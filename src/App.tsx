@@ -18,7 +18,11 @@ import { TacticalGuideView } from './components/TacticalGuideView';
 import { ExpeditionView } from './components/ExpeditionView';
 import { TutorialCodexView } from './components/TutorialCodexView';
 import { MythologyAtlasView } from './components/MythologyAtlasView';
-import { MultiplayerView, SovereignAccountModal } from './components/MultiplayerView';
+import {
+  AccountModalTab,
+  MultiplayerView,
+  SovereignAccountModal,
+} from './components/MultiplayerView';
 import { CardView, CardInspectModal } from './components/CardView';
 import {
   getActiveTabUserProfile,
@@ -131,8 +135,8 @@ export const App: React.FC = () => {
   );
   const [accountModalState, setAccountModalState] = useState<{
     open: boolean;
-    tab: 'login' | 'create';
-  }>({ open: false, tab: 'login' });
+    tab: AccountModalTab;
+  }>({ open: false, tab: 'profile' });
   const [activeOnlineMatch, setActiveOnlineMatch] = useState<{
     room: MultiplayerRoom;
     role: 'host' | 'guest';
@@ -451,7 +455,7 @@ export const App: React.FC = () => {
         <div className="nav-right-controls">
           <div
             className="gold-pill"
-            onClick={() => setAccountModalState({ open: true, tab: 'login' })}
+            onClick={() => setAccountModalState({ open: true, tab: 'profile' })}
             style={{
               cursor: 'pointer',
               borderColor: 'rgba(250, 204, 21, 0.55)',
@@ -459,7 +463,7 @@ export const App: React.FC = () => {
               color: '#fef08a',
               gap: '0.45rem',
             }}
-            title="Clique para Entrar, Trocar ou Criar sua Conta de Soberano"
+            title="Clique para abrir seu Perfil do Soberano, Entrar ou Criar Conta"
           >
             <span>👤</span>
             <span style={{ fontWeight: 800 }}>{currentUser.username}</span>
@@ -476,7 +480,7 @@ export const App: React.FC = () => {
                 fontWeight: 800,
               }}
             >
-              CONTA
+              PERFIL
             </span>
           </div>
 
@@ -843,6 +847,7 @@ export const App: React.FC = () => {
         {accountModalState.open && (
           <SovereignAccountModal
             currentUser={currentUser}
+            customDecks={customDecks}
             onUserChange={setCurrentUser}
             initialTab={accountModalState.tab}
             onClose={() => setAccountModalState((prev) => ({ ...prev, open: false }))}

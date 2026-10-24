@@ -1,4 +1,6 @@
 import { CardDefinition, DomainExpansionState, GameState, PlayerState } from '../types/game';
+import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
+import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
 
 export interface SovereignUserProfile {
   id: string;
@@ -79,24 +81,28 @@ const STORAGE_KEYS = {
   SUPABASE_KEY: 'chromatic_pact_supabase_key_v1',
 };
 
-export const AVATAR_OPTIONS: Array<{ cardId: string; label: string }> = [
-  { cardId: 'neutral_10_valkyra_pentacromatica', label: 'Valkyra Pentacromática' },
-  { cardId: 'red_08_dragao_vermelho', label: 'Ignis, Dragão Carmesim' },
-  { cardId: 'blue_06_dragao_azul', label: 'Aurelius, Dragão Cobalto' },
-  { cardId: 'purple_07_lich', label: 'Malakor, Arquilich Umbral' },
-  { cardId: 'green_08_dragao_verde', label: 'Sylvanor, Dragão Esmeralda' },
-  { cardId: 'gold_09_serafim_solar', label: 'Solarius, Serafim do Zênite' },
-  { cardId: 'neutral_54_dragao_etereo', label: 'Aetherion, Dragão Astral' },
-];
+/**
+ * Returns the canonical Honorific Title bound to the chosen Creature / Legendary Avatar.
+ */
+export function getAvatarHonorificTitle(cardId: string): string {
+  const bio = LEGENDARY_CREATURE_BIOGRAPHIES[cardId];
+  if (bio?.properTitle) return bio.properTitle;
+  const card = CARDS_BY_ID[cardId];
+  if (card?.name) return card.name;
+  return 'Valkyra, Imperatriz Pentacromática';
+}
 
-export const TITLE_OPTIONS: string[] = [
-  'Soberano da Fratura',
-  'Arconte do Pacto',
-  'Senhor das Cinzas',
-  'Oráculo do Véu Glacial',
-  'Regente dos Cinco Selos',
-  'Guardião do Trono Tripartido',
-];
+/**
+ * Returns all selectable Avatar creatures (either all 73 Legendaries or all Creatures in the Codex).
+ */
+export function getSelectableAvatarCards(mode: 'legendary' | 'all_creatures' = 'legendary'): CardDefinition[] {
+  if (mode === 'legendary') {
+    return ALL_CARDS.filter(
+      (c) => (c.rarity === 'legendary' || Boolean(LEGENDARY_CREATURE_BIOGRAPHIES[c.id])) && Boolean(c.imagePath)
+    );
+  }
+  return ALL_CARDS.filter((c) => c.type === 'creature' && Boolean(c.imagePath));
+}
 
 // ============================================================================
 // 1. PERSPECTIVE INVERSION (HOST <-> GUEST SYMMETRIC VIEW)
@@ -269,17 +275,17 @@ export function setActiveTabUserProfile(profile: SovereignUserProfile): void {
 export function createNewSovereignAccount(params: {
   username: string;
   email?: string;
-  title: string;
   avatarCardId: string;
   preferredDeckId: string;
 }): SovereignUserProfile {
   const cleanName = params.username.trim() || `Soberano_${Math.floor(100 + Math.random() * 900)}`;
+  const chosenAvatar = params.avatarCardId || 'neutral_10_valkyra_pentacromatica';
   const profile: SovereignUserProfile = {
     id: `sov_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     username: cleanName,
     email: params.email?.trim() || undefined,
-    title: params.title || TITLE_OPTIONS[0],
-    avatarCardId: params.avatarCardId || AVATAR_OPTIONS[0].cardId,
+    title: getAvatarHonorificTitle(chosenAvatar),
+    avatarCardId: chosenAvatar,
     eloRating: 1200,
     pvpWins: 0,
     pvpLosses: 0,
@@ -287,6 +293,32 @@ export function createNewSovereignAccount(params: {
   };
   setActiveTabUserProfile(profile);
   return profile;
+}
+
+/**
+ * Updates the active Sovereign user's profile (Avatar, Automatic Honorific Title, Email, Preferred Deck)
+ * while keeping the Nickname (`username`) strictly immutable.
+ */
+export function updateSovereignAccountProfile(
+  currentProfile: SovereignUserProfile,
+  updates: {
+    email?: string;
+    avatarCardId: string;
+    preferredDeckId?: string;
+  }
+): SovereignUserProfile {
+  const nextAvatar = updates.avatarCardId || currentProfile.avatarCardId;
+  const updated: SovereignUserProfile = {
+    ...currentProfile,
+    // username is strictly preserved (immutable)
+    username: currentProfile.username,
+    email: updates.email !== undefined ? updates.email.trim() || undefined : currentProfile.email,
+    avatarCardId: nextAvatar,
+    title: getAvatarHonorificTitle(nextAvatar),
+    preferredDeckId: updates.preferredDeckId ?? currentProfile.preferredDeckId,
+  };
+  setActiveTabUserProfile(updated);
+  return updated;
 }
 
 export function recordPvpMatchResult(
@@ -389,11 +421,16 @@ export async function loginOrFetchAccountFromSupabase(
         }>;
         if (rows.length > 0) {
           const row = rows[0];
+          const resolvedAvatar =
+            row.avatar_card_id && CARDS_BY_ID[row.avatar_card_id]
+              ? row.avatar_card_id
+              : 'neutral_10_valkyra_pentacromatica';
           const cloudProfile: SovereignUserProfile = {
             id: localMatch?.id ?? `sov_${row.id}`,
             username: row.username,
-            title: row.title || TITLE_OPTIONS[0],
-            avatarCardId: row.avatar_card_id || AVATAR_OPTIONS[0].cardId,
+            email: localMatch?.email,
+            title: getAvatarHonorificTitle(resolvedAvatar),
+            avatarCardId: resolvedAvatar,
             eloRating: row.elo_rating ?? 1200,
             pvpWins: row.pvp_wins ?? 0,
             pvpLosses: row.pvp_losses ?? 0,

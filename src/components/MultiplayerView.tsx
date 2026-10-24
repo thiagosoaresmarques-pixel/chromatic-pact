@@ -4,50 +4,313 @@ import { PREBUILT_DECKS } from '../data/decks';
 import { createInitialGameState } from '../engine/gameEngine';
 import { playSfx } from '../utils/soundEngine';
 import {
-  AVATAR_OPTIONS,
   createNewSovereignAccount,
   generateRoomCode,
   getActiveRoomsList,
+  getAvatarHonorificTitle,
   getRoomByCode,
   getSavedAccountsRoster,
+  getSelectableAvatarCards,
   loginOrFetchAccountFromSupabase,
   MultiplayerRoom,
   publishMpMessage,
   setActiveTabUserProfile,
   SovereignUserProfile,
   subscribeMultiplayerBus,
-  TITLE_OPTIONS,
+  updateSovereignAccountProfile,
 } from '../utils/multiplayerEngine';
 import { CustomSavedDeck } from './BattleArena';
 
+export type AccountModalTab = 'profile' | 'login' | 'create';
+
+interface AvatarCreaturePickerProps {
+  selectedCardId: string;
+  onSelectCardId: (cardId: string) => void;
+}
+
+const DOMAIN_FILTERS: Array<{ id: string; label: string }> = [
+  { id: 'all', label: 'Todos' },
+  { id: 'red', label: '🔴 Fogo' },
+  { id: 'blue', label: '🔵 Gelo' },
+  { id: 'purple', label: '🟣 Sombra' },
+  { id: 'green', label: '🟢 Vida' },
+  { id: 'gold', label: '🟡 Sol' },
+  { id: 'neutral', label: '⚪ Neutro' },
+];
+
+const AvatarCreaturePicker: React.FC<AvatarCreaturePickerProps> = ({
+  selectedCardId,
+  onSelectCardId,
+}) => {
+  const [poolMode, setPoolMode] = useState<'legendary' | 'all_creatures'>('legendary');
+  const [domainFilter, setDomainFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const availableCards = useMemo(() => {
+    const base = getSelectableAvatarCards(poolMode);
+    const q = searchQuery.trim().toLowerCase();
+    return base.filter((c) => {
+      if (domainFilter !== 'all' && c.color !== domainFilter) return false;
+      if (q) {
+        const honorific = getAvatarHonorificTitle(c.id).toLowerCase();
+        return c.name.toLowerCase().includes(q) || honorific.includes(q);
+      }
+      return true;
+    });
+  }, [poolMode, domainFilter, searchQuery]);
+
+  const selectedCard = CARDS_BY_ID[selectedCardId] ?? ALL_CARDS[0];
+  const boundHonorificTitle = getAvatarHonorificTitle(selectedCardId);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+      {/* Live Automatic Honorific Title Preview Banner */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.85rem',
+          padding: '0.7rem 0.9rem',
+          borderRadius: '8px',
+          background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.16), rgba(15, 23, 42, 0.9))',
+          border: '1px solid rgba(250, 204, 21, 0.5)',
+        }}
+      >
+        {selectedCard?.imagePath && (
+          <img
+            src={`${selectedCard.imagePath}?v=12`}
+            alt={selectedCard.name}
+            style={{
+              width: '54px',
+              height: '54px',
+              borderRadius: '50%',
+              border: '2px solid #fde047',
+              objectFit: 'contain',
+              background: '#050811',
+              flexShrink: 0,
+            }}
+          />
+        )}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="aaa-stat-label" style={{ color: '#fde047' }}>
+            👑 TÍTULO HONORÍFICO (VINCULADO AUTOMATICAMENTE AO AVATAR)
+          </div>
+          <div
+            className="font-cinzel gold-gradient-text"
+            style={{ fontSize: '1.02rem', fontWeight: 900, marginTop: '2px' }}
+          >
+            {boundHonorificTitle}
+          </div>
+          <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+            Carta de Avatar: {selectedCard?.name}
+          </div>
+        </div>
+      </div>
+
+      {/* Filter Bar: [Lendárias vs Todas as Criaturas] + Search */}
+      <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <button
+          type="button"
+          className={`aaa-btn ${
+            poolMode === 'legendary' ? 'aaa-btn-primary' : 'aaa-btn-secondary'
+          }`}
+          style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+          onClick={() => setPoolMode('legendary')}
+        >
+          ★ Criaturas Lendárias
+        </button>
+        <button
+          type="button"
+          className={`aaa-btn ${
+            poolMode === 'all_creatures' ? 'aaa-btn-primary' : 'aaa-btn-secondary'
+          }`}
+          style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+          onClick={() => setPoolMode('all_creatures')}
+        >
+          🐉 Todas as Criaturas
+        </button>
+        <input
+          type="text"
+          className="myth-search-compact"
+          placeholder="Buscar criatura ou título..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ flex: 1, minWidth: '150px', padding: '4px 10px', fontSize: '0.76rem' }}
+        />
+      </div>
+
+      {/* Domain Filter Pills */}
+      <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+        {DOMAIN_FILTERS.map((df) => (
+          <button
+            key={df.id}
+            type="button"
+            onClick={() => setDomainFilter(df.id)}
+            style={{
+              padding: '3px 8px',
+              borderRadius: '999px',
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              background:
+                domainFilter === df.id ? 'rgba(250, 204, 21, 0.22)' : 'rgba(15, 23, 42, 0.75)',
+              border:
+                domainFilter === df.id
+                  ? '1px solid #fde047'
+                  : '1px solid rgba(255,255,255,0.12)',
+              color: domainFilter === df.id ? '#fef08a' : '#cbd5e1',
+            }}
+          >
+            {df.label}
+          </button>
+        ))}
+        <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: '#94a3b8', alignSelf: 'center' }}>
+          {availableCards.length} avatares
+        </span>
+      </div>
+
+      {/* Scrollable Avatar Grid */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(112px, 1fr))',
+          gap: '0.5rem',
+          maxHeight: '250px',
+          overflowY: 'auto',
+          padding: '0.45rem',
+          borderRadius: '8px',
+          background: 'rgba(5, 8, 17, 0.75)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+        }}
+      >
+        {availableCards.map((card) => {
+          const selected = selectedCardId === card.id;
+          const honorific = getAvatarHonorificTitle(card.id);
+          return (
+            <button
+              key={card.id}
+              type="button"
+              onClick={() => onSelectCardId(card.id)}
+              title={honorific}
+              style={{
+                padding: '7px 6px',
+                borderRadius: '8px',
+                background: selected
+                  ? 'linear-gradient(145deg, rgba(212, 175, 55, 0.28), rgba(30, 22, 48, 0.9))'
+                  : 'rgba(15, 23, 42, 0.82)',
+                border: selected ? '1.5px solid #fde047' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '5px',
+                textAlign: 'center',
+              }}
+            >
+              {card.imagePath && (
+                <img
+                  src={`${card.imagePath}?v=12`}
+                  alt={card.name}
+                  loading="lazy"
+                  style={{ width: '52px', height: '52px', objectFit: 'contain' }}
+                />
+              )}
+              <span
+                style={{
+                  fontSize: '0.64rem',
+                  fontWeight: 700,
+                  color: selected ? '#fef08a' : '#e2e8f0',
+                  lineHeight: 1.2,
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                }}
+              >
+                {honorific}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 interface SovereignAccountModalProps {
   currentUser: SovereignUserProfile;
+  customDecks?: CustomSavedDeck[];
   onUserChange: (profile: SovereignUserProfile) => void;
   onClose: () => void;
-  initialTab?: 'login' | 'create';
+  initialTab?: AccountModalTab;
 }
 
 export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   currentUser,
+  customDecks = [],
   onUserChange,
   onClose,
-  initialTab = 'login',
+  initialTab = 'profile',
 }) => {
-  const [tab, setTab] = useState<'login' | 'create'>(initialTab);
+  const [tab, setTab] = useState<AccountModalTab>(initialTab);
   const [accountsRoster, setAccountsRoster] = useState<SovereignUserProfile[]>(() =>
     getSavedAccountsRoster()
   );
 
-  // Login by nickname state
+  // 1. Profile Edit State (Everything editable EXCEPT Nickname)
+  const [editEmail, setEditEmail] = useState<string>(currentUser.email || '');
+  const [editAvatarId, setEditAvatarId] = useState<string>(currentUser.avatarCardId);
+  const [editDeckId, setEditDeckId] = useState<string>(
+    currentUser.preferredDeckId || PREBUILT_DECKS[0]?.id || ''
+  );
+  const [profileSavedMsg, setProfileSavedMsg] = useState<string | null>(null);
+
+  // Sync edit state if currentUser changes
+  useEffect(() => {
+    setEditEmail(currentUser.email || '');
+    setEditAvatarId(currentUser.avatarCardId);
+    setEditDeckId(currentUser.preferredDeckId || PREBUILT_DECKS[0]?.id || '');
+  }, [currentUser]);
+
+  // 2. Login by nickname state
   const [loginNickname, setLoginNickname] = useState<string>('');
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
-  // Create new account state
+  // 3. Create new account state
   const [newUsername, setNewUsername] = useState<string>('');
   const [newEmail, setNewEmail] = useState<string>('');
-  const [newTitle, setNewTitle] = useState<string>(TITLE_OPTIONS[0]);
-  const [newAvatarId, setNewAvatarId] = useState<string>(AVATAR_OPTIONS[0].cardId);
+  const [newAvatarId, setNewAvatarId] = useState<string>('neutral_10_valkyra_pentacromatica');
+
+  const allAvailableDecks = useMemo(
+    () => [
+      ...PREBUILT_DECKS.map((d) => ({
+        id: d.id,
+        name: d.name,
+        subtitle: d.subtitle,
+      })),
+      ...customDecks.map((cd) => ({
+        id: cd.id,
+        name: `★ ${cd.name}`,
+        subtitle: 'Grimório Autoral',
+      })),
+    ],
+    [customDecks]
+  );
+
+  const handleSaveProfileChanges = (e: React.FormEvent) => {
+    e.preventDefault();
+    const updated = updateSovereignAccountProfile(currentUser, {
+      email: editEmail,
+      avatarCardId: editAvatarId,
+      preferredDeckId: editDeckId,
+    });
+    setAccountsRoster(getSavedAccountsRoster());
+    onUserChange(updated);
+    playSfx('ascend');
+    setProfileSavedMsg('✓ Perfil atualizado e sincronizado na nuvem!');
+    setTimeout(() => setProfileSavedMsg(null), 3000);
+  };
 
   const handleSelectExisting = (acc: SovereignUserProfile) => {
     setActiveTabUserProfile(acc);
@@ -82,9 +345,8 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     const created = createNewSovereignAccount({
       username: newUsername,
       email: newEmail,
-      title: newTitle,
       avatarCardId: newAvatarId,
-      preferredDeckId: currentUser.preferredDeckId || PREBUILT_DECKS[0]?.id || '',
+      preferredDeckId: editDeckId || PREBUILT_DECKS[0]?.id || '',
     });
     setAccountsRoster(getSavedAccountsRoster());
     onUserChange(created);
@@ -96,7 +358,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     <div className="modal-backdrop" onClick={onClose}>
       <div
         className="modal-panel"
-        style={{ maxWidth: '560px', width: '94vw' }}
+        style={{ maxWidth: '680px', width: '95vw', maxHeight: '92vh', overflowY: 'auto' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -113,26 +375,33 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
 
         <h3
           className="font-cinzel gold-gradient-text"
-          style={{ fontSize: '1.4rem', margin: '0.25rem 0 0.9rem' }}
+          style={{ fontSize: '1.35rem', margin: '0.2rem 0 0.85rem' }}
         >
-          IDENTIDADE DO SOBERANO
+          IDENTIDADE & PERFIL DO SOBERANO
         </h3>
 
-        {/* Tabs: Entrar / Trocar Conta vs Criar Nova Conta */}
+        {/* 3 Tabs: Meu Perfil | Entrar / Trocar Conta | Criar Nova Conta */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '0.5rem',
-            marginBottom: '1.1rem',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '0.45rem',
+            marginBottom: '1rem',
           }}
         >
+          <button
+            type="button"
+            className={`aaa-btn ${tab === 'profile' ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
+            onClick={() => setTab('profile')}
+          >
+            👤 Meu Perfil
+          </button>
           <button
             type="button"
             className={`aaa-btn ${tab === 'login' ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
             onClick={() => setTab('login')}
           >
-            🔑 Entrar / Trocar Conta
+            🔑 Entrar / Trocar
           </button>
           <button
             type="button"
@@ -143,7 +412,113 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
           </button>
         </div>
 
-        {tab === 'login' ? (
+        {tab === 'profile' && (
+          <form
+            onSubmit={handleSaveProfileChanges}
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
+          >
+            {profileSavedMsg && (
+              <div
+                style={{
+                  padding: '0.6rem 0.9rem',
+                  borderRadius: '6px',
+                  background: 'rgba(16, 185, 129, 0.2)',
+                  border: '1px solid #34d399',
+                  color: '#a7f3d0',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                }}
+              >
+                {profileSavedMsg}
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div>
+                <label className="aaa-stat-label">
+                  🔒 NICKNAME DO SOBERANO (IMUTÁVEL)
+                </label>
+                <input
+                  type="text"
+                  className="myth-search-compact"
+                  value={currentUser.username}
+                  disabled
+                  readOnly
+                  title="O Nickname de um Soberano é perpétuo e não pode ser alterado."
+                  style={{
+                    width: '100%',
+                    marginTop: '4px',
+                    opacity: 0.72,
+                    cursor: 'not-allowed',
+                    background: 'rgba(15, 23, 42, 0.5)',
+                    borderColor: 'rgba(148, 163, 184, 0.25)',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="aaa-stat-label">E-MAIL DO SOBERANO</label>
+                <input
+                  type="email"
+                  className="myth-search-compact"
+                  placeholder="seu@email.com"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  style={{ width: '100%', marginTop: '4px' }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="aaa-stat-label">GRIMÓRIO PREFERIDO PARA DUELOS</label>
+              <select
+                className="myth-select-compact"
+                value={editDeckId}
+                onChange={(e) => setEditDeckId(e.target.value)}
+                style={{ width: '100%', marginTop: '4px' }}
+              >
+                {allAvailableDecks.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name} — {d.subtitle}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="aaa-stat-label" style={{ marginBottom: '0.35rem', display: 'block' }}>
+                ALTERAR AVATAR E TÍTULO HONORÍFICO (ESCOLHA QUALQUER CRIATURA OU LENDÁRIA)
+              </label>
+              <AvatarCreaturePicker
+                selectedCardId={editAvatarId}
+                onSelectCardId={setEditAvatarId}
+              />
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: '0.35rem',
+              }}
+            >
+              <div style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
+                🏆 Rating atual: <strong style={{ color: '#fde047' }}>{currentUser.eloRating} ELO</strong> ({currentUser.pvpWins}V / {currentUser.pvpLosses}D)
+              </div>
+              <div style={{ display: 'flex', gap: '0.6rem' }}>
+                <button type="button" className="aaa-btn aaa-btn-ghost" onClick={onClose}>
+                  Fechar
+                </button>
+                <button type="submit" className="aaa-btn aaa-btn-primary">
+                  💾 Salvar Alterações do Perfil
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+
+        {tab === 'login' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {/* Cloud Login by Nickname */}
             <form
@@ -165,7 +540,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                 <input
                   type="text"
                   className="myth-search-compact"
-                  placeholder="Digite seu Nickname (ex: Thiago_Arconte)..."
+                  placeholder="Digite seu Nickname (ex: tsm81)..."
                   value={loginNickname}
                   onChange={(e) => setLoginNickname(e.target.value)}
                   style={{ flex: 1 }}
@@ -241,7 +616,8 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                             )}
                           </div>
                           <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                            {acc.title} • 🏆 {acc.eloRating} ELO ({acc.pvpWins}V / {acc.pvpLosses}D)
+                            {getAvatarHonorificTitle(acc.avatarCardId)} • 🏆 {acc.eloRating} ELO (
+                            {acc.pvpWins}V / {acc.pvpLosses}D)
                           </div>
                         </div>
                       </div>
@@ -254,102 +630,50 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
               </div>
             </div>
           </div>
-        ) : (
+        )}
+
+        {tab === 'create' && (
           <form
             onSubmit={handleCreateAccount}
             style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
           >
-            <div>
-              <label className="aaa-stat-label">NICKNAME DO SOBERANO *</label>
-              <input
-                type="text"
-                className="myth-search-compact"
-                placeholder="Ex: Thiago_Arconte"
-                value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value)}
-                required
-                style={{ width: '100%', marginTop: '4px' }}
-              />
-            </div>
-
-            <div>
-              <label className="aaa-stat-label">E-MAIL (OPCIONAL)</label>
-              <input
-                type="email"
-                className="myth-search-compact"
-                placeholder="seu@email.com"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                style={{ width: '100%', marginTop: '4px' }}
-              />
-            </div>
-
-            <div>
-              <label className="aaa-stat-label">TÍTULO HONORÍFICO</label>
-              <select
-                className="myth-select-compact"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                style={{ width: '100%', marginTop: '4px' }}
-              >
-                {TITLE_OPTIONS.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="aaa-stat-label">ESCOLHA SEU BRASÃO / AVATAR</label>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(4, 1fr)',
-                  gap: '0.5rem',
-                  marginTop: '6px',
-                }}
-              >
-                {AVATAR_OPTIONS.map((av) => {
-                  const card = CARDS_BY_ID[av.cardId];
-                  const selected = newAvatarId === av.cardId;
-                  return (
-                    <button
-                      key={av.cardId}
-                      type="button"
-                      onClick={() => setNewAvatarId(av.cardId)}
-                      style={{
-                        padding: '6px',
-                        borderRadius: '6px',
-                        background: selected
-                          ? 'rgba(212, 175, 55, 0.22)'
-                          : 'rgba(15, 23, 42, 0.8)',
-                        border: selected
-                          ? '1.5px solid #fde047'
-                          : '1px solid rgba(255,255,255,0.12)',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '4px',
-                      }}
-                    >
-                      {card?.imagePath && (
-                        <img
-                          src={`${card.imagePath}?v=12`}
-                          alt={av.label}
-                          style={{ width: '44px', height: '44px', objectFit: 'contain' }}
-                        />
-                      )}
-                      <span
-                        style={{ fontSize: '0.62rem', color: '#e2e8f0', textAlign: 'center' }}
-                      >
-                        {av.label.split(',')[0]}
-                      </span>
-                    </button>
-                  );
-                })}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div>
+                <label className="aaa-stat-label">
+                  NICKNAME DO SOBERANO * (NÃO PODERÁ SER MUDADO DEPOIS)
+                </label>
+                <input
+                  type="text"
+                  className="myth-search-compact"
+                  placeholder="Ex: tsm81"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  required
+                  style={{ width: '100%', marginTop: '4px' }}
+                />
               </div>
+
+              <div>
+                <label className="aaa-stat-label">E-MAIL (OPCIONAL)</label>
+                <input
+                  type="email"
+                  className="myth-search-compact"
+                  placeholder="seu@email.com"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  style={{ width: '100%', marginTop: '4px' }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="aaa-stat-label" style={{ marginBottom: '0.35rem', display: 'block' }}>
+                ESCOLHA SEU AVATAR (QUALQUER CRIATURA OU LENDÁRIA DEFINE SEU TÍTULO HONORÍFICO)
+              </label>
+              <AvatarCreaturePicker
+                selectedCardId={newAvatarId}
+                onSelectCardId={setNewAvatarId}
+              />
             </div>
 
             <div
@@ -357,7 +681,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                 display: 'flex',
                 justifyContent: 'flex-end',
                 gap: '0.65rem',
-                marginTop: '0.5rem',
+                marginTop: '0.35rem',
               }}
             >
               <button type="button" className="aaa-btn aaa-btn-ghost" onClick={onClose}>
@@ -379,7 +703,7 @@ interface MultiplayerViewProps {
   currentUser: SovereignUserProfile;
   onUserChange: (profile: SovereignUserProfile) => void;
   onStartOnlineMatch: (room: MultiplayerRoom, role: 'host' | 'guest') => void;
-  onOpenAccountModal: (tab: 'login' | 'create') => void;
+  onOpenAccountModal: (tab: AccountModalTab) => void;
 }
 
 function resolveDeckCards(cardIds: string[]) {
@@ -414,6 +738,9 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
 
   useEffect(() => {
     setAccountsRoster(getSavedAccountsRoster());
+    if (currentUser.preferredDeckId) {
+      setSelectedDeckId(currentUser.preferredDeckId);
+    }
   }, [currentUser]);
 
   const allAvailableDecks = useMemo(
@@ -448,7 +775,6 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
 
       if (msg.type === 'ROOM_UPSERT') {
         const r = msg.room;
-        // If we are hosting this room and a guest just joined -> start the match automatically!
         if (
           r.status === 'playing' &&
           r.canonicalState &&
@@ -482,7 +808,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
       host: {
         id: currentUser.id,
         username: currentUser.username,
-        title: currentUser.title,
+        title: getAvatarHonorificTitle(currentUser.avatarCardId),
         avatarCardId: currentUser.avatarCardId,
         eloRating: currentUser.eloRating,
         deckId: selectedDeckObj.id,
@@ -510,7 +836,6 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
         accountsRoster.find((a) => a.id !== room.host.id) ??
         createNewSovereignAccount({
           username: 'Arconte_Desafiante',
-          title: 'Oráculo do Véu Glacial',
           avatarCardId: 'neutral_54_dragao_etereo',
           preferredDeckId: selectedDeckObj.id,
         });
@@ -526,10 +851,10 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     const canonicalState = createInitialGameState(hostCards, guestCards, {
       playerName: room.host.username,
       aiName: activeGuest.username,
-      aiTitle: `${activeGuest.title} (${activeGuest.eloRating} ELO)`,
+      aiTitle: `${getAvatarHonorificTitle(activeGuest.avatarCardId)} (${activeGuest.eloRating} ELO)`,
       aiAvatarCardId: activeGuest.avatarCardId,
     });
-    canonicalState.player.title = `${room.host.title} (${room.host.eloRating} ELO)`;
+    canonicalState.player.title = `${getAvatarHonorificTitle(room.host.avatarCardId)} (${room.host.eloRating} ELO)`;
     canonicalState.player.avatarCardId = room.host.avatarCardId;
 
     const updatedRoom: MultiplayerRoom = {
@@ -538,7 +863,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
       guest: {
         id: activeGuest.id,
         username: activeGuest.username,
-        title: activeGuest.title,
+        title: getAvatarHonorificTitle(activeGuest.avatarCardId),
         avatarCardId: activeGuest.avatarCardId,
         eloRating: activeGuest.eloRating,
         deckId: selectedDeckObj.id,
@@ -585,6 +910,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   };
 
   const avatarCard = CARDS_BY_ID[currentUser.avatarCardId] ?? ALL_CARDS[0];
+  const currentHonorific = getAvatarHonorificTitle(currentUser.avatarCardId);
   const waitingRooms = rooms.filter((r) => r.status === 'waiting');
 
   return (
@@ -602,9 +928,16 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
           <button
             type="button"
             className="aaa-btn aaa-btn-secondary"
+            onClick={() => onOpenAccountModal('profile')}
+          >
+            👤 Editar Meu Perfil
+          </button>
+          <button
+            type="button"
+            className="aaa-btn aaa-btn-secondary"
             onClick={() => onOpenAccountModal('login')}
           >
-            🔑 Entrar / Trocar Usuário
+            🔑 Trocar Usuário
           </button>
           <button
             type="button"
@@ -637,7 +970,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
       <div className="tg-grid-layout">
         {/* Left Panel: Sovereign Account */}
         <div className="tg-panel">
-          <div className="aaa-kicker">CONTA CONECTADA NESTA SESSÃO</div>
+          <div className="aaa-kicker">PERFIL DO SOBERANO CONECTADO</div>
           <div
             style={{
               display: 'flex',
@@ -650,6 +983,8 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             }}
           >
             <div
+              onClick={() => onOpenAccountModal('profile')}
+              title="Clique para trocar seu Avatar"
               style={{
                 width: '68px',
                 height: '68px',
@@ -661,6 +996,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                cursor: 'pointer',
               }}
             >
               {avatarCard?.imagePath && (
@@ -679,8 +1015,8 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               >
                 {currentUser.username}
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginBottom: '0.4rem' }}>
-                {currentUser.title}
+              <div style={{ fontSize: '0.78rem', color: '#fde047', marginBottom: '0.4rem' }}>
+                👑 {currentHonorific}
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span className="tg-role-pill" style={{ flex: 'none' }}>
@@ -696,16 +1032,16 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               <button
                 type="button"
                 className="aaa-btn aaa-btn-primary"
-                onClick={() => onOpenAccountModal('create')}
+                onClick={() => onOpenAccountModal('profile')}
               >
-                ✨ Criar Conta
+                👤 Editar Perfil
               </button>
               <button
                 type="button"
                 className="aaa-btn aaa-btn-secondary"
                 onClick={() => onOpenAccountModal('login')}
               >
-                🔑 Trocar Conta
+                🔑 Trocar / Criar
               </button>
             </div>
           </div>
@@ -914,7 +1250,8 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                         {room.host.username}
                       </div>
                       <div className="exp-ach-desc">
-                        {room.host.title} • 🏆 {room.host.eloRating} ELO
+                        {getAvatarHonorificTitle(room.host.avatarCardId)} • 🏆 {room.host.eloRating}{' '}
+                        ELO
                       </div>
                       <div className="exp-ach-prog">
                         {room.isPublicQueue ? '🌐 Fila Pública 1x1' : '🔒 Sala com Código'}

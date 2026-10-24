@@ -488,10 +488,17 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                 </div>
               )}
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-                <div>
-                  <label className="aaa-stat-label">
-                    🔒 NICKNAME DO SOBERANO (IMUTÁVEL)
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '0.85rem',
+                  alignItems: 'end',
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                    🔒 NICKNAME (IMUTÁVEL)
                   </label>
                   <input
                     type="text"
@@ -502,7 +509,8 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                     title="O Nickname de um Soberano é perpétuo e não pode ser alterado."
                     style={{
                       width: '100%',
-                      marginTop: '4px',
+                      height: '38px',
+                      boxSizing: 'border-box',
                       opacity: 0.72,
                       cursor: 'not-allowed',
                       background: 'rgba(15, 23, 42, 0.5)',
@@ -511,15 +519,17 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                   />
                 </div>
 
-                <div>
-                  <label className="aaa-stat-label">E-MAIL DO SOBERANO</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                    E-MAIL DO SOBERANO
+                  </label>
                   <input
                     type="email"
                     className="myth-search-compact"
                     placeholder="seu@email.com"
                     value={editEmail}
                     onChange={(e) => setEditEmail(e.target.value)}
-                    style={{ width: '100%', marginTop: '4px' }}
+                    style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
                   />
                 </div>
               </div>
@@ -727,10 +737,17 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             onSubmit={handleCreateAccount}
             style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
           >
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              <div>
-                <label className="aaa-stat-label">
-                  NICKNAME DO SOBERANO * (NÃO PODERÁ SER MUDADO DEPOIS)
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '0.85rem',
+                alignItems: 'end',
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                  NICKNAME * (IMUTÁVEL)
                 </label>
                 <input
                   type="text"
@@ -739,19 +756,21 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                   value={newUsername}
                   onChange={(e) => setNewUsername(e.target.value)}
                   required
-                  style={{ width: '100%', marginTop: '4px' }}
+                  style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
                 />
               </div>
 
-              <div>
-                <label className="aaa-stat-label">E-MAIL (OPCIONAL)</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                  E-MAIL (OPCIONAL)
+                </label>
                 <input
                   type="email"
                   className="myth-search-compact"
                   placeholder="seu@email.com"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  style={{ width: '100%', marginTop: '4px' }}
+                  style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
                 />
               </div>
             </div>

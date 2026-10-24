@@ -520,9 +520,9 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
       <header className="aaa-page-header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div className="aaa-kicker">
-            MODO ROGUELIKE & DRAFT TÁTICO • 20 RODADAS DE ESCOLHA (100 CARTAS) • 7 BATALHAS CRESCENTES
+            MODO ROGUELITE • DRAFT & TRAVESSIA ABISSAL
           </div>
-          <h1 className="aaa-page-title font-cinzel">🧭 Expedição do Vazio</h1>
+          <h1 className="aaa-page-title font-cinzel">Expedição do Vazio</h1>
         </div>
 
         <div className="aaa-header-actions" style={{ flexWrap: 'wrap', gap: '0.6rem' }}>
@@ -530,7 +530,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
             <div className="aaa-stat-block">
               <span className="aaa-stat-label">BÊNÇÃO ATIVA</span>
               <span className="aaa-stat-val" style={{ color: activeBlessing.accent }}>
-                {activeBlessing.icon} {activeBlessing.name}
+                {activeBlessing.name}
               </span>
             </div>
           )}
@@ -551,7 +551,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
               className="btn-fantasy btn-fantasy-danger"
               onClick={handleRestartExpedition}
             >
-              ↻ Nova Expedição
+              Nova Expedição
             </button>
           )}
         </div>

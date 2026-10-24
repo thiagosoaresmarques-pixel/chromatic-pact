@@ -668,11 +668,10 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
       <header className="aaa-page-header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div className="aaa-kicker">
-            ENCICLOPÉDIA TÁTICA ASSIMÉTRICA • {PREBUILT_DECKS.length} GRIMÓRIOS OFICIAIS ×{' '}
-            {PREBUILT_DECKS.length} CONFRONTOS
+            ORÁCULO DE GUERRA • ANÁLISE DE GRIMÓRIOS & CONFRONTOS
           </div>
           <h1 className="aaa-page-title font-cinzel">
-            📐 Guia Estratégico, Doutrina 3x & Simulador de Matchups
+            Oráculo Estratégico & Matchups
           </h1>
         </div>
 
@@ -682,25 +681,25 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             className={`btn-fantasy ${viewSection === 'deck_mastery' ? 'btn-fantasy-primary' : ''}`}
             onClick={() => setViewSection('deck_mastery')}
           >
-            📖 Manual do Seu Deck
+            Manual do Grimório
           </button>
           <button
             type="button"
             className={`btn-fantasy ${viewSection === 'matchup_duel' ? 'btn-fantasy-primary' : ''}`}
             onClick={() => setViewSection('matchup_duel')}
           >
-            ⚔️ Simulador 1v1 (Como Vencer)
+            Simulador 1×1
           </button>
           <button
             type="button"
             className={`btn-fantasy ${viewSection === 'matrix_all' ? 'btn-fantasy-primary' : ''}`}
             onClick={() => setViewSection('matrix_all')}
           >
-            🌐 Matriz contra Todos ({allDecks.length - 1})
+            Matriz de Confrontos ({allDecks.length - 1})
           </button>
           {isModal && onClose && (
             <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
-              ✕ Fechar Guia
+              Fechar
             </button>
           )}
         </div>
@@ -733,22 +732,18 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               value={selectedPlayerDeckId}
               onChange={(e) => setSelectedPlayerDeckId(e.target.value)}
             >
-              <optgroup label={`${PREBUILT_DECKS.length} Grimórios Assimétricos Oficiais`}>
-                {PREBUILT_DECKS.map((d) => {
-                  const prof = profilesById[d.id];
-                  return (
-                    <option key={d.id} value={d.id}>
-                      {d.name} — [{prof?.counts.creature}C / {prof?.counts.spell}M /{' '}
-                      {prof?.counts.reaction}R / {prof?.counts.relic}Rel]
-                    </option>
-                  );
-                })}
+              <optgroup label="Grimórios Oficiais">
+                {PREBUILT_DECKS.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name} — {d.subtitle}
+                  </option>
+                ))}
               </optgroup>
               {customDecks.length > 0 && (
-                <optgroup label="Seus Grimórios Personalizados">
+                <optgroup label="Grimórios Autorais">
                   {customDecks.map((cd) => (
                     <option key={cd.id} value={cd.id}>
-                      ★ {cd.name} ({cd.cardIds.length} cartas)
+                      ★ {cd.name}
                     </option>
                   ))}
                 </optgroup>
@@ -758,7 +753,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               <span className="tg-role-pill" title={playerProfile.archetypeRole}>
                 {playerProfile.archetypeRole}
               </span>
-              <span className="tg-cost-pill">Média {playerProfile.avgCost}⚡</span>
+              <span className="tg-cost-pill">Custo Médio {playerProfile.avgCost}</span>
             </div>
           </div>
         </div>
@@ -775,7 +770,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             }}
             title="Inverter Grimórios em Análise"
           >
-            ⇄ VS ({activeMatchup.favorabilityScore}/{100 - activeMatchup.favorabilityScore})
+            ⇄ Inverter ({activeMatchup.favorabilityScore}/{100 - activeMatchup.favorabilityScore})
           </button>
           {onLaunchDuel && (
             <button
@@ -783,7 +778,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               className="btn-fantasy btn-fantasy-primary"
               onClick={() => onLaunchDuel(selectedPlayerDeckId, selectedOpponentDeckId)}
             >
-              ⚔️ Duelar
+              Testar na Arena
             </button>
           )}
         </div>
@@ -816,22 +811,18 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 if (viewSection === 'matrix_all') setViewSection('matchup_duel');
               }}
             >
-              <optgroup label={`${PREBUILT_DECKS.length} Grimórios Assimétricos Oficiais`}>
-                {PREBUILT_DECKS.map((d) => {
-                  const prof = profilesById[d.id];
-                  return (
-                    <option key={d.id} value={d.id}>
-                      {d.name} — [{prof?.counts.creature}C / {prof?.counts.spell}M /{' '}
-                      {prof?.counts.reaction}R / {prof?.counts.relic}Rel]
-                    </option>
-                  );
-                })}
+              <optgroup label="Grimórios Oficiais">
+                {PREBUILT_DECKS.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name} — {d.subtitle}
+                  </option>
+                ))}
               </optgroup>
               {customDecks.length > 0 && (
-                <optgroup label="Seus Grimórios Personalizados">
+                <optgroup label="Grimórios Autorais">
                   {customDecks.map((cd) => (
                     <option key={cd.id} value={cd.id}>
-                      ★ {cd.name} ({cd.cardIds.length} cartas)
+                      ★ {cd.name}
                     </option>
                   ))}
                 </optgroup>
@@ -841,7 +832,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               <span className="tg-role-pill" title={opponentProfile.archetypeRole}>
                 {opponentProfile.archetypeRole}
               </span>
-              <span className="tg-cost-pill">Média {opponentProfile.avgCost}⚡</span>
+              <span className="tg-cost-pill">Custo Médio {opponentProfile.avgCost}</span>
             </div>
           </div>
         </div>

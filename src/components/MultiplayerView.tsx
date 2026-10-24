@@ -1323,9 +1323,9 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
       <div className="aaa-page-header">
         <div>
           <div className="aaa-kicker">
-            🟢 SERVIDORES DOS CINCO DOMÍNIOS • ONLINE EM TEMPO REAL
+            SERVIDORES DOS CINCO DOMÍNIOS • SINCRONIZAÇÃO EM TEMPO REAL
           </div>
-          <h1 className="aaa-page-title">CONCLAVE MULTIPLAYER 1x1</h1>
+          <h1 className="aaa-page-title font-cinzel">Conclave Multiplayer 1×1</h1>
         </div>
 
         <div className="aaa-header-actions">
@@ -1334,21 +1334,21 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             className="aaa-btn aaa-btn-secondary"
             onClick={() => onOpenAccountModal('profile')}
           >
-            👤 Editar Meu Perfil
+            Meu Perfil
           </button>
           <button
             type="button"
             className="aaa-btn aaa-btn-secondary"
             onClick={() => onOpenAccountModal('login')}
           >
-            🔑 Trocar Usuário
+            Trocar Usuário
           </button>
           <button
             type="button"
             className="aaa-btn aaa-btn-primary"
             onClick={() => onOpenAccountModal('create')}
           >
-            ✨ Criar Nova Conta
+            Criar Nova Conta
           </button>
         </div>
       </div>
@@ -1420,14 +1420,14 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                 {currentUser.username}
               </div>
               <div style={{ fontSize: '0.78rem', color: '#fde047', marginBottom: '0.4rem' }}>
-                👑 {currentHonorific}
+                {currentHonorific}
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span className="tg-role-pill" style={{ flex: 'none' }}>
-                  🏆 {currentUser.eloRating} ELO
+                  {currentUser.eloRating} ELO
                 </span>
                 <span className="tg-cost-pill">
-                  ⚔️ {currentUser.pvpWins}V - {currentUser.pvpLosses}D
+                  {currentUser.pvpWins}V • {currentUser.pvpLosses}D
                 </span>
               </div>
             </div>
@@ -1438,14 +1438,14 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                 className="aaa-btn aaa-btn-primary"
                 onClick={() => onOpenAccountModal('profile')}
               >
-                👤 Editar Perfil
+                Editar Perfil
               </button>
               <button
                 type="button"
                 className="aaa-btn aaa-btn-secondary"
                 onClick={() => onOpenAccountModal('login')}
               >
-                🔑 Trocar / Criar
+                Trocar / Criar
               </button>
             </div>
           </div>
@@ -1473,7 +1473,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
 
         {/* Right Panel: Deck Selection, Quick Queue & Room Creation */}
         <div className="tg-panel">
-          <div className="aaa-kicker">ESCOLHA SEU GRIMÓRIO PARA O DUELO 1x1</div>
+          <div className="aaa-kicker">PAREAMENTO & SALAS DE DUELO</div>
           <div className="aaa-deck-selector-box" style={{ padding: '0.55rem 0.85rem' }}>
             <span className="aaa-stat-label">GRIMÓRIO ATIVO (100 CARTAS)</span>
             <select
@@ -1503,14 +1503,14 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               style={{ flex: 1 }}
               onClick={handleQuickMatchmaking}
             >
-              ⚔️ BUSCAR PARTIDA 1x1 (FILA RÁPIDA)
+              BUSCAR PARTIDA 1×1 (FILA RÁPIDA)
             </button>
             <button
               type="button"
               className="aaa-btn aaa-btn-secondary aaa-btn-lg"
               onClick={() => handleCreateRoom(false)}
             >
-              🏰 CRIAR SALA COM CÓDIGO
+              CRIAR SALA PRIVADA
             </button>
           </div>
 
@@ -1534,7 +1534,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               style={{ textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.06em' }}
             />
             <button type="submit" className="aaa-btn aaa-btn-primary">
-              🔑 ENTRAR POR CÓDIGO
+              ENTRAR POR CÓDIGO
             </button>
           </form>
 

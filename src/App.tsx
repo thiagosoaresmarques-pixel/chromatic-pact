@@ -383,7 +383,7 @@ export const App: React.FC = () => {
             }`}
             onClick={() => setActiveTab('multiplayer')}
           >
-            ⚔️ PvP 1×1
+            Conclave 1×1
           </button>
 
           <button
@@ -396,7 +396,7 @@ export const App: React.FC = () => {
             }`}
             onClick={() => setActiveTab('campaign')}
           >
-            Campanha (20)
+            Campanha
           </button>
 
           <button
@@ -417,7 +417,7 @@ export const App: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'tactics' ? 'active' : ''}`}
             onClick={() => setActiveTab('tactics')}
           >
-            Táticas (30×30)
+            Oráculo
           </button>
 
           <button
@@ -441,7 +441,7 @@ export const App: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'mythology' ? 'active' : ''}`}
             onClick={() => setActiveTab('mythology')}
           >
-            Mythologia
+            Mitologia
           </button>
 
           <button
@@ -449,7 +449,7 @@ export const App: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'rules' ? 'active' : ''}`}
             onClick={() => setActiveTab('rules')}
           >
-            Tutorial & Códice
+            Tutorial
           </button>
         </nav>
 
@@ -519,8 +519,8 @@ export const App: React.FC = () => {
             }
           >
             {soundMuted
-              ? '🔇 ÁUDIO OFF'
-              : `🎵 ${musicInfo.stage === 'climax' ? 'CLÍMAX' : 'ÁUDIO ON'}`}
+              ? 'ÁUDIO OFF'
+              : `${musicInfo.stage === 'climax' ? 'CLÍMAX' : 'ÁUDIO ON'}`}
           </button>
         </div>
       </header>
@@ -533,7 +533,7 @@ export const App: React.FC = () => {
             <div className="aaa-home-showcase-hero">
               <div className="aaa-home-hero-copy">
                 <div className="aaa-kicker aaa-hero-badge">
-                  ✦ OS CINCO DOMÍNIOS AGUARDAM O SEU PACTO
+                  OS CINCO DOMÍNIOS AGUARDAM O SEU PACTO
                 </div>
                 <h1 className="font-cinzel gold-gradient-text aaa-home-hero-heading">
                   CHROMATIC PACT
@@ -558,28 +558,33 @@ export const App: React.FC = () => {
                       setActiveTab('arena');
                     }}
                   >
-                    ⚔️ ENTRAR NA ARENA
+                    ENTRAR NA ARENA
                   </button>
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
                     onClick={() => setActiveTab('multiplayer')}
                   >
-                    🌐 DUELO 1×1 ONLINE
+                    CONCLAVE 1×1 ONLINE
                   </button>
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
                     onClick={() => setActiveTab('campaign')}
                   >
-                    👑 DESAFIAR OS SOBERANOS
+                    MODO CAMPANHA
                   </button>
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
-                    onClick={() => setAccountModalState({ open: true, tab: 'login' })}
+                    onClick={() =>
+                      setAccountModalState({
+                        open: true,
+                        tab: isUnregisteredProfile(currentUser) ? 'create' : 'profile',
+                      })
+                    }
                   >
-                    👤 ENTRAR / CRIAR CONTA
+                    {isUnregisteredProfile(currentUser) ? 'CRIAR CONTA / LOGIN' : 'MEU PERFIL'}
                   </button>
                 </div>
 

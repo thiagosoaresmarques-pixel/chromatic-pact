@@ -189,9 +189,9 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       <header className="aaa-page-header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div className="aaa-kicker">
-            CRÔNICAS DO PACTO CROMÁTICO • 5 ATOS • 20 CHEFES • 30 DECKS
+            CAMPANHA HISTÓRICA • 5 ATOS
           </div>
-          <h1 className="aaa-page-title font-cinzel">Desafio dos 20 Soberanos</h1>
+          <h1 className="aaa-page-title font-cinzel">Queda dos Soberanos</h1>
         </div>
 
         <div className="aaa-header-actions" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
@@ -209,18 +209,18 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               onChange={(e) => setSelectedDeckId(e.target.value)}
               className="aaa-select"
             >
-              <optgroup label={`${PREBUILT_DECKS.length} Decks Oficiais (30 Grimórios)`}>
+              <optgroup label="Grimórios Oficiais">
                 {PREBUILT_DECKS.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.name} ({d.subtitle})
+                    {d.name} — {d.subtitle}
                   </option>
                 ))}
               </optgroup>
               {customDecks.length > 0 && (
-                <optgroup label="Decks Personalizados">
+                <optgroup label="Grimórios Autorais">
                   {customDecks.map((cd) => (
                     <option key={cd.id} value={cd.id}>
-                      ★ {cd.name} ({cd.cardIds.length})
+                      ★ {cd.name}
                     </option>
                   ))}
                 </optgroup>
@@ -233,7 +233,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             className="btn-fantasy btn-fantasy-primary"
             onClick={() => setShowTacticalGuideModal(true)}
           >
-            📐 Guia Tático / Como Vencer o Chefe
+            Guia de Confronto
           </button>
         </div>
       </header>
@@ -242,12 +242,12 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
         {(
           [
-            { id: 'all', label: `Todos os 20 Estágios` },
+            { id: 'all', label: 'Todos os Estágios' },
             { id: 1, label: 'Ato I: Fronteiras (1–4)' },
             { id: 2, label: 'Ato II: Dualistas (5–8)' },
             { id: 3, label: 'Ato III: Ancestrais (9–12)' },
             { id: 4, label: 'Ato IV: Tempo (13–14)' },
-            { id: 5, label: '🔥 Ato V: Os Tronos Tripartidos (15–20)' },
+            { id: 5, label: 'Ato V: Tronos Tripartidos (15–20)' },
           ] as const
         ).map((tab) => (
           <button
@@ -387,14 +387,14 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   className="aaa-btn aaa-btn-primary aaa-btn-lg"
                   onClick={() => onStartBossBattle(activeBoss, getSelectedDeckCardIds())}
                 >
-                  INICIAR CONFRONTO CONTRA {activeBoss.name.toUpperCase()}
+                  INICIAR CONFRONTO
                 </button>
                 <button
                   type="button"
                   className="aaa-btn aaa-btn-secondary"
                   onClick={() => setShowTacticalGuideModal(true)}
                 >
-                  📐 Como Vencer {activeBoss.name}
+                  Análise de Confronto
                 </button>
                 {activeBossCard && (
                   <button

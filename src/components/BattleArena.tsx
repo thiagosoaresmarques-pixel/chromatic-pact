@@ -360,6 +360,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     null
   );
   const [showSacrificeBreakModal, setShowSacrificeBreakModal] = useState(false);
+  const [showSurrenderConfirm, setShowSurrenderConfirm] = useState(false);
+  const [opponentOfflineSeconds, setOpponentOfflineSeconds] = useState(0);
+  const lastOpponentSignalRef = useRef<number>(Date.now());
   const [sacrificeAlloc, setSacrificeAlloc] = useState<SacrificeAllocation>({
     sovereignHp: 0,
     unitDamages: {},
@@ -784,6 +787,33 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const isRemoteSyncRef = useRef<boolean>(false);
   const mpVersionRef = useRef<number>(onlineMatch?.room.stateVersion ?? 1);
   const mpMountedRef = useRef<boolean>(false);
+  const latestPhaseRef = useRef<GameState['phase']>(gameState.phase);
+  const onlineMatchRef = useRef<typeof onlineMatch>(onlineMatch);
+  const hasForfeitedRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    latestPhaseRef.current = gameState.phase;
+    onlineMatchRef.current = onlineMatch;
+  }, [gameState.phase, onlineMatch]);
+
+  // If player leaves the Arena tab mid-1v1 match without finishing, forfeit automatically
+  useEffect(() => {
+    return () => {
+      const om = onlineMatchRef.current;
+      if (om && latestPhaseRef.current !== 'gameover' && !hasForfeitedRef.current) {
+        hasForfeitedRef.current = true;
+        publishMpMessage({
+          type: 'MATCH_FORFEIT',
+          roomCode: om.room.code,
+          role: om.role,
+          actorId: om.currentUser.id,
+          actorName: om.currentUser.username,
+          reason: 'disconnect',
+        });
+        om.onPvpResult(false);
+      }
+    };
+  }, []);
 
   const handleConfirmMulligan = () => {
     const next = mulliganCards(gameState, 'player', mulliganSwapIndices);
@@ -807,9 +837,40 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setMulliganSwapIndices([]);
   };
 
+  const handleConfirmSurrender = () => {
+    setShowSurrenderConfirm(false);
+    setIsMulliganOpen(false);
+    setActiveRightDrawer(null);
+    if (gameState.phase === 'gameover') return;
+
+    const reasonText = `${gameState.player.name} rendeu-se na batalha. Vitória concedida a ${gameState.ai.name}!`;
+
+    if (onlineMatch) {
+      hasForfeitedRef.current = true;
+      isRemoteSyncRef.current = true;
+      publishMpMessage({
+        type: 'MATCH_FORFEIT',
+        roomCode: onlineMatch.room.code,
+        role: onlineMatch.role,
+        actorId: onlineMatch.currentUser.id,
+        actorName: onlineMatch.currentUser.username,
+        reason: 'surrender',
+      });
+    }
+
+    setGameState((prev) => ({
+      ...prev,
+      phase: 'gameover',
+      winner: 'ai',
+      winReason: reasonText,
+    }));
+  };
+
   // Real-time 1v1 Multiplayer State Synchronization (Host <-> Guest)
   useEffect(() => {
     if (!onlineMatch) return;
+    lastOpponentSignalRef.current = Date.now();
+    setOpponentOfflineSeconds(0);
 
     const unsub = subscribeMultiplayerBus((msg) => {
       if (
@@ -818,6 +879,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         msg.actorId !== onlineMatch.currentUser.id &&
         msg.stateVersion > mpVersionRef.current
       ) {
+        lastOpponentSignalRef.current = Date.now();
+        setOpponentOfflineSeconds(0);
         mpVersionRef.current = msg.stateVersion;
         isRemoteSyncRef.current = true;
         const localized =
@@ -831,6 +894,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         msg.roomCode === onlineMatch.room.code &&
         msg.actorId !== onlineMatch.currentUser.id
       ) {
+        lastOpponentSignalRef.current = Date.now();
+        setOpponentOfflineSeconds(0);
         isRemoteSyncRef.current = true;
         setGameState((prev) => ({
           ...prev,
@@ -840,11 +905,143 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             deck: msg.deck,
           },
         }));
+      } else if (
+        msg.type === 'HEARTBEAT_PING' &&
+        msg.roomCode === onlineMatch.room.code &&
+        msg.actorId !== onlineMatch.currentUser.id
+      ) {
+        lastOpponentSignalRef.current = Date.now();
+        setOpponentOfflineSeconds(0);
+      } else if (
+        msg.type === 'MATCH_FORFEIT' &&
+        msg.roomCode === onlineMatch.room.code &&
+        msg.actorId !== onlineMatch.currentUser.id
+      ) {
+        lastOpponentSignalRef.current = Date.now();
+        setOpponentOfflineSeconds(0);
+        setIsMulliganOpen(false);
+        isRemoteSyncRef.current = true;
+        const winText =
+          msg.reason === 'surrender'
+            ? `${msg.actorName} rendeu-se na batalha! Vitória concedida a você.`
+            : `${msg.actorName} abandonou a sala ou perdeu a conexão! Vitória por W.O.`;
+        setGameState((prev) =>
+          prev.phase === 'gameover'
+            ? prev
+            : {
+                ...prev,
+                phase: 'gameover',
+                winner: 'player',
+                winReason: winText,
+              }
+        );
+      } else if (msg.type === 'ROOM_UPSERT' && msg.room.code === onlineMatch.room.code) {
+        const oppHb =
+          onlineMatch.role === 'host' ? msg.room.guestHeartbeatAt : msg.room.hostHeartbeatAt;
+        if (oppHb && oppHb > lastOpponentSignalRef.current) {
+          lastOpponentSignalRef.current = oppHb;
+          setOpponentOfflineSeconds(0);
+        }
+        const opponentRole = onlineMatch.role === 'host' ? 'guest' : 'host';
+        if (msg.room.forfeitedByRole === opponentRole) {
+          setIsMulliganOpen(false);
+          isRemoteSyncRef.current = true;
+          setGameState((prev) =>
+            prev.phase === 'gameover'
+              ? prev
+              : {
+                  ...prev,
+                  phase: 'gameover',
+                  winner: 'player',
+                  winReason:
+                    msg.room.forfeitReason ||
+                    'O oponente abandonou a sala ou perdeu a conexão! Vitória por W.O.',
+                }
+          );
+        }
       }
     });
 
     return () => unsub();
   }, [onlineMatch]);
+
+  // 1v1 Heartbeat, Connection Drop Detection (45s W.O.) & Tab-Close Abandonment Handler
+  useEffect(() => {
+    if (!onlineMatch || gameState.phase === 'gameover') {
+      setOpponentOfflineSeconds(0);
+      return;
+    }
+
+    const heartbeatTimer = window.setInterval(() => {
+      publishMpMessage({
+        type: 'HEARTBEAT_PING',
+        roomCode: onlineMatch.room.code,
+        role: onlineMatch.role,
+        actorId: onlineMatch.currentUser.id,
+        timestamp: Date.now(),
+      });
+    }, 5000);
+
+    const watchdogTimer = window.setInterval(() => {
+      const elapsedSec = Math.floor((Date.now() - lastOpponentSignalRef.current) / 1000);
+      if (elapsedSec >= 45) {
+        const oppRole = onlineMatch.role === 'host' ? 'guest' : 'host';
+        const oppName = gameState.ai.name || 'Oponente';
+        isRemoteSyncRef.current = true;
+        publishMpMessage({
+          type: 'MATCH_FORFEIT',
+          roomCode: onlineMatch.room.code,
+          role: oppRole,
+          actorId:
+            onlineMatch.role === 'host'
+              ? onlineMatch.room.guest?.id ?? 'guest'
+              : onlineMatch.room.host.id,
+          actorName: oppName,
+          reason: 'disconnect',
+        });
+        setIsMulliganOpen(false);
+        setOpponentOfflineSeconds(0);
+        setGameState((prev) =>
+          prev.phase === 'gameover'
+            ? prev
+            : {
+                ...prev,
+                phase: 'gameover',
+                winner: 'player',
+                winReason: `${oppName} perdeu a conexão ou abandonou a sala (45s sem resposta). Vitória por W.O.!`,
+              }
+        );
+      } else if (elapsedSec >= 18) {
+        setOpponentOfflineSeconds(elapsedSec);
+      } else {
+        setOpponentOfflineSeconds(0);
+      }
+    }, 1000);
+
+    const handleBeforeUnloadAbandon = () => {
+      if (hasForfeitedRef.current) return;
+      hasForfeitedRef.current = true;
+      publishMpMessage({
+        type: 'MATCH_FORFEIT',
+        roomCode: onlineMatch.room.code,
+        role: onlineMatch.role,
+        actorId: onlineMatch.currentUser.id,
+        actorName: onlineMatch.currentUser.username,
+        reason: 'disconnect',
+      });
+      onlineMatch.onPvpResult(false);
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnloadAbandon);
+    window.addEventListener('pagehide', handleBeforeUnloadAbandon);
+
+    return () => {
+      window.clearInterval(heartbeatTimer);
+      window.clearInterval(watchdogTimer);
+      window.removeEventListener('beforeunload', handleBeforeUnloadAbandon);
+      window.removeEventListener('pagehide', handleBeforeUnloadAbandon);
+    };
+  }, [onlineMatch, gameState.phase, gameState.ai.name]);
 
   // Publish local player's actions to 1v1 opponent in real time
   useEffect(() => {
@@ -3235,6 +3432,23 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       {!isPlayerTurn ? 'AGUARDE...' : '⏭️ PASSAR TURNO [ESPAÇO]'}
                     </button>
 
+                    {gameState.phase !== 'gameover' && (
+                      <button
+                        type="button"
+                        className="hud-action-cta"
+                        style={{
+                          background: 'rgba(127, 29, 29, 0.72)',
+                          borderColor: 'rgba(248, 113, 113, 0.5)',
+                          color: '#fecaca',
+                          padding: '0 0.65rem',
+                        }}
+                        title="Render-se e encerrar a batalha"
+                        onClick={() => setShowSurrenderConfirm(true)}
+                      >
+                        🏳️ DESISTIR
+                      </button>
+                    )}
+
                     <div
                       className={`hud-gear-menu-wrapper ${
                         activeRightDrawer === 'menu' ? 'is-pinned-open' : ''
@@ -3324,16 +3538,30 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           >
                             📖 Regras
                           </button>
-                          <button
-                            type="button"
-                            className="awmt-btn danger"
-                            onClick={() => {
-                              startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId);
-                              setActiveRightDrawer(null);
-                            }}
-                          >
-                            ↻ Reiniciar
-                          </button>
+                          {!onlineMatch && (
+                            <button
+                              type="button"
+                              className="awmt-btn danger"
+                              onClick={() => {
+                                startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId);
+                                setActiveRightDrawer(null);
+                              }}
+                            >
+                              ↻ Reiniciar
+                            </button>
+                          )}
+                          {gameState.phase !== 'gameover' && (
+                            <button
+                              type="button"
+                              className="awmt-btn danger"
+                              onClick={() => {
+                                setActiveRightDrawer(null);
+                                setShowSurrenderConfirm(true);
+                              }}
+                            >
+                              🏳️ Desistir
+                            </button>
+                          )}
                           <button
                             type="button"
                             className={`awmt-btn full-width ${showLogSidebar ? 'active' : ''}`}
@@ -3914,21 +4142,23 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
-              <button
-                type="button"
-                className="btn-fantasy btn-fantasy-primary"
-                onClick={() => startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId)}
-              >
-                Jogar Novamente
-              </button>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              {!onlineMatch && (
+                <button
+                  type="button"
+                  className="btn-fantasy btn-fantasy-primary"
+                  onClick={() => startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId)}
+                >
+                  Jogar Novamente
+                </button>
+              )}
               {onlineMatch && (
                 <button
                   type="button"
-                  className="btn-fantasy"
+                  className="btn-fantasy btn-fantasy-primary"
                   onClick={onlineMatch.onExitPvp}
                 >
-                  Voltar ao Conclave 1x1
+                  Voltar ao Conclave 1×1
                 </button>
               )}
               {campaignBoss && onExitCampaign && (
@@ -3938,6 +4168,81 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* SURRENDER / CONCEDE CONFIRMATION MODAL */}
+      {showSurrenderConfirm && gameState.phase !== 'gameover' && (
+        <div className="modal-backdrop" onClick={() => setShowSurrenderConfirm(false)}>
+          <div
+            className="modal-panel"
+            style={{ maxWidth: '440px', textAlign: 'center', padding: '1.75rem' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="font-cinzel"
+              style={{
+                fontSize: '0.74rem',
+                letterSpacing: '0.16em',
+                color: '#fca5a5',
+                marginBottom: '0.4rem',
+              }}
+            >
+              ENCERRAR COMBATE
+            </div>
+            <h3
+              className="font-cinzel gold-gradient-text"
+              style={{ fontSize: '1.35rem', marginBottom: '0.6rem' }}
+            >
+              RENDER-SE NA BATALHA?
+            </h3>
+            <p style={{ color: '#cbd5e1', fontSize: '0.86rem', lineHeight: 1.5, marginBottom: '1.35rem' }}>
+              {onlineMatch
+                ? `Ao desistir, a vitória será concedida imediatamente a ${gameState.ai.name} e sua Reputação será atualizada.`
+                : `Ao desistir, seu Bastião se renderá imediatamente e a partida atual será encerrada.`}
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn-fantasy"
+                onClick={() => setShowSurrenderConfirm(false)}
+              >
+                Continuar Lutando
+              </button>
+              <button
+                type="button"
+                className="btn-fantasy btn-fantasy-danger"
+                onClick={handleConfirmSurrender}
+              >
+                🏳️ Confirmar Desistência
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* OPPONENT CONNECTION INSTABILITY / DISCONNECT COUNTDOWN BANNER */}
+      {onlineMatch && opponentOfflineSeconds >= 18 && gameState.phase !== 'gameover' && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '68px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1200,
+            padding: '0.55rem 1.15rem',
+            borderRadius: '999px',
+            background: 'rgba(127, 29, 29, 0.92)',
+            border: '1.5px solid #f87171',
+            color: '#fef2f2',
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.65)',
+            pointerEvents: 'none',
+          }}
+        >
+          ⚠️ Conexão de {gameState.ai.name} instável ({opponentOfflineSeconds}s sem resposta) — Vitória por W.O. em{' '}
+          {Math.max(0, 45 - opponentOfflineSeconds)}s...
         </div>
       )}
 

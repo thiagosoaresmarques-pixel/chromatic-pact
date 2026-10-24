@@ -88,6 +88,11 @@ export interface MultiplayerRoom {
   canonicalState?: GameState;
   stateVersion: number;
   lastActorId?: string;
+  lastActivityAt?: number;
+  hostHeartbeatAt?: number;
+  guestHeartbeatAt?: number;
+  forfeitedByRole?: 'host' | 'guest';
+  forfeitReason?: string;
 }
 
 export type MpNetworkMessage =
@@ -109,6 +114,21 @@ export type MpNetworkMessage =
       hand: CardDefinition[];
       deck: CardDefinition[];
       actorId: string;
+    }
+  | {
+      type: 'HEARTBEAT_PING';
+      roomCode: string;
+      role: 'host' | 'guest';
+      actorId: string;
+      timestamp: number;
+    }
+  | {
+      type: 'MATCH_FORFEIT';
+      roomCode: string;
+      role: 'host' | 'guest';
+      actorId: string;
+      actorName: string;
+      reason: 'surrender' | 'disconnect';
     }
   | {
       type: 'EMOTE_PING';
@@ -815,13 +835,17 @@ async function syncProfileToSupabaseIfConfigured(profile: SovereignUserProfile):
   }
 }
 
-async function syncRoomToSupabaseIfConfigured(room: MultiplayerRoom): Promise<void> {
+async function syncRoomToSupabaseIfConfigured(
+  room: MultiplayerRoom,
+  keepalive = false
+): Promise<void> {
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return;
 
   try {
     await fetch(`${cfg.url}/rest/v1/multiplayer_rooms?on_conflict=code`, {
       method: 'POST',
+      keepalive,
       headers: getSupabaseHeaders(cfg.anonKey, {
         'Content-Type': 'application/json',
         Prefer: 'resolution=merge-duplicates',
@@ -851,7 +875,10 @@ async function syncRoomToSupabaseIfConfigured(room: MultiplayerRoom): Promise<vo
   }
 }
 
-async function deleteRoomFromSupabaseIfConfigured(roomCode: string): Promise<void> {
+async function deleteRoomFromSupabaseIfConfigured(
+  roomCode: string,
+  keepalive = false
+): Promise<void> {
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return;
 
@@ -860,6 +887,7 @@ async function deleteRoomFromSupabaseIfConfigured(roomCode: string): Promise<voi
       `${cfg.url}/rest/v1/multiplayer_rooms?code=eq.${encodeURIComponent(roomCode)}`,
       {
         method: 'DELETE',
+        keepalive,
         headers: getSupabaseHeaders(cfg.anonKey),
       }
     );
@@ -891,7 +919,13 @@ async function pollRoomsFromSupabaseIfConfigured(): Promise<void> {
       if (!remoteRoom || !remoteRoom.code) continue;
       const localRoom = roomsMap.get(remoteRoom.code);
 
-      if (!localRoom || remoteRoom.stateVersion > localRoom.stateVersion) {
+      if (
+        !localRoom ||
+        remoteRoom.stateVersion > localRoom.stateVersion ||
+        (remoteRoom.hostHeartbeatAt ?? 0) > (localRoom.hostHeartbeatAt ?? 0) ||
+        (remoteRoom.guestHeartbeatAt ?? 0) > (localRoom.guestHeartbeatAt ?? 0) ||
+        Boolean(remoteRoom.forfeitedByRole && !localRoom.forfeitedByRole)
+      ) {
         handleIncomingMessage({ type: 'ROOM_UPSERT', room: remoteRoom });
         if (
           remoteRoom.canonicalState &&
@@ -959,7 +993,13 @@ function handleIncomingMessage(msg: MpNetworkMessage): void {
     persistRoomsCache();
   } else if (msg.type === 'ROOM_UPSERT' && msg.room?.code) {
     const existing = roomsMap.get(msg.room.code);
-    if (!existing || msg.room.stateVersion >= existing.stateVersion) {
+    if (
+      !existing ||
+      msg.room.stateVersion >= existing.stateVersion ||
+      (msg.room.hostHeartbeatAt ?? 0) > (existing.hostHeartbeatAt ?? 0) ||
+      (msg.room.guestHeartbeatAt ?? 0) > (existing.guestHeartbeatAt ?? 0) ||
+      Boolean(msg.room.forfeitedByRole && !existing.forfeitedByRole)
+    ) {
       roomsMap.set(msg.room.code, msg.room);
       persistRoomsCache();
     }
@@ -969,9 +1009,45 @@ function handleIncomingMessage(msg: MpNetworkMessage): void {
   } else if (msg.type === 'MATCH_STATE_SYNC') {
     const r = roomsMap.get(msg.roomCode);
     if (r && msg.stateVersion >= r.stateVersion) {
+      const now = Date.now();
       r.canonicalState = msg.canonicalState;
       r.stateVersion = msg.stateVersion;
       r.lastActorId = msg.actorId;
+      r.lastActivityAt = now;
+      if (r.host.id === msg.actorId) r.hostHeartbeatAt = now;
+      if (r.guest?.id === msg.actorId) r.guestHeartbeatAt = now;
+      roomsMap.set(r.code, { ...r });
+      persistRoomsCache();
+    }
+  } else if (msg.type === 'HEARTBEAT_PING') {
+    const r = roomsMap.get(msg.roomCode);
+    if (r) {
+      r.lastActivityAt = msg.timestamp;
+      if (msg.role === 'host') r.hostHeartbeatAt = msg.timestamp;
+      else r.guestHeartbeatAt = msg.timestamp;
+      roomsMap.set(r.code, { ...r });
+    }
+  } else if (msg.type === 'MATCH_FORFEIT') {
+    const r = roomsMap.get(msg.roomCode);
+    if (r) {
+      const reasonText =
+        msg.reason === 'surrender'
+          ? `${msg.actorName} rendeu-se na batalha.`
+          : `${msg.actorName} abandonou a sala ou perdeu a conexão.`;
+      r.status = 'finished';
+      r.forfeitedByRole = msg.role;
+      r.forfeitReason = reasonText;
+      r.lastActorId = msg.actorId;
+      r.lastActivityAt = Date.now();
+      r.stateVersion += 10;
+      if (r.canonicalState) {
+        r.canonicalState = {
+          ...r.canonicalState,
+          phase: 'gameover',
+          winner: msg.role === 'host' ? 'ai' : 'player',
+          winReason: reasonText,
+        };
+      }
       roomsMap.set(r.code, { ...r });
       persistRoomsCache();
     }
@@ -1051,8 +1127,10 @@ export function publishMpMessage(msg: MpNetworkMessage): void {
   }
 
   // Post to Vite Relay for cross-browser / LAN players
+  const isUrgentLifecycle = msg.type === 'MATCH_FORFEIT' || msg.type === 'ROOM_REMOVE';
   fetch('/api/mp/publish', {
     method: 'POST',
+    keepalive: isUrgentLifecycle,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(msg),
   }).catch(() => {
@@ -1061,10 +1139,14 @@ export function publishMpMessage(msg: MpNetworkMessage): void {
 
   if (msg.type === 'ROOM_UPSERT') {
     syncRoomToSupabaseIfConfigured(msg.room);
-  } else if (msg.type === 'MATCH_STATE_SYNC') {
+  } else if (
+    msg.type === 'MATCH_STATE_SYNC' ||
+    msg.type === 'HEARTBEAT_PING' ||
+    msg.type === 'MATCH_FORFEIT'
+  ) {
     const updatedRoom = roomsMap.get(msg.roomCode);
     if (updatedRoom) {
-      syncRoomToSupabaseIfConfigured(updatedRoom);
+      syncRoomToSupabaseIfConfigured(updatedRoom, msg.type === 'MATCH_FORFEIT');
     }
   } else if (msg.type === 'MULLIGAN_SIDE_SYNC') {
     const r = roomsMap.get(msg.roomCode);
@@ -1085,7 +1167,7 @@ export function publishMpMessage(msg: MpNetworkMessage): void {
       syncRoomToSupabaseIfConfigured(r);
     }
   } else if (msg.type === 'ROOM_REMOVE') {
-    deleteRoomFromSupabaseIfConfigured(msg.roomCode);
+    deleteRoomFromSupabaseIfConfigured(msg.roomCode, true);
   }
 }
 
@@ -1100,7 +1182,16 @@ export function subscribeMultiplayerBus(cb: (msg: MpNetworkMessage) => void): ()
 
 export function getActiveRoomsList(): MultiplayerRoom[] {
   initMultiplayerNetworkBus();
-  return Array.from(roomsMap.values()).sort((a, b) => b.createdAt - a.createdAt);
+  const now = Date.now();
+  return Array.from(roomsMap.values())
+    .filter((r) => {
+      if (r.status === 'waiting') {
+        const lastSeen = r.hostHeartbeatAt ?? r.lastActivityAt ?? r.createdAt;
+        return now - lastSeen < 1000 * 60 * 10; // Hide abandoned waiting rooms older than 10 min
+      }
+      return true;
+    })
+    .sort((a, b) => b.createdAt - a.createdAt);
 }
 
 export function getRoomByCode(code: string): MultiplayerRoom | undefined {

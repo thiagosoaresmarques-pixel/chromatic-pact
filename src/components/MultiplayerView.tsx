@@ -1211,6 +1211,37 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     return () => unsub();
   }, [currentUser.id, currentUser.username, hostedRoomCode, onStartOnlineMatch]);
 
+  // Keep hosted waiting room alive & automatically remove it if host closes tab while waiting
+  useEffect(() => {
+    if (!hostedRoomCode) return;
+
+    const interval = window.setInterval(() => {
+      publishMpMessage({
+        type: 'HEARTBEAT_PING',
+        roomCode: hostedRoomCode,
+        role: 'host',
+        actorId: currentUser.id,
+        timestamp: Date.now(),
+      });
+    }, 15000);
+
+    const handleTabCloseWhileWaiting = () => {
+      const currentRoom = getRoomByCode(hostedRoomCode);
+      if (!currentRoom || currentRoom.status === 'waiting') {
+        publishMpMessage({ type: 'ROOM_REMOVE', roomCode: hostedRoomCode });
+      }
+    };
+
+    window.addEventListener('beforeunload', handleTabCloseWhileWaiting);
+    window.addEventListener('pagehide', handleTabCloseWhileWaiting);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener('beforeunload', handleTabCloseWhileWaiting);
+      window.removeEventListener('pagehide', handleTabCloseWhileWaiting);
+    };
+  }, [hostedRoomCode, currentUser.id]);
+
   const handleSwitchAccount = (acc: SovereignUserProfile) => {
     setActiveTabUserProfile(acc);
     onUserChange(acc);

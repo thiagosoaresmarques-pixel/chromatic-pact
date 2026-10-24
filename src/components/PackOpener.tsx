@@ -8,7 +8,8 @@ export interface PackOpenerProps {
   gold: number;
   unlockedCardIds: Record<string, number>;
   onOpenPack: (packCost: number, cards: CardDefinition[]) => void;
-  onUnlockSandbox: () => void;
+  isGuest?: boolean;
+  onRequireAccount?: () => void;
 }
 
 interface PackTypeOption {
@@ -29,7 +30,7 @@ const PACK_OPTIONS: PackTypeOption[] = [
     kicker: 'COLEÇÃO UNIVERSAL',
     subtitle: '5 cartas de qualquer Domínio • 1 Rara ou Lendária garantida',
     domain: 'all',
-    cost: 100,
+    cost: 30,
     accent: '#d4af37',
     coverCardId: 'neutral_10_valkyra_pentacromatica',
   },
@@ -39,7 +40,7 @@ const PACK_OPTIONS: PackTypeOption[] = [
     kicker: 'DOMÍNIO RUBRO',
     subtitle: 'Dragões, Piroclasmos, Sopro Elemental e Fúria Dracônica',
     domain: 'red',
-    cost: 100,
+    cost: 30,
     accent: '#ef4444',
     coverCardId: 'red_08_dragao_vermelho',
   },
@@ -49,7 +50,7 @@ const PACK_OPTIONS: PackTypeOption[] = [
     kicker: 'DOMÍNIO SAFIRA',
     subtitle: 'Gigantes, Gelo, Voo, Cronomancia e Controle Arcano',
     domain: 'blue',
-    cost: 100,
+    cost: 30,
     accent: '#38bdf8',
     coverCardId: 'blue_06_dragao_azul',
   },
@@ -59,7 +60,7 @@ const PACK_OPTIONS: PackTypeOption[] = [
     kicker: 'DOMÍNIO ABISSAL',
     subtitle: 'Demônios, Mortos-Vivos, Pactos de Sangue e Reanimação',
     domain: 'purple',
-    cost: 100,
+    cost: 30,
     accent: '#a855f7',
     coverCardId: 'purple_08_lorde_abissal',
   },
@@ -67,9 +68,9 @@ const PACK_OPTIONS: PackTypeOption[] = [
     id: 'pack_green',
     name: 'Selva & Fera',
     kicker: 'DOMÍNIO ESMERALDA',
-    subtitle: ' predadores colossais, Toque Letal, Atropelar e Regeneração',
+    subtitle: 'Predadores colossais, Toque Letal, Atropelar e Regeneração',
     domain: 'green',
-    cost: 100,
+    cost: 30,
     accent: '#10b981',
     coverCardId: 'green_09_hidra',
   },
@@ -79,7 +80,7 @@ const PACK_OPTIONS: PackTypeOption[] = [
     kicker: 'DOMÍNIO SOLAR',
     subtitle: 'Paladinos, Golens, Escudo Divino, Armadura e Relíquias',
     domain: 'gold',
-    cost: 100,
+    cost: 30,
     accent: '#f59e0b',
     coverCardId: 'gold_09_serafim_solar',
   },
@@ -122,13 +123,13 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
   gold,
   unlockedCardIds,
   onOpenPack,
-  onUnlockSandbox,
+  isGuest = false,
+  onRequireAccount,
 }) => {
   const [selectedPackId, setSelectedPackId] = useState<string>('pack_all');
   const [currentPackCards, setCurrentPackCards] = useState<CardDefinition[]>([]);
   const [revealedIndices, setRevealedIndices] = useState<number[]>([]);
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
-  const [sandboxToast, setSandboxToast] = useState<boolean>(false);
 
   const selectedPack =
     PACK_OPTIONS.find((p) => p.id === selectedPackId) ?? PACK_OPTIONS[0];
@@ -156,6 +157,10 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
   }, [unlockedCardIds]);
 
   const handleBuyAndOpenPack = () => {
+    if (isGuest) {
+      onRequireAccount?.();
+      return;
+    }
     if (gold < selectedPack.cost) return;
     const drawn = generateBoosterCards(selectedPack.domain);
     setCurrentPackCards(drawn);
@@ -182,13 +187,6 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
     playSfx(hasLegendary ? 'ascend' : 'pack_open');
   };
 
-  const handleSandboxClick = () => {
-    onUnlockSandbox();
-    playSfx('victory');
-    setSandboxToast(true);
-    setTimeout(() => setSandboxToast(false), 3500);
-  };
-
   const pct = Math.min(
     100,
     Math.round((collectionStats.uniqueUnlocked / Math.max(1, collectionStats.totalCards)) * 100)
@@ -199,13 +197,13 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
       {/* Compact Header Bar */}
       <header className="aaa-page-header">
         <div>
-          <div className="aaa-kicker">RELICÁRIO & FORJA</div>
+          <div className="aaa-kicker">RELICÁRIO • +10 OURO POR VITÓRIA EM COMBATE</div>
           <h1 className="aaa-page-title font-cinzel">Pacotes de Expansão</h1>
         </div>
 
         <div className="aaa-header-actions">
           <div className="aaa-stat-block">
-            <span className="aaa-stat-label">COLEÇÃO</span>
+            <span className="aaa-stat-label">COLEÇÃO DESBLOQUEADA</span>
             <span className="aaa-stat-val">
               {collectionStats.uniqueUnlocked}/{collectionStats.totalCards} ({pct}%)
             </span>
@@ -215,16 +213,31 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
             <span className="aaa-stat-label">SALDO</span>
             <span className="aaa-stat-val gold-text">{gold} OURO</span>
           </div>
-
-          <button type="button" className="aaa-btn aaa-btn-ghost" onClick={handleSandboxClick}>
-            Desbloquear Coleção Completa (Sandbox)
-          </button>
         </div>
       </header>
 
-      {sandboxToast && (
-        <div className="aaa-toast-banner">
-          Modo Sandbox ativado: todas as {ALL_CARDS.length} cartas (3 cópias) e +1.000 Ouro foram liberados.
+      {isGuest && (
+        <div
+          style={{
+            padding: '0.85rem 1.1rem',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
+            border: '1px solid rgba(250, 204, 21, 0.45)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
+            <strong style={{ color: '#fde047' }}>Modo Visitante:</strong> você pode inspecionar os pacotes do Relicário. Para acumular <strong>+10 Ouro por vitória</strong> e abrir pacotes para expandir sua coleção além das cartas iniciais, entre ou crie sua conta.
+          </div>
+          {onRequireAccount && (
+            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireAccount}>
+              Entrar / Criar Conta
+            </button>
+          )}
         </div>
       )}
 
@@ -281,10 +294,12 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
         <button
           type="button"
           className="aaa-btn aaa-btn-primary aaa-btn-lg"
-          disabled={gold < selectedPack.cost}
+          disabled={!isGuest && gold < selectedPack.cost}
           onClick={handleBuyAndOpenPack}
         >
-          ABRIR {selectedPack.name.toUpperCase()} — {selectedPack.cost} OURO
+          {isGuest
+            ? `ENTRAR / CRIAR CONTA PARA ABRIR PACOTES (${selectedPack.cost} OURO)`
+            : `ABRIR ${selectedPack.name.toUpperCase()} — ${selectedPack.cost} OURO`}
         </button>
 
         {currentPackCards.length > 0 && revealedIndices.length < currentPackCards.length && (

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { CampaignBoss, CardDefinition } from './types/game';
 import { ALL_CARDS, CARDS_BY_ID } from './data/cards';
-import { PREBUILT_DECKS } from './data/decks';
 import { isMuted, toggleMute } from './utils/soundEngine';
 import {
   getCurrentMusicState,
@@ -26,10 +25,13 @@ import {
 import { CardView, CardInspectModal } from './components/CardView';
 import {
   getActiveTabUserProfile,
+  getStarterCollection,
   isUnregisteredProfile,
   MultiplayerRoom,
   recordPvpMatchResult,
+  setActiveTabUserProfile,
   SovereignUserProfile,
+  VICTORY_GOLD_REWARD,
 } from './utils/multiplayerEngine';
 
 type ActiveTab =
@@ -44,78 +46,42 @@ type ActiveTab =
   | 'mythology'
   | 'rules';
 
-const STORAGE_KEYS = {
-  GOLD: 'chromatic_pact_gold_v1',
-  COLLECTION: 'chromatic_pact_collection_v1',
-  DEFEATED_BOSSES: 'chromatic_pact_bosses_v1',
-  CUSTOM_DECKS: 'chromatic_pact_custom_decks_v1',
-  ARENA_WINS: 'chromatic_pact_arena_wins_v1',
-};
-
-function getInitialCollection(): Record<string, number> {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEYS.COLLECTION);
-    if (saved) {
-      return JSON.parse(saved);
-    }
-  } catch {
-    // Ignore localStorage parse errors
-  }
-
-  // Default starter collection: unlock starter copies from the first 2 prebuilt decks
-  const initial: Record<string, number> = {};
-  for (const deck of PREBUILT_DECKS.slice(0, 2)) {
-    for (const id of deck.cardIds) {
-      initial[id] = Math.min(3, (initial[id] ?? 0) + 1);
-    }
-  }
-  return initial;
-}
-
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [soundMuted, setSoundMuted] = useState<boolean>(() => isMuted());
   const [musicInfo, setMusicInfo] = useState<MusicStateDescriptor>(() => getCurrentMusicState());
 
-  const [gold, setGold] = useState<number>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.GOLD);
-      return saved !== null ? Number(saved) : 500;
-    } catch {
-      return 500;
-    }
-  });
-
-  const [unlockedCardIds, setUnlockedCardIds] = useState<Record<string, number>>(
-    getInitialCollection
+  // Sovereign User Profile & 1v1 Multiplayer State
+  const [currentUser, setCurrentUser] = useState<SovereignUserProfile>(() =>
+    getActiveTabUserProfile()
   );
 
-  const [defeatedBossIds, setDefeatedBossIds] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.DEFEATED_BOSSES);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const isGuest = isUnregisteredProfile(currentUser);
 
-  const [customDecks, setCustomDecks] = useState<CustomSavedDeck[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.CUSTOM_DECKS);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  // Per-account economy & progression (Guests always remain at 0 Gold and 0 customDecks)
+  const gold = isGuest ? 0 : currentUser.gold ?? 0;
+  const customDecks: CustomSavedDeck[] = useMemo(
+    () => (isGuest ? [] : currentUser.customDecks ?? []),
+    [isGuest, currentUser.customDecks]
+  );
+  const defeatedBossIds: string[] = useMemo(
+    () => (isGuest ? [] : currentUser.defeatedBossIds ?? []),
+    [isGuest, currentUser.defeatedBossIds]
+  );
+  const arenaWins = isGuest ? 0 : currentUser.arenaWins ?? 0;
 
-  const [arenaWins, setArenaWins] = useState<number>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.ARENA_WINS);
-      return saved ? Number(saved) : 0;
-    } catch {
-      return 0;
+  const unlockedCardIds: Record<string, number> = useMemo(() => {
+    const starter = getStarterCollection();
+    if (isGuest) return starter;
+    const extra = currentUser.extraUnlockedCards ?? {};
+    const merged: Record<string, number> = { ...starter };
+    for (const [cid, count] of Object.entries(extra)) {
+      if (count > 0) {
+        merged[cid] = (merged[cid] ?? 0) + count;
+      }
     }
-  });
+    return merged;
+  }, [isGuest, currentUser.extraUnlockedCards]);
 
   // Active Campaign / Expedition Match State
   const [activeCampaignBoss, setActiveCampaignBoss] = useState<CampaignBoss | null>(null);
@@ -130,10 +96,6 @@ export const App: React.FC = () => {
   }>({});
   const [showcaseInspectCard, setShowcaseInspectCard] = useState<CardDefinition | null>(null);
 
-  // Sovereign User Profile & 1v1 Multiplayer State
-  const [currentUser, setCurrentUser] = useState<SovereignUserProfile>(() =>
-    getActiveTabUserProfile()
-  );
   const [accountModalState, setAccountModalState] = useState<{
     open: boolean;
     tab: AccountModalTab;
@@ -143,46 +105,27 @@ export const App: React.FC = () => {
     role: 'host' | 'guest';
   } | null>(null);
 
-  // Sync with localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.GOLD, String(gold));
-    } catch {
-      // Ignore storage error
-    }
-  }, [gold]);
+  const updateCurrentUserProgression = (patch: Partial<SovereignUserProfile>) => {
+    if (isUnregisteredProfile(currentUser)) return;
+    const updated: SovereignUserProfile = {
+      ...currentUser,
+      ...patch,
+    };
+    setActiveTabUserProfile(updated);
+    setCurrentUser(updated);
+  };
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.COLLECTION, JSON.stringify(unlockedCardIds));
-    } catch {
-      // Ignore storage error
+  const handleOpenArenaSolo = () => {
+    setActiveCampaignBoss(null);
+    setActiveOnlineMatch(null);
+    setIsExpeditionBattle(false);
+    // Registered users (including tsm81 and new users) must first confirm/save their 100-card combat deck
+    if (!isGuest && customDecks.length === 0) {
+      setActiveTab('deckbuilder');
+      return;
     }
-  }, [unlockedCardIds]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.DEFEATED_BOSSES, JSON.stringify(defeatedBossIds));
-    } catch {
-      // Ignore storage error
-    }
-  }, [defeatedBossIds]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.CUSTOM_DECKS, JSON.stringify(customDecks));
-    } catch {
-      // Ignore storage error
-    }
-  }, [customDecks]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.ARENA_WINS, String(arenaWins));
-    } catch {
-      // Ignore storage error
-    }
-  }, [arenaWins]);
+    setActiveTab('arena');
+  };
 
   const handleToggleSound = () => {
     startAdaptiveMusic();
@@ -236,52 +179,64 @@ export const App: React.FC = () => {
   };
 
   const handleCampaignVictory = (boss: CampaignBoss) => {
-    setGold((prev) => prev + boss.rewardGold);
-    setArenaWins((prev) => prev + 1);
+    if (isGuest) return;
     if (isExpeditionBattle) {
       setLastClearedExpeditionBossId(boss.id);
+      updateCurrentUserProgression({
+        gold: gold + VICTORY_GOLD_REWARD,
+        arenaWins: arenaWins + 1,
+      });
     } else {
-      setDefeatedBossIds((prev) => (prev.includes(boss.id) ? prev : [...prev, boss.id]));
+      const nextBosses = defeatedBossIds.includes(boss.id)
+        ? defeatedBossIds
+        : [...defeatedBossIds, boss.id];
+      updateCurrentUserProgression({
+        gold: gold + VICTORY_GOLD_REWARD,
+        arenaWins: arenaWins + 1,
+        defeatedBossIds: nextBosses,
+      });
     }
   };
 
   const handleRewardGold = (amount: number) => {
-    setGold((prev) => prev + amount);
-    setArenaWins((prev) => prev + 1);
-  };
-
-  const handleOpenPack = (packCost: number, drawnCards: CardDefinition[]) => {
-    setGold((prev) => Math.max(0, prev - packCost));
-    setUnlockedCardIds((prev) => {
-      const next = { ...prev };
-      for (const c of drawnCards) {
-        next[c.id] = (next[c.id] ?? 0) + 1;
-      }
-      return next;
+    if (isGuest) return;
+    updateCurrentUserProgression({
+      gold: gold + amount,
+      arenaWins: arenaWins + 1,
     });
   };
 
-  const handleUnlockSandbox = () => {
-    setGold((prev) => prev + 1000);
-    const full: Record<string, number> = {};
-    for (const c of ALL_CARDS) {
-      full[c.id] = c.rarity === 'legendary' ? 1 : 3;
+  const handleOpenPack = (packCost: number, drawnCards: CardDefinition[]) => {
+    if (isGuest) return;
+    const nextExtra = { ...(currentUser.extraUnlockedCards ?? {}) };
+    for (const c of drawnCards) {
+      nextExtra[c.id] = (nextExtra[c.id] ?? 0) + 1;
     }
-    setUnlockedCardIds(full);
+    updateCurrentUserProgression({
+      gold: Math.max(0, gold - packCost),
+      extraUnlockedCards: nextExtra,
+    });
   };
 
   const handleSaveCustomDeck = (deck: CustomSavedDeck) => {
-    setCustomDecks((prev) => {
-      const exists = prev.some((d) => d.id === deck.id);
-      if (exists) {
-        return prev.map((d) => (d.id === deck.id ? deck : d));
-      }
-      return [...prev, deck];
+    if (isGuest) return;
+    const exists = customDecks.some((d) => d.id === deck.id);
+    const nextDecks = exists
+      ? customDecks.map((d) => (d.id === deck.id ? deck : d))
+      : [...customDecks, deck];
+    updateCurrentUserProgression({
+      customDecks: nextDecks,
+      preferredDeckId: deck.id,
     });
   };
 
   const handleDeleteCustomDeck = (deckId: string) => {
-    setCustomDecks((prev) => prev.filter((d) => d.id !== deckId));
+    if (isGuest) return;
+    const nextDecks = customDecks.filter((d) => d.id !== deckId);
+    updateCurrentUserProgression({
+      customDecks: nextDecks,
+      preferredDeckId: nextDecks[0]?.id ?? '',
+    });
   };
 
   const uniqueUnlockedCount = useMemo(
@@ -364,12 +319,7 @@ export const App: React.FC = () => {
             className={`nav-tab-btn ${
               activeTab === 'arena' && !activeCampaignBoss && !activeOnlineMatch ? 'active' : ''
             }`}
-            onClick={() => {
-              setActiveCampaignBoss(null);
-              setActiveOnlineMatch(null);
-              setIsExpeditionBattle(false);
-              setActiveTab('arena');
-            }}
+            onClick={handleOpenArenaSolo}
           >
             Arena Solo
           </button>
@@ -527,6 +477,43 @@ export const App: React.FC = () => {
 
       {/* Main Content View */}
       <main style={{ flex: 1 }}>
+        {!isGuest && customDecks.length === 0 && activeTab !== 'deckbuilder' && (
+          <div
+            style={{
+              maxWidth: '1540px',
+              margin: '0.6rem auto 0',
+              padding: '0.7rem 1.15rem',
+              borderRadius: '10px',
+              background:
+                'linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(15, 23, 42, 0.96))',
+              border: '1.5px solid rgba(250, 204, 21, 0.65)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '1rem',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div>
+              <div className="aaa-kicker" style={{ color: '#fef08a' }}>
+                📜 PASSO OBRIGATÓRIO • CONTA: {currentUser.username.toUpperCase()}
+              </div>
+              <div style={{ fontSize: '0.84rem', color: '#e2e8f0', marginTop: '2px' }}>
+                Para entrar em combate, monte e confirme primeiro o seu{' '}
+                <strong style={{ color: '#fde047' }}>Grimório de Combate (100 cartas)</strong>{' '}
+                escolhendo um dos 5 decks iniciais, editando-o ou criando do zero.
+              </div>
+            </div>
+            <button
+              type="button"
+              className="aaa-btn aaa-btn-primary"
+              onClick={() => setActiveTab('deckbuilder')}
+            >
+              Forjar Meu Grimório (100 Cartas) →
+            </button>
+          </div>
+        )}
+
         {activeTab === 'home' && (
           <div className="aaa-page-shell">
             {/* Split Cinematic Hero with Interactive 3D Card Fan */}
@@ -551,14 +538,11 @@ export const App: React.FC = () => {
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-primary aaa-btn-lg aaa-hero-cta-main"
-                    onClick={() => {
-                      setActiveCampaignBoss(null);
-                      setActiveOnlineMatch(null);
-                      setIsExpeditionBattle(false);
-                      setActiveTab('arena');
-                    }}
+                    onClick={handleOpenArenaSolo}
                   >
-                    ENTRAR NA ARENA
+                    {!isGuest && customDecks.length === 0
+                      ? 'FORJAR GRIMÓRIO (100 CARTAS)'
+                      : 'ENTRAR NA ARENA'}
                   </button>
                   <button
                     type="button"
@@ -629,11 +613,7 @@ export const App: React.FC = () => {
             <div className="aaa-home-portals-grid">
               <div
                 className="aaa-portal-card"
-                onClick={() => {
-                  setActiveCampaignBoss(null);
-                  setIsExpeditionBattle(false);
-                  setActiveTab('arena');
-                }}
+                onClick={handleOpenArenaSolo}
               >
                 <img
                   src="/assets/cards/red_08_dragao_vermelho.png"
@@ -747,6 +727,7 @@ export const App: React.FC = () => {
             currentUser={currentUser}
             onUserChange={setCurrentUser}
             onOpenAccountModal={(tab) => setAccountModalState({ open: true, tab })}
+            onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartOnlineMatch={(room, role) => {
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
@@ -759,6 +740,7 @@ export const App: React.FC = () => {
         {activeTab === 'arena' && (
           <BattleArena
             customDecks={customDecks}
+            isGuest={isGuest}
             campaignBoss={activeCampaignBoss}
             campaignPlayerDeckIds={campaignPlayerDeckIds}
             initialPlayerDeckId={quickDuelDecks.playerDeckId}
@@ -795,12 +777,17 @@ export const App: React.FC = () => {
           <CampaignView
             defeatedBossIds={defeatedBossIds}
             customDecks={customDecks}
+            isGuest={isGuest}
+            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartBossBattle={handleStartBossBattle}
           />
         )}
 
         {activeTab === 'expedition' && (
           <ExpeditionView
+            isGuest={isGuest}
+            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onStartExpeditionBattle={handleStartExpeditionBattle}
             onSaveCustomDeck={handleSaveCustomDeck}
             onRewardGold={handleRewardGold}
@@ -812,6 +799,10 @@ export const App: React.FC = () => {
           <TacticalGuideView
             customDecks={customDecks}
             onLaunchDuel={(playerDeckId, opponentDeckId) => {
+              if (!isGuest && customDecks.length === 0) {
+                setActiveTab('deckbuilder');
+                return;
+              }
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
               setQuickDuelDecks({ playerDeckId, aiDeckId: opponentDeckId });
@@ -824,6 +815,9 @@ export const App: React.FC = () => {
           <DeckBuilder
             unlockedCardIds={unlockedCardIds}
             customDecks={customDecks}
+            isGuest={isGuest}
+            username={currentUser.username}
+            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onSaveCustomDeck={handleSaveCustomDeck}
             onDeleteCustomDeck={handleDeleteCustomDeck}
           />
@@ -833,8 +827,9 @@ export const App: React.FC = () => {
           <PackOpener
             gold={gold}
             unlockedCardIds={unlockedCardIds}
+            isGuest={isGuest}
+            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onOpenPack={handleOpenPack}
-            onUnlockSandbox={handleUnlockSandbox}
           />
         )}
 
@@ -845,11 +840,7 @@ export const App: React.FC = () => {
         {activeTab === 'rules' && (
           <TutorialCodexView
             isModal={false}
-            onStartPracticeDuel={() => {
-              setActiveCampaignBoss(null);
-              setIsExpeditionBattle(false);
-              setActiveTab('arena');
-            }}
+            onStartPracticeDuel={handleOpenArenaSolo}
             onInspectCard={setShowcaseInspectCard}
           />
         )}
@@ -868,6 +859,7 @@ export const App: React.FC = () => {
             onUserChange={setCurrentUser}
             initialTab={accountModalState.tab}
             onClose={() => setAccountModalState((prev) => ({ ...prev, open: false }))}
+            onNeedsDeckSetup={() => setActiveTab('deckbuilder')}
           />
         )}
       </main>

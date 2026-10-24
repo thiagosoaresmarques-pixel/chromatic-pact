@@ -288,6 +288,8 @@ export interface ExpeditionViewProps {
   onSaveCustomDeck: (deck: CustomSavedDeck) => void;
   onRewardGold: (amount: number) => void;
   lastClearedExpeditionBossId?: string | null;
+  isGuest?: boolean;
+  onRequireAccount?: () => void;
 }
 
 export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
@@ -295,6 +297,8 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
   onSaveCustomDeck,
   onRewardGold,
   lastClearedExpeditionBossId,
+  isGuest = false,
+  onRequireAccount,
 }) => {
   const [runState, setRunState] = useState<ExpeditionRunState>(() => {
     try {
@@ -388,6 +392,10 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
   }, [runState.deckCardIds]);
 
   const handleSelectBlessing = (blessing: SovereignBlessing) => {
+    if (isGuest) {
+      onRequireAccount?.();
+      return;
+    }
     playSfx('ascend');
     setDraftBuckets(generateThreeDraftBuckets(1, blessing.id));
     setRunState({
@@ -556,6 +564,31 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
           )}
         </div>
       </header>
+
+      {isGuest && (
+        <div
+          style={{
+            padding: '0.85rem 1.1rem',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
+            border: '1px solid rgba(250, 204, 21, 0.45)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
+            <strong style={{ color: '#fde047' }}>Modo Visitante:</strong> você pode conhecer as Bênçãos e etapas da Expedição do Vazio. Para iniciar uma travessia roguelite, entre ou crie sua Conta de Soberano.
+          </div>
+          {onRequireAccount && (
+            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireAccount}>
+              Entrar / Criar Conta
+            </button>
+          )}
+        </div>
+      )}
 
       {toastMsg && <div className="aaa-toast-banner">{toastMsg}</div>}
 

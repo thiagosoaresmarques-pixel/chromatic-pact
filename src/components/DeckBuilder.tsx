@@ -11,6 +11,7 @@ import {
 } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
+import { MONOCHROMATIC_STARTER_DECKS } from '../utils/multiplayerEngine';
 
 export interface SynergyPackageDef {
   id: string;
@@ -116,12 +117,17 @@ export interface DeckBuilderProps {
   customDecks: CustomSavedDeck[];
   onSaveCustomDeck: (deck: CustomSavedDeck) => void;
   onDeleteCustomDeck: (deckId: string) => void;
+  isGuest?: boolean;
+  username?: string;
+  onRequireAccount?: () => void;
 }
 
 interface GalleryCardCellProps {
   card: CardDefinition;
   countInDeck: number;
   maxAllowed: number;
+  ownedCopies: number;
+  isGuest?: boolean;
   canAdd: boolean;
   onAdd: (card: CardDefinition) => void;
   onRemove: (cardId: string) => void;
@@ -129,9 +135,14 @@ interface GalleryCardCellProps {
 }
 
 const GalleryCardCell = React.memo<GalleryCardCellProps>(
-  ({ card, countInDeck, maxAllowed, canAdd, onAdd, onRemove, onInspect }) => {
+  ({ card, countInDeck, maxAllowed, ownedCopies, isGuest, canAdd, onAdd, onRemove, onInspect }) => {
+    const isLockedForUser = !isGuest && ownedCopies <= 0;
+    const effectiveMax = isGuest ? maxAllowed : Math.min(maxAllowed, ownedCopies);
     return (
-      <div className="db-card-cell">
+      <div
+        className="db-card-cell"
+        style={isLockedForUser ? { opacity: 0.45, filter: 'grayscale(0.65)' } : undefined}
+      >
         <CardView
           card={card}
           mode="gallery"
@@ -148,11 +159,23 @@ const GalleryCardCell = React.memo<GalleryCardCellProps>(
           >
             −
           </button>
-          <div className="db-step-pips" title={`Máx. ${maxAllowed}× (${RARITY_LABELS[card.rarity]})`}>
+          <div
+            className="db-step-pips"
+            title={
+              isLockedForUser
+                ? 'Carta bloqueada — obtenha no Relicário'
+                : `No Deck: ${countInDeck}/${effectiveMax} (Limite da Raridade: ${maxAllowed}×)`
+            }
+          >
             {Array.from({ length: maxAllowed }).map((_, idx) => (
               <span
                 key={idx}
                 className={`db-copy-pip ${idx < countInDeck ? 'is-filled' : ''}`}
+                style={
+                  !isGuest && idx >= ownedCopies
+                    ? { opacity: 0.25, borderStyle: 'dashed' }
+                    : undefined
+                }
               />
             ))}
           </div>
@@ -178,6 +201,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   customDecks,
   onSaveCustomDeck,
   onDeleteCustomDeck,
+  isGuest = false,
+  username,
+  onRequireAccount,
 }) => {
   // Filters
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
@@ -185,17 +211,19 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const [rarityFilter, setRarityFilter] = useState<Rarity | 'all'>('all');
   const [costFilter, setCostFilter] = useState<number | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [onlyUnlocked, setOnlyUnlocked] = useState<boolean>(false);
+  const [onlyUnlocked, setOnlyUnlocked] = useState<boolean>(() => !isGuest);
   const [synergyFilterId, setSynergyFilterId] = useState<string | 'all' | 'recommended'>('all');
   const [showSynergyPanel, setShowSynergyPanel] = useState<boolean>(false);
 
   // Active Deck Being Edited
-  const [deckName, setDeckName] = useState<string>('Pacto Personalizado');
+  const [deckName, setDeckName] = useState<string>(() =>
+    customDecks[0]?.name ?? `${MONOCHROMATIC_STARTER_DECKS[0]?.name ?? 'Grimório Inicial'}`
+  );
   const [editingDeckId, setEditingDeckId] = useState<string>(
-    () => `custom_${Date.now()}`
+    () => customDecks[0]?.id ?? `custom_${Date.now()}`
   );
   const [deckCardIds, setDeckCardIds] = useState<string[]>(
-    () => PREBUILT_DECKS[0]?.cardIds ?? []
+    () => customDecks[0]?.cardIds ?? MONOCHROMATIC_STARTER_DECKS[0]?.cardIds ?? PREBUILT_DECKS[0]?.cardIds ?? []
   );
 
   // Modals
@@ -567,17 +595,33 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       if (deckCardIds.length >= 100) return;
       const currentCopies = deckCountsById[card.id] ?? 0;
       const maxAllowed = MAX_COPIES_BY_RARITY[card.rarity];
-      if (currentCopies >= maxAllowed) return;
+      const ownedCopies = isGuest ? maxAllowed : unlockedCardIds[card.id] ?? 0;
+      if (!isGuest && ownedCopies <= 0) {
+        setSaveBanner(
+          `Carta bloqueada na sua coleção. Abra pacotes no Relicário para desbloquear novas cartas!`
+        );
+        setTimeout(() => setSaveBanner(null), 3200);
+        return;
+      }
+      if (currentCopies >= Math.min(maxAllowed, ownedCopies)) {
+        if (!isGuest && currentCopies >= ownedCopies && ownedCopies < maxAllowed) {
+          setSaveBanner(
+            `Você possui ${ownedCopies} cópia(s) desta carta na sua coleção. Desbloqueie mais no Relicário!`
+          );
+          setTimeout(() => setSaveBanner(null), 3200);
+        }
+        return;
+      }
       if (card.rarity === 'legendary' && deckAnalysis.legendaryCount >= MAX_LEGENDARIES_PER_DECK) {
         setSaveBanner(
-          `⚠️ Limite máximo de ${MAX_LEGENDARIES_PER_DECK} cartas Lendárias por Grimório atingido!`
+          `Limite máximo de ${MAX_LEGENDARIES_PER_DECK} cartas Lendárias por Grimório atingido!`
         );
         setTimeout(() => setSaveBanner(null), 3000);
         return;
       }
       setDeckCardIds((prev) => [...prev, card.id]);
     },
-    [deckCardIds.length, deckCountsById, deckAnalysis.legendaryCount]
+    [deckCardIds.length, deckCountsById, deckAnalysis.legendaryCount, isGuest, unlockedCardIds]
   );
 
   const handleRemoveCardFromDeck = useCallback((cardId: string) => {
@@ -603,15 +647,18 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
     const pool = ALL_CARDS.filter(
       (c) =>
-        domainPriority.length === 0 ||
-        domainPriority.slice(0, 2).includes(c.domain) ||
-        c.domain === 'neutral'
+        (isGuest || (unlockedCardIds[c.id] ?? 0) > 0) &&
+        (domainPriority.length === 0 ||
+          domainPriority.slice(0, 2).includes(c.domain) ||
+          c.domain === 'neutral')
     );
 
     for (const card of pool) {
       if (nextIds.length >= 100) break;
       const maxAllowed = MAX_COPIES_BY_RARITY[card.rarity];
-      while ((counts[card.id] ?? 0) < maxAllowed && nextIds.length < 100) {
+      const owned = isGuest ? maxAllowed : unlockedCardIds[card.id] ?? 0;
+      const effectiveCap = Math.min(maxAllowed, owned);
+      while ((counts[card.id] ?? 0) < effectiveCap && nextIds.length < 100) {
         if (card.rarity === 'legendary' && legsCount >= MAX_LEGENDARIES_PER_DECK) break;
         nextIds.push(card.id);
         counts[card.id] = (counts[card.id] ?? 0) + 1;
@@ -623,27 +670,33 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   };
 
   const handleSaveCurrentDeck = () => {
+    if (isGuest) {
+      setSaveBanner('Entre ou crie sua Conta de Soberano para salvar seu Grimório de 100 cartas!');
+      setTimeout(() => setSaveBanner(null), 3500);
+      onRequireAccount?.();
+      return;
+    }
     if (deckCardIds.length !== 100) {
-      setSaveBanner('⚠️ Um Grimório oficial precisa ter exatamente 100 cartas (use Auto-Completar se desejar).');
+      setSaveBanner('O Grimório de Combate deve ter exatamente 100 cartas (use Completar ou adicione cartas da sua coleção).');
       setTimeout(() => setSaveBanner(null), 3500);
       return;
     }
-    const cleanName = deckName.trim() || 'Grimório Arcano';
+    const cleanName = deckName.trim() || 'Grimório do Soberano';
     onSaveCustomDeck({
       id: editingDeckId,
       name: cleanName,
       cardIds: deckCardIds,
     });
-    setSaveBanner(`✅ Grimório "${cleanName}" (100 cartas) salvo com sucesso!`);
-    setTimeout(() => setSaveBanner(null), 3000);
+    setSaveBanner(`Grimório "${cleanName}" (100 cartas) salvo! Todos os modos de combate estão liberados.`);
+    setTimeout(() => setSaveBanner(null), 3500);
   };
 
   const handleLoadPrebuilt = (prebuiltId: string) => {
     const found = PREBUILT_DECKS.find((d) => d.id === prebuiltId);
     if (!found) return;
     setActiveGuideDeckId(prebuiltId);
-    setDeckName(`${found.name} (Editado)`);
-    setEditingDeckId(`custom_${Date.now()}`);
+    setDeckName(`${found.name}`);
+    setEditingDeckId(customDecks[0]?.id ?? `custom_${Date.now()}`);
     setDeckCardIds([...found.cardIds]);
   };
 
@@ -681,6 +734,104 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     <div className="db-modern-shell">
       {/* LEFT CATALOG AREA */}
       <div className="db-catalog-area">
+        {/* GUEST OR MANDATORY FIRST DECK ONBOARDING BANNER */}
+        {isGuest ? (
+          <div
+            style={{
+              margin: '0 0 0.75rem 0',
+              padding: '0.85rem 1.1rem',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
+              border: '1px solid rgba(250, 204, 21, 0.45)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '1rem',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
+              <strong style={{ color: '#fde047' }}>Modo Visitante:</strong> você pode explorar e inspecionar todas as 890 cartas. Para montar e salvar seu <strong>Grimório de Combate (100 cartas)</strong> e liberar os demais modos, entre ou crie sua conta.
+            </div>
+            {onRequireAccount && (
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-primary"
+                onClick={onRequireAccount}
+              >
+                Entrar / Criar Conta
+              </button>
+            )}
+          </div>
+        ) : customDecks.length === 0 ? (
+          <div
+            style={{
+              margin: '0 0 0.85rem 0',
+              padding: '0.95rem 1.15rem',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(15, 23, 42, 0.96))',
+              border: '1.5px solid #fde047',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.6rem',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div>
+                <div style={{ fontSize: '0.66rem', fontWeight: 800, letterSpacing: '0.1em', color: '#fde047' }}>
+                  PASSO INICIAL OBRIGATÓRIO DO SOBERANO {username ? `• ${username.toUpperCase()}` : ''}
+                </div>
+                <div className="font-cinzel" style={{ fontSize: '1.02rem', fontWeight: 700, color: '#ffffff' }}>
+                  Monte e Salve seu Grimório de Combate (100 Cartas)
+                </div>
+              </div>
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-primary"
+                onClick={handleSaveCurrentDeck}
+              >
+                Confirmar & Salvar Grimório ({deckCardIds.length}/100)
+              </button>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.45 }}>
+              Escolha um dos <strong>5 Grimórios Monocromáticos Iniciais</strong> abaixo para usar como está, edite-o livremente com seu acervo inicial ou clique em <strong>Criar do Zero</strong> (respeitando até 3× Comum/Incomum, 2× Rara e 1× Lendária, máx. 10 Lendas):
+            </div>
+            <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+              {MONOCHROMATIC_STARTER_DECKS.map((sd) => {
+                const dom = sd.domains[0] ?? 'red';
+                return (
+                  <button
+                    key={sd.id}
+                    type="button"
+                    className="db-action-btn"
+                    style={{
+                      borderColor: `${DOMAIN_META[dom].color}88`,
+                      color: '#f8fafc',
+                      padding: '0.35rem 0.7rem',
+                      fontSize: '0.74rem',
+                    }}
+                    onClick={() => handleLoadPrebuilt(sd.id)}
+                  >
+                    {DOMAIN_META[dom].shortName}: {sd.name}
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                className="db-action-btn subtle-danger"
+                style={{ padding: '0.35rem 0.7rem', fontSize: '0.74rem' }}
+                onClick={() => {
+                  setDeckName(username ? `Grimório de ${username}` : 'Meu Grimório');
+                  setDeckCardIds([]);
+                  setOnlyUnlocked(true);
+                }}
+              >
+                Criar do Zero (0/100)
+              </button>
+            </div>
+          </div>
+        ) : null}
+
         {/* SINGLE ULTRA-CLEAN STICKY TOOLBAR */}
         <div className="db-modern-toolbar">
           {/* Domain Orbs */}
@@ -905,12 +1056,14 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           {visibleCards.map((card) => {
             const countInDeck = deckCountsById[card.id] ?? 0;
             const maxAllowed = MAX_COPIES_BY_RARITY[card.rarity];
+            const ownedCopies = isGuest ? maxAllowed : unlockedCardIds[card.id] ?? 0;
+            const effectiveMax = Math.min(maxAllowed, ownedCopies);
             const legCapReached =
               card.rarity === 'legendary' &&
               countInDeck === 0 &&
               deckAnalysis.legendaryCount >= MAX_LEGENDARIES_PER_DECK;
             const canAdd =
-              countInDeck < maxAllowed && !legCapReached && deckCardIds.length < 100;
+              countInDeck < effectiveMax && !legCapReached && deckCardIds.length < 100;
 
             return (
               <GalleryCardCell
@@ -918,6 +1071,8 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 card={card}
                 countInDeck={countInDeck}
                 maxAllowed={maxAllowed}
+                ownedCopies={ownedCopies}
+                isGuest={isGuest}
                 canAdd={canAdd}
                 onAdd={handleAddCardToDeck}
                 onRemove={handleRemoveCardFromDeck}
@@ -1004,9 +1159,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             }}
           >
             <option value="" disabled>
-              📜 Carregar um dos 30 Grimórios Oficiais...
+              Carregar um dos 5 Grimórios Iniciais...
             </option>
-            {PREBUILT_DECKS.map((d) => (
+            {MONOCHROMATIC_STARTER_DECKS.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name} — {d.subtitle}
               </option>

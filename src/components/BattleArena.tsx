@@ -57,10 +57,12 @@ import { playSfx } from '../utils/soundEngine';
 import { MusicIntensityStage, setMusicState } from '../utils/musicEngine';
 import {
   flipGameStatePerspective,
+  MONOCHROMATIC_STARTER_DECKS,
   MultiplayerRoom,
   publishMpMessage,
   SovereignUserProfile,
   subscribeMultiplayerBus,
+  VICTORY_GOLD_REWARD,
 } from '../utils/multiplayerEngine';
 import { CardView, CardInspectModal, DOMAIN_META } from './CardView';
 import { TacticalGuideView } from './TacticalGuideView';
@@ -119,6 +121,7 @@ export interface CustomSavedDeck {
 
 export interface BattleArenaProps {
   customDecks: CustomSavedDeck[];
+  isGuest?: boolean;
   campaignBoss?: CampaignBoss | null;
   campaignPlayerDeckIds?: string[] | null;
   initialPlayerDeckId?: string;
@@ -256,6 +259,7 @@ function getOrganicTabletopPose(
 
 export const BattleArena: React.FC<BattleArenaProps> = ({
   customDecks,
+  isGuest = false,
   campaignBoss,
   campaignPlayerDeckIds,
   initialPlayerDeckId,
@@ -265,8 +269,28 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onRewardGold,
   onlineMatch,
 }) => {
+  const allowedPlayerDecks = useMemo(
+    () =>
+      !isGuest && customDecks.length > 0
+        ? customDecks.map((cd) => ({
+            id: cd.id,
+            name: `★ ${cd.name}`,
+            subtitle: 'Grimório Autoral (100 Cartas)',
+            coverCardId: cd.cardIds[0] ?? 'red_01',
+            cardIds: cd.cardIds,
+          }))
+        : MONOCHROMATIC_STARTER_DECKS.map((d) => ({
+            id: d.id,
+            name: d.name,
+            subtitle: d.subtitle,
+            coverCardId: d.coverCardId,
+            cardIds: d.cardIds,
+          })),
+    [isGuest, customDecks]
+  );
+
   const [selectedPlayerDeckId, setSelectedPlayerDeckId] = useState<string>(
-    initialPlayerDeckId ?? PREBUILT_DECKS[0]?.id ?? 'deck_red_inferno'
+    initialPlayerDeckId ?? allowedPlayerDecks[0]?.id ?? 'deck_red_inferno'
   );
   const [selectedAiDeckId, setSelectedAiDeckId] = useState<string>(
     initialAiDeckId ?? PREBUILT_DECKS[1]?.id ?? 'deck_blue_tempest'
@@ -279,10 +303,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         : flipGameStatePerspective(onlineMatch.room.canonicalState);
     }
 
+    const defaultPlayerDeck =
+      allowedPlayerDecks.find((d) => d.id === initialPlayerDeckId) ?? allowedPlayerDecks[0];
+
     const pDeckIds =
       campaignPlayerDeckIds && campaignPlayerDeckIds.length >= 30
         ? campaignPlayerDeckIds
-        : PREBUILT_DECKS[0]?.cardIds ?? [];
+        : defaultPlayerDeck?.cardIds ?? MONOCHROMATIC_STARTER_DECKS[0]?.cardIds ?? [];
 
     const bossDeckObj = campaignBoss
       ? PREBUILT_DECKS.find((d) => d.id === campaignBoss.deckId) ?? PREBUILT_DECKS[1]
@@ -846,25 +873,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   }, [gameState, onlineMatch]);
 
   const startNewQuickMatch = (pDeckId: string, aDeckId: string) => {
-    const allDecks: {
-      id: string;
-      name: string;
-      subtitle: string;
-      coverCardId: string;
-      cardIds: string[];
-    }[] = [
-      ...PREBUILT_DECKS,
-      ...customDecks.map((cd) => ({
-        id: cd.id,
-        name: cd.name,
-        subtitle: 'Grimório Personalizado',
-        coverCardId: cd.cardIds[0] ?? 'red_01',
-        cardIds: cd.cardIds,
-      })),
-    ];
-
-    const pDeck = allDecks.find((d) => d.id === pDeckId) ?? allDecks[0];
-    const aDeck = allDecks.find((d) => d.id === aDeckId) ?? allDecks[1] ?? allDecks[0];
+    const pDeck = allowedPlayerDecks.find((d) => d.id === pDeckId) ?? allowedPlayerDecks[0];
+    const aDeck = PREBUILT_DECKS.find((d) => d.id === aDeckId) ?? PREBUILT_DECKS[1] ?? PREBUILT_DECKS[0];
 
     const nextState = createInitialGameState(
       resolveDeckCards(pDeck?.cardIds ?? []),
@@ -1025,11 +1035,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         playSfx('victory');
         if (onlineMatch) {
           onlineMatch.onPvpResult(true);
-          if (onRewardGold) onRewardGold(120, 'Vitória em Duelo Online 1x1');
+          if (onRewardGold) onRewardGold(VICTORY_GOLD_REWARD, 'Vitória em Duelo Online 1x1');
         } else if (campaignBoss && onCampaignVictory) {
           onCampaignVictory(campaignBoss);
         } else if (onRewardGold) {
-          onRewardGold(75, 'Vitória em Duelo na Arena');
+          onRewardGold(VICTORY_GOLD_REWARD, 'Vitória em Duelo na Arena');
         }
       } else {
         playSfx('defeat');
@@ -3255,14 +3265,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 }}
                                 className="awmt-deck-select"
                               >
-                                {PREBUILT_DECKS.map((d) => (
+                                {allowedPlayerDecks.map((d) => (
                                   <option key={d.id} value={d.id}>
                                     {d.name}
-                                  </option>
-                                ))}
-                                {customDecks.map((cd) => (
-                                  <option key={cd.id} value={cd.id}>
-                                    ★ {cd.name}
                                   </option>
                                 ))}
                               </select>
@@ -3903,7 +3908,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   marginBottom: '1.25rem',
                 }}
               >
-                Recompensa: +{campaignBoss ? campaignBoss.rewardGold : 75} Ouro
+                {isGuest
+                  ? 'Modo Visitante: Crie sua Conta de Soberano para conquistar +10 Ouro por vitória!'
+                  : `Recompensa: +${VICTORY_GOLD_REWARD} Ouro`}
               </div>
             )}
 

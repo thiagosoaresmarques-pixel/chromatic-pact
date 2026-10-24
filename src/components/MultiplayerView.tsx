@@ -15,6 +15,7 @@ import {
   getSavedAccountsRoster,
   getSelectableAvatarCards,
   isUnregisteredProfile,
+  MONOCHROMATIC_STARTER_DECKS,
   MultiplayerRoom,
   publishMpMessage,
   recoverAndResetPassword,
@@ -247,6 +248,7 @@ interface SovereignAccountModalProps {
   onUserChange: (profile: SovereignUserProfile) => void;
   onClose: () => void;
   initialTab?: AccountModalTab;
+  onNeedsDeckSetup?: () => void;
 }
 
 export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
@@ -255,6 +257,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   onUserChange,
   onClose,
   initialTab = 'profile',
+  onNeedsDeckSetup,
 }) => {
   const isUnregistered = isUnregisteredProfile(currentUser);
   const [tab, setTab] = useState<AccountModalTab>(
@@ -303,18 +306,18 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   const [newAvatarId, setNewAvatarId] = useState<string>('neutral_10_valkyra_pentacromatica');
 
   const allAvailableDecks = useMemo(
-    () => [
-      ...PREBUILT_DECKS.map((d) => ({
-        id: d.id,
-        name: d.name,
-        subtitle: d.subtitle,
-      })),
-      ...customDecks.map((cd) => ({
-        id: cd.id,
-        name: `★ ${cd.name}`,
-        subtitle: 'Grimório Autoral',
-      })),
-    ],
+    () =>
+      customDecks.length > 0
+        ? customDecks.map((cd) => ({
+            id: cd.id,
+            name: `★ ${cd.name}`,
+            subtitle: 'Grimório Autoral (100 Cartas)',
+          }))
+        : MONOCHROMATIC_STARTER_DECKS.map((d) => ({
+            id: d.id,
+            name: d.name,
+            subtitle: d.subtitle,
+          })),
     [customDecks]
   );
 
@@ -339,6 +342,9 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     onUserChange(acc);
     playSfx('channel');
     onClose();
+    if (!acc.customDecks || acc.customDecks.length === 0) {
+      onNeedsDeckSetup?.();
+    }
   };
 
   const handleDeleteAccount = async (acc: SovereignUserProfile, e?: React.MouseEvent) => {
@@ -364,6 +370,9 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
       onUserChange(res.profile);
       playSfx('ascend');
       onClose();
+      if (!res.profile.customDecks || res.profile.customDecks.length === 0) {
+        onNeedsDeckSetup?.();
+      }
     } else {
       setLoginError(res.error || 'Falha na autenticação.');
     }
@@ -376,14 +385,20 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     const res = await recoverAndResetPassword(recUsername, recEmail, recNewPassword);
     setLoginLoading(false);
     if (res.ok && res.profile) {
+      const recoveredProfile = res.profile;
       setAccountsRoster(getSavedAccountsRoster());
-      onUserChange(res.profile);
+      onUserChange(recoveredProfile);
       playSfx('ascend');
       setRecMessage({
         ok: true,
-        text: `✓ Senha redefinida com sucesso para ${res.profile.username}! Você já está conectado.`,
+        text: `✓ Senha redefinida com sucesso para ${recoveredProfile.username}! Você já está conectado.`,
       });
-      setTimeout(() => onClose(), 1200);
+      setTimeout(() => {
+        onClose();
+        if (!recoveredProfile.customDecks || recoveredProfile.customDecks.length === 0) {
+          onNeedsDeckSetup?.();
+        }
+      }, 1200);
     } else {
       setRecMessage({
         ok: false,
@@ -413,12 +428,13 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
       email: newEmail,
       password: newPassword,
       avatarCardId: newAvatarId,
-      preferredDeckId: editDeckId || PREBUILT_DECKS[0]?.id || '',
+      preferredDeckId: editDeckId || MONOCHROMATIC_STARTER_DECKS[0]?.id || '',
     });
     setAccountsRoster(getSavedAccountsRoster());
     onUserChange(created);
     playSfx('ascend');
     onClose();
+    onNeedsDeckSetup?.();
   };
 
   return (
@@ -1104,6 +1120,7 @@ interface MultiplayerViewProps {
   onUserChange: (profile: SovereignUserProfile) => void;
   onStartOnlineMatch: (room: MultiplayerRoom, role: 'host' | 'guest') => void;
   onOpenAccountModal: (tab: AccountModalTab) => void;
+  onRequireDeckSetup?: () => void;
 }
 
 function resolveDeckCards(cardIds: string[]) {
@@ -1124,13 +1141,16 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   onUserChange,
   onStartOnlineMatch,
   onOpenAccountModal,
+  onRequireDeckSetup,
 }) => {
+  const isGuest = isUnregisteredProfile(currentUser);
+  const needsDeckSetup = !isGuest && customDecks.length === 0;
   const [accountsRoster, setAccountsRoster] = useState<SovereignUserProfile[]>(() =>
     getSavedAccountsRoster()
   );
   const [rooms, setRooms] = useState<MultiplayerRoom[]>(() => getActiveRoomsList());
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
-    currentUser.preferredDeckId || PREBUILT_DECKS[0]?.id || ''
+    customDecks[0]?.id || currentUser.preferredDeckId || MONOCHROMATIC_STARTER_DECKS[0]?.id || ''
   );
   const [joinCodeInput, setJoinCodeInput] = useState<string>('');
   const [hostedRoomCode, setHostedRoomCode] = useState<string | null>(null);
@@ -1138,28 +1158,30 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
 
   useEffect(() => {
     setAccountsRoster(getSavedAccountsRoster());
-    if (currentUser.preferredDeckId) {
+    if (customDecks.length > 0 && !customDecks.some((d) => d.id === selectedDeckId)) {
+      setSelectedDeckId(customDecks[0].id);
+    } else if (currentUser.preferredDeckId) {
       setSelectedDeckId(currentUser.preferredDeckId);
     }
-  }, [currentUser]);
+  }, [currentUser, customDecks, selectedDeckId]);
 
   const allAvailableDecks = useMemo(
-    () => [
-      ...PREBUILT_DECKS.map((d) => ({
-        id: d.id,
-        name: d.name,
-        subtitle: d.subtitle,
-        coverCardId: d.coverCardId,
-        cardIds: d.cardIds,
-      })),
-      ...customDecks.map((cd) => ({
-        id: cd.id,
-        name: `★ ${cd.name}`,
-        subtitle: 'Grimório Autoral',
-        coverCardId: cd.cardIds[0] ?? 'neutral_10_valkyra_pentacromatica',
-        cardIds: cd.cardIds,
-      })),
-    ],
+    () =>
+      customDecks.length > 0
+        ? customDecks.map((cd) => ({
+            id: cd.id,
+            name: `★ ${cd.name}`,
+            subtitle: 'Grimório Autoral (100 Cartas)',
+            coverCardId: cd.cardIds[0] ?? 'neutral_10_valkyra_pentacromatica',
+            cardIds: cd.cardIds,
+          }))
+        : MONOCHROMATIC_STARTER_DECKS.map((d) => ({
+            id: d.id,
+            name: d.name,
+            subtitle: d.subtitle,
+            coverCardId: d.coverCardId,
+            cardIds: d.cardIds,
+          })),
     [customDecks]
   );
 
@@ -1192,15 +1214,23 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   const handleSwitchAccount = (acc: SovereignUserProfile) => {
     setActiveTabUserProfile(acc);
     onUserChange(acc);
-    setSelectedDeckId(acc.preferredDeckId || PREBUILT_DECKS[0]?.id || '');
+    setSelectedDeckId(acc.preferredDeckId || MONOCHROMATIC_STARTER_DECKS[0]?.id || '');
     playSfx('channel');
     setStatusBanner(`Sessão alterada para ${acc.username} (${acc.eloRating} ELO).`);
+    if (!acc.customDecks || acc.customDecks.length === 0) {
+      onRequireDeckSetup?.();
+    }
   };
 
   const handleCreateRoom = (isPublicQueue: boolean) => {
     if (isUnregisteredProfile(currentUser)) {
       setStatusBanner('Crie ou entre na sua conta de Soberano antes de abrir uma sala 1x1!');
       onOpenAccountModal('create');
+      return;
+    }
+    if (needsDeckSetup) {
+      setStatusBanner('Monte e salve seu Grimório de Combate (100 cartas) antes de duelar 1x1!');
+      onRequireDeckSetup?.();
       return;
     }
     if (!selectedDeckObj) return;
@@ -1236,6 +1266,11 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     if (isUnregisteredProfile(currentUser)) {
       setStatusBanner('Crie ou entre na sua conta de Soberano antes de aceitar um duelo 1x1!');
       onOpenAccountModal('create');
+      return;
+    }
+    if (needsDeckSetup) {
+      setStatusBanner('Monte e salve seu Grimório de Combate (100 cartas) antes de aceitar um duelo 1x1!');
+      onRequireDeckSetup?.();
       return;
     }
     if (!selectedDeckObj) return;

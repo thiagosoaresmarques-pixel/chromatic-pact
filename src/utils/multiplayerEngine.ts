@@ -1,6 +1,44 @@
-import { CardDefinition, DomainExpansionState, GameState, PlayerState } from '../types/game';
+import { CardDefinition, DomainExpansionState, GameState, PlayerState, PrebuiltDeck } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
+import { PREBUILT_DECKS } from '../data/decks';
 import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
+
+export const VICTORY_GOLD_REWARD = 10;
+
+export const MONOCHROMATIC_STARTER_DECKS: PrebuiltDeck[] = PREBUILT_DECKS.filter(
+  (d) => d.domains.length === 1
+);
+
+/**
+ * Returns the initial starter card collection granted to every registered Sovereign.
+ * Includes all copies required to play or edit any of the 5 Monochromatic Starter Decks,
+ * plus a starter reserve of common/uncommon cards so the player can also build a 100-card deck from scratch.
+ */
+export function getStarterCollection(): Record<string, number> {
+  const initial: Record<string, number> = {};
+  for (const deck of MONOCHROMATIC_STARTER_DECKS) {
+    const counts: Record<string, number> = {};
+    for (const id of deck.cardIds) {
+      counts[id] = (counts[id] ?? 0) + 1;
+    }
+    for (const [id, cnt] of Object.entries(counts)) {
+      initial[id] = Math.max(initial[id] ?? 0, cnt);
+    }
+  }
+  // Grant 2 copies of neutral commons/uncommons as flexible deckbuilding reserve
+  for (const card of ALL_CARDS) {
+    if (card.domain === 'neutral' && (card.rarity === 'common' || card.rarity === 'uncommon')) {
+      initial[card.id] = Math.max(initial[card.id] ?? 0, 2);
+    }
+  }
+  return initial;
+}
+
+export interface SovereignSavedDeck {
+  id: string;
+  name: string;
+  cardIds: string[];
+}
 
 export interface SovereignUserProfile {
   id: string;
@@ -13,6 +51,11 @@ export interface SovereignUserProfile {
   pvpWins: number;
   pvpLosses: number;
   preferredDeckId: string;
+  gold?: number;
+  customDecks?: SovereignSavedDeck[];
+  extraUnlockedCards?: Record<string, number>;
+  defeatedBossIds?: string[];
+  arenaWins?: number;
 }
 
 export interface MultiplayerRoom {
@@ -344,22 +387,54 @@ function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
     t: honorific,
     e: (profile.email || '').trim().toLowerCase(),
     p: profile.passwordHash || '',
+    g: profile.gold ?? 0,
+    d: profile.customDecks ?? [],
+    u: profile.extraUnlockedCards ?? {},
+    b: profile.defeatedBossIds ?? [],
+    w: profile.arenaWins ?? 0,
+    pref: profile.preferredDeckId || '',
   });
 }
 
 function decodeCloudTitleMeta(
   rawTitle: string | null | undefined,
   avatarCardId: string
-): { title: string; email?: string; passwordHash?: string } {
+): {
+  title: string;
+  email?: string;
+  passwordHash?: string;
+  gold?: number;
+  customDecks?: SovereignSavedDeck[];
+  extraUnlockedCards?: Record<string, number>;
+  defeatedBossIds?: string[];
+  arenaWins?: number;
+  preferredDeckId?: string;
+} {
   const fallbackTitle = getAvatarHonorificTitle(avatarCardId);
   if (!rawTitle) return { title: fallbackTitle };
   if (rawTitle.startsWith('{')) {
     try {
-      const parsed = JSON.parse(rawTitle) as { t?: string; e?: string; p?: string };
+      const parsed = JSON.parse(rawTitle) as {
+        t?: string;
+        e?: string;
+        p?: string;
+        g?: number;
+        d?: SovereignSavedDeck[];
+        u?: Record<string, number>;
+        b?: string[];
+        w?: number;
+        pref?: string;
+      };
       return {
         title: fallbackTitle,
         email: parsed.e || undefined,
         passwordHash: parsed.p || undefined,
+        gold: typeof parsed.g === 'number' ? parsed.g : undefined,
+        customDecks: Array.isArray(parsed.d) ? parsed.d : undefined,
+        extraUnlockedCards: parsed.u && typeof parsed.u === 'object' ? parsed.u : undefined,
+        defeatedBossIds: Array.isArray(parsed.b) ? parsed.b : undefined,
+        arenaWins: typeof parsed.w === 'number' ? parsed.w : undefined,
+        preferredDeckId: parsed.pref || undefined,
       };
     } catch {
       return { title: fallbackTitle };
@@ -388,6 +463,11 @@ export function createNewSovereignAccount(params: {
     pvpWins: 0,
     pvpLosses: 0,
     preferredDeckId: params.preferredDeckId,
+    gold: 0,
+    customDecks: [],
+    extraUnlockedCards: {},
+    defeatedBossIds: [],
+    arenaWins: 0,
   };
   setActiveTabUserProfile(profile);
   return profile;
@@ -525,7 +605,12 @@ function hydrateProfileFromRow(
     eloRating: row.elo_rating ?? 1200,
     pvpWins: row.pvp_wins ?? 0,
     pvpLosses: row.pvp_losses ?? 0,
-    preferredDeckId: localMatch?.preferredDeckId || 'deck_red_aggro',
+    preferredDeckId: meta.preferredDeckId || localMatch?.preferredDeckId || 'deck_red_inferno',
+    gold: meta.gold ?? localMatch?.gold ?? 0,
+    customDecks: meta.customDecks ?? localMatch?.customDecks ?? [],
+    extraUnlockedCards: meta.extraUnlockedCards ?? localMatch?.extraUnlockedCards ?? {},
+    defeatedBossIds: meta.defeatedBossIds ?? localMatch?.defeatedBossIds ?? [],
+    arenaWins: meta.arenaWins ?? localMatch?.arenaWins ?? 0,
   };
 }
 

@@ -5,11 +5,15 @@ import { CAMPAIGN_BOSSES, PREBUILT_DECKS } from '../data/decks';
 import { DOMAIN_META, CardInspectModal } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
+import { VICTORY_GOLD_REWARD } from '../utils/multiplayerEngine';
 
 export interface CampaignViewProps {
   defeatedBossIds: string[];
   customDecks: CustomSavedDeck[];
   onStartBossBattle: (boss: CampaignBoss, playerDeckCardIds: string[]) => void;
+  isGuest?: boolean;
+  onRequireAccount?: () => void;
+  onRequireDeckSetup?: () => void;
 }
 
 const FALLBACK_ACT_V_BOSSES: CampaignBoss[] = [
@@ -131,6 +135,9 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   defeatedBossIds,
   customDecks,
   onStartBossBattle,
+  isGuest = false,
+  onRequireAccount,
+  onRequireDeckSetup,
 }) => {
   const fullBossRoster: CampaignBoss[] = useMemo(() => {
     if (CAMPAIGN_BOSSES.length >= 20) {
@@ -142,7 +149,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   }, []);
 
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
-    PREBUILT_DECKS[0]?.id ?? 'deck_red_inferno'
+    customDecks[0]?.id ?? PREBUILT_DECKS[0]?.id ?? 'deck_red_inferno'
   );
   const [selectedBossId, setSelectedBossId] = useState<string>(
     fullBossRoster[0]?.id ?? 'boss_1'
@@ -152,11 +159,23 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
 
   const getSelectedDeckCardIds = (): string[] => {
+    const custom = customDecks.find((cd) => cd.id === selectedDeckId) ?? customDecks[0];
+    if (custom) return custom.cardIds;
     const prebuilt = PREBUILT_DECKS.find((d) => d.id === selectedDeckId);
     if (prebuilt) return prebuilt.cardIds;
-    const custom = customDecks.find((cd) => cd.id === selectedDeckId);
-    if (custom) return custom.cardIds;
     return PREBUILT_DECKS[0]?.cardIds ?? [];
+  };
+
+  const handleClickStartBoss = (boss: CampaignBoss) => {
+    if (isGuest) {
+      onRequireAccount?.();
+      return;
+    }
+    if (customDecks.length === 0) {
+      onRequireDeckSetup?.();
+      return;
+    }
+    onStartBossBattle(boss, getSelectedDeckCardIds());
   };
 
   const filteredRoster = useMemo(() => {
@@ -202,31 +221,22 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             </span>
           </div>
 
-          <div className="aaa-deck-picker-inline">
-            <span className="aaa-stat-label">SEU GRIMÓRIO</span>
-            <select
-              value={selectedDeckId}
-              onChange={(e) => setSelectedDeckId(e.target.value)}
-              className="aaa-select"
-            >
-              <optgroup label="Grimórios Oficiais">
-                {PREBUILT_DECKS.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name} — {d.subtitle}
+          {!isGuest && customDecks.length > 0 && (
+            <div className="aaa-deck-picker-inline">
+              <span className="aaa-stat-label">SEU GRIMÓRIO (100 CARTAS)</span>
+              <select
+                value={selectedDeckId}
+                onChange={(e) => setSelectedDeckId(e.target.value)}
+                className="aaa-select"
+              >
+                {customDecks.map((cd) => (
+                  <option key={cd.id} value={cd.id}>
+                    ★ {cd.name}
                   </option>
                 ))}
-              </optgroup>
-              {customDecks.length > 0 && (
-                <optgroup label="Grimórios Autorais">
-                  {customDecks.map((cd) => (
-                    <option key={cd.id} value={cd.id}>
-                      ★ {cd.name}
-                    </option>
-                  ))}
-                </optgroup>
-              )}
-            </select>
-          </div>
+              </select>
+            </div>
+          )}
 
           <button
             type="button"
@@ -237,6 +247,54 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           </button>
         </div>
       </header>
+
+      {isGuest ? (
+        <div
+          style={{
+            padding: '0.85rem 1.1rem',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
+            border: '1px solid rgba(250, 204, 21, 0.45)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
+            <strong style={{ color: '#fde047' }}>Modo Visitante:</strong> você pode inspecionar os 20 Soberanos da Campanha. Para desafiar os chefes com seu próprio Grimório de 100 cartas e ganhar <strong>+{VICTORY_GOLD_REWARD} Ouro por vitória</strong>, entre ou crie sua conta.
+          </div>
+          {onRequireAccount && (
+            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireAccount}>
+              Entrar / Criar Conta
+            </button>
+          )}
+        </div>
+      ) : customDecks.length === 0 ? (
+        <div
+          style={{
+            padding: '0.85rem 1.1rem',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.16), rgba(15, 23, 42, 0.95))',
+            border: '1px solid #fde047',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
+            <strong style={{ color: '#fde047' }}>Grimório de Combate Necessário:</strong> antes de iniciar sua Campanha, monte e salve seu Grimório de 100 cartas na seção <strong>Grimório</strong>.
+          </div>
+          {onRequireDeckSetup && (
+            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireDeckSetup}>
+              Montar Meu Grimório (100 Cartas) →
+            </button>
+          )}
+        </div>
+      ) : null}
 
       {/* Act Filter Tabs (Ato I .. Ato V — Os Tronos Tripartidos) */}
       <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
@@ -300,7 +358,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 </div>
                 <div className="aaa-boss-row-stats">
                   <span>{boss.startingHp} PV</span>
-                  <span className="gold-text">+{boss.rewardGold}</span>
+                  <span className="gold-text">+{VICTORY_GOLD_REWARD}</span>
                 </div>
               </div>
             );
@@ -362,7 +420,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 </div>
                 <div className="aaa-metric-box">
                   <span className="aaa-metric-lbl">RECOMPENSA DE VITÓRIA</span>
-                  <span className="aaa-metric-val gold-text">+{activeBoss.rewardGold} OURO</span>
+                  <span className="aaa-metric-val gold-text">+{VICTORY_GOLD_REWARD} OURO</span>
                 </div>
                 <div className="aaa-metric-box">
                   <span className="aaa-metric-lbl">STATUS</span>
@@ -385,9 +443,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 <button
                   type="button"
                   className="aaa-btn aaa-btn-primary aaa-btn-lg"
-                  onClick={() => onStartBossBattle(activeBoss, getSelectedDeckCardIds())}
+                  onClick={() => handleClickStartBoss(activeBoss)}
                 >
-                  INICIAR CONFRONTO
+                  {isGuest
+                    ? 'ENTRAR / CRIAR CONTA PARA COMBATER'
+                    : customDecks.length === 0
+                    ? 'MONTAR GRIMÓRIO (100 CARTAS) PARA COMBATER'
+                    : 'INICIAR CONFRONTO'}
                 </button>
                 <button
                   type="button"

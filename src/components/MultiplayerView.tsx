@@ -50,7 +50,7 @@ const AvatarCreaturePicker: React.FC<AvatarCreaturePickerProps> = ({
     const base = getSelectableAvatarCards(poolMode);
     const q = searchQuery.trim().toLowerCase();
     return base.filter((c) => {
-      if (domainFilter !== 'all' && c.color !== domainFilter) return false;
+      if (domainFilter !== 'all' && c.domain !== domainFilter) return false;
       if (q) {
         const honorific = getAvatarHonorificTitle(c.id).toLowerCase();
         return c.name.toLowerCase().includes(q) || honorific.includes(q);

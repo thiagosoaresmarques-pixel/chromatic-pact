@@ -357,6 +357,64 @@ function getSupabaseHeaders(anonKey: string, extra?: Record<string, string>): Re
   return headers;
 }
 
+export async function loginOrFetchAccountFromSupabase(
+  usernameInput: string
+): Promise<SovereignUserProfile | null> {
+  const clean = usernameInput.trim();
+  if (!clean) return null;
+
+  // Check local roster first
+  const localMatch = getSavedAccountsRoster().find(
+    (a) => a.username.toLowerCase() === clean.toLowerCase()
+  );
+
+  const cfg = getSupabaseConfig();
+  if (cfg.isConfigured) {
+    try {
+      const res = await fetch(
+        `${cfg.url}/rest/v1/sovereign_profiles?username=ilike.${encodeURIComponent(clean)}&limit=1`,
+        {
+          headers: getSupabaseHeaders(cfg.anonKey),
+        }
+      );
+      if (res.ok) {
+        const rows = (await res.json()) as Array<{
+          id: string;
+          username: string;
+          title: string;
+          avatar_card_id: string;
+          elo_rating: number;
+          pvp_wins: number;
+          pvp_losses: number;
+        }>;
+        if (rows.length > 0) {
+          const row = rows[0];
+          const cloudProfile: SovereignUserProfile = {
+            id: localMatch?.id ?? `sov_${row.id}`,
+            username: row.username,
+            title: row.title || TITLE_OPTIONS[0],
+            avatarCardId: row.avatar_card_id || AVATAR_OPTIONS[0].cardId,
+            eloRating: row.elo_rating ?? 1200,
+            pvpWins: row.pvp_wins ?? 0,
+            pvpLosses: row.pvp_losses ?? 0,
+            preferredDeckId: localMatch?.preferredDeckId || 'deck_red_aggro',
+          };
+          setActiveTabUserProfile(cloudProfile);
+          return cloudProfile;
+        }
+      }
+    } catch {
+      // Fallback to local
+    }
+  }
+
+  if (localMatch) {
+    setActiveTabUserProfile(localMatch);
+    return localMatch;
+  }
+  return null;
+}
+
 async function syncProfileToSupabaseIfConfigured(profile: SovereignUserProfile): Promise<void> {
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return;

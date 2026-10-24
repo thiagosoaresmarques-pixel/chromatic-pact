@@ -18,7 +18,7 @@ import { TacticalGuideView } from './components/TacticalGuideView';
 import { ExpeditionView } from './components/ExpeditionView';
 import { TutorialCodexView } from './components/TutorialCodexView';
 import { MythologyAtlasView } from './components/MythologyAtlasView';
-import { MultiplayerView } from './components/MultiplayerView';
+import { MultiplayerView, SovereignAccountModal } from './components/MultiplayerView';
 import { CardView, CardInspectModal } from './components/CardView';
 import {
   getActiveTabUserProfile,
@@ -129,6 +129,10 @@ export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<SovereignUserProfile>(() =>
     getActiveTabUserProfile()
   );
+  const [accountModalState, setAccountModalState] = useState<{
+    open: boolean;
+    tab: 'login' | 'create';
+  }>({ open: false, tab: 'login' });
   const [activeOnlineMatch, setActiveOnlineMatch] = useState<{
     room: MultiplayerRoom;
     role: 'host' | 'guest';
@@ -447,18 +451,33 @@ export const App: React.FC = () => {
         <div className="nav-right-controls">
           <div
             className="gold-pill"
-            onClick={() => setActiveTab('multiplayer')}
+            onClick={() => setAccountModalState({ open: true, tab: 'login' })}
             style={{
               cursor: 'pointer',
-              borderColor: 'rgba(167,139,250,0.45)',
-              background: 'rgba(20,16,38,0.85)',
-              color: '#e9d5ff',
+              borderColor: 'rgba(250, 204, 21, 0.55)',
+              background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
+              color: '#fef08a',
+              gap: '0.45rem',
             }}
-            title="Clique para abrir seu Perfil do Soberano e o Conclave PvP 1×1"
+            title="Clique para Entrar, Trocar ou Criar sua Conta de Soberano"
           >
             <span>👤</span>
-            <span>{currentUser.username}</span>
-            <span style={{ opacity: 0.72, fontSize: '0.72rem' }}>({currentUser.eloRating})</span>
+            <span style={{ fontWeight: 800 }}>{currentUser.username}</span>
+            <span style={{ opacity: 0.78, fontSize: '0.7rem' }}>({currentUser.eloRating})</span>
+            <span
+              style={{
+                marginLeft: '0.2rem',
+                padding: '1px 6px',
+                borderRadius: '4px',
+                background: 'rgba(250, 204, 21, 0.18)',
+                border: '1px solid rgba(250, 204, 21, 0.45)',
+                fontSize: '0.62rem',
+                color: '#fde047',
+                fontWeight: 800,
+              }}
+            >
+              CONTA
+            </span>
           </div>
 
           <div
@@ -538,6 +557,13 @@ export const App: React.FC = () => {
                     onClick={() => setActiveTab('campaign')}
                   >
                     👑 DESAFIAR OS SOBERANOS
+                  </button>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
+                    onClick={() => setAccountModalState({ open: true, tab: 'login' })}
+                  >
+                    👤 ENTRAR / CRIAR CONTA
                   </button>
                 </div>
 
@@ -699,6 +725,7 @@ export const App: React.FC = () => {
             customDecks={customDecks}
             currentUser={currentUser}
             onUserChange={setCurrentUser}
+            onOpenAccountModal={(tab) => setAccountModalState({ open: true, tab })}
             onStartOnlineMatch={(room, role) => {
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
@@ -810,6 +837,15 @@ export const App: React.FC = () => {
           <CardInspectModal
             card={showcaseInspectCard}
             onClose={() => setShowcaseInspectCard(null)}
+          />
+        )}
+
+        {accountModalState.open && (
+          <SovereignAccountModal
+            currentUser={currentUser}
+            onUserChange={setCurrentUser}
+            initialTab={accountModalState.tab}
+            onClose={() => setAccountModalState((prev) => ({ ...prev, open: false }))}
           />
         )}
       </main>

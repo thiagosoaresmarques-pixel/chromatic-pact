@@ -8,13 +8,11 @@ import {
   createNewSovereignAccount,
   generateRoomCode,
   getActiveRoomsList,
-  getActiveTabUserProfile,
   getRoomByCode,
   getSavedAccountsRoster,
-  getSupabaseConfig,
+  loginOrFetchAccountFromSupabase,
   MultiplayerRoom,
   publishMpMessage,
-  saveSupabaseConfig,
   setActiveTabUserProfile,
   SovereignUserProfile,
   subscribeMultiplayerBus,
@@ -22,11 +20,366 @@ import {
 } from '../utils/multiplayerEngine';
 import { CustomSavedDeck } from './BattleArena';
 
+interface SovereignAccountModalProps {
+  currentUser: SovereignUserProfile;
+  onUserChange: (profile: SovereignUserProfile) => void;
+  onClose: () => void;
+  initialTab?: 'login' | 'create';
+}
+
+export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
+  currentUser,
+  onUserChange,
+  onClose,
+  initialTab = 'login',
+}) => {
+  const [tab, setTab] = useState<'login' | 'create'>(initialTab);
+  const [accountsRoster, setAccountsRoster] = useState<SovereignUserProfile[]>(() =>
+    getSavedAccountsRoster()
+  );
+
+  // Login by nickname state
+  const [loginNickname, setLoginNickname] = useState<string>('');
+  const [loginLoading, setLoginLoading] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  // Create new account state
+  const [newUsername, setNewUsername] = useState<string>('');
+  const [newEmail, setNewEmail] = useState<string>('');
+  const [newTitle, setNewTitle] = useState<string>(TITLE_OPTIONS[0]);
+  const [newAvatarId, setNewAvatarId] = useState<string>(AVATAR_OPTIONS[0].cardId);
+
+  const handleSelectExisting = (acc: SovereignUserProfile) => {
+    setActiveTabUserProfile(acc);
+    onUserChange(acc);
+    playSfx('channel');
+    onClose();
+  };
+
+  const handleCloudLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginNickname.trim()) return;
+    setLoginLoading(true);
+    setLoginError(null);
+    const found = await loginOrFetchAccountFromSupabase(loginNickname);
+    setLoginLoading(false);
+    if (found) {
+      setAccountsRoster(getSavedAccountsRoster());
+      onUserChange(found);
+      playSfx('ascend');
+      onClose();
+    } else {
+      setLoginError(
+        `Usuário "${loginNickname.trim()}" ainda não encontrado. Clique na aba "✨ Criar Nova Conta" acima para registrá-lo!`
+      );
+      setNewUsername(loginNickname.trim());
+    }
+  };
+
+  const handleCreateAccount = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUsername.trim()) return;
+    const created = createNewSovereignAccount({
+      username: newUsername,
+      email: newEmail,
+      title: newTitle,
+      avatarCardId: newAvatarId,
+      preferredDeckId: currentUser.preferredDeckId || PREBUILT_DECKS[0]?.id || '',
+    });
+    setAccountsRoster(getSavedAccountsRoster());
+    onUserChange(created);
+    playSfx('ascend');
+    onClose();
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="modal-panel"
+        style={{ maxWidth: '560px', width: '94vw' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="aaa-kicker">CONTA DO SOBERANO • CHROMATIC PACT ONLINE</div>
+          <button
+            type="button"
+            className="aaa-btn aaa-btn-ghost"
+            style={{ padding: '4px 10px' }}
+            onClick={onClose}
+          >
+            ✕
+          </button>
+        </div>
+
+        <h3
+          className="font-cinzel gold-gradient-text"
+          style={{ fontSize: '1.4rem', margin: '0.25rem 0 0.9rem' }}
+        >
+          IDENTIDADE DO SOBERANO
+        </h3>
+
+        {/* Tabs: Entrar / Trocar Conta vs Criar Nova Conta */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '0.5rem',
+            marginBottom: '1.1rem',
+          }}
+        >
+          <button
+            type="button"
+            className={`aaa-btn ${tab === 'login' ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
+            onClick={() => setTab('login')}
+          >
+            🔑 Entrar / Trocar Conta
+          </button>
+          <button
+            type="button"
+            className={`aaa-btn ${tab === 'create' ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
+            onClick={() => setTab('create')}
+          >
+            ✨ Criar Nova Conta
+          </button>
+        </div>
+
+        {tab === 'login' ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {/* Cloud Login by Nickname */}
+            <form
+              onSubmit={handleCloudLogin}
+              style={{
+                padding: '0.9rem',
+                borderRadius: '8px',
+                background: 'rgba(15, 23, 42, 0.78)',
+                border: '1px solid rgba(212, 175, 55, 0.35)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.55rem',
+              }}
+            >
+              <label className="aaa-stat-label">
+                ENTRAR COM NICKNAME JÁ CADASTRADO NA NUVEM
+              </label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  className="myth-search-compact"
+                  placeholder="Digite seu Nickname (ex: Thiago_Arconte)..."
+                  value={loginNickname}
+                  onChange={(e) => setLoginNickname(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                <button
+                  type="submit"
+                  className="aaa-btn aaa-btn-primary"
+                  disabled={loginLoading}
+                >
+                  {loginLoading ? 'Buscando...' : 'Entrar →'}
+                </button>
+              </div>
+              {loginError && (
+                <div style={{ fontSize: '0.76rem', color: '#fca5a5', marginTop: '0.2rem' }}>
+                  {loginError}
+                </div>
+              )}
+            </form>
+
+            {/* Saved Accounts on this Browser */}
+            <div>
+              <div className="aaa-stat-label" style={{ marginBottom: '0.5rem' }}>
+                CONTAS SALVAS NESTE DISPOSITIVO (CLIQUE PARA ATIVAR)
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {accountsRoster.map((acc) => {
+                  const isCurrent = acc.id === currentUser.id;
+                  const card = CARDS_BY_ID[acc.avatarCardId] ?? ALL_CARDS[0];
+                  return (
+                    <div
+                      key={acc.id}
+                      onClick={() => handleSelectExisting(acc)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '0.65rem 0.9rem',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        background: isCurrent
+                          ? 'rgba(212, 175, 55, 0.18)'
+                          : 'rgba(15, 23, 42, 0.75)',
+                        border: isCurrent
+                          ? '1.5px solid #fde047'
+                          : '1px solid rgba(255,255,255,0.1)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        {card?.imagePath && (
+                          <img
+                            src={`${card.imagePath}?v=12`}
+                            alt={acc.username}
+                            style={{
+                              width: '42px',
+                              height: '42px',
+                              borderRadius: '50%',
+                              border: '1px solid #fde047',
+                              objectFit: 'contain',
+                              background: '#050811',
+                            }}
+                          />
+                        )}
+                        <div>
+                          <div
+                            className="font-cinzel"
+                            style={{ fontWeight: 800, color: '#f8fafc', fontSize: '0.92rem' }}
+                          >
+                            {acc.username}{' '}
+                            {isCurrent && (
+                              <span style={{ color: '#fde047', fontSize: '0.72rem' }}>
+                                (ATIVO)
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
+                            {acc.title} • 🏆 {acc.eloRating} ELO ({acc.pvpWins}V / {acc.pvpLosses}D)
+                          </div>
+                        </div>
+                      </div>
+                      <span className="aaa-btn aaa-btn-secondary" style={{ padding: '4px 10px' }}>
+                        {isCurrent ? '✓ Conectado' : 'Usar Conta'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <form
+            onSubmit={handleCreateAccount}
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
+          >
+            <div>
+              <label className="aaa-stat-label">NICKNAME DO SOBERANO *</label>
+              <input
+                type="text"
+                className="myth-search-compact"
+                placeholder="Ex: Thiago_Arconte"
+                value={newUsername}
+                onChange={(e) => setNewUsername(e.target.value)}
+                required
+                style={{ width: '100%', marginTop: '4px' }}
+              />
+            </div>
+
+            <div>
+              <label className="aaa-stat-label">E-MAIL (OPCIONAL)</label>
+              <input
+                type="email"
+                className="myth-search-compact"
+                placeholder="seu@email.com"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                style={{ width: '100%', marginTop: '4px' }}
+              />
+            </div>
+
+            <div>
+              <label className="aaa-stat-label">TÍTULO HONORÍFICO</label>
+              <select
+                className="myth-select-compact"
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                style={{ width: '100%', marginTop: '4px' }}
+              >
+                {TITLE_OPTIONS.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="aaa-stat-label">ESCOLHA SEU BRASÃO / AVATAR</label>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: '0.5rem',
+                  marginTop: '6px',
+                }}
+              >
+                {AVATAR_OPTIONS.map((av) => {
+                  const card = CARDS_BY_ID[av.cardId];
+                  const selected = newAvatarId === av.cardId;
+                  return (
+                    <button
+                      key={av.cardId}
+                      type="button"
+                      onClick={() => setNewAvatarId(av.cardId)}
+                      style={{
+                        padding: '6px',
+                        borderRadius: '6px',
+                        background: selected
+                          ? 'rgba(212, 175, 55, 0.22)'
+                          : 'rgba(15, 23, 42, 0.8)',
+                        border: selected
+                          ? '1.5px solid #fde047'
+                          : '1px solid rgba(255,255,255,0.12)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      {card?.imagePath && (
+                        <img
+                          src={`${card.imagePath}?v=12`}
+                          alt={av.label}
+                          style={{ width: '44px', height: '44px', objectFit: 'contain' }}
+                        />
+                      )}
+                      <span
+                        style={{ fontSize: '0.62rem', color: '#e2e8f0', textAlign: 'center' }}
+                      >
+                        {av.label.split(',')[0]}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: '0.65rem',
+                marginTop: '0.5rem',
+              }}
+            >
+              <button type="button" className="aaa-btn aaa-btn-ghost" onClick={onClose}>
+                Cancelar
+              </button>
+              <button type="submit" className="aaa-btn aaa-btn-primary">
+                ✓ Criar & Entrar com este Usuário
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+};
+
 interface MultiplayerViewProps {
   customDecks: CustomSavedDeck[];
   currentUser: SovereignUserProfile;
   onUserChange: (profile: SovereignUserProfile) => void;
   onStartOnlineMatch: (room: MultiplayerRoom, role: 'host' | 'guest') => void;
+  onOpenAccountModal: (tab: 'login' | 'create') => void;
 }
 
 function resolveDeckCards(cardIds: string[]) {
@@ -46,6 +399,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   currentUser,
   onUserChange,
   onStartOnlineMatch,
+  onOpenAccountModal,
 }) => {
   const [accountsRoster, setAccountsRoster] = useState<SovereignUserProfile[]>(() =>
     getSavedAccountsRoster()
@@ -58,18 +412,9 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   const [hostedRoomCode, setHostedRoomCode] = useState<string | null>(null);
   const [statusBanner, setStatusBanner] = useState<string | null>(null);
 
-  // Account creation / edit modal state
-  const [showAccountModal, setShowAccountModal] = useState<boolean>(false);
-  const [newUsername, setNewUsername] = useState<string>('');
-  const [newEmail, setNewEmail] = useState<string>('');
-  const [newTitle, setNewTitle] = useState<string>(TITLE_OPTIONS[0]);
-  const [newAvatarId, setNewAvatarId] = useState<string>(AVATAR_OPTIONS[0].cardId);
-
-  // Cloud Config modal state
-  const [showCloudModal, setShowCloudModal] = useState<boolean>(false);
-  const [supaUrl, setSupaUrl] = useState<string>(() => getSupabaseConfig().url);
-  const [supaKey, setSupaKey] = useState<string>(() => getSupabaseConfig().anonKey);
-  const cloudConfigured = getSupabaseConfig().isConfigured;
+  useEffect(() => {
+    setAccountsRoster(getSavedAccountsRoster());
+  }, [currentUser]);
 
   const allAvailableDecks = useMemo(
     () => [
@@ -126,25 +471,6 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     setStatusBanner(`Sessão alterada para ${acc.username} (${acc.eloRating} ELO).`);
   };
 
-  const handleCreateAccount = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newUsername.trim()) return;
-    const created = createNewSovereignAccount({
-      username: newUsername,
-      email: newEmail,
-      title: newTitle,
-      avatarCardId: newAvatarId,
-      preferredDeckId: selectedDeckId,
-    });
-    setAccountsRoster(getSavedAccountsRoster());
-    onUserChange(created);
-    setShowAccountModal(false);
-    setNewUsername('');
-    setNewEmail('');
-    playSfx('ascend');
-    setStatusBanner(`Novo Soberano consagrado: ${created.username}!`);
-  };
-
   const handleCreateRoom = (isPublicQueue: boolean) => {
     if (!selectedDeckObj) return;
     const code = generateRoomCode();
@@ -170,7 +496,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     playSfx('summon');
     setStatusBanner(
       isPublicQueue
-        ? `Na Fila 1x1 (Sala ${code})! Abra uma 2ª aba ou envie o código ao oponente.`
+        ? `Na Fila 1x1 (Sala ${code})! Aguardando desafiante ou envie o código a um amigo.`
         : `Sala Privada ${code} criada! Envie o código ao seu oponente.`
     );
   };
@@ -178,7 +504,6 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   const handleJoinRoom = (room: MultiplayerRoom) => {
     if (!selectedDeckObj) return;
 
-    // If user is trying to join their own room from the same account, automatically switch to a 2nd test account so they can test 1v1 effortlessly!
     let activeGuest = currentUser;
     if (room.host.id === currentUser.id) {
       const altAccount =
@@ -198,7 +523,6 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     const hostCards = resolveDeckCards(room.host.cardIds);
     const guestCards = resolveDeckCards(selectedDeckObj.cardIds);
 
-    // Create canonical GameState from Host's perspective ('player' = Host, 'ai' = Guest)
     const canonicalState = createInitialGameState(hostCards, guestCards, {
       playerName: room.host.username,
       aiName: activeGuest.username,
@@ -265,11 +589,11 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
 
   return (
     <div className="aaa-page-shell">
-      {/* Header: Sovereign Account & Cloud Status */}
+      {/* Header: Sovereign Account & Online Status */}
       <div className="aaa-page-header">
         <div>
           <div className="aaa-kicker">
-            ARENA ONLINE 1x1 • {cloudConfigured ? '🟢 SUPABASE CLOUD ATIVO' : '⚡ MODO TESTE MULTI-ABA / LAN ATIVO'}
+            🟢 SERVIDORES DOS CINCO DOMÍNIOS • ONLINE EM TEMPO REAL
           </div>
           <h1 className="aaa-page-title">CONCLAVE MULTIPLAYER 1x1</h1>
         </div>
@@ -278,22 +602,25 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
           <button
             type="button"
             className="aaa-btn aaa-btn-secondary"
-            onClick={() => setShowAccountModal(true)}
+            onClick={() => onOpenAccountModal('login')}
           >
-            👤 Criar / Novo Usuário
+            🔑 Entrar / Trocar Usuário
           </button>
           <button
             type="button"
-            className="aaa-btn aaa-btn-ghost"
-            onClick={() => setShowCloudModal(true)}
+            className="aaa-btn aaa-btn-primary"
+            onClick={() => onOpenAccountModal('create')}
           >
-            ☁️ Configurar Supabase + Cloudflare
+            ✨ Criar Nova Conta
           </button>
         </div>
       </div>
 
       {statusBanner && (
-        <div className="aaa-toast-banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div
+          className="aaa-toast-banner"
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        >
           <span>{statusBanner}</span>
           <button
             type="button"
@@ -306,11 +633,11 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
         </div>
       )}
 
-      {/* Top Grid: [Active Sovereign User Card + Quick Account Switcher] | [Deck Picker & Matchmaking Actions] */}
+      {/* Top Grid: [Active Sovereign User Card] | [Deck Picker & Matchmaking Actions] */}
       <div className="tg-grid-layout">
-        {/* Left Panel: Sovereign Account & Quick Test Account Switcher */}
+        {/* Left Panel: Sovereign Account */}
         <div className="tg-panel">
-          <div className="aaa-kicker">PERFIL DO SOBERANO (ISOLADO POR ABA PARA TESTE 1x1)</div>
+          <div className="aaa-kicker">CONTA CONECTADA NESTA SESSÃO</div>
           <div
             style={{
               display: 'flex',
@@ -364,10 +691,27 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                 </span>
               </div>
             </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-primary"
+                onClick={() => onOpenAccountModal('create')}
+              >
+                ✨ Criar Conta
+              </button>
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-secondary"
+                onClick={() => onOpenAccountModal('login')}
+              >
+                🔑 Trocar Conta
+              </button>
+            </div>
           </div>
 
           <div className="aaa-kicker" style={{ marginTop: '0.5rem' }}>
-            TROCA RÁPIDA DE USUÁRIO DE TESTE (USE CONTAS DIFERENTES EM CADA ABA)
+            ALTERNAR PERFIL SALVO NESTE DISPOSITIVO
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {accountsRoster.map((acc) => {
@@ -384,23 +728,6 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                 </button>
               );
             })}
-          </div>
-
-          <div
-            style={{
-              marginTop: '0.4rem',
-              padding: '0.75rem 0.9rem',
-              borderRadius: '6px',
-              background: 'rgba(14, 116, 144, 0.14)',
-              border: '1px solid rgba(56, 189, 248, 0.35)',
-              fontSize: '0.76rem',
-              color: '#bae6fd',
-              lineHeight: 1.5,
-            }}
-          >
-            💡 <strong>Como testar o 1x1 agora mesmo:</strong> Crie uma sala ao lado e clique em{' '}
-            <strong>"Abrir 2ª Aba (Jogador 2)"</strong>. Na segunda aba, clique em{' '}
-            <strong>"Entrar no Duelo"</strong> — cada aba verá o tabuleiro da sua própria perspectiva!
           </div>
         </div>
 
@@ -478,7 +805,8 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                 marginTop: '0.45rem',
                 padding: '0.95rem 1.1rem',
                 borderRadius: '8px',
-                background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.16), rgba(15, 23, 42, 0.92))',
+                background:
+                  'linear-gradient(135deg, rgba(212, 175, 55, 0.16), rgba(15, 23, 42, 0.92))',
                 border: '1.5px solid #fde047',
                 display: 'flex',
                 flexDirection: 'column',
@@ -486,8 +814,12 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span className="font-cinzel" style={{ color: '#fef08a', fontWeight: 900, fontSize: '0.92rem' }}>
-                  ⏳ AGUARDANDO OPONENTE NA SALA: <strong style={{ color: '#fff' }}>{hostedRoomCode}</strong>
+                <span
+                  className="font-cinzel"
+                  style={{ color: '#fef08a', fontWeight: 900, fontSize: '0.92rem' }}
+                >
+                  ⏳ AGUARDANDO OPONENTE NA SALA:{' '}
+                  <strong style={{ color: '#fff' }}>{hostedRoomCode}</strong>
                 </span>
                 <button
                   type="button"
@@ -514,7 +846,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                   className="aaa-btn aaa-btn-secondary"
                   onClick={() => window.open(window.location.href, '_blank')}
                 >
-                  🪟 Abrir 2ª Aba (Jogador 2) para Testar Agora
+                  🪟 Abrir 2ª Aba para Testar 1x1
                 </button>
               </div>
             </div>
@@ -578,7 +910,8 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                     />
                     <div>
                       <div className="font-cinzel exp-ach-title" style={{ fontSize: '0.9rem' }}>
-                        Sala <span style={{ color: '#fff' }}>{room.code}</span> • {room.host.username}
+                        Sala <span style={{ color: '#fff' }}>{room.code}</span> •{' '}
+                        {room.host.username}
                       </div>
                       <div className="exp-ach-desc">
                         {room.host.title} • 🏆 {room.host.eloRating} ELO
@@ -602,188 +935,6 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
           </div>
         )}
       </div>
-
-      {/* Modal: Create New Sovereign User Account */}
-      {showAccountModal && (
-        <div className="modal-backdrop" onClick={() => setShowAccountModal(false)}>
-          <div
-            className="modal-panel"
-            style={{ maxWidth: '520px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="aaa-kicker">CADASTRO DE SOBERANO • PERFIL MULTIPLAYER</div>
-            <h3 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.35rem', marginBottom: '1rem' }}>
-              CRIAR NOVO USUÁRIO
-            </h3>
-
-            <form onSubmit={handleCreateAccount} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <div>
-                <label className="aaa-stat-label">NICKNAME DO SOBERANO *</label>
-                <input
-                  type="text"
-                  className="myth-search-compact"
-                  placeholder="Ex: Thiago_Arconte"
-                  value={newUsername}
-                  onChange={(e) => setNewUsername(e.target.value)}
-                  required
-                  style={{ width: '100%', marginTop: '4px' }}
-                />
-              </div>
-
-              <div>
-                <label className="aaa-stat-label">E-MAIL (OPCIONAL NO MODO TESTE)</label>
-                <input
-                  type="email"
-                  className="myth-search-compact"
-                  placeholder="seu@email.com"
-                  value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
-                  style={{ width: '100%', marginTop: '4px' }}
-                />
-              </div>
-
-              <div>
-                <label className="aaa-stat-label">TÍTULO HONORÍFICO</label>
-                <select
-                  className="myth-select-compact"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  style={{ width: '100%', marginTop: '4px' }}
-                >
-                  {TITLE_OPTIONS.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="aaa-stat-label">AVATAR DO SOBERANO</label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', marginTop: '6px' }}>
-                  {AVATAR_OPTIONS.map((av) => {
-                    const card = CARDS_BY_ID[av.cardId];
-                    const selected = newAvatarId === av.cardId;
-                    return (
-                      <button
-                        key={av.cardId}
-                        type="button"
-                        onClick={() => setNewAvatarId(av.cardId)}
-                        style={{
-                          padding: '6px',
-                          borderRadius: '6px',
-                          background: selected ? 'rgba(212, 175, 55, 0.22)' : 'rgba(15, 23, 42, 0.8)',
-                          border: selected ? '1.5px solid #fde047' : '1px solid rgba(255,255,255,0.12)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          gap: '4px',
-                        }}
-                      >
-                        {card?.imagePath && (
-                          <img
-                            src={`${card.imagePath}?v=12`}
-                            alt={av.label}
-                            style={{ width: '44px', height: '44px', objectFit: 'contain' }}
-                          />
-                        )}
-                        <span style={{ fontSize: '0.62rem', color: '#e2e8f0', textAlign: 'center' }}>
-                          {av.label.split(',')[0]}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem', marginTop: '0.5rem' }}>
-                <button
-                  type="button"
-                  className="aaa-btn aaa-btn-ghost"
-                  onClick={() => setShowAccountModal(false)}
-                >
-                  Cancelar
-                </button>
-                <button type="submit" className="aaa-btn aaa-btn-primary">
-                  ✓ Criar & Entrar com este Usuário
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal: Cloud Configuration (Supabase + Cloudflare Pages) */}
-      {showCloudModal && (
-        <div className="modal-backdrop" onClick={() => setShowCloudModal(false)}>
-          <div
-            className="modal-panel"
-            style={{ maxWidth: '600px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="aaa-kicker">ARQUITETURA CUSTO ZERO • SUPABASE + CLOUDFLARE PAGES</div>
-            <h3 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.3rem', marginBottom: '0.6rem' }}>
-              CONEXÃO COM SUPABASE CLOUD
-            </h3>
-            <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.55, marginBottom: '1rem' }}>
-              Para testes locais ou na mesma rede Wi-Fi, o servidor embutido do Vite já sincroniza as
-              partidas 1x1 automaticamente. Para jogar online pela internet via{' '}
-              <strong>Supabase + Cloudflare Pages</strong>, cole abaixo a URL e a Anon Key do seu
-              projeto gratuito no Supabase (ou defina <code>VITE_SUPABASE_URL</code> e{' '}
-              <code>VITE_SUPABASE_ANON_KEY</code> no arquivo <code>.env</code>). O script SQL já está
-              salvo na raiz do projeto em <code>supabase_schema.sql</code>.
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div>
-                <label className="aaa-stat-label">SUPABASE PROJECT URL</label>
-                <input
-                  type="url"
-                  className="myth-search-compact"
-                  placeholder="https://seu-projeto.supabase.co"
-                  value={supaUrl}
-                  onChange={(e) => setSupaUrl(e.target.value)}
-                  style={{ width: '100%', marginTop: '4px' }}
-                />
-              </div>
-
-              <div>
-                <label className="aaa-stat-label">SUPABASE ANON PUBLIC KEY</label>
-                <input
-                  type="text"
-                  className="myth-search-compact"
-                  placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                  value={supaKey}
-                  onChange={(e) => setSupaKey(e.target.value)}
-                  style={{ width: '100%', marginTop: '4px' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.65rem', marginTop: '0.5rem' }}>
-                <button
-                  type="button"
-                  className="aaa-btn aaa-btn-ghost"
-                  onClick={() => setShowCloudModal(false)}
-                >
-                  Fechar
-                </button>
-                <button
-                  type="button"
-                  className="aaa-btn aaa-btn-primary"
-                  onClick={() => {
-                    saveSupabaseConfig(supaUrl, supaKey);
-                    setShowCloudModal(false);
-                    setStatusBanner('Configuração do Supabase salva!');
-                  }}
-                >
-                  Salvar Conexão Supabase
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

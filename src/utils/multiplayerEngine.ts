@@ -514,14 +514,31 @@ export function updateSovereignAccountProfile(
   return updated;
 }
 
+/**
+ * Calcula a variação de Reputação pelo modelo matemático de Elo (Xadrez FIDE / Tênis ATP).
+ * Probabilidade esperada: E_A = 1 / (1 + 10 ^ ((R_B - R_A) / 400))
+ * Atualização: Delta = round(K * (S_A - E_A)), onde S_A = 1 (vitória) ou 0 (derrota) e K = 32.
+ */
+export function calculateReputationDelta(
+  playerRating: number,
+  opponentRating: number,
+  didWin: boolean,
+  kFactor = 32
+): number {
+  const expectedScore = 1 / (1 + Math.pow(10, (opponentRating - playerRating) / 400));
+  const actualScore = didWin ? 1 : 0;
+  return Math.round(kFactor * (actualScore - expectedScore));
+}
+
 export function recordPvpMatchResult(
   profile: SovereignUserProfile,
-  didWin: boolean
+  didWin: boolean,
+  opponentRating = 1200
 ): SovereignUserProfile {
-  const eloDelta = didWin ? 25 : -18;
+  const reputationDelta = calculateReputationDelta(profile.eloRating, opponentRating, didWin, 32);
   const updated: SovereignUserProfile = {
     ...profile,
-    eloRating: Math.max(800, profile.eloRating + eloDelta),
+    eloRating: Math.max(100, profile.eloRating + reputationDelta),
     pvpWins: profile.pvpWins + (didWin ? 1 : 0),
     pvpLosses: profile.pvpLosses + (didWin ? 0 : 1),
   };

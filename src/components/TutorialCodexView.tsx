@@ -254,7 +254,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     subtitle: 'Perfil com Avatar Lendário, Campanha, Expedição Roguelite e Duelos 1×1 em tempo real.',
     cardId: 'red_08_dragao_vermelho',
     summary:
-      'Sua Conta de Soberano sincroniza seu perfil, ELO e histórico na nuvem, permitindo alternar entre modos solo e confrontos 1×1 online em tempo real.',
+      'Sua Conta de Soberano sincroniza seu perfil, Reputação e histórico na nuvem, permitindo alternar entre modos solo e confrontos 1×1 online em tempo real.',
     keyPoints: [
       {
         tag: 'PERFIL SOBERANO',
@@ -276,7 +276,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
       },
     ],
     proTip:
-      'Seu Nickname é único e permanente no ranking ELO, mas você pode alterar seu Avatar, Grimório favorito e Senha a qualquer momento na aba Meu Perfil.',
+      'Seu Nickname é único e permanente no ranking de Reputação (calculado pela fórmula de xadrez/tênis conforme a Reputação do adversário), mas você pode alterar seu Avatar, Grimório favorito e Senha a qualquer momento na aba Meu Perfil.',
   },
 ];
 

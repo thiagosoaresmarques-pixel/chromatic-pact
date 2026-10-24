@@ -955,7 +955,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                               )}
                             </div>
                             <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                              {getAvatarHonorificTitle(acc.avatarCardId)} • 🏆 {acc.eloRating} ELO (
+                              {getAvatarHonorificTitle(acc.avatarCardId)} • 🏆 {acc.eloRating} Reputação (
                               {acc.pvpWins}V / {acc.pvpLosses}D)
                             </div>
                           </div>
@@ -1216,7 +1216,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     onUserChange(acc);
     setSelectedDeckId(acc.preferredDeckId || MONOCHROMATIC_STARTER_DECKS[0]?.id || '');
     playSfx('channel');
-    setStatusBanner(`Sessão alterada para ${acc.username} (${acc.eloRating} ELO).`);
+    setStatusBanner(`Sessão alterada para ${acc.username} (${acc.eloRating} Reputação).`);
     if (!acc.customDecks || acc.customDecks.length === 0) {
       onRequireDeckSetup?.();
     }
@@ -1290,10 +1290,10 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     const canonicalState = createInitialGameState(hostCards, guestCards, {
       playerName: room.host.username,
       aiName: activeGuest.username,
-      aiTitle: `${getAvatarHonorificTitle(activeGuest.avatarCardId)} (${activeGuest.eloRating} ELO)`,
+      aiTitle: `${getAvatarHonorificTitle(activeGuest.avatarCardId)} (${activeGuest.eloRating} Reputação)`,
       aiAvatarCardId: activeGuest.avatarCardId,
     });
-    canonicalState.player.title = `${getAvatarHonorificTitle(room.host.avatarCardId)} (${room.host.eloRating} ELO)`;
+    canonicalState.player.title = `${getAvatarHonorificTitle(room.host.avatarCardId)} (${room.host.eloRating} Reputação)`;
     canonicalState.player.avatarCardId = room.host.avatarCardId;
 
     const updatedRoom: MultiplayerRoom = {
@@ -1493,7 +1493,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               </div>
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span className="tg-role-pill" style={{ flex: 'none' }}>
-                  {currentUser.eloRating} ELO
+                  {currentUser.eloRating} Reputação
                 </span>
                 <span className="tg-cost-pill">
                   {currentUser.pvpWins}V • {currentUser.pvpLosses}D
@@ -1717,7 +1717,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                       </div>
                       <div className="exp-ach-desc">
                         {getAvatarHonorificTitle(room.host.avatarCardId)} • 🏆 {room.host.eloRating}{' '}
-                        ELO
+                        Reputação
                       </div>
                       <div className="exp-ach-prog">
                         {room.isPublicQueue ? '🌐 Fila Pública 1x1' : '🔒 Sala com Código'}

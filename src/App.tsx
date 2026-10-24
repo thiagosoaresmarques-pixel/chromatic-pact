@@ -739,7 +739,11 @@ export const App: React.FC = () => {
                       setActiveTab('multiplayer');
                     },
                     onPvpResult: (didWin) => {
-                      const updated = recordPvpMatchResult(currentUser, didWin);
+                      const opponentRating =
+                        activeOnlineMatch.role === 'host'
+                          ? activeOnlineMatch.room.guest?.eloRating ?? 1200
+                          : activeOnlineMatch.room.host.eloRating ?? 1200;
+                      const updated = recordPvpMatchResult(currentUser, didWin, opponentRating);
                       setCurrentUser(updated);
                     },
                   }

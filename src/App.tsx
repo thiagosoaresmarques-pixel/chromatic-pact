@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { CampaignBoss, CardDefinition } from './types/game';
 import { ALL_CARDS, CARDS_BY_ID } from './data/cards';
 import { isMuted, toggleMute } from './utils/soundEngine';
@@ -30,8 +30,20 @@ import {
   recordPvpMatchResult,
   setActiveTabUserProfile,
   SovereignUserProfile,
+  subscribeMultiplayerBus,
   VICTORY_GOLD_REWARD,
 } from './utils/multiplayerEngine';
+
+export interface SovereignNotification {
+  id: string;
+  kicker: string;
+  title: string;
+  message: string;
+  createdAt: number;
+  read: boolean;
+  actionLabel?: string;
+  actionTarget?: ActiveTab | 'account_modal';
+}
 
 type ActiveTab =
   | 'home'
@@ -110,6 +122,162 @@ export const App: React.FC = () => {
     role: 'host' | 'guest';
   } | null>(null);
 
+  // Sovereign Notification Center State
+  const [notifications, setNotifications] = useState<SovereignNotification[]>(() => {
+    try {
+      const saved = localStorage.getItem('chromatic_pact_notifications_v1');
+      if (saved) {
+        const parsed = JSON.parse(saved) as SovereignNotification[];
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.slice(0, 25);
+      }
+    } catch {
+      // Ignore
+    }
+    return [];
+  });
+  const [isNotifOpen, setIsNotifOpen] = useState<boolean>(false);
+  const [liveToastNotif, setLiveToastNotif] = useState<SovereignNotification | null>(null);
+  const seenRoomCodesRef = useRef<Set<string>>(new Set());
+
+  const pushNotification = useCallback(
+    (
+      item: Omit<SovereignNotification, 'id' | 'createdAt' | 'read'>,
+      showToast = true
+    ) => {
+      const created: SovereignNotification = {
+        ...item,
+        id: `notif_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        createdAt: Date.now(),
+        read: false,
+      };
+      setNotifications((prev) => {
+        // Avoid duplicate consecutive titles
+        if (prev[0] && prev[0].title === created.title && prev[0].message === created.message) {
+          return prev;
+        }
+        const next = [created, ...prev].slice(0, 25);
+        try {
+          localStorage.setItem('chromatic_pact_notifications_v1', JSON.stringify(next));
+        } catch {
+          // Ignore
+        }
+        return next;
+      });
+      if (showToast) {
+        setLiveToastNotif(created);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!liveToastNotif) return;
+    const t = window.setTimeout(() => setLiveToastNotif(null), 4500);
+    return () => window.clearTimeout(t);
+  }, [liveToastNotif]);
+
+  const markAllNotificationsRead = () => {
+    setNotifications((prev) => {
+      const next = prev.map((n) => ({ ...n, read: true }));
+      try {
+        localStorage.setItem('chromatic_pact_notifications_v1', JSON.stringify(next));
+      } catch {
+        // Ignore
+      }
+      return next;
+    });
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+    try {
+      localStorage.removeItem('chromatic_pact_notifications_v1');
+    } catch {
+      // Ignore
+    }
+  };
+
+  const handleNotificationAction = (n: SovereignNotification) => {
+    setNotifications((prev) => {
+      const next = prev.map((item) => (item.id === n.id ? { ...item, read: true } : item));
+      try {
+        localStorage.setItem('chromatic_pact_notifications_v1', JSON.stringify(next));
+      } catch {
+        // Ignore
+      }
+      return next;
+    });
+    setIsNotifOpen(false);
+    setLiveToastNotif(null);
+    if (!n.actionTarget) return;
+    if (n.actionTarget === 'account_modal') {
+      setAccountModalState({
+        open: true,
+        tab: isUnregisteredProfile(currentUser) ? 'create' : 'profile',
+      });
+    } else {
+      setActiveTab(n.actionTarget);
+    }
+  };
+
+  // Seed initial account / deck onboarding notification when user changes
+  useEffect(() => {
+    if (isGuest) {
+      pushNotification(
+        {
+          kicker: 'CONCLAVE DOS SOBERANOS',
+          title: 'Modo Visitante Ativo',
+          message:
+            'Crie sua Conta de Soberano para escolher seu Grimório de 100 cartas, ganhar +10 Ouro por vitória e disputar partidas 1×1.',
+          actionLabel: 'Criar Conta / Entrar',
+          actionTarget: 'account_modal',
+        },
+        false
+      );
+    } else if (customDecks.length === 0) {
+      pushNotification(
+        {
+          kicker: `SOBERANO ${currentUser.username.toUpperCase()}`,
+          title: 'Monte seu 1º Grimório (100 Cartas)',
+          message:
+            'Escolha um dos 5 decks iniciais, edite-o ou monte do zero no Grimório para receber suas 100 cartas iniciais na coleção.',
+          actionLabel: 'Abrir Grimório',
+          actionTarget: 'deckbuilder',
+        },
+        false
+      );
+    }
+  }, [isGuest, currentUser.id, currentUser.username, customDecks.length, pushNotification]);
+
+  // Listen for live 1v1 Multiplayer room events to notify user
+  useEffect(() => {
+    const unsub = subscribeMultiplayerBus((msg) => {
+      if (msg.type === 'ROOM_UPSERT' && msg.room?.code) {
+        const r = msg.room;
+        if (
+          r.status === 'waiting' &&
+          r.host.id !== currentUser.id &&
+          !seenRoomCodesRef.current.has(r.code)
+        ) {
+          seenRoomCodesRef.current.add(r.code);
+          pushNotification({
+            kicker: 'CONCLAVE 1×1 AO VIVO',
+            title: `Nova Sala 1×1 Aberta (${r.code})`,
+            message: `${r.host.username} (${r.host.eloRating} Reputação) aguarda um desafiante no Conclave.`,
+            actionLabel: 'Ir ao Conclave 1×1',
+            actionTarget: 'multiplayer',
+          });
+        }
+      }
+    });
+    return () => unsub();
+  }, [currentUser.id, pushNotification]);
+
+  const unreadNotifCount = useMemo(
+    () => notifications.filter((n) => !n.read).length,
+    [notifications]
+  );
+
   const updateCurrentUserProgression = (patch: Partial<SovereignUserProfile>) => {
     if (isUnregisteredProfile(currentUser)) return;
     const updated: SovereignUserProfile = {
@@ -185,10 +353,11 @@ export const App: React.FC = () => {
 
   const handleCampaignVictory = (boss: CampaignBoss) => {
     if (isGuest) return;
+    const nextGold = gold + VICTORY_GOLD_REWARD;
     if (isExpeditionBattle) {
       setLastClearedExpeditionBossId(boss.id);
       updateCurrentUserProgression({
-        gold: gold + VICTORY_GOLD_REWARD,
+        gold: nextGold,
         arenaWins: arenaWins + 1,
       });
     } else {
@@ -196,18 +365,39 @@ export const App: React.FC = () => {
         ? defeatedBossIds
         : [...defeatedBossIds, boss.id];
       updateCurrentUserProgression({
-        gold: gold + VICTORY_GOLD_REWARD,
+        gold: nextGold,
         arenaWins: arenaWins + 1,
         defeatedBossIds: nextBosses,
       });
     }
+    pushNotification({
+      kicker: 'TRIUNFO EM COMBATE',
+      title: `Vitória sobre ${boss.name}! (+${VICTORY_GOLD_REWARD} Ouro)`,
+      message:
+        nextGold >= 80
+          ? `Seu saldo chegou a ${nextGold} Ouro — você já pode abrir um pacote no Relicário!`
+          : `Recompensa creditada. Saldo atual: ${nextGold} Ouro.`,
+      actionLabel: nextGold >= 80 ? 'Abrir Relicário' : undefined,
+      actionTarget: nextGold >= 80 ? 'packs' : undefined,
+    });
   };
 
   const handleRewardGold = (amount: number) => {
     if (isGuest) return;
+    const nextGold = gold + amount;
     updateCurrentUserProgression({
-      gold: gold + amount,
+      gold: nextGold,
       arenaWins: arenaWins + 1,
+    });
+    pushNotification({
+      kicker: 'ESPÓLIOS DE BATALHA',
+      title: `+${amount} Ouro Conquistado`,
+      message:
+        nextGold >= 80
+          ? `Saldo: ${nextGold} Ouro — suficiente para romper um Selo no Relicário!`
+          : `Saldo atualizado: ${nextGold} Ouro.`,
+      actionLabel: nextGold >= 80 ? 'Abrir Relicário' : undefined,
+      actionTarget: nextGold >= 80 ? 'packs' : undefined,
     });
   };
 
@@ -221,10 +411,21 @@ export const App: React.FC = () => {
       gold: Math.max(0, gold - packCost),
       extraUnlockedCards: nextExtra,
     });
+    pushNotification(
+      {
+        kicker: 'RELICÁRIO ASTRAL',
+        title: `+${drawnCards.length} Novas Cartas na Coleção`,
+        message: `Cartas integradas ao seu acervo: ${drawnCards.map((c) => c.name).join(', ')}.`,
+        actionLabel: 'Ver no Grimório',
+        actionTarget: 'deckbuilder',
+      },
+      false
+    );
   };
 
   const handleSaveCustomDeck = (deck: CustomSavedDeck) => {
     if (isGuest) return;
+    const isFirst = customDecks.length === 0;
     const exists = customDecks.some((d) => d.id === deck.id);
     const nextDecks = exists
       ? customDecks.map((d) => (d.id === deck.id ? deck : d))
@@ -235,6 +436,17 @@ export const App: React.FC = () => {
       customDecks: nextDecks,
       starterDeckCardIds: hasStarterCollection ? currentUser.starterDeckCardIds : deck.cardIds,
       preferredDeckId: deck.id,
+    });
+    pushNotification({
+      kicker: 'GRIMÓRIO CONSAGRADO',
+      title: isFirst
+        ? `1º Grimório Salvo: "${deck.name}" (100 Cartas)`
+        : `Grimório Atualizado: "${deck.name}"`,
+      message: isFirst
+        ? 'As 100 cartas do seu deck inicial foram adicionadas à sua coleção e todos os modos de combate estão liberados!'
+        : 'Sua lista de 100 cartas foi salva e definida como ativa para combate.',
+      actionLabel: 'Entrar na Arena',
+      actionTarget: 'arena',
     });
   };
 
@@ -442,6 +654,97 @@ export const App: React.FC = () => {
           >
             <span className="gold-gem-dot" />
             <span>{gold} OURO</span>
+          </div>
+
+          {/* Sovereign Notification Center (Bell + Unread Counter + Popover) */}
+          <div className="nav-notif-wrapper">
+            <button
+              type="button"
+              className={`nav-notif-btn ${isNotifOpen ? 'is-open' : ''} ${
+                unreadNotifCount > 0 ? 'has-unread' : ''
+              }`}
+              onClick={() => {
+                setIsNotifOpen((prev) => {
+                  const nextOpen = !prev;
+                  if (nextOpen) markAllNotificationsRead();
+                  return nextOpen;
+                });
+              }}
+              title="Central de Notificações do Soberano"
+            >
+              <span>🔔</span>
+              <span>AVISOS</span>
+              {unreadNotifCount > 0 && (
+                <span className="nav-notif-badge">{unreadNotifCount}</span>
+              )}
+            </button>
+
+            {isNotifOpen && (
+              <div className="nav-notif-popover" onClick={(e) => e.stopPropagation()}>
+                <div className="nav-notif-header">
+                  <span className="nav-notif-title">
+                    Central de Notificações ({notifications.length})
+                  </span>
+                  <div className="nav-notif-header-actions">
+                    {notifications.length > 0 && (
+                      <button
+                        type="button"
+                        className="nav-notif-mini-btn"
+                        onClick={clearAllNotifications}
+                      >
+                        Limpar
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="nav-notif-mini-btn"
+                      onClick={() => setIsNotifOpen(false)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                <div className="nav-notif-list">
+                  {notifications.length === 0 ? (
+                    <div className="nav-notif-empty">
+                      Nenhuma notificação no momento. Seus alertas de vitórias, Ouro, Reputação e
+                      salas 1×1 aparecerão aqui.
+                    </div>
+                  ) : (
+                    notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className={`nav-notif-item ${!n.read ? 'is-unread' : ''}`}
+                      >
+                        <div className="nav-notif-item-top">
+                          <span className="nav-notif-item-kicker">{n.kicker}</span>
+                          <span className="nav-notif-item-time">
+                            {new Date(n.createdAt).toLocaleTimeString('pt-BR', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </div>
+                        <div className="nav-notif-item-title">{n.title}</div>
+                        <div className="nav-notif-item-desc">{n.message}</div>
+                        {n.actionLabel && n.actionTarget && (
+                          <div className="nav-notif-item-footer">
+                            <button
+                              type="button"
+                              className="nav-notif-mini-btn"
+                              onClick={() => handleNotificationAction(n)}
+                            >
+                              {n.actionLabel} →
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <button
@@ -743,8 +1046,20 @@ export const App: React.FC = () => {
                         activeOnlineMatch.role === 'host'
                           ? activeOnlineMatch.room.guest?.eloRating ?? 1200
                           : activeOnlineMatch.room.host.eloRating ?? 1200;
+                      const prevRating = currentUser.eloRating;
                       const updated = recordPvpMatchResult(currentUser, didWin, opponentRating);
+                      const delta = updated.eloRating - prevRating;
+                      const sign = delta >= 0 ? `+${delta}` : `${delta}`;
                       setCurrentUser(updated);
+                      pushNotification({
+                        kicker: 'RANKING DE REPUTAÇÃO 1×1',
+                        title: didWin
+                          ? `Vitória no Conclave! (${sign} Reputação)`
+                          : `Fim de Duelo 1×1 (${sign} Reputação)`,
+                        message: `Sua Reputação agora é ${updated.eloRating} (${updated.pvpWins}V / ${updated.pvpLosses}D).`,
+                        actionLabel: 'Ver Conclave 1×1',
+                        actionTarget: 'multiplayer',
+                      });
                     },
                   }
                 : null
@@ -842,6 +1157,35 @@ export const App: React.FC = () => {
             onClose={() => setAccountModalState((prev) => ({ ...prev, open: false }))}
             onNeedsDeckSetup={() => setActiveTab('deckbuilder')}
           />
+        )}
+
+        {/* Live Floating Toast Notification */}
+        {liveToastNotif && (
+          <div className="nav-notif-toast">
+            <div className="nav-notif-item-top">
+              <span className="nav-notif-item-kicker">{liveToastNotif.kicker}</span>
+              <button
+                type="button"
+                className="nav-notif-mini-btn"
+                onClick={() => setLiveToastNotif(null)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="nav-notif-item-title">{liveToastNotif.title}</div>
+            <div className="nav-notif-item-desc">{liveToastNotif.message}</div>
+            {liveToastNotif.actionLabel && liveToastNotif.actionTarget && (
+              <div className="nav-notif-item-footer">
+                <button
+                  type="button"
+                  className="nav-notif-mini-btn"
+                  onClick={() => handleNotificationAction(liveToastNotif)}
+                >
+                  {liveToastNotif.actionLabel} →
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </main>
     </div>

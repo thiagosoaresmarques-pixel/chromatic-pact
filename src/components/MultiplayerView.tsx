@@ -4,6 +4,7 @@ import { PREBUILT_DECKS } from '../data/decks';
 import { createInitialGameState } from '../engine/gameEngine';
 import { playSfx } from '../utils/soundEngine';
 import {
+  authenticateSovereignAccount,
   createNewSovereignAccount,
   deleteSovereignAccount,
   generateRoomCode,
@@ -14,9 +15,9 @@ import {
   getSavedAccountsRoster,
   getSelectableAvatarCards,
   isUnregisteredProfile,
-  loginOrFetchAccountFromSupabase,
   MultiplayerRoom,
   publishMpMessage,
+  recoverAndResetPassword,
   setActiveTabUserProfile,
   SovereignUserProfile,
   subscribeMultiplayerBus,
@@ -265,6 +266,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
 
   // 1. Profile Edit State (Everything editable EXCEPT Nickname)
   const [editEmail, setEditEmail] = useState<string>(currentUser.email || '');
+  const [editNewPassword, setEditNewPassword] = useState<string>('');
   const [editAvatarId, setEditAvatarId] = useState<string>(currentUser.avatarCardId);
   const [editDeckId, setEditDeckId] = useState<string>(
     currentUser.preferredDeckId || PREBUILT_DECKS[0]?.id || ''
@@ -274,18 +276,30 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   // Sync edit state if currentUser changes
   useEffect(() => {
     setEditEmail(currentUser.email || '');
+    setEditNewPassword('');
     setEditAvatarId(currentUser.avatarCardId);
     setEditDeckId(currentUser.preferredDeckId || PREBUILT_DECKS[0]?.id || '');
   }, [currentUser]);
 
-  // 2. Login by nickname state
+  // 2. Login by Nickname/Email + Password state
   const [loginNickname, setLoginNickname] = useState<string>('');
+  const [loginPassword, setLoginPassword] = useState<string>('');
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+
+  // Password Recovery state
+  const [showRecoveryForm, setShowRecoveryForm] = useState<boolean>(false);
+  const [recUsername, setRecUsername] = useState<string>('');
+  const [recEmail, setRecEmail] = useState<string>('');
+  const [recNewPassword, setRecNewPassword] = useState<string>('');
+  const [recMessage, setRecMessage] = useState<{ ok: boolean; text: string } | null>(null);
 
   // 3. Create new account state
   const [newUsername, setNewUsername] = useState<string>('');
   const [newEmail, setNewEmail] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState<string>('');
+  const [createError, setCreateError] = useState<string | null>(null);
   const [newAvatarId, setNewAvatarId] = useState<string>('neutral_10_valkyra_pentacromatica');
 
   const allAvailableDecks = useMemo(
@@ -308,9 +322,11 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     e.preventDefault();
     const updated = updateSovereignAccountProfile(currentUser, {
       email: editEmail,
+      newPassword: editNewPassword.trim() ? editNewPassword : undefined,
       avatarCardId: editAvatarId,
       preferredDeckId: editDeckId,
     });
+    setEditNewPassword('');
     setAccountsRoster(getSavedAccountsRoster());
     onUserChange(updated);
     playSfx('ascend');
@@ -338,30 +354,64 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
 
   const handleCloudLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginNickname.trim()) return;
+    if (!loginNickname.trim() || !loginPassword.trim()) return;
     setLoginLoading(true);
     setLoginError(null);
-    const found = await loginOrFetchAccountFromSupabase(loginNickname);
+    const res = await authenticateSovereignAccount(loginNickname, loginPassword);
     setLoginLoading(false);
-    if (found) {
+    if (res.ok && res.profile) {
       setAccountsRoster(getSavedAccountsRoster());
-      onUserChange(found);
+      onUserChange(res.profile);
       playSfx('ascend');
       onClose();
     } else {
-      setLoginError(
-        `Usuário "${loginNickname.trim()}" ainda não encontrado. Clique na aba "✨ Criar Nova Conta" acima para registrá-lo!`
-      );
-      setNewUsername(loginNickname.trim());
+      setLoginError(res.error || 'Falha na autenticação.');
+    }
+  };
+
+  const handleRecoverPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRecMessage(null);
+    setLoginLoading(true);
+    const res = await recoverAndResetPassword(recUsername, recEmail, recNewPassword);
+    setLoginLoading(false);
+    if (res.ok && res.profile) {
+      setAccountsRoster(getSavedAccountsRoster());
+      onUserChange(res.profile);
+      playSfx('ascend');
+      setRecMessage({
+        ok: true,
+        text: `✓ Senha redefinida com sucesso para ${res.profile.username}! Você já está conectado.`,
+      });
+      setTimeout(() => onClose(), 1200);
+    } else {
+      setRecMessage({
+        ok: false,
+        text: res.error || 'Não foi possível redefinir a senha.',
+      });
     }
   };
 
   const handleCreateAccount = (e: React.FormEvent) => {
     e.preventDefault();
+    setCreateError(null);
     if (!newUsername.trim()) return;
+    if (!newEmail.trim()) {
+      setCreateError('Informe um E-mail válido para recuperação de senha.');
+      return;
+    }
+    if (newPassword.trim().length < 4) {
+      setCreateError('A senha deve ter pelo menos 4 caracteres.');
+      return;
+    }
+    if (newPassword !== newPasswordConfirm) {
+      setCreateError('As duas senhas digitadas não conferem.');
+      return;
+    }
     const created = createNewSovereignAccount({
       username: newUsername,
       email: newEmail,
+      password: newPassword,
       avatarCardId: newAvatarId,
       preferredDeckId: editDeckId || PREBUILT_DECKS[0]?.id || '',
     });
@@ -534,20 +584,45 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className="aaa-stat-label">GRIMÓRIO PREFERIDO PARA DUELOS</label>
-                <select
-                  className="myth-select-compact"
-                  value={editDeckId}
-                  onChange={(e) => setEditDeckId(e.target.value)}
-                  style={{ width: '100%', marginTop: '4px' }}
-                >
-                  {allAvailableDecks.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name} — {d.subtitle}
-                    </option>
-                  ))}
-                </select>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '0.85rem',
+                  alignItems: 'end',
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                    NOVA SENHA (DEIXE EM BRANCO P/ MANTER)
+                  </label>
+                  <input
+                    type="password"
+                    className="myth-search-compact"
+                    placeholder="••••••••"
+                    value={editNewPassword}
+                    onChange={(e) => setEditNewPassword(e.target.value)}
+                    style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                    GRIMÓRIO PREFERIDO PARA DUELOS
+                  </label>
+                  <select
+                    className="myth-select-compact"
+                    value={editDeckId}
+                    onChange={(e) => setEditDeckId(e.target.value)}
+                    style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                  >
+                    {allAvailableDecks.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name} — {d.subtitle}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -593,45 +668,205 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
 
         {tab === 'login' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {/* Cloud Login by Nickname */}
-            <form
-              onSubmit={handleCloudLogin}
-              style={{
-                padding: '0.9rem',
-                borderRadius: '8px',
-                background: 'rgba(15, 23, 42, 0.78)',
-                border: '1px solid rgba(212, 175, 55, 0.35)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.55rem',
-              }}
-            >
-              <label className="aaa-stat-label">
-                ENTRAR COM NICKNAME JÁ CADASTRADO NA NUVEM
-              </label>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <input
-                  type="text"
-                  className="myth-search-compact"
-                  placeholder="Digite seu Nickname..."
-                  value={loginNickname}
-                  onChange={(e) => setLoginNickname(e.target.value)}
-                  style={{ flex: 1 }}
-                />
-                <button
-                  type="submit"
-                  className="aaa-btn aaa-btn-primary"
-                  disabled={loginLoading}
+            {!showRecoveryForm ? (
+              <form
+                onSubmit={handleCloudLogin}
+                style={{
+                  padding: '0.95rem',
+                  borderRadius: '8px',
+                  background: 'rgba(15, 23, 42, 0.78)',
+                  border: '1px solid rgba(212, 175, 55, 0.35)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
+                <div className="aaa-kicker">AUTENTICAÇÃO DO SOBERANO</div>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '0.85rem',
+                    alignItems: 'end',
+                  }}
                 >
-                  {loginLoading ? 'Buscando...' : 'Entrar →'}
-                </button>
-              </div>
-              {loginError && (
-                <div style={{ fontSize: '0.76rem', color: '#fca5a5', marginTop: '0.2rem' }}>
-                  {loginError}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                      NICKNAME OU E-MAIL *
+                    </label>
+                    <input
+                      type="text"
+                      className="myth-search-compact"
+                      placeholder="Ex: tsm81 ou seu@email.com"
+                      value={loginNickname}
+                      onChange={(e) => setLoginNickname(e.target.value)}
+                      required
+                      style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                      SENHA *
+                    </label>
+                    <input
+                      type="password"
+                      className="myth-search-compact"
+                      placeholder="••••••••"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      required
+                      style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                    />
+                  </div>
                 </div>
-              )}
-            </form>
+
+                {loginError && (
+                  <div style={{ fontSize: '0.76rem', color: '#fca5a5' }}>{loginError}</div>
+                )}
+
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-ghost"
+                    style={{ fontSize: '0.72rem', color: '#fde047', padding: '4px 8px' }}
+                    onClick={() => {
+                      setRecUsername(loginNickname);
+                      setShowRecoveryForm(true);
+                    }}
+                  >
+                    🔄 Esqueceu sua senha? Recuperar / Redefinir Senha
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="aaa-btn aaa-btn-primary"
+                    disabled={loginLoading}
+                  >
+                    {loginLoading ? 'Autenticando...' : '🔑 Entrar na Conta →'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form
+                onSubmit={handleRecoverPassword}
+                style={{
+                  padding: '0.95rem',
+                  borderRadius: '8px',
+                  background: 'rgba(15, 23, 42, 0.86)',
+                  border: '1.5px solid rgba(250, 204, 21, 0.5)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className="aaa-kicker" style={{ color: '#fde047' }}>
+                    🔄 RECUPERAÇÃO E REDEFINIÇÃO DE SENHA
+                  </div>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-ghost"
+                    style={{ padding: '2px 8px', fontSize: '0.7rem' }}
+                    onClick={() => {
+                      setShowRecoveryForm(false);
+                      setRecMessage(null);
+                    }}
+                  >
+                    ← Voltar ao Login
+                  </button>
+                </div>
+
+                <p style={{ fontSize: '0.76rem', color: '#cbd5e1', margin: 0 }}>
+                  Informe seu <strong>Nickname</strong> e o <strong>E-mail cadastrado</strong> na
+                  sua conta para validar sua identidade e definir uma nova senha imediatamente:
+                </p>
+
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '0.85rem',
+                    alignItems: 'end',
+                  }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                      NICKNAME DA CONTA *
+                    </label>
+                    <input
+                      type="text"
+                      className="myth-search-compact"
+                      placeholder="Ex: tsm81"
+                      value={recUsername}
+                      onChange={(e) => setRecUsername(e.target.value)}
+                      required
+                      style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                      E-MAIL CADASTRADO *
+                    </label>
+                    <input
+                      type="email"
+                      className="myth-search-compact"
+                      placeholder="seu@email.com"
+                      value={recEmail}
+                      onChange={(e) => setRecEmail(e.target.value)}
+                      required
+                      style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                    NOVA SENHA * (MÍN. 4 CARACTERES)
+                  </label>
+                  <input
+                    type="password"
+                    className="myth-search-compact"
+                    placeholder="Digite sua nova senha..."
+                    value={recNewPassword}
+                    onChange={(e) => setRecNewPassword(e.target.value)}
+                    required
+                    style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                {recMessage && (
+                  <div
+                    style={{
+                      fontSize: '0.78rem',
+                      color: recMessage.ok ? '#a7f3d0' : '#fca5a5',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {recMessage.text}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                  <button
+                    type="submit"
+                    className="aaa-btn aaa-btn-primary"
+                    disabled={loginLoading}
+                  >
+                    {loginLoading ? 'Validando...' : '✓ Redefinir Senha & Entrar'}
+                  </button>
+                </div>
+              </form>
+            )}
 
             {/* Saved Accounts on this Browser */}
             <div>
@@ -737,6 +972,22 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             onSubmit={handleCreateAccount}
             style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
           >
+            {createError && (
+              <div
+                style={{
+                  padding: '0.55rem 0.85rem',
+                  borderRadius: '6px',
+                  background: 'rgba(239, 68, 68, 0.18)',
+                  border: '1px solid rgba(248, 113, 113, 0.45)',
+                  color: '#fca5a5',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                }}
+              >
+                {createError}
+              </div>
+            )}
+
             <div
               style={{
                 display: 'grid',
@@ -762,7 +1013,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
-                  E-MAIL (OPCIONAL)
+                  E-MAIL * (PARA RECUPERAÇÃO)
                 </label>
                 <input
                   type="email"
@@ -770,6 +1021,46 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                   placeholder="seu@email.com"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
+                  required
+                  style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '0.85rem',
+                alignItems: 'end',
+              }}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                  SENHA * (MÍN. 4 CARACTERES)
+                </label>
+                <input
+                  type="password"
+                  className="myth-search-compact"
+                  placeholder="••••••••"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                  CONFIRMAR SENHA *
+                </label>
+                <input
+                  type="password"
+                  className="myth-search-compact"
+                  placeholder="••••••••"
+                  value={newPasswordConfirm}
+                  onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                  required
                   style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
                 />
               </div>

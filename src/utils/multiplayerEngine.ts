@@ -6,6 +6,7 @@ export interface SovereignUserProfile {
   id: string;
   username: string;
   email?: string;
+  passwordHash?: string;
   title: string;
   avatarCardId: string;
   eloRating: number;
@@ -318,9 +319,59 @@ export function setActiveTabUserProfile(profile: SovereignUserProfile): void {
   saveAccountToRoster(profile);
 }
 
+/**
+ * Deterministic salted hash for Sovereign Account password verification across devices.
+ */
+export function hashPassword(rawPassword: string): string {
+  const clean = rawPassword.trim();
+  if (!clean) return '';
+  const salted = `chromatic_pact_salt_v1::${clean}`;
+  let h1 = 0xdeadbeef ^ salted.length;
+  let h2 = 0x41c6ce57 ^ salted.length;
+  for (let i = 0; i < salted.length; i++) {
+    const ch = salted.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return `cpw_${(h2 >>> 0).toString(16).padStart(8, '0')}${(h1 >>> 0).toString(16).padStart(8, '0')}`;
+}
+
+function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
+  const honorific = getAvatarHonorificTitle(profile.avatarCardId);
+  return JSON.stringify({
+    t: honorific,
+    e: (profile.email || '').trim().toLowerCase(),
+    p: profile.passwordHash || '',
+  });
+}
+
+function decodeCloudTitleMeta(
+  rawTitle: string | null | undefined,
+  avatarCardId: string
+): { title: string; email?: string; passwordHash?: string } {
+  const fallbackTitle = getAvatarHonorificTitle(avatarCardId);
+  if (!rawTitle) return { title: fallbackTitle };
+  if (rawTitle.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(rawTitle) as { t?: string; e?: string; p?: string };
+      return {
+        title: fallbackTitle,
+        email: parsed.e || undefined,
+        passwordHash: parsed.p || undefined,
+      };
+    } catch {
+      return { title: fallbackTitle };
+    }
+  }
+  return { title: fallbackTitle };
+}
+
 export function createNewSovereignAccount(params: {
   username: string;
-  email?: string;
+  email: string;
+  password: string;
   avatarCardId: string;
   preferredDeckId: string;
 }): SovereignUserProfile {
@@ -329,7 +380,8 @@ export function createNewSovereignAccount(params: {
   const profile: SovereignUserProfile = {
     id: `sov_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     username: cleanName,
-    email: params.email?.trim() || undefined,
+    email: params.email.trim().toLowerCase(),
+    passwordHash: hashPassword(params.password),
     title: getAvatarHonorificTitle(chosenAvatar),
     avatarCardId: chosenAvatar,
     eloRating: 1200,
@@ -342,23 +394,32 @@ export function createNewSovereignAccount(params: {
 }
 
 /**
- * Updates the active Sovereign user's profile (Avatar, Automatic Honorific Title, Email, Preferred Deck)
+ * Updates the active Sovereign user's profile (Avatar, Automatic Honorific Title, Email, Password, Preferred Deck)
  * while keeping the Nickname (`username`) strictly immutable.
  */
 export function updateSovereignAccountProfile(
   currentProfile: SovereignUserProfile,
   updates: {
     email?: string;
+    newPassword?: string;
     avatarCardId: string;
     preferredDeckId?: string;
   }
 ): SovereignUserProfile {
   const nextAvatar = updates.avatarCardId || currentProfile.avatarCardId;
+  const nextPasswordHash =
+    updates.newPassword && updates.newPassword.trim().length > 0
+      ? hashPassword(updates.newPassword)
+      : currentProfile.passwordHash;
   const updated: SovereignUserProfile = {
     ...currentProfile,
     // username is strictly preserved (immutable)
     username: currentProfile.username,
-    email: updates.email !== undefined ? updates.email.trim() || undefined : currentProfile.email,
+    email:
+      updates.email !== undefined
+        ? updates.email.trim().toLowerCase() || undefined
+        : currentProfile.email,
+    passwordHash: nextPasswordHash,
     avatarCardId: nextAvatar,
     title: getAvatarHonorificTitle(nextAvatar),
     preferredDeckId: updates.preferredDeckId ?? currentProfile.preferredDeckId,
@@ -435,55 +496,94 @@ function getSupabaseHeaders(anonKey: string, extra?: Record<string, string>): Re
   return headers;
 }
 
-export async function loginOrFetchAccountFromSupabase(
-  usernameInput: string
-): Promise<SovereignUserProfile | null> {
-  const clean = usernameInput.trim();
-  if (!clean) return null;
+interface SupabaseProfileRow {
+  id: string;
+  username: string;
+  title: string;
+  avatar_card_id: string;
+  elo_rating: number;
+  pvp_wins: number;
+  pvp_losses: number;
+}
 
-  // Check local roster first
-  const localMatch = getSavedAccountsRoster().find(
-    (a) => a.username.toLowerCase() === clean.toLowerCase()
+function hydrateProfileFromRow(
+  row: SupabaseProfileRow,
+  localMatch?: SovereignUserProfile
+): SovereignUserProfile {
+  const resolvedAvatar =
+    row.avatar_card_id && CARDS_BY_ID[row.avatar_card_id]
+      ? row.avatar_card_id
+      : 'neutral_10_valkyra_pentacromatica';
+  const meta = decodeCloudTitleMeta(row.title, resolvedAvatar);
+  return {
+    id: localMatch?.id ?? `sov_${row.id}`,
+    username: row.username,
+    email: meta.email || localMatch?.email,
+    passwordHash: meta.passwordHash || localMatch?.passwordHash,
+    title: meta.title,
+    avatarCardId: resolvedAvatar,
+    eloRating: row.elo_rating ?? 1200,
+    pvpWins: row.pvp_wins ?? 0,
+    pvpLosses: row.pvp_losses ?? 0,
+    preferredDeckId: localMatch?.preferredDeckId || 'deck_red_aggro',
+  };
+}
+
+/**
+ * Authenticates a Sovereign Account by Nickname or Email + Password.
+ */
+export async function authenticateSovereignAccount(
+  identifierInput: string,
+  rawPassword: string
+): Promise<{ ok: boolean; profile?: SovereignUserProfile; error?: string }> {
+  const cleanId = identifierInput.trim();
+  const cleanLower = cleanId.toLowerCase();
+  if (!cleanId) {
+    return { ok: false, error: 'Informe seu Nickname ou E-mail.' };
+  }
+  if (!rawPassword.trim()) {
+    return { ok: false, error: 'Informe sua Senha.' };
+  }
+
+  const inputHash = hashPassword(rawPassword);
+  const localRoster = getSavedAccountsRoster();
+  const localMatch = localRoster.find(
+    (a) =>
+      a.username.toLowerCase() === cleanLower ||
+      (a.email && a.email.toLowerCase() === cleanLower)
   );
 
   const cfg = getSupabaseConfig();
   if (cfg.isConfigured) {
     try {
       const res = await fetch(
-        `${cfg.url}/rest/v1/sovereign_profiles?username=ilike.${encodeURIComponent(clean)}&limit=1`,
+        `${cfg.url}/rest/v1/sovereign_profiles?select=*&limit=100`,
         {
           headers: getSupabaseHeaders(cfg.anonKey),
         }
       );
       if (res.ok) {
-        const rows = (await res.json()) as Array<{
-          id: string;
-          username: string;
-          title: string;
-          avatar_card_id: string;
-          elo_rating: number;
-          pvp_wins: number;
-          pvp_losses: number;
-        }>;
-        if (rows.length > 0) {
-          const row = rows[0];
-          const resolvedAvatar =
-            row.avatar_card_id && CARDS_BY_ID[row.avatar_card_id]
-              ? row.avatar_card_id
-              : 'neutral_10_valkyra_pentacromatica';
-          const cloudProfile: SovereignUserProfile = {
-            id: localMatch?.id ?? `sov_${row.id}`,
-            username: row.username,
-            email: localMatch?.email,
-            title: getAvatarHonorificTitle(resolvedAvatar),
-            avatarCardId: resolvedAvatar,
-            eloRating: row.elo_rating ?? 1200,
-            pvpWins: row.pvp_wins ?? 0,
-            pvpLosses: row.pvp_losses ?? 0,
-            preferredDeckId: localMatch?.preferredDeckId || 'deck_red_aggro',
-          };
+        const rows = (await res.json()) as SupabaseProfileRow[];
+        const matchedRow = rows.find((r) => {
+          if (r.username.toLowerCase() === cleanLower) return true;
+          const meta = decodeCloudTitleMeta(r.title, r.avatar_card_id);
+          return Boolean(meta.email && meta.email.toLowerCase() === cleanLower);
+        });
+
+        if (matchedRow) {
+          const cloudProfile = hydrateProfileFromRow(matchedRow, localMatch);
+          if (cloudProfile.passwordHash && cloudProfile.passwordHash !== inputHash) {
+            return {
+              ok: false,
+              error: 'Senha incorreta. Verifique sua senha ou clique em "Esqueci minha senha".',
+            };
+          }
+          // If legacy account had no passwordHash yet, bind this password now
+          if (!cloudProfile.passwordHash) {
+            cloudProfile.passwordHash = inputHash;
+          }
           setActiveTabUserProfile(cloudProfile);
-          return cloudProfile;
+          return { ok: true, profile: cloudProfile };
         }
       }
     } catch {
@@ -492,10 +592,93 @@ export async function loginOrFetchAccountFromSupabase(
   }
 
   if (localMatch) {
+    if (localMatch.passwordHash && localMatch.passwordHash !== inputHash) {
+      return {
+        ok: false,
+        error: 'Senha incorreta. Verifique sua senha ou clique em "Esqueci minha senha".',
+      };
+    }
     setActiveTabUserProfile(localMatch);
-    return localMatch;
+    return { ok: true, profile: localMatch };
   }
-  return null;
+
+  return {
+    ok: false,
+    error: `Conta "${cleanId}" não encontrada. Clique na aba "✨ Criar Nova Conta" para se cadastrar!`,
+  };
+}
+
+/**
+ * Recovers and resets a Sovereign Account password by verifying Nickname + Registered Email.
+ */
+export async function recoverAndResetPassword(
+  usernameInput: string,
+  emailInput: string,
+  newRawPassword: string
+): Promise<{ ok: boolean; profile?: SovereignUserProfile; error?: string }> {
+  const cleanUser = usernameInput.trim();
+  const cleanEmail = emailInput.trim().toLowerCase();
+  if (!cleanUser || !cleanEmail) {
+    return { ok: false, error: 'Preencha o Nickname e o E-mail cadastrado na conta.' };
+  }
+  if (newRawPassword.trim().length < 4) {
+    return { ok: false, error: 'A nova senha deve ter pelo menos 4 caracteres.' };
+  }
+
+  const localMatch = getSavedAccountsRoster().find(
+    (a) => a.username.toLowerCase() === cleanUser.toLowerCase()
+  );
+
+  const cfg = getSupabaseConfig();
+  if (cfg.isConfigured) {
+    try {
+      const res = await fetch(
+        `${cfg.url}/rest/v1/sovereign_profiles?username=ilike.${encodeURIComponent(cleanUser)}&limit=1`,
+        {
+          headers: getSupabaseHeaders(cfg.anonKey),
+        }
+      );
+      if (res.ok) {
+        const rows = (await res.json()) as SupabaseProfileRow[];
+        if (rows.length > 0) {
+          const cloudProfile = hydrateProfileFromRow(rows[0], localMatch);
+          if (cloudProfile.email && cloudProfile.email.toLowerCase() !== cleanEmail) {
+            return {
+              ok: false,
+              error: 'O E-mail informado não corresponde ao E-mail cadastrado para este Nickname.',
+            };
+          }
+          cloudProfile.email = cleanEmail;
+          cloudProfile.passwordHash = hashPassword(newRawPassword);
+          setActiveTabUserProfile(cloudProfile);
+          return { ok: true, profile: cloudProfile };
+        }
+      }
+    } catch {
+      // Fallback to local
+    }
+  }
+
+  if (localMatch) {
+    if (localMatch.email && localMatch.email.toLowerCase() !== cleanEmail) {
+      return {
+        ok: false,
+        error: 'O E-mail informado não corresponde ao E-mail cadastrado para este Nickname.',
+      };
+    }
+    const updated: SovereignUserProfile = {
+      ...localMatch,
+      email: cleanEmail,
+      passwordHash: hashPassword(newRawPassword),
+    };
+    setActiveTabUserProfile(updated);
+    return { ok: true, profile: updated };
+  }
+
+  return {
+    ok: false,
+    error: `Nickname "${cleanUser}" não encontrado.`,
+  };
 }
 
 async function syncProfileToSupabaseIfConfigured(profile: SovereignUserProfile): Promise<void> {
@@ -511,7 +694,7 @@ async function syncProfileToSupabaseIfConfigured(profile: SovereignUserProfile):
       }),
       body: JSON.stringify({
         username: profile.username,
-        title: profile.title,
+        title: encodeCloudTitleMeta(profile),
         avatar_card_id: profile.avatarCardId,
         elo_rating: profile.eloRating,
         pvp_wins: profile.pvpWins,

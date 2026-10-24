@@ -5,12 +5,15 @@ import { createInitialGameState } from '../engine/gameEngine';
 import { playSfx } from '../utils/soundEngine';
 import {
   createNewSovereignAccount,
+  deleteSovereignAccount,
   generateRoomCode,
   getActiveRoomsList,
+  getActiveTabUserProfile,
   getAvatarHonorificTitle,
   getRoomByCode,
   getSavedAccountsRoster,
   getSelectableAvatarCards,
+  isUnregisteredProfile,
   loginOrFetchAccountFromSupabase,
   MultiplayerRoom,
   publishMpMessage,
@@ -252,7 +255,10 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   onClose,
   initialTab = 'profile',
 }) => {
-  const [tab, setTab] = useState<AccountModalTab>(initialTab);
+  const isUnregistered = isUnregisteredProfile(currentUser);
+  const [tab, setTab] = useState<AccountModalTab>(
+    isUnregistered && initialTab === 'profile' ? 'create' : initialTab
+  );
   const [accountsRoster, setAccountsRoster] = useState<SovereignUserProfile[]>(() =>
     getSavedAccountsRoster()
   );
@@ -317,6 +323,17 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     onUserChange(acc);
     playSfx('channel');
     onClose();
+  };
+
+  const handleDeleteAccount = async (acc: SovereignUserProfile, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const remaining = await deleteSovereignAccount(acc);
+    setAccountsRoster(remaining);
+    const nextActive = getActiveTabUserProfile();
+    onUserChange(nextActive);
+    if (isUnregisteredProfile(nextActive)) {
+      setTab('create');
+    }
   };
 
   const handleCloudLogin = async (e: React.FormEvent) => {
@@ -413,109 +430,155 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
         </div>
 
         {tab === 'profile' && (
-          <form
-            onSubmit={handleSaveProfileChanges}
-            style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
-          >
-            {profileSavedMsg && (
-              <div
-                style={{
-                  padding: '0.6rem 0.9rem',
-                  borderRadius: '6px',
-                  background: 'rgba(16, 185, 129, 0.2)',
-                  border: '1px solid #34d399',
-                  color: '#a7f3d0',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                }}
-              >
-                {profileSavedMsg}
-              </div>
-            )}
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              <div>
-                <label className="aaa-stat-label">
-                  🔒 NICKNAME DO SOBERANO (IMUTÁVEL)
-                </label>
-                <input
-                  type="text"
-                  className="myth-search-compact"
-                  value={currentUser.username}
-                  disabled
-                  readOnly
-                  title="O Nickname de um Soberano é perpétuo e não pode ser alterado."
-                  style={{
-                    width: '100%',
-                    marginTop: '4px',
-                    opacity: 0.72,
-                    cursor: 'not-allowed',
-                    background: 'rgba(15, 23, 42, 0.5)',
-                    borderColor: 'rgba(148, 163, 184, 0.25)',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label className="aaa-stat-label">E-MAIL DO SOBERANO</label>
-                <input
-                  type="email"
-                  className="myth-search-compact"
-                  placeholder="seu@email.com"
-                  value={editEmail}
-                  onChange={(e) => setEditEmail(e.target.value)}
-                  style={{ width: '100%', marginTop: '4px' }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="aaa-stat-label">GRIMÓRIO PREFERIDO PARA DUELOS</label>
-              <select
-                className="myth-select-compact"
-                value={editDeckId}
-                onChange={(e) => setEditDeckId(e.target.value)}
-                style={{ width: '100%', marginTop: '4px' }}
-              >
-                {allAvailableDecks.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name} — {d.subtitle}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="aaa-stat-label" style={{ marginBottom: '0.35rem', display: 'block' }}>
-                ALTERAR AVATAR E TÍTULO HONORÍFICO (ESCOLHA QUALQUER CRIATURA OU LENDÁRIA)
-              </label>
-              <AvatarCreaturePicker
-                selectedCardId={editAvatarId}
-                onSelectCardId={setEditAvatarId}
-              />
-            </div>
-
+          isUnregistered ? (
             <div
               style={{
+                padding: '1.5rem',
+                textAlign: 'center',
+                borderRadius: '8px',
+                background: 'rgba(15, 23, 42, 0.75)',
+                border: '1px dashed rgba(250, 204, 21, 0.35)',
                 display: 'flex',
-                justifyContent: 'space-between',
+                flexDirection: 'column',
                 alignItems: 'center',
-                marginTop: '0.35rem',
+                gap: '0.75rem',
               }}
             >
-              <div style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
-                🏆 Rating atual: <strong style={{ color: '#fde047' }}>{currentUser.eloRating} ELO</strong> ({currentUser.pvpWins}V / {currentUser.pvpLosses}D)
+              <div className="font-cinzel gold-gradient-text" style={{ fontSize: '1.1rem', fontWeight: 800 }}>
+                NENHUM PERFIL ATIVO NESTE DISPOSITIVO
               </div>
+              <p style={{ fontSize: '0.82rem', color: '#94a3b8', maxWidth: '420px' }}>
+                Crie sua conta escolhendo seu Nickname e qualquer Criatura ou Lendária como Avatar, ou entre com um Nickname já salvo na nuvem.
+              </p>
               <div style={{ display: 'flex', gap: '0.6rem' }}>
-                <button type="button" className="aaa-btn aaa-btn-ghost" onClick={onClose}>
-                  Fechar
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-primary"
+                  onClick={() => setTab('create')}
+                >
+                  ✨ Criar Nova Conta
                 </button>
-                <button type="submit" className="aaa-btn aaa-btn-primary">
-                  💾 Salvar Alterações do Perfil
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-secondary"
+                  onClick={() => setTab('login')}
+                >
+                  🔑 Entrar com Nickname
                 </button>
               </div>
             </div>
-          </form>
+          ) : (
+            <form
+              onSubmit={handleSaveProfileChanges}
+              style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
+            >
+              {profileSavedMsg && (
+                <div
+                  style={{
+                    padding: '0.6rem 0.9rem',
+                    borderRadius: '6px',
+                    background: 'rgba(16, 185, 129, 0.2)',
+                    border: '1px solid #34d399',
+                    color: '#a7f3d0',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  {profileSavedMsg}
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label className="aaa-stat-label">
+                    🔒 NICKNAME DO SOBERANO (IMUTÁVEL)
+                  </label>
+                  <input
+                    type="text"
+                    className="myth-search-compact"
+                    value={currentUser.username}
+                    disabled
+                    readOnly
+                    title="O Nickname de um Soberano é perpétuo e não pode ser alterado."
+                    style={{
+                      width: '100%',
+                      marginTop: '4px',
+                      opacity: 0.72,
+                      cursor: 'not-allowed',
+                      background: 'rgba(15, 23, 42, 0.5)',
+                      borderColor: 'rgba(148, 163, 184, 0.25)',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label className="aaa-stat-label">E-MAIL DO SOBERANO</label>
+                  <input
+                    type="email"
+                    className="myth-search-compact"
+                    placeholder="seu@email.com"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    style={{ width: '100%', marginTop: '4px' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="aaa-stat-label">GRIMÓRIO PREFERIDO PARA DUELOS</label>
+                <select
+                  className="myth-select-compact"
+                  value={editDeckId}
+                  onChange={(e) => setEditDeckId(e.target.value)}
+                  style={{ width: '100%', marginTop: '4px' }}
+                >
+                  {allAvailableDecks.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name} — {d.subtitle}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="aaa-stat-label" style={{ marginBottom: '0.35rem', display: 'block' }}>
+                  ALTERAR AVATAR E TÍTULO HONORÍFICO (ESCOLHA QUALQUER CRIATURA OU LENDÁRIA)
+                </label>
+                <AvatarCreaturePicker
+                  selectedCardId={editAvatarId}
+                  onSelectCardId={setEditAvatarId}
+                />
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: '0.35rem',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem',
+                }}
+              >
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-ghost"
+                  style={{ color: '#fca5a5', borderColor: 'rgba(248, 113, 113, 0.35)' }}
+                  onClick={() => handleDeleteAccount(currentUser)}
+                >
+                  🗑️ Excluir Este Perfil
+                </button>
+                <div style={{ display: 'flex', gap: '0.6rem' }}>
+                  <button type="button" className="aaa-btn aaa-btn-ghost" onClick={onClose}>
+                    Fechar
+                  </button>
+                  <button type="submit" className="aaa-btn aaa-btn-primary">
+                    💾 Salvar Alterações do Perfil
+                  </button>
+                </div>
+              </div>
+            </form>
+          )
         )}
 
         {tab === 'login' && (
@@ -540,7 +603,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                 <input
                   type="text"
                   className="myth-search-compact"
-                  placeholder="Digite seu Nickname (ex: tsm81)..."
+                  placeholder="Digite seu Nickname..."
                   value={loginNickname}
                   onChange={(e) => setLoginNickname(e.target.value)}
                   style={{ flex: 1 }}
@@ -563,71 +626,98 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             {/* Saved Accounts on this Browser */}
             <div>
               <div className="aaa-stat-label" style={{ marginBottom: '0.5rem' }}>
-                CONTAS SALVAS NESTE DISPOSITIVO (CLIQUE PARA ATIVAR)
+                CONTAS SALVAS NESTE DISPOSITIVO
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {accountsRoster.map((acc) => {
-                  const isCurrent = acc.id === currentUser.id;
-                  const card = CARDS_BY_ID[acc.avatarCardId] ?? ALL_CARDS[0];
-                  return (
-                    <div
-                      key={acc.id}
-                      onClick={() => handleSelectExisting(acc)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '0.65rem 0.9rem',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        background: isCurrent
-                          ? 'rgba(212, 175, 55, 0.18)'
-                          : 'rgba(15, 23, 42, 0.75)',
-                        border: isCurrent
-                          ? '1.5px solid #fde047'
-                          : '1px solid rgba(255,255,255,0.1)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        {card?.imagePath && (
-                          <img
-                            src={`${card.imagePath}?v=12`}
-                            alt={acc.username}
-                            style={{
-                              width: '42px',
-                              height: '42px',
-                              borderRadius: '50%',
-                              border: '1px solid #fde047',
-                              objectFit: 'contain',
-                              background: '#050811',
-                            }}
-                          />
-                        )}
-                        <div>
-                          <div
-                            className="font-cinzel"
-                            style={{ fontWeight: 800, color: '#f8fafc', fontSize: '0.92rem' }}
-                          >
-                            {acc.username}{' '}
-                            {isCurrent && (
-                              <span style={{ color: '#fde047', fontSize: '0.72rem' }}>
-                                (ATIVO)
-                              </span>
-                            )}
-                          </div>
-                          <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                            {getAvatarHonorificTitle(acc.avatarCardId)} • 🏆 {acc.eloRating} ELO (
-                            {acc.pvpWins}V / {acc.pvpLosses}D)
+              {accountsRoster.length === 0 ? (
+                <div
+                  style={{
+                    padding: '1.1rem',
+                    borderRadius: '8px',
+                    background: 'rgba(15, 23, 42, 0.65)',
+                    border: '1px dashed rgba(255,255,255,0.12)',
+                    color: '#94a3b8',
+                    fontSize: '0.8rem',
+                    textAlign: 'center',
+                  }}
+                >
+                  Nenhum perfil salvo neste navegador. Clique em <strong>"✨ Criar Nova Conta"</strong> acima para criar seu perfil!
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {accountsRoster.map((acc) => {
+                    const isCurrent = acc.id === currentUser.id;
+                    const card = CARDS_BY_ID[acc.avatarCardId] ?? ALL_CARDS[0];
+                    return (
+                      <div
+                        key={acc.id}
+                        onClick={() => handleSelectExisting(acc)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.65rem 0.9rem',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          background: isCurrent
+                            ? 'rgba(212, 175, 55, 0.18)'
+                            : 'rgba(15, 23, 42, 0.75)',
+                          border: isCurrent
+                            ? '1.5px solid #fde047'
+                            : '1px solid rgba(255,255,255,0.1)',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          {card?.imagePath && (
+                            <img
+                              src={`${card.imagePath}?v=12`}
+                              alt={acc.username}
+                              style={{
+                                width: '42px',
+                                height: '42px',
+                                borderRadius: '50%',
+                                border: '1px solid #fde047',
+                                objectFit: 'contain',
+                                background: '#050811',
+                              }}
+                            />
+                          )}
+                          <div>
+                            <div
+                              className="font-cinzel"
+                              style={{ fontWeight: 800, color: '#f8fafc', fontSize: '0.92rem' }}
+                            >
+                              {acc.username}{' '}
+                              {isCurrent && (
+                                <span style={{ color: '#fde047', fontSize: '0.72rem' }}>
+                                  (ATIVO)
+                                </span>
+                              )}
+                            </div>
+                            <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
+                              {getAvatarHonorificTitle(acc.avatarCardId)} • 🏆 {acc.eloRating} ELO (
+                              {acc.pvpWins}V / {acc.pvpLosses}D)
+                            </div>
                           </div>
                         </div>
+                        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                          <span className="aaa-btn aaa-btn-secondary" style={{ padding: '4px 10px' }}>
+                            {isCurrent ? '✓ Conectado' : 'Usar Conta'}
+                          </span>
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-ghost"
+                            style={{ padding: '4px 8px', color: '#fca5a5' }}
+                            title="Excluir este perfil"
+                            onClick={(e) => handleDeleteAccount(acc, e)}
+                          >
+                            🗑️
+                          </button>
+                        </div>
                       </div>
-                      <span className="aaa-btn aaa-btn-secondary" style={{ padding: '4px 10px' }}>
-                        {isCurrent ? '✓ Conectado' : 'Usar Conta'}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -798,6 +888,11 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   };
 
   const handleCreateRoom = (isPublicQueue: boolean) => {
+    if (isUnregisteredProfile(currentUser)) {
+      setStatusBanner('Crie ou entre na sua conta de Soberano antes de abrir uma sala 1x1!');
+      onOpenAccountModal('create');
+      return;
+    }
     if (!selectedDeckObj) return;
     const code = generateRoomCode();
     const room: MultiplayerRoom = {
@@ -828,22 +923,21 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   };
 
   const handleJoinRoom = (room: MultiplayerRoom) => {
+    if (isUnregisteredProfile(currentUser)) {
+      setStatusBanner('Crie ou entre na sua conta de Soberano antes de aceitar um duelo 1x1!');
+      onOpenAccountModal('create');
+      return;
+    }
     if (!selectedDeckObj) return;
 
-    let activeGuest = currentUser;
-    if (room.host.id === currentUser.id) {
-      const altAccount =
-        accountsRoster.find((a) => a.id !== room.host.id) ??
-        createNewSovereignAccount({
-          username: 'Arconte_Desafiante',
-          avatarCardId: 'neutral_54_dragao_etereo',
-          preferredDeckId: selectedDeckObj.id,
-        });
-      setActiveTabUserProfile(altAccount);
-      onUserChange(altAccount);
-      setAccountsRoster(getSavedAccountsRoster());
-      activeGuest = altAccount;
+    if (room.host.id === currentUser.id || room.host.username === currentUser.username) {
+      setStatusBanner(
+        'Para testar contra si mesmo em outra aba, crie ou selecione um 2º usuário diferente do anfitrião!'
+      );
+      onOpenAccountModal('create');
+      return;
     }
+    const activeGuest = currentUser;
 
     const hostCards = resolveDeckCards(room.host.cardIds);
     const guestCards = resolveDeckCards(selectedDeckObj.cardIds);

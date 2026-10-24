@@ -74,12 +74,23 @@ export type MpNetworkMessage =
     };
 
 const STORAGE_KEYS = {
-  ACCOUNTS_ROSTER: 'chromatic_pact_accounts_roster_v1',
-  TAB_ACTIVE_USER: 'chromatic_pact_tab_user_v1',
-  ROOMS_CACHE: 'chromatic_pact_mp_rooms_v1',
+  ACCOUNTS_ROSTER: 'chromatic_pact_accounts_roster_v2',
+  TAB_ACTIVE_USER: 'chromatic_pact_tab_user_v2',
+  ROOMS_CACHE: 'chromatic_pact_mp_rooms_v2',
   SUPABASE_URL: 'chromatic_pact_supabase_url_v1',
   SUPABASE_KEY: 'chromatic_pact_supabase_key_v1',
 };
+
+// Purge legacy v1 pre-seeded profiles from browser storage
+if (typeof window !== 'undefined') {
+  try {
+    localStorage.removeItem('chromatic_pact_accounts_roster_v1');
+    localStorage.removeItem('chromatic_pact_mp_rooms_v1');
+    sessionStorage.removeItem('chromatic_pact_tab_user_v1');
+  } catch {
+    // Ignore
+  }
+}
 
 /**
  * Returns the canonical Honorific Title bound to the chosen Creature / Legendary Avatar.
@@ -183,48 +194,38 @@ export function flipGameStatePerspective(state: GameState): GameState {
 // 2. USER ACCOUNTS & SOVEREIGN PROFILE MANAGEMENT (TAB-ISOLATED FOR 1v1 TESTING)
 // ============================================================================
 
-const DEFAULT_TEST_ACCOUNTS: SovereignUserProfile[] = [
-  {
-    id: 'sov_player_1',
-    username: 'Kaelen_Soberano',
-    title: 'Soberano da Fratura',
-    avatarCardId: 'red_08_dragao_vermelho',
-    eloRating: 1240,
-    pvpWins: 3,
-    pvpLosses: 1,
-    preferredDeckId: 'deck_red_aggro',
-  },
-  {
-    id: 'sov_player_2',
-    username: 'Vaeloria_Astral',
-    title: 'Oráculo do Véu Glacial',
-    avatarCardId: 'neutral_54_dragao_etereo',
-    eloRating: 1215,
-    pvpWins: 2,
-    pvpLosses: 1,
-    preferredDeckId: 'deck_blue_control',
-  },
-];
+const UNREGISTERED_PLACEHOLDER: SovereignUserProfile = {
+  id: 'unregistered',
+  username: 'Sem Conta',
+  title: 'Visitante sem Pacto',
+  avatarCardId: 'neutral_10_valkyra_pentacromatica',
+  eloRating: 1200,
+  pvpWins: 0,
+  pvpLosses: 0,
+  preferredDeckId: 'deck_red_aggro',
+};
+
+export function isUnregisteredProfile(profile: SovereignUserProfile): boolean {
+  return !profile || profile.id === 'unregistered' || profile.username === 'Sem Conta';
+}
 
 export function getSavedAccountsRoster(): SovereignUserProfile[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.ACCOUNTS_ROSTER);
     if (raw) {
       const parsed = JSON.parse(raw) as SovereignUserProfile[];
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) {
+        return parsed.filter((a) => !isUnregisteredProfile(a));
+      }
     }
   } catch {
     // Ignore storage error
   }
-  try {
-    localStorage.setItem(STORAGE_KEYS.ACCOUNTS_ROSTER, JSON.stringify(DEFAULT_TEST_ACCOUNTS));
-  } catch {
-    // Ignore
-  }
-  return DEFAULT_TEST_ACCOUNTS;
+  return [];
 }
 
 export function saveAccountToRoster(profile: SovereignUserProfile): SovereignUserProfile[] {
+  if (isUnregisteredProfile(profile)) return getSavedAccountsRoster();
   const current = getSavedAccountsRoster();
   const exists = current.some((a) => a.id === profile.id || a.username === profile.username);
   const next = exists
@@ -242,28 +243,73 @@ export function saveAccountToRoster(profile: SovereignUserProfile): SovereignUse
   return next;
 }
 
-export function getActiveTabUserProfile(): SovereignUserProfile {
+export async function deleteSovereignAccount(profile: SovereignUserProfile): Promise<SovereignUserProfile[]> {
+  const remaining = getSavedAccountsRoster().filter(
+    (a) => a.id !== profile.id && a.username !== profile.username
+  );
   try {
-    const tabSaved = sessionStorage.getItem(STORAGE_KEYS.TAB_ACTIVE_USER);
-    if (tabSaved) {
-      return JSON.parse(tabSaved) as SovereignUserProfile;
+    localStorage.setItem(STORAGE_KEYS.ACCOUNTS_ROSTER, JSON.stringify(remaining));
+    const tabRaw = sessionStorage.getItem(STORAGE_KEYS.TAB_ACTIVE_USER);
+    if (tabRaw) {
+      const tabParsed = JSON.parse(tabRaw) as SovereignUserProfile;
+      if (tabParsed.id === profile.id || tabParsed.username === profile.username) {
+        sessionStorage.removeItem(STORAGE_KEYS.TAB_ACTIVE_USER);
+      }
     }
   } catch {
     // Ignore
   }
 
-  // If this is a second tab opened for testing, automatically pick the 2nd account if Tab 1 is hosting!
+  const cfg = getSupabaseConfig();
+  if (cfg.isConfigured && profile.username) {
+    try {
+      await fetch(
+        `${cfg.url}/rest/v1/sovereign_profiles?username=eq.${encodeURIComponent(profile.username)}`,
+        {
+          method: 'DELETE',
+          headers: getSupabaseHeaders(cfg.anonKey),
+        }
+      );
+    } catch {
+      // Ignore
+    }
+  }
+  return remaining;
+}
+
+export function getActiveTabUserProfile(): SovereignUserProfile {
+  try {
+    const tabSaved = sessionStorage.getItem(STORAGE_KEYS.TAB_ACTIVE_USER);
+    if (tabSaved) {
+      const parsed = JSON.parse(tabSaved) as SovereignUserProfile;
+      if (!isUnregisteredProfile(parsed)) return parsed;
+    }
+  } catch {
+    // Ignore
+  }
+
   const roster = getSavedAccountsRoster();
+  if (roster.length === 0) {
+    return UNREGISTERED_PLACEHOLDER;
+  }
+
   const existingRooms = getCachedRooms();
   const hostIdsInWaiting = new Set(existingRooms.map((r) => r.host.id));
-  const picked =
-    roster.find((acc) => !hostIdsInWaiting.has(acc.id)) ?? roster[0] ?? DEFAULT_TEST_ACCOUNTS[0];
+  const picked = roster.find((acc) => !hostIdsInWaiting.has(acc.id)) ?? roster[0];
 
   setActiveTabUserProfile(picked);
   return picked;
 }
 
 export function setActiveTabUserProfile(profile: SovereignUserProfile): void {
+  if (isUnregisteredProfile(profile)) {
+    try {
+      sessionStorage.removeItem(STORAGE_KEYS.TAB_ACTIVE_USER);
+    } catch {
+      // Ignore
+    }
+    return;
+  }
   try {
     sessionStorage.setItem(STORAGE_KEYS.TAB_ACTIVE_USER, JSON.stringify(profile));
   } catch {

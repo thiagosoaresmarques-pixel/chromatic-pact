@@ -26,6 +26,7 @@ import {
 import { CardView, CardInspectModal } from './components/CardView';
 import {
   getActiveTabUserProfile,
+  isUnregisteredProfile,
   MultiplayerRoom,
   recordPvpMatchResult,
   SovereignUserProfile,
@@ -455,7 +456,12 @@ export const App: React.FC = () => {
         <div className="nav-right-controls">
           <div
             className="gold-pill"
-            onClick={() => setAccountModalState({ open: true, tab: 'profile' })}
+            onClick={() =>
+              setAccountModalState({
+                open: true,
+                tab: isUnregisteredProfile(currentUser) ? 'create' : 'profile',
+              })
+            }
             style={{
               cursor: 'pointer',
               borderColor: 'rgba(250, 204, 21, 0.55)',
@@ -466,22 +472,28 @@ export const App: React.FC = () => {
             title="Clique para abrir seu Perfil do Soberano, Entrar ou Criar Conta"
           >
             <span>👤</span>
-            <span style={{ fontWeight: 800 }}>{currentUser.username}</span>
-            <span style={{ opacity: 0.78, fontSize: '0.7rem' }}>({currentUser.eloRating})</span>
-            <span
-              style={{
-                marginLeft: '0.2rem',
-                padding: '1px 6px',
-                borderRadius: '4px',
-                background: 'rgba(250, 204, 21, 0.18)',
-                border: '1px solid rgba(250, 204, 21, 0.45)',
-                fontSize: '0.62rem',
-                color: '#fde047',
-                fontWeight: 800,
-              }}
-            >
-              PERFIL
-            </span>
+            {isUnregisteredProfile(currentUser) ? (
+              <span style={{ fontWeight: 800 }}>ENTRAR / CRIAR CONTA</span>
+            ) : (
+              <>
+                <span style={{ fontWeight: 800 }}>{currentUser.username}</span>
+                <span style={{ opacity: 0.78, fontSize: '0.7rem' }}>({currentUser.eloRating})</span>
+                <span
+                  style={{
+                    marginLeft: '0.2rem',
+                    padding: '1px 6px',
+                    borderRadius: '4px',
+                    background: 'rgba(250, 204, 21, 0.18)',
+                    border: '1px solid rgba(250, 204, 21, 0.45)',
+                    fontSize: '0.62rem',
+                    color: '#fde047',
+                    fontWeight: 800,
+                  }}
+                >
+                  PERFIL
+                </span>
+              </>
+            )}
           </div>
 
           <div

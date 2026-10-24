@@ -53,6 +53,7 @@ export interface SovereignUserProfile {
   preferredDeckId: string;
   gold?: number;
   customDecks?: SovereignSavedDeck[];
+  starterDeckCardIds?: string[];
   extraUnlockedCards?: Record<string, number>;
   defeatedBossIds?: string[];
   arenaWins?: number;
@@ -389,6 +390,7 @@ function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
     p: profile.passwordHash || '',
     g: profile.gold ?? 0,
     d: profile.customDecks ?? [],
+    s: profile.starterDeckCardIds ?? [],
     u: profile.extraUnlockedCards ?? {},
     b: profile.defeatedBossIds ?? [],
     w: profile.arenaWins ?? 0,
@@ -405,6 +407,7 @@ function decodeCloudTitleMeta(
   passwordHash?: string;
   gold?: number;
   customDecks?: SovereignSavedDeck[];
+  starterDeckCardIds?: string[];
   extraUnlockedCards?: Record<string, number>;
   defeatedBossIds?: string[];
   arenaWins?: number;
@@ -420,6 +423,7 @@ function decodeCloudTitleMeta(
         p?: string;
         g?: number;
         d?: SovereignSavedDeck[];
+        s?: string[];
         u?: Record<string, number>;
         b?: string[];
         w?: number;
@@ -431,6 +435,7 @@ function decodeCloudTitleMeta(
         passwordHash: parsed.p || undefined,
         gold: typeof parsed.g === 'number' ? parsed.g : undefined,
         customDecks: Array.isArray(parsed.d) ? parsed.d : undefined,
+        starterDeckCardIds: Array.isArray(parsed.s) ? parsed.s : undefined,
         extraUnlockedCards: parsed.u && typeof parsed.u === 'object' ? parsed.u : undefined,
         defeatedBossIds: Array.isArray(parsed.b) ? parsed.b : undefined,
         arenaWins: typeof parsed.w === 'number' ? parsed.w : undefined,
@@ -465,6 +470,7 @@ export function createNewSovereignAccount(params: {
     preferredDeckId: params.preferredDeckId,
     gold: 0,
     customDecks: [],
+    starterDeckCardIds: [],
     extraUnlockedCards: {},
     defeatedBossIds: [],
     arenaWins: 0,
@@ -608,6 +614,7 @@ function hydrateProfileFromRow(
     preferredDeckId: meta.preferredDeckId || localMatch?.preferredDeckId || 'deck_red_inferno',
     gold: meta.gold ?? localMatch?.gold ?? 0,
     customDecks: meta.customDecks ?? localMatch?.customDecks ?? [],
+    starterDeckCardIds: meta.starterDeckCardIds ?? localMatch?.starterDeckCardIds ?? [],
     extraUnlockedCards: meta.extraUnlockedCards ?? localMatch?.extraUnlockedCards ?? {},
     defeatedBossIds: meta.defeatedBossIds ?? localMatch?.defeatedBossIds ?? [],
     arenaWins: meta.arenaWins ?? localMatch?.arenaWins ?? 0,

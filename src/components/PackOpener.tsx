@@ -9,7 +9,9 @@ export interface PackOpenerProps {
   unlockedCardIds: Record<string, number>;
   onOpenPack: (packCost: number, cards: CardDefinition[]) => void;
   isGuest?: boolean;
+  hasCustomDeck?: boolean;
   onRequireAccount?: () => void;
+  onRequireDeckSetup?: () => void;
 }
 
 interface PackTypeOption {
@@ -124,7 +126,9 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
   unlockedCardIds,
   onOpenPack,
   isGuest = false,
+  hasCustomDeck = false,
   onRequireAccount,
+  onRequireDeckSetup,
 }) => {
   const [selectedPackId, setSelectedPackId] = useState<string>('pack_all');
   const [currentPackCards, setCurrentPackCards] = useState<CardDefinition[]>([]);
@@ -205,7 +209,7 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
           <div className="aaa-stat-block">
             <span className="aaa-stat-label">COLEÇÃO DESBLOQUEADA</span>
             <span className="aaa-stat-val">
-              {collectionStats.uniqueUnlocked}/{collectionStats.totalCards} ({pct}%)
+              {collectionStats.totalCopies} CARTAS ({collectionStats.uniqueUnlocked}/{collectionStats.totalCards} ÚNICAS)
             </span>
           </div>
 
@@ -216,7 +220,7 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
         </div>
       </header>
 
-      {isGuest && (
+      {isGuest ? (
         <div className="aaa-status-callout is-guest">
           <div className="aaa-callout-copy">
             <span className="aaa-callout-kicker">MODO VISITANTE • NAVEGAÇÃO LIVRE</span>
@@ -231,7 +235,22 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
             </button>
           )}
         </div>
-      )}
+      ) : !hasCustomDeck && collectionStats.totalCopies === 0 ? (
+        <div className="aaa-status-callout is-onboarding">
+          <div className="aaa-callout-copy">
+            <span className="aaa-callout-kicker">ETAPA INICIAL • 0 CARTAS NA COLEÇÃO</span>
+            <span className="aaa-callout-title">Escolha ou Monte seu 1º Grimório de 100 Cartas</span>
+            <p className="aaa-callout-text">
+              Sua conta começa com <strong>0 cartas</strong> e <strong>0 Ouro</strong>. Vá ao <strong>Grimório</strong> para escolher um dos 5 decks iniciais, editá-lo ou montar seu deck do zero: ao salvar, essas <strong>100 cartas</strong> passam a integrar sua coleção!
+            </p>
+          </div>
+          {onRequireDeckSetup && (
+            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireDeckSetup}>
+              Escolher / Montar Meu Grimório (100 Cartas) →
+            </button>
+          )}
+        </div>
+      ) : null}
 
       {/* Minimalist Collection Progress Strip */}
       <div className="aaa-collection-strip">

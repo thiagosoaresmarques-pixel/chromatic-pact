@@ -25,7 +25,6 @@ import {
 import { CardView, CardInspectModal } from './components/CardView';
 import {
   getActiveTabUserProfile,
-  getStarterCollection,
   isUnregisteredProfile,
   MultiplayerRoom,
   recordPvpMatchResult,
@@ -71,17 +70,23 @@ export const App: React.FC = () => {
   const arenaWins = isGuest ? 0 : currentUser.arenaWins ?? 0;
 
   const unlockedCardIds: Record<string, number> = useMemo(() => {
-    const starter = getStarterCollection();
-    if (isGuest) return starter;
+    if (isGuest) return {};
+    const baseCardIds =
+      currentUser.starterDeckCardIds && currentUser.starterDeckCardIds.length > 0
+        ? currentUser.starterDeckCardIds
+        : customDecks[0]?.cardIds ?? [];
+    const merged: Record<string, number> = {};
+    for (const cid of baseCardIds) {
+      merged[cid] = (merged[cid] ?? 0) + 1;
+    }
     const extra = currentUser.extraUnlockedCards ?? {};
-    const merged: Record<string, number> = { ...starter };
     for (const [cid, count] of Object.entries(extra)) {
       if (count > 0) {
         merged[cid] = (merged[cid] ?? 0) + count;
       }
     }
     return merged;
-  }, [isGuest, currentUser.extraUnlockedCards]);
+  }, [isGuest, currentUser.starterDeckCardIds, customDecks, currentUser.extraUnlockedCards]);
 
   // Active Campaign / Expedition Match State
   const [activeCampaignBoss, setActiveCampaignBoss] = useState<CampaignBoss | null>(null);
@@ -224,8 +229,11 @@ export const App: React.FC = () => {
     const nextDecks = exists
       ? customDecks.map((d) => (d.id === deck.id ? deck : d))
       : [...customDecks, deck];
+    const hasStarterCollection =
+      currentUser.starterDeckCardIds && currentUser.starterDeckCardIds.length > 0;
     updateCurrentUserProgression({
       customDecks: nextDecks,
+      starterDeckCardIds: hasStarterCollection ? currentUser.starterDeckCardIds : deck.cardIds,
       preferredDeckId: deck.id,
     });
   };
@@ -795,7 +803,9 @@ export const App: React.FC = () => {
             gold={gold}
             unlockedCardIds={unlockedCardIds}
             isGuest={isGuest}
+            hasCustomDeck={!isGuest && customDecks.length > 0}
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onOpenPack={handleOpenPack}
           />
         )}

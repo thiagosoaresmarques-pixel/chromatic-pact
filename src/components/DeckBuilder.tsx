@@ -205,15 +205,22 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   username,
   onRequireAccount,
 }) => {
+  const isFirstDeckSetup = !isGuest && customDecks.length === 0;
+  const hasFreeCatalogSelection = isGuest || isFirstDeckSetup;
+
   // Filters
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
   const [typeFilter, setTypeFilter] = useState<CardType | 'all'>('all');
   const [rarityFilter, setRarityFilter] = useState<Rarity | 'all'>('all');
   const [costFilter, setCostFilter] = useState<number | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [onlyUnlocked, setOnlyUnlocked] = useState<boolean>(() => !isGuest);
+  const [onlyUnlocked, setOnlyUnlocked] = useState<boolean>(() => !isGuest && customDecks.length > 0);
   const [synergyFilterId, setSynergyFilterId] = useState<string | 'all' | 'recommended'>('all');
   const [showSynergyPanel, setShowSynergyPanel] = useState<boolean>(false);
+
+  useEffect(() => {
+    setOnlyUnlocked(!isGuest && customDecks.length > 0);
+  }, [isGuest, customDecks.length]);
 
   // Active Deck Being Edited
   const [deckName, setDeckName] = useState<string>(() =>
@@ -595,8 +602,8 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       if (deckCardIds.length >= 100) return;
       const currentCopies = deckCountsById[card.id] ?? 0;
       const maxAllowed = MAX_COPIES_BY_RARITY[card.rarity];
-      const ownedCopies = isGuest ? maxAllowed : unlockedCardIds[card.id] ?? 0;
-      if (!isGuest && ownedCopies <= 0) {
+      const ownedCopies = hasFreeCatalogSelection ? maxAllowed : unlockedCardIds[card.id] ?? 0;
+      if (!hasFreeCatalogSelection && ownedCopies <= 0) {
         setSaveBanner(
           `Carta bloqueada na sua coleção. Abra pacotes no Relicário para desbloquear novas cartas!`
         );
@@ -604,7 +611,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
         return;
       }
       if (currentCopies >= Math.min(maxAllowed, ownedCopies)) {
-        if (!isGuest && currentCopies >= ownedCopies && ownedCopies < maxAllowed) {
+        if (!hasFreeCatalogSelection && currentCopies >= ownedCopies && ownedCopies < maxAllowed) {
           setSaveBanner(
             `Você possui ${ownedCopies} cópia(s) desta carta na sua coleção. Desbloqueie mais no Relicário!`
           );
@@ -621,7 +628,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       }
       setDeckCardIds((prev) => [...prev, card.id]);
     },
-    [deckCardIds.length, deckCountsById, deckAnalysis.legendaryCount, isGuest, unlockedCardIds]
+    [deckCardIds.length, deckCountsById, deckAnalysis.legendaryCount, hasFreeCatalogSelection, unlockedCardIds]
   );
 
   const handleRemoveCardFromDeck = useCallback((cardId: string) => {
@@ -647,7 +654,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
     const pool = ALL_CARDS.filter(
       (c) =>
-        (isGuest || (unlockedCardIds[c.id] ?? 0) > 0) &&
+        (hasFreeCatalogSelection || (unlockedCardIds[c.id] ?? 0) > 0) &&
         (domainPriority.length === 0 ||
           domainPriority.slice(0, 2).includes(c.domain) ||
           c.domain === 'neutral')
@@ -656,7 +663,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     for (const card of pool) {
       if (nextIds.length >= 100) break;
       const maxAllowed = MAX_COPIES_BY_RARITY[card.rarity];
-      const owned = isGuest ? maxAllowed : unlockedCardIds[card.id] ?? 0;
+      const owned = hasFreeCatalogSelection ? maxAllowed : unlockedCardIds[card.id] ?? 0;
       const effectiveCap = Math.min(maxAllowed, owned);
       while ((counts[card.id] ?? 0) < effectiveCap && nextIds.length < 100) {
         if (card.rarity === 'legendary' && legsCount >= MAX_LEGENDARIES_PER_DECK) break;
@@ -1102,7 +1109,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             visibleCards.map((card) => {
               const countInDeck = deckCountsById[card.id] ?? 0;
               const maxAllowed = MAX_COPIES_BY_RARITY[card.rarity];
-              const ownedCopies = isGuest ? maxAllowed : unlockedCardIds[card.id] ?? 0;
+              const ownedCopies = hasFreeCatalogSelection ? maxAllowed : unlockedCardIds[card.id] ?? 0;
               const effectiveMax = Math.min(maxAllowed, ownedCopies);
               const legCapReached =
                 card.rarity === 'legendary' &&
@@ -1118,7 +1125,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                   countInDeck={countInDeck}
                   maxAllowed={maxAllowed}
                   ownedCopies={ownedCopies}
-                  isGuest={isGuest}
+                  isGuest={hasFreeCatalogSelection}
                   canAdd={canAdd}
                   onAdd={handleAddCardToDeck}
                   onRemove={handleRemoveCardFromDeck}

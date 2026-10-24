@@ -730,28 +730,37 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const reactionPct = Math.round((deckAnalysis.typeCounts.reaction / totalForBar) * 100);
   const relicPct = Math.max(0, 100 - creaturePct - spellPct - reactionPct);
 
+  const hasActiveFilters =
+    domainFilter !== 'all' ||
+    typeFilter !== 'all' ||
+    rarityFilter !== 'all' ||
+    costFilter !== 'all' ||
+    searchQuery.trim() !== '' ||
+    synergyFilterId !== 'all';
+
+  const handleResetFilters = () => {
+    setDomainFilter('all');
+    setTypeFilter('all');
+    setRarityFilter('all');
+    setCostFilter('all');
+    setSearchQuery('');
+    setSynergyFilterId('all');
+  };
+
   return (
     <div className="db-modern-shell">
       {/* LEFT CATALOG AREA */}
       <div className="db-catalog-area">
         {/* GUEST OR MANDATORY FIRST DECK ONBOARDING BANNER */}
         {isGuest ? (
-          <div
-            style={{
-              margin: '0 0 0.75rem 0',
-              padding: '0.85rem 1.1rem',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
-              border: '1px solid rgba(250, 204, 21, 0.45)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '1rem',
-              flexWrap: 'wrap',
-            }}
-          >
-            <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
-              <strong style={{ color: '#fde047' }}>Modo Visitante:</strong> você pode explorar e inspecionar todas as 890 cartas. Para montar e salvar seu <strong>Grimório de Combate (100 cartas)</strong> e liberar os demais modos, entre ou crie sua conta.
+          <div className="aaa-status-callout is-guest" style={{ marginBottom: '0.75rem' }}>
+            <div className="aaa-callout-copy">
+              <span className="aaa-callout-kicker">MODO VISITANTE • EXPLORAÇÃO DO ACERVO</span>
+              <div className="aaa-callout-text">
+                Você pode explorar e inspecionar todas as 890 cartas. Para montar e salvar seu{' '}
+                <strong>Grimório de Combate (100 cartas)</strong> e liberar os demais modos, entre
+                ou crie sua conta.
+              </div>
             </div>
             {onRequireAccount && (
               <button
@@ -765,23 +774,29 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           </div>
         ) : customDecks.length === 0 ? (
           <div
+            className="aaa-status-callout is-onboarding"
             style={{
-              margin: '0 0 0.85rem 0',
-              padding: '0.95rem 1.15rem',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(15, 23, 42, 0.96))',
-              border: '1.5px solid #fde047',
-              display: 'flex',
+              marginBottom: '0.85rem',
               flexDirection: 'column',
+              alignItems: 'stretch',
               gap: '0.6rem',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '0.5rem',
+              }}
+            >
               <div>
-                <div style={{ fontSize: '0.66rem', fontWeight: 800, letterSpacing: '0.1em', color: '#fde047' }}>
-                  PASSO INICIAL OBRIGATÓRIO DO SOBERANO {username ? `• ${username.toUpperCase()}` : ''}
+                <div className="aaa-callout-kicker">
+                  PASSO INICIAL OBRIGATÓRIO DO SOBERANO{' '}
+                  {username ? `• ${username.toUpperCase()}` : ''}
                 </div>
-                <div className="font-cinzel" style={{ fontSize: '1.02rem', fontWeight: 700, color: '#ffffff' }}>
+                <div className="aaa-callout-title">
                   Monte e Salve seu Grimório de Combate (100 Cartas)
                 </div>
               </div>
@@ -793,8 +808,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 Confirmar & Salvar Grimório ({deckCardIds.length}/100)
               </button>
             </div>
-            <div style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.45 }}>
-              Escolha um dos <strong>5 Grimórios Monocromáticos Iniciais</strong> abaixo para usar como está, edite-o livremente com seu acervo inicial ou clique em <strong>Criar do Zero</strong> (respeitando até 3× Comum/Incomum, 2× Rara e 1× Lendária, máx. 10 Lendas):
+            <div className="aaa-callout-text">
+              Escolha um dos <strong>5 Grimórios Monocromáticos Iniciais</strong> abaixo para usar
+              como está, edite-o livremente com seu acervo inicial ou clique em{' '}
+              <strong>Criar do Zero</strong> (respeitando até 3× Comum/Incomum, 2× Rara e 1×
+              Lendária, máx. 10 Lendas):
             </div>
             <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
               {MONOCHROMATIC_STARTER_DECKS.map((sd) => {
@@ -809,6 +827,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                       color: '#f8fafc',
                       padding: '0.35rem 0.7rem',
                       fontSize: '0.74rem',
+                      flex: 'none',
                     }}
                     onClick={() => handleLoadPrebuilt(sd.id)}
                   >
@@ -819,7 +838,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               <button
                 type="button"
                 className="db-action-btn subtle-danger"
-                style={{ padding: '0.35rem 0.7rem', fontSize: '0.74rem' }}
+                style={{ padding: '0.35rem 0.7rem', fontSize: '0.74rem', flex: 'none' }}
                 onClick={() => {
                   setDeckName(username ? `Grimório de ${username}` : 'Meu Grimório');
                   setDeckCardIds([]);
@@ -949,12 +968,22 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           {/* Sleek Analytics Drawer Toggle + Count */}
           <div className="db-toolbar-right">
             <span className="db-results-count">{filteredCards.length} cartas</span>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                className="db-analytics-toggle-btn"
+                onClick={handleResetFilters}
+                title="Limpar todos os filtros ativos"
+              >
+                <span>Limpar Filtros</span>
+              </button>
+            )}
             <button
               type="button"
               className="db-analytics-toggle-btn"
               onClick={() => setShowTacticalGuideModal(true)}
             >
-              <span>📐 Guia Tático</span>
+              <span>Guia Tático</span>
             </button>
             <button
               type="button"
@@ -1053,33 +1082,51 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
         {/* CLEAN CARDS GRID — IMMEDIATELY FRONT AND CENTER (PROGRESSIVE VIRTUALIZED BATCHES) */}
         <div className="db-cards-grid">
-          {visibleCards.map((card) => {
-            const countInDeck = deckCountsById[card.id] ?? 0;
-            const maxAllowed = MAX_COPIES_BY_RARITY[card.rarity];
-            const ownedCopies = isGuest ? maxAllowed : unlockedCardIds[card.id] ?? 0;
-            const effectiveMax = Math.min(maxAllowed, ownedCopies);
-            const legCapReached =
-              card.rarity === 'legendary' &&
-              countInDeck === 0 &&
-              deckAnalysis.legendaryCount >= MAX_LEGENDARIES_PER_DECK;
-            const canAdd =
-              countInDeck < effectiveMax && !legCapReached && deckCardIds.length < 100;
+          {filteredCards.length === 0 ? (
+            <div className="db-catalog-empty-state">
+              <div className="font-cinzel gold-gradient-text" style={{ fontSize: '1.05rem', fontWeight: 800 }}>
+                NENHUMA CARTA ENCONTRADA PARA OS FILTROS SELECIONADOS
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#94a3b8', maxWidth: '420px' }}>
+                Ajuste a busca, desative o filtro "Coleção" para ver todas as 890 cartas ou limpe os filtros atuais.
+              </div>
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-primary"
+                onClick={handleResetFilters}
+              >
+                Limpar Filtros
+              </button>
+            </div>
+          ) : (
+            visibleCards.map((card) => {
+              const countInDeck = deckCountsById[card.id] ?? 0;
+              const maxAllowed = MAX_COPIES_BY_RARITY[card.rarity];
+              const ownedCopies = isGuest ? maxAllowed : unlockedCardIds[card.id] ?? 0;
+              const effectiveMax = Math.min(maxAllowed, ownedCopies);
+              const legCapReached =
+                card.rarity === 'legendary' &&
+                countInDeck === 0 &&
+                deckAnalysis.legendaryCount >= MAX_LEGENDARIES_PER_DECK;
+              const canAdd =
+                countInDeck < effectiveMax && !legCapReached && deckCardIds.length < 100;
 
-            return (
-              <GalleryCardCell
-                key={card.id}
-                card={card}
-                countInDeck={countInDeck}
-                maxAllowed={maxAllowed}
-                ownedCopies={ownedCopies}
-                isGuest={isGuest}
-                canAdd={canAdd}
-                onAdd={handleAddCardToDeck}
-                onRemove={handleRemoveCardFromDeck}
-                onInspect={setInspectCard}
-              />
-            );
-          })}
+              return (
+                <GalleryCardCell
+                  key={card.id}
+                  card={card}
+                  countInDeck={countInDeck}
+                  maxAllowed={maxAllowed}
+                  ownedCopies={ownedCopies}
+                  isGuest={isGuest}
+                  canAdd={canAdd}
+                  onAdd={handleAddCardToDeck}
+                  onRemove={handleRemoveCardFromDeck}
+                  onInspect={setInspectCard}
+                />
+              );
+            })
+          )}
         </div>
 
         {/* Progressive Scroll Sentinel & Manual Load More Bar */}
@@ -1139,7 +1186,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               title="Máximo de 10 cartas Lendárias (1× cada) por Grimório de 100 cartas"
               style={{ fontSize: '0.68rem', padding: '0.18rem 0.45rem' }}
             >
-              👑 {deckAnalysis.legendaryCount}/{MAX_LEGENDARIES_PER_DECK}
+              Lendas {deckAnalysis.legendaryCount}/{MAX_LEGENDARIES_PER_DECK}
             </span>
             <span
               className={`db-deck-counter-pill ${
@@ -1149,6 +1196,25 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             >
               {deckCardIds.length}/100
             </span>
+          </div>
+
+          <div className="db-deck-progress-wrap">
+            <div className="db-deck-progress-bar">
+              <div
+                className={`db-deck-progress-fill ${
+                  deckCardIds.length === 100 ? 'is-complete' : ''
+                }`}
+                style={{ width: `${Math.min(100, deckCardIds.length)}%` }}
+              />
+            </div>
+            <div className="db-deck-progress-meta">
+              <span>{deckAnalysis.uniqueCount} cartas distintas</span>
+              <strong className={deckCardIds.length === 100 ? 'is-complete' : ''}>
+                {deckCardIds.length === 100
+                  ? '✓ 100/100 Pronto p/ Combate'
+                  : `Faltam ${Math.max(0, 100 - deckCardIds.length)} carta(s)`}
+              </strong>
+            </div>
           </div>
 
           <select
@@ -1196,15 +1262,20 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               type="button"
               className="db-action-btn primary"
               onClick={handleSaveCurrentDeck}
+              title={
+                deckCardIds.length === 100
+                  ? 'Salvar este Grimório de 100 cartas para todos os modos de combate'
+                  : 'Complete 100 cartas para salvar seu Grimório de Combate'
+              }
             >
-              Salvar Deck
+              {deckCardIds.length === 100 ? 'Salvar (100)' : `Salvar (${deckCardIds.length}/100)`}
             </button>
             <button
               type="button"
               className="db-action-btn"
               onClick={() => setShowTacticalGuideModal(true)}
             >
-              📐 Guia
+              Guia
             </button>
             <button
               type="button"

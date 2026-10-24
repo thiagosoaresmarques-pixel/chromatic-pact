@@ -477,21 +477,21 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             className={`aaa-btn ${tab === 'profile' ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
             onClick={() => setTab('profile')}
           >
-            👤 Meu Perfil
+            Meu Perfil
           </button>
           <button
             type="button"
             className={`aaa-btn ${tab === 'login' ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
             onClick={() => setTab('login')}
           >
-            🔑 Entrar / Trocar
+            Entrar / Trocar
           </button>
           <button
             type="button"
             className={`aaa-btn ${tab === 'create' ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
             onClick={() => setTab('create')}
           >
-            ✨ Criar Nova Conta
+            Criar Nova Conta
           </button>
         </div>
 
@@ -522,14 +522,14 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                   className="aaa-btn aaa-btn-primary"
                   onClick={() => setTab('create')}
                 >
-                  ✨ Criar Nova Conta
+                  Criar Nova Conta
                 </button>
                 <button
                   type="button"
                   className="aaa-btn aaa-btn-secondary"
                   onClick={() => setTab('login')}
                 >
-                  🔑 Entrar com Nickname
+                  Entrar com Nickname
                 </button>
               </div>
             </div>
@@ -667,14 +667,14 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                   style={{ color: '#fca5a5', borderColor: 'rgba(248, 113, 113, 0.35)' }}
                   onClick={() => handleDeleteAccount(currentUser)}
                 >
-                  🗑️ Excluir Este Perfil
+                  Excluir Este Perfil
                 </button>
                 <div style={{ display: 'flex', gap: '0.6rem' }}>
                   <button type="button" className="aaa-btn aaa-btn-ghost" onClick={onClose}>
                     Fechar
                   </button>
                   <button type="submit" className="aaa-btn aaa-btn-primary">
-                    💾 Salvar Alterações do Perfil
+                    Salvar Alterações do Perfil
                   </button>
                 </div>
               </div>
@@ -1388,6 +1388,40 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
         </div>
       </div>
 
+      {isUnregisteredProfile(currentUser) ? (
+        <div className="aaa-status-callout is-guest">
+          <div className="aaa-callout-copy">
+            <span className="aaa-callout-kicker">MODO VISITANTE • NAVEGAÇÃO LIVRE</span>
+            <span className="aaa-callout-title">Conclave Multiplayer 1×1</span>
+            <p className="aaa-callout-text">
+              Você pode visualizar as salas abertas no lobby. Para disputar duelos 1×1 ranqueados e ganhar <strong>+10 Ouro por vitória</strong>, entre ou crie sua Conta de Soberano.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="aaa-btn aaa-btn-primary"
+            onClick={() => onOpenAccountModal('create')}
+          >
+            Entrar / Criar Conta
+          </button>
+        </div>
+      ) : needsDeckSetup ? (
+        <div className="aaa-status-callout is-onboarding">
+          <div className="aaa-callout-copy">
+            <span className="aaa-callout-kicker">ETAPA OBRIGATÓRIA • JORNADA DO SOBERANO</span>
+            <span className="aaa-callout-title">Grimório de Combate Necessário</span>
+            <p className="aaa-callout-text">
+              Antes de abrir ou aceitar salas 1×1, monte e salve seu Grimório de 100 cartas na seção <strong>Grimório</strong>.
+            </p>
+          </div>
+          {onRequireDeckSetup && (
+            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireDeckSetup}>
+              Montar Meu Grimório (100 Cartas) →
+            </button>
+          )}
+        </div>
+      ) : null}
+
       {statusBanner && (
         <div
           className="aaa-toast-banner"
@@ -1614,14 +1648,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                     setStatusBanner(`Código ${hostedRoomCode} copiado!`);
                   }}
                 >
-                  📋 Copiar Código ({hostedRoomCode})
-                </button>
-                <button
-                  type="button"
-                  className="aaa-btn aaa-btn-secondary"
-                  onClick={() => window.open(window.location.href, '_blank')}
-                >
-                  🪟 Abrir 2ª Aba para Testar 1x1
+                  Copiar Código ({hostedRoomCode})
                 </button>
               </div>
             </div>

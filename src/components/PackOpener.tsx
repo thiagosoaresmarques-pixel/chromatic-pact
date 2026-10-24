@@ -217,21 +217,13 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
       </header>
 
       {isGuest && (
-        <div
-          style={{
-            padding: '0.85rem 1.1rem',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
-            border: '1px solid rgba(250, 204, 21, 0.45)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '1rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
-            <strong style={{ color: '#fde047' }}>Modo Visitante:</strong> você pode inspecionar os pacotes do Relicário. Para acumular <strong>+10 Ouro por vitória</strong> e abrir pacotes para expandir sua coleção além das cartas iniciais, entre ou crie sua conta.
+        <div className="aaa-status-callout is-guest">
+          <div className="aaa-callout-copy">
+            <span className="aaa-callout-kicker">MODO VISITANTE • NAVEGAÇÃO LIVRE</span>
+            <span className="aaa-callout-title">Relicário de Expansão</span>
+            <p className="aaa-callout-text">
+              Você pode inspecionar todos os pacotes do Relicário. Para acumular <strong>+10 Ouro por vitória</strong> e abrir pacotes para expandir sua coleção além das cartas iniciais, entre ou crie sua conta.
+            </p>
           </div>
           {onRequireAccount && (
             <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireAccount}>

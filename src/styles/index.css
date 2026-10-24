@@ -10478,3 +10478,260 @@ html, body, #root {
   color: #e2e8f0;
   max-width: 580px;
 }
+
+/* ============================================================================
+   UI/UX DESIGN SYSTEM REFINEMENTS & ACCESSIBILITY BEST PRACTICES
+   - Keyboard focus-visible rings
+   - Unified Status & Onboarding Callouts (.aaa-status-callout)
+   - Harmonized Top Navigation Bar & Active Indicator
+   - 100-Card Grimoire Progress Bar & Empty Filter State
+   - Sculpted Achievement Badges
+   ============================================================================ */
+
+/* 1. Keyboard Focus Ring Accessibility */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid rgba(250, 204, 21, 0.85);
+  outline-offset: 2px;
+}
+
+/* 2. Harmonized Top Navigation Bar & Active Tab Indicator */
+.top-navbar {
+  min-height: 52px;
+  padding: 6px 1.1rem;
+  background: rgba(9, 11, 16, 0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+}
+
+.nav-tabs {
+  gap: 0.2rem;
+  padding: 3px 5px;
+  border-radius: 6px;
+  background: rgba(7, 10, 18, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-tab-btn {
+  position: relative;
+  padding: 0.38rem 0.68rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  border-radius: 4px;
+  color: #94a3b8;
+  transition: color 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+
+.nav-tab-btn:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.nav-tab-btn.active {
+  color: #fef08a;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.14) 0%, rgba(212, 175, 55, 0.05) 100%);
+  border-color: rgba(212, 175, 55, 0.42);
+}
+
+.nav-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: #fde047;
+  box-shadow: 0 0 8px rgba(253, 224, 71, 0.8);
+}
+
+.nav-right-controls .gold-pill,
+.nav-right-controls .btn-fantasy {
+  height: 30px;
+  padding: 0 0.72rem !important;
+  font-size: 0.65rem !important;
+  border-radius: 5px;
+  transition: all 0.16s ease;
+}
+
+.nav-right-controls .gold-pill:hover {
+  border-color: rgba(250, 204, 21, 0.75);
+  background: rgba(212, 175, 55, 0.15);
+  transform: translateY(-1px);
+}
+
+.nav-account-pill {
+  border-color: rgba(250, 204, 21, 0.55) !important;
+  background: linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95)) !important;
+  color: #fef08a !important;
+  gap: 0.45rem !important;
+  cursor: pointer;
+}
+
+.nav-account-pill:hover {
+  border-color: #fde047 !important;
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.22);
+}
+
+.nav-account-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.8);
+}
+
+.nav-account-dot.is-guest {
+  background: #fbbf24;
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.7);
+}
+
+.nav-account-badge {
+  margin-left: 0.15rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(250, 204, 21, 0.16);
+  border: 1px solid rgba(250, 204, 21, 0.42);
+  font-size: 0.58rem;
+  color: #fde047;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+/* 3. Unified Architectural Status & Onboarding Callout Banners */
+.aaa-status-callout {
+  padding: 0.9rem 1.2rem;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(18, 24, 38, 0.95), rgba(11, 14, 22, 0.98));
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  border-left: 3px solid #d4af37;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.aaa-status-callout.is-onboarding {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(11, 15, 25, 0.96));
+  border-color: rgba(250, 204, 21, 0.58);
+  border-left: 3px solid #fde047;
+}
+
+.aaa-status-callout.is-guest {
+  background: linear-gradient(135deg, rgba(30, 22, 48, 0.9), rgba(11, 15, 25, 0.96));
+  border-color: rgba(212, 175, 55, 0.38);
+  border-left: 3px solid #d4af37;
+}
+
+.aaa-callout-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 240px;
+}
+
+.aaa-callout-kicker {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #fde047;
+  text-transform: uppercase;
+}
+
+.aaa-callout-title {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.aaa-callout-text {
+  font-size: 0.81rem;
+  color: #cbd5e1;
+  line-height: 1.48;
+}
+
+.aaa-callout-text strong {
+  color: #fde68a;
+}
+
+/* 4. 100-Card DeckBuilder Progress Track & Empty Filter State */
+.db-deck-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.db-deck-progress-bar {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.db-deck-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+  transition: width 0.22s ease, background 0.22s ease;
+}
+
+.db-deck-progress-fill.is-complete {
+  background: linear-gradient(90deg, #059669, #34d399);
+}
+
+.db-deck-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: #94a3b8;
+}
+
+.db-deck-progress-meta strong.is-complete {
+  color: #4ade80;
+}
+
+.db-catalog-empty-state {
+  grid-column: 1 / -1;
+  padding: 3rem 1.5rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  background: rgba(11, 15, 25, 0.88);
+  border: 1px dashed rgba(212, 175, 55, 0.35);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* 5. Sculpted Roman Achievement Medallions */
+.exp-ach-emblem {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: #fde68a;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.exp-achievement-card.is-unlocked .exp-ach-emblem {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.28), rgba(146, 64, 14, 0.45));
+  border-color: #fde047;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
+}
+

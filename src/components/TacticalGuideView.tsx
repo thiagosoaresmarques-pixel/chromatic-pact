@@ -853,7 +853,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             <div className="tg-asymmetry-bars">
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span>🐾 Criaturas ({playerProfile.vanguardCount} Vang. / {playerProfile.rearguardCount - playerProfile.counts.relic - playerProfile.counts.reaction} Ret.)</span>
+                  <span><i className="dot-c" /> Criaturas ({playerProfile.vanguardCount} Vang. / {playerProfile.rearguardCount - playerProfile.counts.relic - playerProfile.counts.reaction} Ret.)</span>
                   <strong>{playerProfile.counts.creature} cartas ({playerProfile.pcts.creature}%)</strong>
                 </div>
                 <div className="tg-asym-track">
@@ -866,7 +866,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span>✨ Feitiços (Magias de Ação & Área)</span>
+                  <span><i className="dot-s" /> Feitiços (Magias de Ação & Área)</span>
                   <strong>{playerProfile.counts.spell} cartas ({playerProfile.pcts.spell}%)</strong>
                 </div>
                 <div className="tg-asym-track">
@@ -879,7 +879,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span>🪤 Reações (Emboscadas de Retaguarda)</span>
+                  <span><i className="dot-r" /> Reações (Emboscadas de Retaguarda)</span>
                   <strong>{playerProfile.counts.reaction} cartas ({playerProfile.pcts.reaction}%)</strong>
                 </div>
                 <div className="tg-asym-track">
@@ -892,7 +892,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span>🏛️ Relíquias (Motores Contínuos)</span>
+                  <span><i className="dot-l" /> Relíquias (Motores Contínuos)</span>
                   <strong>{playerProfile.counts.relic} cartas ({playerProfile.pcts.relic}%)</strong>
                 </div>
                 <div className="tg-asym-track">
@@ -1044,7 +1044,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             {/* General Tactics vs Enemy Composition */}
             <div className="tg-section-block">
               <h4 className="font-cinzel tg-sec-heading">
-                🎯 1. Tática Geral & Como Explorar a Assimetria Inimiga
+                I. Tática Geral & Como Explorar a Assimetria Inimiga
               </h4>
               <p>{activeMatchup.generalTactics}</p>
             </div>
@@ -1052,7 +1052,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             {/* Mulligan & Channeling Priority */}
             <div className="tg-section-block">
               <h4 className="font-cinzel tg-sec-heading">
-                🃏 2. Mão Inicial (Mulligan) & Prioridade de Canalização
+                II. Mão Inicial (Mulligan) & Prioridade de Canalização
               </h4>
               <p>{activeMatchup.mulliganAndChannelGuide}</p>
             </div>
@@ -1060,7 +1060,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             {/* Critical Threat Turn & Enemy Traps */}
             <div className="tg-section-block warn-block">
               <h4 className="font-cinzel tg-sec-heading">
-                ⚠️ 3. Turno de Perigo & O Que Antecipar (Emboscadas / Área)
+                III. Turno de Perigo & O Que Antecipar (Emboscadas / Área)
               </h4>
               <p>{activeMatchup.criticalThreatTurn}</p>
             </div>
@@ -1068,7 +1068,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             {/* Win Condition Path */}
             <div className="tg-section-block win-block">
               <h4 className="font-cinzel tg-sec-heading">
-                👑 4. Caminho para a Vitória no Duelo
+                IV. Caminho para a Vitória no Duelo
               </h4>
               <p>{activeMatchup.winConditionPath}</p>
             </div>

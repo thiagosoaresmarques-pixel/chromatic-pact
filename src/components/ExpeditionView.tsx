@@ -3,6 +3,7 @@ import { CampaignBoss, CardDefinition, CardType, Domain } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import { playSfx } from '../utils/soundEngine';
+import { VICTORY_GOLD_REWARD } from '../utils/multiplayerEngine';
 import { CardView, CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 
@@ -295,7 +296,7 @@ export interface ExpeditionViewProps {
 export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
   onStartExpeditionBattle,
   onSaveCustomDeck,
-  onRewardGold,
+  onRewardGold: _onRewardGold,
   lastClearedExpeditionBossId,
   isGuest = false,
   onRequireAccount,
@@ -360,7 +361,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
         clearedStages: nextCleared,
         currentStage: Math.min(7, boss.stage + 1),
         lootPending: !isAllCleared,
-        totalGoldEarned: prev.totalGoldEarned + boss.rewardGold,
+        totalGoldEarned: prev.totalGoldEarned + VICTORY_GOLD_REWARD,
       };
     });
   }, [lastClearedExpeditionBossId]);
@@ -467,33 +468,6 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
     setTimeout(() => setToastMsg(null), 3200);
   };
 
-  const handleClaimStageVictorySim = (stageBoss: CampaignBoss) => {
-    // Allows advancing or testing the gauntlet reward flow
-    onRewardGold(stageBoss.rewardGold);
-    playSfx('victory');
-    const highTier = ALL_CARDS.filter((c) => c.rarity === 'legendary' || c.rarity === 'rare');
-    const picks: CardDefinition[] = [];
-    for (let i = 0; i < 3; i += 1) {
-      picks.push(highTier[Math.floor(Math.random() * highTier.length)] ?? ALL_CARDS[i]);
-    }
-    setLootChoices(picks);
-
-    setRunState((prev) => {
-      const nextCleared = prev.clearedStages.includes(stageBoss.stage)
-        ? prev.clearedStages
-        : [...prev.clearedStages, stageBoss.stage];
-      const allDone = nextCleared.length >= 7;
-      return {
-        ...prev,
-        phase: allDone ? 'completed' : 'trail',
-        clearedStages: nextCleared,
-        currentStage: Math.min(7, stageBoss.stage + 1),
-        lootPending: !allDone,
-        totalGoldEarned: prev.totalGoldEarned + stageBoss.rewardGold,
-      };
-    });
-  };
-
   const handleSaveExpeditionDeckToGrimoire = () => {
     if (runState.deckCardIds.length < 40) return;
     const name = `Expedição: ${activeBlessing?.name ?? 'Vazio'}`;
@@ -502,7 +476,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
       name,
       cardIds: runState.deckCardIds.slice(0, 100),
     });
-    setToastMsg(`✅ Grimório "${name}" salvo nos seus Decks Personalizados!`);
+    setToastMsg(`Grimório "${name}" salvo nos seus Decks Personalizados!`);
     setTimeout(() => setToastMsg(null), 3200);
   };
 
@@ -566,21 +540,13 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
       </header>
 
       {isGuest && (
-        <div
-          style={{
-            padding: '0.85rem 1.1rem',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
-            border: '1px solid rgba(250, 204, 21, 0.45)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '1rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
-            <strong style={{ color: '#fde047' }}>Modo Visitante:</strong> você pode conhecer as Bênçãos e etapas da Expedição do Vazio. Para iniciar uma travessia roguelite, entre ou crie sua Conta de Soberano.
+        <div className="aaa-status-callout is-guest">
+          <div className="aaa-callout-copy">
+            <span className="aaa-callout-kicker">MODO VISITANTE • NAVEGAÇÃO LIVRE</span>
+            <span className="aaa-callout-title">Expedição do Vazio (Roguelite)</span>
+            <p className="aaa-callout-text">
+              Você pode conhecer as Bênçãos e etapas da Expedição do Vazio. Para iniciar uma travessia roguelite e ganhar <strong>+{VICTORY_GOLD_REWARD} Ouro por vitória</strong>, entre ou crie sua Conta de Soberano.
+            </p>
           </div>
           {onRequireAccount && (
             <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireAccount}>
@@ -715,10 +681,10 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
             </h3>
 
             <div className="db-metrics-legend" style={{ marginBottom: '0.75rem' }}>
-              <span>🐾 {deckStats.counts.creature} Criat.</span>
-              <span>✨ {deckStats.counts.spell} Feit.</span>
-              <span>🪤 {deckStats.counts.reaction} Reaç.</span>
-              <span>🏛️ {deckStats.counts.relic} Relíq.</span>
+              <span><i className="dot-c" /> {deckStats.counts.creature} Criat.</span>
+              <span><i className="dot-s" /> {deckStats.counts.spell} Feit.</span>
+              <span><i className="dot-r" /> {deckStats.counts.reaction} Reaç.</span>
+              <span><i className="dot-l" /> {deckStats.counts.relic} Relíq.</span>
             </div>
 
             <div className="db-mini-curve" style={{ marginBottom: '0.9rem' }}>
@@ -830,7 +796,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                     </div>
                     <div className="aaa-boss-row-stats">
                       <span>{stageBoss.startingHp} PV</span>
-                      <span className="gold-text">+{stageBoss.rewardGold}</span>
+                      <span className="gold-text">+{VICTORY_GOLD_REWARD}</span>
                     </div>
                   </div>
                 );
@@ -864,7 +830,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   </div>
                   <div className="aaa-metric-box">
                     <span className="aaa-metric-lbl">RECOMPENSA</span>
-                    <span className="aaa-metric-val gold-text">+{currentBoss.rewardGold} OURO</span>
+                    <span className="aaa-metric-val gold-text">+{VICTORY_GOLD_REWARD} OURO</span>
                   </div>
                   <div className="aaa-metric-box">
                     <span className="aaa-metric-lbl">SEU DECK DRAFTADO</span>
@@ -890,23 +856,15 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                     className="aaa-btn aaa-btn-primary aaa-btn-lg"
                     onClick={() => onStartExpeditionBattle(currentBoss, runState.deckCardIds)}
                   >
-                    ⚔️ INICIAR BATALHA DA ETAPA {currentBoss.stage}/7
+                    INICIAR BATALHA DA ETAPA {currentBoss.stage}/7
                   </button>
 
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-secondary"
-                    onClick={() => handleClaimStageVictorySim(currentBoss)}
-                  >
-                    ✨ Coletar Espólios da Etapa {currentBoss.stage}
-                  </button>
-
-                  <button
-                    type="button"
-                    className="aaa-btn aaa-btn-ghost"
                     onClick={handleSaveExpeditionDeckToGrimoire}
                   >
-                    💾 Salvar este Deck no Grimório
+                    Salvar este Deck no Grimório
                   </button>
                 </div>
               </div>

@@ -249,21 +249,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       </header>
 
       {isGuest ? (
-        <div
-          style={{
-            padding: '0.85rem 1.1rem',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
-            border: '1px solid rgba(250, 204, 21, 0.45)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '1rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
-            <strong style={{ color: '#fde047' }}>Modo Visitante:</strong> você pode inspecionar os 20 Soberanos da Campanha. Para desafiar os chefes com seu próprio Grimório de 100 cartas e ganhar <strong>+{VICTORY_GOLD_REWARD} Ouro por vitória</strong>, entre ou crie sua conta.
+        <div className="aaa-status-callout is-guest">
+          <div className="aaa-callout-copy">
+            <span className="aaa-callout-kicker">MODO VISITANTE • NAVEGAÇÃO LIVRE</span>
+            <span className="aaa-callout-title">Inspeção da Campanha Histórica</span>
+            <p className="aaa-callout-text">
+              Você pode inspecionar os 20 Soberanos e os 5 Atos da Campanha. Para desafiar os chefes com seu próprio Grimório de 100 cartas e ganhar <strong>+{VICTORY_GOLD_REWARD} Ouro por vitória</strong>, entre ou crie sua conta.
+            </p>
           </div>
           {onRequireAccount && (
             <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireAccount}>
@@ -272,21 +264,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           )}
         </div>
       ) : customDecks.length === 0 ? (
-        <div
-          style={{
-            padding: '0.85rem 1.1rem',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.16), rgba(15, 23, 42, 0.95))',
-            border: '1px solid #fde047',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '1rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ fontSize: '0.82rem', color: '#e2e8f0', lineHeight: 1.45 }}>
-            <strong style={{ color: '#fde047' }}>Grimório de Combate Necessário:</strong> antes de iniciar sua Campanha, monte e salve seu Grimório de 100 cartas na seção <strong>Grimório</strong>.
+        <div className="aaa-status-callout is-onboarding">
+          <div className="aaa-callout-copy">
+            <span className="aaa-callout-kicker">ETAPA OBRIGATÓRIA • JORNADA DO SOBERANO</span>
+            <span className="aaa-callout-title">Grimório de Combate Necessário</span>
+            <p className="aaa-callout-text">
+              Antes de iniciar sua Campanha, monte e salve seu Grimório de 100 cartas na seção <strong>Grimório</strong>.
+            </p>
           </div>
           {onRequireDeckSetup && (
             <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireDeckSetup}>

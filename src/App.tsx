@@ -249,7 +249,7 @@ export const App: React.FC = () => {
     () => [
       {
         id: 'ach_first_blood',
-        icon: '⚔️',
+        icon: 'I',
         title: 'Sangue na Arena',
         desc: 'Conquiste sua primeira vitória em duelos na Arena ou na Campanha.',
         progress: `${arenaWins + defeatedBossIds.length} vitórias`,
@@ -257,7 +257,7 @@ export const App: React.FC = () => {
       },
       {
         id: 'ach_act_v',
-        icon: '👑',
+        icon: 'II',
         title: 'Regicida dos Cinco Atos',
         desc: 'Subjugue os Soberanos da Campanha até os Tronos Tripartidos.',
         progress: `${defeatedBossIds.length}/20 Soberanos`,
@@ -265,7 +265,7 @@ export const App: React.FC = () => {
       },
       {
         id: 'ach_collector',
-        icon: '💎',
+        icon: 'III',
         title: 'Guardião do Códice',
         desc: 'Reúna todas as criaturas, relíquias e feitiços dos Cinco Domínios.',
         progress: `${uniqueUnlockedCount}/${ALL_CARDS.length} Ecos`,
@@ -273,9 +273,9 @@ export const App: React.FC = () => {
       },
       {
         id: 'ach_decksmith',
-        icon: '📜',
+        icon: 'IV',
         title: 'Arquiteto do Pacto',
-        desc: 'Forje e consagre um grimório autoral para os campos de batalha.',
+        desc: 'Forje e consagre um grimório autoral de 100 cartas para os campos de batalha.',
         progress: `${customDecks.length} criados`,
         unlocked: customDecks.length >= 1,
       },
@@ -405,43 +405,23 @@ export const App: React.FC = () => {
 
         <div className="nav-right-controls">
           <div
-            className="gold-pill"
+            className="gold-pill nav-account-pill"
             onClick={() =>
               setAccountModalState({
                 open: true,
                 tab: isUnregisteredProfile(currentUser) ? 'create' : 'profile',
               })
             }
-            style={{
-              cursor: 'pointer',
-              borderColor: 'rgba(250, 204, 21, 0.55)',
-              background: 'linear-gradient(135deg, rgba(30, 22, 48, 0.92), rgba(15, 23, 42, 0.95))',
-              color: '#fef08a',
-              gap: '0.45rem',
-            }}
             title="Clique para abrir seu Perfil do Soberano, Entrar ou Criar Conta"
           >
-            <span>👤</span>
+            <span className={`nav-account-dot ${isGuest ? 'is-guest' : ''}`} />
             {isUnregisteredProfile(currentUser) ? (
               <span style={{ fontWeight: 800 }}>ENTRAR / CRIAR CONTA</span>
             ) : (
               <>
                 <span style={{ fontWeight: 800 }}>{currentUser.username}</span>
-                <span style={{ opacity: 0.78, fontSize: '0.7rem' }}>({currentUser.eloRating})</span>
-                <span
-                  style={{
-                    marginLeft: '0.2rem',
-                    padding: '1px 6px',
-                    borderRadius: '4px',
-                    background: 'rgba(250, 204, 21, 0.18)',
-                    border: '1px solid rgba(250, 204, 21, 0.45)',
-                    fontSize: '0.62rem',
-                    color: '#fde047',
-                    fontWeight: 800,
-                  }}
-                >
-                  PERFIL
-                </span>
+                <span style={{ opacity: 0.78, fontSize: '0.68rem' }}>({currentUser.eloRating})</span>
+                <span className="nav-account-badge">PERFIL</span>
               </>
             )}
           </div>
@@ -450,6 +430,7 @@ export const App: React.FC = () => {
             className="gold-pill"
             onClick={() => setActiveTab('packs')}
             style={{ cursor: 'pointer' }}
+            title="Saldo de Ouro (+10 Ouro por vitória) — Clique para abrir o Relicário"
           >
             <span className="gold-gem-dot" />
             <span>{gold} OURO</span>
@@ -460,7 +441,6 @@ export const App: React.FC = () => {
             className={`btn-fantasy ${
               !soundMuted && musicInfo.stage === 'climax' ? 'btn-fantasy-danger' : ''
             }`}
-            style={{ padding: '0.35rem 0.7rem', fontSize: '0.72rem', letterSpacing: '0.05em' }}
             onClick={handleToggleSound}
             title={
               soundMuted
@@ -478,39 +458,26 @@ export const App: React.FC = () => {
       {/* Main Content View */}
       <main style={{ flex: 1 }}>
         {!isGuest && customDecks.length === 0 && activeTab !== 'deckbuilder' && (
-          <div
-            style={{
-              maxWidth: '1540px',
-              margin: '0.6rem auto 0',
-              padding: '0.7rem 1.15rem',
-              borderRadius: '10px',
-              background:
-                'linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(15, 23, 42, 0.96))',
-              border: '1.5px solid rgba(250, 204, 21, 0.65)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '1rem',
-              flexWrap: 'wrap',
-            }}
-          >
-            <div>
-              <div className="aaa-kicker" style={{ color: '#fef08a' }}>
-                📜 PASSO OBRIGATÓRIO • CONTA: {currentUser.username.toUpperCase()}
+          <div style={{ maxWidth: '1380px', margin: '0.85rem auto 0', padding: '0 1.75rem' }}>
+            <div className="aaa-status-callout is-onboarding">
+              <div className="aaa-callout-copy">
+                <span className="aaa-callout-kicker">
+                  PASSO INICIAL OBRIGATÓRIO • CONTA: {currentUser.username.toUpperCase()}
+                </span>
+                <div className="aaa-callout-text">
+                  Para entrar em combate, monte e confirme primeiro o seu{' '}
+                  <strong>Grimório de Combate (100 cartas)</strong> escolhendo um dos 5 decks
+                  iniciais, editando-o ou criando do zero.
+                </div>
               </div>
-              <div style={{ fontSize: '0.84rem', color: '#e2e8f0', marginTop: '2px' }}>
-                Para entrar em combate, monte e confirme primeiro o seu{' '}
-                <strong style={{ color: '#fde047' }}>Grimório de Combate (100 cartas)</strong>{' '}
-                escolhendo um dos 5 decks iniciais, editando-o ou criando do zero.
-              </div>
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-primary"
+                onClick={() => setActiveTab('deckbuilder')}
+              >
+                Forjar Meu Grimório (100 Cartas) →
+              </button>
             </div>
-            <button
-              type="button"
-              className="aaa-btn aaa-btn-primary"
-              onClick={() => setActiveTab('deckbuilder')}
-            >
-              Forjar Meu Grimório (100 Cartas) →
-            </button>
           </div>
         )}
 
@@ -708,7 +675,7 @@ export const App: React.FC = () => {
                     key={ach.id}
                     className={`exp-achievement-card ${ach.unlocked ? 'is-unlocked' : ''}`}
                   >
-                    <span className="exp-ach-icon">{ach.icon}</span>
+                    <span className="exp-ach-emblem">{ach.icon}</span>
                     <div>
                       <div className="font-cinzel exp-ach-title">{ach.title}</div>
                       <div className="exp-ach-desc">{ach.desc}</div>

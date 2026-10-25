@@ -15,6 +15,8 @@ import { EPIC_POEM_PARALLEL_PART_9 } from './epicPoemParallelPart9';
 import { EPIC_POEM_PARALLEL_PART_10 } from './epicPoemParallelPart10';
 import { EPIC_POEM_PARALLEL_PART_11 } from './epicPoemParallelPart11';
 import { EPIC_POEM_PARALLEL_PART_12 } from './epicPoemParallelPart12';
+import { EPIC_POEM_PARALLEL_PART_13 } from './epicPoemParallelPart13';
+import { EPIC_POEM_PARALLEL_PART_14 } from './epicPoemParallelPart14';
 
 /**
  * O GRANDE POEMA ÉPICO DE VAELORIA — A CANÇÃO DA FRATURA CROMÁTICA (∞ A.F. — 1.240 D.F.)
@@ -55,6 +57,8 @@ const RAW_PARALLEL_CANTOS: EpicPoemCanto[] = [
   ...EPIC_POEM_PARALLEL_PART_10,
   ...EPIC_POEM_PARALLEL_PART_11,
   ...EPIC_POEM_PARALLEL_PART_12,
+  ...EPIC_POEM_PARALLEL_PART_13,
+  ...EPIC_POEM_PARALLEL_PART_14,
 ];
 
 /**

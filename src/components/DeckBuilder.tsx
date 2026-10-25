@@ -207,6 +207,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 }) => {
   const isFirstDeckSetup = !isGuest && customDecks.length === 0;
   const hasFreeCatalogSelection = isGuest || isFirstDeckSetup;
+  const totalOwnedCopies = useMemo(
+    () => Object.values(unlockedCardIds).reduce((acc, v) => acc + (v > 0 ? v : 0), 0),
+    [unlockedCardIds]
+  );
+  const canModifySavedGrimoire = isGuest || isFirstDeckSetup || totalOwnedCopies > 100;
 
   // Filters
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
@@ -232,6 +237,15 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const [deckCardIds, setDeckCardIds] = useState<string[]>(
     () => customDecks[0]?.cardIds ?? MONOCHROMATIC_STARTER_DECKS[0]?.cardIds ?? PREBUILT_DECKS[0]?.cardIds ?? []
   );
+
+  // Sync active deck when user switches account or saves their first Grimório
+  useEffect(() => {
+    if (customDecks.length > 0 && !customDecks.some((d) => d.id === editingDeckId)) {
+      setDeckName(customDecks[0].name);
+      setEditingDeckId(customDecks[0].id);
+      setDeckCardIds([...customDecks[0].cardIds]);
+    }
+  }, [customDecks, editingDeckId]);
 
   // Modals
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
@@ -631,15 +645,25 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     [deckCardIds.length, deckCountsById, deckAnalysis.legendaryCount, hasFreeCatalogSelection, unlockedCardIds]
   );
 
-  const handleRemoveCardFromDeck = useCallback((cardId: string) => {
-    setDeckCardIds((prev) => {
-      const idx = prev.indexOf(cardId);
-      if (idx === -1) return prev;
-      const copy = [...prev];
-      copy.splice(idx, 1);
-      return copy;
-    });
-  }, []);
+  const handleRemoveCardFromDeck = useCallback(
+    (cardId: string) => {
+      if (!canModifySavedGrimoire) {
+        setSaveBanner(
+          '🔒 Grimório Consagrado! Adquira novas cartas no Relicário (+10 Ouro por vitória) para poder substituir cartas do seu Grimório.'
+        );
+        setTimeout(() => setSaveBanner(null), 3500);
+        return;
+      }
+      setDeckCardIds((prev) => {
+        const idx = prev.indexOf(cardId);
+        if (idx === -1) return prev;
+        const copy = [...prev];
+        copy.splice(idx, 1);
+        return copy;
+      });
+    },
+    [canModifySavedGrimoire]
+  );
 
   const handleAutoCompleteDeck = () => {
     if (deckCardIds.length >= 100) return;
@@ -688,6 +712,18 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       setTimeout(() => setSaveBanner(null), 3500);
       return;
     }
+    if (!isFirstDeckSetup) {
+      for (const [cardId, count] of Object.entries(deckCountsById)) {
+        const owned = unlockedCardIds[cardId] ?? 0;
+        if (count > owned) {
+          setSaveBanner(
+            'Apenas cartas presentes na sua coleção (Grimório Inicial + aquisições no Relicário) podem compor seu Grimório!'
+          );
+          setTimeout(() => setSaveBanner(null), 3500);
+          return;
+        }
+      }
+    }
     const cleanName = deckName.trim() || 'Grimório do Soberano';
     onSaveCustomDeck({
       id: editingDeckId,
@@ -699,6 +735,13 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   };
 
   const handleLoadPrebuilt = (prebuiltId: string) => {
+    if (!isGuest && !isFirstDeckSetup) {
+      setSaveBanner(
+        '🔒 Seu Grimório inicial já foi consagrado! Novos cards só podem ser integrados mediante aquisições no Relicário.'
+      );
+      setTimeout(() => setSaveBanner(null), 3500);
+      return;
+    }
     const found = PREBUILT_DECKS.find((d) => d.id === prebuiltId);
     if (!found) return;
     setActiveGuideDeckId(prebuiltId);
@@ -854,6 +897,23 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               >
                 Criar do Zero (0/100)
               </button>
+            </div>
+          </div>
+        ) : !canModifySavedGrimoire ? (
+          <div className="aaa-status-callout" style={{ marginBottom: '0.85rem' }}>
+            <div>
+              <div className="aaa-callout-kicker">
+                GRIMÓRIO CONSAGRADO (100/100 CARTAS){' '}
+                {username ? `• ${username.toUpperCase()}` : ''}
+              </div>
+              <div className="aaa-callout-title">
+                Alterações no Grimório apenas mediante aquisições no Relicário
+              </div>
+              <div className="aaa-callout-text">
+                Seu Grimório inicial de 100 cartas está selado. Conquiste vitórias (+10 Ouro por
+                vitória) e abra pacotes no <strong>Relicário</strong> para desbloquear novas cartas
+                e poder substituí-las no seu Grimório.
+              </div>
             </div>
           </div>
         ) : null}
@@ -1224,22 +1284,24 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             </div>
           </div>
 
-          <select
-            className="db-prebuilt-select"
-            value=""
-            onChange={(e) => {
-              if (e.target.value) handleLoadPrebuilt(e.target.value);
-            }}
-          >
-            <option value="" disabled>
-              Carregar um dos 5 Grimórios Iniciais...
-            </option>
-            {MONOCHROMATIC_STARTER_DECKS.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name} — {d.subtitle}
+          {(isGuest || isFirstDeckSetup) && (
+            <select
+              className="db-prebuilt-select"
+              value=""
+              onChange={(e) => {
+                if (e.target.value) handleLoadPrebuilt(e.target.value);
+              }}
+            >
+              <option value="" disabled>
+                Carregar um dos 5 Grimórios Iniciais...
               </option>
-            ))}
-          </select>
+              {MONOCHROMATIC_STARTER_DECKS.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name} — {d.subtitle}
+                </option>
+              ))}
+            </select>
+          )}
 
           {customDecks.length > 0 && (
             <div className="db-saved-decks-row">
@@ -1252,13 +1314,15 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                   >
                     {cd.name}
                   </button>
-                  <button
-                    type="button"
-                    className="db-saved-del-btn"
-                    onClick={() => onDeleteCustomDeck(cd.id)}
-                  >
-                    ✕
-                  </button>
+                  {customDecks.length > 1 && (
+                    <button
+                      type="button"
+                      className="db-saved-del-btn"
+                      onClick={() => onDeleteCustomDeck(cd.id)}
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -1292,13 +1356,15 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             >
               Completar
             </button>
-            <button
-              type="button"
-              className="db-action-btn subtle-danger"
-              onClick={() => setDeckCardIds([])}
-            >
-              Limpar
-            </button>
+            {(isGuest || isFirstDeckSetup) && (
+              <button
+                type="button"
+                className="db-action-btn subtle-danger"
+                onClick={() => setDeckCardIds([])}
+              >
+                Limpar
+              </button>
+            )}
           </div>
 
           {saveBanner && <div className="db-save-toast">{saveBanner}</div>}

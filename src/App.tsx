@@ -451,7 +451,7 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteCustomDeck = (deckId: string) => {
-    if (isGuest) return;
+    if (isGuest || customDecks.length <= 1) return;
     const nextDecks = customDecks.filter((d) => d.id !== deckId);
     updateCurrentUserProgression({
       customDecks: nextDecks,

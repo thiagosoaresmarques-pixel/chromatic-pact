@@ -890,7 +890,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Queima o Soberano inimigo em 2 de dano."
       }
     ],
-    "description": "Relíquia Lendária (6 VIDA, 1 ARM). Ao Entrar: Causa 3 de dano à Vanguarda inimiga. Fim do Turno: Causa 2 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Causa 3 de dano à Vanguarda inimiga. Fim do Turno: Causa 2 de dano ao Soberano rival.",
     "flavorText": "Forjada com a primeira escama caída do trono pentacromático.",
     "imagePath": "/assets/cards/red_28_coroa_cinzas.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, floating crown of red dragon horns and levitating rubies radiating fiery shockwaves."
@@ -2128,7 +2128,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Causa 2 de dano ao Soberano rival."
       }
     ],
-    "description": "Relíquia Lendária (6 VIDA, 1 ARM). Ao Entrar: Congela a Vanguarda inimiga e compra 1 carta. Início do Turno: Congela 1 inimigo.",
+    "description": "Ao Entrar: Congela a Vanguarda inimiga e compra 1 carta. Início do Turno: Congela 1 inimigo.",
     "flavorText": "No centro do ciclone reina o silêncio de quem tudo vê.",
     "imagePath": "/assets/cards/blue_28_orbe_tempestade.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, celestial brass astrolabe containing a miniature lightning storm and swirling galaxy."
@@ -5918,7 +5918,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Invoca uma Sentinela de Ferro (2/3)."
       }
     ],
-    "description": "Relíquia Lendária (6 VIDA, 1 ARM). Ao Entrar: Escudo Divino e +1/+1 aos aliados. Início do Turno: Cura +1 em todos os aliados.",
+    "description": "Ao Entrar: Escudo Divino e +1/+1 aos aliados. Início do Turno: Cura +1 em todos os aliados.",
     "flavorText": "Do alto do Zênite, cada sentença proferida se torna lei imutável.",
     "imagePath": "/assets/cards/gold_33_trono_celestial.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, floating throne of pure sun-gold and white marble flanked by angelic wings and clockwork halos."
@@ -6352,7 +6352,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Item Mágico Contínuo (4 VIDA). Ao Entrar: +2/+1 a um aliado e compra 1 carta. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: +2/+1 a um aliado e compra 1 carta. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Costuradas com plumas de águia real e banhadas nas correntes de ar das grandes altitudes.",
     "imagePath": "/assets/cards/neutral_11_botas_aladas.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, ornate leather and silver greaves with glowing white eagle wings hovering over a pedestal."
@@ -6393,7 +6393,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 1 de VIDA de um aliado."
       }
     ],
-    "description": "Item Mágico Contínuo (4 VIDA). Ao Entrar: Cura 3 no Soberano. Início do Turno: Cura 2 no Soberano e 1 em um aliado.",
+    "description": "Ao Entrar: Cura 3 no Soberano. Início do Turno: Cura 2 no Soberano e 1 em um aliado.",
     "flavorText": "A esmeralda engastada pulsa como um segundo coração.",
     "imagePath": "/assets/cards/neutral_12_anel_regeneracao.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, ancient gold ring set with a pulsing emerald gem radiating green healing energy."
@@ -6434,7 +6434,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Cura 1 de VIDA do seu Soberano."
       }
     ],
-    "description": "Item Mágico Contínuo (5 VIDA). Ao Entrar: Compra 2 cartas. Ao Lançar Feitiço: Drena 1 de VIDA do Soberano inimigo.",
+    "description": "Ao Entrar: Compra 2 cartas. Ao Lançar Feitiço: Drena 1 de VIDA do Soberano inimigo.",
     "flavorText": "Escrito em uma língua que todas as cinco tormentas compreendem.",
     "imagePath": "/assets/cards/neutral_13_grimorio_astral.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, astral spellbook with cosmic star-map pages floating in a ring of silver runes."
@@ -6470,7 +6470,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1 ATQ e +2 VIDA a um aliado."
       }
     ],
-    "description": "Item Mágico Contínuo (5 VIDA, 1 ARM). Ao Entrar: Escudo Divino aos aliados. Início do Turno: Concede +1/+2 a um aliado.",
+    "description": "Ao Entrar: Escudo Divino aos aliados. Início do Turno: Concede +1/+2 a um aliado.",
     "flavorText": "Leve como seda sob a túnica, impenetrável como escama de dragão.",
     "imagePath": "/assets/cards/neutral_14_armadura_mithral.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, gleaming silver mithral chainmail shirt radiating protective blue-white runes."
@@ -6511,7 +6511,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Compra 1 carta adicional."
       }
     ],
-    "description": "Item Mágico Contínuo (5 VIDA). Ao Entrar: Congela 2 inimigos e gera +1⚡. Início do Turno: Compra 1 carta adicional.",
+    "description": "Ao Entrar: Congela 2 inimigos e gera +1⚡. Início do Turno: Compra 1 carta adicional.",
     "flavorText": "Quem controla a queda dos grãos decide quem envelhece e quem ataca.",
     "imagePath": "/assets/cards/neutral_15_ampulheta_tempo.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, ornate golden hourglass filled with glowing stardust sand floating in a temporal rift."
@@ -6546,7 +6546,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Desfere um golpe astral causando 2 de dano a um inimigo."
       }
     ],
-    "description": "Item Mágico Contínuo (5 VIDA, 1 ARM). Ao Entrar: Causa 4 de dano a um inimigo. Início do Turno: Causa 2 de dano a um inimigo.",
+    "description": "Ao Entrar: Causa 4 de dano a um inimigo. Início do Turno: Causa 2 de dano a um inimigo.",
     "flavorText": "Um, dois! Um, dois! E através e através, a lâmina vorpal cantou.",
     "imagePath": "/assets/cards/neutral_16_lamina_vorpal.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, floating razor-sharp greatsword with a wicked violet-silver edge slicing through reality."
@@ -6593,7 +6593,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Lendária (6 VIDA, 1 ARM). Ao Entrar: +2⚡ e cura 2 em todos. Início do Turno: Gera +1⚡ e cura 2 no Soberano.",
+    "description": "Ao Entrar: +2⚡ e cura 2 em todos. Início do Turno: Gera +1⚡ e cura 2 no Soberano.",
     "flavorText": "Chumbo em ouro, ferida em vigor, mortal em eterno.",
     "imagePath": "/assets/cards/neutral_17_pedra_filosofal.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, radiant crimson-gold philosopher stone floating above alchemical transmutation circles."
@@ -10159,7 +10159,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua Lendária (1🛡️/6❤️). Ao Entrar: Dá +1/+1 aos aliados e compra 1 carta. Início do Turno: Gera +1⚡ e cura 2 no Soberano.",
+    "description": "Ao Entrar: Dá +1/+1 aos aliados e compra 1 carta. Início do Turno: Gera +1⚡ e cura 2 no Soberano.",
     "flavorText": "Rubi, safira, ametista, esmeralda e topázio: quem porta as cinco joias governa o pacto.",
     "imagePath": "/assets/cards/neutral_30_coroa_pactos.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), supreme royal crown set with five glowing elemental gems—red ruby, blue sapphire, purple amethyst, green emerald, and gold topaz."
@@ -13175,7 +13175,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Invoca uma Sentinela de Ferro (3/4) na Vanguarda."
       }
     ],
-    "description": "Relíquia Contínua Lendária (1🛡️/6❤️). Ao Entrar: Causa 4 a um inimigo e invoca Sentinela (3/4). Início do Turno: Dá +1/+1 a todos os aliados.",
+    "description": "Ao Entrar: Causa 4 a um inimigo e invoca Sentinela (3/4). Início do Turno: Dá +1/+1 a todos os aliados.",
     "flavorText": "Uma gota do primeiro sol solidificada em ouro eterno.",
     "imagePath": "/assets/cards/gold_72_talisma_bem.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), supreme legendary golden sun-medallion talisman with angelic wings and a core of pure white-gold starfire."
@@ -13489,7 +13489,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua Lendária (1🛡️/6❤️). Ao Entrar: Compra 2 cartas e causa 2 à Vanguarda rival. Ao Lançar Feitiço: Causa 2 a um inimigo e 2 ao Soberano rival.",
+    "description": "Ao Entrar: Compra 2 cartas e causa 2 à Vanguarda rival. Ao Lançar Feitiço: Causa 2 a um inimigo e 2 ao Soberano rival.",
     "flavorText": "O ápice da arte arcana, capaz de dobrar todas as escolas de magia.",
     "imagePath": "/assets/cards/neutral_40_cajado_magi.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), supreme archmage staff of dark ironwood and dragon-gold claws holding a levitating prism of pure arcane lightning."
@@ -14726,7 +14726,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Gera +1 de Essência."
       }
     ],
-    "description": "Relíquia Contínua Lendária (1🛡️/6❤️). Ao Entrar: Dá +1/+2 aos aliados. Início do Turno: Gera +1⚡ e cura 2 nos aliados.",
+    "description": "Ao Entrar: Dá +1/+2 aos aliados. Início do Turno: Gera +1⚡ e cura 2 nos aliados.",
     "flavorText": "Enquanto os ponteiros dourados girarem neste altar, nosso exército será eterno.",
     "imagePath": "/assets/cards/gold_90_trono_horas.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), grand celestial clock-throne of gold and white marble surrounded by haloed gears and sunbeams."
@@ -16743,7 +16743,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua Lendária (1🛡️/6❤️). Ao Entrar: Congela a Vanguarda rival e compra 1 carta. Início do Turno: Gera +1⚡ e dá +1/+1 aos aliados.",
+    "description": "Ao Entrar: Congela a Vanguarda rival e compra 1 carta. Início do Turno: Gera +1⚡ e dá +1/+1 aos aliados.",
     "flavorText": "Doze badaladas que ecoam desde o primeiro segundo da criação até o último suspiro das estrelas.",
     "imagePath": "/assets/cards/neutral_50_relogio_eternidade.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), colossal cosmic Clock of Eternity with golden zodiac rings, sapphire crystal face, and floating astral gears."
@@ -20032,7 +20032,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua Lendária (1🛡️/6❤️). Ao Entrar: Gera +2⚡ e cura 3 no Soberano. Início do Turno: Dá +1/+1 aos aliados e compra 1 carta.",
+    "description": "Ao Entrar: Gera +2⚡ e cura 3 no Soberano. Início do Turno: Dá +1/+1 aos aliados e compra 1 carta.",
     "flavorText": "Quem bebe do Graal Prismático comanda as cinco forças da criação como uma só.",
     "imagePath": "/assets/cards/neutral_60_calice_infinito.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), supreme legendary chalice set with five glowing elemental gems overflowing with prismatic starlight."
@@ -22925,7 +22925,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a todos os aliados."
       }
     ],
-    "description": "Relíquia Contínua Lendária (2🛡️/6❤️). Ao Entrar: Concede Escudo Divino aos aliados e cura 3 no Soberano. Início do Turno: Concede +1/+1 a todos os aliados.",
+    "description": "Ao Entrar: Concede Escudo Divino aos aliados e cura 3 no Soberano. Início do Turno: Concede +1/+1 a todos os aliados.",
     "flavorText": "Seus doze raios de diamante representam as doze leis eternas da Ordem.",
     "imagePath": "/assets/cards/gold_126_coroa_imperador_solar.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), supreme legendary Crown of the Solar Emperor levitating above a velvet-and-gold cushion with twelve diamond sun-rays."
@@ -24224,7 +24224,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Compra 1 carta."
       }
     ],
-    "description": "Relíquia Contínua Lendária (1🛡️/6❤️). Ao Entrar: Congela os inimigos. Início do Turno: Compra 1 carta.",
+    "description": "Ao Entrar: Congela os inimigos. Início do Turno: Compra 1 carta.",
     "flavorText": "Esculpido no primeiro iceberg do mundo, onde o tempo jamais corre.",
     "imagePath": "/assets/cards/blue_146_trono_inverno_eterno.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Majestic Throne of Eternal Winter carved from blue diamond ice."
@@ -24845,7 +24845,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua Lendária (1🛡️/6❤️). Ao Entrar: +1/+1 aos aliados. Início do Turno: Cura 2 de VIDA no seu Soberano.",
+    "description": "Ao Entrar: +1/+1 aos aliados. Início do Turno: Cura 2 de VIDA no seu Soberano.",
     "flavorText": "O diamante negro em sua fronte pulsa com mil anos de imortalidade.",
     "imagePath": "/assets/cards/purple_146_coroa_rei_cadaver.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), The Corpse-Kings Iron-and-Bone Crown set with a pulsing black-purple soul diamond."
@@ -26060,7 +26060,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a todos os aliados."
       }
     ],
-    "description": "Relíquia Lendária (2🛡️/7❤️). Ao Entrar: +1/+2 e Escudo Divino aos aliados. Início do Turno: +1/+1 aos aliados.",
+    "description": "Ao Entrar: +1/+2 e Escudo Divino aos aliados. Início do Turno: +1/+1 aos aliados.",
     "flavorText": "Do alto deste trono, nenhuma falange dourada jamais conheceu a derrota.",
     "imagePath": "/assets/cards/gold_146_trono_imperador_eterno.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Supreme Golden Throne of the Eternal Emperor flanked by floating solar shields."

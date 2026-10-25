@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
+import { CARDS_BY_ID } from '../data/cards';
 import {
   BoardUnit,
   CardDefinition,
@@ -152,7 +153,7 @@ export const CardView: React.FC<CardViewProps> = ({
   const [internalInspectCard, setInternalInspectCard] = useState<CardDefinition | null>(null);
   const cardRef = React.useRef<HTMLDivElement | null>(null);
 
-  const displayCard = unit?.card ?? card;
+  const displayCard = unit?.card ?? (CARDS_BY_ID[card.id] ?? card);
   const domainInfo = DOMAIN_META[displayCard.domain] || DOMAIN_META.neutral;
 
   // Real-time 3D Tilt, Multi-Layer Parallax & Specular Foil Glare
@@ -724,7 +725,8 @@ export interface CardInspectModalProps {
   onClose: () => void;
 }
 
-export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card, onClose }) => {
+export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card: rawCard, onClose }) => {
+  const card = CARDS_BY_ID[rawCard.id] ?? rawCard;
   const domainInfo = DOMAIN_META[card.domain] || DOMAIN_META.neutral;
 
   const modalContent = (

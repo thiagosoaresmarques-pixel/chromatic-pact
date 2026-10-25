@@ -1143,7 +1143,7 @@ export const App: React.FC = () => {
 
         {showcaseInspectCard && (
           <CardInspectModal
-            card={showcaseInspectCard}
+            card={CARDS_BY_ID[showcaseInspectCard.id] ?? showcaseInspectCard}
             onClose={() => setShowcaseInspectCard(null)}
           />
         )}

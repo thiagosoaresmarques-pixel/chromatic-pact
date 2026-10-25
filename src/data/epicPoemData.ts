@@ -5,6 +5,8 @@ import { EPIC_POEM_PART_3 } from './epicPoemPart3';
 import { EPIC_POEM_PART_4 } from './epicPoemPart4';
 import { EPIC_POEM_PARALLEL_PART_1 } from './epicPoemParallelPart1';
 import { EPIC_POEM_PARALLEL_PART_2 } from './epicPoemParallelPart2';
+import { EPIC_POEM_PARALLEL_PART_3 } from './epicPoemParallelPart3';
+import { EPIC_POEM_PARALLEL_PART_4 } from './epicPoemParallelPart4';
 
 /**
  * O GRANDE POEMA ÉPICO DE VAELORIA — A CANÇÃO DA FRATURA CROMÁTICA (∞ A.F. — 1.240 D.F.)
@@ -25,11 +27,24 @@ export const EPIC_POEM_CANTOS: EpicPoemCanto[] = [
 export const PARALLEL_EPIC_POEM_CANTOS: EpicPoemCanto[] = [
   ...EPIC_POEM_PARALLEL_PART_1,
   ...EPIC_POEM_PARALLEL_PART_2,
-];
+  ...EPIC_POEM_PARALLEL_PART_3,
+  ...EPIC_POEM_PARALLEL_PART_4,
+].sort((a, b) => (a.parallelCode || '').localeCompare(b.parallelCode || ''));
 
 export const PARALLEL_CANTO_BY_PARENT_ID: Record<string, EpicPoemCanto> = Object.fromEntries(
   PARALLEL_EPIC_POEM_CANTOS.filter((c) => c.parentCantoId).map((c) => [c.parentCantoId!, c])
 );
+
+export const PARALLEL_CANTOS_BY_PARENT_ID: Record<string, EpicPoemCanto[]> =
+  PARALLEL_EPIC_POEM_CANTOS.reduce<Record<string, EpicPoemCanto[]>>((acc, canto) => {
+    if (canto.parentCantoId) {
+      if (!acc[canto.parentCantoId]) {
+        acc[canto.parentCantoId] = [];
+      }
+      acc[canto.parentCantoId].push(canto);
+    }
+    return acc;
+  }, {});
 
 export const ALL_PARALLEL_POEM_NODES: EpicPoemNode[] = PARALLEL_EPIC_POEM_CANTOS.flatMap(
   (c) => c.nodes

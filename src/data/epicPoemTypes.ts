@@ -14,6 +14,8 @@ export interface EpicPoemNode {
   creatureOrder?: number;
   /** ID da carta ilustrada associada a este trecho do poema */
   cardId: string;
+  /** Se verdadeiro, oculta a ilustração neste segmento para fluir apenas como estrofes narrativas de transição */
+  hideCardArt?: boolean;
   /** Título poético do episódio ou nome próprio da criatura lendária */
   title: string;
   /** Subtítulo / epíteto ou resumo de 1 linha do marco histórico */

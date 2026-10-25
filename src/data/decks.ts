@@ -361,7 +361,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "green_09_hidra",
       "green_67_tiranossauro_alfa",
       "green_68_zaratan_ilha",
-      "green_102_hidra_venenosa",
       "green_01_goblin",
       "green_01_goblin",
       "green_01_goblin",
@@ -457,7 +456,8 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "green_79_anquilossauro_ferro",
       "green_75_druida_ciclos",
       "green_75_druida_ciclos",
-      "green_75_druida_ciclos"
+      "green_75_druida_ciclos",
+      "green_110_javali_couraca_pedra"
     ]
   },
   {
@@ -550,9 +550,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "gold_132_automato_custodio",
       "gold_132_automato_custodio",
       "gold_132_automato_custodio",
-      "gold_113_valquiria_alvorada",
-      "gold_113_valquiria_alvorada",
-      "gold_113_valquiria_alvorada",
       "gold_131_cavaleiro_pegaso_solar",
       "gold_131_cavaleiro_pegaso_solar",
       "gold_131_cavaleiro_pegaso_solar",
@@ -569,7 +566,10 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "gold_156_serafim_coroa_radiante",
       "gold_156_serafim_coroa_radiante",
       "gold_45_gigante_tempestade",
-      "gold_45_gigante_tempestade"
+      "gold_45_gigante_tempestade",
+      "gold_60_golem_bronze",
+      "gold_60_golem_bronze",
+      "gold_60_golem_bronze"
     ]
   },
   {
@@ -900,15 +900,15 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "neutral_11_botas_aladas",
       "neutral_11_botas_aladas",
       "neutral_11_botas_aladas",
-      "green_71_pedra_terra",
-      "green_71_pedra_terra",
       "green_75_druida_ciclos",
       "green_75_druida_ciclos",
       "green_75_druida_ciclos",
       "red_32_ritual_cinzas",
       "red_32_ritual_cinzas",
       "red_30_furia_sangue",
-      "green_51_crescimento_gigante"
+      "green_51_crescimento_gigante",
+      "green_108_semente_mundo",
+      "green_108_semente_mundo"
     ]
   },
   {
@@ -1189,8 +1189,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple_116_devorador_mentes",
       "red_134_senhor_guerra_rubro",
       "red_134_senhor_guerra_rubro",
-      "red_135_behemoth_piroclastico",
-      "red_135_behemoth_piroclastico",
       "purple_134_matriarca_noite_eterna",
       "purple_134_matriarca_noite_eterna",
       "purple_135_colosso_catacumba",
@@ -1231,8 +1229,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "red_145_emboscada_geiser",
       "red_145_emboscada_geiser",
       "red_164_armadilha_fissura_magma",
-      "red_146_coroa_chama_eterna",
-      "purple_146_coroa_rei_cadaver",
       "purple_89_ampulheta_sangue",
       "purple_89_ampulheta_sangue",
       "purple_89_ampulheta_sangue",
@@ -1247,7 +1243,11 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple_93_verme_necrotico",
       "purple_93_verme_necrotico",
       "purple_93_verme_necrotico",
-      "purple_50_pacto_proibido"
+      "purple_50_pacto_proibido",
+      "red_165_bigorna_fogo_primordial",
+      "purple_125_ataude_sangue",
+      "red_76_salamandra_vapor",
+      "red_76_salamandra_vapor"
     ]
   },
   {
@@ -1358,9 +1358,9 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "green_80_cobra_constritora_rei",
       "green_80_cobra_constritora_rei",
       "green_80_cobra_constritora_rei",
-      "green_133_gorila_costa_prateada_rei",
-      "green_133_gorila_costa_prateada_rei",
-      "green_133_gorila_costa_prateada_rei"
+      "green_79_anquilossauro_ferro",
+      "green_79_anquilossauro_ferro",
+      "green_79_anquilossauro_ferro"
     ]
   },
   {
@@ -1565,7 +1565,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple_145_orgao_catedrais_negras",
       "purple_165_calice_sangue_imortal",
       "purple_165_calice_sangue_imortal",
-      "purple_72_espelho_aprisionador",
       "gold_21_golem_barro",
       "gold_21_golem_barro",
       "gold_21_golem_barro",
@@ -1586,7 +1585,8 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple_96_abominacao_costurada",
       "purple_61_sombra_assassina",
       "purple_61_sombra_assassina",
-      "purple_61_sombra_assassina"
+      "purple_61_sombra_assassina",
+      "gold_32_estandarte_imperial"
     ]
   },
   {
@@ -1696,10 +1696,10 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "blue_72_incensario_ventos",
       "red_67_fornalha_interior",
       "red_67_fornalha_interior",
-      "blue_14_saqueador_abissal",
-      "blue_14_saqueador_abissal",
       "blue_30_visao_ancestral",
-      "blue_30_visao_ancestral"
+      "blue_30_visao_ancestral",
+      "red_30_furia_sangue",
+      "red_30_furia_sangue"
     ]
   },
   {
@@ -1740,8 +1740,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "red_116_hidra_vulcanica",
       "red_154_juggernaut_escoria",
       "red_154_juggernaut_escoria",
-      "purple_19_conde_vampiro",
-      "purple_19_conde_vampiro",
       "red_118_tita_basalto",
       "red_118_tita_basalto",
       "purple_117_conde_nosferatu",
@@ -1778,9 +1776,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "red_161_erupcao_piroclastica",
       "red_33_supernova_vulcanica",
       "red_33_supernova_vulcanica",
-      "red_51_cataclismo_draconico",
-      "red_51_cataclismo_draconico",
-      "red_69_ira_vulcao",
       "neutral_46_pausar_pensar",
       "neutral_46_pausar_pensar",
       "neutral_46_pausar_pensar",
@@ -1813,7 +1808,12 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "blue_65_estudo_runico",
       "blue_14_saqueador_abissal",
       "blue_14_saqueador_abissal",
-      "red_30_furia_sangue"
+      "red_30_furia_sangue",
+      "red_76_salamandra_vapor",
+      "red_76_salamandra_vapor",
+      "blue_30_visao_ancestral",
+      "red_67_fornalha_interior",
+      "red_67_fornalha_interior"
     ]
   },
   {
@@ -1982,7 +1982,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple_136_dragao_espectral_abismo",
       "purple_136_dragao_espectral_abismo",
       "purple_137_arauto_sol_negro",
-      "blue_68_parar_tempo",
       "blue_122_colapso_gravidade",
       "purple_48_toque_apodrecimento",
       "purple_48_toque_apodrecimento",
@@ -2020,8 +2019,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "gold_142_calice_alvorada_real",
       "gold_142_calice_alvorada_real",
       "gold_142_calice_alvorada_real",
-      "gold_52_calice_graal",
-      "gold_52_calice_graal",
       "blue_71_tigela_mares",
       "blue_71_tigela_mares",
       "gold_70_maca_ruptura",
@@ -2041,7 +2038,10 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "gold_144_obelisk_lei_suprema",
       "gold_144_obelisk_lei_suprema",
       "blue_165_planetario_horologico",
-      "gold_32_estandarte_imperial"
+      "gold_32_estandarte_imperial",
+      "blue_30_visao_ancestral",
+      "purple_36_trono_ossos",
+      "purple_36_trono_ossos"
     ]
   },
   {
@@ -2725,8 +2725,8 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "gold_29_martelo_trovao",
       "gold_29_martelo_trovao",
       "gold_29_martelo_trovao",
-      "green_107_altar_fera_antiga",
-      "green_107_altar_fera_antiga"
+      "gold_163_estandarte_legiao_dourada",
+      "gold_163_estandarte_legiao_dourada"
     ]
   },
   {
@@ -2821,7 +2821,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple_122_praga_necrotica",
       "green_123_crescimento_titanico",
       "green_123_crescimento_titanico",
-      "green_144_bencao_arvore_mundo",
       "green_35_fosso_vinhas",
       "green_35_fosso_vinhas",
       "green_35_fosso_vinhas",
@@ -2831,16 +2830,17 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "blue_164_desvio_dimensional",
       "purple_164_sentenca_tumulo",
       "blue_146_trono_inverno_eterno",
-      "purple_146_coroa_rei_cadaver",
       "purple_89_ampulheta_sangue",
       "purple_89_ampulheta_sangue",
       "purple_89_ampulheta_sangue",
-      "blue_107_bussola_astral",
-      "blue_107_bussola_astral",
       "green_107_altar_fera_antiga",
       "green_75_druida_ciclos",
       "green_75_druida_ciclos",
-      "green_75_druida_ciclos"
+      "green_75_druida_ciclos",
+      "blue_10_portal_runas",
+      "blue_30_visao_ancestral",
+      "blue_89_roda_tempo",
+      "blue_89_roda_tempo"
     ]
   },
   {
@@ -2903,8 +2903,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "red_118_tita_basalto",
       "purple_117_conde_nosferatu",
       "purple_117_conde_nosferatu",
-      "purple_118_serafim_caido",
-      "purple_118_serafim_caido",
       "red_123_cataclismo_solar",
       "purple_123_eclipse_abissal",
       "purple_48_toque_apodrecimento",
@@ -2954,7 +2952,9 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple_50_pacto_proibido",
       "purple_50_pacto_proibido",
       "gold_32_estandarte_imperial",
-      "red_67_fornalha_interior"
+      "red_67_fornalha_interior",
+      "gold_39_inquisidor_justica",
+      "gold_39_inquisidor_justica"
     ]
   },
   {
@@ -3086,7 +3086,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "gold_97_colosso_celestial",
       "green_121_avatar_gaia",
       "gold_119_soberano_ordem_eterna",
-      "green_141_soberano_fera_primordial",
       "green_142_patriarca_selva_eterna",
       "green_01_goblin",
       "green_01_goblin",
@@ -3181,7 +3180,8 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "green_79_anquilossauro_ferro",
       "green_75_druida_ciclos",
       "green_75_druida_ciclos",
-      "green_75_druida_ciclos"
+      "green_75_druida_ciclos",
+      "green_109_lince_espinhos"
     ]
   },
   {
@@ -3371,8 +3371,6 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple_104_pacto_demoniaco",
       "blue_104_fracao_temporal",
       "blue_104_fracao_temporal",
-      "red_101_bombardeio_orbital",
-      "red_101_bombardeio_orbital",
       "red_122_onda_calor_letal",
       "red_122_onda_calor_letal",
       "green_123_crescimento_titanico",
@@ -3410,7 +3408,9 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple_36_trono_ossos",
       "purple_36_trono_ossos",
       "red_30_furia_sangue",
-      "red_30_furia_sangue"
+      "red_30_furia_sangue",
+      "red_67_fornalha_interior",
+      "red_67_fornalha_interior"
     ]
   }
 ];

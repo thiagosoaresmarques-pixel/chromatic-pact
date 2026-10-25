@@ -235,7 +235,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
                 <div
                   className="poem-historical-vignette"
                   onClick={() => onInspectCard(card)}
-                  style={{ borderColor: `${domColor}45` }}
+                  style={{ '--dom-glow': `${domColor}45` } as React.CSSProperties}
                   title={`Clique para inspecionar ${card.name}`}
                 >
                   <img
@@ -305,10 +305,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
                 <div
                   className="poem-card-medallion"
                   onClick={() => onInspectCard(card)}
-                  style={{
-                    background: `radial-gradient(circle at 50% 45%, ${domColor}26 0%, rgba(9, 12, 22, 0.94) 76%)`,
-                    borderColor: `${domColor}40`,
-                  }}
+                  style={{ '--dom-glow': `${domColor}45` } as React.CSSProperties}
                   title={`Clique para inspecionar ${card.name}`}
                 >
                   <img

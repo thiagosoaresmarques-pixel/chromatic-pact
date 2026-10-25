@@ -5909,13 +5909,6 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "heal_all_allies",
         "value": 1,
         "description": "Início do Turno: Cura +1 de VIDA em todos os aliados."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "summon_token",
-        "value": 2,
-        "secondaryValue": 3,
-        "description": "Início do Turno: Invoca uma Sentinela de Ferro (2/3)."
       }
     ],
     "description": "Ao Entrar: Escudo Divino e +1/+1 aos aliados. Início do Turno: Cura +1 em todos os aliados.",
@@ -9585,7 +9578,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Invoca um Guarda Real (2/3)."
       }
     ],
-    "description": "Feitiço: Convoca um Guarda Real (2/3), concede +1/+1 a todos os aliados e compra 1 carta.",
+    "description": "Feitiço: Invoca uma Sentinela de Ferro (2/3), concede +1/+1 a todos os aliados e compra 1 carta.",
     "flavorText": "Ao som das trombetas de ouro, nenhum soldado marcha sozinho.",
     "imagePath": "/assets/cards/gold_48_decreto_imperial.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), golden imperial decree scroll sealed with a lion crest radiating beams of blessing over shields."

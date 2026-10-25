@@ -3124,28 +3124,6 @@ export function playCard(
         }
       }
     }
-
-    // Materialização de Eco Arcano: Lançar Feitiços (ou Reações instantâneas de custo >= 2)
-    // condensa a energia residual em um Elemental de Eco se o conjurador tiver <= 3 criaturas em campo!
-    const friendlyCreaturesCount = getAllBoardUnits(actorState).filter(
-      (u) => !u.isTrap && u.card.type === 'creature'
-    ).length;
-    if (
-      card.cost >= 2 &&
-      friendlyCreaturesCount <= 3 &&
-      !card.effects.some((e) => e.type === 'summon_token' || e.type === 'revive_from_crypt')
-    ) {
-      const slot = findAvailableSlot(actorState, 'vanguard');
-      if (slot) {
-        const echoAtk = Math.max(2, Math.min(5, Math.floor(card.cost * 0.85)));
-        const echoHp = Math.max(2, Math.min(5, Math.ceil(card.cost * 0.9)));
-        const tokenDef = createTokenDefinition(card.domain, echoAtk, echoHp);
-        const tokenUnit = createBoardUnit(tokenDef, actor, slot.row, slot.slotIndex, corruptionAtkBonus);
-        addUnitToSlot(actorState, slot.row, slot.slotIndex, tokenUnit);
-        consumeColumnRuneOnDeploy(next, actor, slot.row, slot.slotIndex, tokenUnit);
-        addFeedback(next, tokenUnit.instanceId, '✨ Eco Arcano!', 'buff');
-      }
-    }
   }
 
   cleanupDeadUnits(next);

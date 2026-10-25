@@ -45,6 +45,8 @@ export interface EpicPoemCanto {
   isParallel?: boolean;
   /** ID do Canto principal (ex: 'canto_1_vigilia' a 'canto_7_presente') ao qual esta história paralela se vincula */
   parentCantoId?: string;
+  /** ID do nó de evento histórico no Canto principal logo após o qual esta história paralela se ramifica */
+  anchorNodeId?: string;
   /** Código curto para a régua lateral (ex: 'I-A', 'II-A') */
   parallelCode?: string;
   /** Rótulo curto para subitem da régua lateral e filtro (ex: 'Conjura do Prisma') */

@@ -10199,7 +10199,7 @@ html, body, #root {
   gap: 0.32rem;
   cursor: pointer;
   text-align: left;
-  color: #64748b;
+  color: #cbd5e1;
   font-size: 0.61rem;
   transition: all 0.16s ease;
 }
@@ -10210,7 +10210,7 @@ html, body, #root {
 }
 
 .poem-ruler-substep.is-expanded {
-  color: #cbd5e1;
+  color: #f8fafc;
 }
 
 .poem-ruler-substep.active {
@@ -10230,14 +10230,15 @@ html, body, #root {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 122px;
+  max-width: 132px;
 }
 
 .poem-parallel-branch-wrapper {
+  scroll-margin-top: 96px;
   display: flex;
   flex-direction: column;
   gap: 1.85rem;
-  margin-top: -1.4rem;
+  margin: 0.45rem 0 0.85rem;
 }
 
 .poem-parallel-branch-trigger {

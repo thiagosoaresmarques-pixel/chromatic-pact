@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { CardDefinition, Domain } from '../types/game';
 import { CARDS_BY_ID } from '../data/cards';
 import { EpicPoemCanto, EpicPoemNode } from '../data/epicPoemTypes';
@@ -32,7 +32,7 @@ const CANTO_RULER_ITEMS: Array<{
   { id: 'canto_1_vigilia', roman: 'I', shortEra: 'Vigília Imóvel', yearMark: '∞ A.F.' },
   { id: 'canto_2_fratura', roman: 'II', shortEra: 'A Fratura', yearMark: '1 D.F.' },
   { id: 'canto_3_cidadelas', roman: 'III', shortEra: 'As Cidadelas', yearMark: '143 D.F.' },
-  { id: 'canto_4_sangue', roman: 'IV', shortEra: 'Era do Sangue', yearMark: '411 D.F.' },
+  { id: 'canto_4_guerra', roman: 'IV', shortEra: 'Era do Sangue', yearMark: '411 D.F.' },
   { id: 'canto_5_pacto', roman: 'V', shortEra: 'O Pacto', yearMark: '689 D.F.' },
   { id: 'canto_6_tratados', roman: 'VI', shortEra: 'Os Tratados', yearMark: '851 D.F.' },
   { id: 'canto_7_presente', roman: 'VII', shortEra: 'Sétimo Selo', yearMark: '1.121 D.F.' },
@@ -45,6 +45,46 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeScrollCantoId, setActiveScrollCantoId] = useState<string>('canto_1_vigilia');
   const [expandedParallelIds, setExpandedParallelIds] = useState<Record<string, boolean>>({});
+  const programmaticScrollLockUntil = useRef<number>(0);
+
+  const scrollToSectionById = useCallback((domId: string, fallbackDomId?: string) => {
+    programmaticScrollLockUntil.current = Date.now() + 950;
+
+    const attemptScroll = (isRetry: boolean) => {
+      const el =
+        document.getElementById(domId) ||
+        (fallbackDomId ? document.getElementById(fallbackDomId) : null);
+      if (!el) return;
+
+      const navOffset = 98;
+      const rect = el.getBoundingClientRect();
+      const absoluteTop = rect.top + window.scrollY - navOffset;
+      const distance = Math.abs(window.scrollY - absoluteTop);
+
+      if (!isRetry && distance > 3200) {
+        const approachTop =
+          absoluteTop > window.scrollY
+            ? Math.max(0, absoluteTop - 380)
+            : Math.max(0, absoluteTop + 380);
+        window.scrollTo({ top: approachTop, behavior: 'auto' });
+        requestAnimationFrame(() => {
+          const targetEl =
+            document.getElementById(domId) ||
+            (fallbackDomId ? document.getElementById(fallbackDomId) : null);
+          if (!targetEl) return;
+          const updatedTop = targetEl.getBoundingClientRect().top + window.scrollY - navOffset;
+          window.scrollTo({ top: Math.max(0, updatedTop), behavior: 'smooth' });
+        });
+      } else {
+        window.scrollTo({ top: Math.max(0, absoluteTop), behavior: 'smooth' });
+      }
+    };
+
+    requestAnimationFrame(() => {
+      attemptScroll(false);
+      setTimeout(() => attemptScroll(true), 180);
+    });
+  }, []);
 
   const filterNodes = (nodes: EpicPoemNode[], q: string): EpicPoemNode[] => {
     return nodes.filter((node) => {
@@ -120,6 +160,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (Date.now() < programmaticScrollLockUntil.current) return;
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -129,7 +170,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
         }
       },
       {
-        rootMargin: '-15% 0px -65% 0px',
+        rootMargin: '-12% 0px -65% 0px',
         threshold: 0,
       }
     );
@@ -142,17 +183,21 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
     setSelectedCantoId(val);
     const parallelMatch = PARALLEL_EPIC_POEM_CANTOS.find((p) => p.id === val);
     if (parallelMatch) {
+      if (selectedDomain !== 'all') setSelectedDomain('all');
+      if (nodeFilterKind !== 'all') setNodeFilterKind('all');
+      if (searchQuery.trim() !== '') setSearchQuery('');
       setExpandedParallelIds((prev) => ({ ...prev, [parallelMatch.id]: true }));
       setActiveScrollCantoId(parallelMatch.id);
       setTimeout(() => {
-        const el = document.getElementById(`poem-canto-${parallelMatch.id}`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 60);
+        scrollToSectionById(
+          `poem-parallel-card-${parallelMatch.id}`,
+          `poem-canto-${parallelMatch.id}`
+        );
+      }, 50);
     } else if (val !== 'all') {
       setActiveScrollCantoId(val);
       setTimeout(() => {
-        const el = document.getElementById(`poem-canto-${val}`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        scrollToSectionById(`poem-canto-${val}`);
       }, 40);
     }
   };
@@ -160,15 +205,20 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
   const handleJumpToCanto = (cantoId: string) => {
     if (selectedCantoId !== 'all') {
       setSelectedCantoId('all');
-      setTimeout(() => {
-        const el = document.getElementById(`poem-canto-${cantoId}`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 40);
-    } else {
-      const el = document.getElementById(`poem-canto-${cantoId}`);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (selectedDomain !== 'all') {
+      const targetCanto = EPIC_POEM_CANTOS.find((c) => c.id === cantoId);
+      if (targetCanto && !targetCanto.nodes.some((n) => n.domain === selectedDomain)) {
+        setSelectedDomain('all');
+      }
+    }
+    if (searchQuery.trim() !== '') {
+      setSearchQuery('');
     }
     setActiveScrollCantoId(cantoId);
+    setTimeout(() => {
+      scrollToSectionById(`poem-canto-${cantoId}`);
+    }, 45);
   };
 
   const handleJumpToParallelCanto = (parallelCanto: EpicPoemCanto) => {
@@ -180,170 +230,45 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
     ) {
       setSelectedCantoId('all');
     }
+    if (
+      selectedDomain !== 'all' &&
+      !parallelCanto.nodes.some((n) => n.domain === selectedDomain)
+    ) {
+      setSelectedDomain('all');
+    }
+    if (
+      nodeFilterKind === 'creatures_only' &&
+      !parallelCanto.nodes.some((n) => n.kind === 'creature')
+    ) {
+      setNodeFilterKind('all');
+    }
+    if (searchQuery.trim() !== '') {
+      setSearchQuery('');
+    }
     setActiveScrollCantoId(parallelCanto.id);
     setTimeout(() => {
-      const el = document.getElementById(`poem-canto-${parallelCanto.id}`);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 65);
+      scrollToSectionById(
+        `poem-parallel-card-${parallelCanto.id}`,
+        `poem-canto-${parallelCanto.id}`
+      );
+    }, 55);
   };
 
   const toggleParallelCanto = (parallelId: string) => {
     setExpandedParallelIds((prev) => {
       const nextOpen = !prev[parallelId];
       if (nextOpen) {
+        setActiveScrollCantoId(parallelId);
         setTimeout(() => {
-          const el = document.getElementById(`poem-canto-${parallelId}`);
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 65);
+          scrollToSectionById(
+            `poem-parallel-card-${parallelId}`,
+            `poem-canto-${parallelId}`
+          );
+        }, 55);
       }
       return { ...prev, [parallelId]: nextOpen };
     });
   };
-
-  const renderCantoBookPages = (cantoObj: EpicPoemCanto, nodesList: EpicPoemNode[]) => (
-    <div className="poem-book-pages">
-      {nodesList.map((node, nodeIdx) => {
-        const card = CARDS_BY_ID[node.cardId];
-        const domColor = DOMAIN_LABELS[node.domain]?.color || cantoObj.accentColor || '#f59e0b';
-        const isCreature = node.kind === 'creature';
-        const isRightMedallion =
-          isCreature &&
-          (node.creatureOrder !== undefined ? node.creatureOrder % 2 === 0 : nodeIdx % 2 === 1);
-
-        if (!isCreature) {
-          /* =========================================================
-             MARCO HISTÓRICO (PRELÚDIO / INTERLÚDIO) — CENTRALIZADO
-          ========================================================= */
-          return (
-            <article key={node.id} className="poem-folio-historical">
-              <div className="poem-ornamental-divider" style={{ color: domColor }}>
-                ─── ❖ ───
-              </div>
-
-              <div className="poem-historical-dateline">
-                <span style={{ color: domColor }}>{node.yearLabel}</span>
-                <span className="poem-dateline-sep">•</span>
-                <span>{node.locationLabel}</span>
-              </div>
-
-              <h3
-                className="font-cinzel poem-historical-title"
-                onClick={() => card && onInspectCard(card)}
-                title={card ? `Inspecionar ${card.name}` : undefined}
-              >
-                {node.title}
-              </h3>
-              <div className="poem-historical-subtitle">{node.subtitle}</div>
-
-              {card && (
-                <div
-                  className="poem-historical-vignette"
-                  onClick={() => onInspectCard(card)}
-                  style={{ '--dom-glow': `${domColor}45` } as React.CSSProperties}
-                  title={`Clique para inspecionar ${card.name}`}
-                >
-                  <img
-                    src={`${card.imagePath}?v=12`}
-                    alt={card.name}
-                    className="poem-historical-vignette-img"
-                    loading="lazy"
-                  />
-                  <span className="poem-historical-vignette-caption">{card.name}</span>
-                </div>
-              )}
-
-              <div className="poem-book-stanzas-centered">
-                {node.stanzas.map((stanza, sIdx) => (
-                  <div key={sIdx} className="poem-book-stanza">
-                    {stanza.map((line, lIdx) => (
-                      <div key={lIdx} className="poem-verse-line">
-                        {line}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </article>
-          );
-        }
-
-        /* ===========================================================
-           CRIATURA — FOLIO DE LIVRO ILUMINADO COM MEDALHÃO CLICÁVEL
-        =========================================================== */
-        return (
-          <article
-            key={node.id}
-            className={`poem-folio-creature ${
-              isRightMedallion ? 'is-medallion-right' : 'is-medallion-left'
-            }`}
-          >
-            <div className="poem-node-header">
-              <div className="poem-node-dateline">
-                <span className="poem-dateline-year" style={{ color: domColor }}>
-                  {node.yearLabel}
-                </span>
-                <span className="poem-dateline-sep">•</span>
-                <span className="poem-dateline-loc">{node.locationLabel}</span>
-                {node.creatureOrder !== undefined && (
-                  <>
-                    <span className="poem-dateline-sep">•</span>
-                    <span className="poem-dateline-legend">Lenda #{node.creatureOrder}</span>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div className="poem-node-title-block">
-              <h3
-                className="font-cinzel poem-node-title"
-                onClick={() => card && onInspectCard(card)}
-                title={card ? `Clique para inspecionar ${card.name}` : undefined}
-              >
-                {node.title}
-              </h3>
-              <div className="poem-node-epithet">{node.subtitle}</div>
-            </div>
-
-            <div className="poem-folio-body">
-              {card && (
-                <div
-                  className="poem-card-medallion"
-                  onClick={() => onInspectCard(card)}
-                  style={{ '--dom-glow': `${domColor}45` } as React.CSSProperties}
-                  title={`Clique para inspecionar ${card.name}`}
-                >
-                  <img
-                    src={`${card.imagePath}?v=12`}
-                    alt={card.name}
-                    className="poem-card-medallion-img"
-                    loading="lazy"
-                  />
-                  <span className="poem-card-medallion-name">{card.name}</span>
-                </div>
-              )}
-
-              <div className="poem-book-stanzas">
-                {node.stanzas.map((stanza, sIdx) => (
-                  <div key={sIdx} className="poem-book-stanza">
-                    {stanza.map((line, lIdx) => (
-                      <div
-                        key={lIdx}
-                        className={`poem-verse-line ${
-                          sIdx === 0 && lIdx === 0 ? 'poem-first-verse' : ''
-                        }`}
-                      >
-                        {line}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </article>
-        );
-      })}
-    </div>
-  );
 
   /**
    * Renderiza toda a História Paralela dentro de UM ÚNICO CARD CONTÍNUO (.poem-parallel-unified-card),
@@ -356,7 +281,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
     nodesList: EpicPoemNode[]
   ) => (
     <section
-      id={`poem-canto-${parallelCanto.id}`}
+      id={`poem-parallel-card-${parallelCanto.id}`}
       className="poem-canto-section is-parallel-canto"
     >
       <div
@@ -442,6 +367,245 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
         </footer>
       </div>
     </section>
+  );
+
+  const renderParallelBranchBlock = (
+    parallelCanto: EpicPoemCanto & { allNodes: EpicPoemNode[] },
+    isParallelExpanded: boolean
+  ) => (
+    <div id={`poem-canto-${parallelCanto.id}`} className="poem-parallel-branch-wrapper">
+      {selectedCantoId !== parallelCanto.id && (
+        <div
+          className={`poem-parallel-branch-trigger ${isParallelExpanded ? 'is-expanded' : ''}`}
+          style={{ borderColor: `${parallelCanto.accentColor}55` }}
+          onClick={() => toggleParallelCanto(parallelCanto.id)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleParallelCanto(parallelCanto.id);
+            }
+          }}
+        >
+          <div className="poem-branch-header-row">
+            <span className="poem-branch-arrow" style={{ color: parallelCanto.accentColor }}>
+              ↳
+            </span>
+            <div className="poem-branch-copy">
+              <span
+                className="poem-branch-kicker"
+                style={{ color: parallelCanto.accentColor }}
+              >
+                CRÔNICA PARALELA CONTEMPORÂNEA • {parallelCanto.cantoNumber} (
+                {parallelCanto.periodLabel})
+              </span>
+              <h3 className="font-cinzel poem-branch-title">{parallelCanto.title}</h3>
+              <p className="poem-branch-subtitle">{parallelCanto.subtitle}</p>
+            </div>
+          </div>
+
+          <div className="poem-branch-footer-row">
+            <div className="poem-branch-thumbs" onClick={(e) => e.stopPropagation()}>
+              {parallelCanto.allNodes.map((pNode) => {
+                const pCard = CARDS_BY_ID[pNode.cardId];
+                if (!pCard) return null;
+                return (
+                  <button
+                    key={pNode.id}
+                    type="button"
+                    className="poem-branch-thumb-btn"
+                    onClick={() => onInspectCard(pCard)}
+                    title={`Inspecionar ${pCard.name}`}
+                  >
+                    <img
+                      src={`${pCard.imagePath}?v=12`}
+                      alt={pCard.name}
+                      className="poem-branch-thumb-img"
+                      loading="lazy"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+
+            <span className="poem-branch-cta-btn">
+              {isParallelExpanded
+                ? '▴ Ocultar História Paralela'
+                : `↳ Ler História Paralela (${parallelCanto.nodes.length} Cânticos) →`}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {isParallelExpanded && renderParallelCantoUnifiedCard(parallelCanto, parallelCanto.nodes)}
+    </div>
+  );
+
+  const renderCantoBookPages = (
+    cantoObj: EpicPoemCanto,
+    nodesList: EpicPoemNode[],
+    parallelCanto?: EpicPoemCanto & { allNodes: EpicPoemNode[] },
+    isParallelExpanded?: boolean
+  ) => (
+    <div className="poem-book-pages">
+      {nodesList.map((node, nodeIdx) => {
+        const card = CARDS_BY_ID[node.cardId];
+        const domColor = DOMAIN_LABELS[node.domain]?.color || cantoObj.accentColor || '#f59e0b';
+        const isCreature = node.kind === 'creature';
+        const isRightMedallion =
+          isCreature &&
+          (node.creatureOrder !== undefined ? node.creatureOrder % 2 === 0 : nodeIdx % 2 === 1);
+        const shouldRenderParallelAfterNode = Boolean(
+          parallelCanto &&
+            parallelCanto.nodes.length > 0 &&
+            parallelCanto.anchorNodeId === node.id
+        );
+
+        if (!isCreature) {
+          /* =========================================================
+             MARCO HISTÓRICO (PRELÚDIO / INTERLÚDIO) — CENTRALIZADO
+          ========================================================= */
+          return (
+            <React.Fragment key={node.id}>
+              <article className="poem-folio-historical">
+                <div className="poem-ornamental-divider" style={{ color: domColor }}>
+                  ─── ❖ ───
+                </div>
+
+                <div className="poem-historical-dateline">
+                  <span style={{ color: domColor }}>{node.yearLabel}</span>
+                  <span className="poem-dateline-sep">•</span>
+                  <span>{node.locationLabel}</span>
+                </div>
+
+                <h3
+                  className="font-cinzel poem-historical-title"
+                  onClick={() => card && onInspectCard(card)}
+                  title={card ? `Inspecionar ${card.name}` : undefined}
+                >
+                  {node.title}
+                </h3>
+                <div className="poem-historical-subtitle">{node.subtitle}</div>
+
+                {card && (
+                  <div
+                    className="poem-historical-vignette"
+                    onClick={() => onInspectCard(card)}
+                    style={{ '--dom-glow': `${domColor}45` } as React.CSSProperties}
+                    title={`Clique para inspecionar ${card.name}`}
+                  >
+                    <img
+                      src={`${card.imagePath}?v=12`}
+                      alt={card.name}
+                      className="poem-historical-vignette-img"
+                      loading="lazy"
+                    />
+                    <span className="poem-historical-vignette-caption">{card.name}</span>
+                  </div>
+                )}
+
+                <div className="poem-book-stanzas-centered">
+                  {node.stanzas.map((stanza, sIdx) => (
+                    <div key={sIdx} className="poem-book-stanza">
+                      {stanza.map((line, lIdx) => (
+                        <div key={lIdx} className="poem-verse-line">
+                          {line}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </article>
+
+              {shouldRenderParallelAfterNode &&
+                parallelCanto &&
+                renderParallelBranchBlock(parallelCanto, Boolean(isParallelExpanded))}
+            </React.Fragment>
+          );
+        }
+
+        /* ===========================================================
+           CRIATURA — FOLIO DE LIVRO ILUMINADO COM MEDALHÃO CLICÁVEL
+        =========================================================== */
+        return (
+          <React.Fragment key={node.id}>
+            <article
+              className={`poem-folio-creature ${
+                isRightMedallion ? 'is-medallion-right' : 'is-medallion-left'
+              }`}
+            >
+              <div className="poem-node-header">
+                <div className="poem-node-dateline">
+                  <span className="poem-dateline-year" style={{ color: domColor }}>
+                    {node.yearLabel}
+                  </span>
+                  <span className="poem-dateline-sep">•</span>
+                  <span className="poem-dateline-loc">{node.locationLabel}</span>
+                  {node.creatureOrder !== undefined && (
+                    <>
+                      <span className="poem-dateline-sep">•</span>
+                      <span className="poem-dateline-legend">Lenda #{node.creatureOrder}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="poem-node-title-block">
+                <h3
+                  className="font-cinzel poem-node-title"
+                  onClick={() => card && onInspectCard(card)}
+                  title={card ? `Clique para inspecionar ${card.name}` : undefined}
+                >
+                  {node.title}
+                </h3>
+                <div className="poem-node-epithet">{node.subtitle}</div>
+              </div>
+
+              <div className="poem-folio-body">
+                {card && (
+                  <div
+                    className="poem-card-medallion"
+                    onClick={() => onInspectCard(card)}
+                    style={{ '--dom-glow': `${domColor}45` } as React.CSSProperties}
+                    title={`Clique para inspecionar ${card.name}`}
+                  >
+                    <img
+                      src={`${card.imagePath}?v=12`}
+                      alt={card.name}
+                      className="poem-card-medallion-img"
+                      loading="lazy"
+                    />
+                    <span className="poem-card-medallion-name">{card.name}</span>
+                  </div>
+                )}
+
+                <div className="poem-book-stanzas">
+                  {node.stanzas.map((stanza, sIdx) => (
+                    <div key={sIdx} className="poem-book-stanza">
+                      {stanza.map((line, lIdx) => (
+                        <div
+                          key={lIdx}
+                          className={`poem-verse-line ${
+                            sIdx === 0 && lIdx === 0 ? 'poem-first-verse' : ''
+                          }`}
+                        >
+                          {line}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </article>
+
+            {shouldRenderParallelAfterNode &&
+              parallelCanto &&
+              renderParallelBranchBlock(parallelCanto, Boolean(isParallelExpanded))}
+          </React.Fragment>
+        );
+      })}
+    </div>
   );
 
   return (
@@ -595,6 +759,12 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
                   selectedCantoId === parallelCanto.id ||
                   (hasSearchQuery && parallelCanto.nodes.length > 0))
             );
+            const isRenderedInlineAfterAnchor = Boolean(
+              parallelCanto &&
+                parallelCanto.nodes.length > 0 &&
+                selectedCantoId !== parallelCanto.id &&
+                canto.nodes.some((n) => n.id === parallelCanto.anchorNodeId)
+            );
 
             return (
               <React.Fragment key={canto.id}>
@@ -623,8 +793,8 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
                       <p className="poem-canto-subtitle">{canto.subtitle}</p>
                     </div>
 
-                    {/* PÁGINAS DO CANTO PRINCIPAL */}
-                    {renderCantoBookPages(canto, canto.nodes)}
+                    {/* PÁGINAS DO CANTO PRINCIPAL (COM A RAMIFICAÇÃO PARALELA ANCORADA NO EVENTO) */}
+                    {renderCantoBookPages(canto, canto.nodes, parallelCanto, isParallelExpanded)}
 
                     {/* COLOFÃO EDITORIAL DE FECHO DO CANTO */}
                     <footer className="poem-canto-colophon">
@@ -635,88 +805,11 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
                   </section>
                 )}
 
-                {/* PORTAL / SETA DE RAMIFICAÇÃO TEMPORAL (CRÔNICA PARALELA OPCIONAL) */}
-                {parallelCanto && parallelCanto.nodes.length > 0 && (
-                  <div className="poem-parallel-branch-wrapper">
-                    {selectedCantoId !== parallelCanto.id && (
-                      <div
-                        className={`poem-parallel-branch-trigger ${
-                          isParallelExpanded ? 'is-expanded' : ''
-                        }`}
-                        style={{ borderColor: `${parallelCanto.accentColor}55` }}
-                        onClick={() => toggleParallelCanto(parallelCanto.id)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            toggleParallelCanto(parallelCanto.id);
-                          }
-                        }}
-                      >
-                        <div className="poem-branch-header-row">
-                          <span
-                            className="poem-branch-arrow"
-                            style={{ color: parallelCanto.accentColor }}
-                          >
-                            ↳
-                          </span>
-                          <div className="poem-branch-copy">
-                            <span
-                              className="poem-branch-kicker"
-                              style={{ color: parallelCanto.accentColor }}
-                            >
-                              CRÔNICA PARALELA OPCIONAL • {parallelCanto.cantoNumber} (
-                              {parallelCanto.periodLabel})
-                            </span>
-                            <h3 className="font-cinzel poem-branch-title">
-                              {parallelCanto.title}
-                            </h3>
-                            <p className="poem-branch-subtitle">{parallelCanto.subtitle}</p>
-                          </div>
-                        </div>
-
-                        <div className="poem-branch-footer-row">
-                          <div
-                            className="poem-branch-thumbs"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {parallelCanto.allNodes.map((pNode) => {
-                              const pCard = CARDS_BY_ID[pNode.cardId];
-                              if (!pCard) return null;
-                              return (
-                                <button
-                                  key={pNode.id}
-                                  type="button"
-                                  className="poem-branch-thumb-btn"
-                                  onClick={() => onInspectCard(pCard)}
-                                  title={`Inspecionar ${pCard.name}`}
-                                >
-                                  <img
-                                    src={`${pCard.imagePath}?v=12`}
-                                    alt={pCard.name}
-                                    className="poem-branch-thumb-img"
-                                    loading="lazy"
-                                  />
-                                </button>
-                              );
-                            })}
-                          </div>
-
-                          <span className="poem-branch-cta-btn">
-                            {isParallelExpanded
-                              ? '▴ Ocultar História Paralela'
-                              : `↳ Explorar História Paralela (${parallelCanto.nodes.length} Episódios) →`}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* CARD ÚNICO CONTÍNUO DO CANTO PARALELO */}
-                    {isParallelExpanded &&
-                      renderParallelCantoUnifiedCard(parallelCanto, parallelCanto.nodes)}
-                  </div>
-                )}
+                {/* FALLBACK QUANDO O CANTO PARALELO É SELECIONADO ISOLADAMENTE OU O NÓ ÂNCORA ESTÁ OCULTO POR FILTRO */}
+                {parallelCanto &&
+                  parallelCanto.nodes.length > 0 &&
+                  !isRenderedInlineAfterAnchor &&
+                  renderParallelBranchBlock(parallelCanto, isParallelExpanded)}
               </React.Fragment>
             );
           })

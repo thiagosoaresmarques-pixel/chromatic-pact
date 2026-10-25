@@ -1195,17 +1195,30 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 1,
-        "description": "Ao Entrar: Concede +1/+1 a um aliado."
+        "description": "Ao Entrar: Concede +1/+1 a todos os aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Invoca uma Cria Dracônica (2/1)."
       },
       {
         "trigger": "turn_start",
         "type": "buff_target_ally",
         "value": 1,
         "secondaryValue": 1,
-        "description": "Início do Turno: Tempera as armas de um aliado (+1 ATQ / +1 VIDA)."
+        "description": "Início do Turno: Concede +1/+1 a um aliado."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Início do Turno: Causa 1 de dano ao Soberano rival."
       }
     ],
     "description": "Ao Entrar: +1/+1 aos aliados e invoca Cria Dracônica (2/1). Início do Turno: +1/+1 a um aliado e 1 de dano ao Soberano rival.",
@@ -13359,6 +13372,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       },
       {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Invoca um Constructo Etéreo (1/2)."
+      },
+      {
         "trigger": "turn_start",
         "type": "grant_bonus_essence",
         "value": 1,
@@ -13424,15 +13444,22 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "heal_sovereign",
+        "type": "summon_token",
         "value": 2,
-        "description": "Ao Entrar: Cura 2 de VIDA do seu Soberano."
+        "secondaryValue": 3,
+        "description": "Ao Entrar: Invoca um Constructo Etéreo (2/3)."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao Entrar: Cura 3 de VIDA do seu Soberano."
       },
       {
         "trigger": "turn_start",
         "type": "heal_all_allies",
-        "value": 1,
-        "description": "Início do Turno: Cura 1 de VIDA em todos os seus aliados."
+        "value": 2,
+        "description": "Início do Turno: Cura 2 de VIDA em todos os seus aliados."
       }
     ],
     "description": "Ao Entrar: Invoca Constructo (2/3) e cura 3 no Soberano. Início do Turno: Cura 2 em todos os aliados.",
@@ -14084,6 +14111,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       },
       {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Invoca um Elemental de Geada (2/2)."
+      },
+      {
         "trigger": "turn_start",
         "type": "grant_bonus_essence",
         "value": 1,
@@ -14675,6 +14709,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "freeze_enemy",
         "value": 1,
         "description": "Ao Entrar: Congela 1 inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "secondaryValue": 3,
+        "description": "Ao Entrar: Invoca uma Sentinela de Ferro (2/3)."
       },
       {
         "trigger": "turn_start",

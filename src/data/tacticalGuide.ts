@@ -65,33 +65,33 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 10,
       "relics": 8,
       "ascensions": 0,
-      "averageCost": 3.14
+      "averageCost": 3.04
     },
     "playstyleOverview": "Baralho agressivo de pressão constante (100 cartas) que combina 55 feras vulcânicas de Ímpeto com 37 cartas de queima e reação piromântica (27 Feitiços e 10 Reações). O objetivo é abrir brechas na Vanguarda inimiga com dano em área e finalizar com o Sopro devastador dos Dragões Vermelhos.",
     "channelingStrategy": "Turnos 1–3: Canalize um dragão de custo 6–7 duplicado ou uma Relíquia lenta para garantir Afinidade Vermelha nível 2 rapidamente. Turnos 4+: Pare de canalizar magias de queima direta — cada feitiço na mão representa alcance letal contra o Soberano rival.",
     "positioningAndStackingGuide": "Coloque Artilheiros Kobold e Salamandras na Retaguarda com Alcance. Na Vanguarda, espalhe atacantes de Ímpeto em colunas diferentes para forçar múltiplos bloqueios e ativar Invasão de Coluna (+1⚔️ ATQ) nos slots vazios inimigos.",
     "phasePlan": {
-      "earlyGame": "Invoque Kobolds, Diabretes e Mastins Infernais para pressionar a Vanguarda desde o Turno 1.",
-      "midGame": "Limpe os Guardiões inimigos com Jato de Magma e Erupção Piroclástica, mantendo a iniciativa ofensiva.",
-      "lateGame": "Desça Igniskar, Fênix Primordial ou o Dragão de Magma Ancião para varrer a fileira rival com Sopro e queimar o Soberano."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Víbora de Brasa Jovem, Batedor Escamado das Brasas, Diabrete de Escória Vulcânica para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fúria de Sangue Vulcânico e Pausar e Pensar um Segundo e Botas Aladas do Mensageiro, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Igniskar, Tirano da Cratera, Pyroclasmos, Imperador das Chamas, Magmarok, o Tirano Piroclástico pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Caldeirão Piroclástico",
         "cards": [
-          "Caldeirão deSangue Magmático",
-          "Chuva de Enxofre",
-          "Fornalha Interior"
+          "Botas Aladas do Mensageiro",
+          "Bigorna Dracônica da Cratera",
+          "Fornalha Rúnica de Muspel"
         ],
-        "howItWorks": "Instale o Caldeirão na Retaguarda e dispare múltiplos feitiços de baixo custo no mesmo turno para somar queima direta ao Soberano rival."
+        "howItWorks": "Combine Botas Aladas do Mensageiro + Bigorna Dracônica da Cratera + Fornalha Rúnica de Muspel para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       },
       {
         "title": "Mergulho da Fênix",
         "cards": [
-          "Fênix da Chama Primordial",
-          "Ritual das Cinzas"
+          "Igniskar, Tirano da Cratera",
+          "Pyroclasmos, Imperador das Chamas"
         ],
-        "howItWorks": "Use a Fênix com Voo e Renascer para trocar agressivamente na Vanguarda antes de limpar o resto da fileira com magia."
+        "howItWorks": "Articule Igniskar, Tirano da Cratera + Pyroclasmos, Imperador das Chamas nos turnos decisivos para quebrar a linha de Guardiões rivais e abrir letal contra o Soberano inimigo."
       }
     ],
     "strengths": [
@@ -118,34 +118,34 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 13,
       "relics": 10,
       "ascensions": 3,
-      "averageCost": 3.28
+      "averageCost": 3.46
     },
     "playstyleOverview": "Quase metade do grimório de 100 cartas (35 Feitiços e 13 Reações) consiste em magias de gelo, relâmpago e manipulação temporal. Em vez de disputar força bruta na Vanguarda, o Conclave paralisa colunas inteiras com Congelamento e vence pelos céus com Leviatãs, Esfinges e Krakens.",
     "channelingStrategy": "Canalize feitiços situacionais nos primeiros turnos; mantenha sempre Essência aberta para suas 13 Reações.",
     "positioningAndStackingGuide": "Empilhe até 2–3 Magos de Alcance num mesmo slot protegido da Retaguarda atrás de uma Naga Guardiã ou Gigante de Gelo Jarl na Vanguarda. Use suas 10 Reações para punir qualquer tentativa inimiga de quebrar sua coluna principal.",
     "phasePlan": {
-      "earlyGame": "Compre cartas com Noviço da Ampulheta e Mago Aprendiz enquanto congela os primeiros agressores.",
-      "midGame": "Estabilize o campo com Prisão Glacial, Zero Absoluto e Roda do Tempo, acumulando vantagem de mão.",
-      "lateGame": "Trave toda a Vanguarda inimiga com Parar o Tempo e finalize com Thaddeus, Kraken e Leviatã Primordial."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Sentinela das Correntes Aéreas, Iniciado da Torre Astral, Iniciado do Relógio Astral para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Pausar e Pensar um Segundo e Translocação na Neblina e Astrolábio das Eras Eternas, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Kraken da Fossa Abissal, Orion, Arconte da Tempestade Astral, Thalassia, A Maré Devoradora pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Inverno Perpétuo",
         "cards": [
-          "Zero Absoluto",
-          "Parar o Tempo",
-          "Kraken das Fendas Abissais"
+          "Astrolábio das Eras Eternas",
+          "Botas Aladas do Mensageiro",
+          "Códice da Ressonância Astral"
         ],
-        "howItWorks": "Encadeie efeitos de Congelamento em toda a Vanguarda inimiga por três turnos seguidos enquanto seus colossos atacam sem resposta."
+        "howItWorks": "Combine Astrolábio das Eras Eternas + Botas Aladas do Mensageiro + Códice da Ressonância Astral para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       },
       {
         "title": "Eco da Singularidade",
         "cards": [
-          "Planetário Arcano",
-          "Estudo Rúnico",
-          "Raio em Cadeia"
+          "Kraken da Fossa Abissal",
+          "Orion, Arconte da Tempestade Astral",
+          "Thalassia, A Maré Devoradora"
         ],
-        "howItWorks": "Com o Planetário e Portal de Runas ativos na Retaguarda, cada feitiço de compra gera Essência e dano contínuo."
+        "howItWorks": "Articule Kraken da Fossa Abissal + Orion, Arconte da Tempestade Astral + Thalassia, A Maré Devoradora nos turnos decisivos para quebrar a linha de Guardiões rivais e abrir letal contra o Soberano inimigo."
       }
     ],
     "strengths": [
@@ -171,35 +171,35 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "spells": 22,
       "reactions": 10,
       "relics": 13,
-      "ascensions": 10,
-      "averageCost": 2.97
+      "ascensions": 7,
+      "averageCost": 3.24
     },
     "playstyleOverview": "Grimório de atrito imortal (100 cartas: 55 Criaturas, 22 Feitiços, 10 Reações e 13 Relíquias) focado em Renascer, Dreno de Vida e reanimação contínua da Cripta.",
     "channelingStrategy": "Turnos 1–3: Canalize cartas de custo 5–6 ou feitiços situacionais para ativar Afinidade Roxa 2+. Turnos 4+: Evite canalizar criaturas lendárias se você tiver Exumar Legião ou Erguer os Mortos, pois até unidades abatidas em combate voltam da Cripta.",
     "positioningAndStackingGuide": "Use mortos-vivos com Renascer e Toque Letal na Vanguarda e proteja suas 13 Relíquias na Retaguarda.",
     "phasePlan": {
-      "earlyGame": "Desgaste a linha de frente inimiga com Rastejadores da Cripta, Acólitos e Toque da Decomposição.",
-      "midGame": "Ative Dreno de Vida com Conde Vampiro e Lanterna das Almas para abrir 15+ pontos de vantagem de VIDA.",
-      "lateGame": "Reanime Malakor (Lich) e o Dragão-Ossário diretamente da Cripta para dominar a partida por exaustão."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Sabujo Devorador de Almas, Escolo-Couraçada da Cripta, Garra Decepada Animada para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Sentença do Oblívio e Toque da Decomposição e Botas Aladas do Mensageiro, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Ossaurion, Dragão-Ossário Eterno, Malakor, Imperador da Entropia, Vesperion, Arquimago Lich Imortal pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Sifão da Eternidade",
         "cards": [
           "Lanterna das Almas Penadas",
-          "Cálice Vampírico",
-          "Dreno Vital"
+          "Botas Aladas do Mensageiro",
+          "Ampulheta das Mil Mortes"
         ],
-        "howItWorks": "As relíquias na Retaguarda drenam o Soberano rival automaticamente a cada turno enquanto curam o seu."
+        "howItWorks": "Combine Lanterna das Almas Penadas + Botas Aladas do Mensageiro + Ampulheta das Mil Mortes para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       },
       {
         "title": "Retorno do Dragão-Ossário",
         "cards": [
-          "Exumar Legião",
-          "Dragão-Ossário das Catacumbas",
-          "Malakor, o Arquimago Lich"
+          "Ossaurion, Dragão-Ossário Eterno",
+          "Malakor, Imperador da Entropia",
+          "Vesperion, Arquimago Lich Imortal"
         ],
-        "howItWorks": "Após forçar o inimigo a gastar todos os recursos abatendo seus campeões, traga-os de volta com bônus permanentes."
+        "howItWorks": "Articule Ossaurion, Dragão-Ossário Eterno + Malakor, Imperador da Entropia + Vesperion, Arquimago Lich Imortal nos turnos decisivos para quebrar a linha de Guardiões rivais e abrir letal contra o Soberano inimigo."
       }
     ],
     "strengths": [
@@ -225,35 +225,35 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "spells": 10,
       "reactions": 5,
       "relics": 5,
-      "ascensions": 6,
-      "averageCost": 2.61
+      "ascensions": 9,
+      "averageCost": 2.79
     },
     "playstyleOverview": "Força bruta em estado puro: 80 das 100 cartas são criaturas! Com 9 unidades de Ascensão, Regeneração natural e Atropelar em massa, este baralho sufoca o tabuleiro ocupando todas as 6 colunas e empilhando esquadrões ferozes.",
     "channelingStrategy": "Como 80% do deck são criaturas, canalize qualquer fera de custo médio redundante nos Turnos 1–4 para garantir uma curva de Essência perfeita até 7⚡ (Hidra, Tiranossauro e Zaratan).",
     "positioningAndStackingGuide": "Empilhe 2 a 3 feras por slot nas colunas onde o inimigo colocou bloqueadores fracos: com Atropelar e Chamado da Selva (+bônus em área), o dano excedente esmaga o Soberano rival diretamente!",
     "phasePlan": {
-      "earlyGame": "Preencha a Vanguarda com Lobo Atroz, Texugo Atroz e Javali Presa-de-Ferro.",
-      "midGame": "Ascenda o Lobo Atroz (Fenrir) e o Licantropo Alfa ou fortaleça a manada com Khan Centauro.",
-      "lateGame": "Lance Tiranossauro Alfa, Hidra e Zaratan seguido de Estouro da Manada para vitória imediata."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lebre Astral do Tempo Perdido, Emboscador Goblin da Mata, Lobo Atroz da Espinha Gelada para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fosso de Vinhas Estranguladoras e Rugido de Sobrevivência e Altar das Presas Ancestrais, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Chelonia, A Tartaruga-Continente, Vorágine, Hidra Voraz do Pântano, Rex Primordial da Cratera Perdida pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Estouro da Alcateia",
         "cards": [
-          "Khan Centauro da Estepe Verde",
-          "Estouro da Manada",
-          "Lobo Atroz da Espinha Gelada"
+          "Lobo Atroz da Espinha Gelada",
+          "Altar das Presas Ancestrais",
+          "Monólito de Comando da Terra"
         ],
-        "howItWorks": "Multiplique o ATQ de todas as unidades empilhadas na Vanguarda para causar mais de 25 de dano com Atropelar em um único turno."
+        "howItWorks": "Combine Lobo Atroz da Espinha Gelada + Altar das Presas Ancestrais + Monólito de Comando da Terra para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       },
       {
         "title": "Muralha Regenerativa",
         "cards": [
-          "Ent Ancião",
-          "Zaratan, a Tartaruga-Continente",
-          "Cajado da Floresta"
+          "Chelonia, A Tartaruga-Continente",
+          "Vorágine, Hidra Voraz do Pântano",
+          "Rex Primordial da Cratera Perdida"
         ],
-        "howItWorks": "Unidades com alta VIDA e Regeneração recuperam-se de feitiços de área a cada turno."
+        "howItWorks": "Articule Chelonia, A Tartaruga-Continente + Vorágine, Hidra Voraz do Pântano + Rex Primordial da Cratera Perdida nos turnos decisivos para quebrar a linha de Guardiões rivais e abrir letal contra o Soberano inimigo."
       }
     ],
     "strengths": [
@@ -279,35 +279,35 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "spells": 12,
       "reactions": 8,
       "relics": 25,
-      "ascensions": 5,
-      "averageCost": 3.36
+      "ascensions": 0,
+      "averageCost": 4.18
     },
     "playstyleOverview": "Cidadela impenetrável de 100 cartas que combina 55 soldados, paladinos e anjos blindados com 25 Relíquias Contínuas na Retaguarda, 12 Feitiços e 8 Reações.",
     "channelingStrategy": "Turnos 1–3: Canalize criaturas de custo 6–7 se precisar de Afinidade Dourada, mas preserve suas Relíquias de custo 2–3 (Escudo Solar, Martelo do Trovão), pois cada relíquia instalada gera valor cumulativo até o fim do jogo.",
     "positioningAndStackingGuide": "Posicione Guardiões com Escudo Divino na Vanguarda para proteger suas 25 Relíquias Contínuas na Retaguarda.",
     "phasePlan": {
       "earlyGame": "Posicione Escudeiro Solar, Lanceiro da Falange e Cão de Guarda Real enquanto instala a primeira Relíquia.",
-      "midGame": "Acumule 3+ Relíquias na Retaguarda para que cada início/fim de turno fortaleça toda a sua Vanguarda.",
-      "lateGame": "Convoque Aurarius (Dragão de Ouro), Colosso Celestial e Raziel com estatísticas gigantescas."
+      "midGame": "Domine o meio de jogo combinando Intervenção da Égide Angelical e Correntes Sagradas da Catedral e Estandarte da Legião Dourada, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Aurelius, Soberano Dragão da Alvorada, Aurarius, Majestade do Sol, Justinian, Soberano da Ordem Eterna pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Santuário das Dez Relíquias",
         "cards": [
-          "Santuário da Ordem Suprema",
-          "Trono Celestial",
-          "Estandarte Imperial"
+          "Estandarte da Legião Dourada",
+          "Visagem Real das Cinco Coroas",
+          "Arca da Aliança Dourada"
         ],
-        "howItWorks": "Com três relíquias de comando ativas na Retaguarda, qualquer recruta 1/3 torna-se um titã blindado em poucos turnos."
+        "howItWorks": "Combine Estandarte da Legião Dourada + Visagem Real das Cinco Coroas + Arca da Aliança Dourada para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       },
       {
         "title": "Julgamento Imaculado",
         "cards": [
-          "Veredito Celestial",
-          "Escudo Divino",
-          "Dragão de Ouro"
+          "Aurelius, Soberano Dragão da Alvorada",
+          "Aurarius, Majestade do Sol",
+          "Justinian, Soberano da Ordem Eterna"
         ],
-        "howItWorks": "Purifique a linha inimiga enquanto suas unidades mantêm Escudo Divino intacto."
+        "howItWorks": "Articule Aurelius, Soberano Dragão da Alvorada + Aurarius, Majestade do Sol + Justinian, Soberano da Ordem Eterna nos turnos decisivos para quebrar a linha de Guardiões rivais e abrir letal contra o Soberano inimigo."
       }
     ],
     "strengths": [
@@ -335,25 +335,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 7,
       "relics": 15,
       "ascensions": 5,
-      "averageCost": 3.04
+      "averageCost": 2.96
     },
     "playstyleOverview": "Une a fúria piromântica dos dragões vermelhos à blindagem sagrada dos dragões e 15 Relíquias douradas em um grimório de 100 cartas (60 Criaturas, 18 Feitiços, 7 Reações e 15 Relíquias).",
     "channelingStrategy": "Priorize atingir 2 de Afinidade Vermelha e 2 de Afinidade Dourada até o Turno 4, canalizando cartas de custo 5 duplicadas.",
     "positioningAndStackingGuide": "Mantenha Guardiões Dourados na frente (posição 0 da pilha) e coloque Artilheiros/Meio-Dragões como 2ª unidade do mesmo slot para somar fogo concentrado sem expor os atacantes.",
     "phasePlan": {
-      "earlyGame": "Defenda o campo com Escudeiro Solar e Lanceiro da Falange enquanto instala a Bigorna de Fogo.",
-      "midGame": "Domine os céus com Cavaleiro de Grifo, Manticora de Fogo e Wyvern Imperial.",
-      "lateGame": "Desça Dragão Vermelho, Dragão de Ouro e Valkyra Pentacromática para varrer o tabuleiro com Sopros."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lâmina Voadora Consagrada, Homúnculo do Alquimista, Víbora de Brasa Jovem para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fornalha Interior e Édito da Falange Dourada e Bigorna da Chama Primordial, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Valkyra, Imperatriz Pentacromática, Aurarius, Majestade do Sol, Igniskar, Tirano da Cratera pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Sopro Cruzado Imperial",
         "cards": [
-          "Igniskar, o Dragão Vermelho",
-          "Aurarius, o Dragão de Ouro",
-          "Bênção do Escudo"
+          "Bigorna da Chama Primordial",
+          "Bigorna Dracônica da Cratera",
+          "Maça Solar da Ruptura"
         ],
-        "howItWorks": "Proteja seus dragões com Escudo Divino enquanto seus Sopros aniquilam toda a Vanguarda adversária."
+        "howItWorks": "Combine Bigorna da Chama Primordial + Bigorna Dracônica da Cratera + Maça Solar da Ruptura para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -379,25 +379,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 10,
       "relics": 12,
       "ascensions": 3,
-      "averageCost": 3.33
+      "averageCost": 3.48
     },
     "playstyleOverview": "Combina o Congelamento e compra de cartas do Azul com a reanimação e Dreno de Vida do Roxo (50 Criaturas, 28 Feitiços, 10 Reações e 12 Relíquias). O oponente fica preso em uma teia de paralisia e perda contínua de vida.",
     "channelingStrategy": "Garanta 2 Azul e 2 Roxo cedo; canalize criaturas que você pretende reanimar mais tarde ou feitiços situacionais.",
     "positioningAndStackingGuide": "Use Aparições e Carniçais Reais com Renascer na Vanguarda para absorver pressão enquanto acumula Magos da Ilusão, Tirano Ocular e Lanterna das Almas na Retaguarda.",
     "phasePlan": {
-      "earlyGame": "Atrase o inimigo com Prisão Glacial, Armadilha de Teia e Acólito Oculto.",
-      "midGame": "Reduza o poder rival com Enervação Temporal e drene vida com Sussurros da Loucura.",
-      "lateGame": "Congele tudo com Parar o Tempo e finalize com Tirano Ocular, Lich e Kraken."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Tritão Guardião dos Recifes, Iniciado da Torre Astral, Garra Decepada Animada para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Sentença do Oblívio e Toque da Decomposição e Códice da Ressonância Astral, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Kraken da Fossa Abissal, Thalassia, A Maré Devoradora, Vesperion, Arquimago Lich Imortal pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Pesadelo Paralisante",
         "cards": [
-          "Parar o Tempo",
-          "Eclipse Eterno",
-          "Tirano Ocular das Profundezas"
+          "Códice da Ressonância Astral",
+          "Ampulheta das Mil Mortes",
+          "Cálice de Comando das Águas"
         ],
-        "howItWorks": "Imobilize a Vanguarda rival e execute as unidades enfraquecidas enquanto reanima sua Cripta."
+        "howItWorks": "Combine Códice da Ressonância Astral + Ampulheta das Mil Mortes + Cálice de Comando das Águas para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -422,26 +422,26 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "spells": 20,
       "reactions": 5,
       "relics": 7,
-      "ascensions": 6,
-      "averageCost": 2.54
+      "ascensions": 9,
+      "averageCost": 2.47
     },
     "playstyleOverview": "Grimório de investida veloz (100 cartas) que une 68 feras com Ímpeto e Atropelar do Verde aos 20 feitiços de queima, 5 Reações e 7 Relíquias do Vermelho.",
     "channelingStrategy": "Canalize nos Turnos 1–4 para chegar a 5–6⚡ rapidamente; depois do Turno 5, jogue todas as cartas da mão para manter pressão máxima.",
     "positioningAndStackingGuide": "Ocupar todas as 6 colunas da Vanguarda é prioridade máxima para garantir ataques de Invasão de Coluna (+1⚔️ ATQ) nos slots onde você destruir o defensor com Flecha Explosiva.",
     "phasePlan": {
-      "earlyGame": "Ataque já no Turno 1 com Kobold, Goblin, Lobo Atroz e Mastim Infernal.",
-      "midGame": "Remova Guardiões com Flecha Explosiva e amplifique o dano com Fúria da Matilha.",
-      "lateGame": "Atropele a linha final com Tiranossauro Alfa, Tirano Carmesim e Tauron-Khor."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lebre Astral do Tempo Perdido, Víbora de Brasa Jovem, Emboscador Goblin da Mata para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fúria de Sangue Vulcânico e Vigor Titânico da Selva e Botas Aladas do Mensageiro, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Igniskar, Tirano da Cratera, Tauron-Khor, Titã Quebra-Tronos, Ignarok, o Devorador de Reinos pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Brecha Vulcânica",
         "cards": [
-          "Chuva de Enxofre",
-          "Estouro da Manada",
-          "Tiranossauro Alfa"
+          "Botas Aladas do Mensageiro",
+          "Monólito de Comando da Terra",
+          "Orbe do Sol Aprisionado"
         ],
-        "howItWorks": "Queime os bloqueadores inimigos com Chuva de Enxofre e avance com toda a manada fortalecida."
+        "howItWorks": "Combine Botas Aladas do Mensageiro + Monólito de Comando da Terra + Orbe do Sol Aprisionado para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -467,25 +467,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 8,
       "relics": 30,
       "ascensions": 2,
-      "averageCost": 3.37
+      "averageCost": 3.34
     },
     "playstyleOverview": "Com 30 Relíquias Contínuas, 42 Criaturas e 28 Magias/Reações, a Forja Arcana transforma a Retaguarda em uma linha de montagem de escudos, compra de cartas e fortalecimento mecânico.",
     "channelingStrategy": "Nunca canalize suas Relíquias de geração de recursos (Bolsa de Conjurar, Relógio de Bolso Real); canalize feitiços duplicados.",
     "positioningAndStackingGuide": "Preencha a Retaguarda com 4 a 5 Relíquias e empilhe Autômatos e Guardiões com Escudo Divino em 3 unidades por slot na Vanguarda para proteger suas máquinas.",
     "phasePlan": {
-      "earlyGame": "Instale Bolsa de Conjurar, Relógio de Bolso Real e Gárgula na Vanguarda.",
-      "midGame": "Ative Forja Rúnica, Cubo de Força e Trono das Horas para blindar todo o tabuleiro.",
-      "lateGame": "Vença com Arcanjo Chronos, Esfinge Dourada e exércitos imortais."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Coruja Astral de Vigília, Sentinela das Correntes Aéreas, Mastim Couraçado da Cidadela para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Pausar e Pensar um Segundo e Intervenção da Égide Angelical e Estandarte da Legião Dourada, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Justinian, Soberano da Ordem Eterna, Hyperion, Deus-Imperador da Aurora, Chronoleviatã, Soberano do Tempo pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Engrenagem Perpétua",
         "cards": [
-          "Forja Rúnica",
-          "Trono das Horas",
-          "Trono Celestial"
+          "Estandarte da Legião Dourada",
+          "Bastião do Sol Invicto",
+          "Visagem Real das Cinco Coroas"
         ],
-        "howItWorks": "Gera múltiplos buffs automáticos por turno sem gastar Essência adicional."
+        "howItWorks": "Combine Estandarte da Legião Dourada + Bastião do Sol Invicto + Visagem Real das Cinco Coroas para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -510,26 +510,26 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "spells": 15,
       "reactions": 5,
       "relics": 10,
-      "ascensions": 14,
-      "averageCost": 2.66
+      "ascensions": 17,
+      "averageCost": 2.77
     },
     "playstyleOverview": "Potência de atrito (100 cartas) que combina a massa de 70 criaturas do Verde e Roxo com Toque Letal, Renascer, 20 Magias/Reações e 10 Relíquias.",
     "channelingStrategy": "Canalize titãs de custo 6–7 se vierem cedo demais; você pode tanto invocá-los mais tarde quanto reanimá-los.",
     "positioningAndStackingGuide": "Coloque uma unidade de Toque Letal ou Renascer na frente de cada pilha e empilhe feras de alto ATQ atrás dela no mesmo slot.",
     "phasePlan": {
-      "earlyGame": "Domine o chão com Aranha Gigante, Aranha Abissal, Lobo Atroz e Zumbi.",
-      "midGame": "Destrua os maiores campeões inimigos com Basilisco, Bodak e Escorpião Colossal.",
-      "lateGame": "Traga de volta Verme Roxo, Behemoth Primordial e Rainha dos Fungos com Exumar Legião."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Acólito do Sol Negro, Lebre Astral do Tempo Perdido, Escolo-Couraçada da Cripta para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Sentença do Oblívio e Toque da Decomposição e Corazón da Árvore-Mundo, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Ossaurion, Dragão-Ossário Eterno, Gorgoroth, Behemoth Devorador de Montanhas, Vesperion, Arquimago Lich Imortal pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Colheita Peçonhenta",
         "cards": [
-          "Rainha dos Fungos",
-          "Eclipse Eterno",
-          "Behemoth Primordial"
+          "Corazón da Árvore-Mundo",
+          "Altar das Presas Ancestrais",
+          "Ampulheta das Mil Mortes"
         ],
-        "howItWorks": "Limpe os pequenos defensores inimigos e reanime seu maior colosso no mesmo turno."
+        "howItWorks": "Combine Corazón da Árvore-Mundo + Altar das Presas Ancestrais + Ampulheta das Mil Mortes para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -555,25 +555,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 10,
       "relics": 13,
       "ascensions": 5,
-      "averageCost": 2.94
+      "averageCost": 2.98
     },
     "playstyleOverview": "Agressão sombria de 100 cartas (52 Criaturas, 25 Feitiços, 10 Reações e 13 Relíquias) que utiliza Corrupção como combustível para feitiços devastadores, Fênix velozes e Lordes Abissais.",
     "channelingStrategy": "Atinja 2 Vermelho e 2 Roxo até o Turno 4; guarde Dreno Vital e Colheita das Sombras para compensar a vida gasta em pactos.",
     "positioningAndStackingGuide": "Espalhe atacantes agressivos na Vanguarda e mantenha a Lanterna das Almas e o Caldeirão de Magma protegidos na Retaguarda.",
     "phasePlan": {
-      "earlyGame": "Pressione com Serpente de Fogo, Cultista da Chama e Mastim Infernal.",
-      "midGame": "Queime defensores com Jato de Magma e recupere vida com Dreno Vital.",
-      "lateGame": "Finalize com Carmilla, Fênix de Táquions e Lorde Abissal."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Acólito do Sol Negro, Víbora de Brasa Jovem, Batedor Escamado das Brasas para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Contrato das Sete Correntes e Toque da Decomposição e Botas Aladas do Mensageiro, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Igniskar, Tirano da Cratera, Carmilla, Condessa de Sangue e Ouro, Ignis-Aeterna, A Fênix do Tempo Emprestado pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Chama do Eclipse",
         "cards": [
-          "Coroa da Chama Eterna",
-          "Eclipse Eterno",
-          "Lorde Abissal"
+          "Botas Aladas do Mensageiro",
+          "Ampulheta das Mil Mortes",
+          "Bigorna Dracônica da Cratera"
         ],
-        "howItWorks": "Amplifique o dano em área enquanto drena a alma do Soberano inimigo."
+        "howItWorks": "Combine Botas Aladas do Mensageiro + Ampulheta das Mil Mortes + Bigorna Dracônica da Cratera para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -598,25 +598,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 8,
       "relics": 12,
       "ascensions": 9,
-      "averageCost": 3.05
+      "averageCost": 3.23
     },
     "playstyleOverview": "Recordista em evolução: possui 60 criaturas apoiadas por 20 Feitiços, 8 Reações e 12 Relíquias! Usa a geração de Essência extra da Selva e da Tempestade para transformar recrutas em Semideuses.",
     "channelingStrategy": "Sempre canalize nos primeiros 5 turnos! A Essência máxima elevada permite invocar e Ascender no mesmo turno.",
     "positioningAndStackingGuide": "Proteja suas unidades de Ascensão atrás de um Guardião no mesmo slot até ter Essência para despertá-las.",
     "phasePlan": {
-      "earlyGame": "Invoque Mago Aprendiz, Lobo Atroz, Tritão da Maré e Arqueiro Silvestre.",
-      "midGame": "Gere Essência extra com Xamã Druida e Portal de Runas para iniciar as Ascensões.",
-      "lateGame": "Domine com Licantropo Ascendido, Ursogrifo Ascendido, Kraken e Zaratan."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Sentinela das Correntes Aéreas, Tritão Guardião dos Recifes, Emboscador Goblin da Mata para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fosso de Vinhas Estranguladoras e Congelar o Instante e Botas Aladas do Mensageiro, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Kraken da Fossa Abissal, Chelonia, A Tartaruga-Continente, Thalassia, A Maré Devoradora pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Despertar Simultâneo",
         "cards": [
-          "Xamã Druida",
-          "Clone Espelhado",
-          "Licantropo Alfa"
+          "Botas Aladas do Mensageiro",
+          "Códice da Ressonância Astral",
+          "Altar das Presas Ancestrais"
         ],
-        "howItWorks": "Acelere sua Essência para ascender dois campeões seguidos e dobrar sua presença em campo."
+        "howItWorks": "Combine Botas Aladas do Mensageiro + Códice da Ressonância Astral + Altar das Presas Ancestrais para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -641,26 +641,26 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "spells": 12,
       "reactions": 5,
       "relics": 18,
-      "ascensions": 12,
-      "averageCost": 2.59
+      "ascensions": 15,
+      "averageCost": 2.51
     },
     "playstyleOverview": "Une a Regeneração e 65 feras colossais do Verde aos Escudos Divinos, 17 Magias/Reações e 18 Relíquias do Dourado. Suas unidades simplesmente se recusam a morrer.",
     "channelingStrategy": "Canalize cartas de custo 6–7 duplicadas nos primeiros turnos para estabilizar 2 Verde e 2 Dourado.",
     "positioningAndStackingGuide": "Empilhe 3 unidades por slot combinando Guardiões Dourados na frente e feras regenerativas/arqueiros atrás.",
     "phasePlan": {
-      "earlyGame": "Segure o campo com Escudeiro Solar, Lanceiro e Dríade dos Espinhos.",
-      "midGame": "Instale Cálice do Graal e Cajado da Floresta enquanto avança com Rinoceronte Couraçado.",
-      "lateGame": "Esmague com Dragão Solar, Emperion Solar e Zaratan."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lâmina Voadora Consagrada, Lebre Astral do Tempo Perdido, Lanceiro da Guarda da Alvorada para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Renovação das Quatro Estações e Chamado da Matilha Alfa e Monólito da Presa Primordial, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Tellurion, Avatar Primordial da Terra Viva, Chelonia, A Tartaruga-Continente, Aurelion, O Titã Empíreo pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Aurora Imortal",
         "cards": [
-          "Dragão Solar",
-          "Cálice do Graal",
-          "Ent Ancião"
+          "Monólito da Presa Primordial",
+          "Estandarte da Legião Dourada",
+          "Bastião do Sol Invicto"
         ],
-        "howItWorks": "Combina Armadura 2, Escudo Divino e Regeneração contínua em toda a linha de frente."
+        "howItWorks": "Combine Monólito da Presa Primordial + Estandarte da Legião Dourada + Bastião do Sol Invicto para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -684,26 +684,26 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "spells": 17,
       "reactions": 8,
       "relics": 20,
-      "ascensions": 10,
-      "averageCost": 2.93
+      "ascensions": 4,
+      "averageCost": 3.59
     },
     "playstyleOverview": "A Catedral de Sangue e Ouro: desgasta o oponente com 55 Criaturas, 20 Relíquias Contínuas, 25 Magias/Reações, Escudos Divinos e Dreno de Vida vampírico.",
     "channelingStrategy": "Priorize 2 Roxo e 2 Dourado; mantenha sempre uma Relíquia de sustentação na mão.",
     "positioningAndStackingGuide": "Empilhe Inquisidores e Escudeiros na Vanguarda para proteger suas 20 Relíquias na Retaguarda.",
     "phasePlan": {
-      "earlyGame": "Estabeleça defesa com Escudeiro Solar, Acólito e Pacto Profano.",
-      "midGame": "Ative Cálice Vampírico, Espada Vingadora e Carniçal Real.",
-      "lateGame": "Domine com Carmilla, Rei Hekton e Príncipe dos Mortos."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Garra Decepada Animada, Legionário Ossudo, Operário de Relojoaria para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Sentença do Oblívio e Toque da Decomposição e Talismã do Zênite Puro, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Justinian, Soberano da Ordem Eterna, Malakor, Imperador da Entropia, Malakor-Vael, Soberano da Não-Vida pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Dízimo da Catedral",
         "cards": [
           "Carmilla, Condessa de Sangue e Ouro",
-          "Talismã do Bem Supremo",
-          "Exumar Legião"
+          "Talismã do Zênite Puro",
+          "Cálice de Obsidiana do Sangue Imortal"
         ],
-        "howItWorks": "Drena grandes quantidades de vida ao entrar e mantém seus campeões blindados."
+        "howItWorks": "Combine Carmilla, Condessa de Sangue e Ouro + Talismã do Zênite Puro + Cálice de Obsidiana do Sangue Imortal para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -728,25 +728,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 10,
       "relics": 12,
       "ascensions": 3,
-      "averageCost": 3.41
+      "averageCost": 3.31
     },
     "playstyleOverview": "Tempestade de 33 Feitiços e 10 Reações de fogo e gelo apoiada por 45 Criaturas (Fênix, Wyverns e Dragões) e 12 Relíquias. Cada magia lançada limpa o caminho para ataques aéreos.",
     "channelingStrategy": "Canalize criaturas pesadas nos Turnos 1–3; conserve feitiços de custo baixo para combar com Caldeirão de Magma e Cajado do Magi.",
     "positioningAndStackingGuide": "Mantenha voadores e artilheiros na Retaguarda e use Congelamento/Queima para impedir que a Vanguarda rival contra-ataque.",
     "phasePlan": {
-      "earlyGame": "Compre cartas com Estudo Rúnico e Noviço da Ampulheta enquanto queima ameaças iniciais.",
-      "midGame": "Controle o tabuleiro com Raio em Cadeia, Chuva de Enxofre e Fênix Primordial.",
-      "lateGame": "Finalize com Cataclismo Dracônico, Parar o Tempo, Igniskar e Kraken."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Batedor Escamado das Brasas, Iniciado da Torre Astral, Diabrete de Escória Vulcânica para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fornalha Interior e Maré Sanguinária das Trincheiras e Botas Aladas do Mensageiro, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Igniskar, Tirano da Cratera, Kraken da Fossa Abissal, Pyroclasmos, Imperador das Chamas pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Tormenta da Fênix",
         "cards": [
-          "Fênix de Táquions",
-          "Cataclismo Dracônico",
-          "Parar o Tempo"
+          "Botas Aladas do Mensageiro",
+          "Códice da Ressonância Astral",
+          "Turíbulo dos Quatro Ventos"
         ],
-        "howItWorks": "Limpe o campo inteiro e ataque pelos céus enquanto o inimigo está congelado."
+        "howItWorks": "Combine Botas Aladas do Mensageiro + Códice da Ressonância Astral + Turíbulo dos Quatro Ventos para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -772,25 +772,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 12,
       "relics": 12,
       "ascensions": 4,
-      "averageCost": 3.45
+      "averageCost": 3.29
     },
     "playstyleOverview": "Exatamente 50% do grimório de 100 cartas são Feitiços e Reações (38 Feitiços + 12 Reações, além de 38 Criaturas e 12 Relíquias)! Une Azul, Vermelho e Roxo para controlar, queimar e drenar o oponente.",
     "channelingStrategy": "Nos Turnos 1–3, canalize 1 carta da cor que faltar para ter 🔵+🔴+🟣 ativos; depois canalize apenas criaturas excedentes.",
     "positioningAndStackingGuide": "Posicione seus 38 especialistas (Magos, Artilheiros, Dragões) em slots protegidos e mantenha sempre 1–2 Reações armadas na Retaguarda.",
     "phasePlan": {
-      "earlyGame": "Estabeleça as 3 Afinidades e segure o jogo com Prisão Glacial e Flecha Explosiva.",
-      "midGame": "Ative Orbe das Tempestades e Caldeirão de Magma para transformar cada feitiço em dano duplo.",
-      "lateGame": "Encadeie Eclipse Eterno, Parar o Tempo e Kraken para fechar a partida."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Sentinela das Correntes Aéreas, Tritão Guardião dos Recifes, Batedor Escamado das Brasas para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fúria de Sangue Vulcânico e Contrato das Sete Correntes e Cálice de Obsidiana do Sangue Imortal, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Kraken da Fossa Abissal, Ossaurion, Dragão-Ossário Eterno, Aureon, Dragão da Geada Astral pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Tríade do Cataclismo",
         "cards": [
-          "Parar o Tempo",
-          "Eclipse Eterno",
-          "Chuva de Enxofre"
+          "Cálice de Obsidiana do Sangue Imortal",
+          "Turíbulo dos Quatro Ventos",
+          "Ampulheta das Mil Mortes"
         ],
-        "howItWorks": "Devasta qualquer formação inimiga enquanto reanima aliados e congela sobreviventes."
+        "howItWorks": "Combine Cálice de Obsidiana do Sangue Imortal + Turíbulo dos Quatro Ventos + Ampulheta das Mil Mortes para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -822,19 +822,19 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
     "channelingStrategy": "Canalize qualquer criatura de custo 4–5 nos primeiros turnos para corrigir as 3 cores (🟢+🔴+🟡) e acelerar até 7⚡.",
     "positioningAndStackingGuide": "Empilhe 2–3 unidades por slot em todas as colunas ofensivas; use o Julgamento Solar e Chamado da Selva para abrir caminho.",
     "phasePlan": {
-      "earlyGame": "Pressione desde o Turno 1 com Texugo, Lobo Atroz, Escudeiro Solar e Mastim.",
-      "midGame": "Avance com Mamute de Guerra, Colosso de Obsidiana e Arconte da Justiça.",
-      "lateGame": "Esmague com Tiranossauro Alfa, Rei Hekton e Dragão de Magma Ancião."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lâmina Voadora Consagrada, Lebre Astral do Tempo Perdido, Homúnculo do Alquimista para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Mandíbula da Fenda Tectônica e Emboscada do Gêiser Piroclástico e Martelo Forjado em Estrela, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Pyroclasmos, Imperador das Chamas, Magmarok, o Tirano Piroclástico, Ignis-Vael, Príncipe do Núcleo Ardente pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Investida dos Três Reinos",
         "cards": [
-          "Tiranossauro Alfa",
-          "Chamado da Selva",
-          "Fornalha Interior"
+          "Martelo Forjado em Estrela",
+          "Monólito de Comando da Terra",
+          "Orbe do Sol Aprisionado"
         ],
-        "howItWorks": "Transforma uma fileira inteira de feras e cavaleiros em demolidores imparáveis."
+        "howItWorks": "Combine Martelo Forjado em Estrela + Monólito de Comando da Terra + Orbe do Sol Aprisionado para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -860,25 +860,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 8,
       "relics": 35,
       "ascensions": 0,
-      "averageCost": 3.31
+      "averageCost": 3.3
     },
     "playstyleOverview": "O maior arsenal de relíquias do jogo: 35 Relíquias Contínuas (35% do grimório de 100 cartas), 40 Criaturas e 25 Magias/Reações que transformam a Retaguarda em uma fortaleza sagrada de efeitos passivos.",
     "channelingStrategy": "Canalize criaturas duplicadas nos Turnos 1–3 para fixar 🟡+🔵+🟣; preserve os artefatos lendários (Relógio da Eternidade, Arca da Aliança).",
     "positioningAndStackingGuide": "Ocupar 4 a 5 slots da Retaguarda com Relíquias e empilhar todas as suas criaturas em 3 por slot na Vanguarda para maximizar os buffs em área das Relíquias.",
     "phasePlan": {
-      "earlyGame": "Defenda com Escudeiro Solar e Lanceiro enquanto instala Bolsa de Conjurar e Tigela das Marés.",
-      "midGame": "Acumule Cálice do Graal, Trono das Horas e Armadura do Imperador.",
-      "lateGame": "Invoque Emperion Solar, Arcanjo Chronos e O Grande Relógio da Eternidade."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Errante das Catacumbas, Sentinela das Correntes Aéreas, Tritão Guardião dos Recifes para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Sentença do Oblívio e Toque da Decomposição e Estandarte da Legião Dourada, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Aurelion, O Titã Empíreo, Malakor-Vael, Soberano da Não-Vida, Carmilla, Condessa de Sangue e Ouro pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Catedral das Catorze Relíquias",
         "cards": [
-          "O Grande Relógio da Eternidade",
-          "Arca da Aliança",
-          "Talismã do Bem Supremo"
+          "Estandarte da Legião Dourada",
+          "Astrolábio das Eras Eternas",
+          "Estandarte da Legião Dourada"
         ],
-        "howItWorks": "Cada início de turno gera Essência extra, congela inimigos, cura o Soberano e concede +2/+2 a todo o exército."
+        "howItWorks": "Combine Estandarte da Legião Dourada + Astrolábio das Eras Eternas + Estandarte da Legião Dourada para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -904,25 +904,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 7,
       "relics": 10,
       "ascensions": 6,
-      "averageCost": 2.67
+      "averageCost": 2.79
     },
     "playstyleOverview": "Aliança sombria entre Abismo, Selva e Chama: 68 criaturas ferozes e mortas-vivas (com 15 Feitiços, 7 Reações e 10 Relíquias) que atacam sem medo da morte, pois retornam mais fortes da Cripta.",
     "channelingStrategy": "Garanta 🟣+🟢+🔴 cedo; canalize criaturas pesadas sabendo que Exumar Legião e Príncipe dos Mortos podem trazê-las de volta.",
     "positioningAndStackingGuide": "Use unidades com Renascer e Toque Letal na linha de frente das pilhas para proteger os causadores de dano (Meio-Dragão, Sombra Assassina).",
     "phasePlan": {
-      "earlyGame": "Avance com Lobo Atroz, Acólito Oculto e Salamandra da Forja.",
-      "midGame": "Pressione com Licantropo Alfa, Troll Venenoso e Fênix Primordial.",
-      "lateGame": "Invoque Malakor-Vael (Príncipe dos Mortos), Lich e Dragão Esmeralda."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Acólito do Sol Negro, Víbora de Brasa Jovem, Escolo-Couraçada da Cripta para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Toque da Decomposição e Fosso de Vinhas Estranguladoras e Trono de Ossos do Arquimago, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Vesperion, Arquimago Lich Imortal, Malakor-Vael, Soberano da Não-Vida, Carmilla, Condessa de Sangue e Ouro pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Noite de Malakor-Vael",
         "cards": [
-          "Príncipe dos Mortos",
-          "Trono de Ossos",
-          "Eclipse Eterno"
+          "Trono de Ossos do Arquimago",
+          "Ampulheta das Mil Mortes",
+          "Bigorna Dracônica da Cratera"
         ],
-        "howItWorks": "Reanima múltiplos campeões caídos enquanto drena a vida do Soberano rival."
+        "howItWorks": "Combine Trono de Ossos do Arquimago + Ampulheta das Mil Mortes + Bigorna Dracônica da Cratera para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -948,25 +948,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 5,
       "relics": 18,
       "ascensions": 9,
-      "averageCost": 3.19
+      "averageCost": 3.14
     },
     "playstyleOverview": "Une 62 Criaturas (Anjos, Esfinges, Leviatãs e a Tartaruga-Continente) sob a proteção de 18 Relíquias e 20 Magias/Reações de Ordem, Selva e Tempestade.",
     "channelingStrategy": "Canalize nos Turnos 1–4 para atingir 🟡+🟢+🔵 e acelerar até os colossos de custo 6–7.",
     "positioningAndStackingGuide": "Coloque Guardiões regenerativos na Vanguarda e mantenha Arcontes, Magos e Relíquias na Retaguarda.",
     "phasePlan": {
-      "earlyGame": "Estabilize com Escudeiro Solar, Dríade dos Espinhos e Tritão da Maré.",
-      "midGame": "Domine o meio de jogo com Valquíria de Guerra, Xamã Druida e Arconte da Tempestade.",
-      "lateGame": "Trave o campo com Leviatã Primordial, Zaratan e Emperion Solar."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lâmina Voadora Consagrada, Coruja Astral de Vigília, Sentinela das Correntes Aéreas para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Vigor Titânico da Selva e Intervenção da Égide Angelical e Monólito da Presa Primordial, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Chelonia, A Tartaruga-Continente, Orion, Arconte da Tempestade Astral, Aurelion, O Titã Empíreo pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Horizonte Inexpugnável",
         "cards": [
-          "Emperion Solar",
-          "Zaratan, a Tartaruga-Continente",
-          "Decreto de Glória"
+          "Monólito da Presa Primordial",
+          "Talismã do Zênite Puro",
+          "Altar das Presas Ancestrais"
         ],
-        "howItWorks": "Cria uma barreira de Guardiões colossais com buffs globais de ataque e vida."
+        "howItWorks": "Combine Monólito da Presa Primordial + Talismã do Zênite Puro + Altar das Presas Ancestrais para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -991,25 +991,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 10,
       "relics": 25,
       "ascensions": 0,
-      "averageCost": 3.28
+      "averageCost": 3.55
     },
     "playstyleOverview": "Grimório temático da Ordem do Relógio Eterno (100 cartas): combina 25 Relíquias temporais com 35 magias/reações de manipulação do tempo e 40 campeões horológicos.",
     "channelingStrategy": "Preserve o Relógio de Bolso Real e a Roda do Tempo; canalize criaturas duplicadas para atingir 2 Azul e 2 Dourado.",
     "positioningAndStackingGuide": "Instale seus relógios e pêndulos na Retaguarda e agrupe Guerreiros Horologistas e Paladinos do Destino em pilhas protegidas na Vanguarda.",
     "phasePlan": {
-      "earlyGame": "Use Noviço da Ampulheta, Aprendiz Relojoeiro e Relógio de Bolso Real.",
-      "midGame": "Controle o ritmo com Bomba do Tempo, Tiro da Perdição e Forja de 1877.",
-      "lateGame": "Vença com Thaddeus (Senhor do Tempo), Arcanjo Chronos e O Grande Relógio da Eternidade."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Tritão Guardião dos Recifes, Iniciado do Relógio Astral, Operário de Relojoaria para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Pausar e Pensar um Segundo e Intervenção da Égide Angelical e Astrolábio das Eras Eternas, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Orion, Arconte da Tempestade Astral, Aegirion, Soberano das Fendas Abissais, Aureon, Dragão da Geada Astral pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Badalada da Meia-Noite",
         "cards": [
-          "Thaddeus, o Senhor do Tempo",
-          "Arcanjo Chronos",
-          "O Grande Relógio da Eternidade"
+          "Astrolábio das Eras Eternas",
+          "Estandarte da Legião Dourada",
+          "Cálice Real da Alvorada"
         ],
-        "howItWorks": "Paralisa toda a Vanguarda rival enquanto gera Essência e buffs contínuos para sua falange."
+        "howItWorks": "Combine Astrolábio das Eras Eternas + Estandarte da Legião Dourada + Cálice Real da Alvorada para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -1037,25 +1037,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 5,
       "relics": 15,
       "ascensions": 0,
-      "averageCost": 2.84
+      "averageCost": 2.9
     },
     "playstyleOverview": "Une os 5 Domínios Elementais sob o comando de Valkyra (65 Criaturas, 15 Feitiços, 5 Reações e 15 Relíquias), canalizando artefatos prismáticos para invocar dragões e lendas de todas as cores!",
     "channelingStrategy": "Use o Altar da Canalização para descartar cartas de custo baixo no meio do jogo e alcançar rapidamente os custos 6 e 7 de Valkyra.",
     "positioningAndStackingGuide": "Combine palavras-chave complementares no mesmo slot: Guardião Dourado na frente + Fera Verde no meio + Artilheiro Azul/Vermelho atrás!",
     "phasePlan": {
-      "earlyGame": "Estabeleça presença com os 5 iniciados da Ampulheta e Lanceiro da Falange.",
-      "midGame": "Pressione com Anquilossauro de Ferro, Cavaleiro de Ambrósia e Fênix de Táquions.",
-      "lateGame": "Invoque Draco Horológico e Valkyra, a Imperatriz Pentacromática."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lâmina Voadora Consagrada, Sentinela das Correntes Aéreas, Tritão Guardião dos Recifes para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Sentença do Oblívio e Toque da Decomposição e Astrolábio das Eras Eternas, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Valkyra, Imperatriz Pentacromática, Pyroclasmos, Imperador das Chamas, Orion, Arconte da Tempestade Astral pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Despertar Pentacromático",
         "cards": [
           "Valkyra, Imperatriz Pentacromática",
-          "Draco Horológico de Aeternus",
-          "O Grande Relógio da Eternidade"
+          "Astrolábio das Eras Eternas",
+          "Bigorna Dracônica da Cratera"
         ],
-        "howItWorks": "Une o poder dos cinco elementos em uma ofensiva aérea e terrestre devastadora."
+        "howItWorks": "Combine Valkyra, Imperatriz Pentacromática + Astrolábio das Eras Eternas + Bigorna Dracônica da Cratera para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -1081,25 +1081,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 13,
       "relics": 12,
       "ascensions": 8,
-      "averageCost": 3.34
+      "averageCost": 3.08
     },
     "playstyleOverview": "A versão mais explosiva da cabala 🔴+🔵+🟣: com 35 criaturas, 53 Magias/Reações (40 Feitiços + 13 Reações) e 12 Relíquias de gatilho arcano, cada turno transforma-se em uma barragem de raios, meteoros e drenos.",
     "channelingStrategy": "Canalize criaturas situacionais nos Turnos 1–3 para ativar as 3 cores; nunca canalize Fornalha Dracônica, Coroa das Tempestades ou Grimório do Necromante.",
     "positioningAndStackingGuide": "Mantenha Piromante Lança-Chamas e Arquimago da Tempestade na Retaguarda junto com suas 12 Relíquias de Ao Lançar Feitiço, e use suas 13 Reações para impedir que o inimigo encoste neles.",
     "phasePlan": {
-      "earlyGame": "Compre cartas com Iniciado Rúnico e congele agressores com Congelar o Instante.",
-      "midGame": "Instale Fornalha Dracônica e Coroa das Tempestades, disparando 2–3 feitiços por turno.",
-      "lateGame": "Invoque Aegirion (Soberano dos Mares) e Zephyros para varrer e congelar toda a Vanguarda rival."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Iniciado Rúnico da Torre, Batedor Escamado das Brasas, Diabrete de Escória Vulcânica para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fornalha Interior e Fúria de Sangue Vulcânico e Trono de Ossos do Arquimago, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Pyroclasmos, Imperador das Chamas, Aegirion, Soberano das Fendas Abissais, Nosferatu, Monarca Carmesim pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Bateria de Gatilhos Arcanos",
         "cards": [
           "Fornalha das Escamas Rubras",
-          "Diadema do Olho do Furacão",
-          "Fração de Segundo Infinita"
+          "Trono de Ossos do Arquimago",
+          "Cálice da Sede Carmesim"
         ],
-        "howItWorks": "Cada feitiço lançado causa dano automático ao Soberano inimigo E varre a Vanguarda rival."
+        "howItWorks": "Combine Fornalha das Escamas Rubras + Trono de Ossos do Arquimago + Cálice da Sede Carmesim para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -1131,19 +1131,19 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
     "channelingStrategy": "Canalize todo turno até atingir 7⚡ de Essência máxima; cada compra no fim de jogo é um titã capaz de vencer sozinho.",
     "positioningAndStackingGuide": "Empilhe Guardiões (Urso Rúnico, Lanceiro da Alvorada) com atacantes de Atropelar (Berserker Dracônico, Gorila Esmeralda) e dispare Levante da Selva (+2/+2 para todos).",
     "phasePlan": {
-      "earlyGame": "Ocupe a Vanguarda com Batedor Salamandra, Rastreador Feral e Lanceiro da Alvorada.",
-      "midGame": "Esmague o meio de jogo com Urso Rúnico, Mestre Forjador de Obsidiana e Mamute Primordial.",
-      "lateGame": "Lance Rex Primordial, Khorvath, Yggdrakon e Solarius em sequência."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lâmina Voadora Consagrada, Lanceiro da Guarda da Alvorada, Homúnculo do Alquimista para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fosso de Vinhas Estranguladoras e Armadilha Piroclástica e Martelo Forjado em Estrela, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Khorvath, O Dragão Vulcânico Ancião, Silvathor, O Dragão-Floresta Ancião, Polydra, A Hidra de Nove Cabeças pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Forja dos Três Anciões",
         "cards": [
-          "Mestre da Forja de Hélios",
           "Levante da Selva Indomável",
-          "Rex Primordial da Cratera Verde"
+          "Rex Primordial da Cratera Verde",
+          "Martelo Forjado em Estrela"
         ],
-        "howItWorks": "Concede Escudo Divino e +3/+3 em área para uma fileira inteira de colossos com Atropelar."
+        "howItWorks": "Combine Levante da Selva Indomável + Rex Primordial da Cratera Verde + Martelo Forjado em Estrela para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -1168,16 +1168,16 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "spells": 22,
       "reactions": 8,
       "relics": 8,
-      "ascensions": 9,
-      "averageCost": 3.01
+      "ascensions": 12,
+      "averageCost": 3.07
     },
     "playstyleOverview": "Potência de meio e fim de jogo (62 Criaturas, 22 Feitiços, 8 Reações e 8 Relíquias): combina Congelamento em área do Azul, evolução e feras regenerativas do Verde, e reanimação necrótica do Roxo.",
     "channelingStrategy": "Canalize nos primeiros 4 turnos para garantir 🔵+🟣+🟢 e ativar Semente da Árvore-Mundo o quanto antes.",
     "positioningAndStackingGuide": "Trave as colunas perigosas do inimigo com Serpente Constritora e Leviatã Abissal enquanto empilha unidades de Toque Letal e Dreno de Vida.",
     "phasePlan": {
-      "earlyGame": "Acelere com Iniciado Rúnico, Cultista do Sangue e Xamã dos Esporos.",
-      "midGame": "Congele a frente inimiga com Dilúvio Arcano e Leviatã Abissal enquanto ascende seus campeões.",
-      "lateGame": "Domine com Polydra (Hidra), Morgath (Dragão Necrótico) e Yggdrakon."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Sentinela das Correntes Aéreas, Iniciado Rúnico da Torre, Tritão Guardião dos Recifes para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fosso de Vinhas Estranguladoras e Congelar o Instante e Ampulheta das Mil Mortes, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Morgath, O Dragão da Chama Necrótica, Orion, Arconte da Tempestade Astral, Silvathor, O Dragão-Floresta Ancião pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
@@ -1213,25 +1213,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 10,
       "relics": 20,
       "ascensions": 8,
-      "averageCost": 2.98
+      "averageCost": 2.85
     },
     "playstyleOverview": "Funde a disciplina blindada da Ordem Solar com o Dreno de Vida vampírico e a queima vulcânica. Suas 20 Relíquias Imperiais sustentam uma linha de frente de 50 Justicares, Vampiros e Serafins.",
     "channelingStrategy": "Priorize Afinidade Dourada e Roxa nos Turnos 1–3 para estabilizar a Vanguarda e instalar suas primeiras Relíquias.",
     "positioningAndStackingGuide": "Coloque Guardiões com Escudo Divino na frente das pilhas e posicione 4 Relíquias contínuas na Retaguarda.",
     "phasePlan": {
-      "earlyGame": "Segure a linha com Escudeiro Solar, Lanceiro da Alvorada e Cultista do Sangue.",
-      "midGame": "Ative Coroa Imperial, Martelo Consagrado e Inquisidor do Vazio.",
-      "lateGame": "Vença com Seraphiel, Vladislaus e Bael-Khor."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Errante das Catacumbas, Mastim Couraçado da Cidadela, Escudeiro da Alvorada para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fornalha Interior e Édito da Falange Dourada e Estandarte da Legião Dourada, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Pyroclasmos, Imperador das Chamas, Seraphiel, A Imperatriz das Seis Asas, Nosferatu, Monarca Carmesim pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Decreto do Sol Carmesim",
         "cards": [
           "Seraphiel, A Imperatriz das Seis Asas",
-          "Santuário da Ordem Suprema",
-          "Vladislaus, O Patriarca de Sangue"
+          "Vladislaus, O Patriarca de Sangue",
+          "Estandarte da Legião Dourada"
         ],
-        "howItWorks": "Concede Escudo Divino a todo o exército enquanto drena a vida do Soberano inimigo."
+        "howItWorks": "Combine Seraphiel, A Imperatriz das Seis Asas + Vladislaus, O Patriarca de Sangue + Estandarte da Legião Dourada para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -1257,25 +1257,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 7,
       "relics": 20,
       "ascensions": 12,
-      "averageCost": 2.86
+      "averageCost": 2.85
     },
     "playstyleOverview": "Aliança luminosa entre Tempestade, Selva e Ordem: ergue uma muralha intransponível de 58 Guardiões e Campeões enquanto 20 Relíquias geram Essência, cartas e buffs a cada turno.",
     "channelingStrategy": "Canalize duplicatas de custo alto nos Turnos 1–3; a Semente da Árvore-Mundo e a Coroa do Imperador acelerarão sua Essência rapidamente.",
     "positioningAndStackingGuide": "Empilhe Guardiões (Sentinela de Safira, Urso Rúnico, Colosso Celestial) na Vanguarda e preencha a Retaguarda com Relíquias e Magos de Alcance.",
     "phasePlan": {
-      "earlyGame": "Compre cartas com Iniciado Rúnico e proteja-se com Lanceiro da Alvorada e Autômato de Bronze.",
-      "midGame": "Instale Semente do Mundo, Coroa do Imperador e Bastião Eterno.",
-      "lateGame": "Invoque Solarius, Zephyros e Colosso Celestial sobre uma fileira totalmente blindada."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lâmina Voadora Consagrada, Lanceiro da Guarda da Alvorada, Sentinela das Correntes Aéreas para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fosso de Vinhas Estranguladoras e Congelar o Instante e Estandarte da Legião Dourada, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Tellurion, Avatar Primordial da Terra Viva, Orion, Arconte da Tempestade Astral, Aurion-Sol, O Dragão Imperial do Zênite pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Horizonte Dourado",
         "cards": [
           "Aurion-Sol, O Dragão Imperial do Zênite",
-          "Santuário da Ordem Suprema",
-          "Levante da Selva Indomável"
+          "Levante da Selva Indomável",
+          "Estandarte da Legião Dourada"
         ],
-        "howItWorks": "Concede +4/+4 acumulado e Escudo Divino para todas as unidades em campo."
+        "howItWorks": "Combine Aurion-Sol, O Dragão Imperial do Zênite + Levante da Selva Indomável + Estandarte da Legião Dourada para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -1299,35 +1299,35 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "spells": 8,
       "reactions": 2,
       "relics": 5,
-      "ascensions": 12,
-      "averageCost": 2.72
+      "ascensions": 15,
+      "averageCost": 2.87
     },
     "playstyleOverview": "O baralho com maior densidade de criaturas de todo o jogo (85 criaturas em 100 cartas — 85%)! Projetado especificamente para explorar a mecânica de Empilhamento de Esquadrão (até 3 cartas por slot), enchendo o tabuleiro em tempo recorde e multiplicando bônus em área.",
     "channelingStrategy": "Você só precisa canalizar nos Turnos 1 a 3 (até 5⚡ de Essência). A partir do Turno 4, pare de canalizar e despeje 2 a 3 criaturas por turno no tabuleiro!",
     "positioningAndStackingGuide": "Regra de Ouro da Falange: monte pilhas completas de 3 unidades por slot! Coloque sempre um Guardião com Escudo Divino (Autômato de Bronze, Lanceiro da Alvorada) na posição 1 (frente da pilha) e duas unidades de ataque/Alcance atrás dele no mesmo slot. Quando você lançar Formação dos Mil Escudos ou Levante da Selva, cada slot de 3 unidades receberá +6/+6 de atributos totais combinados!",
     "phasePlan": {
-      "earlyGame": "Despeje 2 unidades por turno já nos Turnos 1–2, formando suas primeiras pilhas triplas na Vanguarda.",
-      "midGame": "Proteja as pilhas com Mestre da Forja Solar (Escudo Divino em todos) e dispare Chamado da Selva ou Formação Falange.",
-      "lateGame": "Lance Colosso Celestial, Brontossauro Colosso ou Levante da Selva para transformar 10+ unidades em campo num exército letal."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lâmina Voadora Consagrada, Paladino do Brasão Solar, Lanceiro da Guarda da Alvorada para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Correntes Sagradas da Catedral e Faro do Predador Alfa e Estandarte da Legião Dourada, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Tellurion, Avatar Primordial da Terra Viva, Justinian, Soberano da Ordem Eterna, Sylvanhorn, Patriarca da Selva Eterna pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Falange Tripla Multiplicadora",
         "cards": [
-          "Mestre da Forja de Hélios",
-          "Formação dos Mil Escudos",
-          "Levante da Selva Indomável"
+          "Levante da Selva Indomável",
+          "Estandarte da Legião Dourada",
+          "Talismã do Zênite Puro"
         ],
-        "howItWorks": "Com 9 a 12 unidades empilhadas em slots triplos, um único buff em área adiciona mais de 20 pontos de ATQ e VIDA ao tabuleiro."
+        "howItWorks": "Combine Levante da Selva Indomável + Estandarte da Legião Dourada + Talismã do Zênite Puro para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       },
       {
         "title": "Escudo da Legião",
         "cards": [
           "Colosso de Mármore e Ouro",
-          "Égide da Intervenção Solar",
-          "Santuário da Ordem Suprema"
+          "Tellurion, Avatar Primordial da Terra Viva",
+          "Justinian, Soberano da Ordem Eterna"
         ],
-        "howItWorks": "Concede Escudo Divino a todas as unidades de todas as pilhas, tornando o exército imune a magias de dano em área."
+        "howItWorks": "Articule Colosso de Mármore e Ouro + Tellurion, Avatar Primordial da Terra Viva + Justinian, Soberano da Ordem Eterna nos turnos decisivos para quebrar a linha de Guardiões rivais e abrir letal contra o Soberano inimigo."
       }
     ],
     "strengths": [
@@ -1354,15 +1354,15 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 15,
       "relics": 15,
       "ascensions": 8,
-      "averageCost": 3.19
+      "averageCost": 3.06
     },
     "playstyleOverview": "Especialista em bombardeio de longo alcance e controle tático: empilha 38 artilheiros, magos com Alcance e Guardiões de Safira enquanto controla o campo com 32 Feitiços, 15 Reações ocultas e 15 Relíquias.",
     "channelingStrategy": "Canalize nos primeiros turnos para destravar suas afinidades; mantenha sempre Essência disponível para acionar suas 15 Reações e Emboscadas.",
     "positioningAndStackingGuide": "Coloque Sentinela de Safira, Colosso de Obsidiana e Leviatã na Vanguarda, e empilhe 2–3 Artilheiros de Alcance (Artilheiro de Magma, Piromante Lança-Chamas, Arquimago) num mesmo slot da Retaguarda.",
     "phasePlan": {
-      "earlyGame": "Segure a linha com Sentinela dos Ventos, Iniciado Rúnico e Prisão Glacial.",
-      "midGame": "Instale Bússola Astral e Coroa das Tempestades enquanto bombardeia da Retaguarda.",
-      "lateGame": "Trave o campo com Dilúvio Arcano, Parar o Tempo e Khorvath (Dragão Vulcânico Ancião)."
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Sentinela das Correntes Aéreas, Iniciado Rúnico da Torre, Iniciado da Torre Astral para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fornalha Interior e Fúria de Sangue Vulcânico e Botas Aladas do Mensageiro, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Dragão de Safira Sônico, Khorvath, O Dragão Vulcânico Ancião, Orion, Arconte da Tempestade Astral pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
@@ -1370,9 +1370,9 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
         "cards": [
           "Piromante Lança-Chamas",
           "Arquimago da Cidadela Flutuante",
-          "Diadema do Olho do Furacão"
+          "Botas Aladas do Mensageiro"
         ],
-        "howItWorks": "Cada feitiço lançado dispara três gatilhos simultâneos de dano contra o Soberano e a fileira inimiga."
+        "howItWorks": "Combine Piromante Lança-Chamas + Arquimago da Cidadela Flutuante + Botas Aladas do Mensageiro para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -1400,25 +1400,25 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "reactions": 5,
       "relics": 25,
       "ascensions": 6,
-      "averageCost": 3.67
+      "averageCost": 3.58
     },
     "playstyleOverview": "Convergência suprema dos cinco domínios (50 Criaturas, 20 Feitiços, 5 Reações e 25 Relíquias): utiliza 25 Relíquias Prismáticas e geradoras de Essência e compra para invocar todos os Dragões Anciões Lendários do jogo!",
     "channelingStrategy": "Canalize nos Turnos 1–4 qualquer carta que não seja geradora de Essência para chegar rapidamente a 7⚡ e 3 pontos de afinidade nos seus Dragões Anciões.",
     "positioningAndStackingGuide": "Dedique 3–4 slots da Retaguarda às suas Relíquias Prismáticas (Graal Infinito, Relógio da Eternidade, Santuário da Ordem) e domine a Vanguarda com uma esquadrilha de Dragões Lendários.",
     "phasePlan": {
-      "earlyGame": "Acelere Essência com Orbe da Convergência, Mercenário Planar e Pacto Demoníaco.",
-      "midGame": "Estabilize com Colosso Prismático, Draco Horológico e Graal do Prisma Infinito.",
-      "lateGame": "Invoque Khorvath, Solarius, Morgath, Yggdrakon, Zephyros e Valkyra para um final apoteótico!"
+      "earlyGame": "Estabeleça presença imediata na Vanguarda com Lanceiro da Guarda da Alvorada, Sentinela das Correntes Aéreas, Iniciado Rúnico da Torre para disputar colunas e ativar Invasão de Território (+1 ATQ).",
+      "midGame": "Domine o meio de jogo combinando Fúria de Sangue Vulcânico e Congelar o Instante e Estandarte da Legião Dourada, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
+      "lateGame": "Invoque a Expansão de Domínio e finalize a partida com Valkyra, Imperatriz Pentacromática, Dragão Umbral do Eclipse, Khorvath, O Dragão Vulcânico Ancião pressionando diretamente o Soberano rival."
     },
     "signatureCombos": [
       {
         "title": "Concílio dos Seis Dragões",
         "cards": [
-          "Graal do Prisma Infinito",
           "Valkyra, Imperatriz Pentacromática",
-          "Aurion-Sol, O Dragão Imperial do Zênite"
+          "Estandarte da Legião Dourada",
+          "Monólito da Presa Primordial"
         ],
-        "howItWorks": "O Graal gera +2⚡ e buffs contínuos para colocar múltiplos Dragões Lendários de custo 7 em campo."
+        "howItWorks": "Combine Valkyra, Imperatriz Pentacromática + Estandarte da Legião Dourada + Monólito da Presa Primordial para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       }
     ],
     "strengths": [
@@ -1433,934 +1433,934 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
 
 export const EMPIRICAL_WIN_RATES: Record<string, Record<string, number>> = {
   "deck_red_inferno": {
-    "deck_blue_tempest": 50,
+    "deck_blue_tempest": 55,
     "deck_purple_abyss": 47,
-    "deck_green_wild": 50,
-    "deck_gold_bastion": 52,
-    "deck_dual_draconic_pact": 48,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 53,
+    "deck_green_wild": 47,
+    "deck_gold_bastion": 53,
+    "deck_dual_draconic_pact": 47,
+    "deck_dual_abyssal_storm": 45,
+    "deck_dual_primal_fury": 47,
     "deck_dual_arcane_forge": 53,
-    "deck_dual_eternal_rot": 48,
-    "deck_dual_blood_flame": 48,
-    "deck_dual_wild_evolution": 47,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 47,
-    "deck_dual_storm_dragon": 52,
-    "deck_tri_arcane_cataclysm": 48,
-    "deck_tri_primal_titans": 50,
-    "deck_tri_eternal_reliquary": 47,
-    "deck_tri_blood_moon": 48,
-    "deck_tri_celestial_scales": 53,
-    "deck_spec_chronomancer": 50,
-    "deck_spec_pentachromatic": 52,
-    "deck_tri_astral_cataclysm": 47,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 48,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 50,
-    "deck_squad_thousand_shields": 48,
-    "deck_squad_siege_battery": 55,
-    "deck_penta_valkyra_pact": 48
-  },
-  "deck_blue_tempest": {
-    "deck_red_inferno": 50,
-    "deck_purple_abyss": 50,
-    "deck_green_wild": 48,
-    "deck_gold_bastion": 52,
-    "deck_dual_draconic_pact": 55,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 53,
-    "deck_dual_arcane_forge": 53,
-    "deck_dual_eternal_rot": 55,
+    "deck_dual_eternal_rot": 53,
     "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 50,
-    "deck_dual_solar_wild": 55,
-    "deck_dual_iron_inquisition": 53,
+    "deck_dual_wild_evolution": 47,
+    "deck_dual_solar_wild": 47,
+    "deck_dual_iron_inquisition": 47,
     "deck_dual_storm_dragon": 50,
-    "deck_tri_arcane_cataclysm": 48,
+    "deck_tri_arcane_cataclysm": 50,
     "deck_tri_primal_titans": 53,
     "deck_tri_eternal_reliquary": 53,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_chronomancer": 52,
+    "deck_tri_blood_moon": 50,
+    "deck_tri_celestial_scales": 50,
+    "deck_spec_chronomancer": 50,
     "deck_spec_pentachromatic": 53,
-    "deck_tri_astral_cataclysm": 53,
+    "deck_tri_astral_cataclysm": 47,
+    "deck_tri_primordial_forge": 53,
+    "deck_tri_abyssal_chimera": 50,
+    "deck_tri_crimson_sun": 47,
+    "deck_tri_eternal_horizon": 55,
+    "deck_squad_thousand_shields": 47,
+    "deck_squad_siege_battery": 47,
+    "deck_penta_valkyra_pact": 50
+  },
+  "deck_blue_tempest": {
+    "deck_red_inferno": 45,
+    "deck_purple_abyss": 53,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 50,
+    "deck_dual_draconic_pact": 53,
+    "deck_dual_abyssal_storm": 55,
+    "deck_dual_primal_fury": 53,
+    "deck_dual_arcane_forge": 50,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 45,
+    "deck_dual_wild_evolution": 55,
+    "deck_dual_solar_wild": 55,
+    "deck_dual_iron_inquisition": 53,
+    "deck_dual_storm_dragon": 47,
+    "deck_tri_arcane_cataclysm": 50,
+    "deck_tri_primal_titans": 45,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_blood_moon": 50,
+    "deck_tri_celestial_scales": 50,
+    "deck_spec_chronomancer": 45,
+    "deck_spec_pentachromatic": 47,
+    "deck_tri_astral_cataclysm": 47,
     "deck_tri_primordial_forge": 55,
-    "deck_tri_abyssal_chimera": 53,
-    "deck_tri_crimson_sun": 53,
-    "deck_tri_eternal_horizon": 50,
+    "deck_tri_abyssal_chimera": 55,
+    "deck_tri_crimson_sun": 55,
+    "deck_tri_eternal_horizon": 47,
     "deck_squad_thousand_shields": 53,
-    "deck_squad_siege_battery": 52,
+    "deck_squad_siege_battery": 50,
     "deck_penta_valkyra_pact": 53
   },
   "deck_purple_abyss": {
     "deck_red_inferno": 53,
-    "deck_blue_tempest": 50,
-    "deck_green_wild": 50,
-    "deck_gold_bastion": 48,
-    "deck_dual_draconic_pact": 53,
-    "deck_dual_abyssal_storm": 48,
+    "deck_blue_tempest": 47,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 47,
+    "deck_dual_draconic_pact": 47,
+    "deck_dual_abyssal_storm": 50,
     "deck_dual_primal_fury": 53,
-    "deck_dual_arcane_forge": 53,
-    "deck_dual_eternal_rot": 53,
-    "deck_dual_blood_flame": 52,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 50,
-    "deck_dual_iron_inquisition": 52,
-    "deck_dual_storm_dragon": 48,
+    "deck_dual_arcane_forge": 47,
+    "deck_dual_eternal_rot": 45,
+    "deck_dual_blood_flame": 50,
+    "deck_dual_wild_evolution": 47,
+    "deck_dual_solar_wild": 53,
+    "deck_dual_iron_inquisition": 53,
+    "deck_dual_storm_dragon": 50,
     "deck_tri_arcane_cataclysm": 47,
-    "deck_tri_primal_titans": 53,
-    "deck_tri_eternal_reliquary": 52,
-    "deck_tri_blood_moon": 48,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_chronomancer": 50,
-    "deck_spec_pentachromatic": 52,
-    "deck_tri_astral_cataclysm": 48,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 52,
+    "deck_tri_primal_titans": 47,
+    "deck_tri_eternal_reliquary": 53,
+    "deck_tri_blood_moon": 55,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_chronomancer": 45,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 55,
+    "deck_tri_primordial_forge": 53,
+    "deck_tri_abyssal_chimera": 50,
     "deck_tri_crimson_sun": 53,
-    "deck_tri_eternal_horizon": 52,
-    "deck_squad_thousand_shields": 50,
-    "deck_squad_siege_battery": 48,
-    "deck_penta_valkyra_pact": 52
+    "deck_tri_eternal_horizon": 47,
+    "deck_squad_thousand_shields": 53,
+    "deck_squad_siege_battery": 45,
+    "deck_penta_valkyra_pact": 55
   },
   "deck_green_wild": {
-    "deck_red_inferno": 50,
-    "deck_blue_tempest": 52,
-    "deck_purple_abyss": 50,
-    "deck_gold_bastion": 48,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_abyssal_storm": 50,
-    "deck_dual_primal_fury": 55,
-    "deck_dual_arcane_forge": 53,
-    "deck_dual_eternal_rot": 52,
-    "deck_dual_blood_flame": 52,
+    "deck_red_inferno": 53,
+    "deck_blue_tempest": 47,
+    "deck_purple_abyss": 47,
+    "deck_gold_bastion": 50,
+    "deck_dual_draconic_pact": 47,
+    "deck_dual_abyssal_storm": 47,
+    "deck_dual_primal_fury": 47,
+    "deck_dual_arcane_forge": 47,
+    "deck_dual_eternal_rot": 47,
+    "deck_dual_blood_flame": 55,
+    "deck_dual_wild_evolution": 53,
+    "deck_dual_solar_wild": 50,
+    "deck_dual_iron_inquisition": 45,
+    "deck_dual_storm_dragon": 55,
+    "deck_tri_arcane_cataclysm": 50,
+    "deck_tri_primal_titans": 47,
+    "deck_tri_eternal_reliquary": 53,
+    "deck_tri_blood_moon": 55,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_chronomancer": 45,
+    "deck_spec_pentachromatic": 53,
+    "deck_tri_astral_cataclysm": 45,
+    "deck_tri_primordial_forge": 47,
+    "deck_tri_abyssal_chimera": 53,
+    "deck_tri_crimson_sun": 47,
+    "deck_tri_eternal_horizon": 47,
+    "deck_squad_thousand_shields": 55,
+    "deck_squad_siege_battery": 45,
+    "deck_penta_valkyra_pact": 55
+  },
+  "deck_gold_bastion": {
+    "deck_red_inferno": 47,
+    "deck_blue_tempest": 50,
+    "deck_purple_abyss": 53,
+    "deck_green_wild": 50,
+    "deck_dual_draconic_pact": 47,
+    "deck_dual_abyssal_storm": 55,
+    "deck_dual_primal_fury": 50,
+    "deck_dual_arcane_forge": 55,
+    "deck_dual_eternal_rot": 55,
+    "deck_dual_blood_flame": 45,
+    "deck_dual_wild_evolution": 53,
+    "deck_dual_solar_wild": 50,
+    "deck_dual_iron_inquisition": 47,
+    "deck_dual_storm_dragon": 47,
+    "deck_tri_arcane_cataclysm": 53,
+    "deck_tri_primal_titans": 45,
+    "deck_tri_eternal_reliquary": 47,
+    "deck_tri_blood_moon": 53,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_chronomancer": 55,
+    "deck_spec_pentachromatic": 47,
+    "deck_tri_astral_cataclysm": 45,
+    "deck_tri_primordial_forge": 50,
+    "deck_tri_abyssal_chimera": 50,
+    "deck_tri_crimson_sun": 50,
+    "deck_tri_eternal_horizon": 50,
+    "deck_squad_thousand_shields": 47,
+    "deck_squad_siege_battery": 50,
+    "deck_penta_valkyra_pact": 55
+  },
+  "deck_dual_draconic_pact": {
+    "deck_red_inferno": 53,
+    "deck_blue_tempest": 47,
+    "deck_purple_abyss": 53,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 53,
+    "deck_dual_abyssal_storm": 47,
+    "deck_dual_primal_fury": 47,
+    "deck_dual_arcane_forge": 47,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 55,
     "deck_dual_wild_evolution": 50,
     "deck_dual_solar_wild": 55,
     "deck_dual_iron_inquisition": 50,
-    "deck_dual_storm_dragon": 55,
-    "deck_tri_arcane_cataclysm": 48,
-    "deck_tri_primal_titans": 52,
-    "deck_tri_eternal_reliquary": 48,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 50,
-    "deck_spec_chronomancer": 47,
-    "deck_spec_pentachromatic": 48,
-    "deck_tri_astral_cataclysm": 52,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 48,
-    "deck_tri_crimson_sun": 55,
-    "deck_tri_eternal_horizon": 53,
-    "deck_squad_thousand_shields": 47,
-    "deck_squad_siege_battery": 53,
-    "deck_penta_valkyra_pact": 52
-  },
-  "deck_gold_bastion": {
-    "deck_red_inferno": 48,
-    "deck_blue_tempest": 48,
-    "deck_purple_abyss": 52,
-    "deck_green_wild": 52,
-    "deck_dual_draconic_pact": 50,
-    "deck_dual_abyssal_storm": 50,
-    "deck_dual_primal_fury": 50,
-    "deck_dual_arcane_forge": 53,
-    "deck_dual_eternal_rot": 47,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 52,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 47,
-    "deck_dual_storm_dragon": 48,
-    "deck_tri_arcane_cataclysm": 53,
-    "deck_tri_primal_titans": 52,
-    "deck_tri_eternal_reliquary": 52,
-    "deck_tri_blood_moon": 48,
-    "deck_tri_celestial_scales": 55,
-    "deck_spec_chronomancer": 47,
-    "deck_spec_pentachromatic": 50,
-    "deck_tri_astral_cataclysm": 52,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 48,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 47,
-    "deck_squad_siege_battery": 50,
-    "deck_penta_valkyra_pact": 48
-  },
-  "deck_dual_draconic_pact": {
-    "deck_red_inferno": 52,
-    "deck_blue_tempest": 45,
-    "deck_purple_abyss": 47,
-    "deck_green_wild": 48,
-    "deck_gold_bastion": 50,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 50,
-    "deck_dual_arcane_forge": 45,
-    "deck_dual_eternal_rot": 48,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 47,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 48,
     "deck_dual_storm_dragon": 50,
-    "deck_tri_arcane_cataclysm": 48,
-    "deck_tri_primal_titans": 50,
-    "deck_tri_eternal_reliquary": 48,
-    "deck_tri_blood_moon": 53,
-    "deck_tri_celestial_scales": 48,
-    "deck_spec_chronomancer": 48,
-    "deck_spec_pentachromatic": 53,
-    "deck_tri_astral_cataclysm": 45,
-    "deck_tri_primordial_forge": 48,
-    "deck_tri_abyssal_chimera": 45,
-    "deck_tri_crimson_sun": 50,
-    "deck_tri_eternal_horizon": 52,
-    "deck_squad_thousand_shields": 47,
-    "deck_squad_siege_battery": 50,
-    "deck_penta_valkyra_pact": 48
-  },
-  "deck_dual_abyssal_storm": {
-    "deck_red_inferno": 52,
-    "deck_blue_tempest": 52,
-    "deck_purple_abyss": 52,
-    "deck_green_wild": 50,
-    "deck_gold_bastion": 50,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_primal_fury": 52,
-    "deck_dual_arcane_forge": 52,
-    "deck_dual_eternal_rot": 53,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 55,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 52,
-    "deck_dual_storm_dragon": 53,
-    "deck_tri_arcane_cataclysm": 52,
-    "deck_tri_primal_titans": 53,
-    "deck_tri_eternal_reliquary": 52,
-    "deck_tri_blood_moon": 48,
-    "deck_tri_celestial_scales": 50,
-    "deck_spec_chronomancer": 50,
-    "deck_spec_pentachromatic": 52,
-    "deck_tri_astral_cataclysm": 52,
-    "deck_tri_primordial_forge": 55,
+    "deck_tri_arcane_cataclysm": 53,
+    "deck_tri_primal_titans": 55,
+    "deck_tri_eternal_reliquary": 55,
+    "deck_tri_blood_moon": 45,
+    "deck_tri_celestial_scales": 45,
+    "deck_spec_chronomancer": 45,
+    "deck_spec_pentachromatic": 47,
+    "deck_tri_astral_cataclysm": 50,
+    "deck_tri_primordial_forge": 53,
     "deck_tri_abyssal_chimera": 50,
-    "deck_tri_crimson_sun": 55,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 53,
-    "deck_squad_siege_battery": 50,
-    "deck_penta_valkyra_pact": 52
-  },
-  "deck_dual_primal_fury": {
-    "deck_red_inferno": 47,
-    "deck_blue_tempest": 47,
-    "deck_purple_abyss": 47,
-    "deck_green_wild": 45,
-    "deck_gold_bastion": 50,
-    "deck_dual_draconic_pact": 50,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_arcane_forge": 48,
-    "deck_dual_eternal_rot": 47,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 47,
-    "deck_dual_solar_wild": 48,
-    "deck_dual_iron_inquisition": 50,
-    "deck_dual_storm_dragon": 52,
-    "deck_tri_arcane_cataclysm": 50,
-    "deck_tri_primal_titans": 48,
-    "deck_tri_eternal_reliquary": 50,
-    "deck_tri_blood_moon": 50,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_chronomancer": 48,
-    "deck_spec_pentachromatic": 53,
-    "deck_tri_astral_cataclysm": 52,
-    "deck_tri_primordial_forge": 48,
-    "deck_tri_abyssal_chimera": 52,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 47,
+    "deck_tri_crimson_sun": 47,
+    "deck_tri_eternal_horizon": 53,
     "deck_squad_thousand_shields": 50,
     "deck_squad_siege_battery": 50,
-    "deck_penta_valkyra_pact": 47
+    "deck_penta_valkyra_pact": 45
+  },
+  "deck_dual_abyssal_storm": {
+    "deck_red_inferno": 55,
+    "deck_blue_tempest": 45,
+    "deck_purple_abyss": 50,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 45,
+    "deck_dual_draconic_pact": 53,
+    "deck_dual_primal_fury": 53,
+    "deck_dual_arcane_forge": 53,
+    "deck_dual_eternal_rot": 53,
+    "deck_dual_blood_flame": 53,
+    "deck_dual_wild_evolution": 45,
+    "deck_dual_solar_wild": 47,
+    "deck_dual_iron_inquisition": 53,
+    "deck_dual_storm_dragon": 50,
+    "deck_tri_arcane_cataclysm": 50,
+    "deck_tri_primal_titans": 45,
+    "deck_tri_eternal_reliquary": 55,
+    "deck_tri_blood_moon": 55,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_chronomancer": 50,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 50,
+    "deck_tri_primordial_forge": 50,
+    "deck_tri_abyssal_chimera": 47,
+    "deck_tri_crimson_sun": 53,
+    "deck_tri_eternal_horizon": 45,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 47,
+    "deck_penta_valkyra_pact": 50
+  },
+  "deck_dual_primal_fury": {
+    "deck_red_inferno": 53,
+    "deck_blue_tempest": 47,
+    "deck_purple_abyss": 47,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 50,
+    "deck_dual_draconic_pact": 53,
+    "deck_dual_abyssal_storm": 47,
+    "deck_dual_arcane_forge": 50,
+    "deck_dual_eternal_rot": 45,
+    "deck_dual_blood_flame": 45,
+    "deck_dual_wild_evolution": 55,
+    "deck_dual_solar_wild": 45,
+    "deck_dual_iron_inquisition": 53,
+    "deck_dual_storm_dragon": 55,
+    "deck_tri_arcane_cataclysm": 53,
+    "deck_tri_primal_titans": 50,
+    "deck_tri_eternal_reliquary": 45,
+    "deck_tri_blood_moon": 47,
+    "deck_tri_celestial_scales": 50,
+    "deck_spec_chronomancer": 55,
+    "deck_spec_pentachromatic": 47,
+    "deck_tri_astral_cataclysm": 47,
+    "deck_tri_primordial_forge": 45,
+    "deck_tri_abyssal_chimera": 50,
+    "deck_tri_crimson_sun": 53,
+    "deck_tri_eternal_horizon": 50,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 55,
+    "deck_penta_valkyra_pact": 55
   },
   "deck_dual_arcane_forge": {
     "deck_red_inferno": 47,
-    "deck_blue_tempest": 47,
-    "deck_purple_abyss": 47,
-    "deck_green_wild": 47,
-    "deck_gold_bastion": 47,
-    "deck_dual_draconic_pact": 55,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 52,
-    "deck_dual_eternal_rot": 53,
-    "deck_dual_blood_flame": 48,
-    "deck_dual_wild_evolution": 52,
-    "deck_dual_solar_wild": 53,
-    "deck_dual_iron_inquisition": 48,
-    "deck_dual_storm_dragon": 50,
-    "deck_tri_arcane_cataclysm": 48,
-    "deck_tri_primal_titans": 50,
-    "deck_tri_eternal_reliquary": 50,
-    "deck_tri_blood_moon": 53,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_chronomancer": 48,
-    "deck_spec_pentachromatic": 47,
-    "deck_tri_astral_cataclysm": 47,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 53,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 52,
-    "deck_squad_thousand_shields": 52,
-    "deck_squad_siege_battery": 48,
-    "deck_penta_valkyra_pact": 55
-  },
-  "deck_dual_eternal_rot": {
-    "deck_red_inferno": 52,
-    "deck_blue_tempest": 45,
-    "deck_purple_abyss": 47,
-    "deck_green_wild": 48,
-    "deck_gold_bastion": 53,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_abyssal_storm": 47,
-    "deck_dual_primal_fury": 53,
-    "deck_dual_arcane_forge": 47,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 50,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 50,
-    "deck_dual_storm_dragon": 50,
-    "deck_tri_arcane_cataclysm": 53,
-    "deck_tri_primal_titans": 53,
-    "deck_tri_eternal_reliquary": 52,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 48,
-    "deck_spec_chronomancer": 47,
-    "deck_spec_pentachromatic": 50,
-    "deck_tri_astral_cataclysm": 48,
-    "deck_tri_primordial_forge": 50,
-    "deck_tri_abyssal_chimera": 48,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 50,
-    "deck_squad_thousand_shields": 50,
-    "deck_squad_siege_battery": 48,
-    "deck_penta_valkyra_pact": 52
-  },
-  "deck_dual_blood_flame": {
-    "deck_red_inferno": 52,
     "deck_blue_tempest": 50,
-    "deck_purple_abyss": 48,
-    "deck_green_wild": 48,
-    "deck_gold_bastion": 50,
-    "deck_dual_draconic_pact": 50,
-    "deck_dual_abyssal_storm": 50,
+    "deck_purple_abyss": 53,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 45,
+    "deck_dual_draconic_pact": 53,
+    "deck_dual_abyssal_storm": 47,
     "deck_dual_primal_fury": 50,
-    "deck_dual_arcane_forge": 52,
-    "deck_dual_eternal_rot": 50,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 53,
-    "deck_dual_iron_inquisition": 48,
-    "deck_dual_storm_dragon": 50,
-    "deck_tri_arcane_cataclysm": 50,
+    "deck_dual_eternal_rot": 55,
+    "deck_dual_blood_flame": 50,
+    "deck_dual_wild_evolution": 53,
+    "deck_dual_solar_wild": 45,
+    "deck_dual_iron_inquisition": 53,
+    "deck_dual_storm_dragon": 47,
+    "deck_tri_arcane_cataclysm": 45,
     "deck_tri_primal_titans": 50,
     "deck_tri_eternal_reliquary": 47,
-    "deck_tri_blood_moon": 50,
-    "deck_tri_celestial_scales": 48,
-    "deck_spec_chronomancer": 47,
-    "deck_spec_pentachromatic": 48,
-    "deck_tri_astral_cataclysm": 48,
+    "deck_tri_blood_moon": 45,
+    "deck_tri_celestial_scales": 55,
+    "deck_spec_chronomancer": 53,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 53,
     "deck_tri_primordial_forge": 50,
-    "deck_tri_abyssal_chimera": 52,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 52,
-    "deck_squad_siege_battery": 53,
+    "deck_tri_abyssal_chimera": 50,
+    "deck_tri_crimson_sun": 53,
+    "deck_tri_eternal_horizon": 53,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 50,
     "deck_penta_valkyra_pact": 53
+  },
+  "deck_dual_eternal_rot": {
+    "deck_red_inferno": 47,
+    "deck_blue_tempest": 50,
+    "deck_purple_abyss": 55,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 45,
+    "deck_dual_draconic_pact": 50,
+    "deck_dual_abyssal_storm": 47,
+    "deck_dual_primal_fury": 55,
+    "deck_dual_arcane_forge": 45,
+    "deck_dual_blood_flame": 50,
+    "deck_dual_wild_evolution": 47,
+    "deck_dual_solar_wild": 50,
+    "deck_dual_iron_inquisition": 47,
+    "deck_dual_storm_dragon": 50,
+    "deck_tri_arcane_cataclysm": 53,
+    "deck_tri_primal_titans": 50,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_blood_moon": 50,
+    "deck_tri_celestial_scales": 55,
+    "deck_spec_chronomancer": 45,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 55,
+    "deck_tri_primordial_forge": 50,
+    "deck_tri_abyssal_chimera": 47,
+    "deck_tri_crimson_sun": 47,
+    "deck_tri_eternal_horizon": 50,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 50,
+    "deck_penta_valkyra_pact": 53
+  },
+  "deck_dual_blood_flame": {
+    "deck_red_inferno": 50,
+    "deck_blue_tempest": 55,
+    "deck_purple_abyss": 50,
+    "deck_green_wild": 45,
+    "deck_gold_bastion": 55,
+    "deck_dual_draconic_pact": 45,
+    "deck_dual_abyssal_storm": 47,
+    "deck_dual_primal_fury": 55,
+    "deck_dual_arcane_forge": 50,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_wild_evolution": 50,
+    "deck_dual_solar_wild": 45,
+    "deck_dual_iron_inquisition": 53,
+    "deck_dual_storm_dragon": 53,
+    "deck_tri_arcane_cataclysm": 53,
+    "deck_tri_primal_titans": 47,
+    "deck_tri_eternal_reliquary": 53,
+    "deck_tri_blood_moon": 47,
+    "deck_tri_celestial_scales": 47,
+    "deck_spec_chronomancer": 55,
+    "deck_spec_pentachromatic": 45,
+    "deck_tri_astral_cataclysm": 53,
+    "deck_tri_primordial_forge": 53,
+    "deck_tri_abyssal_chimera": 47,
+    "deck_tri_crimson_sun": 50,
+    "deck_tri_eternal_horizon": 50,
+    "deck_squad_thousand_shields": 53,
+    "deck_squad_siege_battery": 53,
+    "deck_penta_valkyra_pact": 47
   },
   "deck_dual_wild_evolution": {
     "deck_red_inferno": 53,
-    "deck_blue_tempest": 50,
-    "deck_purple_abyss": 52,
-    "deck_green_wild": 50,
-    "deck_gold_bastion": 48,
-    "deck_dual_draconic_pact": 53,
-    "deck_dual_abyssal_storm": 45,
-    "deck_dual_primal_fury": 53,
-    "deck_dual_arcane_forge": 48,
-    "deck_dual_eternal_rot": 50,
-    "deck_dual_blood_flame": 52,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 48,
-    "deck_dual_storm_dragon": 50,
-    "deck_tri_arcane_cataclysm": 52,
-    "deck_tri_primal_titans": 52,
-    "deck_tri_eternal_reliquary": 50,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_chronomancer": 50,
-    "deck_spec_pentachromatic": 53,
-    "deck_tri_astral_cataclysm": 47,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 50,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 52,
-    "deck_squad_thousand_shields": 50,
-    "deck_squad_siege_battery": 52,
-    "deck_penta_valkyra_pact": 52
-  },
-  "deck_dual_solar_wild": {
-    "deck_red_inferno": 48,
     "deck_blue_tempest": 45,
-    "deck_purple_abyss": 50,
-    "deck_green_wild": 45,
-    "deck_gold_bastion": 48,
-    "deck_dual_draconic_pact": 48,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 52,
+    "deck_purple_abyss": 53,
+    "deck_green_wild": 47,
+    "deck_gold_bastion": 47,
+    "deck_dual_draconic_pact": 50,
+    "deck_dual_abyssal_storm": 55,
+    "deck_dual_primal_fury": 45,
     "deck_dual_arcane_forge": 47,
-    "deck_dual_eternal_rot": 48,
-    "deck_dual_blood_flame": 47,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_iron_inquisition": 47,
+    "deck_dual_eternal_rot": 53,
+    "deck_dual_blood_flame": 50,
+    "deck_dual_solar_wild": 45,
+    "deck_dual_iron_inquisition": 55,
     "deck_dual_storm_dragon": 50,
     "deck_tri_arcane_cataclysm": 50,
-    "deck_tri_primal_titans": 50,
-    "deck_tri_eternal_reliquary": 48,
-    "deck_tri_blood_moon": 50,
-    "deck_tri_celestial_scales": 50,
-    "deck_spec_chronomancer": 47,
-    "deck_spec_pentachromatic": 48,
+    "deck_tri_primal_titans": 53,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_blood_moon": 55,
+    "deck_tri_celestial_scales": 47,
+    "deck_spec_chronomancer": 55,
+    "deck_spec_pentachromatic": 50,
     "deck_tri_astral_cataclysm": 47,
-    "deck_tri_primordial_forge": 55,
+    "deck_tri_primordial_forge": 50,
+    "deck_tri_abyssal_chimera": 53,
+    "deck_tri_crimson_sun": 55,
+    "deck_tri_eternal_horizon": 50,
+    "deck_squad_thousand_shields": 45,
+    "deck_squad_siege_battery": 55,
+    "deck_penta_valkyra_pact": 47
+  },
+  "deck_dual_solar_wild": {
+    "deck_red_inferno": 53,
+    "deck_blue_tempest": 45,
+    "deck_purple_abyss": 47,
+    "deck_green_wild": 50,
+    "deck_gold_bastion": 50,
+    "deck_dual_draconic_pact": 45,
+    "deck_dual_abyssal_storm": 53,
+    "deck_dual_primal_fury": 55,
+    "deck_dual_arcane_forge": 55,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 55,
+    "deck_dual_wild_evolution": 55,
+    "deck_dual_iron_inquisition": 47,
+    "deck_dual_storm_dragon": 50,
+    "deck_tri_arcane_cataclysm": 47,
+    "deck_tri_primal_titans": 50,
+    "deck_tri_eternal_reliquary": 45,
+    "deck_tri_blood_moon": 50,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_chronomancer": 47,
+    "deck_spec_pentachromatic": 45,
+    "deck_tri_astral_cataclysm": 55,
+    "deck_tri_primordial_forge": 45,
     "deck_tri_abyssal_chimera": 50,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 50,
-    "deck_squad_siege_battery": 48,
-    "deck_penta_valkyra_pact": 50
+    "deck_tri_crimson_sun": 45,
+    "deck_tri_eternal_horizon": 47,
+    "deck_squad_thousand_shields": 47,
+    "deck_squad_siege_battery": 50,
+    "deck_penta_valkyra_pact": 55
   },
   "deck_dual_iron_inquisition": {
     "deck_red_inferno": 53,
     "deck_blue_tempest": 47,
-    "deck_purple_abyss": 48,
-    "deck_green_wild": 50,
-    "deck_gold_bastion": 53,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 50,
-    "deck_dual_arcane_forge": 52,
-    "deck_dual_eternal_rot": 50,
-    "deck_dual_blood_flame": 52,
-    "deck_dual_wild_evolution": 52,
-    "deck_dual_solar_wild": 53,
-    "deck_dual_storm_dragon": 48,
-    "deck_tri_arcane_cataclysm": 53,
-    "deck_tri_primal_titans": 52,
-    "deck_tri_eternal_reliquary": 53,
-    "deck_tri_blood_moon": 55,
-    "deck_tri_celestial_scales": 53,
-    "deck_spec_chronomancer": 48,
-    "deck_spec_pentachromatic": 50,
-    "deck_tri_astral_cataclysm": 52,
-    "deck_tri_primordial_forge": 53,
-    "deck_tri_abyssal_chimera": 52,
-    "deck_tri_crimson_sun": 53,
-    "deck_tri_eternal_horizon": 52,
-    "deck_squad_thousand_shields": 50,
-    "deck_squad_siege_battery": 48,
-    "deck_penta_valkyra_pact": 53
-  },
-  "deck_dual_storm_dragon": {
-    "deck_red_inferno": 48,
-    "deck_blue_tempest": 50,
-    "deck_purple_abyss": 52,
-    "deck_green_wild": 45,
-    "deck_gold_bastion": 52,
-    "deck_dual_draconic_pact": 50,
-    "deck_dual_abyssal_storm": 47,
-    "deck_dual_primal_fury": 48,
-    "deck_dual_arcane_forge": 50,
-    "deck_dual_eternal_rot": 50,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 50,
-    "deck_dual_solar_wild": 50,
-    "deck_dual_iron_inquisition": 52,
-    "deck_tri_arcane_cataclysm": 52,
-    "deck_tri_primal_titans": 50,
-    "deck_tri_eternal_reliquary": 52,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 50,
-    "deck_spec_chronomancer": 52,
-    "deck_spec_pentachromatic": 47,
-    "deck_tri_astral_cataclysm": 55,
-    "deck_tri_primordial_forge": 55,
-    "deck_tri_abyssal_chimera": 52,
-    "deck_tri_crimson_sun": 53,
-    "deck_tri_eternal_horizon": 50,
-    "deck_squad_thousand_shields": 53,
-    "deck_squad_siege_battery": 50,
-    "deck_penta_valkyra_pact": 48
-  },
-  "deck_tri_arcane_cataclysm": {
-    "deck_red_inferno": 52,
-    "deck_blue_tempest": 52,
-    "deck_purple_abyss": 53,
-    "deck_green_wild": 52,
-    "deck_gold_bastion": 47,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 50,
-    "deck_dual_arcane_forge": 52,
-    "deck_dual_eternal_rot": 47,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 50,
-    "deck_dual_iron_inquisition": 47,
-    "deck_dual_storm_dragon": 48,
-    "deck_tri_primal_titans": 53,
-    "deck_tri_eternal_reliquary": 52,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_chronomancer": 50,
-    "deck_spec_pentachromatic": 50,
-    "deck_tri_astral_cataclysm": 50,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 53,
-    "deck_tri_crimson_sun": 53,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 53,
-    "deck_squad_siege_battery": 47,
-    "deck_penta_valkyra_pact": 48
-  },
-  "deck_tri_primal_titans": {
-    "deck_red_inferno": 50,
-    "deck_blue_tempest": 47,
     "deck_purple_abyss": 47,
-    "deck_green_wild": 48,
-    "deck_gold_bastion": 48,
+    "deck_green_wild": 55,
+    "deck_gold_bastion": 53,
     "deck_dual_draconic_pact": 50,
     "deck_dual_abyssal_storm": 47,
-    "deck_dual_primal_fury": 52,
-    "deck_dual_arcane_forge": 50,
-    "deck_dual_eternal_rot": 47,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 50,
-    "deck_dual_iron_inquisition": 48,
-    "deck_dual_storm_dragon": 50,
-    "deck_tri_arcane_cataclysm": 47,
-    "deck_tri_eternal_reliquary": 48,
-    "deck_tri_blood_moon": 47,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_chronomancer": 48,
-    "deck_spec_pentachromatic": 47,
-    "deck_tri_astral_cataclysm": 47,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 50,
-    "deck_tri_crimson_sun": 50,
-    "deck_tri_eternal_horizon": 52,
-    "deck_squad_thousand_shields": 48,
-    "deck_squad_siege_battery": 45,
-    "deck_penta_valkyra_pact": 50
-  },
-  "deck_tri_eternal_reliquary": {
-    "deck_red_inferno": 53,
-    "deck_blue_tempest": 47,
-    "deck_purple_abyss": 48,
-    "deck_green_wild": 52,
-    "deck_gold_bastion": 48,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 50,
-    "deck_dual_arcane_forge": 50,
-    "deck_dual_eternal_rot": 48,
-    "deck_dual_blood_flame": 53,
-    "deck_dual_wild_evolution": 50,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 47,
-    "deck_dual_storm_dragon": 48,
-    "deck_tri_arcane_cataclysm": 48,
-    "deck_tri_primal_titans": 52,
-    "deck_tri_blood_moon": 53,
-    "deck_tri_celestial_scales": 50,
-    "deck_spec_chronomancer": 48,
-    "deck_spec_pentachromatic": 48,
-    "deck_tri_astral_cataclysm": 48,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 50,
-    "deck_tri_crimson_sun": 53,
-    "deck_tri_eternal_horizon": 50,
-    "deck_squad_thousand_shields": 50,
-    "deck_squad_siege_battery": 47,
-    "deck_penta_valkyra_pact": 47
-  },
-  "deck_tri_blood_moon": {
-    "deck_red_inferno": 52,
-    "deck_blue_tempest": 48,
-    "deck_purple_abyss": 52,
-    "deck_green_wild": 48,
-    "deck_gold_bastion": 52,
-    "deck_dual_draconic_pact": 47,
-    "deck_dual_abyssal_storm": 52,
-    "deck_dual_primal_fury": 50,
-    "deck_dual_arcane_forge": 47,
-    "deck_dual_eternal_rot": 48,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 50,
-    "deck_dual_iron_inquisition": 45,
-    "deck_dual_storm_dragon": 48,
-    "deck_tri_arcane_cataclysm": 48,
-    "deck_tri_primal_titans": 53,
-    "deck_tri_eternal_reliquary": 47,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_chronomancer": 50,
-    "deck_spec_pentachromatic": 48,
-    "deck_tri_astral_cataclysm": 48,
-    "deck_tri_primordial_forge": 48,
-    "deck_tri_abyssal_chimera": 47,
-    "deck_tri_crimson_sun": 50,
-    "deck_tri_eternal_horizon": 50,
-    "deck_squad_thousand_shields": 48,
-    "deck_squad_siege_battery": 52,
-    "deck_penta_valkyra_pact": 52
-  },
-  "deck_tri_celestial_scales": {
-    "deck_red_inferno": 47,
-    "deck_blue_tempest": 48,
-    "deck_purple_abyss": 48,
-    "deck_green_wild": 50,
-    "deck_gold_bastion": 45,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_abyssal_storm": 50,
-    "deck_dual_primal_fury": 48,
-    "deck_dual_arcane_forge": 48,
-    "deck_dual_eternal_rot": 52,
-    "deck_dual_blood_flame": 52,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 50,
-    "deck_dual_iron_inquisition": 47,
-    "deck_dual_storm_dragon": 50,
-    "deck_tri_arcane_cataclysm": 48,
-    "deck_tri_primal_titans": 48,
-    "deck_tri_eternal_reliquary": 50,
-    "deck_tri_blood_moon": 48,
-    "deck_spec_chronomancer": 48,
-    "deck_spec_pentachromatic": 50,
-    "deck_tri_astral_cataclysm": 47,
-    "deck_tri_primordial_forge": 50,
-    "deck_tri_abyssal_chimera": 45,
-    "deck_tri_crimson_sun": 53,
-    "deck_tri_eternal_horizon": 50,
-    "deck_squad_thousand_shields": 45,
-    "deck_squad_siege_battery": 50,
-    "deck_penta_valkyra_pact": 48
-  },
-  "deck_spec_chronomancer": {
-    "deck_red_inferno": 50,
-    "deck_blue_tempest": 48,
-    "deck_purple_abyss": 50,
-    "deck_green_wild": 53,
-    "deck_gold_bastion": 53,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_abyssal_storm": 50,
-    "deck_dual_primal_fury": 52,
-    "deck_dual_arcane_forge": 52,
-    "deck_dual_eternal_rot": 53,
-    "deck_dual_blood_flame": 53,
-    "deck_dual_wild_evolution": 50,
-    "deck_dual_solar_wild": 53,
-    "deck_dual_iron_inquisition": 52,
-    "deck_dual_storm_dragon": 48,
-    "deck_tri_arcane_cataclysm": 50,
-    "deck_tri_primal_titans": 52,
-    "deck_tri_eternal_reliquary": 52,
-    "deck_tri_blood_moon": 50,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_pentachromatic": 52,
-    "deck_tri_astral_cataclysm": 50,
-    "deck_tri_primordial_forge": 53,
-    "deck_tri_abyssal_chimera": 48,
-    "deck_tri_crimson_sun": 55,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 50,
-    "deck_squad_siege_battery": 53,
-    "deck_penta_valkyra_pact": 47
-  },
-  "deck_spec_pentachromatic": {
-    "deck_red_inferno": 48,
-    "deck_blue_tempest": 47,
-    "deck_purple_abyss": 48,
-    "deck_green_wild": 52,
-    "deck_gold_bastion": 50,
-    "deck_dual_draconic_pact": 47,
-    "deck_dual_abyssal_storm": 48,
     "deck_dual_primal_fury": 47,
-    "deck_dual_arcane_forge": 53,
-    "deck_dual_eternal_rot": 50,
-    "deck_dual_blood_flame": 52,
-    "deck_dual_wild_evolution": 47,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 50,
-    "deck_dual_storm_dragon": 53,
-    "deck_tri_arcane_cataclysm": 50,
-    "deck_tri_primal_titans": 53,
-    "deck_tri_eternal_reliquary": 52,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 50,
-    "deck_spec_chronomancer": 48,
-    "deck_tri_astral_cataclysm": 48,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 53,
-    "deck_tri_crimson_sun": 50,
-    "deck_tri_eternal_horizon": 52,
-    "deck_squad_thousand_shields": 52,
-    "deck_squad_siege_battery": 47,
-    "deck_penta_valkyra_pact": 48
-  },
-  "deck_tri_astral_cataclysm": {
-    "deck_red_inferno": 53,
-    "deck_blue_tempest": 47,
-    "deck_purple_abyss": 52,
-    "deck_green_wild": 48,
-    "deck_gold_bastion": 48,
-    "deck_dual_draconic_pact": 55,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 48,
-    "deck_dual_arcane_forge": 53,
-    "deck_dual_eternal_rot": 52,
-    "deck_dual_blood_flame": 52,
-    "deck_dual_wild_evolution": 53,
-    "deck_dual_solar_wild": 53,
-    "deck_dual_iron_inquisition": 48,
-    "deck_dual_storm_dragon": 45,
-    "deck_tri_arcane_cataclysm": 50,
-    "deck_tri_primal_titans": 53,
-    "deck_tri_eternal_reliquary": 52,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 53,
-    "deck_spec_chronomancer": 50,
-    "deck_spec_pentachromatic": 52,
-    "deck_tri_primordial_forge": 50,
-    "deck_tri_abyssal_chimera": 53,
-    "deck_tri_crimson_sun": 55,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 50,
-    "deck_squad_siege_battery": 50,
-    "deck_penta_valkyra_pact": 52
-  },
-  "deck_tri_primordial_forge": {
-    "deck_red_inferno": 48,
-    "deck_blue_tempest": 45,
-    "deck_purple_abyss": 48,
-    "deck_green_wild": 48,
-    "deck_gold_bastion": 48,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_abyssal_storm": 45,
-    "deck_dual_primal_fury": 52,
-    "deck_dual_arcane_forge": 48,
-    "deck_dual_eternal_rot": 50,
-    "deck_dual_blood_flame": 50,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 45,
-    "deck_dual_iron_inquisition": 47,
-    "deck_dual_storm_dragon": 45,
-    "deck_tri_arcane_cataclysm": 48,
-    "deck_tri_primal_titans": 48,
-    "deck_tri_eternal_reliquary": 48,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 50,
-    "deck_spec_chronomancer": 47,
-    "deck_spec_pentachromatic": 48,
-    "deck_tri_astral_cataclysm": 50,
-    "deck_tri_abyssal_chimera": 45,
-    "deck_tri_crimson_sun": 50,
-    "deck_tri_eternal_horizon": 50,
-    "deck_squad_thousand_shields": 48,
-    "deck_squad_siege_battery": 50,
-    "deck_penta_valkyra_pact": 50
-  },
-  "deck_tri_abyssal_chimera": {
-    "deck_red_inferno": 52,
-    "deck_blue_tempest": 47,
-    "deck_purple_abyss": 48,
-    "deck_green_wild": 52,
-    "deck_gold_bastion": 52,
-    "deck_dual_draconic_pact": 55,
-    "deck_dual_abyssal_storm": 50,
-    "deck_dual_primal_fury": 48,
     "deck_dual_arcane_forge": 47,
-    "deck_dual_eternal_rot": 52,
-    "deck_dual_blood_flame": 48,
-    "deck_dual_wild_evolution": 50,
-    "deck_dual_solar_wild": 50,
-    "deck_dual_iron_inquisition": 48,
-    "deck_dual_storm_dragon": 48,
-    "deck_tri_arcane_cataclysm": 47,
-    "deck_tri_primal_titans": 50,
-    "deck_tri_eternal_reliquary": 50,
-    "deck_tri_blood_moon": 53,
-    "deck_tri_celestial_scales": 55,
-    "deck_spec_chronomancer": 52,
-    "deck_spec_pentachromatic": 47,
-    "deck_tri_astral_cataclysm": 47,
-    "deck_tri_primordial_forge": 55,
-    "deck_tri_crimson_sun": 53,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 47,
-    "deck_squad_siege_battery": 48,
-    "deck_penta_valkyra_pact": 50
-  },
-  "deck_tri_crimson_sun": {
-    "deck_red_inferno": 48,
-    "deck_blue_tempest": 47,
-    "deck_purple_abyss": 47,
-    "deck_green_wild": 45,
-    "deck_gold_bastion": 48,
-    "deck_dual_draconic_pact": 50,
-    "deck_dual_abyssal_storm": 45,
-    "deck_dual_primal_fury": 48,
-    "deck_dual_arcane_forge": 48,
-    "deck_dual_eternal_rot": 48,
-    "deck_dual_blood_flame": 48,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 48,
-    "deck_dual_iron_inquisition": 47,
-    "deck_dual_storm_dragon": 47,
-    "deck_tri_arcane_cataclysm": 47,
-    "deck_tri_primal_titans": 50,
-    "deck_tri_eternal_reliquary": 47,
-    "deck_tri_blood_moon": 50,
-    "deck_tri_celestial_scales": 47,
-    "deck_spec_chronomancer": 45,
-    "deck_spec_pentachromatic": 50,
-    "deck_tri_astral_cataclysm": 45,
-    "deck_tri_primordial_forge": 50,
-    "deck_tri_abyssal_chimera": 47,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 48,
-    "deck_squad_siege_battery": 47,
-    "deck_penta_valkyra_pact": 48
-  },
-  "deck_tri_eternal_horizon": {
-    "deck_red_inferno": 50,
-    "deck_blue_tempest": 50,
-    "deck_purple_abyss": 48,
-    "deck_green_wild": 47,
-    "deck_gold_bastion": 52,
-    "deck_dual_draconic_pact": 48,
-    "deck_dual_abyssal_storm": 52,
-    "deck_dual_primal_fury": 53,
-    "deck_dual_arcane_forge": 48,
-    "deck_dual_eternal_rot": 50,
-    "deck_dual_blood_flame": 52,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 48,
-    "deck_dual_storm_dragon": 50,
-    "deck_tri_arcane_cataclysm": 52,
-    "deck_tri_primal_titans": 48,
-    "deck_tri_eternal_reliquary": 50,
-    "deck_tri_blood_moon": 50,
-    "deck_tri_celestial_scales": 50,
-    "deck_spec_chronomancer": 52,
-    "deck_spec_pentachromatic": 48,
-    "deck_tri_astral_cataclysm": 52,
-    "deck_tri_primordial_forge": 50,
-    "deck_tri_abyssal_chimera": 52,
-    "deck_tri_crimson_sun": 52,
-    "deck_squad_thousand_shields": 45,
-    "deck_squad_siege_battery": 52,
-    "deck_penta_valkyra_pact": 52
-  },
-  "deck_squad_thousand_shields": {
-    "deck_red_inferno": 52,
-    "deck_blue_tempest": 47,
-    "deck_purple_abyss": 50,
-    "deck_green_wild": 53,
-    "deck_gold_bastion": 53,
-    "deck_dual_draconic_pact": 53,
-    "deck_dual_abyssal_storm": 47,
-    "deck_dual_primal_fury": 50,
-    "deck_dual_arcane_forge": 48,
-    "deck_dual_eternal_rot": 50,
-    "deck_dual_blood_flame": 48,
-    "deck_dual_wild_evolution": 50,
-    "deck_dual_solar_wild": 50,
-    "deck_dual_iron_inquisition": 50,
-    "deck_dual_storm_dragon": 47,
-    "deck_tri_arcane_cataclysm": 47,
-    "deck_tri_primal_titans": 52,
-    "deck_tri_eternal_reliquary": 50,
-    "deck_tri_blood_moon": 52,
-    "deck_tri_celestial_scales": 55,
-    "deck_spec_chronomancer": 50,
-    "deck_spec_pentachromatic": 48,
-    "deck_tri_astral_cataclysm": 50,
-    "deck_tri_primordial_forge": 52,
-    "deck_tri_abyssal_chimera": 53,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 55,
-    "deck_squad_siege_battery": 52,
-    "deck_penta_valkyra_pact": 52
-  },
-  "deck_squad_siege_battery": {
-    "deck_red_inferno": 45,
-    "deck_blue_tempest": 48,
-    "deck_purple_abyss": 52,
-    "deck_green_wild": 47,
-    "deck_gold_bastion": 50,
-    "deck_dual_draconic_pact": 50,
-    "deck_dual_abyssal_storm": 50,
-    "deck_dual_primal_fury": 50,
-    "deck_dual_arcane_forge": 52,
-    "deck_dual_eternal_rot": 52,
+    "deck_dual_eternal_rot": 53,
     "deck_dual_blood_flame": 47,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 52,
-    "deck_dual_iron_inquisition": 52,
+    "deck_dual_wild_evolution": 45,
+    "deck_dual_solar_wild": 53,
     "deck_dual_storm_dragon": 50,
     "deck_tri_arcane_cataclysm": 53,
     "deck_tri_primal_titans": 55,
     "deck_tri_eternal_reliquary": 53,
-    "deck_tri_blood_moon": 48,
-    "deck_tri_celestial_scales": 50,
+    "deck_tri_blood_moon": 47,
+    "deck_tri_celestial_scales": 45,
+    "deck_spec_chronomancer": 45,
+    "deck_spec_pentachromatic": 55,
+    "deck_tri_astral_cataclysm": 53,
+    "deck_tri_primordial_forge": 53,
+    "deck_tri_abyssal_chimera": 50,
+    "deck_tri_crimson_sun": 50,
+    "deck_tri_eternal_horizon": 45,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 45,
+    "deck_penta_valkyra_pact": 45
+  },
+  "deck_dual_storm_dragon": {
+    "deck_red_inferno": 50,
+    "deck_blue_tempest": 53,
+    "deck_purple_abyss": 50,
+    "deck_green_wild": 45,
+    "deck_gold_bastion": 53,
+    "deck_dual_draconic_pact": 50,
+    "deck_dual_abyssal_storm": 50,
+    "deck_dual_primal_fury": 45,
+    "deck_dual_arcane_forge": 53,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 47,
+    "deck_dual_wild_evolution": 50,
+    "deck_dual_solar_wild": 50,
+    "deck_dual_iron_inquisition": 50,
+    "deck_tri_arcane_cataclysm": 55,
+    "deck_tri_primal_titans": 53,
+    "deck_tri_eternal_reliquary": 55,
+    "deck_tri_blood_moon": 47,
+    "deck_tri_celestial_scales": 47,
     "deck_spec_chronomancer": 47,
     "deck_spec_pentachromatic": 53,
     "deck_tri_astral_cataclysm": 50,
-    "deck_tri_primordial_forge": 50,
-    "deck_tri_abyssal_chimera": 52,
+    "deck_tri_primordial_forge": 53,
+    "deck_tri_abyssal_chimera": 50,
     "deck_tri_crimson_sun": 53,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 48,
-    "deck_penta_valkyra_pact": 55
+    "deck_tri_eternal_horizon": 45,
+    "deck_squad_thousand_shields": 55,
+    "deck_squad_siege_battery": 50,
+    "deck_penta_valkyra_pact": 45
   },
-  "deck_penta_valkyra_pact": {
-    "deck_red_inferno": 52,
-    "deck_blue_tempest": 47,
-    "deck_purple_abyss": 48,
-    "deck_green_wild": 48,
-    "deck_gold_bastion": 52,
-    "deck_dual_draconic_pact": 52,
-    "deck_dual_abyssal_storm": 48,
-    "deck_dual_primal_fury": 53,
-    "deck_dual_arcane_forge": 45,
-    "deck_dual_eternal_rot": 48,
+  "deck_tri_arcane_cataclysm": {
+    "deck_red_inferno": 50,
+    "deck_blue_tempest": 50,
+    "deck_purple_abyss": 53,
+    "deck_green_wild": 50,
+    "deck_gold_bastion": 47,
+    "deck_dual_draconic_pact": 47,
+    "deck_dual_abyssal_storm": 50,
+    "deck_dual_primal_fury": 47,
+    "deck_dual_arcane_forge": 55,
+    "deck_dual_eternal_rot": 47,
     "deck_dual_blood_flame": 47,
-    "deck_dual_wild_evolution": 48,
-    "deck_dual_solar_wild": 50,
+    "deck_dual_wild_evolution": 50,
+    "deck_dual_solar_wild": 53,
     "deck_dual_iron_inquisition": 47,
-    "deck_dual_storm_dragon": 52,
-    "deck_tri_arcane_cataclysm": 52,
+    "deck_dual_storm_dragon": 45,
+    "deck_tri_primal_titans": 53,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_blood_moon": 53,
+    "deck_tri_celestial_scales": 45,
+    "deck_spec_chronomancer": 47,
+    "deck_spec_pentachromatic": 45,
+    "deck_tri_astral_cataclysm": 47,
+    "deck_tri_primordial_forge": 55,
+    "deck_tri_abyssal_chimera": 47,
+    "deck_tri_crimson_sun": 53,
+    "deck_tri_eternal_horizon": 45,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 53,
+    "deck_penta_valkyra_pact": 50
+  },
+  "deck_tri_primal_titans": {
+    "deck_red_inferno": 47,
+    "deck_blue_tempest": 55,
+    "deck_purple_abyss": 53,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 55,
+    "deck_dual_draconic_pact": 45,
+    "deck_dual_abyssal_storm": 55,
+    "deck_dual_primal_fury": 50,
+    "deck_dual_arcane_forge": 50,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 53,
+    "deck_dual_wild_evolution": 47,
+    "deck_dual_solar_wild": 50,
+    "deck_dual_iron_inquisition": 45,
+    "deck_dual_storm_dragon": 47,
+    "deck_tri_arcane_cataclysm": 47,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_blood_moon": 53,
+    "deck_tri_celestial_scales": 50,
+    "deck_spec_chronomancer": 55,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 55,
+    "deck_tri_primordial_forge": 47,
+    "deck_tri_abyssal_chimera": 45,
+    "deck_tri_crimson_sun": 55,
+    "deck_tri_eternal_horizon": 53,
+    "deck_squad_thousand_shields": 47,
+    "deck_squad_siege_battery": 45,
+    "deck_penta_valkyra_pact": 50
+  },
+  "deck_tri_eternal_reliquary": {
+    "deck_red_inferno": 47,
+    "deck_blue_tempest": 50,
+    "deck_purple_abyss": 47,
+    "deck_green_wild": 47,
+    "deck_gold_bastion": 53,
+    "deck_dual_draconic_pact": 45,
+    "deck_dual_abyssal_storm": 45,
+    "deck_dual_primal_fury": 55,
+    "deck_dual_arcane_forge": 53,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 47,
+    "deck_dual_wild_evolution": 50,
+    "deck_dual_solar_wild": 55,
+    "deck_dual_iron_inquisition": 47,
+    "deck_dual_storm_dragon": 45,
+    "deck_tri_arcane_cataclysm": 50,
     "deck_tri_primal_titans": 50,
-    "deck_tri_eternal_reliquary": 53,
-    "deck_tri_blood_moon": 48,
-    "deck_tri_celestial_scales": 52,
-    "deck_spec_chronomancer": 53,
-    "deck_spec_pentachromatic": 52,
-    "deck_tri_astral_cataclysm": 48,
+    "deck_tri_blood_moon": 50,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_chronomancer": 55,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 53,
     "deck_tri_primordial_forge": 50,
     "deck_tri_abyssal_chimera": 50,
-    "deck_tri_crimson_sun": 52,
-    "deck_tri_eternal_horizon": 48,
-    "deck_squad_thousand_shields": 48,
-    "deck_squad_siege_battery": 45
+    "deck_tri_crimson_sun": 50,
+    "deck_tri_eternal_horizon": 45,
+    "deck_squad_thousand_shields": 55,
+    "deck_squad_siege_battery": 47,
+    "deck_penta_valkyra_pact": 47
+  },
+  "deck_tri_blood_moon": {
+    "deck_red_inferno": 50,
+    "deck_blue_tempest": 50,
+    "deck_purple_abyss": 45,
+    "deck_green_wild": 45,
+    "deck_gold_bastion": 47,
+    "deck_dual_draconic_pact": 55,
+    "deck_dual_abyssal_storm": 45,
+    "deck_dual_primal_fury": 53,
+    "deck_dual_arcane_forge": 55,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 53,
+    "deck_dual_wild_evolution": 45,
+    "deck_dual_solar_wild": 50,
+    "deck_dual_iron_inquisition": 53,
+    "deck_dual_storm_dragon": 53,
+    "deck_tri_arcane_cataclysm": 47,
+    "deck_tri_primal_titans": 47,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_celestial_scales": 47,
+    "deck_spec_chronomancer": 50,
+    "deck_spec_pentachromatic": 47,
+    "deck_tri_astral_cataclysm": 50,
+    "deck_tri_primordial_forge": 50,
+    "deck_tri_abyssal_chimera": 50,
+    "deck_tri_crimson_sun": 47,
+    "deck_tri_eternal_horizon": 55,
+    "deck_squad_thousand_shields": 47,
+    "deck_squad_siege_battery": 55,
+    "deck_penta_valkyra_pact": 53
+  },
+  "deck_tri_celestial_scales": {
+    "deck_red_inferno": 50,
+    "deck_blue_tempest": 50,
+    "deck_purple_abyss": 47,
+    "deck_green_wild": 47,
+    "deck_gold_bastion": 47,
+    "deck_dual_draconic_pact": 55,
+    "deck_dual_abyssal_storm": 47,
+    "deck_dual_primal_fury": 50,
+    "deck_dual_arcane_forge": 45,
+    "deck_dual_eternal_rot": 45,
+    "deck_dual_blood_flame": 53,
+    "deck_dual_wild_evolution": 53,
+    "deck_dual_solar_wild": 47,
+    "deck_dual_iron_inquisition": 55,
+    "deck_dual_storm_dragon": 53,
+    "deck_tri_arcane_cataclysm": 55,
+    "deck_tri_primal_titans": 50,
+    "deck_tri_eternal_reliquary": 47,
+    "deck_tri_blood_moon": 53,
+    "deck_spec_chronomancer": 47,
+    "deck_spec_pentachromatic": 53,
+    "deck_tri_astral_cataclysm": 50,
+    "deck_tri_primordial_forge": 55,
+    "deck_tri_abyssal_chimera": 55,
+    "deck_tri_crimson_sun": 47,
+    "deck_tri_eternal_horizon": 53,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 47,
+    "deck_penta_valkyra_pact": 47
+  },
+  "deck_spec_chronomancer": {
+    "deck_red_inferno": 50,
+    "deck_blue_tempest": 55,
+    "deck_purple_abyss": 55,
+    "deck_green_wild": 55,
+    "deck_gold_bastion": 45,
+    "deck_dual_draconic_pact": 55,
+    "deck_dual_abyssal_storm": 50,
+    "deck_dual_primal_fury": 45,
+    "deck_dual_arcane_forge": 47,
+    "deck_dual_eternal_rot": 55,
+    "deck_dual_blood_flame": 45,
+    "deck_dual_wild_evolution": 45,
+    "deck_dual_solar_wild": 53,
+    "deck_dual_iron_inquisition": 55,
+    "deck_dual_storm_dragon": 53,
+    "deck_tri_arcane_cataclysm": 53,
+    "deck_tri_primal_titans": 45,
+    "deck_tri_eternal_reliquary": 45,
+    "deck_tri_blood_moon": 50,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_pentachromatic": 47,
+    "deck_tri_astral_cataclysm": 50,
+    "deck_tri_primordial_forge": 47,
+    "deck_tri_abyssal_chimera": 47,
+    "deck_tri_crimson_sun": 53,
+    "deck_tri_eternal_horizon": 53,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 47,
+    "deck_penta_valkyra_pact": 53
+  },
+  "deck_spec_pentachromatic": {
+    "deck_red_inferno": 47,
+    "deck_blue_tempest": 53,
+    "deck_purple_abyss": 50,
+    "deck_green_wild": 47,
+    "deck_gold_bastion": 53,
+    "deck_dual_draconic_pact": 53,
+    "deck_dual_abyssal_storm": 50,
+    "deck_dual_primal_fury": 53,
+    "deck_dual_arcane_forge": 50,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 55,
+    "deck_dual_wild_evolution": 50,
+    "deck_dual_solar_wild": 55,
+    "deck_dual_iron_inquisition": 45,
+    "deck_dual_storm_dragon": 47,
+    "deck_tri_arcane_cataclysm": 55,
+    "deck_tri_primal_titans": 50,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_blood_moon": 53,
+    "deck_tri_celestial_scales": 47,
+    "deck_spec_chronomancer": 53,
+    "deck_tri_astral_cataclysm": 50,
+    "deck_tri_primordial_forge": 50,
+    "deck_tri_abyssal_chimera": 55,
+    "deck_tri_crimson_sun": 45,
+    "deck_tri_eternal_horizon": 50,
+    "deck_squad_thousand_shields": 53,
+    "deck_squad_siege_battery": 50,
+    "deck_penta_valkyra_pact": 50
+  },
+  "deck_tri_astral_cataclysm": {
+    "deck_red_inferno": 53,
+    "deck_blue_tempest": 53,
+    "deck_purple_abyss": 45,
+    "deck_green_wild": 55,
+    "deck_gold_bastion": 55,
+    "deck_dual_draconic_pact": 50,
+    "deck_dual_abyssal_storm": 50,
+    "deck_dual_primal_fury": 53,
+    "deck_dual_arcane_forge": 47,
+    "deck_dual_eternal_rot": 45,
+    "deck_dual_blood_flame": 47,
+    "deck_dual_wild_evolution": 53,
+    "deck_dual_solar_wild": 45,
+    "deck_dual_iron_inquisition": 47,
+    "deck_dual_storm_dragon": 50,
+    "deck_tri_arcane_cataclysm": 53,
+    "deck_tri_primal_titans": 45,
+    "deck_tri_eternal_reliquary": 47,
+    "deck_tri_blood_moon": 50,
+    "deck_tri_celestial_scales": 50,
+    "deck_spec_chronomancer": 50,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_primordial_forge": 53,
+    "deck_tri_abyssal_chimera": 45,
+    "deck_tri_crimson_sun": 47,
+    "deck_tri_eternal_horizon": 47,
+    "deck_squad_thousand_shields": 55,
+    "deck_squad_siege_battery": 55,
+    "deck_penta_valkyra_pact": 50
+  },
+  "deck_tri_primordial_forge": {
+    "deck_red_inferno": 47,
+    "deck_blue_tempest": 45,
+    "deck_purple_abyss": 47,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 50,
+    "deck_dual_draconic_pact": 47,
+    "deck_dual_abyssal_storm": 50,
+    "deck_dual_primal_fury": 55,
+    "deck_dual_arcane_forge": 50,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 47,
+    "deck_dual_wild_evolution": 50,
+    "deck_dual_solar_wild": 55,
+    "deck_dual_iron_inquisition": 47,
+    "deck_dual_storm_dragon": 47,
+    "deck_tri_arcane_cataclysm": 45,
+    "deck_tri_primal_titans": 53,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_blood_moon": 50,
+    "deck_tri_celestial_scales": 45,
+    "deck_spec_chronomancer": 53,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 47,
+    "deck_tri_abyssal_chimera": 53,
+    "deck_tri_crimson_sun": 50,
+    "deck_tri_eternal_horizon": 55,
+    "deck_squad_thousand_shields": 47,
+    "deck_squad_siege_battery": 50,
+    "deck_penta_valkyra_pact": 53
+  },
+  "deck_tri_abyssal_chimera": {
+    "deck_red_inferno": 50,
+    "deck_blue_tempest": 45,
+    "deck_purple_abyss": 50,
+    "deck_green_wild": 47,
+    "deck_gold_bastion": 50,
+    "deck_dual_draconic_pact": 50,
+    "deck_dual_abyssal_storm": 53,
+    "deck_dual_primal_fury": 50,
+    "deck_dual_arcane_forge": 50,
+    "deck_dual_eternal_rot": 53,
+    "deck_dual_blood_flame": 53,
+    "deck_dual_wild_evolution": 47,
+    "deck_dual_solar_wild": 50,
+    "deck_dual_iron_inquisition": 50,
+    "deck_dual_storm_dragon": 50,
+    "deck_tri_arcane_cataclysm": 53,
+    "deck_tri_primal_titans": 55,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_blood_moon": 50,
+    "deck_tri_celestial_scales": 45,
+    "deck_spec_chronomancer": 53,
+    "deck_spec_pentachromatic": 45,
+    "deck_tri_astral_cataclysm": 55,
+    "deck_tri_primordial_forge": 47,
+    "deck_tri_crimson_sun": 53,
+    "deck_tri_eternal_horizon": 55,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 50,
+    "deck_penta_valkyra_pact": 47
+  },
+  "deck_tri_crimson_sun": {
+    "deck_red_inferno": 53,
+    "deck_blue_tempest": 45,
+    "deck_purple_abyss": 47,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 50,
+    "deck_dual_draconic_pact": 53,
+    "deck_dual_abyssal_storm": 47,
+    "deck_dual_primal_fury": 47,
+    "deck_dual_arcane_forge": 47,
+    "deck_dual_eternal_rot": 53,
+    "deck_dual_blood_flame": 50,
+    "deck_dual_wild_evolution": 45,
+    "deck_dual_solar_wild": 55,
+    "deck_dual_iron_inquisition": 50,
+    "deck_dual_storm_dragon": 47,
+    "deck_tri_arcane_cataclysm": 47,
+    "deck_tri_primal_titans": 45,
+    "deck_tri_eternal_reliquary": 50,
+    "deck_tri_blood_moon": 53,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_chronomancer": 47,
+    "deck_spec_pentachromatic": 55,
+    "deck_tri_astral_cataclysm": 53,
+    "deck_tri_primordial_forge": 50,
+    "deck_tri_abyssal_chimera": 47,
+    "deck_tri_eternal_horizon": 53,
+    "deck_squad_thousand_shields": 47,
+    "deck_squad_siege_battery": 50,
+    "deck_penta_valkyra_pact": 53
+  },
+  "deck_tri_eternal_horizon": {
+    "deck_red_inferno": 45,
+    "deck_blue_tempest": 53,
+    "deck_purple_abyss": 53,
+    "deck_green_wild": 53,
+    "deck_gold_bastion": 50,
+    "deck_dual_draconic_pact": 47,
+    "deck_dual_abyssal_storm": 55,
+    "deck_dual_primal_fury": 50,
+    "deck_dual_arcane_forge": 47,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 50,
+    "deck_dual_wild_evolution": 50,
+    "deck_dual_solar_wild": 53,
+    "deck_dual_iron_inquisition": 55,
+    "deck_dual_storm_dragon": 55,
+    "deck_tri_arcane_cataclysm": 55,
+    "deck_tri_primal_titans": 47,
+    "deck_tri_eternal_reliquary": 55,
+    "deck_tri_blood_moon": 45,
+    "deck_tri_celestial_scales": 47,
+    "deck_spec_chronomancer": 47,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 53,
+    "deck_tri_primordial_forge": 45,
+    "deck_tri_abyssal_chimera": 45,
+    "deck_tri_crimson_sun": 47,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 55,
+    "deck_penta_valkyra_pact": 53
+  },
+  "deck_squad_thousand_shields": {
+    "deck_red_inferno": 53,
+    "deck_blue_tempest": 47,
+    "deck_purple_abyss": 47,
+    "deck_green_wild": 45,
+    "deck_gold_bastion": 53,
+    "deck_dual_draconic_pact": 50,
+    "deck_dual_abyssal_storm": 50,
+    "deck_dual_primal_fury": 50,
+    "deck_dual_arcane_forge": 50,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 47,
+    "deck_dual_wild_evolution": 55,
+    "deck_dual_solar_wild": 53,
+    "deck_dual_iron_inquisition": 50,
+    "deck_dual_storm_dragon": 45,
+    "deck_tri_arcane_cataclysm": 50,
+    "deck_tri_primal_titans": 53,
+    "deck_tri_eternal_reliquary": 45,
+    "deck_tri_blood_moon": 53,
+    "deck_tri_celestial_scales": 50,
+    "deck_spec_chronomancer": 50,
+    "deck_spec_pentachromatic": 47,
+    "deck_tri_astral_cataclysm": 45,
+    "deck_tri_primordial_forge": 53,
+    "deck_tri_abyssal_chimera": 50,
+    "deck_tri_crimson_sun": 53,
+    "deck_tri_eternal_horizon": 50,
+    "deck_squad_siege_battery": 50,
+    "deck_penta_valkyra_pact": 50
+  },
+  "deck_squad_siege_battery": {
+    "deck_red_inferno": 53,
+    "deck_blue_tempest": 50,
+    "deck_purple_abyss": 55,
+    "deck_green_wild": 55,
+    "deck_gold_bastion": 50,
+    "deck_dual_draconic_pact": 50,
+    "deck_dual_abyssal_storm": 53,
+    "deck_dual_primal_fury": 45,
+    "deck_dual_arcane_forge": 50,
+    "deck_dual_eternal_rot": 50,
+    "deck_dual_blood_flame": 47,
+    "deck_dual_wild_evolution": 45,
+    "deck_dual_solar_wild": 50,
+    "deck_dual_iron_inquisition": 55,
+    "deck_dual_storm_dragon": 50,
+    "deck_tri_arcane_cataclysm": 47,
+    "deck_tri_primal_titans": 55,
+    "deck_tri_eternal_reliquary": 53,
+    "deck_tri_blood_moon": 45,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_chronomancer": 53,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 45,
+    "deck_tri_primordial_forge": 50,
+    "deck_tri_abyssal_chimera": 50,
+    "deck_tri_crimson_sun": 50,
+    "deck_tri_eternal_horizon": 45,
+    "deck_squad_thousand_shields": 50,
+    "deck_penta_valkyra_pact": 50
+  },
+  "deck_penta_valkyra_pact": {
+    "deck_red_inferno": 50,
+    "deck_blue_tempest": 47,
+    "deck_purple_abyss": 45,
+    "deck_green_wild": 45,
+    "deck_gold_bastion": 45,
+    "deck_dual_draconic_pact": 55,
+    "deck_dual_abyssal_storm": 50,
+    "deck_dual_primal_fury": 45,
+    "deck_dual_arcane_forge": 47,
+    "deck_dual_eternal_rot": 47,
+    "deck_dual_blood_flame": 53,
+    "deck_dual_wild_evolution": 53,
+    "deck_dual_solar_wild": 45,
+    "deck_dual_iron_inquisition": 55,
+    "deck_dual_storm_dragon": 55,
+    "deck_tri_arcane_cataclysm": 50,
+    "deck_tri_primal_titans": 50,
+    "deck_tri_eternal_reliquary": 53,
+    "deck_tri_blood_moon": 47,
+    "deck_tri_celestial_scales": 53,
+    "deck_spec_chronomancer": 47,
+    "deck_spec_pentachromatic": 50,
+    "deck_tri_astral_cataclysm": 50,
+    "deck_tri_primordial_forge": 47,
+    "deck_tri_abyssal_chimera": 53,
+    "deck_tri_crimson_sun": 47,
+    "deck_tri_eternal_horizon": 47,
+    "deck_squad_thousand_shields": 50,
+    "deck_squad_siege_battery": 50
   }
 };
 

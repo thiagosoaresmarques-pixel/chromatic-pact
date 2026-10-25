@@ -50,7 +50,7 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
       'red_18_marechal_rubro',
     ],
     mechanism:
-      'A Máscara e a Bigorna concedem +1/+1 na entrada e geram 2 Crias Dracônicas (2/1) gratuitas todo início de turno. Quando o Marechal da Legião Férrea ataca, concede +1 ATQ extra a toda a fileira.',
+      'A Máscara do Trono Rubro e a Bigorna do Rei da Fornalha concedem +1/+1 na entrada, invocam Crias Dracônicas (2/1) e fortalecem as tropas a cada início de turno. Quando o Marechal da Legião Férrea ataca, concede +1 ATQ extra a toda a fileira.',
     payoff: 'Geração perpétua de atacantes 4+ ATQ sem custo de Essência.',
   },
   {

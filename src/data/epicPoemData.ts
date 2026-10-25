@@ -24,12 +24,51 @@ export const EPIC_POEM_CANTOS: EpicPoemCanto[] = [
  * CRÔNICAS PARALELAS DE VAELORIA (CANTOS I-A a VII-A)
  * Ramificações opcionais derivadas dos 7 Cantos principais, integrando as demais criaturas e relíquias.
  */
-export const PARALLEL_EPIC_POEM_CANTOS: EpicPoemCanto[] = [
+const ROMAN_BY_CANTO_ID: Record<string, string> = {
+  canto_1_vigilia: 'I',
+  canto_2_fratura: 'II',
+  canto_3_cidadelas: 'III',
+  canto_4_guerra: 'IV',
+  canto_5_pacto: 'V',
+  canto_6_tratados: 'VI',
+  canto_7_presente: 'VII',
+};
+
+const RAW_PARALLEL_CANTOS: EpicPoemCanto[] = [
   ...EPIC_POEM_PARALLEL_PART_1,
   ...EPIC_POEM_PARALLEL_PART_2,
   ...EPIC_POEM_PARALLEL_PART_3,
   ...EPIC_POEM_PARALLEL_PART_4,
-].sort((a, b) => (a.parallelCode || '').localeCompare(b.parallelCode || ''));
+];
+
+/**
+ * Ordena os Cantos Paralelos na exata ordem cronológica dos nós-âncora de cada Canto Principal
+ * e normaliza automaticamente os códigos (I-A, I-B, I-C...) para que a régua lateral e o fluxo
+ * da página estejam sempre 100% sincronizados.
+ */
+export const PARALLEL_EPIC_POEM_CANTOS: EpicPoemCanto[] = EPIC_POEM_CANTOS.flatMap((mainCanto) => {
+  const roman = ROMAN_BY_CANTO_ID[mainCanto.id] || 'I';
+  const children = RAW_PARALLEL_CANTOS.filter((p) => p.parentCantoId === mainCanto.id);
+
+  children.sort((a, b) => {
+    const idxA = mainCanto.nodes.findIndex((n) => n.id === a.anchorNodeId);
+    const idxB = mainCanto.nodes.findIndex((n) => n.id === b.anchorNodeId);
+    const posA = idxA === -1 ? 999 : idxA;
+    const posB = idxB === -1 ? 999 : idxB;
+    if (posA !== posB) return posA - posB;
+    return (a.parallelCode || '').localeCompare(b.parallelCode || '');
+  });
+
+  return children.map((child, idx) => {
+    const suffix = String.fromCharCode(65 + idx); // A, B, C, D...
+    const code = `${roman}-${suffix}`;
+    return {
+      ...child,
+      parallelCode: code,
+      cantoNumber: `CANTO PARALELO ${code}`,
+    };
+  });
+});
 
 export const PARALLEL_CANTO_BY_PARENT_ID: Record<string, EpicPoemCanto> = Object.fromEntries(
   PARALLEL_EPIC_POEM_CANTOS.filter((c) => c.parentCantoId).map((c) => [c.parentCantoId!, c])

@@ -10173,6 +10173,213 @@ html, body, #root {
 }
 
 /* ============================================================================
+   CRÔNICAS PARALELAS (CANTOS I-A a VII-A) — RAMIFICAÇÕES TEMPORAIS OPCIONAIS
+   ============================================================================ */
+.poem-ruler-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+}
+
+.poem-ruler-substep {
+  margin-left: 1.25rem;
+  padding: 0.18rem 0.48rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.32rem;
+  cursor: pointer;
+  text-align: left;
+  color: #64748b;
+  font-size: 0.61rem;
+  transition: all 0.16s ease;
+}
+
+.poem-ruler-substep:hover {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.poem-ruler-substep.is-expanded {
+  color: #cbd5e1;
+}
+
+.poem-ruler-substep.active {
+  color: #fde047;
+  background: rgba(245, 158, 11, 0.16);
+  border-color: rgba(245, 158, 11, 0.42);
+}
+
+.poem-ruler-substep-arrow {
+  font-weight: 800;
+  color: #f59e0b;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.poem-ruler-substep-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 122px;
+}
+
+.poem-parallel-branch-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.85rem;
+  margin-top: -1.4rem;
+}
+
+.poem-parallel-branch-trigger {
+  position: relative;
+  padding: 1.15rem 1.4rem;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  border-left-width: 3px;
+  background: linear-gradient(135deg, rgba(13, 18, 31, 0.94) 0%, rgba(8, 11, 20, 0.98) 100%);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.poem-parallel-branch-trigger:hover {
+  transform: translateY(-2px);
+  border-color: rgba(250, 204, 21, 0.68) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.78), 0 0 18px rgba(245, 158, 11, 0.12);
+}
+
+.poem-parallel-branch-trigger.is-expanded {
+  background: linear-gradient(135deg, rgba(20, 26, 44, 0.96) 0%, rgba(10, 14, 25, 0.99) 100%);
+  border-color: rgba(250, 204, 21, 0.65) !important;
+}
+
+.poem-branch-header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.poem-branch-arrow {
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-top: 0.1rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.poem-branch-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.poem-branch-kicker {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.poem-branch-title {
+  font-size: 1.08rem;
+  color: #fef3c7;
+  margin: 0;
+}
+
+.poem-branch-subtitle {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.poem-branch-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.poem-branch-thumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.poem-branch-thumb-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  padding: 2px;
+  background: radial-gradient(circle, rgba(30, 41, 59, 0.95) 0%, rgba(9, 13, 23, 0.98) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.48);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.poem-branch-thumb-btn:hover {
+  transform: scale(1.14);
+  border-color: #fde047;
+}
+
+.poem-branch-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.poem-branch-cta-btn {
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fde68a;
+  padding: 0.38rem 0.82rem;
+  border-radius: 6px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  text-transform: uppercase;
+  transition: all 0.16s ease;
+}
+
+.poem-parallel-branch-trigger:hover .poem-branch-cta-btn {
+  background: rgba(245, 158, 11, 0.24);
+  border-color: #fde047;
+  color: #ffffff;
+}
+
+.poem-canto-section.is-parallel-canto {
+  margin-left: 1.35rem;
+  padding-left: 1.35rem;
+  border-left: 2px dashed rgba(245, 158, 11, 0.32);
+}
+
+@media (max-width: 680px) {
+  .poem-canto-section.is-parallel-canto {
+    margin-left: 0.35rem;
+    padding-left: 0.65rem;
+  }
+}
+
+/* ============================================================================
    CINEMATIC SOVEREIGN FINISHER SEQUENCE (VICTORY / DEFEAT BEFORE SUMMARY CARD)
    ============================================================================ */
 .sovereign-finisher-overlay {

@@ -3,6 +3,8 @@ import { EPIC_POEM_PART_1 } from './epicPoemPart1';
 import { EPIC_POEM_PART_2 } from './epicPoemPart2';
 import { EPIC_POEM_PART_3 } from './epicPoemPart3';
 import { EPIC_POEM_PART_4 } from './epicPoemPart4';
+import { EPIC_POEM_PARALLEL_PART_1 } from './epicPoemParallelPart1';
+import { EPIC_POEM_PARALLEL_PART_2 } from './epicPoemParallelPart2';
 
 /**
  * O GRANDE POEMA ÉPICO DE VAELORIA — A CANÇÃO DA FRATURA CROMÁTICA (∞ A.F. — 1.240 D.F.)
@@ -15,6 +17,23 @@ export const EPIC_POEM_CANTOS: EpicPoemCanto[] = [
   ...EPIC_POEM_PART_3,
   ...EPIC_POEM_PART_4,
 ];
+
+/**
+ * CRÔNICAS PARALELAS DE VAELORIA (CANTOS I-A a VII-A)
+ * Ramificações opcionais derivadas dos 7 Cantos principais, integrando as demais criaturas e relíquias.
+ */
+export const PARALLEL_EPIC_POEM_CANTOS: EpicPoemCanto[] = [
+  ...EPIC_POEM_PARALLEL_PART_1,
+  ...EPIC_POEM_PARALLEL_PART_2,
+];
+
+export const PARALLEL_CANTO_BY_PARENT_ID: Record<string, EpicPoemCanto> = Object.fromEntries(
+  PARALLEL_EPIC_POEM_CANTOS.filter((c) => c.parentCantoId).map((c) => [c.parentCantoId!, c])
+);
+
+export const ALL_PARALLEL_POEM_NODES: EpicPoemNode[] = PARALLEL_EPIC_POEM_CANTOS.flatMap(
+  (c) => c.nodes
+);
 
 /**
  * Todos os nós poéticos (Prelúdios, as 73 Criaturas Lendárias e Interlúdios) em ordem cronológica linear.

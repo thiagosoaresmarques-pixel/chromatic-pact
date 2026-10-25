@@ -41,6 +41,14 @@ export interface EpicPoemCanto {
   subtitle: string;
   accentColor: string;
   bannerImage: string;
+  /** Se verdadeiro, este Canto é uma Crônica Paralela (aprofundamento opcional de um Canto principal) */
+  isParallel?: boolean;
+  /** ID do Canto principal (ex: 'canto_1_vigilia' a 'canto_7_presente') ao qual esta história paralela se vincula */
+  parentCantoId?: string;
+  /** Código curto para a régua lateral (ex: 'I-A', 'II-A') */
+  parallelCode?: string;
+  /** Rótulo curto para subitem da régua lateral e filtro (ex: 'Conjura do Prisma') */
+  shortTitle?: string;
   /** Sequência contínua de prelúdios, criaturas lendárias e interlúdios históricos em coluna única */
   nodes: EpicPoemNode[];
 }

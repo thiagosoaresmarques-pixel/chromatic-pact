@@ -335,7 +335,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Invoca uma Cria Dracônica (2/1)."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA, 1 ARM). Ao Entrar: +1/+1 a todos os aliados. Início do Turno: Invoca uma Cria Dracônica (2/1).",
+    "description": "Ao Entrar: +1/+1 a todos os aliados. Início do Turno: Invoca uma Cria Dracônica (2/1).",
     "flavorText": "Quem veste a face do dragão jamais volta a falar na língua dos covardes.",
     "imagePath": "/assets/cards/red_10_altar_draconico.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, ornate golden and crimson dragon mask floating over a volcanic altar, glowing runes of power."
@@ -1180,7 +1180,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "red_36_bigorna_fogo",
     "name": "Bigorna do Rei da Fornalha",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Forja",
-    "ipSafeNotes": "Relíquia contínua de forja bélica.",
+    "ipSafeNotes": "Relíquia de forja bélica.",
     "domain": "red",
     "type": "relic",
     "subtype": "Relíquia • Forja",
@@ -1208,7 +1208,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Tempera as armas de um aliado (+1 ATQ / +1 VIDA)."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA, 1 ARM). Ao Entrar: +1/+1 aos aliados e invoca Cria Dracônica (2/1). Início do Turno: +1/+1 a um aliado e 1 de dano ao Soberano rival.",
+    "description": "Ao Entrar: +1/+1 aos aliados e invoca Cria Dracônica (2/1). Início do Turno: +1/+1 a um aliado e 1 de dano ao Soberano rival.",
     "flavorText": "Enquanto o malho bater, nenhuma espada da legião perderá o fio.",
     "imagePath": "/assets/cards/red_36_bigorna_fogo.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, colossal obsidian anvil cracked with glowing lava veins and floating runic hammers."
@@ -1561,7 +1561,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Dispara 2 de dano rúnico em um inimigo."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA). Ao Entrar: Compra 2 cartas. Ao Lançar Feitiço: Causa 2 de dano a um inimigo.",
+    "description": "Ao Entrar: Compra 2 cartas. Ao Lançar Feitiço: Causa 2 de dano a um inimigo.",
     "flavorText": "As runas não descrevem o mundo; elas o obrigam a obedecer.",
     "imagePath": "/assets/cards/blue_10_portal_runas.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, levitating grimoire with glowing blue astral runes opening a dimensional portal."
@@ -2372,7 +2372,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_35_cetro_inverno",
     "name": "Cetro da Geada Soberana",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Criomancia",
-    "ipSafeNotes": "Relíquia contínua de controle glacial.",
+    "ipSafeNotes": "Relíquia de controle glacial.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Criomancia",
@@ -2410,7 +2410,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Causa 2 de dano ao Soberano rival."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA). Ao Entrar: Congela e causa 2 de dano. Início do Turno: Congela 1 inimigo.",
+    "description": "Ao Entrar: Congela e causa 2 de dano. Início do Turno: Congela 1 inimigo.",
     "flavorText": "Esculpido no coração de uma geleira que jamais conheceu a primavera.",
     "imagePath": "/assets/cards/blue_35_cetro_inverno.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, ornate scepter of eternal blue glacier crystal floating above a frozen pedestal."
@@ -2419,7 +2419,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_36_tomo_infinito",
     "name": "Grimório do Infinito Rúnico",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Grimório",
-    "ipSafeNotes": "Relíquia contínua de sinergia com magias.",
+    "ipSafeNotes": "Relíquia de sinergia com magias.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Grimório",
@@ -2451,7 +2451,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Compra 1 carta extra."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA, 1 ARM). Ao Entrar e no Início do Turno: Compra 1 carta. Ao Lançar Feitiço: Causa 2 de dano a um inimigo.",
+    "description": "Ao Entrar e no Início do Turno: Compra 1 carta. Ao Lançar Feitiço: Causa 2 de dano a um inimigo.",
     "flavorText": "Suas páginas se escrevem sozinhas a cada trovão que corta o céu.",
     "imagePath": "/assets/cards/blue_36_tomo_infinito.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, massive floating arcane tome bound in silver and sapphire dragonhide, pages turning with lightning."
@@ -2786,7 +2786,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Drena 1 de VIDA do Soberano rival."
       }
     ],
-    "description": "Corrupção +1. Relíquia Contínua (5 VIDA). Ao Entrar: Compra 2 cartas. Fim do Turno: Drena 1 de VIDA do Soberano inimigo.",
+    "description": "Corrupção +1. Ao Entrar: Compra 2 cartas. Fim do Turno: Drena 1 de VIDA do Soberano inimigo.",
     "flavorText": "O preço é pago em pesadelos; o lucro é colhido em segredos.",
     "imagePath": "/assets/cards/purple_10_pacto_profano.png",
     "aiArtPrompt": "Dark fantasy TCG relic art,hag eye amulet and soul bag glowing with eerie violet spectral light."
@@ -3345,7 +3345,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Restaura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Corrupção +1. Relíquia Contínua (5 VIDA, 1 ARM). Ao Entrar: Reanima criatura da Cripta e 2 de dano à Vanguarda. Início do Turno: Cura 2 no Soberano.",
+    "description": "Corrupção +1. Ao Entrar: Reanima criatura da Cripta e 2 de dano à Vanguarda. Início do Turno: Cura 2 no Soberano.",
     "flavorText": "Esculpida em crânio de dragão negro, sussurra segredos de imortalidade ácida.",
     "imagePath": "/assets/cards/purple_28_filacterio_noite.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, horned black dragon skull mask dripping green acid and purple shadow mist."
@@ -3587,7 +3587,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_35_calice_vampirico",
     "name": "Cálice da Sede Carmesim",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Sanguínea",
-    "ipSafeNotes": "Relíquia contínua de drenagem sanguínea.",
+    "ipSafeNotes": "Relíquia de drenagem sanguínea.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Sanguínea",
@@ -3625,7 +3625,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Cura 1 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA). Ao Entrar: Cura 3 de VIDA e compra 1 carta. Fim do Turno: Drena 2 de VIDA do Soberano inimigo.",
+    "description": "Ao Entrar: Cura 3 de VIDA e compra 1 carta. Fim do Turno: Drena 2 de VIDA do Soberano inimigo.",
     "flavorText": "A taça transborda a cada batida do coração dos mortais.",
     "imagePath": "/assets/cards/purple_35_calice_vampirico.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, ornate gothic silver chalice overflowing with glowing crimson blood mist."
@@ -3634,7 +3634,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_36_trono_ossos",
     "name": "Trono de Ossos do Arquimago",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Necromancia",
-    "ipSafeNotes": "Relíquia contínua geradora de mortos-vivos.",
+    "ipSafeNotes": "Relíquia geradora de mortos-vivos.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Necromancia",
@@ -3663,7 +3663,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Invoca uma Sombra Faminta (2/2)."
       }
     ],
-    "description": "Corrupção +1. Relíquia Contínua (5 VIDA, 1 ARM). Ao Entrar: Invoca Sombra Faminta (2/2). Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Corrupção +1. Ao Entrar: Invoca Sombra Faminta (2/2). Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Sentar-se nele exige abrir mão da carne; erguer-se dele move um império de ossos.",
     "imagePath": "/assets/cards/purple_36_trono_ossos.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, towering throne of ancient skulls and purple soulfire summoning spectral warriors."
@@ -4527,7 +4527,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA). Ao Entrar: Gera +2⚡ neste turno. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Gera +2⚡ neste turno. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Onde as asas prismáticas pousam, a terra floresce em mana pura.",
     "imagePath": "/assets/cards/green_28_totem_silvestre.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, iridescent butterfly-winged faerie dragon coiled around a glowing emerald rune stone."
@@ -4795,7 +4795,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "green_36_coracao_floresta",
     "name": "Coração da Seiva Primordial",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Silvestre",
-    "ipSafeNotes": "Relíquia contínua de cura e evolução silvestre.",
+    "ipSafeNotes": "Relíquia de cura e evolução silvestre.",
     "domain": "green",
     "type": "relic",
     "subtype": "Relíquia • Silvestre",
@@ -4834,7 +4834,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA, 1 ARM). Ao Entrar: +1⚡ e compra 1 carta. Início do Turno: Cura 1 em todos os aliados e +1/+1 a um aliado.",
+    "description": "Ao Entrar: +1⚡ e compra 1 carta. Início do Turno: Cura 1 em todos os aliados e +1/+1 a um aliado.",
     "flavorText": "Pulsa no mesmo compasso das marés e das estações.",
     "imagePath": "/assets/cards/green_36_coracao_floresta.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, glowing emerald heart-crystal cradled inside ancient living oak roots."
@@ -5705,7 +5705,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Restaura +1 de VIDA a todos os aliados."
       }
     ],
-    "description": "Relíquia Contínua (6 VIDA, 1 ARM). Ao Entrar: Escudo Divino a todos os aliados. Início do Turno: Cura +1 em todos os aliados.",
+    "description": "Ao Entrar: Escudo Divino a todos os aliados. Início do Turno: Cura +1 em todos os aliados.",
     "flavorText": "Cinco brasões antigos unidos sob um único juramento de proteger a cidadela.",
     "imagePath": "/assets/cards/gold_28_reliquia_pacto.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, sacred golden reliquary chest with five metallic dragon heads glowing with divine radiance."
@@ -5741,7 +5741,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Abençoa um aliado com +1/+1."
       }
     ],
-    "description": "Relíquia Contínua (4 VIDA, 1 ARM). Ao Entrar: Causa 2 de dano a um inimigo. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Causa 2 de dano a um inimigo. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Pesado demais para mãos mortais; leve como a luz para os justos.",
     "imagePath": "/assets/cards/gold_29_martelo_trovao.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, radiant golden warhammer resting on a celestial altar crackling with holy lightning."
@@ -5750,7 +5750,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_30_escudo_solar",
     "name": "Bastião do Sol Invicto",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Égide",
-    "ipSafeNotes": "Relíquia contínua de proteção divina.",
+    "ipSafeNotes": "Relíquia de proteção divina.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Égide",
@@ -5783,7 +5783,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1 ATQ e +2 VIDA a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA, 1 ARM). Ao Entrar: Escudo Divino aos aliados e cura 3 no Soberano. Início do Turno: +1/+2 a um aliado.",
+    "description": "Ao Entrar: Escudo Divino aos aliados e cura 3 no Soberano. Início do Turno: +1/+2 a um aliado.",
     "flavorText": "Nenhuma sombra atravessa o ouro consagrado ao meio-dia.",
     "imagePath": "/assets/cards/gold_30_escudo_solar.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, levitating sun-emblazoned tower shield projecting a dome of golden light."
@@ -5792,7 +5792,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_31_forja_runica",
     "name": "Fornalha Rúnica dos Anões",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Forja",
-    "ipSafeNotes": "Relíquia contínua geradora de Essência e armadura.",
+    "ipSafeNotes": "Relíquia geradora de Essência e armadura.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Forja",
@@ -5826,7 +5826,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA, 1 ARM). Ao Entrar: Concede +1/+1 a um aliado e compra 1 carta. Início do Turno: +1/+1 a um aliado.",
+    "description": "Ao Entrar: Concede +1/+1 a um aliado e compra 1 carta. Início do Turno: +1/+1 a um aliado.",
     "flavorText": "Ouro derretido e runas antigas alimentam o coração dos autômatos.",
     "imagePath": "/assets/cards/gold_31_forja_runica.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, grand dwarven golden forge with clockwork gears and glowing runic molten gold."
@@ -5835,7 +5835,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_32_estandarte_imperial",
     "name": "Estandarte da Legião Dourada",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Insígnia",
-    "ipSafeNotes": "Relíquia contínua de reforço militar.",
+    "ipSafeNotes": "Relíquia de reforço militar.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Insígnia",
@@ -5869,7 +5869,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Invoca uma Sentinela de Ferro (2/2)."
       }
     ],
-    "description": "Relíquia Contínua (5 VIDA, 1 ARM). Ao Entrar: +1/+1 aos aliados e invoca Sentinela (2/2). Fim do Turno: Cura +1 em todos.",
+    "description": "Ao Entrar: +1/+1 aos aliados e invoca Sentinela (2/2). Fim do Turno: Cura +1 em todos.",
     "flavorText": "Enquanto o pavilhão dourado tremular, a falange jamais recuará.",
     "imagePath": "/assets/cards/gold_32_estandarte_imperial.png",
     "aiArtPrompt": "Dark fantasy TCG relic art, radiant imperial golden dragon banner planted in stone, surrounded by spectral knights."
@@ -7304,7 +7304,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Causa 2 de dano à fileira inimiga. Início do Turno: Causa 2 de dano ao Soberano rival e dá +1/+1 a um aliado.",
+    "description": "Ao Entrar: Causa 2 de dano à fileira inimiga. Início do Turno: Causa 2 de dano ao Soberano rival e dá +1/+1 a um aliado.",
     "flavorText": "Apenas uma fronte digna suporta o peso do ouro em fusão.",
     "imagePath": "/assets/cards/red_54_coroa_chama_eterna.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), jagged royal crown forged of blackened iron and rubies with a halo of eternal golden-red fire floating above it."
@@ -7903,7 +7903,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_53_orbe_tempestades",
     "name": "Orbe do Furacão Perpétuo",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Tempestade",
-    "ipSafeNotes": "Relíquia contínua que reage a feitiços.",
+    "ipSafeNotes": "Relíquia que reage a feitiços.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Tempestade",
@@ -7929,7 +7929,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Dispara um raio causando 1 de dano a um inimigo."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Causa 2 de dano à fileira inimiga. Ao Lançar Feitiço: Causa 1 de dano a um inimigo.",
+    "description": "Ao Entrar: Causa 2 de dano à fileira inimiga. Ao Lançar Feitiço: Causa 1 de dano a um inimigo.",
     "flavorText": "Dentro do cristal repousa a fúria contida de mil ciclones.",
     "imagePath": "/assets/cards/blue_53_orbe_tempestades.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), levitating sapphire crystal orb Containing a miniature raging lightning hurricane on a silver pedestal."
@@ -7938,7 +7938,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_54_planetario_arcano",
     "name": "Planetário das Esferas Celestes",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Rúnica",
-    "ipSafeNotes": "Relíquia contínua de geração de essência e compra.",
+    "ipSafeNotes": "Relíquia de geração de essência e compra.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Rúnica",
@@ -7970,7 +7970,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Restaura 1 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Compra 1 carta. Início do Turno: Gera +1⚡ de Essência. Ao Lançar Feitiço: Cura 1 no Soberano.",
+    "description": "Ao Entrar: Compra 1 carta. Início do Turno: Gera +1⚡ de Essência. Ao Lançar Feitiço: Cura 1 no Soberano.",
     "flavorText": "Quando os anéis celestes se alinham no observatório, o firmamento inteiro despeja poder.",
     "imagePath": "/assets/cards/blue_54_planetario_arcano.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), intricate spinning brass and sapphire celestial orrery astrolabe with glowing planets and star runes."
@@ -8527,7 +8527,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_53_lanterna_almas",
     "name": "Lanterna das Almas Penadas",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Necromancia",
-    "ipSafeNotes": "Relíquia contínua que captura essência espiritual.",
+    "ipSafeNotes": "Relíquia que captura essência espiritual.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Necromancia",
@@ -8559,7 +8559,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Causa 1 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Causa 2 de dano ao Soberano rival. Início do Turno: Drena 1 do Soberano rival e cura 2 no seu.",
+    "description": "Ao Entrar: Causa 2 de dano ao Soberano rival. Início do Turno: Drena 1 do Soberano rival e cura 2 no seu.",
     "flavorText": "A chama azulada nunca se apaga porque queima memórias em vez de óleo.",
     "imagePath": "/assets/cards/purple_53_lanterna_almas.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), wrought-iron gothic cage lantern glowing with trapped violet-teal ghostly flames and chains."
@@ -8568,7 +8568,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_54_altar_sacrificio",
     "name": "Obelisco do Sangue Eterno",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Sanguínea",
-    "ipSafeNotes": "Relíquia contínua de invocação e poder sombrio.",
+    "ipSafeNotes": "Relíquia de invocação e poder sombrio.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Sanguínea",
@@ -8596,7 +8596,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Invoca um Espectro de Sangue (2/2)."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Invoca um servo (2/2). Fim do Turno: Fortalece todos os aliados em +1/+1.",
+    "description": "Ao Entrar: Invoca um servo (2/2). Fim do Turno: Fortalece todos os aliados em +1/+1.",
     "flavorText": "Esculpido em obsidiana estígia, o obelisco pulsa como um coração vivo.",
     "imagePath": "/assets/cards/purple_54_altar_sacrificio.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), jagged black obsidian obelisk carved with glowing crimson-purple blood runes on a sacrificial dais."
@@ -9160,7 +9160,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "green_54_totem_ancestral",
     "name": "Monólito da Presa Primordial",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Totem",
-    "ipSafeNotes": "Relíquia contínua de invocação e cura.",
+    "ipSafeNotes": "Relíquia de invocação e cura.",
     "domain": "green",
     "type": "relic",
     "subtype": "Relíquia • Totem",
@@ -9187,7 +9187,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Invoca um Espírito Lupino (2/2)."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Invoca um Lobo Espiritual (2/2). Início do Turno: Cura 2 de VIDA em todos os aliados.",
+    "description": "Ao Entrar: Invoca um Lobo Espiritual (2/2). Início do Turno: Cura 2 de VIDA em todos os aliados.",
     "flavorText": "Entalhado no tronco da primeira árvore, ele chama os espíritos da mata.",
     "imagePath": "/assets/cards/green_54_totem_ancestral.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), carved ancient wooden totem pole with glowing green wolf and bear faces, mossy stone base."
@@ -9676,7 +9676,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_51_balista_cidadela",
     "name": "Balista de Repetição Imperial",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Armamento",
-    "ipSafeNotes": "Relíquia contínua de artilharia defensiva.",
+    "ipSafeNotes": "Relíquia de artilharia defensiva.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Armamento",
@@ -9702,7 +9702,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Dispara automaticamente causando 2 de dano a um inimigo."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Causa 2 de dano a um inimigo. Fim do Turno: Dispara causando 2 de dano a um inimigo.",
+    "description": "Ao Entrar: Causa 2 de dano a um inimigo. Fim do Turno: Dispara causando 2 de dano a um inimigo.",
     "flavorText": "Suas engrenagens recarregam virotes de aço consagrado sem descanso.",
     "imagePath": "/assets/cards/gold_51_balista_cidadela.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), heavy golden-brass siege repeating ballista mounted on a stone turret firing a glowing sun-bolt."
@@ -9711,7 +9711,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_52_calice_graal",
     "name": "Cálice da Aurora Imortal",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Santuário",
-    "ipSafeNotes": "Relíquia contínua de cura sagrada.",
+    "ipSafeNotes": "Relíquia de cura sagrada.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Santuário",
@@ -9737,7 +9737,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 1 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Cura 3 no Soberano. Início do Turno: Cura 2 no Soberano e 1 em todos os aliados.",
+    "description": "Ao Entrar: Cura 3 no Soberano. Início do Turno: Cura 2 no Soberano e 1 em todos os aliados.",
     "flavorText": "Uma única gota de seu néctar dourado fecha qualquer ferida mortal.",
     "imagePath": "/assets/cards/gold_52_calice_graal.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), jeweled golden chalice overflowing with liquid sunlight and white-gold healing aura."
@@ -9746,7 +9746,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_53_armadura_imperador",
     "name": "Relicário da Égide Soberana",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Égide",
-    "ipSafeNotes": "Relíquia contínua de fortificação.",
+    "ipSafeNotes": "Relíquia de fortificação.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Égide",
@@ -9773,7 +9773,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Concede Escudo Divino aos aliados. Início do Turno: Concede +1 ATQ e +2 VIDA a um aliado.",
+    "description": "Ao Entrar: Concede Escudo Divino aos aliados. Início do Turno: Concede +1 ATQ e +2 VIDA a um aliado.",
     "flavorText": "Forjada para o primeiro imperador, sua presença ainda blinda legiões inteiras.",
     "imagePath": "/assets/cards/gold_53_armadura_imperador.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), resplendent golden emperor plate armor on a marble pedestal radiating a protective hexagonal forcefield."
@@ -9809,7 +9809,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Dá +1/+2 aos aliados. Fim do Turno: Causa 1 de dano à fileira inimiga e cura 2 no Soberano.",
+    "description": "Ao Entrar: Dá +1/+2 aos aliados. Fim do Turno: Causa 1 de dano à fileira inimiga e cura 2 no Soberano.",
     "flavorText": "Dois querubins de ouro guardam o selo que mantém o mundo unido.",
     "imagePath": "/assets/cards/gold_54_arca_alianca.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), sacred golden ark chest topped by two kneeling winged cherub statues radiating divine golden light."
@@ -10013,7 +10013,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_27_elmo_telepatia",
     "name": "Diadema da Mente Desperta",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Equipamento",
-    "ipSafeNotes": "Relíquia contínua de presciência e compra.",
+    "ipSafeNotes": "Relíquia de presciência e compra.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Equipamento",
@@ -10039,7 +10039,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Clareia a mente curando 2 de VIDA do Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Compra 1 carta. Início do Turno: Cura 2 de VIDA do seu Soberano.",
+    "description": "Ao Entrar: Compra 1 carta. Início do Turno: Cura 2 de VIDA do seu Soberano.",
     "flavorText": "Conhecer o movimento do inimigo antes que ele empunhe a espada é metade da vitória.",
     "imagePath": "/assets/cards/neutral_27_elmo_telepatia.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ornate silver-and-amethyst telepathic circlet helm floating with psychic rings."
@@ -10048,7 +10048,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_28_manoplas_forca",
     "name": "Manoplas de Força de Titã",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Equipamento",
-    "ipSafeNotes": "Relíquia contínua de fortalecimento de ataque.",
+    "ipSafeNotes": "Relíquia de fortalecimento de ataque.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Equipamento",
@@ -10076,7 +10076,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Dá +2/+2 a um aliado. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Dá +2/+2 a um aliado. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Com elas, um escudeiro ergue uma coluna de mármore como se fosse um graveto.",
     "imagePath": "/assets/cards/neutral_28_manoplas_forca.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), pair of heavy bronze-and-iron titan gauntlets etched with glowing strength runes."
@@ -10085,7 +10085,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_29_esfera_aniquilacao",
     "name": "Orbe da Singularidade Nula",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Artefato",
-    "ipSafeNotes": "Relíquia contínua de destruição gravitacional.",
+    "ipSafeNotes": "Relíquia de destruição gravitacional.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Artefato",
@@ -10111,7 +10111,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Causa 3 de dano a um inimigo. Fim do Turno: Causa 2 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Causa 3 de dano a um inimigo. Fim do Turno: Causa 2 de dano ao Soberano rival.",
     "flavorText": "Um buraco perfeito na tapeçaria da realidade.",
     "imagePath": "/assets/cards/neutral_29_esfera_aniquilacao.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), pitch-black gravitational singularity sphere surrounded by a razor-thin accretion ring of white-violet light."
@@ -10730,7 +10730,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "red_72_caldeirao_magma",
     "name": "Fornalha Rúnica de Muspel",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Braseiro",
-    "ipSafeNotes": "Relíquia contínua de invocação e bombardeio térmico.",
+    "ipSafeNotes": "Relíquia de invocação e bombardeio térmico.",
     "domain": "red",
     "type": "relic",
     "subtype": "Relíquia • Braseiro",
@@ -10762,7 +10762,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Causa 1 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Causa 2 de dano à Vanguarda rival. Fim do Turno: Causa 2 a um inimigo. Ao Lançar Feitiço: 1 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Causa 2 de dano à Vanguarda rival. Fim do Turno: Causa 2 a um inimigo. Ao Lançar Feitiço: 1 de dano ao Soberano rival.",
     "flavorText": "Enquanto o braseiro arder, o ar do campo de batalha queima a cada respiração.",
     "imagePath": "/assets/cards/red_72_caldeirao_magma.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), heavy rune-etched iron and bronze tripod brazier overflowing with roaring elemental magma and dancing fire spirits."
@@ -11359,7 +11359,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_71_tigela_mares",
     "name": "Cálice de Comando das Águas",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Vaso Elemental",
-    "ipSafeNotes": "Relíquia contínua que reage ao lançamento de feitiços.",
+    "ipSafeNotes": "Relíquia que reage ao lançamento de feitiços.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Vaso Elemental",
@@ -11391,7 +11391,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Congela a Vanguarda rival. Ao Lançar Feitiço: Causa 2 a um inimigo e cura 2 no seu Soberano.",
+    "description": "Ao Entrar: Congela a Vanguarda rival. Ao Lançar Feitiço: Causa 2 a um inimigo e cura 2 no seu Soberano.",
     "flavorText": "Dentro da bacia de safira, um oceano inteiro aguarda o comando do conjurador.",
     "imagePath": "/assets/cards/blue_71_tigela_mares.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ornate silver-and-sapphire ceremonial basin overflowing with levitating luminous ocean waves and water runes."
@@ -11400,7 +11400,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_72_incensario_ventos",
     "name": "Turíbulo dos Quatro Ventos",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Turíbulo",
-    "ipSafeNotes": "Relíquia contínua de tempestade e sopro cortante.",
+    "ipSafeNotes": "Relíquia de tempestade e sopro cortante.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Turíbulo",
@@ -11433,7 +11433,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Invoca um Elemental de Geada (2/3) na Vanguarda."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Compra 1 carta e invoca Elemental (2/3). Início do Turno: Causa 2 de dano à Vanguarda rival.",
+    "description": "Ao Entrar: Compra 1 carta e invoca Elemental (2/3). Início do Turno: Causa 2 de dano à Vanguarda rival.",
     "flavorText": "Cada balanço da corrente libera um vendaval capaz de virar caravelas.",
     "imagePath": "/assets/cards/blue_72_incensario_ventos.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), filigree platinum thurible censer suspended by chains, exhaling glowing cyan storm clouds and miniature lightning arcs."
@@ -11967,7 +11967,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_71_varinha_orcus",
     "name": "Cetro da Caveira Abissal",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Cetro Profano",
-    "ipSafeNotes": "Relíquia contínua necromântica de reanimação e dreno.",
+    "ipSafeNotes": "Relíquia necromântica de reanimação e dreno.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Cetro Profano",
@@ -11993,7 +11993,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Drena 2 de VIDA do Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Reanima 1 aliado da Cripta. Fim do Turno: Causa 2 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Reanima 1 aliado da Cripta. Fim do Turno: Causa 2 de dano ao Soberano rival.",
     "flavorText": "Forjado em ferro estígio e coroado com o crânio de um antigo herói solar.",
     "imagePath": "/assets/cards/purple_71_varinha_orcus.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), sinister black-iron scepter topped with a horned human skull blazing with purple abyssal fire."
@@ -12002,7 +12002,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_72_espelho_aprisionador",
     "name": "Espelho Devorador de Almas",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Artefato",
-    "ipSafeNotes": "Relíquia contínua que captura a força vital inimiga.",
+    "ipSafeNotes": "Relíquia que captura a força vital inimiga.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Artefato",
@@ -12028,7 +12028,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Causa 3 de dano a um inimigo. Início do Turno: Cura 2 de VIDA no seu Soberano.",
+    "description": "Ao Entrar: Causa 3 de dano a um inimigo. Início do Turno: Cura 2 de VIDA no seu Soberano.",
     "flavorText": "Dentro do vidro escuro, rostos silenciosos batem contra a superfície.",
     "imagePath": "/assets/cards/purple_72_espelho_aprisionador.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gothic obsidian mirror with silver gargoyle frame showing swirling purple trapped souls inside the dark glass."
@@ -12509,7 +12509,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "green_71_pedra_terra",
     "name": "Monólito de Comando da Terra",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Monólito",
-    "ipSafeNotes": "Relíquia contínua de fortificação e regeneração terrestre.",
+    "ipSafeNotes": "Relíquia de fortificação e regeneração terrestre.",
     "domain": "green",
     "type": "relic",
     "subtype": "Relíquia • Monólito",
@@ -12536,7 +12536,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA em todos os seus aliados."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Dá +1/+2 a um aliado. Início do Turno: Cura 2 de VIDA em todos os aliados.",
+    "description": "Ao Entrar: Dá +1/+2 a um aliado. Início do Turno: Cura 2 de VIDA em todos os aliados.",
     "flavorText": "A própria rocha sob seus pés fecha as feridas dos filhos da selva.",
     "imagePath": "/assets/cards/green_71_pedra_terra.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), floating moss-covered granite monolith carved with glowing emerald earth-elemental runes and crystal roots."
@@ -12545,7 +12545,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "green_72_cajado_floresta",
     "name": "Báculo da Árvore-Mãe",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Cajado Druídico",
-    "ipSafeNotes": "Relíquia contínua druídica que gera Essência e fortalece a manada.",
+    "ipSafeNotes": "Relíquia druídica que gera Essência e fortalece a manada.",
     "domain": "green",
     "type": "relic",
     "subtype": "Relíquia • Cajado Druídico",
@@ -12572,7 +12572,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Gera +1 de Essência adicional."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Dá +1/+1 a todos os aliados. Início do Turno: Gera +1⚡ de Essência.",
+    "description": "Ao Entrar: Dá +1/+1 a todos os aliados. Início do Turno: Gera +1⚡ de Essência.",
     "flavorText": "Cortado do galho mais alto da primeira árvore que viu o sol nascer.",
     "imagePath": "/assets/cards/green_72_cajado_floresta.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), living ancient oak archdruid staff blossoming with golden leaves and cradling a glowing emerald heart-gem."
@@ -13026,7 +13026,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_69_espada_vingadora",
     "name": "Vingadora Sagrada da Ordem",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Arma Sagrada",
-    "ipSafeNotes": "Relíquia contínua de armamento lendário paladino.",
+    "ipSafeNotes": "Relíquia de armamento lendário paladino.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Arma Sagrada",
@@ -13061,7 +13061,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Invoca uma Sentinela de Ferro (2/2) na Vanguarda."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: +1/+1 a um aliado e invoca Sentinela (2/2). Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: +1/+1 a um aliado e invoca Sentinela (2/2). Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Apenas aqueles de juramento imaculado conseguem erguer seu punho de platina.",
     "imagePath": "/assets/cards/gold_69_espada_vingadora.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), radiant platinum-and-gold paladin greatsword with winged crossguard floating above a velvet reliquary."
@@ -13070,7 +13070,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_70_maca_ruptura",
     "name": "Maça Solar da Ruptura",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Arma Sagrada",
-    "ipSafeNotes": "Relíquia contínua que pune inimigos e restaura o Soberano.",
+    "ipSafeNotes": "Relíquia que pune inimigos e restaura o Soberano.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Arma Sagrada",
@@ -13096,7 +13096,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Causa 3 de dano a um inimigo. Fim do Turno: Cura 2 no seu Soberano.",
+    "description": "Ao Entrar: Causa 3 de dano a um inimigo. Fim do Turno: Cura 2 no seu Soberano.",
     "flavorText": "Sua cabeça em forma de sol desfaz mortos-vivos em poeira luminosa.",
     "imagePath": "/assets/cards/gold_70_maca_ruptura.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), heavy golden sunburst flange mace radiating blinding holy light and floating rune seals."
@@ -13105,7 +13105,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_71_elmo_brilho",
     "name": "Coroa de Brilho Prismático",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Regalia",
-    "ipSafeNotes": "Relíquia contínua cravejada de diamantes, rubis e opalas.",
+    "ipSafeNotes": "Relíquia cravejada de diamantes, rubis e opalas.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Regalia",
@@ -13132,7 +13132,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Feixes solares causam 1 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Dá +1/+1 aos aliados. Início do Turno: Causa 1 de dano à Vanguarda rival.",
+    "description": "Ao Entrar: Dá +1/+1 aos aliados. Início do Turno: Causa 1 de dano à Vanguarda rival.",
     "flavorText": "Trinta gemas solares brilham na fronte do rei, cegando os exércitos inimigos.",
     "imagePath": "/assets/cards/gold_71_elmo_brilho.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), imperial golden helm-crown set with blazing diamonds, rubies, and fire opals emitting prismatic light beams."
@@ -13346,7 +13346,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_37_bolsa_conjurar",
     "name": "Alforje Astral de Maravilhas",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Item Maravilhoso",
-    "ipSafeNotes": "Relíquia contínua clássica de espaço extradimensional.",
+    "ipSafeNotes": "Relíquia clássica de espaço extradimensional.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Item Maravilhoso",
@@ -13372,7 +13372,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Gera +1 de Essência adicional."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/4❤️). Ao Entrar: Compra 1 carta e invoca Constructo (1/2). Início do Turno: Gera +1⚡ de Essência.",
+    "description": "Ao Entrar: Compra 1 carta e invoca Constructo (1/2). Início do Turno: Gera +1⚡ de Essência.",
     "flavorText": "Pesa meio quilo por fora, mas guarda o arsenal de um exército por dentro.",
     "imagePath": "/assets/cards/neutral_37_bolsa_conjurar.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ornate rune-stitched leather adventurer satchel open to reveal a glowing starry pocket dimension inside."
@@ -13381,7 +13381,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_38_anel_estrelas",
     "name": "Anel dos Cometas Cadentes",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Anel Mágico",
-    "ipSafeNotes": "Relíquia contínua que dispara meteoros estelares.",
+    "ipSafeNotes": "Relíquia que dispara meteoros estelares.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Anel Mágico",
@@ -13407,7 +13407,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Causa 3 de dano a um inimigo. Fim do Turno: Causa 2 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Causa 3 de dano a um inimigo. Fim do Turno: Causa 2 de dano ao Soberano rival.",
     "flavorText": "Cravejado com meteoritos que nunca deixaram de queimar.",
     "imagePath": "/assets/cards/neutral_38_anel_estrelas.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), platinum ring set with a blazing blue-white star sapphire orbiting miniature shooting star sparks."
@@ -13416,7 +13416,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_39_cubo_forca",
     "name": "Monólito da Barreira Rúnica",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Artefato",
-    "ipSafeNotes": "Relíquia contínua de proteção geométrica.",
+    "ipSafeNotes": "Relíquia de proteção geométrica.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Artefato",
@@ -13442,7 +13442,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 1 de VIDA em todos os seus aliados."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Invoca Constructo (2/3) e cura 3 no Soberano. Início do Turno: Cura 2 em todos os aliados.",
+    "description": "Ao Entrar: Invoca Constructo (2/3) e cura 3 no Soberano. Início do Turno: Cura 2 em todos os aliados.",
     "flavorText": "Seis faces de marfim e ouro: cada face ergue uma muralha impenetrável.",
     "imagePath": "/assets/cards/neutral_39_cubo_forca.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), intricate golden-and-ivory puzzle cube projecting a translucent geometric forcefield barrier."
@@ -14071,7 +14071,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_89_roda_tempo",
     "name": "Astrolábio das Eras Eternas",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Horologia",
-    "ipSafeNotes": "Relíquia contínua central da classe Cronomancer.",
+    "ipSafeNotes": "Relíquia central da classe Cronomancer.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Horologia",
@@ -14097,7 +14097,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Gera +1 de Essência adicional."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Compra 1 carta e invoca Elemental (2/2). Início do Turno: Gera +1⚡ de Essência.",
+    "description": "Ao Entrar: Compra 1 carta e invoca Elemental (2/2). Início do Turno: Gera +1⚡ de Essência.",
     "flavorText": "Acelerar os aliados, desacelerar os inimigos: tudo gira em torno do eixo eterno.",
     "imagePath": "/assets/cards/blue_89_roda_tempo.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), magnificent levitating celestial wheel of brass gears, sapphire crystals, and glowing roman numerals."
@@ -14106,7 +14106,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_90_orbe_quebrada",
     "name": "Orbe do Tempo Fragmentada",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Fragmento Temporal",
-    "ipSafeNotes": "Relíquia contínua que dispara surtos de táquion a cada feitiço.",
+    "ipSafeNotes": "Relíquia que dispara surtos de táquion a cada feitiço.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Fragmento Temporal",
@@ -14132,7 +14132,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Causa 2 de dano à Vanguarda rival. Ao Lançar Feitiço: Causa 2 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Causa 2 de dano à Vanguarda rival. Ao Lançar Feitiço: Causa 2 de dano ao Soberano rival.",
     "flavorText": "Quando a orbe se partiu, os fragmentos espalharam-se por todas as eras da criação.",
     "imagePath": "/assets/cards/blue_90_orbe_quebrada.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), shattered levitating crystal orb held together by arcs of cyan temporal lightning and floating glass shards."
@@ -14593,7 +14593,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_87_relogio_bolso_real",
     "name": "Cronômetro Dourado de Bolso",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Horologia",
-    "ipSafeNotes": "Relíquia contínua de foco horológico.",
+    "ipSafeNotes": "Relíquia de foco horológico.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Horologia",
@@ -14620,7 +14620,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/4❤️). Ao Entrar: Cura 2 no Soberano. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Cura 2 no Soberano. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Forjado em ouro real, suas engrenagens marcam o compasso da vitória.",
     "imagePath": "/assets/cards/gold_87_relogio_bolso_real.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), open ornate royal gold pocket-watch with glowing celestial gears and a heavy gold chain."
@@ -14629,7 +14629,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_88_forja_1877",
     "name": "Arsenal Balístico de 1877 C.V.",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Artilharia",
-    "ipSafeNotes": "Relíquia contínua de artilharia mecânica.",
+    "ipSafeNotes": "Relíquia de artilharia mecânica.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Artilharia",
@@ -14655,7 +14655,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Bombardeio causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Causa 3 de dano a um inimigo. Fim do Turno: Causa 2 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Causa 3 de dano a um inimigo. Fim do Turno: Causa 2 de dano ao Soberano rival.",
     "flavorText": "Canhões de bronze movidos a vapor e runas de precisão.",
     "imagePath": "/assets/cards/gold_88_forja_1877.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), clockwork brass-and-gold rotary cannon turret mounted on an armored gear pedestal."
@@ -14664,7 +14664,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_89_pendulo_justica",
     "name": "Pêndulo Inflexível de Ambrosia",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Monumento",
-    "ipSafeNotes": "Relíquia contínua que paralisa invasores e restaura a ordem.",
+    "ipSafeNotes": "Relíquia que paralisa invasores e restaura a ordem.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Monumento",
@@ -14690,7 +14690,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Congela 1 inimigo e invoca Sentinela (2/3). Início do Turno: Cura 2 no Soberano.",
+    "description": "Ao Entrar: Congela 1 inimigo e invoca Sentinela (2/3). Início do Turno: Cura 2 no Soberano.",
     "flavorText": "No centro da praça de Ambrosia, o grande pêndulo julga o tempo de todos.",
     "imagePath": "/assets/cards/gold_89_pendulo_justica.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), giant golden cathedral pendulum suspended between marble pillars with glowing law runes."
@@ -15248,7 +15248,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_89_ampulheta_sangue",
     "name": "Ampulheta das Mil Mortes",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Ampulheta",
-    "ipSafeNotes": "Relíquia contínua que drena a vitalidade rival a cada virada.",
+    "ipSafeNotes": "Relíquia que drena a vitalidade rival a cada virada.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Ampulheta",
@@ -15274,7 +15274,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Causa 2 ao Soberano rival. Fim do Turno: Cura 2 no seu Soberano.",
+    "description": "Ao Entrar: Causa 2 ao Soberano rival. Fim do Turno: Cura 2 no seu Soberano.",
     "flavorText": "Não é areia que escorre pelo gargalo de vidro, mas rubis de sangue vivo.",
     "imagePath": "/assets/cards/purple_89_ampulheta_sangue.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gothic wrought-iron hourglass filled with glowing crimson-violet blood sand and bat-wing motifs."
@@ -15283,7 +15283,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_90_recipiente_arcano",
     "name": "Recipiente de Almas Aprisionadas",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Filactério",
-    "ipSafeNotes": "Relíquia contínua da lista do Cronomancer que preserva e reanima espíritos.",
+    "ipSafeNotes": "Relíquia da lista do Cronomancer que preserva e reanima espíritos.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Filactério",
@@ -15309,7 +15309,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Pulso anímico causa 1 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Reanima 1 aliado da Cripta. Início do Turno: Causa 1 de dano à Vanguarda rival.",
+    "description": "Ao Entrar: Reanima 1 aliado da Cripta. Início do Turno: Causa 1 de dano à Vanguarda rival.",
     "flavorText": "Dentro do cristal lapidado, a alma aguarda um novo corpo para habitar.",
     "imagePath": "/assets/cards/purple_90_recipiente_arcano.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ornate amethyst-and-gold soul vessel jar glowing with swirling spectral faces and necromantic seals."
@@ -15855,7 +15855,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "red_90_nucleo_fragmento_rubro",
     "name": "Cristal de Táquion Incandescente",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Fragmento",
-    "ipSafeNotes": "Relíquia contínua que acelera aliados e queima o Soberano rival.",
+    "ipSafeNotes": "Relíquia que acelera aliados e queima o Soberano rival.",
     "domain": "red",
     "type": "relic",
     "subtype": "Relíquia • Fragmento",
@@ -15882,7 +15882,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Causa 2 ao Soberano rival. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Causa 2 ao Soberano rival. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Vibra em uma frequência tão alta que o ar ao redor brilha em vermelho vivo.",
     "imagePath": "/assets/cards/red_90_nucleo_fragmento_rubro.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), levitating jagged red tachyon crystal shard mounted in a brass clockwork cradle."
@@ -16376,7 +16376,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "green_90_relogio_solar_druida",
     "name": "Monólito do Solstício Eterno",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Relógio Solar",
-    "ipSafeNotes": "Relíquia contínua de pedra solar druídica.",
+    "ipSafeNotes": "Relíquia de pedra solar druídica.",
     "domain": "green",
     "type": "relic",
     "subtype": "Relíquia • Relógio Solar",
@@ -16403,7 +16403,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Cura 3 no Soberano. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Cura 3 no Soberano. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Alinhado com o sol do primeiro dia do mundo, sua sombra aponta o caminho da força.",
     "imagePath": "/assets/cards/green_90_relogio_solar_druida.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ancient moss-covered stone sundial monolith glowing with emerald zodiac carvings and golden sunlight."
@@ -16605,7 +16605,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_47_dados_destino",
     "name": "Relicário dos Dados do Destino",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Foco Temporal",
-    "ipSafeNotes": "Relíquia contínua que favorece a sorte do Soberano.",
+    "ipSafeNotes": "Relíquia que favorece a sorte do Soberano.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Foco Temporal",
@@ -16631,7 +16631,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/4❤️). Ao Entrar: Compra 1 carta. Início do Turno: Cura 2 de VIDA no seu Soberano.",
+    "description": "Ao Entrar: Compra 1 carta. Início do Turno: Cura 2 de VIDA no seu Soberano.",
     "flavorText": "Vinte faces de cristal encantado que reescrevem o acaso.",
     "imagePath": "/assets/cards/neutral_47_dados_destino.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), levitating twenty-sided crystal die inside an ornate brass astrolabe ring."
@@ -16640,7 +16640,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_48_receptaculo_eternidade",
     "name": "Ânfora do Tempo Infinito",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Receptáculo",
-    "ipSafeNotes": "Relíquia contínua que armazena tempo de vida.",
+    "ipSafeNotes": "Relíquia que armazena tempo de vida.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Receptáculo",
@@ -16666,7 +16666,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Cura 4 no Soberano. Início do Turno: Cura 2 no seu Soberano.",
+    "description": "Ao Entrar: Cura 4 no Soberano. Início do Turno: Cura 2 no seu Soberano.",
     "flavorText": "Um cálice de quartzo onde a juventude permanece intocada pela passagem dos anos.",
     "imagePath": "/assets/cards/neutral_48_receptaculo_eternidade.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), crystalline eternity chalice cradled in golden clockwork wings glowing with white-gold light."
@@ -16675,7 +16675,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_49_fragmento_mental",
     "name": "Diadema do Fragmento Mental",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Diadema",
-    "ipSafeNotes": "Relíquia contínua que converte feitiços em rajadas psíquico-temporais.",
+    "ipSafeNotes": "Relíquia que converte feitiços em rajadas psíquico-temporais.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Diadema",
@@ -16701,7 +16701,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Causa 2 de dano a um inimigo."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Compra 1 carta. Ao Lançar Feitiço: Causa 2 de dano a um inimigo.",
+    "description": "Ao Entrar: Compra 1 carta. Ao Lançar Feitiço: Causa 2 de dano a um inimigo.",
     "flavorText": "Aumenta a velocidade do pensamento até que cada magia dispare um eco letal.",
     "imagePath": "/assets/cards/neutral_49_fragmento_mental.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), silver-and-sapphire mind-shard circlet crown with a floating crystalline third-eye gem."
@@ -17285,7 +17285,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "red_107_fornalha_draconica",
     "name": "Fornalha das Escamas Rubras",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Fornalha",
-    "ipSafeNotes": "Relíquia contínua de bombardeio piromântico.",
+    "ipSafeNotes": "Relíquia de bombardeio piromântico.",
     "domain": "red",
     "type": "relic",
     "subtype": "Relíquia • Fornalha",
@@ -17311,7 +17311,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Dispara uma brasa que causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Causa 2 de dano ao Soberano rival. Ao Lançar Feitiço: Causa 2 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Causa 2 de dano ao Soberano rival. Ao Lançar Feitiço: Causa 2 de dano ao Soberano rival.",
     "flavorText": "Cada feitiço conjurado sopra o fole da grande fornalha dracônica.",
     "imagePath": "/assets/cards/red_107_fornalha_draconica.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ornate dragon-shaped iron furnace glowing with white-hot coals and belching jets of crimson fire."
@@ -17320,7 +17320,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "red_108_trono_chama_primordial",
     "name": "Trono da Chama Primordial",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Trono",
-    "ipSafeNotes": "Relíquia contínua que fortalece o ataque e queima a cada turno.",
+    "ipSafeNotes": "Relíquia que fortalece o ataque e queima a cada turno.",
     "domain": "red",
     "type": "relic",
     "subtype": "Relíquia • Trono",
@@ -17347,7 +17347,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1 de ATQ a todos os seus aliados."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Causa 2 de dano à Vanguarda rival. Início do Turno: Concede +1 ATQ a todos os aliados.",
+    "description": "Ao Entrar: Causa 2 de dano à Vanguarda rival. Início do Turno: Concede +1 ATQ a todos os aliados.",
     "flavorText": "Apenas aqueles cujo espírito é feito de fogo ousam sentar-se em seus degraus de basalto.",
     "imagePath": "/assets/cards/red_108_trono_chama_primordial.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), majestic throne of jagged black volcanic glass surrounded by a halo of eternal golden-crimson flames."
@@ -17902,7 +17902,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_107_bussola_astral",
     "name": "Bússola das Marés Astrais",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Instrumento",
-    "ipSafeNotes": "Relíquia contínua de compra e congelamento.",
+    "ipSafeNotes": "Relíquia de compra e congelamento.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Instrumento",
@@ -17928,7 +17928,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Congela 1 unidade inimiga."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Compra 1 carta. Início do Turno: Congela 1 unidade inimiga.",
+    "description": "Ao Entrar: Compra 1 carta. Início do Turno: Congela 1 unidade inimiga.",
     "flavorText": "Sua agulha de diamante aponta sempre para o ponto fraco na linha inimiga.",
     "imagePath": "/assets/cards/blue_107_bussola_astral.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ornate silver-and-sapphire astral compass floating over a star-chart with a glowing icy needle."
@@ -17937,7 +17937,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_108_coroa_tempestades",
     "name": "Diadema do Olho do Furacão",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Coroa",
-    "ipSafeNotes": "Relíquia contínua que transforma cada feitiço em trovão.",
+    "ipSafeNotes": "Relíquia que transforma cada feitiço em trovão.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Coroa",
@@ -17957,7 +17957,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Causa 1 de dano a toda a Vanguarda inimiga."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Congela 1 inimigo. Ao Lançar Feitiço: Causa 1 de dano à Vanguarda rival.",
+    "description": "Ao Entrar: Congela 1 inimigo. Ao Lançar Feitiço: Causa 1 de dano à Vanguarda rival.",
     "flavorText": "No centro do ciclone reina o silêncio; nas bordas, a destruição absoluta.",
     "imagePath": "/assets/cards/blue_108_coroa_tempestades.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), electrum storm crown set with a crackling tempest sapphire surrounded by miniature swirling clouds and lightning."
@@ -18459,7 +18459,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_107_grimorio_necromante",
     "name": "Necronomicon de Couro Negro",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Grimório",
-    "ipSafeNotes": "Relíquia contínua que converte feitiços em dreno vital.",
+    "ipSafeNotes": "Relíquia que converte feitiços em dreno vital.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Grimório",
@@ -18491,7 +18491,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Cura 1 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/5❤️). Ao Entrar: Compra 1 carta. Ao Lançar Feitiço: Drena 1 de VIDA do Soberano rival para o seu.",
+    "description": "Ao Entrar: Compra 1 carta. Ao Lançar Feitiço: Drena 1 de VIDA do Soberano rival para o seu.",
     "flavorText": "Suas páginas viram sozinhas sempre que alguém morre por perto.",
     "imagePath": "/assets/cards/purple_107_grimorio_necromante.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ancient black-leather necromancer grimoire bound in silver skull clasps with a glowing purple eye on the cover."
@@ -18500,7 +18500,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_108_obelisco_vazio",
     "name": "Monólito do Eclipse Abissal",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Monólito",
-    "ipSafeNotes": "Relíquia contínua de enfraquecimento e reanimação.",
+    "ipSafeNotes": "Relíquia de enfraquecimento e reanimação.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Monólito",
@@ -18526,7 +18526,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Reduz em -2 o ATQ da Vanguarda rival. Início do Turno: Causa 2 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Reduz em -2 o ATQ da Vanguarda rival. Início do Turno: Causa 2 de dano ao Soberano rival.",
     "flavorText": "Sua sombra fria estende-se até o trono inimigo, sugando a coragem e o calor.",
     "imagePath": "/assets/cards/purple_108_obelisco_vazio.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), floating cracked black monolith levitating above a dark altar with orbiting purple eclipse rings."
@@ -19013,7 +19013,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "green_107_altar_fera_antiga",
     "name": "Totem das Presas Primordiais",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Totem",
-    "ipSafeNotes": "Relíquia contínua que fortalece os esquadrões a cada turno.",
+    "ipSafeNotes": "Relíquia que fortalece os esquadrões a cada turno.",
     "domain": "green",
     "type": "relic",
     "subtype": "Relíquia • Totem",
@@ -19041,7 +19041,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Concede +2/+2 a um aliado. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Concede +2/+2 a um aliado. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Esculpido no tronco da primeira árvore e coroado com o crânio do grande urso.",
     "imagePath": "/assets/cards/green_107_altar_fera_antiga.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), carved wooden tribal totem pole topped with a glowing emerald bear skull and draped in feathers and vines."
@@ -19050,7 +19050,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "green_108_semente_mundo",
     "name": "Corazón da Árvore-Mundo",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Semente",
-    "ipSafeNotes": "Relíquia contínua de geração de essência e cura.",
+    "ipSafeNotes": "Relíquia de geração de essência e cura.",
     "domain": "green",
     "type": "relic",
     "subtype": "Relíquia • Semente",
@@ -19082,7 +19082,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Gera +1 de Essência."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Cura 2 em todos os aliados. Início do Turno: Gera +1⚡ de Essência.",
+    "description": "Ao Entrar: Cura 2 em todos os aliados. Início do Turno: Gera +1⚡ de Essência.",
     "flavorText": "Dentro desta semente dourada dormem todas as florestas do amanhã.",
     "imagePath": "/assets/cards/green_108_semente_mundo.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), giant glowing emerald-and-gold world-tree seed floating inside a cradle of living roots and blossoms."
@@ -19528,7 +19528,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_104_martelo_consagrado",
     "name": "Altar do Martelo Consagrado",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Armamento",
-    "ipSafeNotes": "Relíquia contínua que golpeia inimigos e fortalece aliados.",
+    "ipSafeNotes": "Relíquia que golpeia inimigos e fortalece aliados.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Armamento",
@@ -19555,7 +19555,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Causa 3 de dano a um inimigo. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Causa 3 de dano a um inimigo. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Repousando sobre o pedestal de mármore, o martelo vibra a cada manhã.",
     "imagePath": "/assets/cards/gold_104_martelo_consagrado.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), levitating golden warhammer above a marble altar radiating rings of sacred runes and golden sparks."
@@ -19564,7 +19564,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_105_coroa_imperador",
     "name": "Coroa Imperial de Solis",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Regalia",
-    "ipSafeNotes": "Relíquia contínua que gera essência e inspira tropas.",
+    "ipSafeNotes": "Relíquia que gera essência e inspira tropas.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Regalia",
@@ -19590,7 +19590,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Gera +1 de Essência."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Compra 1 carta. Início do Turno: Gera +1⚡ de Essência.",
+    "description": "Ao Entrar: Compra 1 carta. Início do Turno: Gera +1⚡ de Essência.",
     "flavorText": "Doze pontas de ouro puro que canalizam o tributo de todo o império.",
     "imagePath": "/assets/cards/gold_105_coroa_imperador.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), imperial golden sun-crown resting on a velvet cushion with twelve radiant diamond spikes."
@@ -19599,7 +19599,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_106_bastiao_eterno",
     "name": "Obelisco do Bastião Inexpugnável",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Fortaleza",
-    "ipSafeNotes": "Relíquia contínua de alta durabilidade e cura.",
+    "ipSafeNotes": "Relíquia de alta durabilidade e cura.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Fortaleza",
@@ -19626,7 +19626,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (2🛡️/6❤️). Ao Entrar: Cura 2 em todos os aliados. Início do Turno: Cura 2 de VIDA no seu Soberano.",
+    "description": "Ao Entrar: Cura 2 em todos os aliados. Início do Turno: Cura 2 de VIDA no seu Soberano.",
     "flavorText": "Enquanto esta torre permanecer de pé, o trono jamais cairá.",
     "imagePath": "/assets/cards/gold_106_bastiao_eterno.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), miniature golden citadel tower monolith with glowing alabaster walls and a floating sun crest."
@@ -19635,7 +19635,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_107_reliquia_alvorada",
     "name": "Cálice Sagrado da Alvorada",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Cálice",
-    "ipSafeNotes": "Relíquia contínua que concede Escudo Divino e fortalecimento.",
+    "ipSafeNotes": "Relíquia que concede Escudo Divino e fortalecimento.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Cálice",
@@ -19662,7 +19662,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Concede +1/+2 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Concede Escudo Divino aos aliados. Fim do Turno: Concede +1/+2 a um aliado.",
+    "description": "Ao Entrar: Concede Escudo Divino aos aliados. Fim do Turno: Concede +1/+2 a um aliado.",
     "flavorText": "Transborda com o orvalho colhido no primeiro amanhecer do mundo.",
     "imagePath": "/assets/cards/gold_107_reliquia_alvorada.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), jeweled golden chalice overflowing with liquid sunlight and surrounded by floating angelic feathers."
@@ -19671,7 +19671,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_108_trono_ordem_suprema",
     "name": "Santuário da Ordem Suprema",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Santuário",
-    "ipSafeNotes": "Relíquia contínua que fortalece todo o exército a cada turno.",
+    "ipSafeNotes": "Relíquia que fortalece todo o exército a cada turno.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Santuário",
@@ -19699,7 +19699,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a todos os seus aliados."
       }
     ],
-    "description": "Relíquia Contínua (2🛡️/6❤️). Ao Entrar e no Início do Turno: Concede +1/+1 a todos os seus aliados.",
+    "description": "Ao Entrar e no Início do Turno: Concede +1/+1 a todos os seus aliados.",
     "flavorText": "A lei suprema escrita em ouro: a ordem sempre triunfa sobre o caos.",
     "imagePath": "/assets/cards/gold_108_trono_ordem_suprema.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), grand golden judicial throne flanked by twin scales of justice and glowing solar pillars."
@@ -19905,7 +19905,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_57_orbe_dominacao",
     "name": "Orbe da Convergência Cromática",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Orbe",
-    "ipSafeNotes": "Relíquia contínua que gera essência extra a cada turno.",
+    "ipSafeNotes": "Relíquia que gera essência extra a cada turno.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Orbe",
@@ -19925,7 +19925,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Gera +1 de Essência."
       }
     ],
-    "description": "Relíquia Contínua (0🛡️/4❤️). Ao Entrar e no Início do Turno: Gera +1⚡ de Essência.",
+    "description": "Ao Entrar e no Início do Turno: Gera +1⚡ de Essência.",
     "flavorText": "Cinco chamas elementais giram em harmonia perpétua dentro do cristal.",
     "imagePath": "/assets/cards/neutral_57_orbe_dominacao.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), levitating crystal orb containing five swirling elemental flames of red, blue, purple, green, and gold."
@@ -19934,7 +19934,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_58_espada_planos",
     "name": "Lâmina da Fenda Dimensional",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Armamento",
-    "ipSafeNotes": "Relíquia contínua ofensiva.",
+    "ipSafeNotes": "Relíquia ofensiva.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Armamento",
@@ -19961,7 +19961,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +2 de ATQ a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Causa 3 de dano a um inimigo. Início do Turno: Concede +2 ATQ a um aliado.",
+    "description": "Ao Entrar: Causa 3 de dano a um inimigo. Início do Turno: Concede +2 ATQ a um aliado.",
     "flavorText": "Seu fio corta não apenas o aço, mas o próprio espaço entre os mundos.",
     "imagePath": "/assets/cards/neutral_58_espada_planos.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), floating dimensional greatsword with a blade of starry void-glass and golden crossguard."
@@ -19970,7 +19970,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "neutral_59_armadura_invulneravel",
     "name": "Égide de Adamantina Planar",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Armadura",
-    "ipSafeNotes": "Relíquia contínua defensiva de adamantina.",
+    "ipSafeNotes": "Relíquia defensiva de adamantina.",
     "domain": "neutral",
     "type": "relic",
     "subtype": "Relíquia • Armadura",
@@ -19996,7 +19996,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (2🛡️/6❤️). Ao Entrar: Concede Escudo Divino aos aliados. Início do Turno: Cura 2 de VIDA no seu Soberano.",
+    "description": "Ao Entrar: Concede Escudo Divino aos aliados. Início do Turno: Cura 2 de VIDA no seu Soberano.",
     "flavorText": "Forjada no núcleo de um meteoro caído, nenhuma lâmina jamais a riscou.",
     "imagePath": "/assets/cards/neutral_59_armadura_invulneravel.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gleaming adamantine chestplate and shield floating on an arcane pedestal with silver forcefield rings."
@@ -20563,7 +20563,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "red_126_bigorna_draconica",
     "name": "Bigorna Dracônica da Cratera",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Forja",
-    "ipSafeNotes": "Relíquia contínua de forja e queima.",
+    "ipSafeNotes": "Relíquia de forja e queima.",
     "domain": "red",
     "type": "relic",
     "subtype": "Relíquia • Forja",
@@ -20590,7 +20590,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Causa 1 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Concede +1/+0 aos aliados. Início do Turno: Causa 1 de dano ao Soberano inimigo.",
+    "description": "Ao Entrar: Concede +1/+0 aos aliados. Início do Turno: Causa 1 de dano ao Soberano inimigo.",
     "flavorText": "Cada martelada ressoa como o rugido de um dragão ancestral.",
     "imagePath": "/assets/cards/red_126_bigorna_draconica.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), massive dragon-shaped obsidian anvil glowing with molten gold runes and resting on a lava pedestal."
@@ -21146,7 +21146,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_125_astrolabio_infinito",
     "name": "Astrolábio do Infinito",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Cronomancia",
-    "ipSafeNotes": "Relíquia contínua geradora de Essência.",
+    "ipSafeNotes": "Relíquia geradora de Essência.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Cronomancia",
@@ -21172,7 +21172,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Gera +1 de Essência."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Compra 1 carta. Início do Turno: Gera +1⚡ de Essência.",
+    "description": "Ao Entrar: Compra 1 carta. Início do Turno: Gera +1⚡ de Essência.",
     "flavorText": "Seus anéis de safira giram no compasso exato das marés astrais.",
     "imagePath": "/assets/cards/blue_125_astrolabio_infinito.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ornate celestial brass and sapphire astrolabe with spinning cosmic rings and starlight core."
@@ -21181,7 +21181,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "blue_126_tomo_zero_absoluto",
     "name": "Grimório do Zero Absoluto",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Grimório",
-    "ipSafeNotes": "Relíquia contínua de congelamento e compra.",
+    "ipSafeNotes": "Relíquia de congelamento e compra.",
     "domain": "blue",
     "type": "relic",
     "subtype": "Relíquia • Grimório",
@@ -21207,7 +21207,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Compra 1 carta."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Congela 1 inimigo. Início do Turno: Compra 1 carta.",
+    "description": "Ao Entrar: Congela 1 inimigo. Início do Turno: Compra 1 carta.",
     "flavorText": "Encadernado em gelo eterno, só pode ser lido por quem não teme o inverno.",
     "imagePath": "/assets/cards/blue_126_tomo_zero_absoluto.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ancient frost-bound grimoire floating on an ice pedestal with glowing cyan runes rising from its pages."
@@ -21724,7 +21724,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_125_ataude_sangue",
     "name": "Ataúde de Sangue Real",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Sarcófago",
-    "ipSafeNotes": "Relíquia contínua de dreno e regeneração soberana.",
+    "ipSafeNotes": "Relíquia de dreno e regeneração soberana.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Sarcófago",
@@ -21756,7 +21756,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Drena 2 de VIDA do Soberano rival. Início do Turno: Cura 2 de VIDA no seu Soberano.",
+    "description": "Ao Entrar: Drena 2 de VIDA do Soberano rival. Início do Turno: Cura 2 de VIDA no seu Soberano.",
     "flavorText": "Dentro do ouro negro repousa a sede imortal da dinastia.",
     "imagePath": "/assets/cards/purple_125_ataude_sangue.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), royal vampire sarcophagus of black marble and gold trim surrounded by floating crimson blood orbs."
@@ -21765,7 +21765,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "purple_126_campanario_mortos",
     "name": "Campanário dos Mortos",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Monumento",
-    "ipSafeNotes": "Relíquia contínua que fortalece aliados e drena o rival.",
+    "ipSafeNotes": "Relíquia que fortalece aliados e drena o rival.",
     "domain": "purple",
     "type": "relic",
     "subtype": "Relíquia • Monumento",
@@ -21798,7 +21798,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Concede +1/+1 aos aliados. Início do Turno: Drena 2 de VIDA do Soberano rival para o seu.",
+    "description": "Ao Entrar: Concede +1/+1 aos aliados. Início do Turno: Drena 2 de VIDA do Soberano rival para o seu.",
     "flavorText": "Cada badalada convoca os caídos e anuncia o fim dos vivos.",
     "imagePath": "/assets/cards/purple_126_campanario_mortos.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gothic iron belfry tower with a giant cracked skull-bell ringing waves of purple necrotic energy."
@@ -22295,7 +22295,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "green_125_totem_predador_alfa",
     "name": "Totem do Predador Alfa",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Totem",
-    "ipSafeNotes": "Relíquia contínua que fortalece a tropa a cada turno.",
+    "ipSafeNotes": "Relíquia que fortalece a tropa a cada turno.",
     "domain": "green",
     "type": "relic",
     "subtype": "Relíquia • Totem",
@@ -22316,7 +22316,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Concede +1/+1 a todos os aliados. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Concede +1/+1 a todos os aliados. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Esculpido no carvalho mais antigo e consagrado com garras de urso-rei.",
     "imagePath": "/assets/cards/green_125_totem_predador_alfa.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), carved wooden alpha predator totem pole with glowing green bear, wolf, and eagle spirit runes."
@@ -22325,7 +22325,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "green_126_coracao_selva_viva",
     "name": "Coração da Selva Viva",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Santuário",
-    "ipSafeNotes": "Relíquia contínua de cura em área e vitalidade.",
+    "ipSafeNotes": "Relíquia de cura em área e vitalidade.",
     "domain": "green",
     "type": "relic",
     "subtype": "Relíquia • Santuário",
@@ -22351,7 +22351,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA em todos os aliados."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Cura 3 de VIDA no seu Soberano. Início do Turno: Cura 2 de VIDA em todos os aliados.",
+    "description": "Ao Entrar: Cura 3 de VIDA no seu Soberano. Início do Turno: Cura 2 de VIDA em todos os aliados.",
     "flavorText": "Seu pulso esmeralda faz brotar vida até mesmo na pedra nua.",
     "imagePath": "/assets/cards/green_126_coracao_selva_viva.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), giant pulsing emerald heart crystal cradled in living golden tree roots with healing pollen."
@@ -22784,7 +22784,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_123_altar_sol_eterno",
     "name": "Altar do Sol Eterno",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Altar",
-    "ipSafeNotes": "Relíquia contínua de cura ao Soberano.",
+    "ipSafeNotes": "Relíquia de cura ao Soberano.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Altar",
@@ -22810,7 +22810,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Cura 3 de VIDA no seu Soberano. Início do Turno: Cura 2 de VIDA no seu Soberano.",
+    "description": "Ao Entrar: Cura 3 de VIDA no seu Soberano. Início do Turno: Cura 2 de VIDA no seu Soberano.",
     "flavorText": "Sua chama dourada nunca se apaga, nem sob a mais densa tempestade.",
     "imagePath": "/assets/cards/gold_123_altar_sol_eterno.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), white marble and gold sun altar with an eternal levitating golden flame."
@@ -22819,7 +22819,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_124_estandarte_legiao_dourada",
     "name": "Estandarte da Legião Dourada",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Estandarte",
-    "ipSafeNotes": "Relíquia contínua que fortalece todo o exército.",
+    "ipSafeNotes": "Relíquia que fortalece todo o exército.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Estandarte",
@@ -22847,7 +22847,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a todos os aliados."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar e no Início do Turno: Concede +1/+1 a todos os seus aliados.",
+    "description": "Ao Entrar e no Início do Turno: Concede +1/+1 a todos os seus aliados.",
     "flavorText": "Onde o estandarte do sol é fincado, os soldados lutam como imortais.",
     "imagePath": "/assets/cards/gold_124_estandarte_legiao_dourada.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), grand golden legion war banner topped with a solar eagle crest radiating courage."
@@ -22856,7 +22856,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "id": "gold_125_fornalha_celestial",
     "name": "Fornalha Celestial de Armaduras",
     "originalInspiration": "Códice de Chromatic Pact • Relíquia • Forja",
-    "ipSafeNotes": "Relíquia contínua pesada que blinda e fortalece aliados.",
+    "ipSafeNotes": "Relíquia pesada que blinda e fortalece aliados.",
     "domain": "gold",
     "type": "relic",
     "subtype": "Relíquia • Forja",
@@ -22883,7 +22883,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+2 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (2🛡️/6❤️). Ao Entrar: Concede Escudo Divino aos aliados. Início do Turno: Concede +1/+2 a um aliado.",
+    "description": "Ao Entrar: Concede Escudo Divino aos aliados. Início do Turno: Concede +1/+2 a um aliado.",
     "flavorText": "O fogo sagrado molda placas de aurum que nenhuma garra abissal consegue rasgar.",
     "imagePath": "/assets/cards/gold_125_fornalha_celestial.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), celestial golden armor furnace with floating blessed breastplates and white-gold fire."
@@ -23548,7 +23548,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1 de ATQ a todos os aliados."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Causa 2 de dano à Vanguarda inimiga. Início do Turno: +1 ATQ aos aliados.",
+    "description": "Ao Entrar: Causa 2 de dano à Vanguarda inimiga. Início do Turno: +1 ATQ aos aliados.",
     "flavorText": "Forjada com os chifres do primeiro dragão vermelho e rubis de fogo vivo.",
     "imagePath": "/assets/cards/red_146_coroa_chama_eterna.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Crown of the Eternal Caldera forged from black dragon horns and floating rubies."
@@ -24189,7 +24189,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Compra 1 carta. Início do Turno: Cura 2 de VIDA no seu Soberano.",
+    "description": "Ao Entrar: Compra 1 carta. Início do Turno: Cura 2 de VIDA no seu Soberano.",
     "flavorText": "Aponta sempre para a linha temporal da vitória.",
     "imagePath": "/assets/cards/blue_145_bussola_planos.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Ornate Planar Navigators Compass Reliquary with floating sapphire needles."
@@ -24809,7 +24809,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: Drena 2 do Soberano rival. Início do Turno: Causa 2 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Drena 2 do Soberano rival. Início do Turno: Causa 2 de dano ao Soberano rival.",
     "flavorText": "Seus acordes fúnebres ressoam diretamente na alma do adversário.",
     "imagePath": "/assets/cards/purple_145_orgao_catedrais_negras.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Haunted Gothic Pipe-Organ Reliquary blasting chords of purple ghostly skulls."
@@ -25432,7 +25432,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: +1/+1 aos aliados. Início do Turno: Cura 2 de VIDA no seu Soberano.",
+    "description": "Ao Entrar: +1/+1 aos aliados. Início do Turno: Cura 2 de VIDA no seu Soberano.",
     "flavorText": "Erguido com as presas dos primeiros titãs que caminharam sobre a terra.",
     "imagePath": "/assets/cards/green_146_altar_presas_ancestrais.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Primal Altar of Ancestral Fangs built from colossal dinosaur tusks and amber."
@@ -25910,7 +25910,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/4❤️). Ao Entrar: Cura 3 de VIDA no Soberano. Início do Turno: Cura 2 de VIDA no Soberano.",
+    "description": "Ao Entrar: Cura 3 de VIDA no Soberano. Início do Turno: Cura 2 de VIDA no Soberano.",
     "flavorText": "Transborda com a luz líquida da primeira manhã do mundo.",
     "imagePath": "/assets/cards/gold_142_calice_alvorada_real.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Royal Chalice of the Golden Dawn overflowing with liquid sunlight."
@@ -25947,7 +25947,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/5❤️). Ao Entrar: +2/+2 a um aliado. Início do Turno: +1/+1 a um aliado.",
+    "description": "Ao Entrar: +2/+2 a um aliado. Início do Turno: +1/+1 a um aliado.",
     "flavorText": "O martelo levita sozinho, forjando vitórias turno após turno.",
     "imagePath": "/assets/cards/gold_143_bigorna_sol_invicto.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Sacred Anvil of Sol-Invictus carved of white marble and gold."
@@ -25982,7 +25982,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 1 de VIDA em todos os aliados."
       }
     ],
-    "description": "Relíquia Contínua (2🛡️/5❤️). Ao Entrar: Escudo Divino a um aliado. Início do Turno: Cura 1 em todos os aliados.",
+    "description": "Ao Entrar: Escudo Divino a um aliado. Início do Turno: Cura 1 em todos os aliados.",
     "flavorText": "Seus editos dourados mantêm a ordem inabalável na linha de frente.",
     "imagePath": "/assets/cards/gold_144_obelisk_lei_suprema.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Floating Marble-and-Gold Obelisk of Supreme Law inscribed with solar edicts."
@@ -26017,7 +26017,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (1🛡️/6❤️). Ao Entrar: Escudo Divino aos aliados. Início do Turno: Cura 2 no seu Soberano.",
+    "description": "Ao Entrar: Escudo Divino aos aliados. Início do Turno: Cura 2 no seu Soberano.",
     "flavorText": "Guarda um fragmento do próprio sol entre duas asas esculpidas.",
     "imagePath": "/assets/cards/gold_145_relicario_asas_douradas.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Ornate Golden Reliquary Ark topped with twin sculpted seraphim wings."
@@ -29351,7 +29351,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: A quietude do Monte Axial restaura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Relíquia Contínua (2🛡️/5❤️). Ao Entrar: Concede Escudo Divino a um aliado. Início do Turno: Restaura 2 de VIDA do seu Soberano.",
+    "description": "Ao Entrar: Concede Escudo Divino a um aliado. Início do Turno: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "Mesmo uma lasca fria daquele sol imóvel ainda impõe silêncio às feridas do tempo.",
     "imagePath": "/assets/cards/neutral_61_fragmento_coroa_prisma.png",
     "aiArtPrompt": "2D dark fantasy video game item sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated centered object on a pure solid flat white background (#FFFFFF), ancient mystical hexagonal white-quartz prism reliquary suspended inside an ornate weathered silver and dark obsidian astrolabe frame atop a miniature stepped stone altar of Mount Axial."

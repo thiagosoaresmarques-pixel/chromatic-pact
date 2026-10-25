@@ -519,7 +519,7 @@ export function analyzeMatchupPair(
   const priorityTargets = e.keyThreats.slice(0, 4).map((card) => {
     let reason = `Ameaça central (${card.cost}⚡) do grimório inimigo.`;
     if (card.type === 'relic') {
-      reason = `Relíquia contínua na Retaguarda [R]: gera vantagem todo turno se não for destruída.`;
+      reason = `Relíquia na Retaguarda [R]: gera vantagem todo turno se não for destruída.`;
     } else if ((card.breathDamage ?? 0) > 0) {
       reason = `Sopro (-${card.breathDamage}🔥 na fileira): dizima slots empilhados ao entrar ou atacar!`;
     } else if (card.ascension) {

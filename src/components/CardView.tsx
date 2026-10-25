@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   BoardUnit,
   CardDefinition,
@@ -248,6 +249,7 @@ export const CardView: React.FC<CardViewProps> = ({
       desc = desc.replace(regex, '');
     });
     desc = desc.replace(/^Armadura\s+\d+\.\s*/i, '');
+    desc = desc.replace(/Relíquia\s+Contínua\s*(\([^)]*\))?\.\s*/gi, '');
     return desc.trim() || displayCard.description;
   }, [displayCard.description, activeKeywords]);
 
@@ -725,8 +727,19 @@ export interface CardInspectModalProps {
 export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card, onClose }) => {
   const domainInfo = DOMAIN_META[card.domain] || DOMAIN_META.neutral;
 
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
+  const modalContent = (
+    <div
+      className="modal-backdrop"
+      style={{ zIndex: 9999 }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
       <div
         className="modal-panel"
         style={{ maxWidth: '720px' }}
@@ -862,4 +875,6 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card, onClos
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
 };

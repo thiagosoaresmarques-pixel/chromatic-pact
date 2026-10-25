@@ -10941,4 +10941,44 @@ input:focus-visible,
   gap: 0.35rem;
 }
 
+/* Segmented Dark Fantasy Pill Tabs (Combos Compendium & Filters) */
+.aaa-pill-tabs {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.aaa-pill-tab {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.34rem 0.78rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.aaa-pill-tab:hover {
+  background: rgba(30, 41, 59, 0.92);
+  border-color: rgba(212, 175, 55, 0.42);
+  color: #f8fafc;
+}
+
+.aaa-pill-tab.is-active {
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.22) 0%, rgba(180, 83, 9, 0.18) 100%);
+  border-color: rgba(251, 191, 36, 0.75);
+  color: #fef08a;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.22);
+}
+
+
 

@@ -29389,6 +29389,3157 @@ export const ALL_CARDS: CardDefinition[] = [
     "flavorText": "Mesmo uma lasca fria daquele sol imóvel ainda impõe silêncio às feridas do tempo.",
     "imagePath": "/assets/cards/neutral_61_fragmento_coroa_prisma.png",
     "aiArtPrompt": "2D dark fantasy video game item sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated centered object on a pure solid flat white background (#FFFFFF), ancient mystical hexagonal white-quartz prism reliquary suspended inside an ornate weathered silver and dark obsidian astrolabe frame atop a miniature stepped stone altar of Mount Axial."
+  },
+  {
+    "id": "neutral_62_espadachim_corsario",
+    "name": "Espadachim da Maré Cinzenta",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Espadachim)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Espadachim).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Espadachim",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto"
+    ],
+    "effects": [],
+    "description": "Duelista ágil das docas neutras que golpeia antes que a guarda inimiga se feche.",
+    "flavorText": "Duas lâminas, nenhum senhor e o dobro do soldo.",
+    "imagePath": "/assets/cards/neutral_62_espadachim_corsario.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Agile dark fantasy swashbuckler duelist lunging with rapier and main-gauche dagger, billowing charcoal cloak."
+  },
+  {
+    "id": "neutral_63_abjurador_errante",
+    "name": "Abjurador do Selo Cinzento",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Abjurador)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Abjurador).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Mago",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 1,
+    "hp": 3,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Escudo Divino"
+    ],
+    "effects": [],
+    "description": "Especialista em barreiras geométricas contratado para escoltar caravanas através da Fronteira.",
+    "flavorText": "Nenhuma seta atravessa a geometria perfeita.",
+    "imagePath": "/assets/cards/neutral_63_abjurador_errante.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Armored battle abjurer mage projecting a hexagonal silver-grey runic barrier shield from an iron staff."
+  },
+  {
+    "id": "neutral_64_adivinho_astrolabio",
+    "name": "Vidente do Astrolábio",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Adivinho)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Adivinho).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Oráculo",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 1,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      }
+    ],
+    "description": "Lê as conjunções metálicas do astrolábio para antecipar o próximo movimento do rival.",
+    "flavorText": "Eu já vi sua derrota três turnos atrás.",
+    "imagePath": "/assets/cards/neutral_64_adivinho_astrolabio.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Mystic diviner scholar holding a spinning brass astrolabe with glowing silver starlight runes."
+  },
+  {
+    "id": "neutral_65_adepto_punho_ferro",
+    "name": "Adepto do Punho de Cinza",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Adepto em Artes Marciais)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Adepto em Artes Marciais).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Monge",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto"
+    ],
+    "effects": [],
+    "description": "Monge asceta dos monastérios neutros cujos golpes partem escudos de ferro.",
+    "flavorText": "O aço dobra; o osso temperado na cinza não.",
+    "imagePath": "/assets/cards/neutral_65_adepto_punho_ferro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Dark fantasy martial arts monk in bandages and iron bracers delivering a flying spinning kick with silver chi arcs."
+  },
+  {
+    "id": "neutral_66_bardo_cronicas_ferro",
+    "name": "Menestrel das Lâminas Cantantes",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Bardo)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Bardo).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Meio-Elfo • Bardo",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "description": "Ao Entrar: Concede +1/+1 a um aliado.",
+        "secondaryValue": 1
+      }
+    ],
+    "description": "Entoa baladas de guerra antigas que inflamam o vigor dos mercenários na vanguarda.",
+    "flavorText": "Uma estrofe pelo ouro, outra pelo sangue.",
+    "imagePath": "/assets/cards/neutral_66_bardo_cronicas_ferro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Battle bard playing a bladed steel lute emitting silver sonic shockwaves."
+  },
+  {
+    "id": "neutral_67_arqueiro_companhia_livre",
+    "name": "Besteiro de Repetição de Baldur",
+    "originalInspiration": "Códice de Chromatic Pact • Guia da Costa da Espada (Companhias Mercenárias)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia da Costa da Espada (Companhias Mercenárias).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Atirador",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [],
+    "description": "Atirador veterano equipado com besta de tambor giratório forjada em oficina anã.",
+    "flavorText": "Seis virotes antes do primeiro grito cair.",
+    "imagePath": "/assets/cards/neutral_67_arqueiro_companhia_livre.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Gritty mercenary sharpshooter aiming a heavy mechanical repeating crossbow."
+  },
+  {
+    "id": "neutral_68_piqueiro_escudo_negro",
+    "name": "Piqueiro da Falange Cinzenta",
+    "originalInspiration": "Códice de Chromatic Pact • Guia da Costa da Espada (Guarda da Fronteira)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia da Costa da Espada (Guarda da Fronteira).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Soldado",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 1,
+    "armor": 1,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [],
+    "description": "Forma a primeira muralha de lanças nos portões neutros da Torre dos Cinco Selos.",
+    "flavorText": "A lança para o cavalo; o escudo para o cavaleiro.",
+    "imagePath": "/assets/cards/neutral_68_piqueiro_escudo_negro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy infantry pikeman in dark iron half-plate bracing a long steel pike and tower shield."
+  },
+  {
+    "id": "neutral_69_funda_chumbo_xvart",
+    "name": "Saqueador Xvart das Cavernas",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Bestiário: Xvart)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Bestiário: Xvart).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humanoide • Saqueador",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [],
+    "description": "Batedor astuto de pele cinza-azulada que embosca viajantes em desfiladeiros estreitos.",
+    "flavorText": "Pequeno no tamanho, grande na ganância.",
+    "imagePath": "/assets/cards/neutral_69_funda_chumbo_xvart.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Cunning blue-grey skinned Xvart cave raider slinging a glowing lead stone and clutching a jagged dagger."
+  },
+  {
+    "id": "neutral_70_batedor_tabaxi",
+    "name": "Rastreador Felino das Ruínas",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Cap. 2: Tabaxi)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Cap. 2: Tabaxi).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Fera Humanoide • Batedor",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto"
+    ],
+    "effects": [],
+    "description": "Caçador de relíquias de agilidade felina capaz de escalar muralhas e flanquear linhas inimigas.",
+    "flavorText": "A curiosidade mata apenas quem é lento.",
+    "imagePath": "/assets/cards/neutral_70_batedor_tabaxi.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Sleek jaguar-featured Tabaxi relic hunter leaping mid-air with twin curved climbing claws."
+  },
+  {
+    "id": "neutral_71_imitador_kenku",
+    "name": "Falsário Kenku dos Becos",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Bestiário: Kenku)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Bestiário: Kenku).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humanoide • Ladino",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Toque Letal"
+    ],
+    "effects": [],
+    "description": "Repete com perfeição o grito de comando do general inimigo para abrir brechas fatais.",
+    "flavorText": "Ele fala com a voz do último homem que matou.",
+    "imagePath": "/assets/cards/neutral_71_imitador_kenku.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Hooded raven-folk Kenku rogue crouching on a gargoyle ledge with a poisoned stiletto dagger."
+  },
+  {
+    "id": "neutral_72_quebra_ossos_golias",
+    "name": "Vanguarda Golias dos Picos",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Cap. 2: Golias)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Cap. 2: Golias).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Gigante • Guerreiro",
+    "rarity": "common",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [],
+    "description": "Nômade das cordilheiras cinzentas que encara avalanches e cargas de cavalaria de peito aberto.",
+    "flavorText": "A montanha não recua diante do vento.",
+    "imagePath": "/assets/cards/neutral_72_quebra_ossos_golias.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Towering tattooed Goliath mountain warrior swinging a massive two-handed stone-breaker maul."
+  },
+  {
+    "id": "neutral_73_mineiro_svirfneblin",
+    "name": "Sapador Gnomo das Profundezas",
+    "originalInspiration": "Códice de Chromatic Pact • Compêndio Elemental Evil (Gnomo das Profundezas)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Compêndio Elemental Evil (Gnomo das Profundezas).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Gnomo • Engenheiro",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 1,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Causa 1 de dano a um inimigo."
+      }
+    ],
+    "description": "Escavador veterano do Subterrâneo armado com picareta de tungstênio e cargas de demolição.",
+    "flavorText": "Toda rocha tem uma veia fraca; toda armadura também.",
+    "imagePath": "/assets/cards/neutral_73_mineiro_svirfneblin.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Deep gnome Svirfneblin sapper in chainmail hurling a smoking alchemical blasting charge and wielding a war pick."
+  },
+  {
+    "id": "neutral_74_sentinela_duergar",
+    "name": "Infante Encouraçado Cinzento",
+    "originalInspiration": "Códice de Chromatic Pact • Guia da Costa da Espada (Duergar)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia da Costa da Espada (Duergar).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Anão • Soldado",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [],
+    "description": "Soldado de ferro das fortalezas subterrâneas capaz de expandir a própria estatura no calor da luta.",
+    "flavorText": "Forjados sem sol, temperados sem piedade.",
+    "imagePath": "/assets/cards/neutral_74_sentinela_duergar.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Grim grey-skinned Duergar heavy infantryman with spiked iron warhammer and locking shield."
+  },
+  {
+    "id": "neutral_75_batedor_derro",
+    "name": "Espreitador Derro das Fendas",
+    "originalInspiration": "Códice de Chromatic Pact • Fora do Abismo (Derro)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Fora do Abismo (Derro).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humanoide • Assassino",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto"
+    ],
+    "effects": [],
+    "description": "Assassino errante das galerias profundas que luta com lança farpada de gancho.",
+    "flavorText": "Nos túneis sem eco, o riso vem depois do golpe.",
+    "imagePath": "/assets/cards/neutral_75_batedor_derro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Wild-eyed pale Derro stalker lunging with a hooked aklys club and spiked buckler."
+  },
+  {
+    "id": "neutral_76_gato_escarpas_norte",
+    "name": "Predador das Escarpas Brancas",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (Apêndice C: Caçador de Homens / Crag Cat)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (Apêndice C: Caçador de Homens / Crag Cat).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Fera • Predador",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto"
+    ],
+    "effects": [],
+    "description": "Felino de pelagem cor de granito cujo pelo reflete feitiços de rastreamento.",
+    "flavorText": "Seu rugido imita um grito humano na nevasca.",
+    "imagePath": "/assets/cards/neutral_76_gato_escarpas_norte.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ferocious mountain crag cat with stone-grey fur and saber fangs pouncing from a rocky ledge."
+  },
+  {
+    "id": "neutral_77_familiar_tressym",
+    "name": "Tressym Vigia das Torres",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (Apêndice C: Tressym)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (Apêndice C: Tressym).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Fera • Alado",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 1,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Voo"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      }
+    ],
+    "description": "Gato alado de inteligência aguçada que detecta venenos e emboscadas para seu mestre.",
+    "flavorText": "Quatro patas silenciosas e duas asas atentas.",
+    "imagePath": "/assets/cards/neutral_77_familiar_tressym.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Winged feline Tressym with feathered owl-like wings and glowing amber eyes mid-flight."
+  },
+  {
+    "id": "neutral_78_cacador_uthgardt",
+    "name": "Lanceiro Tribal do Norte",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (Tribos Uthgardt)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (Tribos Uthgardt).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Bárbaro",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Fúria Crescente"
+    ],
+    "effects": [],
+    "description": "Guerreiro nortenho que caça feras colossais nas tundras sem jurar lealdade a nenhum trono.",
+    "flavorText": "O sangue aquece mais que qualquer manto.",
+    "imagePath": "/assets/cards/neutral_78_cacador_uthgardt.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Fierce northern tribal barbarian hunter in wolf pelts hurling a bone-tipped harpoon."
+  },
+  {
+    "id": "neutral_79_dragonete_guarda_neutro",
+    "name": "Dragonete de Guarda Escamado",
+    "originalInspiration": "Códice de Chromatic Pact • Tirania dos Dragões (Apêndice A: Dragonete de Guarda)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tirania dos Dragões (Apêndice A: Dragonete de Guarda).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Dragão • Guarda",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 1,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [],
+    "description": "Réptil dracônico criado em cativeiro para guardar cofres e câmaras de relíquias.",
+    "flavorText": "Não voa nem cospe fogo, mas suas mandíbulas nunca soltam.",
+    "imagePath": "/assets/cards/neutral_79_dragonete_guarda_neutro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Muscular wingless iron-scaled guard drake snapping its heavy jaws in a defensive crouch."
+  },
+  {
+    "id": "neutral_80_dragonete_emboscada",
+    "name": "Dragonete Corredor de Emboscada",
+    "originalInspiration": "Códice de Chromatic Pact • Tirania dos Dragões (Apêndice A: Dragonete de Emboscada)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tirania dos Dragões (Apêndice A: Dragonete de Emboscada).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Dragão • Predador",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto"
+    ],
+    "effects": [],
+    "description": "Caçador esguio de escamas foscas treinado para abater batedores inimigos em disparada.",
+    "flavorText": "Mais rápido que um cavalo e mais silencioso que um lobo.",
+    "imagePath": "/assets/cards/neutral_80_dragonete_emboscada.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Lean predatory ambush drake sprinting low with flared neck frills and razor claws."
+  },
+  {
+    "id": "neutral_81_operario_relojoeiro",
+    "name": "Operário de Corda de Ferro",
+    "originalInspiration": "Códice de Chromatic Pact • Shadow of the Demon Lord (Autômatos)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Shadow of the Demon Lord (Autômatos).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Autômato",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 1,
+    "armor": 1,
+    "hp": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [],
+    "description": "Autômato movido por mola espiral que marcha incansavelmente até que sua chave pare de girar.",
+    "flavorText": "Um giro da chave no peito vale por um dia de batalha.",
+    "imagePath": "/assets/cards/neutral_81_operario_relojoeiro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Brass and blackened iron clockwork soldier with a large winding key in its back swinging a gear-axe."
+  },
+  {
+    "id": "neutral_82_artilheiro_polvora_cinza",
+    "name": "Mosqueteiro da Liga Cinzenta",
+    "originalInspiration": "Códice de Chromatic Pact • Shadow of the Demon Lord (Engenharia & Pólvora)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Shadow of the Demon Lord (Engenharia & Pólvora).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Artilheiro",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [],
+    "description": "Soldado equipado com arcabuz de pederneira que perfura couraças pesadas à distância.",
+    "flavorText": "Contra chumbo quente, nenhum brasão protege.",
+    "imagePath": "/assets/cards/neutral_82_artilheiro_polvora_cinza.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Grim dark fantasy flintlock musketeer firing a heavy rifled arquebus in a cloud of grey smoke."
+  },
+  {
+    "id": "neutral_83_medico_peste_fronteira",
+    "name": "Alquimista de Campo Cinzento",
+    "originalInspiration": "Códice de Chromatic Pact • Shadow of the Demon Lord (Alquimia)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Shadow of the Demon Lord (Alquimia).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Alquimista",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 1,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_target_ally",
+        "value": 3,
+        "description": "Ao Entrar: Cura 3 de VIDA de um aliado."
+      }
+    ],
+    "description": "Sutura feridas em pleno campo de batalha usando sais alquímicos e tinturas cauterizantes.",
+    "flavorText": "Vai arder mais que a espada, mas você continuará de pé.",
+    "imagePath": "/assets/cards/neutral_83_medico_peste_fronteira.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Beaked leather-masked battlefield alchemist-surgeon holding glowing silver-green restorative vials."
+  },
+  {
+    "id": "neutral_84_cao_guerra_encouracado",
+    "name": "Mastim de Ferro da Caravana",
+    "originalInspiration": "Códice de Chromatic Pact • Masmorras Cruéis (Cães de Guerra)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Masmorras Cruéis (Cães de Guerra).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Fera • Guardião",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [],
+    "description": "Mastim de caça vestido com coleira de espigões e peitoral de couro batido.",
+    "flavorText": "Dorme sobre os sacos de ouro com um olho aberto.",
+    "imagePath": "/assets/cards/neutral_84_cao_guerra_encouracado.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Fierce armored war mastiff wearing spiked iron barding and snarling mid-leap."
+  },
+  {
+    "id": "neutral_85_carregador_tocha_masmorra",
+    "name": "Desbravador de Catacumba",
+    "originalInspiration": "Códice de Chromatic Pact • Masmorras Cruéis (Exploradores)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Masmorras Cruéis (Exploradores).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Explorador",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "vanguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      }
+    ],
+    "description": "Conhece cada laje falsa, fio de disparo e passagem secreta das ruínas antigas.",
+    "flavorText": "Nunca pise na pedra mais limpa do corredor.",
+    "imagePath": "/assets/cards/neutral_85_carregador_tocha_masmorra.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Veteran dungeon delver with iron lantern, crowbar, and shortsword peering into darkness."
+  },
+  {
+    "id": "neutral_86_gargula_sentinela_ponte",
+    "name": "Gárgula da Ponte dos Selos",
+    "originalInspiration": "Códice de Chromatic Pact • Manual dos Monstros (Gárgula)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Manual dos Monstros (Gárgula).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elemental • Constructo",
+    "rarity": "common",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Voo"
+    ],
+    "effects": [],
+    "description": "Esculpida no granito cinzento da Torre Axial para vigiar os portões dia e noite.",
+    "flavorText": "Séculos de chuva apenas afiaram suas garras de pedra.",
+    "imagePath": "/assets/cards/neutral_86_gargula_sentinela_ponte.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Weathered grey granite gargoyle with bat wings and iron-clamped horns diving with outstretched talons."
+  },
+  {
+    "id": "neutral_87_armadura_animada_vigia",
+    "name": "Couraça Animada do Arsenal",
+    "originalInspiration": "Códice de Chromatic Pact • Manual dos Monstros (Armadura Animada)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Manual dos Monstros (Armadura Animada).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Guardião",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 2,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [],
+    "description": "Armadura de placas completa movida por runas de guarda gravadas no interior do elmo.",
+    "flavorText": "Vazia por dentro, mas inabalável na linha de frente.",
+    "imagePath": "/assets/cards/neutral_87_armadura_animada_vigia.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Empty gothic full-plate animated armor glowing with silver runes inside the visor, swinging a halberd."
+  },
+  {
+    "id": "neutral_88_espada_voadora_runica",
+    "name": "Gládio Levitante do Salão",
+    "originalInspiration": "Códice de Chromatic Pact • Manual dos Monstros (Espada Voadora)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Manual dos Monstros (Espada Voadora).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Lâmina",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 1,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Ímpeto"
+    ],
+    "effects": [],
+    "description": "Espada bastarda encantada que salta da parede assim que um intruso cruza o limiar.",
+    "flavorText": "Sem braço que canse, sem pulso que trema.",
+    "imagePath": "/assets/cards/neutral_88_espada_voadora_runica.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Animated rune-etched silver greatsword hovering and slashing diagonally with steel motion arcs."
+  },
+  {
+    "id": "neutral_89_tapete_estrangulador",
+    "name": "Tapeçaria Constrictora Real",
+    "originalInspiration": "Códice de Chromatic Pact • Manual dos Monstros (Tapete do Sufocamento)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Manual dos Monstros (Tapete do Sufocamento).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Armadilha",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 1,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Imobiliza (Congela) 1 inimigo."
+      }
+    ],
+    "description": "Tecido com fios de chumbo e encantamentos de captura para imobilizar invasores no salão.",
+    "flavorText": "O tapete mais caro do palácio é o último que você pisa.",
+    "imagePath": "/assets/cards/neutral_89_tapete_estrangulador.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate dark tapestry animated like a coiling serpent with golden tassels and iron fringe."
+  },
+  {
+    "id": "neutral_90_mimico_bau_ferro",
+    "name": "Mímico do Cofre de Ferro",
+    "originalInspiration": "Códice de Chromatic Pact • Manual dos Monstros (Mímico)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Manual dos Monstros (Mímico).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Monstruosidade • Metamorfo",
+    "rarity": "common",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 1,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Toque Letal"
+    ],
+    "effects": [],
+    "description": "Predador amorfo que assume a forma de uma arca de tesouro reforçada para devorar saqueadores.",
+    "flavorText": "A fechadura tem dentes; a tampa tem língua.",
+    "imagePath": "/assets/cards/neutral_90_mimico_bau_ferro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Monstrous iron-bound treasure chest Mimic bursting open with rows of fangs, multiple eyes, and a lashing tongue."
+  },
+  {
+    "id": "neutral_91_campeao_arena_livre",
+    "name": "Campeão Invicto do Coliseu",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Campeão)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Campeão).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Campeão",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Fúria Crescente"
+    ],
+    "effects": [],
+    "description": "Gladiador consagrado em cem duelos que vende sua espada ao soberano mais audaz.",
+    "flavorText": "A multidão ruge; o aço decide.",
+    "imagePath": "/assets/cards/neutral_91_campeao_arena_livre.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavily armored arena champion warrior wielding a notched greatsword and lion-crested pauldron."
+  },
+  {
+    "id": "neutral_92_senhor_guerra_fronteira",
+    "name": "Marechal Mercenário da Fronteira",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Senhor da Guerra)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Senhor da Guerra).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Comandante",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "description": "Ao Entrar: Concede +1/+1 a todos os aliados.",
+        "secondaryValue": 1
+      }
+    ],
+    "description": "Comandante veterano cuja simples voz de comando reorganiza uma linha de batalha quebrada.",
+    "flavorText": "Mantenham os escudos unidos ou morram sozinhos!",
+    "imagePath": "/assets/cards/neutral_92_senhor_guerra_fronteira.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Commanding scarred warlord in dark steel plate pointing a warhammer forward with battle standard cape."
+  },
+  {
+    "id": "neutral_93_ladrao_mestre_mascara",
+    "name": "Mestre-Ladrão da Guilda Cinza",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Ladrão Mestre)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Ladrão Mestre).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Assassino",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto",
+      "Toque Letal"
+    ],
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Atacar: Compra 1 carta."
+      }
+    ],
+    "description": "Infiltra-se nas linhas inimigas para subtrair planos de guerra e cortar gargantas.",
+    "flavorText": "Trancas existem apenas para manter os honestos do lado de fora.",
+    "imagePath": "/assets/cards/neutral_93_ladrao_mestre_mascara.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Master thief assassin in sleek dark leather armor leaping with twin poisoned kris daggers and grappling hook."
+  },
+  {
+    "id": "neutral_94_arqueiro_zenite",
+    "name": "Arqueiro Mestre do Zênite",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Arqueiro)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Arqueiro).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elfo • Atirador",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano a um inimigo."
+      }
+    ],
+    "description": "Capaz de cravar uma flecha de aço na fresta do visor de um cavaleiro a duzentos passos.",
+    "flavorText": "Eu não miro no peito; miro no olho.",
+    "imagePath": "/assets/cards/neutral_94_arqueiro_zenite.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Master elven longbowman drawing three silver-fletched arrows at once in a dynamic crouch."
+  },
+  {
+    "id": "neutral_95_transmutador_alquimico",
+    "name": "Transmutador da Pedra Cinzenta",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Transmutador)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Transmutador).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Mago",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 2,
+        "description": "Ao Entrar: Transmuta a couraça de um aliado, concedendo +2/+2.",
+        "secondaryValue": 2
+      }
+    ],
+    "description": "Converte chumbo em adamantina e carne frágil em ferro vivo durante o combate.",
+    "flavorText": "Toda matéria obedece a quem conhece sua cifra.",
+    "imagePath": "/assets/cards/neutral_95_transmutador_alquimico.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Arcane transmuter wizard transmuting floating liquid mercury and iron shards between his gauntleted hands."
+  },
+  {
+    "id": "neutral_96_conjurador_circulo_neutro",
+    "name": "Conjurador dos Portais Cinzentos",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Apêndice B: Conjurador)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Apêndice B: Conjurador).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Conjurador",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao Entrar: Invoca um Sentinela Planar 2/2.",
+        "secondaryValue": 2
+      }
+    ],
+    "description": "Abre fendas dimensionais breves para trazer sentinelas astrais ao campo de batalha.",
+    "flavorText": "Por que lutar sozinho quando o multiverso está cheio de servos?",
+    "imagePath": "/assets/cards/neutral_96_conjurador_circulo_neutro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Summoner mage tearing open a silver-grey dimensional rift with a horned staff."
+  },
+  {
+    "id": "neutral_97_caracol_mangual_prisma",
+    "name": "Caracol-Mangual de Casco Prismático",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Bestiário: Caracol Mangual / Flail Snail)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Bestiário: Caracol Mangual / Flail Snail).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elemental • Monstruosidade",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Escudo Divino"
+    ],
+    "effects": [],
+    "description": "Criatura subterrânea cujo casco multifacetado refrata feitiços e cujos tentáculos golpeiam como maças.",
+    "flavorText": "Seu casco vale uma fortuna — para quem sobreviver aos cinco manguais.",
+    "imagePath": "/assets/cards/neutral_97_caracol_mangual_prisma.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive Flail Snail with an iridescent faceted shell swinging five spiked club-like tentacles."
+  },
+  {
+    "id": "neutral_98_banderhobb_cacador",
+    "name": "Banderhobb Engolidor de Alvos",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Bestiário: Banderhobb)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Bestiário: Banderhobb).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Monstruosidade • Caçador",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Atropelar"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Prende 1 inimigo com sua língua."
+      }
+    ],
+    "description": "Colosso anfíbio moldado em sombra e barro para rastrear e engolir um alvo marcado.",
+    "flavorText": "Enquanto houver um fio de cabelo da presa, ele não parará.",
+    "imagePath": "/assets/cards/neutral_98_banderhobb_cacador.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Hulking toad-like Banderhobb monstrosity lashing out with a massive whipping tongue and iron chains."
+  },
+  {
+    "id": "neutral_99_tlincalli_ferrao_aco",
+    "name": "Caçador Tlincalli do Deserto Cinza",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Bestiário: Tlincalli)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Bestiário: Tlincalli).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Monstruosidade • Escorpião",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Toque Letal"
+    ],
+    "effects": [],
+    "description": "Nômade metade humanoide, metade escorpião couraçado, armado com corrente de ganchos e ferrão letal.",
+    "flavorText": "Nas dunas de cinza, o ferrão desce antes da sombra.",
+    "imagePath": "/assets/cards/neutral_99_tlincalli_ferrao_aco.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Chitin-armored scorpion-centaur Tlincalli warrior lunging with a spiked chain and curved venomous stinger tail."
+  },
+  {
+    "id": "neutral_100_morkoth_ilha_errante",
+    "name": "Morkoth Colecionador de Relíquias",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Bestiário: Morkoth)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Bestiário: Morkoth).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Aberração • Colecionador",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "steal_small_enemy",
+        "value": 2,
+        "description": "Ao Entrar: Hipnotiza e toma o controle de um inimigo com ATQ <= 2."
+      }
+    ],
+    "description": "Aberração antiga que viaja entre os planos em uma ilha flutuante acumulando artefatos e mentes.",
+    "flavorText": "Tudo o que brilha ou pensa acabará na minha coleção.",
+    "imagePath": "/assets/cards/neutral_100_morkoth_ilha_errante.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Tentacled abyssal Morkoth aberration floating over arcane relics with hypnotic spiraling eyes."
+  },
+  {
+    "id": "neutral_101_neogi_mercador_escravista",
+    "name": "Mercador Astral Neogi",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Bestiário: Neogi Mestre)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Bestiário: Neogi Mestre).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Aberração • Mercador",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Dreno de Vida"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      }
+    ],
+    "description": "Negociante aracnídeo-enguia das naus astrais para quem toda criatura tem um preço de venda.",
+    "flavorText": "Na contabilidade Neogi, não existem aliados, apenas propriedades.",
+    "imagePath": "/assets/cards/neutral_101_neogi_mercador_escravista.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Sinister eel-necked spider-bodied Neogi slaver master wrapped in silk robes casting mind-control threads."
+  },
+  {
+    "id": "neutral_102_cavaleiro_dragao_purpura",
+    "name": "Comandante de Cormyr",
+    "originalInspiration": "Códice de Chromatic Pact • Guia da Costa da Espada (Cavaleiro do Dragão Púrpura)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia da Costa da Espada (Cavaleiro do Dragão Púrpura).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Cavaleiro",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Ao Entrar: Concede Escudo Divino à vanguarda aliada."
+      }
+    ],
+    "description": "Oficial veterano cuja disciplina tática mantém a formação intacta sob fogo cerrado.",
+    "flavorText": "Pela coroa ou pelo contrato, ninguém recua um passo!",
+    "imagePath": "/assets/cards/neutral_102_cavaleiro_dragao_purpura.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Veteran knight commander in fluted steel plate armor raising a broadsword and heraldic heater shield."
+  },
+  {
+    "id": "neutral_103_lamina_cantante_cinza",
+    "name": "Mestre da Lâmina Cantante",
+    "originalInspiration": "Códice de Chromatic Pact • Guia da Costa da Espada (Tradição da Lâmina Cantante)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia da Costa da Espada (Tradição da Lâmina Cantante).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elfo • Duelista Arcano",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto",
+      "Escudo Divino"
+    ],
+    "effects": [],
+    "description": "Une esgrima élfica milenar e abjuração rúnica num único giro de lâmina prateada.",
+    "flavorText": "O som do aço cortando o ar é o único cântico necessário.",
+    "imagePath": "/assets/cards/neutral_103_lamina_cantante_cinza.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Elven Bladesinger master spinning mid-air with a glowing silver longsword and arcane glyph ribbons."
+  },
+  {
+    "id": "neutral_104_mago_guerra_bastiao",
+    "name": "Mago de Guerra do Bastião",
+    "originalInspiration": "Códice de Chromatic Pact • Guia da Costa da Espada (Mago de Guerra)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia da Costa da Espada (Mago de Guerra).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Arcanista",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Ao Entrar: Causa 1 de dano a toda a Vanguarda inimiga."
+      }
+    ],
+    "description": "Conjurador militar em meia-armadura treinado para bombardear formações fechadas.",
+    "flavorText": "A artilharia arcana não precisa de catapultas.",
+    "imagePath": "/assets/cards/neutral_104_mago_guerra_bastiao.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Armored War Mage in steel breastplate and hooded cloak unleashing a barrage of silver force missiles."
+  },
+  {
+    "id": "neutral_105_cacador_sangue_mutageno",
+    "name": "Caçador de Monstros Alquímico",
+    "originalInspiration": "Códice de Chromatic Pact • Guia da Costa da Espada / SotDL (Caçador de Monstros)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia da Costa da Espada / SotDL (Caçador de Monstros).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Caçador",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Toque Letal",
+      "Fúria Crescente"
+    ],
+    "effects": [],
+    "description": "Bebe elixires mutagênicos amargos para enxergar no escuro e igualar a força das feras que caça.",
+    "flavorText": "Para matar o monstro, aceite metade do veneno dele.",
+    "imagePath": "/assets/cards/neutral_105_cacador_sangue_mutageno.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Grim monster hunter with glowing cat-like eyes, bandolier of mutagens, and twin silvered longswords."
+  },
+  {
+    "id": "neutral_106_reen_assassino_relojoeiro",
+    "name": "Reen, Ceifador de Engrenagens",
+    "originalInspiration": "Códice de Chromatic Pact • Shadow of the Demon Lord (Bestiário p. 267: Reen)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Shadow of the Demon Lord (Bestiário p. 267: Reen).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Assassino",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Ímpeto"
+    ],
+    "effects": [],
+    "description": "Constructo alado de lâminas rotativas projetado para caçar alvos através de telhados e muralhas.",
+    "flavorText": "Quando ouvir o zumbido de suas engrenagens, sua cabeça já rolou.",
+    "imagePath": "/assets/cards/neutral_106_reen_assassino_relojoeiro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Lethal winged clockwork assassin Reen construct with spinning razor-blade arms diving from above."
+  },
+  {
+    "id": "neutral_107_colosso_forja_vapor",
+    "name": "Juggernaut de Caldeira e Bronze",
+    "originalInspiration": "Códice de Chromatic Pact • Shadow of the Demon Lord (Tecnomancia)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Shadow of the Demon Lord (Tecnomancia).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Colosso",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Atropelar"
+    ],
+    "effects": [],
+    "description": "Titã mecânico movido a alta pressão cujos pistões esmagam barricadas de pedra.",
+    "flavorText": "Pressão máxima nas válvulas; caminho livre à frente.",
+    "imagePath": "/assets/cards/neutral_107_colosso_forja_vapor.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Towering steam-powered brass and blackened iron juggernaut construct with glowing furnace core and piston fists."
+  },
+  {
+    "id": "neutral_108_inquisidor_cinzento",
+    "name": "Juiz-Caçador da Fronteira",
+    "originalInspiration": "Códice de Chromatic Pact • Shadow of the Demon Lord (Templário / Inquisidor)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Shadow of the Demon Lord (Templário / Inquisidor).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Inquisidor",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Ao Entrar: Reduz em 2 o ATQ da Vanguarda inimiga."
+      }
+    ],
+    "description": "Interroga traidores e desfaz encantamentos ocultos com correntes de prata fria.",
+    "flavorText": "A prata fria queima apenas quem esconde um pacto.",
+    "imagePath": "/assets/cards/neutral_108_inquisidor_cinzento.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Wide-brimmed hat dark fantasy inquisitor wielding a silver-chained censer flail and heavy crossbow."
+  },
+  {
+    "id": "neutral_109_aranha_pedra_steeder",
+    "name": "Aranha-Montaria Duergar",
+    "originalInspiration": "Códice de Chromatic Pact • Fora do Abismo (Steeder Fêmea)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Fora do Abismo (Steeder Fêmea).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Fera • Aracnídeo",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto"
+    ],
+    "effects": [],
+    "description": "Tarântula gigante do Subterrâneo cujas patas secretam resina adesiva para prender presas.",
+    "flavorText": "Salta trinta metros de um pilar de estalactite ao outro.",
+    "imagePath": "/assets/cards/neutral_109_aranha_pedra_steeder.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Giant armored subterranean Steeder spider with glowing eyes and iron saddle leaping with sticky tarsal pads."
+  },
+  {
+    "id": "neutral_110_mercador_lago_escuro",
+    "name": "Contrabandista do Lago Escuro",
+    "originalInspiration": "Códice de Chromatic Pact • Fora do Abismo (Cap. 3: Lago Escuro)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Fora do Abismo (Cap. 3: Lago Escuro).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humanoide • Mercador",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao Entrar: Gera +1⚡ de Essência extra."
+      }
+    ],
+    "description": "Conhece todos os canais subterrâneos onde moedas antigas e relíquias naufragadas se acumulam.",
+    "flavorText": "Ouro da superfície ou pérola do abismo, tudo pesa igual na balança.",
+    "imagePath": "/assets/cards/neutral_110_mercador_lago_escuro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Deep-sea fish-like Kuo-Toa black-market trader holding a lantern and chest of ancient sunken coins."
+  },
+  {
+    "id": "neutral_111_gargula_areia_iymrith",
+    "name": "Gárgula Petrificada do Deserto",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (p. 241: Gárgulas de Iymrith)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (p. 241: Gárgulas de Iymrith).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elemental • Constructo",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 2,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Voo"
+    ],
+    "effects": [],
+    "description": "Moldada a partir de arenito vivo e quartzo por magia ancestral para guardar anfiteatros em ruínas.",
+    "flavorText": "Onde parece haver apenas uma estátua, há uma emboscada.",
+    "imagePath": "/assets/cards/neutral_111_gargula_areia_iymrith.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Sandstone and quartz gargoyle warrior with horned wings and stone halberd erupting from desert rock."
+  },
+  {
+    "id": "neutral_112_caranguejo_colossal_costa",
+    "name": "Caranguejo-Bastião das Rochas",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (Apêndice C: Hulking Crab)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (Apêndice C: Hulking Crab).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Fera • Colosso",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 3,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [],
+    "description": "Crustáceo titânico cuja carapaça incrustada de cracas e naufrágios desvia tiros de balista.",
+    "flavorText": "Confundido com um recife até o momento em que as pinças se fecham.",
+    "imagePath": "/assets/cards/neutral_112_caranguejo_colossal_costa.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal ship-crushing Hulking Crab covered in barnacles and sunken armor plates snapping massive claws."
+  },
+  {
+    "id": "neutral_113_gigante_pedra_entalhador",
+    "name": "Gigante Entalhador de Monólitos",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (Gigante de Pedra)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (Gigante de Pedra).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Gigante • Escultor",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 3,
+        "description": "Ao Entrar: Arremessa um monólito, causando 3 de dano a um inimigo."
+      }
+    ],
+    "description": "Para os gigantes das cavernas de granito, a guerra na superfície é apenas um sonho passageiro.",
+    "flavorText": "Cada rocha arremessada carrega o peso de uma montanha.",
+    "imagePath": "/assets/cards/neutral_113_gigante_pedra_entalhador.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Towering Stone Giant carved with runic reliefs hurling a massive chiseled granite obelisk."
+  },
+  {
+    "id": "neutral_114_emissario_conselho_aguas",
+    "name": "Emissário Real do Conselho",
+    "originalInspiration": "Códice de Chromatic Pact • Tirania dos Dragões Vol. 2 (Conselho de Águas Profundas)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tirania dos Dragões Vol. 2 (Conselho de Águas Profundas).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Diplomata",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Ao Entrar: Compra 2 cartas."
+      }
+    ],
+    "description": "Convoca tratados de emergência e suprimentos de guerra entre as facções rivais.",
+    "flavorText": "Quando o céu pega fogo, até inimigos mortais assinam o mesmo pergaminho.",
+    "imagePath": "/assets/cards/neutral_114_emissario_conselho_aguas.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Noble council emissary in fur-trimmed velvet coat holding a royal wax-sealed treaty scroll and rapier."
+  },
+  {
+    "id": "neutral_115_golem_ferro_fornalha_neutra",
+    "name": "Colosso de Ferro da Cidadela",
+    "originalInspiration": "Códice de Chromatic Pact • Manual dos Monstros (Golem de Ferro)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Manual dos Monstros (Golem de Ferro).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Colosso",
+    "rarity": "rare",
+    "cost": 6,
+    "affinityReq": 0,
+    "atk": 6,
+    "armor": 3,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Atropelar"
+    ],
+    "effects": [],
+    "description": "Fundido com trinta toneladas de ferro negro para guardar a câmara central dos tratados.",
+    "flavorText": "Nem magia nem aço comum deixam sequer um risco em seu peito.",
+    "imagePath": "/assets/cards/neutral_115_golem_ferro_fornalha_neutra.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive black-iron golem colossus swinging a giant cleaver blade with metallic sparks."
+  },
+  {
+    "id": "neutral_116_harshnag_machado_inverno",
+    "name": "Harshnag, O Gigante Quebra-Tronos",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (p. 7 / Cap. 4: Harshnag)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (p. 7 / Cap. 4: Harshnag).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Gigante • Lendário",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 0,
+    "atk": 6,
+    "armor": 2,
+    "hp": 8,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Atropelar"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao Entrar: Abala o chão, causando 2 de dano a toda a Vanguarda inimiga."
+      }
+    ],
+    "description": "O mais célebre gigante mercenário do Norte, vestindo o crânio de um dragão ancião como elmo.",
+    "flavorText": "Até os gigantes se curvam quando seu machado de guerra desce.",
+    "imagePath": "/assets/cards/neutral_116_harshnag_machado_inverno.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Legendary Frost Giant hero wearing a massive dragon-skull helmet and wielding a colossal rune-etched greataxe."
+  },
+  {
+    "id": "neutral_117_elminster_sabio_cinzento",
+    "name": "Valerius, Arquimago dos Sete Selos",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (p. 6: O Sábio do Vale das Sombras)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (p. 6: O Sábio do Vale das Sombras).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Arquimago Lendário",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 1,
+    "hp": 7,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance",
+      "Escudo Divino"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Ao Entrar: Compra 2 cartas."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Início do Turno: Gera +1⚡ de Essência."
+      }
+    ],
+    "description": "Testemunhou a queda de impérios e anotou as fraquezas de cada monstro que habita o mundo.",
+    "flavorText": "Conheço o nome verdadeiro de cada demônio e o preço de cada rei.",
+    "imagePath": "/assets/cards/neutral_117_elminster_sabio_cinzento.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ancient silver-bearded archmage in weathered grey robes wielding a staff of silver fire and floating runes."
+  },
+  {
+    "id": "neutral_118_volothamp_cronista_mundos",
+    "name": "Volothamp, Grande Cronista do Bestiário",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo para Monstros (p. 6: Volothamp Geddarm)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo para Monstros (p. 6: Volothamp Geddarm).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Cronista Lendário",
+    "rarity": "legendary",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 0,
+    "hp": 6,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Escudo Divino"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 3,
+        "description": "Ao Entrar: Revela os segredos do bestiário e compra 3 cartas."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "buff_target_ally",
+        "value": 1,
+        "description": "Início do Turno: Concede +1/+1 a um aliado.",
+        "secondaryValue": 1
+      }
+    ],
+    "description": "Viajante incorrigível cujos guias detalham a anatomia e o ponto fraco de todas as feras conhecidas.",
+    "flavorText": "Primeiro de tudo, um aviso: há monstros aqui — e eu anotei como vencê-los!",
+    "imagePath": "/assets/cards/neutral_118_volothamp_cronista_mundos.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Flamboyant legendary explorer scholar in feathered hat holding an open glowing bestiary tome and quill."
+  },
+  {
+    "id": "neutral_119_colosso_vonindod_fragmento",
+    "name": "Titã Vonindod, O Devastador de Dragões",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (O Colosso de Adamantina Vonindod)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (O Colosso de Adamantina Vonindod).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Titã Lendário",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 0,
+    "atk": 8,
+    "armor": 3,
+    "hp": 9,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Atropelar",
+      "Escudo Divino"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_all_units",
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano a todas as outras unidades."
+      }
+    ],
+    "description": "Antigo colosso de guerra forjado em adamantina pura para caçar dragões nos céus da Era Primordial.",
+    "flavorText": "Quando seus passos ressoam, até os dragões anciãos buscam abrigo nas cavernas.",
+    "imagePath": "/assets/cards/neutral_119_colosso_vonindod_fragmento.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal ancient adamantine war-construct titan with glowing furnace eyes and massive dragon-slaying harpoon arms."
+  },
+  {
+    "id": "neutral_120_xanathar_senhor_crime",
+    "name": "Xanathar, O Olho do Submundo",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Xanathar (p. 7: O Senhor do Crime de Águas Profundas)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Xanathar (p. 7: O Senhor do Crime de Águas Profundas).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Aberração • Soberano do Crime",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 0,
+    "atk": 6,
+    "armor": 1,
+    "hp": 8,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Voo",
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "destroy_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Desintegra 1 criatura inimiga."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Atacar: Compra 1 carta."
+      }
+    ],
+    "description": "Controla do seu covil subterrâneo todas as redes de espionagem, contrabando e informação do continente.",
+    "flavorText": "Nada acontece nas ruas acima sem que um dos meus dez olhos saiba.",
+    "imagePath": "/assets/cards/neutral_120_xanathar_senhor_crime.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Imperious crime-lord Beholder wearing gold rings on its eyestalks hovering beside a crystal goldfish bowl."
+  },
+  {
+    "id": "neutral_121_vizeran_arquimago_exilado",
+    "name": "Vizeran, O Tecelão do Ritual Abissal",
+    "originalInspiration": "Códice de Chromatic Pact • Fora do Abismo (p. 254: Vizeran DeVir)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Fora do Abismo (p. 254: Vizeran DeVir).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elfo • Arquimago Lendário",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 1,
+    "hp": 7,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance",
+      "Dreno de Vida"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 3,
+        "description": "Ao Entrar: Lança Corrente Arcana, causando 3 de dano à Vanguarda inimiga."
+      }
+    ],
+    "description": "Arquimago renegado que vive em uma torre esculpida numa estalagmite gigante, manipulando príncipes abissais uns contra os outros.",
+    "flavorText": "Deixe que os monstros destruam uns aos outros; nós recolhemos as cinzas.",
+    "imagePath": "/assets/cards/neutral_121_vizeran_arquimago_exilado.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ancient exiled dark-elf archmage in silver-webbed robes floating with a floating grimoire and twin orbs of violet-silver force."
+  },
+  {
+    "id": "neutral_122_rei_hekaton_neutro_arbitro",
+    "name": "Atlas-Khor, O Regente do Ordenamento",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (O Trono do Ordenamento)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (O Trono do Ordenamento).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Gigante • Monarca Lendário",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 0,
+    "atk": 7,
+    "armor": 2,
+    "hp": 8,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "description": "Ao Entrar: Concede +2/+2 a todas as unidades aliadas.",
+        "secondaryValue": 2
+      }
+    ],
+    "description": "Juiz supremo das seis castas de gigantes que empunha o cetro das leis primordiais.",
+    "flavorText": "Quando o Ordenamento é mantido, cada montanha e cada mar conhece o seu lugar.",
+    "imagePath": "/assets/cards/neutral_122_rei_hekaton_neutro_arbitro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Majestic Elder Titan King in bronze-and-iron runic plate wielding a colossal lightning-forged greatsword."
+  },
+  {
+    "id": "neutral_123_emissario_relojoeiro_supremo",
+    "name": "Deus-Máquina de Aeternus",
+    "originalInspiration": "Códice de Chromatic Pact • Shadow of the Demon Lord (O Grande Autômato)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Shadow of the Demon Lord (O Grande Autômato).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Divindade Mecânica",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 0,
+    "atk": 6,
+    "armor": 3,
+    "hp": 8,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Renascer"
+    ],
+    "effects": [
+      {
+        "trigger": "turn_start",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Início do Turno: Reforça as defesas aliadas."
+      }
+    ],
+    "description": "O primeiro e mais perfeito autômato consciente, cujo coração é uma esfera giratória de platina e éter.",
+    "flavorText": "Carne apodrece e juramentos quebram; a engrenagem primordial jamais falha.",
+    "imagePath": "/assets/cards/neutral_123_emissario_relojoeiro_supremo.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, God-like winged clockwork archon construct of polished platinum and black iron with a glowing astronomical astrolabe halo."
+  },
+  {
+    "id": "neutral_124_tarrasque_despertar_neutro",
+    "name": "Gorgonoth, O Devorador de Continentes",
+    "originalInspiration": "Códice de Chromatic Pact • Manual dos Monstros (O Tarrasque)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Manual dos Monstros (O Tarrasque).",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Monstruosidade • Titã Primordial",
+    "rarity": "legendary",
+    "cost": 9,
+    "affinityReq": 0,
+    "atk": 10,
+    "armor": 3,
+    "hp": 10,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Atropelar",
+      "Pele Incandescente"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_all_units",
+        "value": 3,
+        "description": "Ao Entrar: Terremoto Cataclísmico que causa 3 de dano a todas as unidades."
+      }
+    ],
+    "description": "Adormecido sob a crosta de Vaeloria desde a Era Zero, desperta apenas quando o equilíbrio dos cinco domínios ameaça ruir.",
+    "flavorText": "Ele não serve ao Fogo, nem ao Gelo, nem à Luz: ele é o fim de todos os tronos.",
+    "imagePath": "/assets/cards/neutral_124_tarrasque_despertar_neutro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal spiked carapace Tarrasque kaiju monstrosity roaring and shattering stone pillars with massive claws."
+  },
+  {
+    "id": "neutral_125_estandarte_runa_krig",
+    "name": "Estandarte da Runa Krig (Guerra)",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (p. 233: Bandeira da Runa Krig)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (p. 233: Bandeira da Runa Krig).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Estandarte • Runa Gigante",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "description": "Ao Entrar: Concede +1/+1 a todos os aliados.",
+        "secondaryValue": 1
+      },
+      {
+        "trigger": "turn_start",
+        "type": "buff_target_ally",
+        "value": 1,
+        "description": "Início do Turno: Concede +1/+1 a um aliado.",
+        "secondaryValue": 1
+      }
+    ],
+    "description": "Tecido com placas circulares de ferro e inscrito com a runa ancestral gigante da guerra.",
+    "flavorText": "Onde a runa Krig tremula, nenhum guerreiro sente o peso do medo.",
+    "imagePath": "/assets/cards/neutral_125_estandarte_runa_krig.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Battle-worn war banner inscribed with the glowing metallic Giant rune Krig on an iron-shod pole."
+  },
+  {
+    "id": "neutral_126_concha_runa_uvar",
+    "name": "Concha do Teleporte Uvar",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (p. 234: Concha de Teletransporte)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (p. 234: Concha de Teletransporte).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Instrumento • Runa Gigante",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "bounce_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Teleporta 1 inimigo de volta para a mão."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      }
+    ],
+    "description": "Enorme concha marinha gravada com a runa gigante Uvar que dobra o espaço ao ser soprada.",
+    "flavorText": "Seu som ecoa a cem léguas de distância e abre o caminho entre os tronos.",
+    "imagePath": "/assets/cards/neutral_126_concha_runa_uvar.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Giant pearlescent sea conch shell carved with glowing silver Giant runes emitting spatial ripples."
+  },
+  {
+    "id": "neutral_127_cetro_regente_shanatar",
+    "name": "Cetro Regente de Shanatar",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (p. 235: Cetros Regentes de Shanatar)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (p. 235: Cetros Regentes de Shanatar).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Cetro • Anão",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Ao Entrar: Protege os aliados."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Início do Turno: Gera +1⚡ de Essência."
+      }
+    ],
+    "description": "Um dos nove cetros de mithral e diamante forjados pelos antigos reis subterrâneos de Shanatar.",
+    "flavorText": "Nove tronos sob a montanha, nove cetros para governar a pedra.",
+    "imagePath": "/assets/cards/neutral_127_cetro_regente_shanatar.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate dwarven ruling scepter of mithral and faceted diamond radiating silver geometric light."
+  },
+  {
+    "id": "neutral_128_trono_cranio_dragao",
+    "name": "Trono do Crânio Dracônico",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (p. 237: Trono do Crânio de Dragão)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (p. 237: Trono do Crânio de Dragão).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Trono • Ancestral",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 6,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "description": "Ao Entrar: Concede +2/+2 a todos os aliados.",
+        "secondaryValue": 2
+      },
+      {
+        "trigger": "turn_start",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Início do Turno: Causa 2 de dano ao Soberano inimigo."
+      }
+    ],
+    "description": "Trono flutuante de obsidiana e osso dracônico inscrito com runas soberanas que esmagam a vontade dos rivais.",
+    "flavorText": "Apenas quem possui sangue de titã suporta sentar-se entre suas presas.",
+    "imagePath": "/assets/cards/neutral_128_trono_cranio_dragao.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Floating obsidian throne carved from a colossal ancient dragon skull etched with glowing silver runes."
+  },
+  {
+    "id": "neutral_129_mascara_rainha_pentacromatica",
+    "name": "A Grande Máscara Pentacromática",
+    "originalInspiration": "Códice de Chromatic Pact • Tirania dos Dragões Vol. 2 (p. 94: Máscara da Rainha Dragão)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tirania dos Dragões Vol. 2 (p. 94: Máscara da Rainha Dragão).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Artefato • Dracônico",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 6,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao Entrar: Sopro Pentacromático que causa 2 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Início do Turno: Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Artefato supremo formado pela união das cinco máscaras dracônicas em uma única coroa de chifres.",
+    "flavorText": "Cinco vozes, cinco sopros, uma única soberania.",
+    "imagePath": "/assets/cards/neutral_129_mascara_rainha_pentacromatica.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Legendary five-horned dragon crown mask combining red, blue, purple, green, and gold metallic scales."
+  },
+  {
+    "id": "neutral_130_orbe_runa_stein",
+    "name": "Orbe Monolítico da Runa Stein",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (p. 235: Orbe da Runa da Pedra)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (p. 235: Orbe da Runa da Pedra).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Orbe • Runa Gigante",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "description": "Ao Entrar: Petrifica a couraça de um aliado, concedendo +1/+3.",
+        "secondaryValue": 3
+      }
+    ],
+    "description": "Esfera de granito polido gravada com a runa da rocha eterna que enrijece a pele dos aliados.",
+    "flavorText": "Quem carrega a runa Stein tem raízes na própria montanha.",
+    "imagePath": "/assets/cards/neutral_130_orbe_runa_stein.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Polished granite sphere deeply engraved with the glowing silver Giant rune Stein floating over an iron ring."
+  },
+  {
+    "id": "neutral_131_manto_deslocamento_ilusorio",
+    "name": "Manto da Fera Deslocadora",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Cap. 7: Manto do Deslocamento)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Cap. 7: Manto do Deslocamento).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Equipamento • Ilusão",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Ao Entrar: Projeta duplicatas ilusórias que protegem os aliados."
+      }
+    ],
+    "description": "Costurado com o couro escuro de uma fera deslocadora, projeta a imagem do usuário a um passo de onde ele realmente está.",
+    "flavorText": "Você sempre acerta a sombra; o dono do manto já está atrás de você.",
+    "imagePath": "/assets/cards/neutral_131_manto_deslocamento_ilusorio.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Dark midnight-grey cloak with twin spiked tentacles on the shoulders projecting a shimmering double silhouette."
+  },
+  {
+    "id": "neutral_132_espada_vingadora_runica",
+    "name": "Gládio Juramentado da Fronteira",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (p. 180: Espada da Vingança)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (p. 180: Espada da Vingança).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Armamento • Lâmina",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 3,
+        "description": "Ao Entrar: Concede +3 ATQ a um aliado."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "damage_single_enemy",
+        "value": 1,
+        "description": "Início do Turno: Causa 1 de dano a um inimigo."
+      }
+    ],
+    "description": "Espada habitada pelo espírito indomável de um antigo duelista que jamais descansa até ver o agressor cair.",
+    "flavorText": "Basta o primeiro corte para que a lâmina exija o duelo até o fim.",
+    "imagePath": "/assets/cards/neutral_132_espada_vingadora_runica.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate dark-steel broadsword with a fierce gargoyle crossguard glowing with vengeful silver-white edge."
+  },
+  {
+    "id": "neutral_133_escudo_sentinela_olho",
+    "name": "Escudo Sentinela Sempre-Atento",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Cap. 7: Escudo Sentinela)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Cap. 7: Escudo Sentinela).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Equipamento • Escudo",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 0,
+        "description": "Ao Entrar: Concede +3 VIDA a um aliado.",
+        "secondaryValue": 3
+      }
+    ],
+    "description": "Forjado com um olho de prata viva no umbo central que vigia todos os ângulos do campo de batalha.",
+    "flavorText": "O portador pode fechar os olhos; o escudo nunca dorme.",
+    "imagePath": "/assets/cards/neutral_133_escudo_sentinela_olho.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy steel heater shield embossed with a wide-open glowing silver eye in the center boss."
+  },
+  {
+    "id": "neutral_134_baralho_muitas_coisas",
+    "name": "O Baralho das Muitas Sortes",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Cap. 7: Baralho das Muitas Coisas)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Cap. 7: Baralho das Muitas Coisas).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Artefato • Destino",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Ao Entrar: Compra 2 cartas."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Início do Turno: Gera +1⚡ de Essência."
+      }
+    ],
+    "description": "Vinte e duas lâminas de marfim e ouro guardadas em estojo de couro que podem erguer um rei ou arruinar um império num único saque.",
+    "flavorText": "Puxe uma carta se tiver coragem: o Trono ou o Vazio.",
+    "imagePath": "/assets/cards/neutral_134_baralho_muitas_coisas.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ivory and gold-leaf tarot cards fanning out in mid-air from an ornate velvet-lined iron box with silver runes."
+  },
+  {
+    "id": "neutral_135_elmo_compreensao_brilhante",
+    "name": "Elmo das Mil Jóias",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Cap. 7: Elmo do Brilho)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Cap. 7: Elmo do Brilho).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Regalia • Elmo",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao Entrar: Dispara feixes prismáticos que causam 2 de dano à Vanguarda inimiga."
+      }
+    ],
+    "description": "Elmo de prata cravejado de diamantes, rubis e opalas de fogo que convertem a vontade do portador em raios destrutivos.",
+    "flavorText": "Cada gema da coroa guarda uma tempestade diferente.",
+    "imagePath": "/assets/cards/neutral_135_elmo_compreensao_brilhante.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Resplendent silver great-helm set with dozens of glowing diamonds, rubies, and opals on its crest."
+  },
+  {
+    "id": "neutral_136_cinto_forca_gigante",
+    "name": "Cinturão de Força de Titã",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Cap. 7: Cinturão de Força de Gigante)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Cap. 7: Cinturão de Força de Gigante).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Equipamento • Força",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 3,
+        "description": "Ao Entrar: Concede +3 ATQ e +2 VIDA a um aliado.",
+        "secondaryValue": 2
+      }
+    ],
+    "description": "Largo cinturão de couro cravejado de fivelas de ferro meteorítico que infunde nos músculos a força bruta de um gigante.",
+    "flavorText": "Com esta fivela na cintura, uma espada de duas mãos pesa como um graveto.",
+    "imagePath": "/assets/cards/neutral_136_cinto_forca_gigante.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive iron-buckled leather war belt embossed with giant runes and glowing with silver-amber power."
+  },
+  {
+    "id": "neutral_137_botas_velocidade_mercurio",
+    "name": "Grevas da Velocidade Relâmpago",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre / Fora do Abismo (p. 232: Botas da Velocidade)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre / Fora do Abismo (p. 232: Botas da Velocidade).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Equipamento • Agilidade",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 2,
+        "description": "Ao Entrar: Concede +2/+1 a um aliado.",
+        "secondaryValue": 1
+      }
+    ],
+    "description": "Ao bater os calcanhares metálicos, o guerreiro se move como um borrão prateado entre as fileiras inimigas.",
+    "flavorText": "Bata os calcanhares e atravesse o campo antes que a flecha caia.",
+    "imagePath": "/assets/cards/neutral_137_botas_velocidade_mercurio.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Sleek articulated quicksilver and dark-leather greaves trailing silver motion-blur arcs."
+  },
+  {
+    "id": "neutral_138_anel_ariete_forca",
+    "name": "Anel do Aríete de Ferro",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Cap. 7: Anel do Aríete)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Cap. 7: Anel do Aríete).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Anel • Impacto",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 3,
+        "description": "Ao Entrar: Dispara um aríete espectral que causa 3 de dano a um inimigo."
+      }
+    ],
+    "description": "Anel de ferro maciço esculpido com a cabeça de um carneiro de chifres retorcidos que projeta ondas de concussão.",
+    "flavorText": "Um soco no ar a dez passos derruba uma porta de carvalho.",
+    "imagePath": "/assets/cards/neutral_138_anel_ariete_forca.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy forged-iron ring shaped like a horned battering-ram head projecting a translucent silver shockwave."
+  },
+  {
+    "id": "neutral_139_amuleto_planos_astrolabio",
+    "name": "Amuleto dos Planos Exteriores",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Cap. 7: Amuleto dos Planos)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Cap. 7: Amuleto dos Planos).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Amuleto • Planar",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Ao Entrar: Abre os caminhos planares e compra 2 cartas."
+      }
+    ],
+    "description": "Disco de adamante escuro com anéis concêntricos que se alinham com as coordenadas do multiverso.",
+    "flavorText": "Gire o disco interno e escolha em qual mundo deseja pisar.",
+    "imagePath": "/assets/cards/neutral_139_amuleto_planos_astrolabio.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Interlocking concentric rings of dark adamantine and silver forming a planar astrolabe amulet."
+  },
+  {
+    "id": "neutral_140_urna_cerebral_preservada",
+    "name": "Urna Cerebral de Salmoura Arcana",
+    "originalInspiration": "Códice de Chromatic Pact • Fora do Abismo (p. 252: Urnas Cerebrais)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Fora do Abismo (p. 252: Urnas Cerebrais).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Recipiente • Psíquico",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Início do Turno: Sussurros psíquicos causam 1 de dano ao Soberano inimigo."
+      }
+    ],
+    "description": "Recipiente de bronze e vidro alquímico onde um intelecto ancestral permanece desperto e sussurrando segredos.",
+    "flavorText": "O corpo morreu há séculos; a mente dentro do vidro ainda planeja.",
+    "imagePath": "/assets/cards/neutral_140_urna_cerebral_preservada.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate bronze and thick glass alchemical canister containing a glowing silver-violet preserved brain."
+  },
+  {
+    "id": "neutral_141_lanterna_revelacao_veraz",
+    "name": "Lanterna da Revelação Veraz",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Cap. 7: Lanterna de Revelação)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Cap. 7: Lanterna de Revelação).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Instrumento • Luz",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Revela emboscadas e compra 1 carta."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao Entrar: Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Lanterna de ferro com lentes de cristal lapidado cuja chama prateada desfaz qualquer invisibilidade ou metamorfose.",
+    "flavorText": "Sob este facho, nenhuma sombra mente.",
+    "imagePath": "/assets/cards/neutral_141_lanterna_revelacao_veraz.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Gothic wrought-iron hooded lantern with faceted quartz lenses burning with a bright silver-white flame."
+  },
+  {
+    "id": "neutral_142_trombeta_valhalla_ferro",
+    "name": "Trombeta de Ferro dos Berserkers",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (p. 210: Trombeta de Valhalla)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (p. 210: Trombeta de Valhalla).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Instrumento • Guerra",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 3,
+        "description": "Ao Entrar: Convoca um Guerreiro Ancestral 3/3.",
+        "secondaryValue": 3
+      }
+    ],
+    "description": "Berrante de chifre e ferro batido cujo clamor convoca espíritos guerreiros de eras passadas para lutar mais uma vez.",
+    "flavorText": "Um único sopro desperta os heróis que caíram antes da Fratura.",
+    "imagePath": "/assets/cards/neutral_142_trombeta_valhalla_ferro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive iron-bound war horn etched with ancient battle scenes emitting silver spectral warrior silhouettes."
+  },
+  {
+    "id": "neutral_143_espelho_aprisionar_almas",
+    "name": "Espelho do Aprisionamento Planar",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Cap. 7: Espelho do Aprisionamento)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Cap. 7: Espelho do Aprisionamento).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Artefato • Prisão",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Aprisiona (Congela) 1 inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "bounce_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Devolve 1 inimigo para a mão."
+      }
+    ],
+    "description": "Espelho oval de mercúrio cristalizado dividido em doze celas extradimensionais invisíveis.",
+    "flavorText": "Olhe para o seu reflexo e descubra que é ele quem está do lado de fora.",
+    "imagePath": "/assets/cards/neutral_143_espelho_aprisionar_almas.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Tall oval gothic mirror with dark iron gargoyle frame and swirling liquid-mercury reflective surface."
+  },
+  {
+    "id": "neutral_144_nucleo_relojoeiro_aeternus",
+    "name": "Coração de Mola Perpétua",
+    "originalInspiration": "Códice de Chromatic Pact • Shadow of the Demon Lord (Relíquias de Engrenagem)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Shadow of the Demon Lord (Relíquias de Engrenagem).",
+    "domain": "neutral",
+    "type": "relic",
+    "subtype": "Relíquia • Núcleo • Mecânico",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao Entrar: Gera +1⚡ de Essência."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "buff_target_ally",
+        "value": 1,
+        "description": "Início do Turno: Concede +1/+1 a um aliado.",
+        "secondaryValue": 1
+      }
+    ],
+    "description": "Giroscópio de bronze e quartzo que nunca perde o impulso desde que foi dado corda na primeira era.",
+    "flavorText": "O motor que não conhece ferrugem nem cansaço.",
+    "imagePath": "/assets/cards/neutral_144_nucleo_relojoeiro_aeternus.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Intricate brass and dark-steel perpetual motion gyroscope core with glowing silver-amber quartz gears."
+  },
+  {
+    "id": "neutral_145_oleo_afiacao_eterea",
+    "name": "Óleo de Afiação Etérea",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (p. 195: Óleo de Afiação)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (p. 195: Óleo de Afiação).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Alquimia",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "description": "Concede +2 ATQ a todas as unidades aliadas."
+      }
+    ],
+    "description": "Unguento prateado e cintilante que permite às lâminas cortar aço e escama como se fossem pergaminho.",
+    "flavorText": "Três gotas no fio da espada e nenhuma couraça resiste.",
+    "imagePath": "/assets/cards/neutral_145_oleo_afiacao_eterea.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Faceted alchemical flask pouring shimmering liquid-silver sharpening oil over a glowing dark steel blade."
+  },
+  {
+    "id": "neutral_146_bomba_tempo_relojoeira",
+    "name": "Bomba do Tempo de Engrenagem",
+    "originalInspiration": "Códice de Chromatic Pact • Cronomancer 5e (p. 13: Bomba do Tempo)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Cronomancer 5e (p. 13: Bomba do Tempo).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 3,
+        "description": "Causa 3 de dano a todas as unidades na Vanguarda inimiga."
+      }
+    ],
+    "description": "Esfera de latão e rodas dentadas que comprime três segundos de explosão num único estilhaço temporal.",
+    "flavorText": "O tique-taque para; a linha de frente inimiga desaparece.",
+    "imagePath": "/assets/cards/neutral_146_bomba_tempo_relojoeira.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate brass clockwork time-bomb sphere bursting with silver temporal shockwaves and flying gears."
+  },
+  {
+    "id": "neutral_147_esfera_tempo_estase",
+    "name": "Esfera Temporal de Estase",
+    "originalInspiration": "Códice de Chromatic Pact • Cronomancer 5e (p. 14: Esfera do Tempo)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Cronomancer 5e (p. 14: Esfera do Tempo).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Congela toda a Vanguarda inimiga no fluxo do tempo."
+      }
+    ],
+    "description": "Bolha translúcida de segundos congelados onde flechas e espadas ficam suspensas no ar.",
+    "flavorText": "Dentro do domo cinzento, um minuto dura uma eternidade.",
+    "imagePath": "/assets/cards/neutral_147_esfera_tempo_estase.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Translucent silver-grey chronomancy sphere suspending flying arrows and rubble in frozen time."
+  },
+  {
+    "id": "neutral_148_destino_renovado_crono",
+    "name": "Destino Renovado pelo Relógio",
+    "originalInspiration": "Códice de Chromatic Pact • Cronomancer 5e (p. 6: Destino Renovado)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Cronomancer 5e (p. 6: Destino Renovado).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 3,
+        "description": "Rebobina feridas, curando 3 de VIDA de todos os aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Restaura 3 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Gira os ponteiros para trás sobre os guerreiros feridos, devolvendo o sangue derramado às veias.",
+    "flavorText": "A ferida nunca existiu se o segundo em que foi aberta for apagado.",
+    "imagePath": "/assets/cards/neutral_148_destino_renovado_crono.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Glowing silver hourglass shattering upward as reversed sand streams knit shattered armor back together."
+  },
+  {
+    "id": "neutral_149_contrato_companhia_dourada",
+    "name": "Contrato de Sangue e Soldo",
+    "originalInspiration": "Códice de Chromatic Pact • Guia da Costa da Espada (Contratos Mercenários)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia da Costa da Espada (Contratos Mercenários).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Tático",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Compra 2 cartas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Gera +1⚡ de Essência."
+      }
+    ],
+    "description": "Pergaminho selado em chumbo que convoca reforços imediatos das guildas livres.",
+    "flavorText": "Assine embaixo; os reforços já estão marchando no portão.",
+    "imagePath": "/assets/cards/neutral_149_contrato_companhia_dourada.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy parchment mercenary contract sealed with molten silver wax beside a dagger and overflowing coin pouch."
+  },
+  {
+    "id": "neutral_150_fogo_alquimico_concentrado",
+    "name": "Bombardeio de Fogo Alquímico",
+    "originalInspiration": "Códice de Chromatic Pact • Livro do Jogador / Masmorras Cruéis (Fogo Alquímico)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Livro do Jogador / Masmorras Cruéis (Fogo Alquímico).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Alquimia",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 4,
+        "description": "Causa 4 de dano direto a uma unidade inimiga."
+      }
+    ],
+    "description": "Frasco pressurizado de nafta e fósforo branco que se inflama em contato com o ar.",
+    "flavorText": "Não apaga com água, nem com reza.",
+    "imagePath": "/assets/cards/neutral_150_fogo_alquimico_concentrado.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Cluster of braided-leather alchemical grenades shattering in a burst of white-silver and amber chemical fire."
+  },
+  {
+    "id": "neutral_151_transmutar_rocha_lama",
+    "name": "Colapso de Pedra Transmutada",
+    "originalInspiration": "Códice de Chromatic Pact • Compêndio Elemental Evil / Xanathar (p. 23: Transmutar Pedra)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Compêndio Elemental Evil / Xanathar (p. 23: Transmutar Pedra).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Transmutação",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Causa 2 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Imobiliza (Congela) toda a Vanguarda inimiga na rocha fundida."
+      }
+    ],
+    "description": "Converte o piso de batalha em lama Movediça que logo se solidifica de volta em pedra bruta.",
+    "flavorText": "Primeiro afundam até os joelhos; depois viram estátuas.",
+    "imagePath": "/assets/cards/neutral_151_transmutar_rocha_lama.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Battlefield stone floor liquefying and erupting into jagged grey rock spires trapping enemy shields."
+  },
+  {
+    "id": "neutral_152_portal_dimensional_cinza",
+    "name": "Travessia pelo Portal Astral",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre / Livro do Jogador (Portal)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre / Livro do Jogador (Portal).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Planar",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 4,
+        "description": "Invoca um Campeão Planar 4/4.",
+        "secondaryValue": 4
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Rasga um anel de ferro incandescente entre os planos para trazer um campeão diretamente à frente de combate.",
+    "flavorText": "Quando os portões da cidadela estão longe, trazemos a cidadela até aqui.",
+    "imagePath": "/assets/cards/neutral_152_portal_dimensional_cinza.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Circular iron-ringed astral portal tearing open with silver-white starlight and a towering armored silhouette stepping through."
+  },
+  {
+    "id": "neutral_153_dissipar_magia_absoluta",
+    "name": "Ruptura Arcana Universal",
+    "originalInspiration": "Códice de Chromatic Pact • Compêndio de Magia (Dissipar Magia)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Compêndio de Magia (Dissipar Magia).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Abjuração",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 3,
+        "description": "Reduz em 3 o ATQ de toda a Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Pulso de frequência nula que desfaz encantamentos de armas e estilhaça auras elementais.",
+    "flavorText": "Cinco cores entram no prisma; apenas o silêncio cinzento sai.",
+    "imagePath": "/assets/cards/neutral_153_dissipar_magia_absoluta.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Explosive shockwave of silver-grey anti-magic geometric runes shattering colored spell rings."
+  },
+  {
+    "id": "neutral_154_elixir_pedra_ferro",
+    "name": "Elixir de Pele de Adamantina",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Poção de Invulnerabilidade)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Poção de Invulnerabilidade).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Alquimia",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Concede Escudo Divino / proteção a todos os aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 0,
+        "description": "Concede +2 VIDA a todos os aliados.",
+        "secondaryValue": 2
+      }
+    ],
+    "description": "Destilado de pó de meteorito e mercúrio que reveste a pele dos guerreiros com o brilho do aço temperado.",
+    "flavorText": "Por três minutos, flechas ricocheteiam na pele nua.",
+    "imagePath": "/assets/cards/neutral_154_elixir_pedra_ferro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy iron-stoppered crystal potion bottle glowing with liquid metallic adamantine silver."
+  },
+  {
+    "id": "neutral_155_chamado_armas_fronteira",
+    "name": "Mobilização da Torre dos Cinco Selos",
+    "originalInspiration": "Códice de Chromatic Pact • Guia da Costa da Espada (Aliança dos Lordes)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia da Costa da Espada (Aliança dos Lordes).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Comando",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 3,
+        "description": "Convoca um Guarda dos Selos 3/3.",
+        "secondaryValue": 3
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "description": "Concede +1/+1 a todos os aliados.",
+        "secondaryValue": 1
+      }
+    ],
+    "description": "Quando os sinos de ferro da Torre Axial dobram, todas as companhias livres entram em formação.",
+    "flavorText": "Nenhum domínio reina sozinho enquanto a Torre estiver de pé.",
+    "imagePath": "/assets/cards/neutral_155_chamado_armas_fronteira.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive iron war-bell ringing atop a gothic tower sending silver shockwaves over crossed halberds."
+  },
+  {
+    "id": "neutral_156_cataclismo_gravidade_reversa",
+    "name": "Inversão Gravitacional Planar",
+    "originalInspiration": "Códice de Chromatic Pact • Compêndio de Magia (Inverter a Gravidade)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Compêndio de Magia (Inverter a Gravidade).",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Transmutação",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_all_units",
+        "value": 3,
+        "description": "Ergue e esmaga o campo, causando 3 de dano a todas as unidades."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 3,
+        "description": "Causa 3 de dano ao Soberano inimigo."
+      }
+    ],
+    "description": "Anula o peso da terra por um instante antes de devolver exércitos e rochas ao solo com força dobrada.",
+    "flavorText": "O céu torna-se um abismo; o chão, uma bigorna.",
+    "imagePath": "/assets/cards/neutral_156_cataclismo_gravidade_reversa.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Shattered stone boulders and war machines floating upward in glowing silver anti-gravity arcs."
+  },
+  {
+    "id": "neutral_157_armadilha_esfera_rolante",
+    "name": "Esfera Esmagadora do Corredor",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (p. 299: Esfera Rolante)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (p. 299: Esfera Rolante).",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Armadilha",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Causa 2 de dano a toda a Vanguarda inimiga."
+      }
+    ],
+    "description": "Imensa esfera de granito maciço liberada do teto inclinado assim que o inimigo avança.",
+    "flavorText": "Quando ouvir o estrondo da pedra, já não há para onde correr.",
+    "imagePath": "/assets/cards/neutral_157_armadilha_esfera_rolante.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal rune-carved granite boulder rolling down a stone corridor crushing shields and sparks."
+  },
+  {
+    "id": "neutral_158_armadilha_dardos_envenenados",
+    "name": "Saraivada de Agulhas Ocultas",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (p. 298: Armadilha de Dardos Envenenados)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (p. 298: Armadilha de Dardos Envenenados).",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Armadilha",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 3,
+        "description": "Dispara dardos ocultos, causando 3 de dano ao atacante."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Reduz em 1 o ATQ da Vanguarda inimiga."
+      }
+    ],
+    "description": "Centenas de agulhas de aço embebidas em veneno paralítico saltam das frestas da parede.",
+    "flavorText": "Um clique sob a bota; trinta agulhas no peito.",
+    "imagePath": "/assets/cards/neutral_158_armadilha_dardos_envenenados.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Stone wall dragon-mouths firing a lethal volley of silver-tipped poisoned iron darts."
+  },
+  {
+    "id": "neutral_159_fosso_estacas_ferro",
+    "name": "Alçapão do Fosso de Estacas",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre / Masmorras Cruéis (p. 298: Fosso Oculto)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre / Masmorras Cruéis (p. 298: Fosso Oculto).",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Armadilha",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Derruba e imobiliza (Congela) 1 atacante inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Causa 2 de dano ao inimigo."
+      }
+    ],
+    "description": "O piso cede sob o peso da investida inimiga, revelando um fosso guarnecido de lanças de ferro.",
+    "flavorText": "A pressa do atacante é a melhor amiga do engenheiro.",
+    "imagePath": "/assets/cards/neutral_159_fosso_estacas_ferro.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Collapsing stone trapdoor opening over a deep dark pit bristling with upward-pointing iron spikes."
+  },
+  {
+    "id": "neutral_160_defesa_ativa_aparar",
+    "name": "Riposta de Aço Temperado",
+    "originalInspiration": "Códice de Chromatic Pact • Masmorras Cruéis (p. 19: Defesa Ativa)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Masmorras Cruéis (p. 19: Defesa Ativa).",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Marcial",
+    "rarity": "uncommon",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Apara o golpe inimigo com Escudo Divino."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Contra-ataca causando 2 de dano ao agressor."
+      }
+    ],
+    "description": "Desvia a lâmina adversária no último milésimo de segundo e devolve a estocada na abertura da couraça.",
+    "flavorText": "A melhor defesa termina no pescoço do atacante.",
+    "imagePath": "/assets/cards/neutral_160_defesa_ativa_aparar.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Two crossed dark-steel longswords clashing in a shower of bright silver sparks as a riposte dagger strikes forward."
+  },
+  {
+    "id": "neutral_161_rede_ferro_gladiador",
+    "name": "Rede de Chumbo e Farpas",
+    "originalInspiration": "Códice de Chromatic Pact • Tormenta do Rei da Tempestade (p. 246: Arremessar Rede)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Tormenta do Rei da Tempestade (p. 246: Arremessar Rede).",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Captura",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Enreda e imobiliza (Congela) a Vanguarda inimiga."
+      }
+    ],
+    "description": "Pesada rede trançada com cabos de ferro e pesos de osso que trava as armas e pernas do inimigo.",
+    "flavorText": "Quanto mais o gigante se debate, mais fundo os ganchos entram.",
+    "imagePath": "/assets/cards/neutral_161_rede_ferro_gladiador.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Weighted iron-chain gladiator net with barbed hooks flying wide through the air."
+  },
+  {
+    "id": "neutral_162_bomba_fumaca_alquimica",
+    "name": "Cortina de Fumaça de Mercúrio",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Volo (Artimanhas de Ladrão Mestre)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Volo (Artimanhas de Ladrão Mestre).",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Evasão",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "bounce_enemy",
+        "value": 1,
+        "description": "Desorienta e devolve 1 atacante inimigo para a mão."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Estilhaça uma esfera de vidro no chão, erguendo um nevoeiro denso que anula a investida rival.",
+    "flavorText": "Quando a fumaça baixa, o alvo mudou de lugar.",
+    "imagePath": "/assets/cards/neutral_162_bomba_fumaca_alquimica.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Shattering glass sphere releasing billowing coils of dense silver-grey alchemical smoke and caltrops."
+  },
+  {
+    "id": "neutral_163_lamina_pendulo_masmorra",
+    "name": "Pêndulo Ceifador doTeto",
+    "originalInspiration": "Códice de Chromatic Pact • Guia do Mestre (Armadilhas Mecânicas)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia do Mestre (Armadilhas Mecânicas).",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Armadilha",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 3,
+        "description": "A lâmina pendular varre a linha de frente, causando 3 de dano à Vanguarda inimiga."
+      }
+    ],
+    "description": "Lâmina crescente de duas toneladas que desce do teto abobadado num arco mortal silencioso.",
+    "flavorText": "O pêndulo marca o fim do turno para quem avançou demais.",
+    "imagePath": "/assets/cards/neutral_163_lamina_pendulo_masmorra.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Giant crescent-moon steel pendulum blade swinging down on heavy iron chains with silver motion arcs."
+  },
+  {
+    "id": "neutral_164_estatua_sopro_oleo",
+    "name": "Cilada do Bastião de Ferro",
+    "originalInspiration": "Códice de Chromatic Pact • Masmorras Cruéis (Armadilhas de Câmara)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Masmorras Cruéis (Armadilhas de Câmara).",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Estratagema",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 4,
+        "description": "Causa 4 de dano ao atacante."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Carrancas mecânicas ocultas nos pilares disparam jatos de chumbo derretido contra o invasor.",
+    "flavorText": "Cada pilar do salão guarda uma surpresa mortal.",
+    "imagePath": "/assets/cards/neutral_164_estatua_sopro_oleo.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Iron gargoyle wall-sconce trap blasting a pressurized stream of molten silver-lead and spikes."
+  },
+  {
+    "id": "neutral_165_quebra_feiticaria_runica",
+    "name": "Selo de Anulação Instantânea",
+    "originalInspiration": "Códice de Chromatic Pact • Guia de Xanathar (Contramágica Tática)",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Xanathar (Contramágica Tática).",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Abjuração",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 3,
+        "description": "Reduz em 3 o ATQ da Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Concede Escudo Divino aos aliados."
+      }
+    ],
+    "description": "Estampa no ar um glifo hexagonal de ferro frio que absorve o impacto do ataque inimigo.",
+    "flavorText": "Sua fúria bate contra o selo e se transforma em nossa armadura.",
+    "imagePath": "/assets/cards/neutral_165_quebra_feiticaria_runica.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Hexagonal cold-iron rune seal materializing mid-air and absorbing incoming weapon strikes in silver sparks."
+  },
+  {
+    "id": "neutral_166_protocolo_torre_axial",
+    "name": "Decreto de Paz Armada da Torre",
+    "originalInspiration": "Códice de Chromatic Pact • Códice de Chromatic Pact • Tratado Supremo",
+    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Códice de Chromatic Pact • Tratado Supremo.",
+    "domain": "neutral",
+    "type": "reaction",
+    "subtype": "Reação • Decreto",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Congela toda a Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Compra 2 cartas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Restaura 3 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Invoca a cláusula primordial do Pacto Cromático, suspendendo o avanço hostil sob pena das cinco coroas.",
+    "flavorText": "Perante o Selo Axial, toda espada deve baixar ou quebrar.",
+    "imagePath": "/assets/cards/neutral_166_protocolo_torre_axial.png",
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Five interlocking chains of silver and iron descending from a floating prism seal to lock enemy weapons."
   }
 ];
 

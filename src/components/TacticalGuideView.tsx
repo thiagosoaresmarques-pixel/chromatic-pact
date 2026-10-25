@@ -3,6 +3,7 @@ import { CardDefinition, CardType, Domain, PrebuiltDeck } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS, CAMPAIGN_BOSSES } from '../data/decks';
 import { DECK_TACTICAL_PROFILES, EMPIRICAL_WIN_RATES, getMatchupGuide } from '../data/tacticalGuide';
+import { TACTICAL_COMBOS_COMPENDIUM, ComboColorTier } from '../data/combosCompendium';
 import { CardView, CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 
@@ -10,6 +11,7 @@ export interface TacticalGuideViewProps {
   customDecks?: CustomSavedDeck[];
   initialPlayerDeckId?: string;
   initialOpponentDeckId?: string;
+  initialViewSection?: 'deck_mastery' | 'matchup_duel' | 'matrix_all' | 'combos_compendium';
   isModal?: boolean;
   onClose?: () => void;
   onLaunchDuel?: (playerDeckId: string, opponentDeckId: string) => void;
@@ -575,6 +577,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
   customDecks = [],
   initialPlayerDeckId,
   initialOpponentDeckId,
+  initialViewSection,
   isModal = false,
   onClose,
   onLaunchDuel,
@@ -613,10 +616,11 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
     return second?.id ?? allDecks[0]?.id ?? 'deck_blue_tempest';
   });
 
-  const [viewSection, setViewSection] = useState<'deck_mastery' | 'matchup_duel' | 'matrix_all'>(
-    initialOpponentDeckId ? 'matchup_duel' : 'deck_mastery'
-  );
+  const [viewSection, setViewSection] = useState<
+    'deck_mastery' | 'matchup_duel' | 'matrix_all' | 'combos_compendium'
+  >(initialViewSection ?? (initialOpponentDeckId ? 'matchup_duel' : 'deck_mastery'));
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
+  const [comboTierFilter, setComboTierFilter] = useState<ComboColorTier | 'all'>('all');
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
 
   const profilesById = useMemo(() => {
@@ -697,6 +701,13 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
           >
             Matriz de Confrontos ({allDecks.length - 1})
           </button>
+          <button
+            type="button"
+            className={`btn-fantasy ${viewSection === 'combos_compendium' ? 'btn-fantasy-primary' : ''}`}
+            onClick={() => setViewSection('combos_compendium')}
+          >
+            Compêndio de Combos ({TACTICAL_COMBOS_COMPENDIUM.length})
+          </button>
           {isModal && onClose && (
             <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
               Fechar
@@ -706,8 +717,9 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
       </header>
 
       {/* DUAL DECK SELECTOR BAR (100% SYMMETRICAL LEFT & RIGHT) */}
-      <div className="tg-selector-banner">
-        {/* Player Deck Selector */}
+      {viewSection !== 'combos_compendium' && (
+        <div className="tg-selector-banner">
+          {/* Player Deck Selector */}
         <div className="tg-selector-card player-side">
           <div className="tg-selector-thumb">
             {coverCardPlayer?.imagePath && (
@@ -837,6 +849,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
           </div>
         </div>
       </div>
+      )}
 
       {/* =====================================================================
           TAB 1: MANUAL COMPLETO DO SEU DECK (ASSIMETRIA, PLANO, CANALIZAÇÃO, COMBOS)
@@ -1235,6 +1248,229 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          TAB 4: COMPÊNDIO DE COMBOS & REACÕES EM CADEIA (1, 2, 3 E 4–5 CORES)
+          ===================================================================== */}
+      {viewSection === 'combos_compendium' && (
+        <div className="tg-panel">
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.85rem',
+              paddingBottom: '0.9rem',
+              marginBottom: '1rem',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            }}
+          >
+            {/* Segmented Tier Selector (1 Color -> 2 Colors -> 3 Colors -> 4-5 Colors) */}
+            <div className="aaa-pill-tabs">
+              {(
+                [
+                  { id: 'all', label: `Todos (${TACTICAL_COMBOS_COMPENDIUM.length})` },
+                  { id: 'mono', label: '1 Cor • Monocromáticos (12)' },
+                  { id: 'dual', label: '2 Cores • Alianças (10)' },
+                  { id: 'tri', label: '3 Cores • Tríades (4)' },
+                  { id: 'poly', label: '4–5 Cores • Pentacromáticos (2)' },
+                ] as const
+              ).map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`aaa-pill-tab ${comboTierFilter === tab.id ? 'is-active' : ''}`}
+                  onClick={() => setComboTierFilter(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Domain Filter Orbs */}
+            <div className="db-domain-orbs">
+              <button
+                type="button"
+                className={`db-orb-btn orb-all ${domainFilter === 'all' ? 'is-active' : ''}`}
+                onClick={() => setDomainFilter('all')}
+              >
+                Todos
+              </button>
+              {(['red', 'blue', 'purple', 'green', 'gold', 'neutral'] as Domain[]).map((dom) => (
+                <button
+                  key={dom}
+                  type="button"
+                  className={`db-orb-btn domain-${dom} ${domainFilter === dom ? 'is-active' : ''}`}
+                  onClick={() => setDomainFilter((prev) => (prev === dom ? 'all' : dom))}
+                >
+                  <span className="db-orb-dot" style={{ background: DOMAIN_META[dom].color }} />
+                  <span>{DOMAIN_META[dom].shortName}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="tg-grid-layout" style={{ alignItems: 'stretch' }}>
+            {TACTICAL_COMBOS_COMPENDIUM.filter(
+              (combo) =>
+                (comboTierFilter === 'all' || combo.tier === comboTierFilter) &&
+                (domainFilter === 'all' || combo.domains.includes(domainFilter))
+            ).map((combo) => {
+              const comboCards = combo.cardIds
+                .map((cid) => CARDS_BY_ID[cid])
+                .filter((c): c is CardDefinition => Boolean(c));
+              const deckIdSet = new Set(playerProfile.deck.cardIds);
+              const inDeckCount = comboCards.filter((c) => deckIdSet.has(c.id)).length;
+
+              return (
+                <div
+                  key={combo.id}
+                  className="tg-combo-card"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '0.65rem',
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                        gap: '0.4rem',
+                        marginBottom: '0.35rem',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
+                        {combo.domains.map((dom) => (
+                          <span
+                            key={dom}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.22rem',
+                              fontSize: '0.68rem',
+                              fontWeight: 700,
+                              padding: '0.14rem 0.48rem',
+                              borderRadius: '999px',
+                              background: DOMAIN_META[dom].badgeBg,
+                              color: DOMAIN_META[dom].color,
+                              border: `1px solid ${DOMAIN_META[dom].color}55`,
+                            }}
+                          >
+                            {DOMAIN_META[dom].icon} {DOMAIN_META[dom].shortName}
+                          </span>
+                        ))}
+                        <span
+                          style={{
+                            fontSize: '0.66rem',
+                            color: '#94a3b8',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.06em',
+                            fontWeight: 700,
+                          }}
+                        >
+                          {combo.tierLabel}
+                        </span>
+                      </div>
+
+                      {inDeckCount > 0 && (
+                        <span
+                          style={{
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            padding: '0.14rem 0.5rem',
+                            borderRadius: '999px',
+                            background:
+                              inDeckCount === comboCards.length
+                                ? 'rgba(74, 222, 128, 0.14)'
+                                : 'rgba(212, 175, 55, 0.12)',
+                            color: inDeckCount === comboCards.length ? '#4ade80' : '#fde68a',
+                            border: `1px solid ${
+                              inDeckCount === comboCards.length
+                                ? 'rgba(74, 222, 128, 0.4)'
+                                : 'rgba(212, 175, 55, 0.35)'
+                            }`,
+                          }}
+                        >
+                          {inDeckCount}/{comboCards.length} no seu Grimório
+                        </span>
+                      )}
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'baseline',
+                        gap: '0.5rem',
+                        marginBottom: '0.35rem',
+                      }}
+                    >
+                      <h4 className="font-cinzel" style={{ color: '#f8fafc', fontSize: '0.96rem', margin: 0 }}>
+                        {combo.title}
+                      </h4>
+                      <span style={{ fontSize: '0.7rem', color: '#fde68a', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        {combo.archetypeTag}
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.5, margin: '0 0 0.45rem' }}>
+                      {combo.mechanism}
+                    </p>
+                    <div
+                      style={{
+                        fontSize: '0.76rem',
+                        color: '#fef08a',
+                        background: 'rgba(212, 175, 55, 0.07)',
+                        borderLeft: '2px solid rgba(212, 175, 55, 0.65)',
+                        padding: '0.35rem 0.6rem',
+                        borderRadius: '0 6px 6px 0',
+                      }}
+                    >
+                      <strong>Resultado:</strong> {combo.payoff}
+                    </div>
+                  </div>
+
+                  <div className="tg-combo-cards-row" style={{ paddingTop: '0.25rem' }}>
+                    {comboCards.map((c) => {
+                      const isPresent = deckIdSet.has(c.id);
+                      return (
+                        <div
+                          key={c.id}
+                          className="tg-mini-card-pill"
+                          style={
+                            isPresent
+                              ? { borderColor: 'rgba(74, 222, 128, 0.55)' }
+                              : undefined
+                          }
+                          onClick={() => setInspectCard(c)}
+                          title="Clique para inspecionar a carta em tamanho real"
+                        >
+                          {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                          <div>
+                            <div className="tg-mini-card-name">
+                              {isPresent ? '✓ ' : ''}
+                              {c.name}
+                            </div>
+                            <div className="tg-mini-card-sub">
+                              {c.cost}⚡ • {DOMAIN_META[c.domain].shortName} • {CARD_TYPE_LABELS[c.type]}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

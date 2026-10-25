@@ -11,6 +11,7 @@ import {
 } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
+import { TACTICAL_COMBOS_COMPENDIUM } from '../data/combosCompendium';
 import { MONOCHROMATIC_STARTER_DECKS } from '../utils/multiplayerEngine';
 
 export interface SynergyPackageDef {
@@ -251,6 +252,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [showPromptsModal, setShowPromptsModal] = useState<boolean>(false);
   const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
+  const [guideModalSection, setGuideModalSection] = useState<
+    'deck_mastery' | 'matchup_duel' | 'matrix_all' | 'combos_compendium'
+  >('deck_mastery');
   const [activeGuideDeckId, setActiveGuideDeckId] = useState<string>(
     () => PREBUILT_DECKS[0]?.id ?? 'deck_red_inferno'
   );
@@ -540,11 +544,17 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const filteredCards = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     const activeSynergyPkg =
-      synergyFilterId !== 'all' && synergyFilterId !== 'recommended'
+      synergyFilterId !== 'all' &&
+      synergyFilterId !== 'recommended' &&
+      !synergyFilterId.startsWith('combo:')
         ? SYNERGY_PACKAGES.find((p) => p.id === synergyFilterId)
         : null;
+    const activeCombo = synergyFilterId.startsWith('combo:')
+      ? TACTICAL_COMBOS_COMPENDIUM.find((c) => `combo:${c.id}` === synergyFilterId)
+      : null;
 
     return ALL_CARDS.filter((card) => {
+      if (activeCombo && !activeCombo.cardIds.includes(card.id)) return false;
       if (domainFilter !== 'all' && card.domain !== domainFilter) return false;
       if (typeFilter !== 'all' && card.type !== typeFilter) return false;
       if (rarityFilter !== 'all' && card.rarity !== rarityFilter) return false;
@@ -1074,7 +1084,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               <div className="db-drawer-kicker">ARQUÉTIPO DETECTADO</div>
               <div className="db-drawer-title">{deckAnalysis.archetypeTitle}</div>
               <p className="db-drawer-desc">{deckAnalysis.archetypeSubtitle}</p>
-              <div className="db-drawer-Chips">
+              <div className="db-drawer-Chips" style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   className={`db-synergy-chip ${
@@ -1088,6 +1098,56 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 >
                   ✨ Ver {deckAnalysis.recommendedCardIds.size} Cartas Sugeridas
                 </button>
+                <button
+                  type="button"
+                  className="db-synergy-chip"
+                  onClick={() => {
+                    setGuideModalSection('combos_compendium');
+                    setShowTacticalGuideModal(true);
+                  }}
+                >
+                  ⚡ Compêndio de Combos (1–5 Cores)
+                </button>
+              </div>
+              <div style={{ marginTop: '0.45rem', display: 'flex', flexDirection: 'column', gap: '0.28rem' }}>
+                <div className="db-drawer-kicker">COMBOS COMPATÍVEIS (CLIQUE P/ FILTRAR CARTAS)</div>
+                {TACTICAL_COMBOS_COMPENDIUM.map((combo) => {
+                  const inDeck = combo.cardIds.filter((cid) => (deckCountsById[cid] ?? 0) > 0).length;
+                  return { combo, inDeck };
+                })
+                  .sort((a, b) => b.inDeck - a.inDeck)
+                  .slice(0, 3)
+                  .map(({ combo, inDeck }) => {
+                    const filterKey = `combo:${combo.id}`;
+                    return (
+                      <button
+                        key={combo.id}
+                        type="button"
+                        className={`db-synergy-mini-btn ${
+                          synergyFilterId === filterKey ? 'is-active' : ''
+                        }`}
+                        onClick={() => {
+                          if (synergyFilterId === filterKey) {
+                            setSynergyFilterId('all');
+                          } else {
+                            setDomainFilter('all');
+                            setTypeFilter('all');
+                            setRarityFilter('all');
+                            setCostFilter('all');
+                            setOnlyUnlocked(false);
+                            setSynergyFilterId(filterKey);
+                          }
+                        }}
+                      >
+                        <span>
+                          {combo.domains.map((d) => DOMAIN_META[d].icon).join('')} {combo.title}
+                        </span>
+                        <strong>
+                          {inDeck}/{combo.cardIds.length}
+                        </strong>
+                      </button>
+                    );
+                  })}
               </div>
             </div>
 
@@ -1610,8 +1670,12 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               : []),
           ]}
           initialPlayerDeckId={deckCardIds.length > 0 ? editingDeckId : activeGuideDeckId}
+          initialViewSection={guideModalSection}
           isModal={true}
-          onClose={() => setShowTacticalGuideModal(false)}
+          onClose={() => {
+            setShowTacticalGuideModal(false);
+            setGuideModalSection('deck_mastery');
+          }}
         />
       )}
 

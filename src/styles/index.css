@@ -10373,15 +10373,55 @@ html, body, #root {
 }
 
 .poem-canto-section.is-parallel-canto {
-  margin-left: 1.35rem;
-  padding-left: 1.35rem;
-  border-left: 2px dashed rgba(245, 158, 11, 0.32);
+  margin-left: 0;
+  padding-left: 0;
+  border-left: none;
 }
 
-@media (max-width: 680px) {
-  .poem-canto-section.is-parallel-canto {
-    margin-left: 0.35rem;
-    padding-left: 0.65rem;
+.poem-parallel-unified-card {
+  padding: 2.1rem 2rem 1.65rem;
+  border-radius: 16px;
+  border: 1px solid rgba(245, 158, 11, 0.34);
+  background-color: rgba(9, 13, 24, 0.96);
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.72);
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.poem-parallel-unified-header {
+  text-align: center;
+  padding-bottom: 1.35rem;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.16);
+}
+
+.poem-parallel-unified-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 2.6rem;
+}
+
+.poem-parallel-stream-segment {
+  position: relative;
+  padding: 0.35rem 0;
+  border: none;
+  background: transparent;
+}
+
+.poem-parallel-stream-segment.is-medallion-right .poem-folio-body {
+  flex-direction: row-reverse;
+}
+
+@media (max-width: 760px) {
+  .poem-parallel-unified-card {
+    padding: 1.45rem 1.1rem 1.25rem;
+  }
+
+  .poem-parallel-stream-segment.is-medallion-right .poem-folio-body {
+    flex-direction: column;
+    align-items: center;
   }
 }
 

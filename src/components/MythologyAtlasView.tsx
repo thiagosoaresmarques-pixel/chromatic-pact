@@ -173,7 +173,11 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
 
   const handleJumpToParallelCanto = (parallelCanto: EpicPoemCanto) => {
     setExpandedParallelIds((prev) => ({ ...prev, [parallelCanto.id]: true }));
-    if (selectedCantoId !== 'all' && selectedCantoId !== parallelCanto.parentCantoId && selectedCantoId !== parallelCanto.id) {
+    if (
+      selectedCantoId !== 'all' &&
+      selectedCantoId !== parallelCanto.parentCantoId &&
+      selectedCantoId !== parallelCanto.id
+    ) {
       setSelectedCantoId('all');
     }
     setActiveScrollCantoId(parallelCanto.id);
@@ -339,6 +343,105 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
         );
       })}
     </div>
+  );
+
+  /**
+   * Renderiza toda a História Paralela dentro de UM ÚNICO CARD CONTÍNUO (.poem-parallel-unified-card),
+   * suprimindo cabeçalhos individuais (yearLabel, locationLabel, title, subtitle) e linhas divisórias,
+   * exibindo apenas o cabeçalho geral do Canto Paralelo no topo e alternando as ilustrações 310×310
+   * sem moldura e sem legenda com as respectivas estrofes.
+   */
+  const renderParallelCantoUnifiedCard = (
+    parallelCanto: EpicPoemCanto,
+    nodesList: EpicPoemNode[]
+  ) => (
+    <section
+      id={`poem-canto-${parallelCanto.id}`}
+      className="poem-canto-section is-parallel-canto"
+    >
+      <div
+        className="poem-parallel-unified-card"
+        style={{
+          borderColor: `${parallelCanto.accentColor}55`,
+          backgroundImage: `linear-gradient(180deg, rgba(10, 14, 26, 0.92) 0%, rgba(7, 10, 19, 0.98) 100%), url('${parallelCanto.bannerImage}')`,
+        }}
+      >
+        <header className="poem-parallel-unified-header">
+          <div className="poem-canto-meta-top">
+            <span
+              className="poem-canto-kicker"
+              style={{ color: parallelCanto.accentColor }}
+            >
+              {parallelCanto.cantoNumber} • {parallelCanto.periodLabel}
+            </span>
+          </div>
+
+          <h2 className="font-cinzel gold-gradient-text poem-canto-title">
+            {parallelCanto.title}
+          </h2>
+          <p className="poem-canto-subtitle">{parallelCanto.subtitle}</p>
+        </header>
+
+        <div className="poem-parallel-unified-stream">
+          {nodesList.map((node, nodeIdx) => {
+            const card = CARDS_BY_ID[node.cardId];
+            const domColor =
+              DOMAIN_LABELS[node.domain]?.color || parallelCanto.accentColor || '#f59e0b';
+            const isRightMedallion = nodeIdx % 2 === 1;
+
+            return (
+              <div
+                key={node.id}
+                className={`poem-parallel-stream-segment ${
+                  isRightMedallion ? 'is-medallion-right' : 'is-medallion-left'
+                }`}
+              >
+                <div className="poem-folio-body">
+                  {card && (
+                    <div
+                      className="poem-card-medallion"
+                      onClick={() => onInspectCard(card)}
+                      style={{ '--dom-glow': `${domColor}45` } as React.CSSProperties}
+                      title={`Clique para inspecionar ${card.name}`}
+                    >
+                      <img
+                        src={`${card.imagePath}?v=12`}
+                        alt={card.name}
+                        className="poem-card-medallion-img"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+
+                  <div className="poem-book-stanzas">
+                    {node.stanzas.map((stanza, sIdx) => (
+                      <div key={sIdx} className="poem-book-stanza">
+                        {stanza.map((line, lIdx) => (
+                          <div
+                            key={lIdx}
+                            className={`poem-verse-line ${
+                              nodeIdx === 0 && sIdx === 0 && lIdx === 0 ? 'poem-first-verse' : ''
+                            }`}
+                          >
+                            {line}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <footer className="poem-canto-colophon">
+          <span>
+            — ❖ FIM DO {parallelCanto.cantoNumber} ({parallelCanto.eraNumber}) ❖ —
+          </span>
+        </footer>
+      </div>
+    </section>
   );
 
   return (
@@ -535,116 +638,83 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
                 {/* PORTAL / SETA DE RAMIFICAÇÃO TEMPORAL (CRÔNICA PARALELA OPCIONAL) */}
                 {parallelCanto && parallelCanto.nodes.length > 0 && (
                   <div className="poem-parallel-branch-wrapper">
-                    <div
-                      className={`poem-parallel-branch-trigger ${
-                        isParallelExpanded ? 'is-expanded' : ''
-                      }`}
-                      style={{ borderColor: `${parallelCanto.accentColor}55` }}
-                      onClick={() => toggleParallelCanto(parallelCanto.id)}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          toggleParallelCanto(parallelCanto.id);
-                        }
-                      }}
-                    >
-                      <div className="poem-branch-header-row">
-                        <span
-                          className="poem-branch-arrow"
-                          style={{ color: parallelCanto.accentColor }}
-                        >
-                          ↳
-                        </span>
-                        <div className="poem-branch-copy">
+                    {selectedCantoId !== parallelCanto.id && (
+                      <div
+                        className={`poem-parallel-branch-trigger ${
+                          isParallelExpanded ? 'is-expanded' : ''
+                        }`}
+                        style={{ borderColor: `${parallelCanto.accentColor}55` }}
+                        onClick={() => toggleParallelCanto(parallelCanto.id)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleParallelCanto(parallelCanto.id);
+                          }
+                        }}
+                      >
+                        <div className="poem-branch-header-row">
                           <span
-                            className="poem-branch-kicker"
+                            className="poem-branch-arrow"
                             style={{ color: parallelCanto.accentColor }}
                           >
-                            CRÔNICA PARALELA OPCIONAL • {parallelCanto.cantoNumber} (
-                            {parallelCanto.periodLabel})
+                            ↳
                           </span>
-                          <h3 className="font-cinzel poem-branch-title">
-                            {parallelCanto.title}
-                          </h3>
-                          <p className="poem-branch-subtitle">{parallelCanto.subtitle}</p>
-                        </div>
-                      </div>
-
-                      <div className="poem-branch-footer-row">
-                        <div
-                          className="poem-branch-thumbs"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {parallelCanto.allNodes.map((pNode) => {
-                            const pCard = CARDS_BY_ID[pNode.cardId];
-                            if (!pCard) return null;
-                            return (
-                              <button
-                                key={pNode.id}
-                                type="button"
-                                className="poem-branch-thumb-btn"
-                                onClick={() => onInspectCard(pCard)}
-                                title={`Inspecionar ${pCard.name}`}
-                              >
-                                <img
-                                  src={`${pCard.imagePath}?v=12`}
-                                  alt={pCard.name}
-                                  className="poem-branch-thumb-img"
-                                  loading="lazy"
-                                />
-                              </button>
-                            );
-                          })}
-                        </div>
-
-                        <span className="poem-branch-cta-btn">
-                          {isParallelExpanded
-                            ? '▴ Ocultar História Paralela'
-                            : `↳ Explorar História Paralela (${parallelCanto.nodes.length} Episódios) →`}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* SEÇÃO EXPANDIDA DO CANTO PARALELO */}
-                    {isParallelExpanded && (
-                      <section
-                        id={`poem-canto-${parallelCanto.id}`}
-                        className="poem-canto-section is-parallel-canto"
-                      >
-                        <div
-                          className="poem-canto-banner"
-                          style={{
-                            borderColor: `${parallelCanto.accentColor}55`,
-                            backgroundImage: `linear-gradient(180deg, rgba(10, 14, 26, 0.9) 0%, rgba(7, 10, 19, 0.97) 100%), url('${parallelCanto.bannerImage}')`,
-                          }}
-                        >
-                          <div className="poem-canto-meta-top">
+                          <div className="poem-branch-copy">
                             <span
-                              className="poem-canto-kicker"
+                              className="poem-branch-kicker"
                               style={{ color: parallelCanto.accentColor }}
                             >
-                              ↳ {parallelCanto.cantoNumber} • {parallelCanto.eraNumber} •{' '}
-                              {parallelCanto.periodLabel}
+                              CRÔNICA PARALELA OPCIONAL • {parallelCanto.cantoNumber} (
+                              {parallelCanto.periodLabel})
                             </span>
+                            <h3 className="font-cinzel poem-branch-title">
+                              {parallelCanto.title}
+                            </h3>
+                            <p className="poem-branch-subtitle">{parallelCanto.subtitle}</p>
                           </div>
-
-                          <h2 className="font-cinzel gold-gradient-text poem-canto-title">
-                            {parallelCanto.title}
-                          </h2>
-                          <p className="poem-canto-subtitle">{parallelCanto.subtitle}</p>
                         </div>
 
-                        {renderCantoBookPages(parallelCanto, parallelCanto.nodes)}
+                        <div className="poem-branch-footer-row">
+                          <div
+                            className="poem-branch-thumbs"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {parallelCanto.allNodes.map((pNode) => {
+                              const pCard = CARDS_BY_ID[pNode.cardId];
+                              if (!pCard) return null;
+                              return (
+                                <button
+                                  key={pNode.id}
+                                  type="button"
+                                  className="poem-branch-thumb-btn"
+                                  onClick={() => onInspectCard(pCard)}
+                                  title={`Inspecionar ${pCard.name}`}
+                                >
+                                  <img
+                                    src={`${pCard.imagePath}?v=12`}
+                                    alt={pCard.name}
+                                    className="poem-branch-thumb-img"
+                                    loading="lazy"
+                                  />
+                                </button>
+                              );
+                            })}
+                          </div>
 
-                        <footer className="poem-canto-colophon">
-                          <span>
-                            — ❖ FIM DO {parallelCanto.cantoNumber} ({parallelCanto.eraNumber}) ❖ —
+                          <span className="poem-branch-cta-btn">
+                            {isParallelExpanded
+                              ? '▴ Ocultar História Paralela'
+                              : `↳ Explorar História Paralela (${parallelCanto.nodes.length} Episódios) →`}
                           </span>
-                        </footer>
-                      </section>
+                        </div>
+                      </div>
                     )}
+
+                    {/* CARD ÚNICO CONTÍNUO DO CANTO PARALELO */}
+                    {isParallelExpanded &&
+                      renderParallelCantoUnifiedCard(parallelCanto, parallelCanto.nodes)}
                   </div>
                 )}
               </React.Fragment>

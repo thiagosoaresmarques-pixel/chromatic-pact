@@ -452,15 +452,15 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
         style={{ maxWidth: '680px', width: '95vw', maxHeight: '92vh', overflowY: 'auto' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="modal-sticky-close-bar">
           <div className="aaa-kicker">CONTA DO SOBERANO • CHROMATIC PACT ONLINE</div>
           <button
             type="button"
-            className="aaa-btn aaa-btn-ghost"
-            style={{ padding: '4px 10px' }}
+            className="btn-fantasy btn-fantasy-danger"
+            style={{ padding: '4px 10px', fontSize: '0.74rem' }}
             onClick={onClose}
           >
-            ✕
+            ✕ Fechar
           </button>
         </div>
 

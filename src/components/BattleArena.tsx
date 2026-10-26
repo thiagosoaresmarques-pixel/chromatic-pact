@@ -127,6 +127,7 @@ export interface BattleArenaProps {
   initialPlayerDeckId?: string;
   initialAiDeckId?: string;
   onCampaignVictory?: (boss: CampaignBoss) => void;
+  onExitArena?: () => void;
   onExitCampaign?: () => void;
   onRewardGold?: (amount: number, reason: string) => void;
   onlineMatch?: {
@@ -265,10 +266,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   initialPlayerDeckId,
   initialAiDeckId,
   onCampaignVictory,
+  onExitArena,
   onExitCampaign,
   onRewardGold,
   onlineMatch,
 }) => {
+  const handleExitBattle = () => {
+    if (onlineMatch) {
+      onlineMatch.onExitPvp();
+    } else if (campaignBoss && onExitCampaign) {
+      onExitCampaign();
+    } else if (onExitArena) {
+      onExitArena();
+    }
+  };
   const allowedPlayerDecks = useMemo(
     () =>
       !isGuest && customDecks.length > 0
@@ -354,7 +365,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     window.innerWidth > 768;
   const [showLogSidebar, setShowLogSidebar] = useState(false);
   const [rewardClaimed, setRewardClaimed] = useState(false);
-  const [gameoverStage, setGameoverStage] = useState<'none' | 'cinematic' | 'modal'>('none');
+  const [gameoverStage, setGameoverStage] = useState<
+    'none' | 'cinematic' | 'modal' | 'dismissed'
+  >('none');
   const [isMulliganOpen, setIsMulliganOpen] = useState(true);
   const [mulliganSwapIndices, setMulliganSwapIndices] = useState<number[]>([]);
   const [isHandPinnedOpen, setIsHandPinnedOpen] = useState(false);
@@ -1959,6 +1972,24 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       {isMulliganOpen && gameState.turn === 1 && gameState.phase !== 'gameover' && (
         <div className="mulligan-modal-backdrop">
           <div className="mulligan-modal-panel">
+            {/* Top Instant Action & Exit Bar (Always visible at top of Smartphone & Desktop without scrolling) */}
+            <div className="mulligan-top-bar">
+              <button
+                type="button"
+                className="mulligan-exit-top-btn"
+                onClick={handleExitBattle}
+              >
+                ← Sair da Batalha
+              </button>
+              <button
+                type="button"
+                className="mulligan-quick-start-top-btn"
+                onClick={handleConfirmMulligan}
+              >
+                ⚔️ {mulliganSwapIndices.length === 0 ? 'Iniciar Batalha' : `Trocar (${mulliganSwapIndices.length}) & Jogar`}
+              </button>
+            </div>
+
             <div className="mulligan-header">
               <div className="mulligan-herald-crest">❖ PREPARAÇÃO DE BATALHA • ESCALA GUERRA TOTAL ❖</div>
               <div className="mulligan-title">ESCOLHA SUA MÃO INICIAL</div>
@@ -1995,7 +2026,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       <CardView
                         card={card}
                         mode="gallery"
-                        onClick={() => toggleMulliganCard(idx)}
+                        onInspect={setInspectCard}
                       />
                       {isMarkedForSwap && (
                         <div className="mulligan-swap-slash-overlay">
@@ -2016,6 +2047,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             </div>
 
             <div className="mulligan-actions-row">
+              <button
+                type="button"
+                className="mulligan-exit-btn"
+                onClick={handleExitBattle}
+              >
+                ← Sair
+              </button>
               <button
                 type="button"
                 className="mulligan-confirm-btn"
@@ -2611,7 +2649,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         <button
                           type="button"
                           className="hud-inline-btn crypt-btn"
-                          onClick={() => setCryptModalOwner('ai')}
+                          onClick={() => {
+                            setIsP2DrawerPinned(false);
+                            setCryptModalOwner('ai');
+                          }}
                         >
                           🪦 Cripta ({gameState.ai.crypt.length})
                         </button>
@@ -3342,7 +3383,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               <button
                                 type="button"
                                 className="hud-inline-btn crypt-btn"
-                                onClick={() => setCryptModalOwner('player')}
+                                onClick={() => {
+                                  setIsP1DrawerPinned(false);
+                                  setCryptModalOwner('player');
+                                }}
                               >
                                 🪦 Cripta ({gameState.player.crypt.length})
                               </button>
@@ -3782,6 +3826,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             }}
                           >
                             📜 Histórico de Combate (Log)
+                          </button>
+                          <button
+                            type="button"
+                            className="awmt-btn danger full-width"
+                            onClick={() => {
+                              setActiveRightDrawer(null);
+                              handleExitBattle();
+                            }}
+                          >
+                            🏠 Sair para o Início
                           </button>
                         </div>
                       </div>
@@ -4617,12 +4671,28 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       )}
 
       {/* 2. GAME OVER SUMMARY MODAL CARD (APPEARS AFTER FINISHER ANIMATION) */}
-      {gameState.phase === 'gameover' && gameoverStage !== 'cinematic' && (
-        <div className="modal-backdrop">
+      {gameState.phase === 'gameover' && gameoverStage === 'modal' && (
+        <div className="modal-backdrop" onClick={() => setGameoverStage('dismissed')}>
           <div
             className="modal-panel"
-            style={{ maxWidth: '500px', textAlign: 'center', padding: '2rem' }}
+            style={{ maxWidth: '500px', textAlign: 'center', padding: '1.75rem 1.5rem', position: 'relative' }}
+            onClick={(e) => e.stopPropagation()}
           >
+            <button
+              type="button"
+              className="btn-fantasy"
+              style={{
+                position: 'absolute',
+                top: '0.75rem',
+                right: '0.75rem',
+                padding: '4px 10px',
+                fontSize: '0.74rem',
+              }}
+              onClick={() => setGameoverStage('dismissed')}
+              title="Fechar resumo e ver o tabuleiro final"
+            >
+              ✕ Fechar
+            </button>
             <div
               className="font-cinzel"
               style={{
@@ -4692,14 +4762,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               </div>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
               {!onlineMatch && (
                 <button
                   type="button"
                   className="btn-fantasy btn-fantasy-primary"
                   onClick={() => startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId)}
                 >
-                  Jogar Novamente
+                  ⚔️ Jogar Novamente
                 </button>
               )}
               {onlineMatch && (
@@ -4708,16 +4778,73 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   className="btn-fantasy btn-fantasy-primary"
                   onClick={onlineMatch.onExitPvp}
                 >
-                  Voltar ao Conclave 1×1
+                  🌐 Voltar ao Conclave 1×1
                 </button>
               )}
               {campaignBoss && onExitCampaign && (
                 <button type="button" className="btn-fantasy" onClick={onExitCampaign}>
-                  Voltar à Campanha
+                  🏰 Voltar à Campanha
                 </button>
               )}
+              {!onlineMatch && !campaignBoss && onExitArena && (
+                <button type="button" className="btn-fantasy" onClick={onExitArena}>
+                  🏠 Voltar ao Início
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn-fantasy"
+                onClick={() => setGameoverStage('dismissed')}
+              >
+                👁️ Ver Tabuleiro
+              </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Floating Post-Game Banner when Game Over Modal was Dismissed to View Board */}
+      {gameState.phase === 'gameover' && gameoverStage === 'dismissed' && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '56px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1500,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            padding: '0.45rem 0.85rem',
+            borderRadius: '999px',
+            background: 'rgba(10, 15, 28, 0.95)',
+            border: '1.5px solid rgba(250, 204, 21, 0.65)',
+            boxShadow: '0 10px 28px rgba(0, 0, 0, 0.85)',
+          }}
+        >
+          <span className="font-cinzel gold-gradient-text" style={{ fontSize: '0.74rem', fontWeight: 800 }}>
+            {gameState.winner === 'player' ? '🏆 VITÓRIA' : '💀 FIM DE PARTIDA'}
+          </span>
+          {!onlineMatch && (
+            <button
+              type="button"
+              className="btn-fantasy btn-fantasy-primary"
+              style={{ padding: '4px 10px', fontSize: '0.7rem' }}
+              onClick={() => startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId)}
+            >
+              ⚔️ Jogar Novamente
+            </button>
+          )}
+          <button
+            type="button"
+            className="btn-fantasy"
+            style={{ padding: '4px 10px', fontSize: '0.7rem' }}
+            onClick={handleExitBattle}
+          >
+            🏠 Sair
+          </button>
         </div>
       )}
 
@@ -4751,7 +4878,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 ? `Ao desistir, a vitória será concedida imediatamente a ${gameState.ai.name} e sua Reputação será atualizada.`
                 : `Ao desistir, seu Bastião se renderá imediatamente e a partida atual será encerrada.`}
             </p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 className="btn-fantasy"
@@ -4766,6 +4893,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               >
                 🏳️ Confirmar Desistência
               </button>
+              {!onlineMatch && (
+                <button
+                  type="button"
+                  className="btn-fantasy"
+                  onClick={() => {
+                    setShowSurrenderConfirm(false);
+                    handleExitBattle();
+                  }}
+                >
+                  🏠 Sair para o Início
+                </button>
+              )}
             </div>
           </div>
         </div>

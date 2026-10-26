@@ -1489,6 +1489,14 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
           style={{ maxWidth: '1220px', width: '95vw', maxHeight: '90vh', overflowY: 'auto' }}
           onClick={(e) => e.stopPropagation()}
         >
+          <div className="modal-sticky-close-bar">
+            <span className="font-cinzel gold-gradient-text" style={{ fontSize: '0.78rem', fontWeight: 800 }}>
+              🔮 CONSELHEIRO TÁTICO DA PARTIDA
+            </span>
+            <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
+              ✕ Fechar Conselheiro
+            </button>
+          </div>
           {content}
         </div>
       </div>

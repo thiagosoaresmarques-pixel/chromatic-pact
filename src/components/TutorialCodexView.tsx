@@ -1332,6 +1332,14 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
           style={{ maxWidth: '1140px', width: '95vw', maxHeight: '90vh', overflowY: 'auto' }}
           onClick={(e) => e.stopPropagation()}
         >
+          <div className="modal-sticky-close-bar">
+            <span className="font-cinzel gold-gradient-text" style={{ fontSize: '0.78rem', fontWeight: 800 }}>
+              🎓 CÓDICE DE REGRAS & TUTORIAL
+            </span>
+            <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
+              ✕ Fechar Tutorial
+            </button>
+          </div>
           {innerContent}
         </div>
       </div>

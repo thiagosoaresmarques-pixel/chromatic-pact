@@ -692,15 +692,27 @@ export const App: React.FC = () => {
                 height: '30px',
                 fontSize: '0.66rem',
                 fontWeight: 800,
-                borderColor: isArenaNavExpanded ? '#facc15' : 'rgba(212, 175, 55, 0.55)',
-                color: '#fef08a',
+                borderColor: 'rgba(248, 113, 113, 0.7)',
+                color: '#fecaca',
               }}
               onClick={() => {
                 setIsNotifOpen(false);
-                setIsArenaNavExpanded((prev) => !prev);
+                setIsArenaNavExpanded(false);
+                if (activeOnlineMatch) {
+                  setActiveOnlineMatch(null);
+                  setActiveTab('multiplayer');
+                } else if (activeCampaignBoss) {
+                  const wasExp = isExpeditionBattle;
+                  setActiveCampaignBoss(null);
+                  setIsExpeditionBattle(false);
+                  setActiveTab(wasExp ? 'expedition' : 'campaign');
+                } else {
+                  setActiveTab('home');
+                }
               }}
+              title="Sair da Arena e voltar ao menu anterior"
             >
-              {isArenaNavExpanded ? '▴ Ocultar Abas' : '☰ Abas ▾'}
+              ← Sair
             </button>
           )}
 
@@ -1129,6 +1141,12 @@ export const App: React.FC = () => {
             initialPlayerDeckId={quickDuelDecks.playerDeckId}
             initialAiDeckId={quickDuelDecks.aiDeckId}
             onCampaignVictory={handleCampaignVictory}
+            onExitArena={() => {
+              setActiveCampaignBoss(null);
+              setActiveOnlineMatch(null);
+              setIsExpeditionBattle(false);
+              setActiveTab('home');
+            }}
             onExitCampaign={() => {
               const wasExp = isExpeditionBattle;
               setActiveCampaignBoss(null);

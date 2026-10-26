@@ -105,6 +105,16 @@ export function trackAdsEvent(
   try {
     if (typeof window.gtag === 'function') {
       window.gtag('event', eventName, enrichedParams);
+
+      // Compatibilidade com conversão "Automaticamente sem código" do Google Ads (URL /inscricao)
+      if (eventName === 'register_account' || eventName === 'quick_play_clicked') {
+        window.gtag('event', 'page_view', {
+          send_to: GOOGLE_ADS_TAG_ID,
+          page_location: 'https://chromaticpact.com/inscricao',
+          page_path: '/inscricao',
+          page_title: 'Inscrição Concluída — Pacto Cromático',
+        });
+      }
     }
   } catch {
     // Ignora falhas de bloqueadores de anúncio

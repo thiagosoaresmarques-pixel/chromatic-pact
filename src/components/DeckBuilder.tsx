@@ -220,13 +220,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const [rarityFilter, setRarityFilter] = useState<Rarity | 'all'>('all');
   const [costFilter, setCostFilter] = useState<number | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [onlyUnlocked, setOnlyUnlocked] = useState<boolean>(() => !isGuest && customDecks.length > 0);
+  const [onlyUnlocked, setOnlyUnlocked] = useState<boolean>(false);
   const [synergyFilterId, setSynergyFilterId] = useState<string | 'all' | 'recommended'>('all');
   const [showSynergyPanel, setShowSynergyPanel] = useState<boolean>(false);
-
-  useEffect(() => {
-    setOnlyUnlocked(!isGuest && customDecks.length > 0);
-  }, [isGuest, customDecks.length]);
 
   // Active Deck Being Edited
   const [deckName, setDeckName] = useState<string>(() =>
@@ -795,6 +791,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     typeFilter !== 'all' ||
     rarityFilter !== 'all' ||
     costFilter !== 'all' ||
+    onlyUnlocked ||
     searchQuery.trim() !== '' ||
     synergyFilterId !== 'all';
 
@@ -803,6 +800,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     setTypeFilter('all');
     setRarityFilter('all');
     setCostFilter('all');
+    setOnlyUnlocked(false);
     setSearchQuery('');
     setSynergyFilterId('all');
   };
@@ -817,7 +815,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             <div className="aaa-callout-copy">
               <span className="aaa-callout-kicker">MODO VISITANTE • EXPLORAÇÃO DO ACERVO</span>
               <div className="aaa-callout-text">
-                Você pode explorar e inspecionar todas as 890 cartas. Para montar e salvar seu{' '}
+                Você pode explorar e inspecionar todas as {ALL_CARDS.length} cartas. Para montar e salvar seu{' '}
                 <strong>Grimório de Combate (100 cartas)</strong> e liberar os demais modos, entre
                 ou crie sua conta.
               </div>
@@ -1215,7 +1213,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 NENHUMA CARTA ENCONTRADA PARA OS FILTROS SELECIONADOS
               </div>
               <div style={{ fontSize: '0.8rem', color: '#94a3b8', maxWidth: '420px' }}>
-                Ajuste a busca, desative o filtro "Coleção" para ver todas as 890 cartas ou limpe os filtros atuais.
+                Ajuste a busca, desative o filtro "Coleção" para ver todas as {ALL_CARDS.length} cartas ou limpe os filtros atuais.
               </div>
               <button
                 type="button"

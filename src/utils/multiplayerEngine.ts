@@ -25,10 +25,11 @@ export function getStarterCollection(): Record<string, number> {
       initial[id] = Math.max(initial[id] ?? 0, cnt);
     }
   }
-  // Grant 2 copies of neutral commons/uncommons as flexible deckbuilding reserve
+  // Grant neutral domain cards as flexible deckbuilding reserve for all Sovereigns
   for (const card of ALL_CARDS) {
-    if (card.domain === 'neutral' && (card.rarity === 'common' || card.rarity === 'uncommon')) {
-      initial[card.id] = Math.max(initial[card.id] ?? 0, 2);
+    if (card.domain === 'neutral') {
+      const copies = card.rarity === 'legendary' ? 1 : 2;
+      initial[card.id] = Math.max(initial[card.id] ?? 0, copies);
     }
   }
   return initial;

@@ -91,6 +91,13 @@ export const App: React.FC = () => {
     for (const cid of baseCardIds) {
       merged[cid] = (merged[cid] ?? 0) + 1;
     }
+    // Always ensure the neutral domain cards (neutral_01..166) are available in the Sovereign's Grimoire collection
+    for (const card of ALL_CARDS) {
+      if (card.domain === 'neutral') {
+        const copies = card.rarity === 'legendary' ? 1 : 2;
+        merged[card.id] = Math.max(merged[card.id] ?? 0, copies);
+      }
+    }
     const extra = currentUser.extraUnlockedCards ?? {};
     for (const [cid, count] of Object.entries(extra)) {
       if (count > 0) {

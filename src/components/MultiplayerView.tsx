@@ -246,6 +246,7 @@ interface SovereignAccountModalProps {
   currentUser: SovereignUserProfile;
   customDecks?: CustomSavedDeck[];
   onUserChange: (profile: SovereignUserProfile) => void;
+  onAccountSuccess?: (profile: SovereignUserProfile) => void;
   onClose: () => void;
   initialTab?: AccountModalTab;
   onNeedsDeckSetup?: () => void;
@@ -255,6 +256,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   currentUser,
   customDecks = [],
   onUserChange,
+  onAccountSuccess,
   onClose,
   initialTab = 'profile',
   onNeedsDeckSetup,
@@ -340,6 +342,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   const handleSelectExisting = (acc: SovereignUserProfile) => {
     setActiveTabUserProfile(acc);
     onUserChange(acc);
+    onAccountSuccess?.(acc);
     playSfx('channel');
     onClose();
     if (!acc.customDecks || acc.customDecks.length === 0) {
@@ -368,6 +371,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     if (res.ok && res.profile) {
       setAccountsRoster(getSavedAccountsRoster());
       onUserChange(res.profile);
+      onAccountSuccess?.(res.profile);
       playSfx('ascend');
       onClose();
       if (!res.profile.customDecks || res.profile.customDecks.length === 0) {
@@ -388,6 +392,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
       const recoveredProfile = res.profile;
       setAccountsRoster(getSavedAccountsRoster());
       onUserChange(recoveredProfile);
+      onAccountSuccess?.(recoveredProfile);
       playSfx('ascend');
       setRecMessage({
         ok: true,
@@ -432,9 +437,12 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     });
     setAccountsRoster(getSavedAccountsRoster());
     onUserChange(created);
+    onAccountSuccess?.(created);
     playSfx('ascend');
     onClose();
-    onNeedsDeckSetup?.();
+    if (!created.customDecks || created.customDecks.length === 0) {
+      onNeedsDeckSetup?.();
+    }
   };
 
   return (
@@ -988,6 +996,36 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             onSubmit={handleCreateAccount}
             style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
           >
+            {/* Destaque Dourado de Bônus de Boas-Vindas */}
+            <div
+              style={{
+                padding: '0.75rem 0.95rem',
+                borderRadius: '8px',
+                background:
+                  'linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(30, 18, 52, 0.92))',
+                border: '1.5px solid rgba(250, 204, 21, 0.65)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+              }}
+            >
+              <span style={{ fontSize: '1.6rem', lineHeight: 1 }}>🎁</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <div
+                  className="font-cinzel gold-gradient-text"
+                  style={{ fontSize: '0.88rem', fontWeight: 900 }}
+                >
+                  PRESENTE DE BOAS-VINDAS DO SOBERANO (100% GRÁTIS)
+                </div>
+                <div style={{ fontSize: '0.76rem', color: '#fef08a', lineHeight: 1.4 }}>
+                  Ao criar sua conta gratuita você recebe imediatamente{' '}
+                  <strong>+160 Ouro de Boas-Vindas (2 Pacotes no Relicário)</strong> +{' '}
+                  <strong>Grimório Inicial de 100 Cartas liberado para combate</strong>!
+                </div>
+              </div>
+            </div>
+
             {createError && (
               <div
                 style={{

@@ -22,8 +22,10 @@ import {
   MultiplayerView,
   SovereignAccountModal,
 } from './components/MultiplayerView';
+import { WelcomeVisitorBanner } from './components/WelcomeVisitorBanner';
 import { CardView, CardInspectModal } from './components/CardView';
 import {
+  ensureStarterDeckForUser,
   getActiveTabUserProfile,
   isUnregisteredProfile,
   MultiplayerRoom,
@@ -33,6 +35,7 @@ import {
   subscribeMultiplayerBus,
   VICTORY_GOLD_REWARD,
 } from './utils/multiplayerEngine';
+import { initAdsTelemetry, trackAdsEvent } from './utils/adsTelemetry';
 
 export interface SovereignNotification {
   id: string;
@@ -296,13 +299,13 @@ export const App: React.FC = () => {
   };
 
   const handleOpenArenaSolo = () => {
+    trackAdsEvent('start_duel', { mode: 'solo_arena', isGuest });
     setActiveCampaignBoss(null);
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
-    // Registered users (including tsm81 and new users) must first confirm/save their 100-card combat deck
     if (!isGuest && customDecks.length === 0) {
-      setActiveTab('deckbuilder');
-      return;
+      const ensured = ensureStarterDeckForUser(currentUser);
+      setCurrentUser(ensured);
     }
     setActiveTab('arena');
   };
@@ -312,6 +315,11 @@ export const App: React.FC = () => {
     const nextMuted = toggleMute();
     setSoundMuted(nextMuted);
   };
+
+  // Initialize Google Ads / UTM attribution telemetry on mount
+  useEffect(() => {
+    initAdsTelemetry();
+  }, []);
 
   // Subscribe to live music descriptor & start adaptive soundtrack on first user gesture
   useEffect(() => {
@@ -343,6 +351,7 @@ export const App: React.FC = () => {
   }, [activeTab]);
 
   const handleStartBossBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
+    trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: false });
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
     setActiveCampaignBoss(boss);
@@ -351,6 +360,7 @@ export const App: React.FC = () => {
   };
 
   const handleStartExpeditionBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
+    trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: true });
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(true);
     setActiveCampaignBoss(boss);
@@ -410,6 +420,7 @@ export const App: React.FC = () => {
 
   const handleOpenPack = (packCost: number, drawnCards: CardDefinition[]) => {
     if (isGuest) return;
+    trackAdsEvent('open_pack', { packCost, cardsCount: drawnCards.length });
     const nextExtra = { ...(currentUser.extraUnlockedCards ?? {}) };
     for (const c of drawnCards) {
       nextExtra[c.id] = (nextExtra[c.id] ?? 0) + 1;
@@ -432,6 +443,7 @@ export const App: React.FC = () => {
 
   const handleSaveCustomDeck = (deck: CustomSavedDeck) => {
     if (isGuest) return;
+    trackAdsEvent('save_deck', { deckName: deck.name, cardsCount: deck.cardIds.length });
     const isFirst = customDecks.length === 0;
     const exists = customDecks.some((d) => d.id === deck.id);
     const nextDecks = exists
@@ -801,6 +813,17 @@ export const App: React.FC = () => {
 
         {activeTab === 'home' && (
           <div className="aaa-page-shell">
+            {isGuest && (
+              <WelcomeVisitorBanner
+                onQuickPlayArena={() => {
+                  trackAdsEvent('quick_play_clicked', { source: 'welcome_banner' });
+                  handleOpenArenaSolo();
+                }}
+                onOpenCreateAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+                onOpenCampaign={() => setActiveTab('campaign')}
+              />
+            )}
+
             {/* Split Cinematic Hero with Interactive 3D Card Fan */}
             <div className="aaa-home-showcase-hero">
               <div className="aaa-home-hero-copy">
@@ -1010,7 +1033,10 @@ export const App: React.FC = () => {
           <MultiplayerView
             customDecks={customDecks}
             currentUser={currentUser}
-            onUserChange={setCurrentUser}
+            onUserChange={(updatedProfile) => {
+              const ensured = ensureStarterDeckForUser(updatedProfile);
+              setCurrentUser(ensured);
+            }}
             onOpenAccountModal={(tab) => setAccountModalState({ open: true, tab })}
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartOnlineMatch={(room, role) => {
@@ -1101,8 +1127,8 @@ export const App: React.FC = () => {
             customDecks={customDecks}
             onLaunchDuel={(playerDeckId, opponentDeckId) => {
               if (!isGuest && customDecks.length === 0) {
-                setActiveTab('deckbuilder');
-                return;
+                const ensured = ensureStarterDeckForUser(currentUser);
+                setCurrentUser(ensured);
               }
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
@@ -1159,7 +1185,15 @@ export const App: React.FC = () => {
           <SovereignAccountModal
             currentUser={currentUser}
             customDecks={customDecks}
-            onUserChange={setCurrentUser}
+            onUserChange={(updatedProfile) => {
+              const ensured = ensureStarterDeckForUser(updatedProfile);
+              setCurrentUser(ensured);
+            }}
+            onAccountSuccess={(updatedProfile) => {
+              const ensured = ensureStarterDeckForUser(updatedProfile);
+              setCurrentUser(ensured);
+              trackAdsEvent('register_account', { username: updatedProfile.username });
+            }}
             initialTab={accountModalState.tab}
             onClose={() => setAccountModalState((prev) => ({ ...prev, open: false }))}
             onNeedsDeckSetup={() => setActiveTab('deckbuilder')}

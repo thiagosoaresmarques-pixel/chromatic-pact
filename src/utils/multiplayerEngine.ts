@@ -1,18 +1,77 @@
-import { CardDefinition, DomainExpansionState, GameState, PlayerState, PrebuiltDeck } from '../types/game';
+import { CardDefinition, Domain, DomainExpansionState, GameState, PlayerState, PrebuiltDeck } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
 
 export const VICTORY_GOLD_REWARD = 10;
+export const STARTER_GOLD = 160;
 
 export const MONOCHROMATIC_STARTER_DECKS: PrebuiltDeck[] = PREBUILT_DECKS.filter(
   (d) => d.domains.length === 1
 );
 
+export interface SovereignSavedDeck {
+  id: string;
+  name: string;
+  domain?: Domain;
+  cardIds: string[];
+  updatedAt?: number;
+}
+
+/**
+ * Builds a balanced 100-card starter deck combining Red (Pyros) and Neutral (Aço) cards,
+ * respecting copy limits (1 for legendary, 2 for common/uncommon/rare).
+ */
+export function buildDefaultStarterDeck(): {
+  id: string;
+  name: string;
+  domain: Domain;
+  cardIds: string[];
+  updatedAt: number;
+} {
+  const cardIds: string[] = [];
+  const counts: Record<string, number> = {};
+  let legendaryCount = 0;
+
+  const redCards = ALL_CARDS.filter((c) => c.domain === 'red').sort((a, b) => a.cost - b.cost);
+  const neutralCards = ALL_CARDS.filter((c) => c.domain === 'neutral').sort((a, b) => a.cost - b.cost);
+
+  const addCardsFromPool = (pool: CardDefinition[], targetTotal: number) => {
+    for (const card of pool) {
+      if (cardIds.length >= targetTotal) break;
+      const isLeg = card.rarity === 'legendary';
+      if (isLeg && legendaryCount >= 8) continue;
+      const maxCopies = isLeg ? 1 : 2;
+      const current = counts[card.id] ?? 0;
+      const toAdd = Math.min(maxCopies - current, targetTotal - cardIds.length);
+      for (let i = 0; i < toAdd; i++) {
+        cardIds.push(card.id);
+        counts[card.id] = (counts[card.id] ?? 0) + 1;
+        if (isLeg) legendaryCount += 1;
+      }
+    }
+  };
+
+  // 70 Red cards + 30 Neutral cards = 100 balanced cards
+  addCardsFromPool(redCards, 70);
+  addCardsFromPool(neutralCards, 100);
+  if (cardIds.length < 100) {
+    addCardsFromPool(ALL_CARDS, 100);
+  }
+
+  return {
+    id: 'starter_deck_pyros_steel_100',
+    name: 'Pacto Inicial de Pyros & Aço (100 Cartas)',
+    domain: 'red',
+    cardIds: cardIds.slice(0, 100),
+    updatedAt: Date.now(),
+  };
+}
+
 /**
  * Returns the initial starter card collection granted to every registered Sovereign.
  * Includes all copies required to play or edit any of the 5 Monochromatic Starter Decks,
- * plus a starter reserve of common/uncommon cards so the player can also build a 100-card deck from scratch.
+ * the default 100-card starter deck, plus a starter reserve of common/uncommon cards.
  */
 export function getStarterCollection(): Record<string, number> {
   const initial: Record<string, number> = {};
@@ -25,6 +84,14 @@ export function getStarterCollection(): Record<string, number> {
       initial[id] = Math.max(initial[id] ?? 0, cnt);
     }
   }
+  const defaultStarter = buildDefaultStarterDeck();
+  const starterCounts: Record<string, number> = {};
+  for (const id of defaultStarter.cardIds) {
+    starterCounts[id] = (starterCounts[id] ?? 0) + 1;
+  }
+  for (const [id, cnt] of Object.entries(starterCounts)) {
+    initial[id] = Math.max(initial[id] ?? 0, cnt);
+  }
   // Grant neutral domain cards as flexible deckbuilding reserve for all Sovereigns
   for (const card of ALL_CARDS) {
     if (card.domain === 'neutral') {
@@ -33,12 +100,6 @@ export function getStarterCollection(): Record<string, number> {
     }
   }
   return initial;
-}
-
-export interface SovereignSavedDeck {
-  id: string;
-  name: string;
-  cardIds: string[];
 }
 
 export interface SovereignUserProfile {
@@ -348,7 +409,7 @@ export function getActiveTabUserProfile(): SovereignUserProfile {
     const tabSaved = sessionStorage.getItem(STORAGE_KEYS.TAB_ACTIVE_USER);
     if (tabSaved) {
       const parsed = JSON.parse(tabSaved) as SovereignUserProfile;
-      if (!isUnregisteredProfile(parsed)) return parsed;
+      if (!isUnregisteredProfile(parsed)) return ensureStarterDeckForUser(parsed);
     }
   } catch {
     // Ignore
@@ -363,8 +424,9 @@ export function getActiveTabUserProfile(): SovereignUserProfile {
   const hostIdsInWaiting = new Set(existingRooms.map((r) => r.host.id));
   const picked = roster.find((acc) => !hostIdsInWaiting.has(acc.id)) ?? roster[0];
 
-  setActiveTabUserProfile(picked);
-  return picked;
+  const ensured = ensureStarterDeckForUser(picked);
+  setActiveTabUserProfile(ensured);
+  return ensured;
 }
 
 export function setActiveTabUserProfile(profile: SovereignUserProfile): void {
@@ -382,6 +444,31 @@ export function setActiveTabUserProfile(profile: SovereignUserProfile): void {
     // Ignore
   }
   saveAccountToRoster(profile);
+}
+
+/**
+ * Ensures any registered Sovereign account has at least 1 complete 100-card Starter Grimoire
+ * so no player is ever blocked out of the Arena after registration.
+ */
+export function ensureStarterDeckForUser(profile: SovereignUserProfile): SovereignUserProfile {
+  if (isUnregisteredProfile(profile)) {
+    return profile;
+  }
+  if (profile.customDecks && profile.customDecks.length > 0) {
+    return profile;
+  }
+  const defaultDeck = buildDefaultStarterDeck();
+  const updated: SovereignUserProfile = {
+    ...profile,
+    customDecks: [defaultDeck],
+    starterDeckCardIds:
+      profile.starterDeckCardIds && profile.starterDeckCardIds.length > 0
+        ? profile.starterDeckCardIds
+        : defaultDeck.cardIds,
+    preferredDeckId: defaultDeck.id,
+  };
+  setActiveTabUserProfile(updated);
+  return updated;
 }
 
 /**
@@ -478,6 +565,7 @@ export function createNewSovereignAccount(params: {
 }): SovereignUserProfile {
   const cleanName = params.username.trim() || `Soberano_${Math.floor(100 + Math.random() * 900)}`;
   const chosenAvatar = params.avatarCardId || 'neutral_10_valkyra_pentacromatica';
+  const defaultDeck = buildDefaultStarterDeck();
   const profile: SovereignUserProfile = {
     id: `sov_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     username: cleanName,
@@ -488,16 +576,17 @@ export function createNewSovereignAccount(params: {
     eloRating: 1200,
     pvpWins: 0,
     pvpLosses: 0,
-    preferredDeckId: params.preferredDeckId,
-    gold: 0,
-    customDecks: [],
-    starterDeckCardIds: [],
+    preferredDeckId: defaultDeck.id,
+    gold: STARTER_GOLD,
+    customDecks: [defaultDeck],
+    starterDeckCardIds: defaultDeck.cardIds,
     extraUnlockedCards: {},
     defeatedBossIds: [],
     arenaWins: 0,
   };
-  setActiveTabUserProfile(profile);
-  return profile;
+  const ensured = ensureStarterDeckForUser(profile);
+  setActiveTabUserProfile(ensured);
+  return ensured;
 }
 
 /**
@@ -712,8 +801,9 @@ export async function authenticateSovereignAccount(
           if (!cloudProfile.passwordHash) {
             cloudProfile.passwordHash = inputHash;
           }
-          setActiveTabUserProfile(cloudProfile);
-          return { ok: true, profile: cloudProfile };
+          const ensuredCloud = ensureStarterDeckForUser(cloudProfile);
+          setActiveTabUserProfile(ensuredCloud);
+          return { ok: true, profile: ensuredCloud };
         }
       }
     } catch {
@@ -728,8 +818,9 @@ export async function authenticateSovereignAccount(
         error: 'Senha incorreta. Verifique sua senha ou clique em "Esqueci minha senha".',
       };
     }
-    setActiveTabUserProfile(localMatch);
-    return { ok: true, profile: localMatch };
+    const ensuredLocal = ensureStarterDeckForUser(localMatch);
+    setActiveTabUserProfile(ensuredLocal);
+    return { ok: true, profile: ensuredLocal };
   }
 
   return {
@@ -780,8 +871,9 @@ export async function recoverAndResetPassword(
           }
           cloudProfile.email = cleanEmail;
           cloudProfile.passwordHash = hashPassword(newRawPassword);
-          setActiveTabUserProfile(cloudProfile);
-          return { ok: true, profile: cloudProfile };
+          const ensuredCloud = ensureStarterDeckForUser(cloudProfile);
+          setActiveTabUserProfile(ensuredCloud);
+          return { ok: true, profile: ensuredCloud };
         }
       }
     } catch {
@@ -801,8 +893,9 @@ export async function recoverAndResetPassword(
       email: cleanEmail,
       passwordHash: hashPassword(newRawPassword),
     };
-    setActiveTabUserProfile(updated);
-    return { ok: true, profile: updated };
+    const ensuredUpdated = ensureStarterDeckForUser(updated);
+    setActiveTabUserProfile(ensuredUpdated);
+    return { ok: true, profile: ensuredUpdated };
   }
 
   return {

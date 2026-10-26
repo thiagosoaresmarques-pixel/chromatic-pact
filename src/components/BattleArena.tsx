@@ -2525,8 +2525,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   {gameState.domainExpansion && (
                     <span
                       className="hud-pill-env-chip domain"
+                      title={
+                        gameState.domainExpansion.clashRival
+                          ? `Disputa de Domínios: ${gameState.domainExpansion.name} vs ${gameState.domainExpansion.clashRival.name} (Acerto Garantido Anulado)`
+                          : `${gameState.domainExpansion.name} (${gameState.domainExpansion.turnsRemaining} rodadas)`
+                      }
                     >
-                      ⛩️ {gameState.domainExpansion.turnsRemaining}r
+                      {gameState.domainExpansion.clashRival
+                        ? `⛩️⚔️ Disputa (${gameState.domainExpansion.turnsRemaining}r)`
+                        : `⛩️ ${gameState.domainExpansion.turnsRemaining}r`}
                     </span>
                   )}
 
@@ -2757,37 +2764,36 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     </div>
                   )}
 
-                  {/* 2. DOMAIN CLASH: TWO DOMAINS FIGHTING (50/50 Split Table + Crackling Fault-Line Seam) */}
+                  {/* 2. DOMAIN CLASH: TWO DOMAINS FIGHTING (50/50 Organic Blend + Subtle Energy Seam) */}
                   {gameState.domainExpansion && gameState.domainExpansion.clashRival && (() => {
                     const exp = gameState.domainExpansion;
                     const rival = exp.clashRival!;
                     const topDom = exp.owner === 'ai' ? exp : rival;
                     const bottomDom = exp.owner === 'player' ? exp : rival;
+                    const topColor = DOMAIN_META[topDom.domain]?.color || '#38bdf8';
+                    const bottomColor = DOMAIN_META[bottomDom.domain]?.color || '#ef4444';
                     return (
                       <div
                         key={`domain-clash-${topDom.domain}-${bottomDom.domain}`}
                         className="tabletop-domain-clash-stage"
+                        style={
+                          {
+                            '--top-clash-color': topColor,
+                            '--bottom-clash-color': bottomColor,
+                          } as React.CSSProperties
+                        }
                       >
                         <div className={`tabletop-domain-clash-half top-half domain-${topDom.domain}`}>
                           <div className={`tabletop-domain-flow-fx domain-${topDom.domain}`} />
-                          <div className="clash-half-domain-tag top-tag">
-                            {topDom.icon} {topDom.name}
-                          </div>
                         </div>
 
                         <div className={`tabletop-domain-clash-half bottom-half domain-${bottomDom.domain}`}>
                           <div className={`tabletop-domain-flow-fx domain-${bottomDom.domain}`} />
-                          <div className="clash-half-domain-tag bottom-tag">
-                            {bottomDom.icon} {bottomDom.name}
-                          </div>
                         </div>
 
                         <div className="tabletop-domain-clash-faultline">
                           <div className="clash-faultline-core-beam" />
-                          <div className="clash-faultline-sparks" />
-                          <div className="clash-faultline-badge">
-                            ⚡⛩️ DISPUTA DE DOMÍNIOS • ACERTO GARANTIDO ANULADO ⚡
-                          </div>
+                          <div className="clash-faultline-impact-pulse" />
                         </div>
                       </div>
                     );

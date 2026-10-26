@@ -506,6 +506,8 @@ export const CardView: React.FC<CardViewProps> = ({
               type="button"
               className="card-inspect-btn"
               onClick={handleOpenInspect}
+              aria-label="Inspecionar detalhes da carta"
+              title="Inspecionar detalhes da carta"
             >
               i
             </button>
@@ -728,6 +730,17 @@ export interface CardInspectModalProps {
 export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card: rawCard, onClose }) => {
   const card = CARDS_BY_ID[rawCard.id] ?? rawCard;
   const domainInfo = DOMAIN_META[card.domain] || DOMAIN_META.neutral;
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const modalContent = (
     <div

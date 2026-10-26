@@ -1752,7 +1752,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setGameState(next);
   };
 
-  // Keyboard shortcuts in Arena: Space = Advance Phase / Execute Combat, C = Channel selected card, V = Deploy Vanguard, R = Deploy Rearguard
+  // Keyboard shortcuts in Arena: Escape = Dismiss modals/drawers/selection, Space = Advance Phase / Execute Combat, C = Channel selected card, V = Deploy Vanguard, R = Deploy Rearguard
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -1765,6 +1765,21 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       ) {
         return;
       }
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setInspectCard(null);
+        setShowQuickRules(false);
+        setShowTacticalAdvisor(false);
+        setShowSacrificeBreakModal(false);
+        setShowSurrenderConfirm(false);
+        setCryptModalOwner(null);
+        setSelectedAttackerId(null);
+        clearHandSelectionAndDrawers();
+        closeAllArenaDrawers();
+        return;
+      }
+
       if (isMulliganOpen || gameState.phase === 'gameover' || !isPlayerTurn || combatAnim) {
         return;
       }
@@ -3519,6 +3534,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       }}
                       onClick={() => {
                         setIsHandHovered(false);
+                        setSelectedAttackerId(null);
+                        setFocusedBoardUnitId(null);
                         if (selectedHandIndex !== null) {
                           setSelectedHandIndex(null);
                           setIsCommandDockMinimized(false);
@@ -3571,13 +3588,19 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       disabled={!isPlayerTurn || Boolean(combatAnim)}
                       onClick={handleEndPlayerTurn}
                     >
-                      {!isPlayerTurn ? 'AGUARDE...' : '⏭️ PASSAR TURNO [ESPAÇO]'}
+                      {!isPlayerTurn ? (
+                        'AGUARDE...'
+                      ) : (
+                        <>
+                          ⏭️ PASSAR TURNO<span className="hide-on-mobile"> [ESPAÇO]</span>
+                        </>
+                      )}
                     </button>
 
                     {gameState.phase !== 'gameover' && (
                       <button
                         type="button"
-                        className="hud-action-cta"
+                        className="hud-action-cta hide-on-mobile"
                         style={{
                           background: 'rgba(127, 29, 29, 0.72)',
                           borderColor: 'rgba(248, 113, 113, 0.5)',
@@ -3777,7 +3800,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           const activePlayCheck =
             activeHandCard ? canPlayCard(gameState, 'player', activeHandCard) : { allowed: false };
           const activeBoardUnitId =
-            selectedHandIndex === null ? selectedAttackerId ?? focusedBoardUnitId : null;
+            selectedHandIndex === null && !isHandPinnedOpen && !isHandHovered
+              ? selectedAttackerId ?? focusedBoardUnitId
+              : null;
           const activeBoardUnitFound = activeBoardUnitId
             ? findUnitOnBoard(gameState, activeBoardUnitId)
             : null;
@@ -3953,7 +3978,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     handleQuickDeployToRow(selectedHandIndex, 'vanguard')
                                   }
                                 >
-                                  + Vanguarda [V]
+                                  + Vanguarda<span className="hide-on-mobile"> [V]</span>
                                 </button>
                               )}
                               {hasEmptyRearguard && (
@@ -3964,7 +3989,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     handleQuickDeployToRow(selectedHandIndex, 'rearguard')
                                   }
                                 >
-                                  + Retaguarda [R]
+                                  + Retaguarda<span className="hide-on-mobile"> [R]</span>
                                 </button>
                               )}
                             </>
@@ -3981,7 +4006,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 handleQuickDeployToRow(selectedHandIndex, 'rearguard')
                               }
                             >
-                              + Posicionar Relíquia [R]
+                              + Posicionar Relíquia<span className="hide-on-mobile"> [R]</span>
                             </button>
                           )}
 
@@ -4007,7 +4032,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               className="quick-act-btn act-rearguard"
                               onClick={() => handleQuickArmTrap(selectedHandIndex)}
                             >
-                              Armar Emboscada [R]
+                              Armar Emboscada<span className="hide-on-mobile"> [R]</span>
                             </button>
                           )}
 
@@ -4017,7 +4042,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             className="quick-act-btn act-channel"
                             onClick={() => handleQuickChannelCard(selectedHandIndex)}
                           >
-                            Canalizar (+1 Afin. & Compra) [C]
+                            Canalizar (+1 Afin. & Compra)<span className="hide-on-mobile"> [C]</span>
                           </button>
                         )}
 
@@ -4027,7 +4052,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             className="quick-act-btn act-burn"
                             onClick={() => handleQuickBurnCard(selectedHandIndex)}
                           >
-                            Sacrificar (+1 Essência) [C]
+                            Sacrificar (+1 Essência)<span className="hide-on-mobile"> [C]</span>
                           </button>
                         )}
                       </div>

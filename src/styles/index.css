@@ -9128,9 +9128,9 @@ html, body, #root {
 }
 
 .selected-card-command-dock {
-  bottom: 42px !important;
+  bottom: 44px !important;
   pointer-events: auto !important;
-  z-index: 125 !important;
+  z-index: 265 !important;
 }
 
 /* Match Tools Grid inside Menu Popover */
@@ -11628,17 +11628,17 @@ input:focus-visible,
     border-radius: 6px !important;
   }
 
-  /* NATIVE MOBILE APP BOTTOM NAVIGATION BAR (Fixed at bottom for thumb access!) */
+  /* NATIVE MOBILE APP BOTTOM NAVIGATION BAR (Fixed at bottom for thumb access + OS Safe-Area Inset!) */
   .nav-tabs:not(.is-arena-tabs) {
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
     width: 100vw !important;
-    height: 58px !important;
+    height: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
     z-index: 185 !important;
     margin: 0 !important;
-    padding: 4px 6px !important;
+    padding: 4px 6px calc(4px + env(safe-area-inset-bottom, 0px)) !important;
     border-radius: 14px 14px 0 0 !important;
     background: linear-gradient(180deg, rgba(14, 18, 30, 0.98) 0%, rgba(7, 10, 18, 0.99) 100%) !important;
     border: none !important;
@@ -12031,6 +12031,43 @@ input:focus-visible,
     white-space: normal !important;
   }
 
+  /* Move "+ Empilhar (X/3)" to top of slot on smartphone so it NEVER covers the bottom ATQ/PV plate! */
+  .slot-stack-add-btn {
+    top: -6px !important;
+    bottom: auto !important;
+    padding: 1px 4px !important;
+    font-size: 0.42rem !important;
+    max-width: 96% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    border-radius: 4px !important;
+  }
+
+  /* Fitts's Law: Enlarge Card Inspect ("i") button & Ritual Chips on touchscreens */
+  .card-inspect-btn {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 0.72rem !important;
+  }
+
+  .hud-ritual-chip {
+    min-height: 26px !important;
+    padding: 3px 7px !important;
+    font-size: 0.56rem !important;
+  }
+
+  .hud-pill-expand-btn {
+    min-height: 24px !important;
+    padding: 0 7px !important;
+    font-size: 0.58rem !important;
+  }
+
+  .hud-gear-btn {
+    width: 32px !important;
+    height: 30px !important;
+    font-size: 0.8rem !important;
+  }
+
   /* Hide lateral lane tags & weather banners on narrow phones so they don't cover slots 1 and 6 */
   .mtg-lane-tag,
   .biome-territory-badge,
@@ -12391,6 +12428,15 @@ input:focus-visible,
     width: 100% !important;
     max-width: 154px !important;
     height: 226px !important;
+  }
+
+  .mulligan-actions-row {
+    position: sticky !important;
+    bottom: 0 !important;
+    z-index: 40 !important;
+    width: 100% !important;
+    padding: 10px 4px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    background: linear-gradient(180deg, transparent 0%, rgba(6, 9, 18, 0.96) 28%, rgba(6, 9, 18, 0.99) 100%) !important;
   }
 
   .mulligan-confirm-btn {

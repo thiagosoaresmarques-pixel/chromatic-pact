@@ -525,7 +525,7 @@ export const App: React.FC = () => {
   return (
     <div className="app-shell">
       {/* Top Navigation Bar */}
-      <header className="top-navbar">
+      <header className={`top-navbar ${activeTab === 'arena' ? 'is-arena-active' : ''}`}>
         <div
           className="brand-logo"
           onClick={() => {
@@ -540,7 +540,7 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        <nav className="nav-tabs">
+        <nav className={`nav-tabs ${activeTab === 'arena' ? 'is-arena-tabs' : ''}`}>
           <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'home' ? 'active' : ''}`}
@@ -550,7 +550,8 @@ export const App: React.FC = () => {
               setActiveTab('home');
             }}
           >
-            Início
+            <span className="nav-tab-icon">🏠</span>
+            <span>Início</span>
           </button>
 
           <button
@@ -560,7 +561,8 @@ export const App: React.FC = () => {
             }`}
             onClick={handleOpenArenaSolo}
           >
-            Arena Solo
+            <span className="nav-tab-icon">⚔️</span>
+            <span>Arena Solo</span>
           </button>
 
           <button
@@ -572,7 +574,8 @@ export const App: React.FC = () => {
             }`}
             onClick={() => setActiveTab('multiplayer')}
           >
-            Conclave 1×1
+            <span className="nav-tab-icon">🌐</span>
+            <span>Conclave 1×1</span>
           </button>
 
           <button
@@ -585,7 +588,8 @@ export const App: React.FC = () => {
             }`}
             onClick={() => setActiveTab('campaign')}
           >
-            Campanha
+            <span className="nav-tab-icon">🏰</span>
+            <span>Campanha</span>
           </button>
 
           <button
@@ -598,7 +602,8 @@ export const App: React.FC = () => {
             }`}
             onClick={() => setActiveTab('expedition')}
           >
-            Expedição
+            <span className="nav-tab-icon">🧭</span>
+            <span>Expedição</span>
           </button>
 
           <button
@@ -606,7 +611,8 @@ export const App: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'tactics' ? 'active' : ''}`}
             onClick={() => setActiveTab('tactics')}
           >
-            Oráculo
+            <span className="nav-tab-icon">🔮</span>
+            <span>Oráculo</span>
           </button>
 
           <button
@@ -614,7 +620,8 @@ export const App: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'deckbuilder' ? 'active' : ''}`}
             onClick={() => setActiveTab('deckbuilder')}
           >
-            Grimório
+            <span className="nav-tab-icon">📖</span>
+            <span>Grimório</span>
           </button>
 
           <button
@@ -622,7 +629,8 @@ export const App: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'packs' ? 'active' : ''}`}
             onClick={() => setActiveTab('packs')}
           >
-            Relicário
+            <span className="nav-tab-icon">🎁</span>
+            <span>Relicário</span>
           </button>
 
           <button
@@ -630,7 +638,8 @@ export const App: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'mythology' ? 'active' : ''}`}
             onClick={() => setActiveTab('mythology')}
           >
-            Mitologia
+            <span className="nav-tab-icon">📜</span>
+            <span>Mitologia</span>
           </button>
 
           <button
@@ -638,7 +647,8 @@ export const App: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'rules' ? 'active' : ''}`}
             onClick={() => setActiveTab('rules')}
           >
-            Tutorial
+            <span className="nav-tab-icon">🎓</span>
+            <span>Tutorial</span>
           </button>
         </nav>
 
@@ -655,12 +665,16 @@ export const App: React.FC = () => {
           >
             <span className={`nav-account-dot ${isGuest ? 'is-guest' : ''}`} />
             {isUnregisteredProfile(currentUser) ? (
-              <span style={{ fontWeight: 800 }}>ENTRAR / CRIAR CONTA</span>
+              <span style={{ fontWeight: 800 }}>
+                ENTRAR<span className="hide-on-mobile"> / CRIAR CONTA</span>
+              </span>
             ) : (
               <>
                 <span style={{ fontWeight: 800 }}>{currentUser.username}</span>
-                <span style={{ opacity: 0.78, fontSize: '0.68rem' }}>({currentUser.eloRating})</span>
-                <span className="nav-account-badge">PERFIL</span>
+                <span className="hide-on-mobile" style={{ opacity: 0.78, fontSize: '0.68rem' }}>
+                  ({currentUser.eloRating})
+                </span>
+                <span className="nav-account-badge hide-on-mobile">PERFIL</span>
               </>
             )}
           </div>
@@ -672,7 +686,10 @@ export const App: React.FC = () => {
             title="Saldo de Ouro (+10 Ouro por vitória) — Clique para abrir o Relicário"
           >
             <span className="gold-gem-dot" />
-            <span>{gold} OURO</span>
+            <span>
+              {gold}
+              <span className="hide-on-mobile"> OURO</span>
+            </span>
           </div>
 
           {/* Sovereign Notification Center (Bell + Unread Counter + Popover) */}
@@ -692,7 +709,7 @@ export const App: React.FC = () => {
               title="Central de Notificações do Soberano"
             >
               <span>🔔</span>
-              <span>AVISOS</span>
+              <span className="hide-on-mobile">AVISOS</span>
               {unreadNotifCount > 0 && (
                 <span className="nav-notif-badge">{unreadNotifCount}</span>
               )}
@@ -768,7 +785,7 @@ export const App: React.FC = () => {
 
           <button
             type="button"
-            className={`btn-fantasy ${
+            className={`btn-fantasy nav-audio-btn ${
               !soundMuted && musicInfo.stage === 'climax' ? 'btn-fantasy-danger' : ''
             }`}
             onClick={handleToggleSound}
@@ -778,9 +795,12 @@ export const App: React.FC = () => {
                 : `Trilha Adaptativa Ativa: ${musicInfo.label}`
             }
           >
-            {soundMuted
-              ? 'ÁUDIO OFF'
-              : `${musicInfo.stage === 'climax' ? 'CLÍMAX' : 'ÁUDIO ON'}`}
+            <span className="show-on-mobile-inline">{soundMuted ? '🔇' : '🔊'}</span>
+            <span className="hide-on-mobile">
+              {soundMuted
+                ? 'ÁUDIO OFF'
+                : `${musicInfo.stage === 'climax' ? 'CLÍMAX' : 'ÁUDIO ON'}`}
+            </span>
           </button>
         </div>
       </header>

@@ -11277,13 +11277,18 @@ input:focus-visible,
 }
 
 /* ============================================================================
-   SMARTPHONE & TABLET RESPONSIVE DESIGN SYSTEM (100% MOBILE ADAPTATION)
-   Covers: Top Navbar, Home Hero & 3D Fan, Battle Arena 6x4 Tabletop & HUD,
-   Hand Drawer, Mulligan, DeckBuilder 2-Col Grid, Campaign, Modals & Touch UX
+   SMARTPHONE & TABLET RESPONSIVE DESIGN SYSTEM (100% MOBILE APP ADAPTATION)
+   Covers: Top App Header, Bottom Tab Bar, Home 2x3 Mode Launcher,
+   Battle Arena 6x4 Tabletop & HUD, Hand Drawer, Mulligan, DeckBuilder & Modals
    ============================================================================ */
 
+.nav-tab-icon,
+.show-on-mobile-inline {
+  display: none;
+}
+
 @media (max-width: 1024px) {
-  /* 1. Top Navigation Bar: Two-tier layout with swipeable horizontal tabs */
+  /* 1. Top Navigation Bar on Tablet: Two-tier layout with swipeable horizontal tabs */
   .top-navbar {
     flex-wrap: wrap !important;
     padding: 6px 0.6rem !important;
@@ -11298,9 +11303,9 @@ input:focus-visible,
   .nav-right-controls {
     order: 2;
     margin-left: auto;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: flex-end;
-    gap: 4px !important;
+    gap: 5px !important;
   }
 
   .nav-tabs {
@@ -11375,6 +11380,20 @@ input:focus-visible,
 }
 
 @media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .show-on-mobile-inline {
+    display: inline !important;
+  }
+
+  .nav-tab-icon {
+    display: inline-block !important;
+    font-size: 1rem;
+    line-height: 1;
+  }
+
   /* Prevent mobile browser auto-zoom when tapping form inputs */
   input,
   select,
@@ -11382,122 +11401,275 @@ input:focus-visible,
     font-size: 16px !important;
   }
 
-  /* Compact App Shell & Page Containers */
+  /* NATIVE MOBILE APP TOP HEADER (1 Single Sleek Row, 46px tall) */
+  .top-navbar {
+    flex-wrap: nowrap !important;
+    min-height: 46px !important;
+    height: 46px !important;
+    padding: 0 0.55rem !important;
+    gap: 0.35rem !important;
+  }
+
+  .top-navbar.is-arena-active {
+    flex-wrap: wrap !important;
+    height: auto !important;
+    padding: 4px 0.5rem !important;
+  }
+
+  .brand-emblem {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 0.76rem !important;
+  }
+
+  .brand-title {
+    font-size: 0.78rem !important;
+    letter-spacing: 0.04em !important;
+  }
+
+  .nav-right-controls {
+    gap: 0.28rem !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .nav-right-controls .gold-pill,
+  .nav-right-controls .btn-fantasy,
+  .nav-notif-btn {
+    height: 30px !important;
+    padding: 0 0.5rem !important;
+    font-size: 0.66rem !important;
+    border-radius: 6px !important;
+  }
+
+  /* NATIVE MOBILE APP BOTTOM NAVIGATION BAR (Fixed at bottom for thumb access!) */
+  .nav-tabs:not(.is-arena-tabs) {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    height: 58px !important;
+    z-index: 185 !important;
+    margin: 0 !important;
+    padding: 4px 6px !important;
+    border-radius: 14px 14px 0 0 !important;
+    background: linear-gradient(180deg, rgba(14, 18, 30, 0.98) 0%, rgba(7, 10, 18, 0.99) 100%) !important;
+    border: none !important;
+    border-top: 1.5px solid rgba(212, 175, 55, 0.55) !important;
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.92) !important;
+    backdrop-filter: blur(14px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 4px !important;
+    overflow-x: auto !important;
+  }
+
+  .nav-tabs:not(.is-arena-tabs) .nav-tab-btn {
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 2px !important;
+    min-width: 66px !important;
+    height: 48px !important;
+    padding: 4px 8px !important;
+    font-size: 0.6rem !important;
+    border-radius: 8px !important;
+  }
+
+  /* Compact top tab strip when inside Battle Arena so bottom HUD is 100% free */
+  .nav-tabs.is-arena-tabs {
+    padding: 2px 2px !important;
+    gap: 3px !important;
+  }
+
+  .nav-tabs.is-arena-tabs .nav-tab-btn {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    gap: 4px !important;
+    padding: 3px 8px !important;
+    font-size: 0.62rem !important;
+  }
+
+  .nav-tabs.is-arena-tabs .nav-tab-icon {
+    font-size: 0.72rem !important;
+  }
+
+  /* Compact App Shell & Page Containers (extra bottom padding for fixed Bottom Tab Bar) */
   .aaa-page-shell {
-    padding: 0.85rem 0.7rem 2.5rem !important;
-    gap: 0.9rem !important;
+    padding: 0.65rem 0.65rem 4.75rem !important;
+    gap: 0.75rem !important;
   }
 
   .aaa-page-header {
-    gap: 0.75rem !important;
-    padding-bottom: 0.65rem !important;
+    gap: 0.65rem !important;
+    padding-bottom: 0.55rem !important;
   }
 
   .aaa-page-title {
-    font-size: 1.2rem !important;
+    font-size: 1.15rem !important;
   }
 
   /* Notification Popover & Toast on Smartphone */
   .nav-notif-popover {
     position: fixed !important;
-    top: 86px !important;
+    top: 52px !important;
     left: 8px !important;
     right: 8px !important;
     width: auto !important;
     max-width: none !important;
-    max-height: 72dvh !important;
+    max-height: 74dvh !important;
   }
 
   .nav-notif-toast {
     left: 10px !important;
     right: 10px !important;
-    bottom: 14px !important;
+    bottom: 66px !important;
     width: auto !important;
     max-width: none !important;
   }
 
-  /* Welcome Visitor Banner & Home Hero */
+  /* COMPACT MOBILE GAME LAUNCHER ON HOME PAGE (Zero Wall of Text!) */
   .welcome-visitor-banner {
-    padding: 0.85rem 0.9rem !important;
+    padding: 0.7rem 0.8rem !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .welcome-visitor-title {
+    font-size: 0.96rem !important;
+    line-height: 1.22 !important;
+  }
+
+  .welcome-visitor-desc {
+    display: none !important;
   }
 
   .welcome-visitor-cta-row {
-    flex-direction: column !important;
-    align-items: stretch !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.45rem !important;
   }
 
   .welcome-visitor-cta-row button {
     width: 100% !important;
+    padding: 0.55rem 0.5rem !important;
+    font-size: 0.68rem !important;
     justify-content: center !important;
     text-align: center !important;
     white-space: normal !important;
-    line-height: 1.3 !important;
+    line-height: 1.2 !important;
+  }
+
+  .welcome-visitor-cta-row button:nth-child(3) {
+    grid-column: 1 / -1 !important;
+    padding: 0.42rem !important;
   }
 
   .aaa-home-showcase-hero {
-    padding: 1.25rem 0.95rem !important;
-    gap: 1.15rem !important;
+    padding: 0.95rem 0.8rem 1.05rem !important;
+    gap: 0.65rem !important;
   }
 
-  .aaa-home-hero-heading {
-    font-size: clamp(1.65rem, 7.2vw, 2.2rem) !important;
-  }
-
-  .aaa-home-hero-tagline {
-    font-size: 0.88rem !important;
-  }
-
-  .aaa-home-hero-lead {
-    font-size: 0.82rem !important;
-    line-height: 1.5 !important;
-  }
-
-  .aaa-home-cta-group {
-    flex-direction: column !important;
-    width: 100% !important;
-    gap: 0.55rem !important;
-  }
-
-  .aaa-home-cta-group .aaa-btn {
-    width: 100% !important;
-    justify-content: center !important;
-    padding: 0.72rem 1rem !important;
-    font-size: 0.78rem !important;
-  }
-
-  /* Scale 3D Card Fan on Home Hero so all 3 cards fit inside 360px-430px screens */
+  /* Put the 3D Fanned Cards right at the top of the Hero on Smartphones! */
   .aaa-home-card-fan-stage {
-    height: 236px !important;
+    order: -1 !important;
+    height: 206px !important;
     width: 100% !important;
+    margin-bottom: 0.15rem !important;
   }
 
   .aaa-fan-card-slot.fan-pos-0 {
-    --fan-x: -68px !important;
-    --fan-y: 8px !important;
+    --fan-x: -66px !important;
+    --fan-y: 6px !important;
     --fan-rot: -8deg !important;
-    --fan-scale: 0.68 !important;
+    --fan-scale: 0.62 !important;
   }
 
   .aaa-fan-card-slot.fan-pos-1 {
     --fan-x: 0px !important;
     --fan-y: -4px !important;
     --fan-rot: 0deg !important;
-    --fan-scale: 0.74 !important;
-  }
-
-  .aaa-fan-card-slot.fan-pos-2 {
-    --fan-x: 68px !important;
-    --fan-y: 8px !important;
-    --fan-rot: 8deg !important;
     --fan-scale: 0.68 !important;
   }
 
-  .aaa-home-card-fan-stage:hover .aaa-fan-card-slot.fan-pos-0 {
-    --fan-x: -82px !important;
+  .aaa-fan-card-slot.fan-pos-2 {
+    --fan-x: 66px !important;
+    --fan-y: 6px !important;
+    --fan-rot: 8deg !important;
+    --fan-scale: 0.62 !important;
   }
 
-  .aaa-home-card-fan-stage:hover .aaa-fan-card-slot.fan-pos-2 {
-    --fan-x: 82px !important;
+  .aaa-home-hero-heading {
+    font-size: 1.55rem !important;
+  }
+
+  .aaa-home-hero-tagline {
+    font-size: 0.78rem !important;
+  }
+
+  /* Hide long desktop essay & duplicate buttons on smartphone home hero */
+  .aaa-home-hero-lead,
+  .aaa-home-domain-pillars,
+  .aaa-hero-badge {
+    display: none !important;
+  }
+
+  .aaa-home-cta-group {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    width: 100% !important;
+    gap: 0.45rem !important;
+    margin-top: 0.25rem !important;
+  }
+
+  .aaa-home-cta-group .aaa-hero-cta-main {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    padding: 0.68rem 1rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .aaa-home-cta-group .aaa-hero-cta-alt {
+    width: 100% !important;
+    padding: 0.52rem 0.4rem !important;
+    font-size: 0.66rem !important;
+  }
+
+  .aaa-home-cta-group .aaa-hero-cta-alt:nth-child(4) {
+    display: none !important;
+  }
+
+  /* 6 Mode Portals in a 2x3 Native Mobile App Grid on Smartphone! */
+  .aaa-home-portals-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.55rem !important;
+  }
+
+  .aaa-portal-card {
+    min-height: 118px !important;
+    padding: 0.75rem !important;
+  }
+
+  .aaa-portal-bg-art {
+    width: 96px !important;
+    height: 96px !important;
+    right: -8px !important;
+    top: -6px !important;
+    opacity: 0.34 !important;
+  }
+
+  .aaa-portal-content h3 {
+    font-size: 0.9rem !important;
+  }
+
+  .aaa-portal-content p {
+    display: none !important;
+  }
+
+  .aaa-portal-cta {
+    font-size: 0.62rem !important;
+    margin-top: 0.2rem !important;
   }
 
   /* ========================================================================

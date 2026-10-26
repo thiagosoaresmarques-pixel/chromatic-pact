@@ -72,7 +72,7 @@ export const WelcomeVisitorBanner: React.FC<WelcomeVisitorBannerProps> = ({
       {/* Main Headline & Copy */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
         <h2
-          className="font-cinzel gold-gradient-text"
+          className="font-cinzel gold-gradient-text welcome-visitor-title"
           style={{
             fontSize: 'clamp(1.08rem, 2.2vw, 1.38rem)',
             fontWeight: 900,
@@ -83,6 +83,7 @@ export const WelcomeVisitorBanner: React.FC<WelcomeVisitorBannerProps> = ({
           Comece a Jogar Agora ou Resgate +160 Ouro Grátis (2 Pacotes no Relicário)
         </h2>
         <p
+          className="welcome-visitor-desc"
           style={{
             margin: 0,
             fontSize: '0.84rem',

@@ -1336,19 +1336,19 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   },
   neutral_120_xanathar_senhor_crime: {
     cardId: 'neutral_120_xanathar_senhor_crime',
-    properTitle: 'Xanathar, O Olho do Submundo',
+    properTitle: 'Oculus-Vex, O Olho Mecânico do Submundo',
     yearLabel: 'Ano 950 D.F.',
     eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
     eraId: 'era_5_tratados',
     chronologicalOrder: 78,
     locationLabel: 'Galerias Subterrâneas do Porto Neutro',
     proseStory:
-      'Nas galerias profundas sob a Fronteira Cinzenta, um soberano ocular ornado de anéis governa todas as guildas de espiões e mercenários. Com dez olhos que nunca dormem, desintegra traidores num piscar enquanto vigia seu aquário de cristal.',
+      'Nas galerias profundas sob a Fronteira Cinzenta, um soberano autômato em forma de olho mecânico de bronze e obsidiana governa todas as guildas de espiões e mercenários. Com lentes telescópicas e anéis giroscópicos que nunca se fecham, desintegra traidores num lampejo de energia.',
     sungStanza: [
-      'Dez olhos atentos no escuro do chão,',
+      'Lentes de bronze girando no chão,',
       'Controlam o ouro, a adaga e a traição;',
-      'Ninguém move um passo sem ele saber,',
-      'E um raio do olho faz tudo morrer!',
+      'Ninguém move um passo sem a máquina ver,',
+      'E um feixe da lente faz tudo morrer!',
     ],
   },
   neutral_121_vizeran_arquimago_exilado: {

@@ -31227,12 +31227,12 @@ export const ALL_CARDS: CardDefinition[] = [
   },
   {
     "id": "neutral_120_xanathar_senhor_crime",
-    "name": "Xanathar, O Olho do Submundo",
-    "originalInspiration": "Códice de Chromatic Pact • Guia de Xanathar (p. 7: O Senhor do Crime de Águas Profundas)",
-    "ipSafeNotes": "Adaptação autoral do domínio neutral a partir de Guia de Xanathar (p. 7: O Senhor do Crime de Águas Profundas).",
+    "name": "Oculus-Vex, O Olho Mecânico do Submundo",
+    "originalInspiration": "Códice de Chromatic Pact • Constructo • Olho Mecânico Lendário",
+    "ipSafeNotes": "Esfera relojoeira de bronze, aço negro e lentes telescópicas orbitada por drones oculares mecânicos (100% IP-safe).",
     "domain": "neutral",
     "type": "creature",
-    "subtype": "Aberração • Soberano do Crime",
+    "subtype": "Constructo • Olho Mecânico",
     "rarity": "legendary",
     "cost": 7,
     "affinityReq": 0,
@@ -31259,9 +31259,9 @@ export const ALL_CARDS: CardDefinition[] = [
       }
     ],
     "description": "Voo • Alcance. Ao Entrar: Destrói 1 unidade inimiga imediatamente. Ao Atacar: Compra 1 carta.",
-    "flavorText": "Nada acontece nas ruas acima sem que um dos meus dez olhos saiba.",
+    "flavorText": "Nenhuma moeda troca de mãos nas galerias subterrâneas sem que suas lentes de cristal registrem o acordo.",
     "imagePath": "/assets/cards/neutral_120_xanathar_senhor_crime.png",
-    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Imperious crime-lord Beholder wearing gold rings on its eyestalks hovering beside a crystal goldfish bowl."
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal levitating mechanical clockwork eye construct forged of dark iron, weathered brass gears, gyroscopic rings, and articulated mechanical camera-lens arms with a blazing emerald-gold central optical iris lens."
   },
   {
     "id": "neutral_121_vizeran_arquimago_exilado",

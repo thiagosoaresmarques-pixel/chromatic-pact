@@ -11858,7 +11858,22 @@ input:focus-visible,
     font-size: 0.58rem !important;
   }
 
-  /* Popovers (Sovereign 1, Sovereign 2 & Gear Menu) on Smartphone */
+  /* Popovers (Sovereign 1, Sovereign 2 & Gear Menu) on Smartphone:
+     Disable sticky touch :hover so popovers ONLY open when explicitly pinned/clicked */
+  .hud-unified-top-bar:hover:not(.is-pinned-open) .hud-top-dropdown {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    max-height: 0 !important;
+    transform: translateY(-6px) scale(0.98) !important;
+  }
+
+  .hud-p1-segment:hover:not(.is-pinned-open) .p1-details-popover,
+  .hud-gear-menu-wrapper:hover:not(.is-pinned-open) .menu-popover {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(8px) scale(0.97) !important;
+  }
+
   .hud-top-dropdown {
     width: 96vw !important;
     max-width: 96vw !important;

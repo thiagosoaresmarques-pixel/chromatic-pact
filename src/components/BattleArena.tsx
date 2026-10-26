@@ -346,23 +346,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const [cryptModalOwner, setCryptModalOwner] = useState<'player' | 'ai' | null>(null);
   const [showQuickRules, setShowQuickRules] = useState(false);
   const [arenaTutorialStep, setArenaTutorialStep] = useState<number | null>(null);
-  const [showFirstMatchGuide, setShowFirstMatchGuide] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('chromatic_pact_first_match_guide_dismissed_v1') !== 'true';
-    } catch {
-      return true;
-    }
-  });
   const [showTacticalAdvisor, setShowTacticalAdvisor] = useState(false);
 
-  const handleDismissFirstMatchGuide = () => {
-    setShowFirstMatchGuide(false);
-    try {
-      localStorage.setItem('chromatic_pact_first_match_guide_dismissed_v1', 'true');
-    } catch {
-      // Ignore storage write errors
-    }
-  };
+  const isDesktopHoverDevice = () =>
+    typeof window !== 'undefined' &&
+    window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+    window.innerWidth > 768;
   const [showLogSidebar, setShowLogSidebar] = useState(false);
   const [rewardClaimed, setRewardClaimed] = useState(false);
   const [gameoverStage, setGameoverStage] = useState<'none' | 'cinematic' | 'modal'>('none');
@@ -2649,124 +2638,6 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 </div>
               </header>
 
-              {/* GUIA TÁTICO RÁPIDO DE 1ª PARTIDA (3 PASSOS COMPACTOS E DISPENSÁVEIS) */}
-              {showFirstMatchGuide && gameState.phase !== 'gameover' && arenaTutorialStep === null && (
-                <div
-                  className="first-match-guide-banner"
-                  style={{
-                    position: 'fixed',
-                    top: '48px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    zIndex: 95,
-                    width: 'min(960px, 95vw)',
-                    background:
-                      'linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.94))',
-                    border: '1px solid rgba(250, 204, 21, 0.55)',
-                    borderRadius: '10px',
-                    boxShadow: '0 10px 28px rgba(0, 0, 0, 0.72), 0 0 18px rgba(212, 175, 55, 0.2)',
-                    padding: '0.55rem 0.85rem',
-                    color: '#f8fafc',
-                    backdropFilter: 'blur(8px)',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      gap: '0.5rem',
-                      marginBottom: '0.4rem',
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    <span
-                      className="font-cinzel"
-                      style={{
-                        fontSize: '0.72rem',
-                        fontWeight: 800,
-                        letterSpacing: '0.1em',
-                        color: '#fde047',
-                      }}
-                    >
-                      ⚔️ GUIA TÁTICO RÁPIDO DE 1ª PARTIDA
-                    </span>
-                    <button
-                      type="button"
-                      className="btn-fantasy btn-fantasy-primary"
-                      style={{ padding: '3px 10px', fontSize: '0.7rem', fontWeight: 700 }}
-                      onClick={handleDismissFirstMatchGuide}
-                    >
-                      Entendi (Ocultar Guia)
-                    </button>
-                  </div>
-
-                  <div
-                    className="first-match-guide-grid"
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                      gap: '0.5rem',
-                      fontSize: '0.74rem',
-                      lineHeight: 1.38,
-                    }}
-                  >
-                    <div
-                      style={{
-                        padding: '0.4rem 0.55rem',
-                        borderRadius: '7px',
-                        background: 'rgba(15, 23, 42, 0.65)',
-                        border: '1px solid rgba(148, 163, 184, 0.22)',
-                      }}
-                    >
-                      <div style={{ fontWeight: 800, color: '#fef08a', marginBottom: '2px' }}>
-                        Passo 1 — Invoque suas Forças
-                      </div>
-                      <div style={{ color: '#e2e8f0' }}>
-                        Use sua Essência (💎) para posicionar criaturas na{' '}
-                        <strong>Vanguarda</strong> (linha de frente / Guardiões) ou{' '}
-                        <strong>Retaguarda</strong> (unidades com Alcance e Relíquias).
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        padding: '0.4rem 0.55rem',
-                        borderRadius: '7px',
-                        background: 'rgba(15, 23, 42, 0.65)',
-                        border: '1px solid rgba(148, 163, 184, 0.22)',
-                      }}
-                    >
-                      <div style={{ fontWeight: 800, color: '#fef08a', marginBottom: '2px' }}>
-                        Passo 2 — Domine o Tabuleiro
-                      </div>
-                      <div style={{ color: '#e2e8f0' }}>
-                        Clique em uma unidade pronta (sem 💤) para atacar inimigos ou golpear
-                        diretamente o <strong>Soberano Inimigo</strong> até zerar a Vida dele.
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        padding: '0.4rem 0.55rem',
-                        borderRadius: '7px',
-                        background: 'rgba(15, 23, 42, 0.65)',
-                        border: '1px solid rgba(148, 163, 184, 0.22)',
-                      }}
-                    >
-                      <div style={{ fontWeight: 800, color: '#fef08a', marginBottom: '2px' }}>
-                        Passo 3 — Recompensas & Relicário
-                      </div>
-                      <div style={{ color: '#e2e8f0' }}>
-                        Domine os terrenos elementais! Cada vitória concede{' '}
-                        <strong>+10 Ouro</strong> para abrir pacotes no Relicário e expandir suas
-                        996 cartas.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* =====================================================
                   2. TABULEIRO 6×4 EM TELA CHEIA (MESA DE MADEIRA + EXPANSÃO DE DOMÍNIO!)
                   ===================================================== */}
@@ -3528,8 +3399,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className={`hud-hand-trigger-btn ${
                         isHandPinnedOpen || isHandHovered ? 'active' : ''
                       }`}
-                      onMouseEnter={() => setIsHandHovered(true)}
-                      onClick={() => setIsHandPinnedOpen((prev) => !prev)}
+                      onMouseEnter={() => {
+                        if (isDesktopHoverDevice()) setIsHandHovered(true);
+                      }}
+                      onClick={() => {
+                        setIsHandHovered(false);
+                        setIsHandPinnedOpen((prev) => !prev);
+                      }}
                     >
                       🃏 MÃO ({gameState.player.hand.length}){' '}
                       {isHandPinnedOpen ? '📌' : '▴'}
@@ -3854,7 +3730,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   className={`mtg-hand-drawer ${
                     isHandExpanded ? 'is-expanded' : 'is-collapsed'
                   }`}
-                  onMouseEnter={() => setIsHandHovered(true)}
+                  onMouseEnter={() => {
+                    if (isDesktopHoverDevice()) setIsHandHovered(true);
+                  }}
                   onMouseLeave={() => setIsHandHovered(false)}
                 >
                   <div className="hand-drawer-handle-bar">

@@ -187,6 +187,25 @@ export const App: React.FC = () => {
     return () => window.clearTimeout(t);
   }, [liveToastNotif]);
 
+  useEffect(() => {
+    if (!isNotifOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && !target.closest('.nav-notif-wrapper')) {
+        setIsNotifOpen(false);
+      }
+    };
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsNotifOpen(false);
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [isNotifOpen]);
+
   const markAllNotificationsRead = () => {
     setNotifications((prev) => {
       const next = prev.map((n) => ({ ...n, read: true }));
@@ -676,7 +695,10 @@ export const App: React.FC = () => {
                 borderColor: isArenaNavExpanded ? '#facc15' : 'rgba(212, 175, 55, 0.55)',
                 color: '#fef08a',
               }}
-              onClick={() => setIsArenaNavExpanded((prev) => !prev)}
+              onClick={() => {
+                setIsNotifOpen(false);
+                setIsArenaNavExpanded((prev) => !prev);
+              }}
             >
               {isArenaNavExpanded ? '▴ Ocultar Abas' : '☰ Abas ▾'}
             </button>
@@ -729,6 +751,7 @@ export const App: React.FC = () => {
                 unreadNotifCount > 0 ? 'has-unread' : ''
               }`}
               onClick={() => {
+                setIsArenaNavExpanded(false);
                 setIsNotifOpen((prev) => {
                   const nextOpen = !prev;
                   if (nextOpen) markAllNotificationsRead();

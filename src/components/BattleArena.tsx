@@ -1603,6 +1603,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
 
     // 3. Select / deselect ready creature to attack immediately, and focus unit for reading!
+    closeAllArenaDrawers();
     setFocusedBoardUnitId((prev) => (prev === unit.instanceId ? null : unit.instanceId));
     setIsCommandDockMinimized(false);
     if (selectedAttackerId === unit.instanceId) {
@@ -1635,6 +1636,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (combatAnim) return;
     if (!isPlayerTurn) {
       if (!enemyUnit.isTrap) {
+        closeAllArenaDrawers();
         setFocusedBoardUnitId((prev) =>
           prev === enemyUnit.instanceId ? null : enemyUnit.instanceId
         );
@@ -1686,6 +1688,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
 
     if (!enemyUnit.isTrap) {
+      closeAllArenaDrawers();
       setFocusedBoardUnitId((prev) =>
         prev === enemyUnit.instanceId ? null : enemyUnit.instanceId
       );
@@ -2550,6 +2553,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           setIsHandPinnedOpen(false);
                           setIsHandHovered(false);
                           setActiveRightDrawer(null);
+                          setSelectedHandIndex(null);
+                          setSelectedAttackerId(null);
+                          setFocusedBoardUnitId(null);
                         }
                         return next;
                       });
@@ -3518,6 +3524,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               setIsHandPinnedOpen(false);
                               setIsHandHovered(false);
                               setActiveRightDrawer(null);
+                              setSelectedHandIndex(null);
+                              setSelectedAttackerId(null);
+                              setFocusedBoardUnitId(null);
                             }
                             return next;
                           })
@@ -3536,7 +3545,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         isHandPinnedOpen || isHandHovered ? 'active' : ''
                       }`}
                       onMouseEnter={() => {
-                        if (isDesktopHoverDevice()) setIsHandHovered(true);
+                        if (
+                          isDesktopHoverDevice() &&
+                          !isP1DrawerPinned &&
+                          !isP2DrawerPinned &&
+                          !activeRightDrawer &&
+                          selectedHandIndex === null
+                        ) {
+                          setIsHandHovered(true);
+                        }
                       }}
                       onClick={() => {
                         setIsHandHovered(false);
@@ -3780,6 +3797,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               setIsP1DrawerPinned(false);
                               setIsHandPinnedOpen(false);
                               setIsHandHovered(false);
+                              setSelectedHandIndex(null);
+                              setSelectedAttackerId(null);
+                              setFocusedBoardUnitId(null);
                             }
                             return next;
                           })
@@ -3799,14 +3819,23 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             BOTTOM CENTER HAND DRAWER (Unobstructed — Left & Right HUDs live in the lateral wings!)
             ========================================================= */}
         {(() => {
+          const anyHudPopoverOpen =
+            isP1DrawerPinned || isP2DrawerPinned || activeRightDrawer !== null;
           const isHandExpanded =
-            selectedHandIndex === null && (isHandPinnedOpen || isHandHovered);
+            !anyHudPopoverOpen &&
+            selectedHandIndex === null &&
+            (isHandPinnedOpen || isHandHovered);
           const activeHandCard =
-            selectedHandIndex !== null ? gameState.player.hand[selectedHandIndex] : null;
+            !anyHudPopoverOpen && selectedHandIndex !== null
+              ? gameState.player.hand[selectedHandIndex]
+              : null;
           const activePlayCheck =
             activeHandCard ? canPlayCard(gameState, 'player', activeHandCard) : { allowed: false };
           const activeBoardUnitId =
-            selectedHandIndex === null && !isHandPinnedOpen && !isHandHovered
+            !anyHudPopoverOpen &&
+            selectedHandIndex === null &&
+            !isHandPinnedOpen &&
+            !isHandHovered
               ? selectedAttackerId ?? focusedBoardUnitId
               : null;
           const activeBoardUnitFound = activeBoardUnitId
@@ -4263,6 +4292,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               onClick={() => {
                                 setSelectedAttackerId(null);
                                 setFocusedBoardUnitId(null);
+                                setIsP2DrawerPinned(false);
+                                setIsP1DrawerPinned(false);
+                                setActiveRightDrawer(null);
                                 setIsHandHovered(false);
                                 setIsHandPinnedOpen(false);
                                 setIsCommandDockMinimized(false);

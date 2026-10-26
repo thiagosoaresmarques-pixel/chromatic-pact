@@ -1517,7 +1517,8 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '1rem',
+              flexWrap: 'wrap',
+              gap: '0.85rem',
               padding: '0.9rem 1rem',
               background: 'rgba(15, 23, 42, 0.82)',
               border: '1px solid rgba(212, 175, 55, 0.45)',
@@ -1550,7 +1551,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               )}
             </div>
 
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ flex: '1 1 165px', minWidth: 0 }}>
               <div
                 className="font-cinzel gold-gradient-text"
                 style={{ fontSize: '1.2rem', fontWeight: 900 }}
@@ -1570,7 +1571,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginLeft: 'auto' }}>
               <button
                 type="button"
                 className="aaa-btn aaa-btn-primary"
@@ -1657,6 +1658,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             onSubmit={handleJoinByCode}
             style={{
               display: 'flex',
+              flexWrap: 'wrap',
               gap: '0.6rem',
               marginTop: '0.35rem',
               paddingTop: '0.65rem',

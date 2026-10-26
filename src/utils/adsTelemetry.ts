@@ -41,6 +41,7 @@ declare global {
   }
 }
 
+export const GOOGLE_ADS_TAG_ID = 'AW-16651599167';
 const ATTRIBUTION_STORAGE_KEY = 'chromatic_pact_ads_attribution_v1';
 const EVENTS_AUDIT_STORAGE_KEY = 'chromatic_pact_ads_events_v1';
 const SESSION_LANDED_KEY = 'chromatic_pact_ads_session_landed_v1';
@@ -91,6 +92,8 @@ export function trackAdsEvent(
 
   const attribution = getAdsAttribution();
   const enrichedParams: Record<string, string | number | boolean> = {
+    send_to: GOOGLE_ADS_TAG_ID,
+    site_domain: 'chromaticpact.com',
     ...params,
     ...(attribution?.gclid ? { gclid: attribution.gclid } : {}),
     ...(attribution?.utmSource ? { utm_source: attribution.utmSource } : {}),

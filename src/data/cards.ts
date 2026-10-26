@@ -31391,7 +31391,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "description": "Guardião • Atropelar • Pele Incandescente. Ao Entrar: Causa 3 de dano a todas as unidades em campo.",
     "flavorText": "Ele não serve ao Fogo, nem ao Gelo, nem à Luz: ele é o fim de todos os tronos.",
     "imagePath": "/assets/cards/neutral_124_tarrasque_despertar_neutro.png",
-    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal spiked carapace Tarrasque kaiju monstrosity roaring and shattering stone pillars with massive claws."
+    "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal spiked carapace Tarrasque kaiju monstrosity roaring with massive claws."
   },
   {
     "id": "neutral_125_estandarte_runa_krig",

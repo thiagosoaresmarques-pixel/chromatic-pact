@@ -6336,15 +6336,17 @@ html, body, #root {
   transform: translateX(-50%);
   z-index: 120;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  min-height: 50px;
-  max-width: min(94vw, 1080px);
-  padding: 6px 14px;
-  background: linear-gradient(180deg, rgba(13, 18, 30, 0.96), rgba(7, 10, 18, 0.99));
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  width: min(94vw, 980px);
+  max-width: min(94vw, 980px);
+  padding: 7px 14px;
+  background: linear-gradient(180deg, rgba(13, 18, 30, 0.97), rgba(7, 10, 18, 0.99));
   border: 1.5px solid #d4af37;
-  border-radius: 6px;
+  border-radius: 8px;
   box-shadow:
     0 12px 32px rgba(0, 0, 0, 0.92),
     0 0 22px rgba(212, 175, 55, 0.35),
@@ -6352,6 +6354,46 @@ html, body, #root {
   backdrop-filter: blur(10px);
   pointer-events: auto;
   animation: commandDockPop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.selected-card-command-dock.is-minimized {
+  padding: 5px 12px;
+  gap: 0;
+}
+
+.sccd-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sccd-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.sccd-toggle-btn {
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  background: rgba(30, 41, 59, 0.9);
+  color: #fde68a;
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.sccd-toggle-btn:hover {
+  background: rgba(161, 98, 7, 0.45);
+  border-color: #facc15;
+  color: #ffffff;
 }
 
 @keyframes commandDockPop {
@@ -8919,8 +8961,14 @@ html, body, #root {
   z-index: 105 !important;
 }
 
-.mtg-hand-drawer .hand-drawer-handle-bar {
+.mtg-hand-drawer.is-collapsed .hand-drawer-handle-bar {
   display: none !important;
+}
+
+.mtg-hand-drawer.is-expanded .hand-drawer-handle-bar {
+  display: flex !important;
+  margin-bottom: 4px !important;
+  pointer-events: auto !important;
 }
 
 .mtg-hand-drawer.is-collapsed {
@@ -11477,17 +11525,26 @@ input:focus-visible,
     border-radius: 8px !important;
   }
 
-  /* Compact top tab strip when inside Battle Arena so bottom HUD is 100% free */
+  /* Collapsible top tab strip when inside Battle Arena so vertical space is 100% free */
   .nav-tabs.is-arena-tabs {
-    padding: 2px 2px !important;
-    gap: 3px !important;
+    display: none !important;
+    width: 100% !important;
+    padding: 4px 2px 2px !important;
+    gap: 4px !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.25) !important;
+  }
+
+  .nav-tabs.is-arena-tabs.is-expanded-mobile {
+    display: flex !important;
   }
 
   .nav-tabs.is-arena-tabs .nav-tab-btn {
     display: inline-flex !important;
     flex-direction: row !important;
     gap: 4px !important;
-    padding: 3px 8px !important;
+    padding: 4px 8px !important;
     font-size: 0.62rem !important;
   }
 
@@ -11673,24 +11730,60 @@ input:focus-visible,
   }
 
   /* ========================================================================
-     BATTLE ARENA ON SMARTPHONE (6 COLUMNS x 4 ROWS FIT 100% ON PORTRAIT)
+     BATTLE ARENA ON SMARTPHONE (6 COLUMNS x 4 ROWS FIT 100% ON PORTRAIT
+     WITH ZERO OVERLAP ON VANGUARD OR REARGUARD!)
      ======================================================================== */
   .arena-main-column.mtg-arena-table {
     padding: 2px 2px 0 !important;
-    min-height: calc(100dvh - 82px) !important;
+    min-height: calc(100dvh - 48px) !important;
   }
 
   .arena-fullscreen-stage {
     height: auto !important;
-    min-height: calc(100dvh - 82px) !important;
+    min-height: calc(100dvh - 48px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
     overflow-x: hidden !important;
     overflow-y: visible !important;
   }
 
+  /* Put Top Opponent Bar & Bottom Player Bar in normal flex flow ABOVE and BELOW
+     the 6x4 board so they NEVER cover Row 1 (AI Rearguard) or Row 4 (Player Rearguard)! */
+  .hud-unified-top-bar {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    margin-bottom: 3px !important;
+    z-index: 70 !important;
+  }
+
   .arena-fullscreen-stage > .mtg-battlefield-surface {
-    padding: 40px 2px 96px 2px !important;
-    min-height: 410px !important;
+    flex: 1 1 auto !important;
+    padding: 8px 2px 10px 2px !important;
+    min-height: 364px !important;
     border-radius: 8px !important;
+    justify-content: space-around !important;
+  }
+
+  .hud-unified-bottom-bar {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    flex-shrink: 0 !important;
+    margin-top: 3px !important;
+    z-index: 105 !important;
+  }
+
+  .mtg-bottom-zone.floating-bottom-hud {
+    height: 0 !important;
+    margin-top: 0 !important;
   }
 
   .arena-fullscreen-stage .mtg-board-lane,
@@ -11903,6 +11996,8 @@ input:focus-visible,
 
   /* Hand Drawer on Smartphone: Swipeable horizontal touch carousel */
   .mtg-hand-drawer {
+    position: fixed !important;
+    bottom: 62px !important;
     width: 100vw !important;
     max-width: 100vw !important;
     min-width: 0 !important;
@@ -11911,12 +12006,13 @@ input:focus-visible,
   }
 
   .mtg-hand-drawer.is-expanded {
-    bottom: 64px !important;
+    bottom: 62px !important;
     transform: none !important;
-    background: rgba(6, 9, 18, 0.97) !important;
-    border-top: 1.5px solid rgba(212, 175, 55, 0.65) !important;
+    background: rgba(6, 9, 18, 0.98) !important;
+    border-top: 1.5px solid rgba(212, 175, 55, 0.75) !important;
     padding-top: 6px !important;
     box-shadow: 0 -14px 36px rgba(0, 0, 0, 0.96) !important;
+    z-index: 210 !important;
   }
 
   .mtg-hand-drawer .hand-drawer-handle-bar {
@@ -11944,33 +12040,77 @@ input:focus-visible,
     height: 184px !important;
   }
 
-  /* Selected Card Command Dock on Smartphone */
+  /* Selected Card Command Dock on Smartphone:
+     Docked flush at bottom: 0 over the bottom bar (BELOW the 6x4 board!)
+     so all 6 Rearguard and 6 Vanguard slots remain 100% uncovered! */
   .selected-card-command-dock {
-    bottom: 66px !important;
-    width: 96vw !important;
-    max-width: 96vw !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    border-radius: 12px 12px 0 0 !important;
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 8px !important;
-    padding: 8px 10px !important;
+    gap: 6px !important;
+    padding: 6px 8px 8px !important;
+    z-index: 215 !important;
+  }
+
+  .sccd-top-row {
+    gap: 6px !important;
   }
 
   .sccd-card-chip {
     border-right: none !important;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.25) !important;
     padding-right: 0 !important;
-    padding-bottom: 6px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .sccd-thumb {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .sccd-name {
+    font-size: 0.72rem !important;
+    max-width: 165px !important;
+  }
+
+  .sccd-hint {
+    font-size: 0.58rem !important;
+    white-space: normal !important;
+    line-height: 1.15 !important;
+  }
+
+  .sccd-header-controls {
+    width: 100% !important;
+    justify-content: space-between !important;
+    gap: 4px !important;
+  }
+
+  .sccd-toggle-btn,
+  .sccd-cancel-btn {
+    flex: 1 1 auto !important;
+    text-align: center !important;
+    padding: 5px 6px !important;
+    font-size: 0.6rem !important;
   }
 
   .sccd-actions {
     width: 100% !important;
-    gap: 6px !important;
+    gap: 5px !important;
+    border-top: 1px solid rgba(212, 175, 55, 0.22) !important;
+    padding-top: 5px !important;
   }
 
   .sccd-actions button {
-    flex: 1 1 calc(50% - 6px) !important;
-    padding: 7px 8px !important;
-    font-size: 0.66rem !important;
+    flex: 1 1 calc(50% - 5px) !important;
+    padding: 6px 6px !important;
+    font-size: 0.62rem !important;
   }
 
   /* Hide desktop hover-only card zoom panel on touchscreens */

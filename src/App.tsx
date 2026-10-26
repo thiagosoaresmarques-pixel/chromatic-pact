@@ -146,6 +146,7 @@ export const App: React.FC = () => {
     return [];
   });
   const [isNotifOpen, setIsNotifOpen] = useState<boolean>(false);
+  const [isArenaNavExpanded, setIsArenaNavExpanded] = useState<boolean>(false);
   const [liveToastNotif, setLiveToastNotif] = useState<SovereignNotification | null>(null);
   const seenRoomCodesRef = useRef<Set<string>>(new Set());
 
@@ -525,11 +526,16 @@ export const App: React.FC = () => {
   return (
     <div className="app-shell">
       {/* Top Navigation Bar */}
-      <header className={`top-navbar ${activeTab === 'arena' ? 'is-arena-active' : ''}`}>
+      <header
+        className={`top-navbar ${activeTab === 'arena' ? 'is-arena-active' : ''} ${
+          isArenaNavExpanded ? 'is-arena-nav-expanded' : ''
+        }`}
+      >
         <div
           className="brand-logo"
           onClick={() => {
             setActiveCampaignBoss(null);
+            setIsArenaNavExpanded(false);
             setActiveTab('home');
           }}
         >
@@ -540,7 +546,12 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        <nav className={`nav-tabs ${activeTab === 'arena' ? 'is-arena-tabs' : ''}`}>
+        <nav
+          className={`nav-tabs ${activeTab === 'arena' ? 'is-arena-tabs' : ''} ${
+            isArenaNavExpanded ? 'is-expanded-mobile' : ''
+          }`}
+          onClick={() => setIsArenaNavExpanded(false)}
+        >
           <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'home' ? 'active' : ''}`}
@@ -653,6 +664,24 @@ export const App: React.FC = () => {
         </nav>
 
         <div className="nav-right-controls">
+          {activeTab === 'arena' && (
+            <button
+              type="button"
+              className="btn-fantasy show-on-mobile-inline"
+              style={{
+                padding: '0 0.55rem',
+                height: '30px',
+                fontSize: '0.66rem',
+                fontWeight: 800,
+                borderColor: isArenaNavExpanded ? '#facc15' : 'rgba(212, 175, 55, 0.55)',
+                color: '#fef08a',
+              }}
+              onClick={() => setIsArenaNavExpanded((prev) => !prev)}
+            >
+              {isArenaNavExpanded ? '▴ Ocultar Abas' : '☰ Abas ▾'}
+            </button>
+          )}
+
           <div
             className="gold-pill nav-account-pill"
             onClick={() =>

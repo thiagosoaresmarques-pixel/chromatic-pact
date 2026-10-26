@@ -42,6 +42,7 @@ declare global {
 }
 
 export const GOOGLE_ADS_TAG_ID = 'AW-16651599167';
+export const GOOGLE_ADS_SIGNUP_CONVERSION_SEND_TO = 'AW-16651599167/6l9iCM_rx6odEL_6jIQ-';
 const ATTRIBUTION_STORAGE_KEY = 'chromatic_pact_ads_attribution_v1';
 const EVENTS_AUDIT_STORAGE_KEY = 'chromatic_pact_ads_events_v1';
 const SESSION_LANDED_KEY = 'chromatic_pact_ads_session_landed_v1';
@@ -106,7 +107,16 @@ export function trackAdsEvent(
     if (typeof window.gtag === 'function') {
       window.gtag('event', eventName, enrichedParams);
 
-      // Compatibilidade com conversão "Automaticamente sem código" do Google Ads (URL /inscricao)
+      // Snippet oficial de conversão de Inscrição do Google Ads (exclusivo para chromaticpact.com)
+      if (eventName === 'register_account') {
+        window.gtag('event', 'conversion', {
+          send_to: GOOGLE_ADS_SIGNUP_CONVERSION_SEND_TO,
+          value: 1.0,
+          currency: 'BRL',
+        });
+      }
+
+      // Compatibilidade adicional com regra de URL /inscricao
       if (eventName === 'register_account' || eventName === 'quick_play_clicked') {
         window.gtag('event', 'page_view', {
           send_to: GOOGLE_ADS_TAG_ID,

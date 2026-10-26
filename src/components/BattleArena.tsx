@@ -2652,6 +2652,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               {/* GUIA TÁTICO RÁPIDO DE 1ª PARTIDA (3 PASSOS COMPACTOS E DISPENSÁVEIS) */}
               {showFirstMatchGuide && gameState.phase !== 'gameover' && arenaTutorialStep === null && (
                 <div
+                  className="first-match-guide-banner"
                   style={{
                     position: 'fixed',
                     top: '48px',
@@ -2701,9 +2702,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </div>
 
                   <div
+                    className="first-match-guide-grid"
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
                       gap: '0.5rem',
                       fontSize: '0.74rem',
                       lineHeight: 1.38,
@@ -3840,6 +3842,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="sccd-cancel-btn"
                       onClick={() => {
                         setSelectedHandIndex(null);
+                        setIsHandPinnedOpen(true);
                       }}
                     >
                       ✕ Trocar Carta ({gameState.player.hand.length})
@@ -3858,13 +3861,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     <button
                       type="button"
                       className={`hand-drawer-toggle-btn ${isHandPinnedOpen ? 'is-pinned' : ''}`}
-                      onClick={() => setIsHandPinnedOpen((prev) => !prev)}
+                      onClick={() => {
+                        setIsHandPinnedOpen(false);
+                        setIsHandHovered(false);
+                      }}
                     >
                       {isHandExpanded
-                        ? `MÃO (${gameState.player.hand.length}) • ${
-                            isHandPinnedOpen ? 'FIXADA ▼' : 'FIXAR'
-                          }`
-                        : `MÃO (${gameState.player.hand.length}) ▲`}
+                        ? `🃏 MÃO (${gameState.player.hand.length}) • OCULTAR ▼`
+                        : `🃏 MÃO (${gameState.player.hand.length}) ▲`}
                     </button>
                   </div>
 

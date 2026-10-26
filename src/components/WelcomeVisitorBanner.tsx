@@ -13,6 +13,7 @@ export const WelcomeVisitorBanner: React.FC<WelcomeVisitorBannerProps> = ({
 }) => {
   return (
     <div
+      className="welcome-visitor-banner"
       style={{
         position: 'relative',
         overflow: 'hidden',
@@ -96,6 +97,7 @@ export const WelcomeVisitorBanner: React.FC<WelcomeVisitorBannerProps> = ({
 
       {/* 3 Clear Action Buttons */}
       <div
+        className="welcome-visitor-cta-row"
         style={{
           display: 'flex',
           flexWrap: 'wrap',

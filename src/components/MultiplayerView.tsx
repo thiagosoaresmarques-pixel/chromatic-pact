@@ -475,7 +475,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))',
             gap: '0.45rem',
             marginBottom: '1rem',
           }}
@@ -565,7 +565,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
                   gap: '0.85rem',
                   alignItems: 'end',
                 }}
@@ -611,7 +611,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
                   gap: '0.85rem',
                   alignItems: 'end',
                 }}
@@ -709,7 +709,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
                     gap: '0.85rem',
                     alignItems: 'end',
                   }}
@@ -817,7 +817,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
                     gap: '0.85rem',
                     alignItems: 'end',
                   }}
@@ -1045,7 +1045,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
                 gap: '0.85rem',
                 alignItems: 'end',
               }}
@@ -1084,7 +1084,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
                 gap: '0.85rem',
                 alignItems: 'end',
               }}
@@ -1756,7 +1756,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             <strong>"Criar Sala com Código"</strong> acima para abrir um duelo!
           </div>
         ) : (
-          <div className="exp-achievements-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+          <div className="exp-achievements-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
             {waitingRooms.map((room) => {
               const hostAvatar = CARDS_BY_ID[room.host.avatarCardId] ?? ALL_CARDS[0];
               const isOwnRoom = room.host.id === currentUser.id;

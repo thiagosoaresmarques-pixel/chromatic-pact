@@ -670,7 +670,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 <div
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
                     gap: '0.85rem',
                     marginBottom: '1.1rem',
                   }}
@@ -889,7 +889,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
             gap: '1rem',
           }}
         >
@@ -1124,7 +1124,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
               gap: '0.85rem',
             }}
           >

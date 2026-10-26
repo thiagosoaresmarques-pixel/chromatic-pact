@@ -28,10 +28,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_sovereign",
         "value": 1,
-        "description": "Ao Entrar: Arremessa brasa causando 1 de dano ao Soberano inimigo."
+        "description": "Ao Entrar: Causa 1 de dano diretamente ao Soberano inimigo."
       }
     ],
-    "description": "Ímpeto. Ataca no mesmo turno em que é invocado.",
+    "description": "Ímpeto. Ao Entrar: Causa 1 de dano diretamente ao Soberano inimigo.",
     "flavorText": "Pequenos em estatura, mas forjados na febre ardente das fendas vulcânicas de Pyros.",
     "imagePath": "/assets/cards/red_01_kobold.png",
     "aiArtPrompt": "Dark fantasy TCG card art, fierce red-scaled kobold scout wielding a glowing obsidian dagger in a volcanic cavern, ember sparks, dramatic lighting, masterpiece."
@@ -4139,10 +4139,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 2,
-        "description": "Ao Entrar: Golpe Furtivo causa 2 de dano a um inimigo."
+        "description": "Ao Entrar: Causa 2 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Ímpeto. Apesar do tamanho enorme, move-se em silêncio absoluto antes de esmagar.",
+    "description": "Ímpeto. Ao Entrar: Causa 2 de dano a uma unidade inimiga.",
     "flavorText": "Quando você ouve o galho quebrar, a maça já desceu.",
     "imagePath": "/assets/cards/green_15_bugbear.png",
     "aiArtPrompt": "Dark fantasy TCG art, hulking hairy goblinoid bugbear ambusher swinging a spiked morningstar in forest shadows."
@@ -4196,10 +4196,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 1,
-        "description": "Ao Entrar: Disparo Preciso causa 1 de dano a um inimigo."
+        "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Alcance, Ímpeto. Dispara em pleno galope a partir da Retaguarda no mesmo turno em que entra.",
+    "description": "Alcance • Ímpeto. Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
     "flavorText": "Nenhum invasor cruza a fronteira das árvores antigas sem três flechas no peito.",
     "imagePath": "/assets/cards/green_17_centauro.png",
     "aiArtPrompt": "Dark fantasy TCG art, noble forest centaur archer drawing a longbow at full gallop."
@@ -7739,16 +7739,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "bounce_enemy",
         "value": 1,
-        "description": "Devolve um inimigo para a mão do oponente."
+        "description": "Devolve 1 unidade inimiga para a mão do oponente."
       },
       {
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Congela um inimigo."
+        "description": "Congela (imobiliza por 1 turno) 1 unidade inimiga."
       }
     ],
-    "description": "Feitiço: Inverte as leis da física, devolvendo um inimigo para a mão rival e congelando outro inimigo.",
+    "description": "Devolve 1 unidade inimiga para a mão do oponente. Congela (imobiliza por 1 turno) 1 unidade inimiga.",
     "flavorText": "De que vale uma armadura pesada quando o chão deixa de existir?",
     "imagePath": "/assets/cards/blue_48_inverter_gravidade.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), arcane violet-blue gravity vortex lifting shattered rocks and knights upside down into a glowing sigil."
@@ -10233,10 +10233,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_sovereign",
         "value": 1,
-        "description": "Ao Entrar: Causa 1 de dano ao Soberano inimigo."
+        "description": "Ao Entrar: Causa 1 de dano diretamente ao Soberano inimigo."
       }
     ],
-    "description": "Devoto das crateras ancestrais que canaliza chamas vulcânicas para incinerar a Vanguarda rival.",
+    "description": "Ao Entrar: Causa 1 de dano diretamente ao Soberano inimigo.",
     "flavorText": "Cinzas para as cinzas, e todo o resto para a fornalha sagrada.",
     "imagePath": "/assets/cards/red_56_cultista_chama.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), fanatical fire cultist wearing bronze flame-shaped mask and crimson robes, holding a crooked brazier staff erupting with orange fire."
@@ -12665,7 +12665,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 1,
-        "description": "Ao Entrar: Causa 1 de dano a um inimigo."
+        "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
       },
       {
         "trigger": "on_enter",
@@ -12674,7 +12674,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Alcance. Dispara virotes perfurantes a partir da Retaguarda.",
+    "description": "Alcance. Ao Entrar: Causa 1 de dano a uma unidade inimiga. Ao Entrar: Compra 1 carta.",
     "flavorText": "A catraca de aço estala, e a armadura do inimigo deixa de importar.",
     "imagePath": "/assets/cards/gold_57_besteiro_imperial.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), imperial siege arbalest marksman in white-and-gold tabard aiming a heavy steel-prodded crossbow."
@@ -13202,7 +13202,14 @@ export const ALL_CARDS: CardDefinition[] = [
     "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [],
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      }
+    ],
     "description": "Blindagem leve (2/1/2). Ao Entrar: Compra 1 carta.",
     "flavorText": "Tique-taque, tique-taque: ele mapeia as armadilhas antes que a infantaria avance.",
     "imagePath": "/assets/cards/neutral_31_automato_explorado.png",
@@ -13530,7 +13537,14 @@ export const ALL_CARDS: CardDefinition[] = [
     "hp": 2,
     "preferredRow": "rearguard",
     "keywords": [],
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao Entrar: Gera +1⚡ de Essência extra neste turno."
+      }
+    ],
     "description": "Ao Entrar: Gera +1⚡ de Essência extra neste turno.",
     "flavorText": "A primeira lição da Ordem é roubar um segundo do amanhã para usar hoje.",
     "imagePath": "/assets/cards/blue_73_novico_ampulheta.png",
@@ -13634,7 +13648,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Voo, Ímpeto. Surge de uma fenda no tempo pronta para atacar.",
+    "description": "Voo • Ímpeto. Ao Entrar: Compra 1 carta.",
     "flavorText": "Um eco de uma batalha que ainda acontecerá daqui a trezentos anos.",
     "imagePath": "/assets/cards/blue_76_anomalia_viva.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), crackling cyan temporal anomaly elemental shaped like a winged vortex of shattered clock gears and starlight."
@@ -14839,7 +14853,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "armor": 0,
     "hp": 2,
     "preferredRow": "vanguard",
-    "keywords": [],
+    "keywords": [
+      "Renascer"
+    ],
     "effects": [],
     "description": "Renascer. Já viu a própria morte tantas vezes que aprendeu a voltar dela.",
     "flavorText": "Esta é a morte número novecentos e oitenta e três. Ainda não é a última.",
@@ -15463,7 +15479,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Alcance, Pele Incandescente. Dispara jatos de vapor escaldante da Retaguarda.",
+    "description": "Alcance • Pele Incandescente. Ao Entrar: Compra 1 carta.",
     "flavorText": "O vapor sob pressão corta a carne e cozinha o guerreiro dentro da própria armadura.",
     "imagePath": "/assets/cards/red_76_salamandra_vapor.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), coiled crimson steam-serpent elemental hissing superheated white-and-orange geyser jets."
@@ -21863,7 +21879,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Ímpeto. Salta da folhagem densa para atacar no mesmo instante.",
+    "description": "Ímpeto. Ao Entrar: Compra 1 carta.",
     "flavorText": "Mais veloz que uma flecha disparada entre os galhos.",
     "imagePath": "/assets/cards/green_109_lince_espinhos.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), agile thorn-furred forest lynx with emerald eyes and wooden briar claws pouncing forward."
@@ -21925,7 +21941,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao Entrar: Prende (Congela) 1 inimigo."
+        "description": "Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga."
       },
       {
         "trigger": "on_enter",
@@ -21934,7 +21950,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Alcance, Toque Letal. Suas flechas embebidas em seiva de lótus negro abatem qualquer colosso.",
+    "description": "Alcance • Toque Letal. Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga. Ao Entrar: Compra 1 carta.",
     "flavorText": "Do alto das copas, um único disparo basta.",
     "imagePath": "/assets/cards/green_111_arqueira_dossel.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), emerald canopy wood-elf archer drawing a living yew bow with a glowing venom-tipped arrow."
@@ -23855,10 +23871,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Ao Entrar: Congela todos os inimigos."
+        "description": "Ao Entrar: Congela (imobiliza por 1 turno) toda a Vanguarda inimiga."
       }
     ],
-    "description": "Voo, Sopro. Ao Entrar: Seu sopro de zero absoluto congela os inimigos.",
+    "description": "Voo • Pele Incandescente. Ao Entrar: Congela (imobiliza por 1 turno) toda a Vanguarda inimiga.",
     "flavorText": "Suas asas carregam o inverno de eras esquecidas.",
     "imagePath": "/assets/cards/blue_135_dragao_glaciar_eterno.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, Hades and Castlevania cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Ancient Eternal-Glacier Blue Dragon with crystalline iceberg scales."
@@ -29408,8 +29424,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Ímpeto"
     ],
-    "effects": [],
-    "description": "Duelista ágil das docas neutras que golpeia antes que a guarda inimiga se feche.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga."
+      }
+    ],
+    "description": "Ímpeto. Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga.",
     "flavorText": "Duas lâminas, nenhum senhor e o dobro do soldo.",
     "imagePath": "/assets/cards/neutral_62_espadachim_corsario.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Agile dark fantasy swashbuckler duelist lunging with rapier and main-gauche dagger, billowing charcoal cloak."
@@ -29432,8 +29455,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Escudo Divino"
     ],
-    "effects": [],
-    "description": "Especialista em barreiras geométricas contratado para escoltar caravanas através da Fronteira.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
+      }
+    ],
+    "description": "Escudo Divino. Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
     "flavorText": "Nenhuma seta atravessa a geometria perfeita.",
     "imagePath": "/assets/cards/neutral_63_abjurador_errante.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Armored battle abjurer mage projecting a hexagonal silver-grey runic barrier shield from an iron staff."
@@ -29464,7 +29494,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Lê as conjunções metálicas do astrolábio para antecipar o próximo movimento do rival.",
+    "description": "Alcance. Ao Entrar: Compra 1 carta.",
     "flavorText": "Eu já vi sua derrota três turnos atrás.",
     "imagePath": "/assets/cards/neutral_64_adivinho_astrolabio.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Mystic diviner scholar holding a spinning brass astrolabe with glowing silver starlight runes."
@@ -29487,8 +29517,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Ímpeto"
     ],
-    "effects": [],
-    "description": "Monge asceta dos monastérios neutros cujos golpes partem escudos de ferro.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao Entrar: Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Ímpeto. Ao Entrar: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "O aço dobra; o osso temperado na cinza não.",
     "imagePath": "/assets/cards/neutral_65_adepto_punho_ferro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Dark fantasy martial arts monk in bandages and iron bracers delivering a flying spinning kick with silver chi arcs."
@@ -29514,11 +29551,11 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 1,
-        "description": "Ao Entrar: Concede +1/+1 a um aliado.",
+        "description": "Ao Entrar: Concede +1 ATQ e +1 VIDA a um aliado.",
         "secondaryValue": 1
       }
     ],
-    "description": "Entoa baladas de guerra antigas que inflamam o vigor dos mercenários na vanguarda.",
+    "description": "Ao Entrar: Concede +1 ATQ e +1 VIDA a um aliado.",
     "flavorText": "Uma estrofe pelo ouro, outra pelo sangue.",
     "imagePath": "/assets/cards/neutral_66_bardo_cronicas_ferro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Battle bard playing a bladed steel lute emitting silver sonic shockwaves."
@@ -29541,8 +29578,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Alcance"
     ],
-    "effects": [],
-    "description": "Atirador veterano equipado com besta de tambor giratório forjada em oficina anã.",
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo."
+      }
+    ],
+    "description": "Alcance. Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo.",
     "flavorText": "Seis virotes antes do primeiro grito cair.",
     "imagePath": "/assets/cards/neutral_67_arqueiro_companhia_livre.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Gritty mercenary sharpshooter aiming a heavy mechanical repeating crossbow."
@@ -29565,8 +29609,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Guardião"
     ],
-    "effects": [],
-    "description": "Forma a primeira muralha de lanças nos portões neutros da Torre dos Cinco Selos.",
+    "effects": [
+      {
+        "trigger": "on_death",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Último Suspiro: Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Guardião. Último Suspiro: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "A lança para o cavalo; o escudo para o cavaleiro.",
     "imagePath": "/assets/cards/neutral_68_piqueiro_escudo_negro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy infantry pikeman in dark iron half-plate bracing a long steel pike and tower shield."
@@ -29589,8 +29640,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Alcance"
     ],
-    "effects": [],
-    "description": "Batedor astuto de pele cinza-azulada que embosca viajantes em desfiladeiros estreitos.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga."
+      }
+    ],
+    "description": "Alcance. Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga.",
     "flavorText": "Pequeno no tamanho, grande na ganância.",
     "imagePath": "/assets/cards/neutral_69_funda_chumbo_xvart.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Cunning blue-grey skinned Xvart cave raider slinging a glowing lead stone and clutching a jagged dagger."
@@ -29613,8 +29671,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Ímpeto"
     ],
-    "effects": [],
-    "description": "Caçador de relíquias de agilidade felina capaz de escalar muralhas e flanquear linhas inimigas.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
+      }
+    ],
+    "description": "Ímpeto. Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
     "flavorText": "A curiosidade mata apenas quem é lento.",
     "imagePath": "/assets/cards/neutral_70_batedor_tabaxi.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Sleek jaguar-featured Tabaxi relic hunter leaping mid-air with twin curved climbing claws."
@@ -29637,8 +29702,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Toque Letal"
     ],
-    "effects": [],
-    "description": "Repete com perfeição o grito de comando do general inimigo para abrir brechas fatais.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +1 ATQ e +1 VIDA a um aliado."
+      }
+    ],
+    "description": "Toque Letal. Ao Entrar: Concede +1 ATQ e +1 VIDA a um aliado.",
     "flavorText": "Ele fala com a voz do último homem que matou.",
     "imagePath": "/assets/cards/neutral_71_imitador_kenku.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Hooded raven-folk Kenku rogue crouching on a gargoyle ledge with a poisoned stiletto dagger."
@@ -29661,8 +29734,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Guardião"
     ],
-    "effects": [],
-    "description": "Nômade das cordilheiras cinzentas que encara avalanches e cargas de cavalaria de peito aberto.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao Entrar: Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Guardião. Ao Entrar: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "A montanha não recua diante do vento.",
     "imagePath": "/assets/cards/neutral_72_quebra_ossos_golias.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Towering tattooed Goliath mountain warrior swinging a massive two-handed stone-breaker maul."
@@ -29688,10 +29768,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 1,
-        "description": "Ao Entrar: Causa 1 de dano a um inimigo."
+        "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Escavador veterano do Subterrâneo armado com picareta de tungstênio e cargas de demolição.",
+    "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
     "flavorText": "Toda rocha tem uma veia fraca; toda armadura também.",
     "imagePath": "/assets/cards/neutral_73_mineiro_svirfneblin.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Deep gnome Svirfneblin sapper in chainmail hurling a smoking alchemical blasting charge and wielding a war pick."
@@ -29714,8 +29794,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Guardião"
     ],
-    "effects": [],
-    "description": "Soldado de ferro das fortalezas subterrâneas capaz de expandir a própria estatura no calor da luta.",
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo."
+      }
+    ],
+    "description": "Guardião. Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo.",
     "flavorText": "Forjados sem sol, temperados sem piedade.",
     "imagePath": "/assets/cards/neutral_74_sentinela_duergar.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Grim grey-skinned Duergar heavy infantryman with spiked iron warhammer and locking shield."
@@ -29738,8 +29825,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Ímpeto"
     ],
-    "effects": [],
-    "description": "Assassino errante das galerias profundas que luta com lança farpada de gancho.",
+    "effects": [
+      {
+        "trigger": "on_death",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Último Suspiro: Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Ímpeto. Último Suspiro: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "Nos túneis sem eco, o riso vem depois do golpe.",
     "imagePath": "/assets/cards/neutral_75_batedor_derro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Wild-eyed pale Derro stalker lunging with a hooked aklys club and spiked buckler."
@@ -29762,8 +29856,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Ímpeto"
     ],
-    "effects": [],
-    "description": "Felino de pelagem cor de granito cujo pelo reflete feitiços de rastreamento.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga."
+      }
+    ],
+    "description": "Ímpeto. Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga.",
     "flavorText": "Seu rugido imita um grito humano na nevasca.",
     "imagePath": "/assets/cards/neutral_76_gato_escarpas_norte.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ferocious mountain crag cat with stone-grey fur and saber fangs pouncing from a rocky ledge."
@@ -29794,7 +29895,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Gato alado de inteligência aguçada que detecta venenos e emboscadas para seu mestre.",
+    "description": "Voo. Ao Entrar: Compra 1 carta.",
     "flavorText": "Quatro patas silenciosas e duas asas atentas.",
     "imagePath": "/assets/cards/neutral_77_familiar_tressym.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Winged feline Tressym with feathered owl-like wings and glowing amber eyes mid-flight."
@@ -29817,8 +29918,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Fúria Crescente"
     ],
-    "effects": [],
-    "description": "Guerreiro nortenho que caça feras colossais nas tundras sem jurar lealdade a nenhum trono.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +1 ATQ e +1 VIDA a um aliado."
+      }
+    ],
+    "description": "Fúria Crescente. Ao Entrar: Concede +1 ATQ e +1 VIDA a um aliado.",
     "flavorText": "O sangue aquece mais que qualquer manto.",
     "imagePath": "/assets/cards/neutral_78_cacador_uthgardt.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Fierce northern tribal barbarian hunter in wolf pelts hurling a bone-tipped harpoon."
@@ -29841,8 +29950,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Guardião"
     ],
-    "effects": [],
-    "description": "Réptil dracônico criado em cativeiro para guardar cofres e câmaras de relíquias.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao Entrar: Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Guardião. Ao Entrar: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "Não voa nem cospe fogo, mas suas mandíbulas nunca soltam.",
     "imagePath": "/assets/cards/neutral_79_dragonete_guarda_neutro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Muscular wingless iron-scaled guard drake snapping its heavy jaws in a defensive crouch."
@@ -29865,8 +29981,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Ímpeto"
     ],
-    "effects": [],
-    "description": "Caçador esguio de escamas foscas treinado para abater batedores inimigos em disparada.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      }
+    ],
+    "description": "Ímpeto. Ao Entrar: Compra 1 carta.",
     "flavorText": "Mais rápido que um cavalo e mais silencioso que um lobo.",
     "imagePath": "/assets/cards/neutral_80_dragonete_emboscada.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Lean predatory ambush drake sprinting low with flared neck frills and razor claws."
@@ -29889,8 +30012,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Guardião"
     ],
-    "effects": [],
-    "description": "Autômato movido por mola espiral que marcha incansavelmente até que sua chave pare de girar.",
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo."
+      }
+    ],
+    "description": "Guardião. Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo.",
     "flavorText": "Um giro da chave no peito vale por um dia de batalha.",
     "imagePath": "/assets/cards/neutral_81_operario_relojoeiro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Brass and blackened iron clockwork soldier with a large winding key in its back swinging a gear-axe."
@@ -29913,8 +30043,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Alcance"
     ],
-    "effects": [],
-    "description": "Soldado equipado com arcabuz de pederneira que perfura couraças pesadas à distância.",
+    "effects": [
+      {
+        "trigger": "on_death",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Último Suspiro: Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Alcance. Último Suspiro: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "Contra chumbo quente, nenhum brasão protege.",
     "imagePath": "/assets/cards/neutral_82_artilheiro_polvora_cinza.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Grim dark fantasy flintlock musketeer firing a heavy rifled arquebus in a cloud of grey smoke."
@@ -29940,10 +30077,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "heal_target_ally",
         "value": 3,
-        "description": "Ao Entrar: Cura 3 de VIDA de um aliado."
+        "description": "Ao Entrar: Restaura 3 de VIDA de um aliado."
       }
     ],
-    "description": "Sutura feridas em pleno campo de batalha usando sais alquímicos e tinturas cauterizantes.",
+    "description": "Ao Entrar: Restaura 3 de VIDA de um aliado.",
     "flavorText": "Vai arder mais que a espada, mas você continuará de pé.",
     "imagePath": "/assets/cards/neutral_83_medico_peste_fronteira.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Beaked leather-masked battlefield alchemist-surgeon holding glowing silver-green restorative vials."
@@ -29966,8 +30103,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Guardião"
     ],
-    "effects": [],
-    "description": "Mastim de caça vestido com coleira de espigões e peitoral de couro batido.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
+      }
+    ],
+    "description": "Guardião. Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
     "flavorText": "Dorme sobre os sacos de ouro com um olho aberto.",
     "imagePath": "/assets/cards/neutral_84_cao_guerra_encouracado.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Fierce armored war mastiff wearing spiked iron barding and snarling mid-leap."
@@ -29996,7 +30140,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Conhece cada laje falsa, fio de disparo e passagem secreta das ruínas antigas.",
+    "description": "Ao Entrar: Compra 1 carta.",
     "flavorText": "Nunca pise na pedra mais limpa do corredor.",
     "imagePath": "/assets/cards/neutral_85_carregador_tocha_masmorra.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Veteran dungeon delver with iron lantern, crowbar, and shortsword peering into darkness."
@@ -30020,8 +30164,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Guardião",
       "Voo"
     ],
-    "effects": [],
-    "description": "Esculpida no granito cinzento da Torre Axial para vigiar os portões dia e noite.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao Entrar: Restaura 2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Guardião • Voo. Ao Entrar: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "Séculos de chuva apenas afiaram suas garras de pedra.",
     "imagePath": "/assets/cards/neutral_86_gargula_sentinela_ponte.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Weathered grey granite gargoyle with bat wings and iron-clamped horns diving with outstretched talons."
@@ -30044,8 +30195,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Guardião"
     ],
-    "effects": [],
-    "description": "Armadura de placas completa movida por runas de guarda gravadas no interior do elmo.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      }
+    ],
+    "description": "Guardião. Ao Entrar: Compra 1 carta.",
     "flavorText": "Vazia por dentro, mas inabalável na linha de frente.",
     "imagePath": "/assets/cards/neutral_87_armadura_animada_vigia.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Empty gothic full-plate animated armor glowing with silver runes inside the visor, swinging a halberd."
@@ -30069,8 +30227,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Voo",
       "Ímpeto"
     ],
-    "effects": [],
-    "description": "Espada bastarda encantada que salta da parede assim que um intruso cruza o limiar.",
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo."
+      }
+    ],
+    "description": "Voo • Ímpeto. Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo.",
     "flavorText": "Sem braço que canse, sem pulso que trema.",
     "imagePath": "/assets/cards/neutral_88_espada_voadora_runica.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Animated rune-etched silver greatsword hovering and slashing diagonally with steel motion arcs."
@@ -30098,10 +30263,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao Entrar: Imobiliza (Congela) 1 inimigo."
+        "description": "Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga."
       }
     ],
-    "description": "Tecido com fios de chumbo e encantamentos de captura para imobilizar invasores no salão.",
+    "description": "Guardião. Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga.",
     "flavorText": "O tapete mais caro do palácio é o último que você pisa.",
     "imagePath": "/assets/cards/neutral_89_tapete_estrangulador.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate dark tapestry animated like a coiling serpent with golden tassels and iron fringe."
@@ -30124,8 +30289,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Toque Letal"
     ],
-    "effects": [],
-    "description": "Predador amorfo que assume a forma de uma arca de tesouro reforçada para devorar saqueadores.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga."
+      }
+    ],
+    "description": "Toque Letal. Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga.",
     "flavorText": "A fechadura tem dentes; a tampa tem língua.",
     "imagePath": "/assets/cards/neutral_90_mimico_bau_ferro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Monstrous iron-bound treasure chest Mimic bursting open with rows of fangs, multiple eyes, and a lashing tongue."
@@ -30149,8 +30321,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Guardião",
       "Fúria Crescente"
     ],
-    "effects": [],
-    "description": "Gladiador consagrado em cem duelos que vende sua espada ao soberano mais audaz.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano a uma unidade inimiga."
+      }
+    ],
+    "description": "Guardião • Fúria Crescente. Ao Entrar: Causa 2 de dano a uma unidade inimiga.",
     "flavorText": "A multidão ruge; o aço decide.",
     "imagePath": "/assets/cards/neutral_91_campeao_arena_livre.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavily armored arena champion warrior wielding a notched greatsword and lion-crested pauldron."
@@ -30178,11 +30357,11 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 1,
-        "description": "Ao Entrar: Concede +1/+1 a todos os aliados.",
+        "description": "Ao Entrar: Concede +1 ATQ e +1 VIDA a todos os aliados.",
         "secondaryValue": 1
       }
     ],
-    "description": "Comandante veterano cuja simples voz de comando reorganiza uma linha de batalha quebrada.",
+    "description": "Guardião. Ao Entrar: Concede +1 ATQ e +1 VIDA a todos os aliados.",
     "flavorText": "Mantenham os escudos unidos ou morram sozinhos!",
     "imagePath": "/assets/cards/neutral_92_senhor_guerra_fronteira.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Commanding scarred warlord in dark steel plate pointing a warhammer forward with battle standard cape."
@@ -30214,7 +30393,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Atacar: Compra 1 carta."
       }
     ],
-    "description": "Infiltra-se nas linhas inimigas para subtrair planos de guerra e cortar gargantas.",
+    "description": "Ímpeto • Toque Letal. Ao Atacar: Compra 1 carta.",
     "flavorText": "Trancas existem apenas para manter os honestos do lado de fora.",
     "imagePath": "/assets/cards/neutral_93_ladrao_mestre_mascara.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Master thief assassin in sleek dark leather armor leaping with twin poisoned kris daggers and grappling hook."
@@ -30242,10 +30421,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 2,
-        "description": "Ao Entrar: Causa 2 de dano a um inimigo."
+        "description": "Ao Entrar: Causa 2 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Capaz de cravar uma flecha de aço na fresta do visor de um cavaleiro a duzentos passos.",
+    "description": "Alcance. Ao Entrar: Causa 2 de dano a uma unidade inimiga.",
     "flavorText": "Eu não miro no peito; miro no olho.",
     "imagePath": "/assets/cards/neutral_94_arqueiro_zenite.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Master elven longbowman drawing three silver-fletched arrows at once in a dynamic crouch."
@@ -30273,11 +30452,11 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 2,
-        "description": "Ao Entrar: Transmuta a couraça de um aliado, concedendo +2/+2.",
+        "description": "Ao Entrar: Concede +2 ATQ e +2 VIDA a um aliado.",
         "secondaryValue": 2
       }
     ],
-    "description": "Converte chumbo em adamantina e carne frágil em ferro vivo durante o combate.",
+    "description": "Alcance. Ao Entrar: Concede +2 ATQ e +2 VIDA a um aliado.",
     "flavorText": "Toda matéria obedece a quem conhece sua cifra.",
     "imagePath": "/assets/cards/neutral_95_transmutador_alquimico.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Arcane transmuter wizard transmuting floating liquid mercury and iron shards between his gauntleted hands."
@@ -30303,11 +30482,11 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "summon_token",
         "value": 2,
-        "description": "Ao Entrar: Invoca um Sentinela Planar 2/2.",
+        "description": "Ao Entrar: Invoca um Campeão/Guarda 2/2 na Vanguarda.",
         "secondaryValue": 2
       }
     ],
-    "description": "Abre fendas dimensionais breves para trazer sentinelas astrais ao campo de batalha.",
+    "description": "Ao Entrar: Invoca um Campeão/Guarda 2/2 na Vanguarda.",
     "flavorText": "Por que lutar sozinho quando o multiverso está cheio de servos?",
     "imagePath": "/assets/cards/neutral_96_conjurador_circulo_neutro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Summoner mage tearing open a silver-grey dimensional rift with a horned staff."
@@ -30331,8 +30510,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Guardião",
       "Escudo Divino"
     ],
-    "effects": [],
-    "description": "Criatura subterrânea cujo casco multifacetado refrata feitiços e cujos tentáculos golpeiam como maças.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Ao Entrar: Reduz em -2 o ATQ de toda a Vanguarda inimiga."
+      }
+    ],
+    "description": "Guardião • Escudo Divino. Ao Entrar: Reduz em -2 o ATQ de toda a Vanguarda inimiga.",
     "flavorText": "Seu casco vale uma fortuna — para quem sobreviver aos cinco manguais.",
     "imagePath": "/assets/cards/neutral_97_caracol_mangual_prisma.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive Flail Snail with an iridescent faceted shell swinging five spiked club-like tentacles."
@@ -30360,10 +30546,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao Entrar: Prende 1 inimigo com sua língua."
+        "description": "Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga."
       }
     ],
-    "description": "Colosso anfíbio moldado em sombra e barro para rastrear e engolir um alvo marcado.",
+    "description": "Atropelar. Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga.",
     "flavorText": "Enquanto houver um fio de cabelo da presa, ele não parará.",
     "imagePath": "/assets/cards/neutral_98_banderhobb_cacador.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Hulking toad-like Banderhobb monstrosity lashing out with a massive whipping tongue and iron chains."
@@ -30386,8 +30572,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Toque Letal"
     ],
-    "effects": [],
-    "description": "Nômade metade humanoide, metade escorpião couraçado, armado com corrente de ganchos e ferrão letal.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Concede +2 ATQ e +2 VIDA a um aliado."
+      }
+    ],
+    "description": "Toque Letal. Ao Entrar: Concede +2 ATQ e +2 VIDA a um aliado.",
     "flavorText": "Nas dunas de cinza, o ferrão desce antes da sombra.",
     "imagePath": "/assets/cards/neutral_99_tlincalli_ferrao_aco.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Chitin-armored scorpion-centaur Tlincalli warrior lunging with a spiked chain and curved venomous stinger tail."
@@ -30415,10 +30609,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "steal_small_enemy",
         "value": 2,
-        "description": "Ao Entrar: Hipnotiza e toma o controle de um inimigo com ATQ <= 2."
+        "description": "Ao Entrar: Assume o controle de um inimigo com ATQ <= 2."
       }
     ],
-    "description": "Aberração antiga que viaja entre os planos em uma ilha flutuante acumulando artefatos e mentes.",
+    "description": "Alcance. Ao Entrar: Assume o controle de um inimigo com ATQ <= 2.",
     "flavorText": "Tudo o que brilha ou pensa acabará na minha coleção.",
     "imagePath": "/assets/cards/neutral_100_morkoth_ilha_errante.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Tentacled abyssal Morkoth aberration floating over arcane relics with hypnotic spiraling eyes."
@@ -30449,7 +30643,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Negociante aracnídeo-enguia das naus astrais para quem toda criatura tem um preço de venda.",
+    "description": "Dreno de Vida. Ao Entrar: Compra 1 carta.",
     "flavorText": "Na contabilidade Neogi, não existem aliados, apenas propriedades.",
     "imagePath": "/assets/cards/neutral_101_neogi_mercador_escravista.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Sinister eel-necked spider-bodied Neogi slaver master wrapped in silk robes casting mind-control threads."
@@ -30477,10 +30671,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Ao Entrar: Concede Escudo Divino à vanguarda aliada."
+        "description": "Ao Entrar: Concede Escudo Divino a todas as unidades aliadas."
       }
     ],
-    "description": "Oficial veterano cuja disciplina tática mantém a formação intacta sob fogo cerrado.",
+    "description": "Guardião. Ao Entrar: Concede Escudo Divino a todas as unidades aliadas.",
     "flavorText": "Pela coroa ou pelo contrato, ninguém recua um passo!",
     "imagePath": "/assets/cards/neutral_102_cavaleiro_dragao_purpura.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Veteran knight commander in fluted steel plate armor raising a broadsword and heraldic heater shield."
@@ -30504,8 +30698,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Ímpeto",
       "Escudo Divino"
     ],
-    "effects": [],
-    "description": "Une esgrima élfica milenar e abjuração rúnica num único giro de lâmina prateada.",
+    "effects": [
+      {
+        "trigger": "on_death",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Último Suspiro: Restaura 3 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Ímpeto • Escudo Divino. Último Suspiro: Restaura 3 de VIDA do seu Soberano.",
     "flavorText": "O som do aço cortando o ar é o único cântico necessário.",
     "imagePath": "/assets/cards/neutral_103_lamina_cantante_cinza.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Elven Bladesinger master spinning mid-air with a glowing silver longsword and arcane glyph ribbons."
@@ -30533,10 +30734,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 1,
-        "description": "Ao Entrar: Causa 1 de dano a toda a Vanguarda inimiga."
+        "description": "Ao Entrar: Causa 1 de dano a todas as unidades na Vanguarda inimiga."
       }
     ],
-    "description": "Conjurador militar em meia-armadura treinado para bombardear formações fechadas.",
+    "description": "Alcance. Ao Entrar: Causa 1 de dano a todas as unidades na Vanguarda inimiga.",
     "flavorText": "A artilharia arcana não precisa de catapultas.",
     "imagePath": "/assets/cards/neutral_104_mago_guerra_bastiao.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Armored War Mage in steel breastplate and hooded cloak unleashing a barrage of silver force missiles."
@@ -30560,8 +30761,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Toque Letal",
       "Fúria Crescente"
     ],
-    "effects": [],
-    "description": "Bebe elixires mutagênicos amargos para enxergar no escuro e igualar a força das feras que caça.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
+      }
+    ],
+    "description": "Toque Letal • Fúria Crescente. Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
     "flavorText": "Para matar o monstro, aceite metade do veneno dele.",
     "imagePath": "/assets/cards/neutral_105_cacador_sangue_mutageno.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Grim monster hunter with glowing cat-like eyes, bandolier of mutagens, and twin silvered longswords."
@@ -30585,8 +30793,16 @@ export const ALL_CARDS: CardDefinition[] = [
       "Voo",
       "Ímpeto"
     ],
-    "effects": [],
-    "description": "Constructo alado de lâminas rotativas projetado para caçar alvos através de telhados e muralhas.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Concede +2 ATQ e +2 VIDA a um aliado."
+      }
+    ],
+    "description": "Voo • Ímpeto. Ao Entrar: Concede +2 ATQ e +2 VIDA a um aliado.",
     "flavorText": "Quando ouvir o zumbido de suas engrenagens, sua cabeça já rolou.",
     "imagePath": "/assets/cards/neutral_106_reen_assassino_relojoeiro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Lethal winged clockwork assassin Reen construct with spinning razor-blade arms diving from above."
@@ -30610,8 +30826,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Guardião",
       "Atropelar"
     ],
-    "effects": [],
-    "description": "Titã mecânico movido a alta pressão cujos pistões esmagam barricadas de pedra.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao Entrar: Restaura 3 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Guardião • Atropelar. Ao Entrar: Restaura 3 de VIDA do seu Soberano.",
     "flavorText": "Pressão máxima nas válvulas; caminho livre à frente.",
     "imagePath": "/assets/cards/neutral_107_colosso_forja_vapor.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Towering steam-powered brass and blackened iron juggernaut construct with glowing furnace core and piston fists."
@@ -30637,10 +30860,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "debuff_enemy_vanguard_atk",
         "value": 2,
-        "description": "Ao Entrar: Reduz em 2 o ATQ da Vanguarda inimiga."
+        "description": "Ao Entrar: Reduz em -2 o ATQ de toda a Vanguarda inimiga."
       }
     ],
-    "description": "Interroga traidores e desfaz encantamentos ocultos com correntes de prata fria.",
+    "description": "Ao Entrar: Reduz em -2 o ATQ de toda a Vanguarda inimiga.",
     "flavorText": "A prata fria queima apenas quem esconde um pacto.",
     "imagePath": "/assets/cards/neutral_108_inquisidor_cinzento.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Wide-brimmed hat dark fantasy inquisitor wielding a silver-chained censer flail and heavy crossbow."
@@ -30663,8 +30886,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Ímpeto"
     ],
-    "effects": [],
-    "description": "Tarântula gigante do Subterrâneo cujas patas secretam resina adesiva para prender presas.",
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo."
+      }
+    ],
+    "description": "Ímpeto. Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo.",
     "flavorText": "Salta trinta metros de um pilar de estalactite ao outro.",
     "imagePath": "/assets/cards/neutral_109_aranha_pedra_steeder.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Giant armored subterranean Steeder spider with glowing eyes and iron saddle leaping with sticky tarsal pads."
@@ -30690,10 +30920,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Ao Entrar: Gera +1⚡ de Essência extra."
+        "description": "Ao Entrar: Gera +1⚡ de Essência extra neste turno."
       }
     ],
-    "description": "Conhece todos os canais subterrâneos onde moedas antigas e relíquias naufragadas se acumulam.",
+    "description": "Ao Entrar: Gera +1⚡ de Essência extra neste turno.",
     "flavorText": "Ouro da superfície ou pérola do abismo, tudo pesa igual na balança.",
     "imagePath": "/assets/cards/neutral_110_mercador_lago_escuro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Deep-sea fish-like Kuo-Toa black-market trader holding a lantern and chest of ancient sunken coins."
@@ -30717,8 +30947,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Guardião",
       "Voo"
     ],
-    "effects": [],
-    "description": "Moldada a partir de arenito vivo e quartzo por magia ancestral para guardar anfiteatros em ruínas.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga."
+      }
+    ],
+    "description": "Guardião • Voo. Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga.",
     "flavorText": "Onde parece haver apenas uma estátua, há uma emboscada.",
     "imagePath": "/assets/cards/neutral_111_gargula_areia_iymrith.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Sandstone and quartz gargoyle warrior with horned wings and stone halberd erupting from desert rock."
@@ -30741,8 +30978,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Guardião"
     ],
-    "effects": [],
-    "description": "Crustáceo titânico cuja carapaça incrustada de cracas e naufrágios desvia tiros de balista.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano a uma unidade inimiga."
+      }
+    ],
+    "description": "Guardião. Ao Entrar: Causa 2 de dano a uma unidade inimiga.",
     "flavorText": "Confundido com um recife até o momento em que as pinças se fecham.",
     "imagePath": "/assets/cards/neutral_112_caranguejo_colossal_costa.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal ship-crushing Hulking Crab covered in barnacles and sunken armor plates snapping massive claws."
@@ -30771,10 +31015,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 3,
-        "description": "Ao Entrar: Arremessa um monólito, causando 3 de dano a um inimigo."
+        "description": "Ao Entrar: Causa 3 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Para os gigantes das cavernas de granito, a guerra na superfície é apenas um sonho passageiro.",
+    "description": "Guardião • Alcance. Ao Entrar: Causa 3 de dano a uma unidade inimiga.",
     "flavorText": "Cada rocha arremessada carrega o peso de uma montanha.",
     "imagePath": "/assets/cards/neutral_113_gigante_pedra_entalhador.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Towering Stone Giant carved with runic reliefs hurling a massive chiseled granite obelisk."
@@ -30803,7 +31047,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 2 cartas."
       }
     ],
-    "description": "Convoca tratados de emergência e suprimentos de guerra entre as facções rivais.",
+    "description": "Ao Entrar: Compra 2 cartas.",
     "flavorText": "Quando o céu pega fogo, até inimigos mortais assinam o mesmo pergaminho.",
     "imagePath": "/assets/cards/neutral_114_emissario_conselho_aguas.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Noble council emissary in fur-trimmed velvet coat holding a royal wax-sealed treaty scroll and rapier."
@@ -30827,8 +31071,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Guardião",
       "Atropelar"
     ],
-    "effects": [],
-    "description": "Fundido com trinta toneladas de ferro negro para guardar a câmara central dos tratados.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Ao Entrar: Compra 2 cartas."
+      }
+    ],
+    "description": "Guardião • Atropelar. Ao Entrar: Compra 2 cartas.",
     "flavorText": "Nem magia nem aço comum deixam sequer um risco em seu peito.",
     "imagePath": "/assets/cards/neutral_115_golem_ferro_fornalha_neutra.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive black-iron golem colossus swinging a giant cleaver blade with metallic sparks."
@@ -30857,10 +31108,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 2,
-        "description": "Ao Entrar: Abala o chão, causando 2 de dano a toda a Vanguarda inimiga."
+        "description": "Ao Entrar: Causa 2 de dano a todas as unidades na Vanguarda inimiga."
       }
     ],
-    "description": "O mais célebre gigante mercenário do Norte, vestindo o crânio de um dragão ancião como elmo.",
+    "description": "Guardião • Atropelar. Ao Entrar: Causa 2 de dano a todas as unidades na Vanguarda inimiga.",
     "flavorText": "Até os gigantes se curvam quando seu machado de guerra desce.",
     "imagePath": "/assets/cards/neutral_116_harshnag_machado_inverno.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Legendary Frost Giant hero wearing a massive dragon-skull helmet and wielding a colossal rune-etched greataxe."
@@ -30895,10 +31146,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "turn_start",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Início do Turno: Gera +1⚡ de Essência."
+        "description": "Início do Turno: Gera +1⚡ de Essência extra neste turno."
       }
     ],
-    "description": "Testemunhou a queda de impérios e anotou as fraquezas de cada monstro que habita o mundo.",
+    "description": "Alcance • Escudo Divino. Ao Entrar: Compra 2 cartas. Início do Turno: Gera +1⚡ de Essência extra neste turno.",
     "flavorText": "Conheço o nome verdadeiro de cada demônio e o preço de cada rei.",
     "imagePath": "/assets/cards/neutral_117_elminster_sabio_cinzento.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ancient silver-bearded archmage in weathered grey robes wielding a staff of silver fire and floating runes."
@@ -30926,17 +31177,17 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "draw_cards",
         "value": 3,
-        "description": "Ao Entrar: Revela os segredos do bestiário e compra 3 cartas."
+        "description": "Ao Entrar: Compra 3 cartas."
       },
       {
         "trigger": "turn_start",
         "type": "buff_target_ally",
         "value": 1,
-        "description": "Início do Turno: Concede +1/+1 a um aliado.",
+        "description": "Início do Turno: Concede +1 ATQ e +1 VIDA a um aliado.",
         "secondaryValue": 1
       }
     ],
-    "description": "Viajante incorrigível cujos guias detalham a anatomia e o ponto fraco de todas as feras conhecidas.",
+    "description": "Escudo Divino. Ao Entrar: Compra 3 cartas. Início do Turno: Concede +1 ATQ e +1 VIDA a um aliado.",
     "flavorText": "Primeiro de tudo, um aviso: há monstros aqui — e eu anotei como vencê-los!",
     "imagePath": "/assets/cards/neutral_118_volothamp_cronista_mundos.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Flamboyant legendary explorer scholar in feathered hat holding an open glowing bestiary tome and quill."
@@ -30966,10 +31217,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_all_units",
         "value": 2,
-        "description": "Ao Entrar: Causa 2 de dano a todas as outras unidades."
+        "description": "Ao Entrar: Causa 2 de dano a todas as unidades em campo."
       }
     ],
-    "description": "Antigo colosso de guerra forjado em adamantina pura para caçar dragões nos céus da Era Primordial.",
+    "description": "Guardião • Atropelar • Escudo Divino. Ao Entrar: Causa 2 de dano a todas as unidades em campo.",
     "flavorText": "Quando seus passos ressoam, até os dragões anciãos buscam abrigo nas cavernas.",
     "imagePath": "/assets/cards/neutral_119_colosso_vonindod_fragmento.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal ancient adamantine war-construct titan with glowing furnace eyes and massive dragon-slaying harpoon arms."
@@ -30998,7 +31249,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "destroy_enemy",
         "value": 1,
-        "description": "Ao Entrar: Desintegra 1 criatura inimiga."
+        "description": "Ao Entrar: Destrói 1 unidade inimiga imediatamente."
       },
       {
         "trigger": "on_attack",
@@ -31007,7 +31258,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Atacar: Compra 1 carta."
       }
     ],
-    "description": "Controla do seu covil subterrâneo todas as redes de espionagem, contrabando e informação do continente.",
+    "description": "Voo • Alcance. Ao Entrar: Destrói 1 unidade inimiga imediatamente. Ao Atacar: Compra 1 carta.",
     "flavorText": "Nada acontece nas ruas acima sem que um dos meus dez olhos saiba.",
     "imagePath": "/assets/cards/neutral_120_xanathar_senhor_crime.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Imperious crime-lord Beholder wearing gold rings on its eyestalks hovering beside a crystal goldfish bowl."
@@ -31036,10 +31287,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 3,
-        "description": "Ao Entrar: Lança Corrente Arcana, causando 3 de dano à Vanguarda inimiga."
+        "description": "Ao Entrar: Causa 3 de dano a todas as unidades na Vanguarda inimiga."
       }
     ],
-    "description": "Arquimago renegado que vive em uma torre esculpida numa estalagmite gigante, manipulando príncipes abissais uns contra os outros.",
+    "description": "Alcance • Dreno de Vida. Ao Entrar: Causa 3 de dano a todas as unidades na Vanguarda inimiga.",
     "flavorText": "Deixe que os monstros destruam uns aos outros; nós recolhemos as cinzas.",
     "imagePath": "/assets/cards/neutral_121_vizeran_arquimago_exilado.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ancient exiled dark-elf archmage in silver-webbed robes floating with a floating grimoire and twin orbs of violet-silver force."
@@ -31068,11 +31319,11 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 2,
-        "description": "Ao Entrar: Concede +2/+2 a todas as unidades aliadas.",
+        "description": "Ao Entrar: Concede +2 ATQ e +2 VIDA a todos os aliados.",
         "secondaryValue": 2
       }
     ],
-    "description": "Juiz supremo das seis castas de gigantes que empunha o cetro das leis primordiais.",
+    "description": "Guardião • Alcance. Ao Entrar: Concede +2 ATQ e +2 VIDA a todos os aliados.",
     "flavorText": "Quando o Ordenamento é mantido, cada montanha e cada mar conhece o seu lugar.",
     "imagePath": "/assets/cards/neutral_122_rei_hekaton_neutro_arbitro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Majestic Elder Titan King in bronze-and-iron runic plate wielding a colossal lightning-forged greatsword."
@@ -31101,10 +31352,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "turn_start",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Início do Turno: Reforça as defesas aliadas."
+        "description": "Início do Turno: Concede Escudo Divino a todas as unidades aliadas."
       }
     ],
-    "description": "O primeiro e mais perfeito autômato consciente, cujo coração é uma esfera giratória de platina e éter.",
+    "description": "Guardião • Renascer. Início do Turno: Concede Escudo Divino a todas as unidades aliadas.",
     "flavorText": "Carne apodrece e juramentos quebram; a engrenagem primordial jamais falha.",
     "imagePath": "/assets/cards/neutral_123_emissario_relojoeiro_supremo.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, God-like winged clockwork archon construct of polished platinum and black iron with a glowing astronomical astrolabe halo."
@@ -31134,10 +31385,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_all_units",
         "value": 3,
-        "description": "Ao Entrar: Terremoto Cataclísmico que causa 3 de dano a todas as unidades."
+        "description": "Ao Entrar: Causa 3 de dano a todas as unidades em campo."
       }
     ],
-    "description": "Adormecido sob a crosta de Vaeloria desde a Era Zero, desperta apenas quando o equilíbrio dos cinco domínios ameaça ruir.",
+    "description": "Guardião • Atropelar • Pele Incandescente. Ao Entrar: Causa 3 de dano a todas as unidades em campo.",
     "flavorText": "Ele não serve ao Fogo, nem ao Gelo, nem à Luz: ele é o fim de todos os tronos.",
     "imagePath": "/assets/cards/neutral_124_tarrasque_despertar_neutro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal spiked carapace Tarrasque kaiju monstrosity roaring and shattering stone pillars with massive claws."
@@ -31163,18 +31414,18 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 1,
-        "description": "Ao Entrar: Concede +1/+1 a todos os aliados.",
+        "description": "Ao Entrar: Concede +1 ATQ e +1 VIDA a todos os aliados.",
         "secondaryValue": 1
       },
       {
         "trigger": "turn_start",
         "type": "buff_target_ally",
         "value": 1,
-        "description": "Início do Turno: Concede +1/+1 a um aliado.",
+        "description": "Início do Turno: Concede +1 ATQ e +1 VIDA a um aliado.",
         "secondaryValue": 1
       }
     ],
-    "description": "Tecido com placas circulares de ferro e inscrito com a runa ancestral gigante da guerra.",
+    "description": "Ao Entrar: Concede +1 ATQ e +1 VIDA a todos os aliados. Início do Turno: Concede +1 ATQ e +1 VIDA a um aliado.",
     "flavorText": "Onde a runa Krig tremula, nenhum guerreiro sente o peso do medo.",
     "imagePath": "/assets/cards/neutral_125_estandarte_runa_krig.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Battle-worn war banner inscribed with the glowing metallic Giant rune Krig on an iron-shod pole."
@@ -31200,7 +31451,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "bounce_enemy",
         "value": 1,
-        "description": "Ao Entrar: Teleporta 1 inimigo de volta para a mão."
+        "description": "Ao Entrar: Devolve 1 unidade inimiga para a mão do oponente."
       },
       {
         "trigger": "on_enter",
@@ -31209,7 +31460,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Enorme concha marinha gravada com a runa gigante Uvar que dobra o espaço ao ser soprada.",
+    "description": "Ao Entrar: Devolve 1 unidade inimiga para a mão do oponente. Ao Entrar: Compra 1 carta.",
     "flavorText": "Seu som ecoa a cem léguas de distância e abre o caminho entre os tronos.",
     "imagePath": "/assets/cards/neutral_126_concha_runa_uvar.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Giant pearlescent sea conch shell carved with glowing silver Giant runes emitting spatial ripples."
@@ -31235,16 +31486,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Ao Entrar: Protege os aliados."
+        "description": "Ao Entrar: Concede Escudo Divino a todas as unidades aliadas."
       },
       {
         "trigger": "turn_start",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Início do Turno: Gera +1⚡ de Essência."
+        "description": "Início do Turno: Gera +1⚡ de Essência extra neste turno."
       }
     ],
-    "description": "Um dos nove cetros de mithral e diamante forjados pelos antigos reis subterrâneos de Shanatar.",
+    "description": "Ao Entrar: Concede Escudo Divino a todas as unidades aliadas. Início do Turno: Gera +1⚡ de Essência extra neste turno.",
     "flavorText": "Nove tronos sob a montanha, nove cetros para governar a pedra.",
     "imagePath": "/assets/cards/neutral_127_cetro_regente_shanatar.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate dwarven ruling scepter of mithral and faceted diamond radiating silver geometric light."
@@ -31270,17 +31521,17 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 2,
-        "description": "Ao Entrar: Concede +2/+2 a todos os aliados.",
+        "description": "Ao Entrar: Concede +2 ATQ e +2 VIDA a todos os aliados.",
         "secondaryValue": 2
       },
       {
         "trigger": "turn_start",
         "type": "damage_enemy_sovereign",
         "value": 2,
-        "description": "Início do Turno: Causa 2 de dano ao Soberano inimigo."
+        "description": "Início do Turno: Causa 2 de dano diretamente ao Soberano inimigo."
       }
     ],
-    "description": "Trono flutuante de obsidiana e osso dracônico inscrito com runas soberanas que esmagam a vontade dos rivais.",
+    "description": "Ao Entrar: Concede +2 ATQ e +2 VIDA a todos os aliados. Início do Turno: Causa 2 de dano diretamente ao Soberano inimigo.",
     "flavorText": "Apenas quem possui sangue de titã suporta sentar-se entre suas presas.",
     "imagePath": "/assets/cards/neutral_128_trono_cranio_dragao.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Floating obsidian throne carved from a colossal ancient dragon skull etched with glowing silver runes."
@@ -31306,7 +31557,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 2,
-        "description": "Ao Entrar: Sopro Pentacromático que causa 2 de dano à Vanguarda inimiga."
+        "description": "Ao Entrar: Causa 2 de dano a todas as unidades na Vanguarda inimiga."
       },
       {
         "trigger": "turn_start",
@@ -31315,7 +31566,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Restaura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Artefato supremo formado pela união das cinco máscaras dracônicas em uma única coroa de chifres.",
+    "description": "Ao Entrar: Causa 2 de dano a todas as unidades na Vanguarda inimiga. Início do Turno: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "Cinco vozes, cinco sopros, uma única soberania.",
     "imagePath": "/assets/cards/neutral_129_mascara_rainha_pentacromatica.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Legendary five-horned dragon crown mask combining red, blue, purple, green, and gold metallic scales."
@@ -31341,11 +31592,11 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 1,
-        "description": "Ao Entrar: Petrifica a couraça de um aliado, concedendo +1/+3.",
+        "description": "Ao Entrar: Concede +1 ATQ e +3 VIDA a um aliado.",
         "secondaryValue": 3
       }
     ],
-    "description": "Esfera de granito polido gravada com a runa da rocha eterna que enrijece a pele dos aliados.",
+    "description": "Ao Entrar: Concede +1 ATQ e +3 VIDA a um aliado.",
     "flavorText": "Quem carrega a runa Stein tem raízes na própria montanha.",
     "imagePath": "/assets/cards/neutral_130_orbe_runa_stein.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Polished granite sphere deeply engraved with the glowing silver Giant rune Stein floating over an iron ring."
@@ -31371,10 +31622,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Ao Entrar: Projeta duplicatas ilusórias que protegem os aliados."
+        "description": "Ao Entrar: Concede Escudo Divino a todas as unidades aliadas."
       }
     ],
-    "description": "Costurado com o couro escuro de uma fera deslocadora, projeta a imagem do usuário a um passo de onde ele realmente está.",
+    "description": "Ao Entrar: Concede Escudo Divino a todas as unidades aliadas.",
     "flavorText": "Você sempre acerta a sombra; o dono do manto já está atrás de você.",
     "imagePath": "/assets/cards/neutral_131_manto_deslocamento_ilusorio.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Dark midnight-grey cloak with twin spiked tentacles on the shoulders projecting a shimmering double silhouette."
@@ -31400,16 +31651,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 3,
-        "description": "Ao Entrar: Concede +3 ATQ a um aliado."
+        "description": "Ao Entrar: Concede +3 ATQ e +3 VIDA a um aliado."
       },
       {
         "trigger": "turn_start",
         "type": "damage_single_enemy",
         "value": 1,
-        "description": "Início do Turno: Causa 1 de dano a um inimigo."
+        "description": "Início do Turno: Causa 1 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Espada habitada pelo espírito indomável de um antigo duelista que jamais descansa até ver o agressor cair.",
+    "description": "Ao Entrar: Concede +3 ATQ e +3 VIDA a um aliado. Início do Turno: Causa 1 de dano a uma unidade inimiga.",
     "flavorText": "Basta o primeiro corte para que a lâmina exija o duelo até o fim.",
     "imagePath": "/assets/cards/neutral_132_espada_vingadora_runica.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate dark-steel broadsword with a fierce gargoyle crossguard glowing with vengeful silver-white edge."
@@ -31445,7 +31696,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "secondaryValue": 3
       }
     ],
-    "description": "Forjado com um olho de prata viva no umbo central que vigia todos os ângulos do campo de batalha.",
+    "description": "Ao Entrar: Compra 1 carta. Ao Entrar: Concede +3 VIDA a um aliado.",
     "flavorText": "O portador pode fechar os olhos; o escudo nunca dorme.",
     "imagePath": "/assets/cards/neutral_133_escudo_sentinela_olho.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy steel heater shield embossed with a wide-open glowing silver eye in the center boss."
@@ -31477,10 +31728,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "turn_start",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Início do Turno: Gera +1⚡ de Essência."
+        "description": "Início do Turno: Gera +1⚡ de Essência extra neste turno."
       }
     ],
-    "description": "Vinte e duas lâminas de marfim e ouro guardadas em estojo de couro que podem erguer um rei ou arruinar um império num único saque.",
+    "description": "Ao Entrar: Compra 2 cartas. Início do Turno: Gera +1⚡ de Essência extra neste turno.",
     "flavorText": "Puxe uma carta se tiver coragem: o Trono ou o Vazio.",
     "imagePath": "/assets/cards/neutral_134_baralho_muitas_coisas.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ivory and gold-leaf tarot cards fanning out in mid-air from an ornate velvet-lined iron box with silver runes."
@@ -31506,10 +31757,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 2,
-        "description": "Ao Entrar: Dispara feixes prismáticos que causam 2 de dano à Vanguarda inimiga."
+        "description": "Ao Entrar: Causa 2 de dano a todas as unidades na Vanguarda inimiga."
       }
     ],
-    "description": "Elmo de prata cravejado de diamantes, rubis e opalas de fogo que convertem a vontade do portador em raios destrutivos.",
+    "description": "Ao Entrar: Causa 2 de dano a todas as unidades na Vanguarda inimiga.",
     "flavorText": "Cada gema da coroa guarda uma tempestade diferente.",
     "imagePath": "/assets/cards/neutral_135_elmo_compreensao_brilhante.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Resplendent silver great-helm set with dozens of glowing diamonds, rubies, and opals on its crest."
@@ -31539,7 +31790,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "secondaryValue": 2
       }
     ],
-    "description": "Largo cinturão de couro cravejado de fivelas de ferro meteorítico que infunde nos músculos a força bruta de um gigante.",
+    "description": "Ao Entrar: Concede +3 ATQ e +2 VIDA a um aliado.",
     "flavorText": "Com esta fivela na cintura, uma espada de duas mãos pesa como um graveto.",
     "imagePath": "/assets/cards/neutral_136_cinto_forca_gigante.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive iron-buckled leather war belt embossed with giant runes and glowing with silver-amber power."
@@ -31565,11 +31816,11 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 2,
-        "description": "Ao Entrar: Concede +2/+1 a um aliado.",
+        "description": "Ao Entrar: Concede +2 ATQ e +1 VIDA a um aliado.",
         "secondaryValue": 1
       }
     ],
-    "description": "Ao bater os calcanhares metálicos, o guerreiro se move como um borrão prateado entre as fileiras inimigas.",
+    "description": "Ao Entrar: Concede +2 ATQ e +1 VIDA a um aliado.",
     "flavorText": "Bata os calcanhares e atravesse o campo antes que a flecha caia.",
     "imagePath": "/assets/cards/neutral_137_botas_velocidade_mercurio.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Sleek articulated quicksilver and dark-leather greaves trailing silver motion-blur arcs."
@@ -31595,10 +31846,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 3,
-        "description": "Ao Entrar: Dispara um aríete espectral que causa 3 de dano a um inimigo."
+        "description": "Ao Entrar: Causa 3 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Anel de ferro maciço esculpido com a cabeça de um carneiro de chifres retorcidos que projeta ondas de concussão.",
+    "description": "Ao Entrar: Causa 3 de dano a uma unidade inimiga.",
     "flavorText": "Um soco no ar a dez passos derruba uma porta de carvalho.",
     "imagePath": "/assets/cards/neutral_138_anel_ariete_forca.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy forged-iron ring shaped like a horned battering-ram head projecting a translucent silver shockwave."
@@ -31624,10 +31875,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "draw_cards",
         "value": 2,
-        "description": "Ao Entrar: Abre os caminhos planares e compra 2 cartas."
+        "description": "Ao Entrar: Compra 2 cartas."
       }
     ],
-    "description": "Disco de adamante escuro com anéis concêntricos que se alinham com as coordenadas do multiverso.",
+    "description": "Ao Entrar: Compra 2 cartas.",
     "flavorText": "Gire o disco interno e escolha em qual mundo deseja pisar.",
     "imagePath": "/assets/cards/neutral_139_amuleto_planos_astrolabio.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Interlocking concentric rings of dark adamantine and silver forming a planar astrolabe amulet."
@@ -31659,10 +31910,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "turn_start",
         "type": "damage_enemy_sovereign",
         "value": 1,
-        "description": "Início do Turno: Sussurros psíquicos causam 1 de dano ao Soberano inimigo."
+        "description": "Início do Turno: Causa 1 de dano diretamente ao Soberano inimigo."
       }
     ],
-    "description": "Recipiente de bronze e vidro alquímico onde um intelecto ancestral permanece desperto e sussurrando segredos.",
+    "description": "Ao Entrar: Compra 1 carta. Início do Turno: Causa 1 de dano diretamente ao Soberano inimigo.",
     "flavorText": "O corpo morreu há séculos; a mente dentro do vidro ainda planeja.",
     "imagePath": "/assets/cards/neutral_140_urna_cerebral_preservada.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate bronze and thick glass alchemical canister containing a glowing silver-violet preserved brain."
@@ -31688,7 +31939,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "draw_cards",
         "value": 1,
-        "description": "Ao Entrar: Revela emboscadas e compra 1 carta."
+        "description": "Ao Entrar: Compra 1 carta."
       },
       {
         "trigger": "on_enter",
@@ -31697,7 +31948,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Restaura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Lanterna de ferro com lentes de cristal lapidado cuja chama prateada desfaz qualquer invisibilidade ou metamorfose.",
+    "description": "Ao Entrar: Compra 1 carta. Ao Entrar: Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "Sob este facho, nenhuma sombra mente.",
     "imagePath": "/assets/cards/neutral_141_lanterna_revelacao_veraz.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Gothic wrought-iron hooded lantern with faceted quartz lenses burning with a bright silver-white flame."
@@ -31723,11 +31974,11 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "summon_token",
         "value": 3,
-        "description": "Ao Entrar: Convoca um Guerreiro Ancestral 3/3.",
+        "description": "Ao Entrar: Invoca um Campeão/Guarda 3/3 na Vanguarda.",
         "secondaryValue": 3
       }
     ],
-    "description": "Berrante de chifre e ferro batido cujo clamor convoca espíritos guerreiros de eras passadas para lutar mais uma vez.",
+    "description": "Ao Entrar: Invoca um Campeão/Guarda 3/3 na Vanguarda.",
     "flavorText": "Um único sopro desperta os heróis que caíram antes da Fratura.",
     "imagePath": "/assets/cards/neutral_142_trombeta_valhalla_ferro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive iron-bound war horn etched with ancient battle scenes emitting silver spectral warrior silhouettes."
@@ -31753,16 +32004,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao Entrar: Aprisiona (Congela) 1 inimigo."
+        "description": "Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga."
       },
       {
         "trigger": "on_enter",
         "type": "bounce_enemy",
         "value": 1,
-        "description": "Ao Entrar: Devolve 1 inimigo para a mão."
+        "description": "Ao Entrar: Devolve 1 unidade inimiga para a mão do oponente."
       }
     ],
-    "description": "Espelho oval de mercúrio cristalizado dividido em doze celas extradimensionais invisíveis.",
+    "description": "Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga. Ao Entrar: Devolve 1 unidade inimiga para a mão do oponente.",
     "flavorText": "Olhe para o seu reflexo e descubra que é ele quem está do lado de fora.",
     "imagePath": "/assets/cards/neutral_143_espelho_aprisionar_almas.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Tall oval gothic mirror with dark iron gargoyle frame and swirling liquid-mercury reflective surface."
@@ -31788,17 +32039,17 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Ao Entrar: Gera +1⚡ de Essência."
+        "description": "Ao Entrar: Gera +1⚡ de Essência extra neste turno."
       },
       {
         "trigger": "turn_start",
         "type": "buff_target_ally",
         "value": 1,
-        "description": "Início do Turno: Concede +1/+1 a um aliado.",
+        "description": "Início do Turno: Concede +1 ATQ e +1 VIDA a um aliado.",
         "secondaryValue": 1
       }
     ],
-    "description": "Giroscópio de bronze e quartzo que nunca perde o impulso desde que foi dado corda na primeira era.",
+    "description": "Ao Entrar: Gera +1⚡ de Essência extra neste turno. Início do Turno: Concede +1 ATQ e +1 VIDA a um aliado.",
     "flavorText": "O motor que não conhece ferrugem nem cansaço.",
     "imagePath": "/assets/cards/neutral_144_nucleo_relojoeiro_aeternus.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Intricate brass and dark-steel perpetual motion gyroscope core with glowing silver-amber quartz gears."
@@ -31824,10 +32075,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 2,
-        "description": "Concede +2 ATQ a todas as unidades aliadas."
+        "description": "Concede +2 ATQ e +2 VIDA a todos os aliados."
       }
     ],
-    "description": "Unguento prateado e cintilante que permite às lâminas cortar aço e escama como se fossem pergaminho.",
+    "description": "Concede +2 ATQ e +2 VIDA a todos os aliados.",
     "flavorText": "Três gotas no fio da espada e nenhuma couraça resiste.",
     "imagePath": "/assets/cards/neutral_145_oleo_afiacao_eterea.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Faceted alchemical flask pouring shimmering liquid-silver sharpening oil over a glowing dark steel blade."
@@ -31856,7 +32107,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Causa 3 de dano a todas as unidades na Vanguarda inimiga."
       }
     ],
-    "description": "Esfera de latão e rodas dentadas que comprime três segundos de explosão num único estilhaço temporal.",
+    "description": "Causa 3 de dano a todas as unidades na Vanguarda inimiga.",
     "flavorText": "O tique-taque para; a linha de frente inimiga desaparece.",
     "imagePath": "/assets/cards/neutral_146_bomba_tempo_relojoeira.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Ornate brass clockwork time-bomb sphere bursting with silver temporal shockwaves and flying gears."
@@ -31882,10 +32133,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Congela toda a Vanguarda inimiga no fluxo do tempo."
+        "description": "Congela (imobiliza por 1 turno) toda a Vanguarda inimiga."
       }
     ],
-    "description": "Bolha translúcida de segundos congelados onde flechas e espadas ficam suspensas no ar.",
+    "description": "Congela (imobiliza por 1 turno) toda a Vanguarda inimiga.",
     "flavorText": "Dentro do domo cinzento, um minuto dura uma eternidade.",
     "imagePath": "/assets/cards/neutral_147_esfera_tempo_estase.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Translucent silver-grey chronomancy sphere suspending flying arrows and rubble in frozen time."
@@ -31911,7 +32162,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "heal_all_allies",
         "value": 3,
-        "description": "Rebobina feridas, curando 3 de VIDA de todos os aliados."
+        "description": "Restaura 3 de VIDA de todas as unidades aliadas."
       },
       {
         "trigger": "on_enter",
@@ -31920,7 +32171,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Restaura 3 de VIDA do seu Soberano."
       }
     ],
-    "description": "Gira os ponteiros para trás sobre os guerreiros feridos, devolvendo o sangue derramado às veias.",
+    "description": "Restaura 3 de VIDA de todas as unidades aliadas. Restaura 3 de VIDA do seu Soberano.",
     "flavorText": "A ferida nunca existiu se o segundo em que foi aberta for apagado.",
     "imagePath": "/assets/cards/neutral_148_destino_renovado_crono.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Glowing silver hourglass shattering upward as reversed sand streams knit shattered armor back together."
@@ -31952,10 +32203,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Gera +1⚡ de Essência."
+        "description": "Gera +1⚡ de Essência extra neste turno."
       }
     ],
-    "description": "Pergaminho selado em chumbo que convoca reforços imediatos das guildas livres.",
+    "description": "Compra 2 cartas. Gera +1⚡ de Essência extra neste turno.",
     "flavorText": "Assine embaixo; os reforços já estão marchando no portão.",
     "imagePath": "/assets/cards/neutral_149_contrato_companhia_dourada.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy parchment mercenary contract sealed with molten silver wax beside a dagger and overflowing coin pouch."
@@ -31981,10 +32232,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 4,
-        "description": "Causa 4 de dano direto a uma unidade inimiga."
+        "description": "Causa 4 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Frasco pressurizado de nafta e fósforo branco que se inflama em contato com o ar.",
+    "description": "Causa 4 de dano a uma unidade inimiga.",
     "flavorText": "Não apaga com água, nem com reza.",
     "imagePath": "/assets/cards/neutral_150_fogo_alquimico_concentrado.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Cluster of braided-leather alchemical grenades shattering in a burst of white-silver and amber chemical fire."
@@ -32010,16 +32261,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 2,
-        "description": "Causa 2 de dano à Vanguarda inimiga."
+        "description": "Causa 2 de dano a todas as unidades na Vanguarda inimiga."
       },
       {
         "trigger": "on_enter",
         "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Imobiliza (Congela) toda a Vanguarda inimiga na rocha fundida."
+        "description": "Congela (imobiliza por 1 turno) toda a Vanguarda inimiga."
       }
     ],
-    "description": "Converte o piso de batalha em lama Movediça que logo se solidifica de volta em pedra bruta.",
+    "description": "Causa 2 de dano a todas as unidades na Vanguarda inimiga. Congela (imobiliza por 1 turno) toda a Vanguarda inimiga.",
     "flavorText": "Primeiro afundam até os joelhos; depois viram estátuas.",
     "imagePath": "/assets/cards/neutral_151_transmutar_rocha_lama.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Battlefield stone floor liquefying and erupting into jagged grey rock spires trapping enemy shields."
@@ -32045,7 +32296,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "summon_token",
         "value": 4,
-        "description": "Invoca um Campeão Planar 4/4.",
+        "description": "Invoca um Campeão/Guarda 4/4 na Vanguarda.",
         "secondaryValue": 4
       },
       {
@@ -32055,7 +32306,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Compra 1 carta."
       }
     ],
-    "description": "Rasga um anel de ferro incandescente entre os planos para trazer um campeão diretamente à frente de combate.",
+    "description": "Invoca um Campeão/Guarda 4/4 na Vanguarda. Compra 1 carta.",
     "flavorText": "Quando os portões da cidadela estão longe, trazemos a cidadela até aqui.",
     "imagePath": "/assets/cards/neutral_152_portal_dimensional_cinza.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Circular iron-ringed astral portal tearing open with silver-white starlight and a towering armored silhouette stepping through."
@@ -32081,7 +32332,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "debuff_enemy_vanguard_atk",
         "value": 3,
-        "description": "Reduz em 3 o ATQ de toda a Vanguarda inimiga."
+        "description": "Reduz em -3 o ATQ de toda a Vanguarda inimiga."
       },
       {
         "trigger": "on_enter",
@@ -32090,7 +32341,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Compra 1 carta."
       }
     ],
-    "description": "Pulso de frequência nula que desfaz encantamentos de armas e estilhaça auras elementais.",
+    "description": "Reduz em -3 o ATQ de toda a Vanguarda inimiga. Compra 1 carta.",
     "flavorText": "Cinco cores entram no prisma; apenas o silêncio cinzento sai.",
     "imagePath": "/assets/cards/neutral_153_dissipar_magia_absoluta.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Explosive shockwave of silver-grey anti-magic geometric runes shattering colored spell rings."
@@ -32116,7 +32367,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Concede Escudo Divino / proteção a todos os aliados."
+        "description": "Concede Escudo Divino a todas as unidades aliadas."
       },
       {
         "trigger": "on_enter",
@@ -32126,7 +32377,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "secondaryValue": 2
       }
     ],
-    "description": "Destilado de pó de meteorito e mercúrio que reveste a pele dos guerreiros com o brilho do aço temperado.",
+    "description": "Concede Escudo Divino a todas as unidades aliadas. Concede +2 VIDA a todos os aliados.",
     "flavorText": "Por três minutos, flechas ricocheteiam na pele nua.",
     "imagePath": "/assets/cards/neutral_154_elixir_pedra_ferro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy iron-stoppered crystal potion bottle glowing with liquid metallic adamantine silver."
@@ -32152,18 +32403,18 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "summon_token",
         "value": 3,
-        "description": "Convoca um Guarda dos Selos 3/3.",
+        "description": "Invoca um Campeão/Guarda 3/3 na Vanguarda.",
         "secondaryValue": 3
       },
       {
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 1,
-        "description": "Concede +1/+1 a todos os aliados.",
+        "description": "Concede +1 ATQ e +1 VIDA a todos os aliados.",
         "secondaryValue": 1
       }
     ],
-    "description": "Quando os sinos de ferro da Torre Axial dobram, todas as companhias livres entram em formação.",
+    "description": "Invoca um Campeão/Guarda 3/3 na Vanguarda. Concede +1 ATQ e +1 VIDA a todos os aliados.",
     "flavorText": "Nenhum domínio reina sozinho enquanto a Torre estiver de pé.",
     "imagePath": "/assets/cards/neutral_155_chamado_armas_fronteira.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Massive iron war-bell ringing atop a gothic tower sending silver shockwaves over crossed halberds."
@@ -32189,16 +32440,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_all_units",
         "value": 3,
-        "description": "Ergue e esmaga o campo, causando 3 de dano a todas as unidades."
+        "description": "Causa 3 de dano a todas as unidades em campo."
       },
       {
         "trigger": "on_enter",
         "type": "damage_enemy_sovereign",
         "value": 3,
-        "description": "Causa 3 de dano ao Soberano inimigo."
+        "description": "Causa 3 de dano diretamente ao Soberano inimigo."
       }
     ],
-    "description": "Anula o peso da terra por um instante antes de devolver exércitos e rochas ao solo com força dobrada.",
+    "description": "Causa 3 de dano a todas as unidades em campo. Causa 3 de dano diretamente ao Soberano inimigo.",
     "flavorText": "O céu torna-se um abismo; o chão, uma bigorna.",
     "imagePath": "/assets/cards/neutral_156_cataclismo_gravidade_reversa.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Shattered stone boulders and war machines floating upward in glowing silver anti-gravity arcs."
@@ -32224,10 +32475,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 2,
-        "description": "Causa 2 de dano a toda a Vanguarda inimiga."
+        "description": "Causa 2 de dano a todas as unidades na Vanguarda inimiga."
       }
     ],
-    "description": "Imensa esfera de granito maciço liberada do teto inclinado assim que o inimigo avança.",
+    "description": "Causa 2 de dano a todas as unidades na Vanguarda inimiga.",
     "flavorText": "Quando ouvir o estrondo da pedra, já não há para onde correr.",
     "imagePath": "/assets/cards/neutral_157_armadilha_esfera_rolante.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Colossal rune-carved granite boulder rolling down a stone corridor crushing shields and sparks."
@@ -32253,16 +32504,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 3,
-        "description": "Dispara dardos ocultos, causando 3 de dano ao atacante."
+        "description": "Causa 3 de dano a uma unidade inimiga."
       },
       {
         "trigger": "on_enter",
         "type": "debuff_enemy_vanguard_atk",
         "value": 1,
-        "description": "Reduz em 1 o ATQ da Vanguarda inimiga."
+        "description": "Reduz em -1 o ATQ de toda a Vanguarda inimiga."
       }
     ],
-    "description": "Centenas de agulhas de aço embebidas em veneno paralítico saltam das frestas da parede.",
+    "description": "Causa 3 de dano a uma unidade inimiga. Reduz em -1 o ATQ de toda a Vanguarda inimiga.",
     "flavorText": "Um clique sob a bota; trinta agulhas no peito.",
     "imagePath": "/assets/cards/neutral_158_armadilha_dardos_envenenados.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Stone wall dragon-mouths firing a lethal volley of silver-tipped poisoned iron darts."
@@ -32288,16 +32539,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Derruba e imobiliza (Congela) 1 atacante inimigo."
+        "description": "Congela (imobiliza por 1 turno) 1 unidade inimiga."
       },
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 2,
-        "description": "Causa 2 de dano ao inimigo."
+        "description": "Causa 2 de dano a uma unidade inimiga."
       }
     ],
-    "description": "O piso cede sob o peso da investida inimiga, revelando um fosso guarnecido de lanças de ferro.",
+    "description": "Congela (imobiliza por 1 turno) 1 unidade inimiga. Causa 2 de dano a uma unidade inimiga.",
     "flavorText": "A pressa do atacante é a melhor amiga do engenheiro.",
     "imagePath": "/assets/cards/neutral_159_fosso_estacas_ferro.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Collapsing stone trapdoor opening over a deep dark pit bristling with upward-pointing iron spikes."
@@ -32323,16 +32574,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Apara o golpe inimigo com Escudo Divino."
+        "description": "Concede Escudo Divino a todas as unidades aliadas."
       },
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 2,
-        "description": "Contra-ataca causando 2 de dano ao agressor."
+        "description": "Causa 2 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Desvia a lâmina adversária no último milésimo de segundo e devolve a estocada na abertura da couraça.",
+    "description": "Concede Escudo Divino a todas as unidades aliadas. Causa 2 de dano a uma unidade inimiga.",
     "flavorText": "A melhor defesa termina no pescoço do atacante.",
     "imagePath": "/assets/cards/neutral_160_defesa_ativa_aparar.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Two crossed dark-steel longswords clashing in a shower of bright silver sparks as a riposte dagger strikes forward."
@@ -32358,10 +32609,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Enreda e imobiliza (Congela) a Vanguarda inimiga."
+        "description": "Congela (imobiliza por 1 turno) toda a Vanguarda inimiga."
       }
     ],
-    "description": "Pesada rede trançada com cabos de ferro e pesos de osso que trava as armas e pernas do inimigo.",
+    "description": "Congela (imobiliza por 1 turno) toda a Vanguarda inimiga.",
     "flavorText": "Quanto mais o gigante se debate, mais fundo os ganchos entram.",
     "imagePath": "/assets/cards/neutral_161_rede_ferro_gladiador.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Weighted iron-chain gladiator net with barbed hooks flying wide through the air."
@@ -32387,7 +32638,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "bounce_enemy",
         "value": 1,
-        "description": "Desorienta e devolve 1 atacante inimigo para a mão."
+        "description": "Devolve 1 unidade inimiga para a mão do oponente."
       },
       {
         "trigger": "on_enter",
@@ -32396,7 +32647,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Compra 1 carta."
       }
     ],
-    "description": "Estilhaça uma esfera de vidro no chão, erguendo um nevoeiro denso que anula a investida rival.",
+    "description": "Devolve 1 unidade inimiga para a mão do oponente. Compra 1 carta.",
     "flavorText": "Quando a fumaça baixa, o alvo mudou de lugar.",
     "imagePath": "/assets/cards/neutral_162_bomba_fumaca_alquimica.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Shattering glass sphere releasing billowing coils of dense silver-grey alchemical smoke and caltrops."
@@ -32422,10 +32673,10 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 3,
-        "description": "A lâmina pendular varre a linha de frente, causando 3 de dano à Vanguarda inimiga."
+        "description": "Causa 3 de dano a todas as unidades na Vanguarda inimiga."
       }
     ],
-    "description": "Lâmina crescente de duas toneladas que desce do teto abobadado num arco mortal silencioso.",
+    "description": "Causa 3 de dano a todas as unidades na Vanguarda inimiga.",
     "flavorText": "O pêndulo marca o fim do turno para quem avançou demais.",
     "imagePath": "/assets/cards/neutral_163_lamina_pendulo_masmorra.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Giant crescent-moon steel pendulum blade swinging down on heavy iron chains with silver motion arcs."
@@ -32451,7 +32702,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 4,
-        "description": "Causa 4 de dano ao atacante."
+        "description": "Causa 4 de dano a uma unidade inimiga."
       },
       {
         "trigger": "on_enter",
@@ -32460,7 +32711,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Restaura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Carrancas mecânicas ocultas nos pilares disparam jatos de chumbo derretido contra o invasor.",
+    "description": "Causa 4 de dano a uma unidade inimiga. Restaura 2 de VIDA do seu Soberano.",
     "flavorText": "Cada pilar do salão guarda uma surpresa mortal.",
     "imagePath": "/assets/cards/neutral_164_estatua_sopro_oleo.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Iron gargoyle wall-sconce trap blasting a pressurized stream of molten silver-lead and spikes."
@@ -32486,16 +32737,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "debuff_enemy_vanguard_atk",
         "value": 3,
-        "description": "Reduz em 3 o ATQ da Vanguarda inimiga."
+        "description": "Reduz em -3 o ATQ de toda a Vanguarda inimiga."
       },
       {
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Concede Escudo Divino aos aliados."
+        "description": "Concede Escudo Divino a todas as unidades aliadas."
       }
     ],
-    "description": "Estampa no ar um glifo hexagonal de ferro frio que absorve o impacto do ataque inimigo.",
+    "description": "Reduz em -3 o ATQ de toda a Vanguarda inimiga. Concede Escudo Divino a todas as unidades aliadas.",
     "flavorText": "Sua fúria bate contra o selo e se transforma em nossa armadura.",
     "imagePath": "/assets/cards/neutral_165_quebra_feiticaria_runica.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Hexagonal cold-iron rune seal materializing mid-air and absorbing incoming weapon strikes in silver sparks."
@@ -32521,7 +32772,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Congela toda a Vanguarda inimiga."
+        "description": "Congela (imobiliza por 1 turno) toda a Vanguarda inimiga."
       },
       {
         "trigger": "on_enter",
@@ -32536,7 +32787,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Restaura 3 de VIDA do seu Soberano."
       }
     ],
-    "description": "Invoca a cláusula primordial do Pacto Cromático, suspendendo o avanço hostil sob pena das cinco coroas.",
+    "description": "Congela (imobiliza por 1 turno) toda a Vanguarda inimiga. Compra 2 cartas. Restaura 3 de VIDA do seu Soberano.",
     "flavorText": "Perante o Selo Axial, toda espada deve baixar ou quebrar.",
     "imagePath": "/assets/cards/neutral_166_protocolo_torre_axial.png",
     "aiArtPrompt": "2D Dark Fantasy Castlevania (Ayami Kojima) meets Hades (Supergiant Games) heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Five interlocking chains of silver and iron descending from a floating prism seal to lock enemy weapons."

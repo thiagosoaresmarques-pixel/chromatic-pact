@@ -25,6 +25,7 @@ import {
 import { WelcomeVisitorBanner } from './components/WelcomeVisitorBanner';
 import { AdminDashboardView } from './components/AdminDashboardView';
 import { CardView, CardInspectModal } from './components/CardView';
+import { HomeSimulatedDuelShowcase } from './components/HomeSimulatedDuelShowcase';
 import {
   adminSaveCloudProfile,
   ensureStarterDeckForUser,
@@ -400,7 +401,7 @@ export const App: React.FC = () => {
 
   // Update non-arena tabs' ambient music mood
   useEffect(() => {
-    if (activeTab === 'arena') return; // BattleArena manages real-time combat intensity
+    if (activeTab === 'arena' || activeTab === 'home') return; // BattleArena & HomeSimulatedDuelShowcase manage real-time combat intensity
     if (activeTab === 'campaign' || activeTab === 'expedition') {
       setMusicState('tactical', 'purple');
     } else if (activeTab === 'packs') {
@@ -1083,28 +1084,14 @@ export const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* Interactive 3D Fanned Cards Showcase */}
-              <div className="aaa-home-card-fan-stage">
-                {[
-                  'red_08_dragao_vermelho',
-                  'neutral_10_valkyra_pentacromatica',
-                  'gold_09_serafim_solar',
-                ].map((cid, idx) => {
-                  const c = CARDS_BY_ID[cid] ?? ALL_CARDS[idx];
-                  if (!c) return null;
-                  return (
-                    <div key={c.id} className={`aaa-fan-card-slot fan-pos-${idx}`}>
-                      <CardView
-                        card={c}
-                        mode="gallery"
-                        isPlayable={idx === 1}
-                        onClick={() => setShowcaseInspectCard(c)}
-                        onInspect={setShowcaseInspectCard}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
+              {/* Live Simulated Duel Showcase (Desktop 4-column War Table / Mobile 2-column Close-Up) */}
+              <HomeSimulatedDuelShowcase
+                onInspectCard={setShowcaseInspectCard}
+                onPlayDuelNow={handleOpenArenaSolo}
+                onOpenCombosCompendium={() => setActiveTab('tactics')}
+                soundMuted={soundMuted}
+                onToggleSound={handleToggleSound}
+              />
             </div>
 
             {/* 6 Illustrated Client Portals */}

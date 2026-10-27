@@ -1190,7 +1190,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       setSelectedHandIndex(null);
       setSelectedAttackerId(null);
       setFocusedBoardUnitId(null);
-      setSacrificeBreakModalOpen(false);
+      setShowSacrificeBreakModal(false);
       closeAllArenaDrawers();
       playSfx('draw');
       setGameState((prev) => {

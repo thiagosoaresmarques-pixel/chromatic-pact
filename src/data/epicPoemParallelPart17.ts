@@ -69,13 +69,13 @@ export const EPIC_POEM_PARALLEL_PART_17: EpicPoemCanto[] = [
             'Refletindo nas faces a luz do luar.',
           ],
           [
-            'Quando Igniskar voou p’ra a Torre destruir,',
+            'Quando Igniskar voou p’ra a Torre derrubar,',
             'O gigante de espelhos não quis recuar;',
             'Abriu o seu peito de quartzo e fulgor,',
             'Bebendo o incêndio do alado senhor!',
           ],
           [
-            'O sopro do monstro no prisma bateu,',
+            'O sopro do monstro no prisma incidiu,',
             'E em sete arcos vivos no espaço explodiu;',
             'Fugiu o tirano com a vista cegada,',
             'Mas a nobre estátua ficou trincada.',
@@ -168,8 +168,8 @@ export const EPIC_POEM_PARALLEL_PART_17: EpicPoemCanto[] = [
           [
             'Do cofre mais fundo da serra ancestral,',
             'Trouxeram a esfera de cinza e cristal:',
-            'O Orbe Monolítico da Runa Stein,',
-            'Que a lei da gravidade no centro detém.',
+            'O Orbe Monolítico que a força contém,',
+            'E a lei da gravidade no centro detém.',
           ],
           [
             'Brilhava na pedra o sinal da firmeza,',
@@ -278,7 +278,7 @@ export const EPIC_POEM_PARALLEL_PART_17: EpicPoemCanto[] = [
           [
             'O dragão bateu asas, tentando subir,',
             'Mas a Runa da Pedra o fez sucumbir;',
-            'O peso do mundo puxava-o p’ra baixo,',
+            'O peso do mundo puxava ao riacho,',
             'Enquanto o colosso erguia o seu facho!',
           ],
           [
@@ -375,8 +375,8 @@ export const EPIC_POEM_PARALLEL_PART_17: EpicPoemCanto[] = [
           [
             'Por cinquenta invernos ninguém mais ousou',
             'Perturbar a fronteira que o colosso guardou;',
-            'E o metal da cratera serviu de alicerce',
-            'Para que a Segunda Era nos reinos floresce.',
+            'E o metal da cratera fez que a paz crescesse',
+            'Para que a Segunda Era nos reinos florescesse.',
           ],
           [
             'Mas a paz das alturas esconde no fundo',
@@ -531,7 +531,7 @@ export const EPIC_POEM_PARALLEL_PART_17: EpicPoemCanto[] = [
           [
             'Ao pulso do Cetro, as paredes mexeram,',
             'E quatro comportas de pedra desceram;',
-            'Cortando de Baelgor o rio de magma',
+            'Cortando de Baelgor a ardente vaga',
             'Que dava sustento à sua negra chaga!',
           ],
           [
@@ -693,7 +693,7 @@ export const EPIC_POEM_PARALLEL_PART_17: EpicPoemCanto[] = [
             'Trancando p’ra sempre o abismo inflamado!',
           ],
           [
-            'Seus cinco semblantes olhavam p’ra baixo,',
+            'Seus cinco semblantes brilharam no riacho,',
             'Apagando do monstro o orgulhoso facho;',
             'Pois nenhuma fúria de uma só cor',
             'Rompe a barreira do quíntuplo amor!',
@@ -736,8 +736,8 @@ export const EPIC_POEM_PARALLEL_PART_17: EpicPoemCanto[] = [
             'Deixando a Bigorna em paz trabalhar.',
           ],
           [
-            'Mas os sábios gravaram no livro de bronze:',
-            'Se um dia a discórdia quebrar os gonzos,',
+            'Mas os sábios gravaram na tábua do norte:',
+            'Se um dia a discórdia quebrar o suporte,',
             'E as cinco coroas brigarem no chão,',
             'A Máscara cai e liberta o vulcão!',
           ],

@@ -180,7 +180,7 @@ export const EPIC_POEM_PARALLEL_PART_8: EpicPoemCanto[] = [
           [
             '— "Na guerra sem lei vence quem fere pelas costas,"',
             'Disse Thaddeus marcando as perguntas e respostas;',
-            '— "Mas na Arena sagrada do nosso grande Pacto,',
+            '— "Mas na Arena sagrada deste Pacto e aparato,',
             'Cada golpe tem hora e tem seu turno exato!"',
           ],
           [
@@ -403,7 +403,7 @@ export const EPIC_POEM_PARALLEL_PART_8: EpicPoemCanto[] = [
           [
             'Ergueu o punho em chamas visando o relicário,',
             'Onde os dez pergaminhos brilhavam no sacrário;',
-            'Queria num só golpe reduzir tudo a cinza,',
+            'Queria num só golpe deixar a cinza lisa,',
             'E devolver Vaeloria à guerra que eterniza!',
           ],
           [
@@ -501,11 +501,11 @@ export const EPIC_POEM_PARALLEL_PART_8: EpicPoemCanto[] = [
             '— "Pyroclasmos, escuta o Marechal da Fornalha:',
             'Fogo sem bigorna é só fumaça que se espalha!',
             'Quando unimos o Rubi ao Ouro de Seraphiel,',
-            'Nossas armas ficaram mais fortes que o céu!"',
+            'Nossas armas ficaram mais fortes no broquel!"',
           ],
           [
             '— "Não viemos quebrar a palavra que foi dada,',
-            'Pois a honra da Legião vale mais que a labareda!"',
+            'Pois a honra da Legião vale mais que uma espada!"',
             'Assim dizendo, Varkas bateu no próprio escudo,',
             'E a tropa de Rubi formou um muro mudo!',
           ],
@@ -565,7 +565,7 @@ export const EPIC_POEM_PARALLEL_PART_8: EpicPoemCanto[] = [
         locationLabel: 'Altar dos Dez Tratados',
         stanzas: [
           [
-            'Zephaniel apontava a lança ao pescoço negro,',
+            'Zephaniel apontava a lança ao furor cego,',
             'Esperando a sentença que traria o sossego;',
             'Mas Seraphiel desceu do trono de esplendor,',
             'E pousou a mão alva no ombro do agressor.',
@@ -691,7 +691,7 @@ export const EPIC_POEM_PARALLEL_PART_8: EpicPoemCanto[] = [
             'A outra o esquecimento, e a terceira a fome!',
           ],
           [
-            'Suas asas de eclipse taparam o luar,',
+            'Suas asas de eclipse vieram de toda parte,',
             'Pousando nas ameias do grande baluarte;',
             'Queria destruir a Mesa do Soberano',
             'Antes que despertasse o campeão humano!',
@@ -836,8 +836,8 @@ export const EPIC_POEM_PARALLEL_PART_8: EpicPoemCanto[] = [
             'Devolveu a esperança no meio da disputa!',
           ],
           [
-            'Mas lá no alto domo, o Monarca de Três Crânios',
-            'Preparava o disparo de fogos subterrâneos;',
+            'Mas lá no alto domo, com seus três crânios insanos,',
+            'O Monarca soprava seus fogos desumanos;',
             'Quando um jato de azul rompeu a cerração,',
             'Mais rápido que o som, mais forte que o trovão!',
           ],

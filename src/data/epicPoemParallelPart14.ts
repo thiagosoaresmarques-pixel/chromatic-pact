@@ -124,7 +124,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           [
             'Ele entregou a Kaelen uma barra de ouro santo,',
             'Para ser forjada junto ao pêndulo de encanto;',
-            'Enquanto o velho Garrick vigiava o corredor,',
+            'Enquanto o velho Garrick vigiava o salão,',
             'Ouvindo os passos furtivos de um bando trapaceiro e vilão!',
           ],
         ],
@@ -196,7 +196,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           [
             'O Draco Horológico abriu os dois olhos de rubi,',
             'Soltando o primeiro tique-taque que a Torre ouviu ali;',
-            'Mas um último sabotador, escorregando pelo óleo,',
+            'Mas um último sabotador, escondido sob o fólio,',
             'Lançou uma bomba de breu contra o nobre capitólio!',
           ],
         ],
@@ -255,7 +255,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'O relógio abre uma fresta para o defensor discreto!"',
           ],
           [
-            'Kaelen puxou uma engrenagem menor ao lado do eixo,',
+            'Kaelen puxou uma engrenagem menor naquele trecho,',
             'Prendendo uma mola rápida de prateado fecho;',
             '"Chamaremos a essa mola o Gatilho de Reação,',
             'Em honra ao velho Garrick e ao seu pronto facão!"',
@@ -544,7 +544,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         locationLabel: 'Garganta Vulcânica de Pyros & Veridia',
         stanzas: [
           [
-            'Quando o pólen encantado tocou a cinza quentinha,',
+            'Quando o pólen encantado tocou a cinza fina,',
             'A terra inteira estremeceu da encosta até a campina;',
             'Brotos grossos como braços rasgaram o solo escuro,',
             'Subindo trinta côvados num crescimento seguro!',
@@ -649,7 +649,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           [
             'Varkas deu uma gargalhada batendo nas costas dele:',
             '"Mas olha a força da tropa que sai da união daquele!',
-            'Fúria de Pyros na veia e músculo de Veridia:',
+            'Fúria de Pyros na veia e de Veridia a lida:',
             'Não há muralha no mundo que aguente essa investida!"',
           ],
           [
@@ -741,8 +741,8 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'Pois tudo que traz a morte está sob a minha mão!"',
           ],
           [
-            'Malakor olhou o Lich com dois olhos de vazio:',
-            '"Tu és apenas um resto que ao meu prato fugiu!',
+            'Malakor olhou o Lich com desprezo sombrio:',
+            '"Tu és apenas um resto no meu prato vazio!',
             'Guarda-te em caixas de vidro fingindo ser imortal,',
             'Mas para a fome da Entropia o osso e a carne são igual!"',
           ],
@@ -846,7 +846,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           [
             '"Batei os pilares no chão, soldados da minha linha!',
             'Ainda que o ferro sangre e a mão fique mesquinha!"',
-            'Com marretadas gigantes cravou as estacas rubras,',
+            'Com marretadas gigantes cravou estacas e obras,',
             'Cercando o Imperador entre quatro ardentes dobras!',
           ],
           [
@@ -881,7 +881,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'E gritou: "Joga teu laço, esqueleto, sem ter medo!"',
           ],
           [
-            'Por um único segundo na história de Vaeloria,',
+            'Por um único segundo de trégua extraordinária,',
             'Vesperion lançou ao guarda sua corrente mortuária;',
             'Garrick emendou o elo negro na corrente carmesim,',
             'E saltou dentro da nuvem onde tudo chega ao fim!',
@@ -949,7 +949,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           ],
           [
             'O Diadema Pentacromático girou sobre a fenda aberta,',
-            'Puxando a nuvem de nada para a moldura correta;',
+            'Puxando a nuvem de nada para a moldura certa;',
             'Trinta metros de vazio foram-se comprimindo,',
             'Enquanto a fenda no solo ia aos poucos se extinguindo!',
           ],

@@ -174,8 +174,8 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           [
             '— "Mandaste bem, mago da torre gelada!" —',
             'Bradou o Artífice em voz trovejada;',
-            '— "Deixa que o bronze de Pyros governe',
-            'A fúria desse astro que quer que eu me prostre!"',
+            '— "Deixa que o bronze de Pyros se mostre',
+            'Na fúria desse astro que quer que eu me prostre!"',
           ],
           [
             'Batendo nas calhas de ferro encarnado,',
@@ -247,8 +247,8 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           [
             'Pela chaminé que varava a montanha,',
             'Subiu a coluna de força tamanha;',
-            'Aquecendo a rocha sob os pés de Vulcanis,',
-            'Para quebrar dos eternos os planos inanes.',
+            'Dando a Vulcanis o calor dos arcanos,',
+            'Para quebrar dos eternos os planos insanos.',
           ],
           [
             'Porém, no terraço da guarda celeste,',
@@ -572,7 +572,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           [
             '— "Agora, pequeno!" — gritou Lyra no ar,',
             'Enquanto fazia as estrelas girar;',
-            'Dando asas de luz às costas de Zik,',
+            'Dando a Zik asas claras de livre repique,',
             'Para que a lança na goela se fique!',
           ],
           [
@@ -607,7 +607,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'Rolou sem alento na cova cavada.',
           ],
           [
-            'Exaustos na lama, o mago, a fada e o réptil',
+            'Exaustos na lama, o réptil, a fada e o mago febril',
             'Apoiaram os ombros num gesto gentil;',
             'Quando as nuvens de chumbo se abriram no ar,',
             'E seis asas de ouro vieram pousar!',
@@ -632,7 +632,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           ],
           [
             'Atrás de suas asas, Valkyra surgia,',
-            'Trazendo os monarcas na clara alvorada;',
+            'Trazendo os monarcas na luz do novo dia;',
             'E vendo de Aldric o rosto marcado,',
             'Curvou a cabeça ao amigo calado.',
           ],
@@ -885,7 +885,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
         stanzas: [
           [
             'General Varkas, de manto escarlate,',
-            'Deixara a tribuna de honra e aparato;',
+            'Deixara a tribuna pronta ao combate;',
             'Descendo as escadas a passo de guerra,',
             'Assim que sentira o tremor sob a terra.',
           ],
@@ -933,7 +933,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'Uma sombra gigante cobriu a ponte!',
           ],
           [
-            'Vindo das furnas onde o magma nasce,',
+            'Vindo das furnas que o magma enlace,',
             'Com brasa nos olhos e ferro na face,',
             'O maior dos filhos da terra encarnada',
             'Pôs o ombro largo na porta trancada!',
@@ -996,8 +996,8 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           [
             'Kaelen forjou para o Operário dourado',
             'Um braço novo de ferro temperado;',
-            'E Varkas prendeu no peito de Rik',
-            'A estrela de aço que nunca se explique.',
+            'E Varkas a Rik deu a honra de pique:',
+            'A estrela de aço que a glória publique.',
           ],
           [
             'Pois Pyros ergueu seu império de ardor,',
@@ -1122,7 +1122,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'Cravando as presas e as garras no chão,',
             'Rasgou no cristal um imenso boqueirão;',
             'A água negra ferveu pela fresta,',
-            'Trazendo o bafejo da antiga tormenta.',
+            'Trazendo o bafejo da vaga funesta.',
           ],
           [
             '— "A porta está aberta, senhor do ossário!" —',
@@ -1213,7 +1213,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'O mar levantou-se num monte de espuma,',
             'E três olhos rubros rasgaram a bruma;',
             'O Leviatã Psíquico Primordial emergiu,',
-            'E toda a falésia de medo tremeu!',
+            'E toda a falésia de medo ruiu!',
           ],
           [
             'Seus longos tentáculos, grossos qual torre,',

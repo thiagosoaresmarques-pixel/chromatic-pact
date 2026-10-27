@@ -314,7 +314,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           [
             'Quando o estrondo da Fratura abalou o salão,',
             'Lyra abraçou o grande Coração;',
-            'A redoma de Chronos e o cobre de Kaelen',
+            'A redoma de Chronos e o cobre de Kaelen também',
             'Não deixaram perder o que as matas contêm.',
           ],
           [
@@ -389,7 +389,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         locationLabel: 'Borda da Caldeira do Norte',
         stanzas: [
           [
-            'Na borda do abismo postou-se Kaelen,',
+            'Na borda do abismo Kaelen foi além,',
             'Olhando o gigante que a fúria contém;',
             'O velho ferreiro da barba dourada',
             'Recusou a proposta da guerra cegada.',
@@ -942,7 +942,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'A mana fluiu em perfeita harmonia,',
             'Levando p’ra os reinos a nova energia;',
             'E as Cinco Capitais brilharam na história,',
-            'No auge dourado da velha Vaeloria!',
+            'Deixando em Vaeloria o clarão de sua glória!',
           ],
         ],
       },
@@ -1007,12 +1007,12 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           [
             'No ano quinhentos e dez da Fratura,',
             'Brotou nos pântanos uma febre impura;',
-            'Dos troncos caídos na Guerra das Cinzas,',
+            'Dos troncos das Cinzas, nas águas indecisas,',
             'Subiram os fungos de roxas divisas.',
           ],
           [
-            'No centro do charco reinava Mycoria,',
-            'Tecendo nos mortos a sua vitória;',
+            'No centro do charco, Mycoria, sem glória,',
+            'Tecia nos mortos a sua vitória;',
             'Cada bicho ou soldado que o esporo aspirava',
             'Perdia a vontade e p’ra ela marchava!',
           ],
@@ -1049,7 +1049,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           [
             '— "Não pude tomar o bosque na espada,',
             'Pois a força de Yggdrasil é muito pesada;',
-            'Mas com o perfume da doce Mycoria,',
+            'Mas com Mycoria e seu cheiro de escória,',
             'A própria floresta me entrega a vitória!"',
           ],
           [
@@ -1127,7 +1127,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           ],
           [
             'Precisavam fechar a garganta do vale,',
-            'Antes que a praga no bosque se espalhe;',
+            'Antes que a praga no bosque se instale;',
             'Foi quando do topo do morro vizinho,',
             'O rei de prata saltou no caminho!',
           ],
@@ -1144,8 +1144,8 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         locationLabel: 'Passo das Raízes Altas',
         stanzas: [
           [
-            'Kongor amarrou uma folha de lótus',
-            'No rosto, p’ra filtrar os ares devotos;',
+            'Kongor amarrou uma folha de lótus nos votos',
+            'De filtrar no rosto os esporos remotos;',
             'E com o pó de Lyra brilhando no pelo,',
             'Saltou na garganta sem ter pesadelo!',
           ],
@@ -1183,7 +1183,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'No alto das pedras que Kongor rolou,',
             'O Arquidruida de Galhada chegou;',
             'Bateu seu cajado de âmbar antigo,',
-            'Chamando as raízes p’ra o nobre serviço.',
+            'Chamando as raízes contra o vil perigo.',
           ],
           [
             '— "Crescei, espinheiros de seiva dourada,',
@@ -1247,7 +1247,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         locationLabel: 'Crista do Passo Fechado',
         stanzas: [
           [
-            'Varkas subiu ao lado do Arquidruida,',
+            'Varkas subiu com o Arquidruida em seguida,',
             'Saudando a pequena fada querida;',
             'Olhou para o pântano onde o Lich estava,',
             'E apontou com a espada que o fogo guiava.',
@@ -1284,7 +1284,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         locationLabel: 'Passo das Raízes Altas',
         stanzas: [
           [
-            'Queimada a coroa da Rainha do Fungo,',
+            'Queimada a coroa do fungo verdugo,',
             'Desfez-se o feitiço daquele jugo;',
             'No fundo do vale, os ursos e os cervos',
             'Sacudiram das costas os podres nervos.',

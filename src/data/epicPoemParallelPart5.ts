@@ -107,7 +107,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           ],
           [
             'Não era o branco tirano e cruel,',
-            'Mas o tom suave do poente no céu;',
+            'Mas o tom suave do céu num pincel;',
             'Uma cor que doía de tanta beleza,',
             'Revelando o contorno da natureza.',
           ],
@@ -251,7 +251,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
             'Mudando de mestre no meio do povo.',
           ],
           [
-            'Curvando a cabeça a Nocturnus e a Aldric,',
+            'Curvando a Aldric e a Nocturnus a fronte sem pique,',
             'Jurou que o segredo no abismo se fique;',
             'Porém na entrada do túnel real,',
             'Brilhou a alabarda da guarda imortal!',
@@ -308,8 +308,8 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           [
             'Envolto em panos de sombra e de luar,',
             'Kaelen levou o Malho ao patamar;',
-            'Onde Vulcanis, Xylar e o resto do grupo',
-            'Aguardavam a hora do grande estupro.',
+            'Onde Vulcanis, Xylar e o resto do bando',
+            'Aguardavam a hora do grande comando.',
           ],
           [
             'Nocturnus subiu ao seu posto na fila,',
@@ -319,7 +319,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           ],
           [
             'Pois antes que o mundo partisse em facções,',
-            'A Luz e a Treva uniram as mãos;',
+            'A Luz e a Treva uniram corações;',
             'Deixando no fundo do monte sagrado',
             'A prova de que tudo nasceu aliado!',
           ],
@@ -365,7 +365,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
             'Ergueu-se das águas num urro que espanta!',
           ],
           [
-            'Girando os tentáculos em redemoinho,',
+            'Girando os tentáculos num torvelinho,',
             'Empurrou o oceano fora do caminho;',
             'Criando uma onda de cem metros de altura,',
             'Rumo à Fronteira da nova estrutura!',
@@ -428,8 +428,8 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           [
             'O mar recuou duas léguas de areia,',
             'Deixando a baía vazia e tão feia;',
-            'E lá no horizonte uma serra de água',
-            'Subia trazendo o extermínio e a mágoa.',
+            'E lá no horizonte uma serra de espuma',
+            'Subia trazendo a tragédia na bruma.',
           ],
           [
             'Os barcos viraram no lodo secado,',
@@ -560,7 +560,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
         stanzas: [
           [
             'Chelonia, a Tartaruga-Continente, chegou,',
-            'Seguindo a estrela que a fada acendeu;',
+            'Seguindo a estrela que a fada apontou;',
             'Com florestas inteiras nas costas de pedra,',
             'Onde a vida antiga dos oceanos medra!',
           ],
@@ -615,7 +615,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           [
             'Olhando para o farol onde o trio sorria,',
             'Nereus inclinou sua fronte fria:',
-            '— "Sem a brasa de Pyros e o pó de Veridia,',
+            '— "Sem a brasa de Pyros e Veridia contra a insídia,',
             'O mar teria vencido na sua perfídia!"',
           ],
         ],
@@ -759,7 +759,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           [
             '— "Eles vêm do oriente, meu nobre senhor!" —',
             'Gritou ela a Vladislaus com riso e ardor;',
-            '— "Vejo asas de chama cortando o eclipse,',
+            '— "Vejo no eclipse a chama que a sorte predisse,',
             'Trazendo a vingança que a luz nos disse!"',
           ],
           [
@@ -1097,8 +1097,8 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           [
             'Nem bala nem lança feriam o dorso,',
             'E a besta avançava sem qualquer remorso;',
-            'Precisavam de força que o passo travasse,',
-            'Batendo de frente na bruta carcaça!',
+            'Precisavam de força que o passo quebrasse,',
+            'Batendo na bruta carcaça e na face!',
           ],
         ],
       },
@@ -1127,7 +1127,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           ],
           [
             'Foi quando dos picos da selva vizinha,',
-            'Soou o tambor que nos peitos batia:',
+            'Soou o tambor que dos montes já vinha:',
             'Pulando do alto do grande penhasco,',
             'Caiu o senhor da floresta no casco!',
           ],
@@ -1144,8 +1144,8 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
         locationLabel: 'Desfiladeiro Central de Vaeloria',
         stanzas: [
           [
-            'Kongor, o Rei de Costas Prateadas, caiu',
-            'Direto na nuca do monstro hostil!',
+            'Kongor, o Rei de Costas Prateadas, viril,',
+            'Caiu bem na nuca do monstro hostil!',
             'Com punhos do tamanho de blocos de mina,',
             'Martelou de Kragmorth a grossa narina!',
           ],
@@ -1261,7 +1261,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           [
             'O Colosso perdeu o equilíbrio dos pés,',
             'Tombando de costas no abismo ao revés;',
-            'Kongor e o Autômato saltaram a tempo,',
+            'Kongor e o Autômato saltaram no alento,',
             'Enquanto a montanha ruía no vento!',
           ],
           [
@@ -1284,7 +1284,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
         locationLabel: 'Desfiladeiro Central de Vaeloria',
         stanzas: [
           [
-            'Ninguém deu um golpe naquela tardinha,',
+            'Ninguém deu um golpe no fim desse dia,',
             'Enquanto a poeira no vale descia;',
             'Kongor bateu no peito, voltando ao pinhal,',
             'E Tauron-Khor sumiu na caverna oriental.',

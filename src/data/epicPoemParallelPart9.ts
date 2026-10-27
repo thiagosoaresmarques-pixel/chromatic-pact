@@ -35,8 +35,8 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
           [
             'O Guardião do Eixo tinha em sua mão',
             'A chave dourada da duração;',
-            'Porém o decreto do Prisma ordenara',
-            'Que a roda dos séculos ficasse parada.',
+            'Porém a sentença pelo Prisma ditada',
+            'Mandava que a roda ficasse parada.',
           ],
           [
             '— "De que serve um relógio se o ponteiro é mudo,',
@@ -71,7 +71,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
           [
             'Quando Chronos tocou-lhe na crista de aço,',
             'O monstro mecânico abriu o compasso:',
-            '— "Não mexas no pino, Guardião da Vigília,',
+            '— "Não mexas no pino que guarda esta trilha,',
             'Ou o tempo desperta e o Zênite humilha!"',
           ],
           [
@@ -202,7 +202,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
         locationLabel: 'Pêndulo Central do Monte Axial',
         stanzas: [
           [
-            'Kaelen saltou sobre o colo do monstro,',
+            'Kaelen saltou sobre o monstro disposto,',
             'Com a barba de fogo brilhando no rosto;',
             'O Artífice Bronze-Ardente abraçou',
             'A trava gelada que o tempo trancou!',
@@ -507,7 +507,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
             'Mas o Verme das Fendas, sentindo-se preso,',
             'Debateu a cauda com todo o seu peso;',
             'Quase quebrando do Quelônio o broquel,',
-            'No escuro sem estrela e sem céu.',
+            'No fundo da fenda de gelo cruel.',
           ],
           [
             'Foi quando da bolha de ar cristalino,',
@@ -638,7 +638,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
             'Sem medo da onda a cidade varrer.',
           ],
           [
-            'Na praia, Aldric despediu-se de Lyra,',
+            'Na praia, com Lyra que a brisa respira,',
             'Pois a vida do homem depressa se vira:',
             '— "Guarda este mundo, pequena imortal,',
             'Que eu deixo nos livros o nosso sinal!"',
@@ -698,7 +698,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
           ],
           [
             'O primeiro na fila do cepo sombrio',
-            'Era o velho mestre que nunca fugiu:',
+            'Era o velho mestre de nobre feitio:',
             'Aquele que desde a Era Zero batia',
             'O bronze sagrado da soberania!',
           ],
@@ -736,7 +736,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
             'Mas entre as alabardas do duque cruel',
             'E o peito de bronze do mestre fiel,',
             'Pularam da sombra da grande oficina',
-            'Os velhos amigos da mesma campanha!',
+            'Os velhos amigos da mesma sina!',
           ],
         ],
       },
@@ -860,7 +860,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
             'Estes servos rebeldes que a forja me dá!"',
           ],
           [
-            'Varkas olhou para Kaelen e Rik,',
+            'Varkas olhou para Rik e Kaelen num pique,',
             'Com quem dividira da morte o repique;',
             'E apontando a espada ao duque cruel,',
             'Respondeu com a honra de quem é fiel:',
@@ -1011,10 +1011,10 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
             'Fugiam buscando um pedaço de azul.',
           ],
           [
-            'Mas no meio da estreita Garganta de Cinzas,',
+            'Mas na Garganta de Cinzas, nas pedras indignas,',
             'Abriu-se um portal de chamas malignas:',
-            'Balgorath, o Flagelo do Abismo, surgiu,',
-            'Com asas de couro e chicote hostil!',
+            'Balgorath, o Flagelo do Abismo, febril,',
+            'Surgiu com suas asas e o látego hostil!',
           ],
           [
             'Ferido de morte após longa batalha,',
@@ -1114,14 +1114,14 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
             'Cravando o escudo no duro rochedo!',
           ],
           [
-            'O calor derretia o penacho do elmo,',
-            'E o vento de enxofre varria o ermo;',
+            'O calor derretia o penacho e a couraça,',
+            'E o vento de enxofre varria a fumaça;',
             '— "Pelo Sol que nasce para todos os seres,',
             'Daqui não passarão os teus negros poderes!"',
           ],
           [
             'Balgorath bateu com o chicote no escudo,',
-            'Abrindo no jovem um corte profundo;',
+            'Abrindo um golpe feroz e pontudo;',
             'Mas os pés do rapaz não saíram do lugar,',
             'Mantendo a parede de luz a brilhar!',
           ],

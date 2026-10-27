@@ -306,7 +306,7 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
         locationLabel: 'Torre dos Cinco Selos',
         stanzas: [
           [
-            'Desde aquele julgamento de setecentos e noventa e quatro,',
+            'Desde o grande julgamento daquele antigo ato,',
             'Todo grimório traz na capa o seu retrato:',
             'Um selo de cinco cores que garante ao jogador',
             'Que nenhuma derrota lhe trará morte ou dor.',
@@ -613,7 +613,7 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
             'Dentro de uma centelha que cabe na minha mão!"',
           ],
           [
-            'Orion, Thaddeus e Varkas curvaram a fronte ali,',
+            'Orion, Thaddeus e Varkas puseram-se a servir,',
             'Perante a pequenina guardiã do porvir;',
             'Enquanto Astrolon soprava na cúpula de cristal,',
             'Selando o juramento do conselho orbital!',
@@ -646,7 +646,7 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
           [
             'E o Grimório de Cem Cartas que hoje tens na mão',
             'Viajou protegido no pó da constelação;',
-            'Guardado pela fada desde aquela vigília,',
+            'Guardado pela fada que nas estrelas brilha,',
             'Para que hoje em Vaeloria tu faças maravilha!',
           ],
         ],
@@ -795,7 +795,7 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
           ],
           [
             'O gorila sangrava sob a chuva de treva,',
-            'Mas seus dedos de ferro não davam uma trégua;',
+            'Mas seu braço de ferro qual muralha se eleva;',
             'Pois sabia que se soltasse a fera enlouquecida,',
             'Veridia inteira seria destruída!',
           ],
@@ -891,8 +891,8 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
         locationLabel: 'Penhasco Negro sobre a Clareira',
         stanzas: [
           [
-            'Enquanto o Lich olhava para os três reis lá embaixo,',
-            'Julgando-se seguro no alto do seu facho,',
+            'Enquanto o Lich olhava do monte sob o facho,',
+            'Julgando-se seguro sobre o negro riacho,',
             'Pelas pedras musgosas da trilha posterior',
             'Subia sem barulho o velho defensor.',
           ],
@@ -960,7 +960,7 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
           [
             'Livre das correntes, Fenris-Gorgon baixou',
             'A fronte para Kongor, que a vida lhe salvou;',
-            'E junto a Sylvanhorn, sob a bênção de Lyra,',
+            'E junto a Sylvanhorn, sob a luz de safira,',
             'Tocou no pergaminho que a liberdade inspira.',
           ],
           [

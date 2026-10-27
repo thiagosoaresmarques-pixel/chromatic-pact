@@ -82,7 +82,7 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
           ],
           [
             'Assim subiram juntos até o Estreito de Safira,',
-            'Onde o mar se levanta e o ciclone rodopia;',
+            'Onde o mar se levanta e o ciclone gira;',
             'Pois lá no céu elétrico de nuvens de chumbo e sal,',
             'Reinava o soberano da tormenta sideral!',
           ],
@@ -112,8 +112,8 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
             'Servindo de para-raios no desfiladeiro aflito.',
           ],
           [
-            'Então a nuvem negra abriu-se de alto a baixo,',
-            'Como se o próprio céu partisse pelo eixo;',
+            'Então a nuvem negra abriu-se com seu facho,',
+            'Cobrindo de relâmpago as águas do riacho;',
             'E entre sete colunas de relâmpago furioso,',
             'Desceu o grande draco de rugido majestoso!',
           ],
@@ -215,8 +215,8 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
             'Abriu-se o grande globo do arquiteto mais hostil!',
           ],
           [
-            'A luz da Lanterna Veraz bateu nas lentes de vidro,',
-            'Mostrando a engrenagem daquele estranho híbrido;',
+            'A luz da Lanterna Veraz bateu no aço polido,',
+            'Mostrando a engrenagem do monstro escondido;',
             'O chefe do submundo que ninguém sabia quem era,',
             'Metade cofre de aço e metade mente fera!',
           ],
@@ -282,7 +282,7 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
             'Que tentaram invadir aquelas terras sem leis.',
           ],
           [
-            'Do fundo de uma cratera de cinza e gelo negro,',
+            'Do fundo de uma cratera de cinza e gelo cego,',
             'Levantou-se a criatura que tirava o sossego;',
             'Não tinha o fogo rubro nem o raio do tufão,',
             'Mas a chama esverdeada da própria extinção!',
@@ -422,8 +422,8 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
           [
             'Sobre a mesa de cobre brilhava em verde-mar',
             'A Urna Cerebral posta a fosforescer no ar;',
-            'Conservada em salmoura de puro éter líquido,',
-            'Guardava o intelecto de um sábio pré-antigo.',
+            'Conservada em salmoura do tempo mais antigo,',
+            'Guardava o intelecto de um sábio e velho amigo.',
           ],
           [
             'Malphas ligou os fios de prata ao cabeçote,',
@@ -568,7 +568,7 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
           [
             'Não eram as Memórias do Pacto regular,',
             'Que exigem estratégia e saber batalhar;',
-            'Mas lâminas de marfim gravadas pelo Caos,',
+            'Mas lâminas de marfim cercadas de véus maus,',
             'Onde a sorte e a ruína caminham lado a lado nos degraus!',
           ],
           [
@@ -665,7 +665,7 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
           [
             'Com uma garra de ouro fechou o Baralho ousado,',
             'Com a outra pôs o Espelho sob o selo sagrado;',
-            'E olhando até o fundo da caverna de Malphas,',
+            'E olhando até o fundo de Malphas fugaz,',
             'Ordenou que as relíquias servissem só à paz!',
           ],
           [
@@ -851,8 +851,8 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
           ],
           [
             'No Trono do Inverno Eterno não entra o desespero,',
-            'Cada jogada é fria, cada cálculo é certeiro;',
-            'A geada que emana de seus braços azuis',
+            'Cada jogada é fria, cada cálculo é severo;',
+            'A geada que emana e na tormenta reluz',
             'Congela o inimigo antes que veja a luz!',
           ],
           [
@@ -898,7 +898,7 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
             'Onde o exército de ossos renasce no infinito!',
           ],
           [
-            'Faltava apenas Solária fechar o quádruplo anel,',
+            'Faltava apenas Solária rasgar o último véu,',
             'Erguendo no terraço mais próximo do céu',
             'O assento de ouro puro onde a lei se completa',
             'Antes de soar na terra a última trombeta!',
@@ -924,7 +924,7 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
           [
             'O Trono do Imperador Eterno irradia tal lei',
             'Que nenhuma desordem alcança o seu rei;',
-            'As tropas alinhadas diante do seu degrau',
+            'As tropas alinhadas diante do portal',
             'Recebem a couraça que vence todo o mal!',
           ],
           [
@@ -1059,8 +1059,8 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
           [
             'Que se abram os Grimórios na mesa de cristal,',
             'Do simples escudeiro ao dragão imperial;',
-            'Pois todas as relíquias que o tempo construiu',
-            'Estão à tua espera no mais nobre desafio!',
+            'Pois todo o grande império que o tempo construiu',
+            'Está à tua espera como nunca se viu!',
           ],
           [
             'Aqui termina o canto da antiga fundação,',

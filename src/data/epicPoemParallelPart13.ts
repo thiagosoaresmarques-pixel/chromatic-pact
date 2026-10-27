@@ -132,8 +132,8 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
           [
             'Kaelen abriu seus dois olhos de chama,',
             'Banhado no bronze que a pedra derrama;',
-            'Pegou do chão um pedaço de rocha,',
-            'E fez o martelo que nunca se afrouxa!',
+            'Pegou do chão a brasa como tocha,',
+            'E fez o martelo na ardente rocha!',
           ],
           [
             '— "Meu pai Vulcanis, não temas o fumo,',
@@ -211,7 +211,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
             'Vulcanis soprou sua chama lá dentro,',
             'A Salamandra girou no seu centro;',
             'E o Titã da Alvorada deixou no metal',
-            'A bênção secreta do raio solar!',
+            'A bênção secreta do sol imortal!',
           ],
           [
             'Porém a Fornalha batia tão forte,',
@@ -500,12 +500,12 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
           [
             'Batendo na panela de ferro e latão,',
             'Gritou para o monstro de azul corpachão:',
-            '— "Aqui, lagartixa de patas demais!',
-            'Vem ver como corre um Batedor audaz!"',
+            '— "Aqui, lagartixa que não corre mais!',
+            'Vem ver a destreza dos meus pés leais!"',
           ],
           [
-            'Correndo por dentro dos tubos de vidro,',
-            'Que o raio fizera qual belo cilindro,',
+            'Correndo por dentro do tubo maciço,',
+            'Que o raio fundira com estranho feitiço,',
             'Zik deslizava com graça e suor,',
             'Enquanto subia o ferreiro maior!',
           ],
@@ -723,7 +723,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
           [
             '— "Derrama o teu soro na água corrente,',
             'Querida Viperia de língua pungente!',
-            'Solária dirá que foi toda Veridia,',
+            'Solária dirá que foi crua insídia,',
             'E a guerra virá da nossa perfídia!"',
           ],
           [
@@ -1128,8 +1128,8 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
           [
             'Solto das cordas, o Tiranossauro se ergueu,',
             'Maior que os pinheiros que a mata escondeu;',
-            'Abriu a bocarra em cima de Varkas,',
-            'Que permaneceu firme, sem medo das marcas!',
+            'Abriu a bocarra buscando mil marcas,',
+            'Mas Varkas deteve as mandíbulas parcas!',
           ],
         ],
       },
@@ -1248,7 +1248,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
         stanzas: [
           [
             'Gorgoroth, o Behemoth Devorador, surgiu,',
-            'Com chifres de rocha e dorso senil;',
+            'Com chifres de rocha que o monte pariu;',
             'Sua pata cobria metade da praça,',
             'Pronta a reduzir a falange a fumaça!',
           ],

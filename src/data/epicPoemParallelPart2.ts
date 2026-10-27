@@ -182,7 +182,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Despertando na umidade um selvagem rugido louro!',
           ],
           [
-            'Lá no fundo, cultivado com sementes de Veridia,',
+            'Lá no fundo, por Veridia preparado contra a insídia,',
             'O Fosso de Vinhas vivas aguardava a vil perfídia;',
             'Cipós grossos como jibóias saltaram da escuridão,',
             'Enlaçando os assassinos pelo torso e pela mão!',
@@ -252,7 +252,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Antes que a corrente umbral tocasse o livro sagrado,',
             'Malakor foi pelo peito duramente abalroado;',
             'Os braços da tumba negra puxaram os sete vilões,',
-            'Engolindo o Arcanista e seus últimosões!',
+            'Engolindo o Arcanista sob eternos grilhões!',
           ],
           [
             'Com um estrondo metálico que fez a cripta tremer,',
@@ -474,7 +474,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'O Piromante Lança-Chamas firmou a bota no chão,',
             'E do sifão de bronze rubro soltou o seu furacão;',
             'Um único jato de brasa voou como um dardo reto,',
-            'Entrando pelo Portal de desenho circunspecto!',
+            'Entrando pelo Portal de traçado tão discreto!',
           ],
           [
             'Ao tocar a geometria do Códice de safira,',
@@ -558,7 +558,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           [
             'Ziguezagueando graciosa por entre a fumaça escura,',
             'Surgiu a pequena fada de cintilante figura;',
-            'A mesma que desde a aurora das eras de Vaeloria',
+            'A mesma que em Vaeloria, desde a aurora da história,',
             'Conhecia os atalhos da mana e da memória!',
           ],
         ],
@@ -593,7 +593,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           ],
           [
             'Vendo o sinal da fada brilhar no alto do céu,',
-            'O coro de Solária abriu seu branco dossel;',
+            'O coro de Solária abriu seu branco véu;',
             'Pois a ponte estava pronta para o quarto elemento',
             'Fechar com chave de ouro o grande experimento!',
           ],
@@ -713,7 +713,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           [
             'À meia-noite em ponto, a Pedra mudou de cor,',
             'Transmutando o chumbo negro em Ouro de vivo ardor;',
-            'Um estalo seco e profundo partiu a viga mestra,',
+            'Um estalo seco e fundo partiu a rocha na fresta,',
             'E uma fenda de luz áurea rasgou a rocha funesta!',
           ],
           [
@@ -802,8 +802,8 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
           [
-            'Vesperion, o Lich Imortal, ergueu o cetro de crânio,',
-            'Iluminando de roxo o abismo subterrâneo;',
+            'Vesperion, o Lich Imortal, ergueu seu crânio tirano,',
+            'Iluminando de roxo o abismo subterrâneo e profano;',
             '"Cem memórias não bastaram para a minha eternidade,',
             'Mas Novecentas e Noventa e Seis me dão divindade!"',
           ],
@@ -852,7 +852,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           [
             'O escudo de ossos negros partiu-se em mil estilhaços,',
             'Jogando o Lich Imortal para trás de seus espaços;',
-            'O vórtice de drenagem quebrou-se num clarão verde,',
+            'O vórtice de drenagem quebrou sua negra rede,',
             'E as Memórias voltaram a girar entre a parede!',
           ],
           [
@@ -875,8 +875,8 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
           [
-            'Vesperion ergueu-se em fúria, cercando-se de espectros,',
-            'E lançou contra o Gorila cem lâminas de seus cetros;',
+            'Vesperion ergueu-se em fúria, cercado a poucos metros,',
+            'Lançando com seus espectros cem lâminas de seus cetros;',
             'Kongor arrancou do chão um pilar de pedra inteira,',
             'Girando o tronco de mármore como clava justiceira!',
           ],
@@ -926,7 +926,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Atrás das asas do Arcanjo, descendo em luz multicor,',
             'Surgiu a própria regente do Tratado fundador;',
             'Trazendo nas mãos o cetro das cinco cores unidas,',
-            'Pronta para dar às relíquias suas leis definitivas!',
+            'Pronta para dar às relíquias as leis já prometidas!',
           ],
         ],
       },

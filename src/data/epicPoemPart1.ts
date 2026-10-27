@@ -64,8 +64,8 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
           [
             'Antes mesmo que a sombra no mundo habitasse,',
             'Ou que o astro supremo em estilhaços tombasse,',
-            'Sobre a crista de prata pousava a rainha,',
-            'Que do próprio clarão a coroa detinha.',
+            'Sobre a crista de prata em vigília sozinha,',
+            'Do próprio clarão a coroa detinha.',
           ],
           [
             'Nas escamas de Valkyra o espectro dormia,',

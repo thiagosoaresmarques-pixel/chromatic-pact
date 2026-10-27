@@ -292,7 +292,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'Mas o malho do ferreiro como um cometa desceu!',
           ],
           [
-            'Três pancadas ressoaram por toda a cidade abaixo,',
+            'Três pancadas ressoaram desde o pináculo ao facho,',
             'Soldando o ar partido como se solda o aço macho;',
             'E cada faísca rubra que do martelo saltou',
             'Nos ponteiros do relógio um novo selo gravou!',
@@ -623,7 +623,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'A pedra negra desfez-se num pó de estelar fulgor!',
           ],
           [
-            'Os demônios da emboscada largaram lança e broquel,',
+            'Os demônios da emboscada largaram o negro troféu,',
             'Aterrorizados com o monstro que vinha do alto céu;',
             'Pois sobre a Estrada Cinzenta pousava o juiz sem cor,',
             'O Dragão do Vácuo Astral em seu supremo esplendor!',
@@ -662,7 +662,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'Assim chegaram intactos os Dez Tratados reais',
             'Aos cinco tronos do mundo e às forjas imperiais;',
             'Selando pela coragem daquela escolta fiel',
-            'A Era das Duas Cores sob a proteção do céu!',
+            'A Era das Duas Cores sob o celeste dossel!',
           ],
         ],
       },
@@ -741,7 +741,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'O Lich viera na estrada tentar um novo consolo!',
           ],
           [
-            '"Se não pude tomar a fonte lá na Torre de Valkyra,',
+            '"Se a Torre de Valkyra não caiu na minha ira,',
             'Tomarei a caravana que pelo planalto gira!" —',
             'Disse Vesperion lançando uma rede de agonia',
             'Sobre os vagões reluzentes da dourada companhia.',
@@ -889,8 +889,8 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           [
             'Vesperion tentou erguer uma barreira de breu,',
             'Mas o punho da floresta contra o trono se moveu;',
-            'E o duelo das alturas no peito do monstro ósseo',
-            'Decidiu a ferro e fogo aquele grande negócio!',
+            'E o duelo das alturas sobre aquele trono escuro',
+            'Decidiu a ferro e fogo a sorte do seu futuro!',
           ],
         ],
       },
@@ -948,7 +948,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'Sacudindo a pedra bruta que o planalto compõe e produz.',
           ],
           [
-            'Kongor saltou para o chão junto a Varkas e a Garrick,',
+            'Kongor saltou para o chão com Varkas e Garrick a pique,',
             'Vendo a própria terra viva fazer que a morte claudique;',
             'Vesperion, vendo erguer-se o colosso primordial,',
             'Abriu um portal de fuga e deixou o lodo mortal!',

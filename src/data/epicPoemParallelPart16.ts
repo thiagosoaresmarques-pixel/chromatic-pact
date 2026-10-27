@@ -70,7 +70,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           ],
           [
             '— "Se a memória morrer nas trevas deste poço,"',
-            'Clamou o velho sábio num último esforço,',
+            'Clamou o velho sábio com sangue no pescoço,',
             '— "As cartas viram papel sem alma e sem passado,',
             'E todo o nosso esforço terá sido frustrado!"',
           ],
@@ -117,7 +117,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'Sustentando o mago no abismo infinito.',
           ],
           [
-            'Mas a pedra da borda começou a ceder,',
+            'Mas a pedra da borda começou a quebrar,',
             'E o próprio rei dourado estava por escorregar;',
             'Quando dois braços fortes de ferro sem brasão',
             'Abraçaram a cintura do grande guardião!',
@@ -168,7 +168,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           [
             'O Comandante Garrick cravou até o punho',
             'Sua espada bastarda servindo de testemunho;',
-            'Com um braço no ferro e o outro em Justinian,',
+            'Com um braço no ferro segurando o titã,',
             'Fez de seu próprio corpo o muro da manhã!',
           ],
           [
@@ -277,7 +277,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           [
             '— "Nada do que foi vivido se perde no vazio!"',
             'Ecoou a voz de Aldric num trovão senhorio;',
-            'O raio de safira rasgou Nihil-Vael,',
+            'O raio de safira rasgou o negro véu,',
             'Devolvendo as memórias para a luz do céu!',
           ],
           [
@@ -425,7 +425,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         locationLabel: 'Bigorna Central da Praça Solar',
         stanzas: [
           [
-            'Saltou para o meio do fogo o velho Kaelen,',
+            'Saltou para o meio do fogo Kaelen também,',
             'Que desde a Era Zero batia o ferro além;',
             'O Artífice Bronze-Ardente ergueu o seu martelo,',
             'Banhado ao mesmo tempo de rubro e de amarelo!',
@@ -437,7 +437,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'O rubi dava o peso que todo escudo rompe!',
           ],
           [
-            '— "Mais forte, Magmarok! Mais claro, Aurelion!"',
+            '— "Mais forte, Magmarok! Mais claro no clarão!"',
             'Gritava o anão de fogo no meio do trovão;',
             'Suas barbas de labareda dançavam de alegria,',
             'Vendo nascer a liga que a Quinta Era abriria!',
@@ -601,7 +601,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         locationLabel: 'Praça do Sol Invicto, Solária',
         stanzas: [
           [
-            'Aurelion baixou a mão de trezentos pés,',
+            'Aurelion baixou a mão sobre os anéis,',
             'Tocando no escudo feito pelos três fiéis;',
             'Sentiu naquela liga uma dureza nova,',
             'Maior que o ouro sozinho em qualquer dura prova.',
@@ -644,7 +644,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'Nascidos nos três golpes por Kaelen martelados.',
           ],
           [
-            'Quando jogares hoje Aurelion ou Magmarok,',
+            'Quando jogares hoje com um simples toque,',
             'Lembra daquela praça que aguentou o choque;',
             'Pois a força bicolor que tens na tua mão',
             'Foi temperada junta no mesmo caldeirão!',
@@ -728,7 +728,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           ],
           [
             'Ajustou os ponteiros ao milésimo exato,',
-            'Para que no momento do sônico impacto',
+            'Para que no momento do sônico contato',
             'O dragão desviasse a três metros do chão,',
             'Espalhando a onda acústica em toda direção!',
           ],

@@ -109,7 +109,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
             'Levava sob o manto a Matriz Primordial,',
             'Onde a regra das quatro raridades tem sinal;',
             'Se riscasse aquele disco com sua garra de rubi,',
-            'Todo o Pacto das Cartas haveria de ruir!',
+            'Todo o Pacto das Cartas cairia por ali!',
           ],
           [
             'Porém nos carrilhões da abóbada estrelada,',
@@ -253,7 +253,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
           [
             'Com golpes de aço cru, sem feitiço ou resplendor,',
             'Garrick limpou a sala do motim conspirador;',
-            'Provando a Justinian e ao próprio Thaddeus ali',
+            'Provando a Justinian e a Thaddeus, com sua fé,',
             'Que sem a base humilde nenhum trono está de pé!',
           ],
         ],
@@ -371,7 +371,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
             'Briharia como fogo dentro da sua visão.',
           ],
           [
-            'Estendendo o véu psíquico de uma margem até a outra,',
+            'Estendendo o véu psíquico onde a margem não se esgota,',
             'O monstro abissal abriu a cerimônia douta;',
             'E sobre a mesa longa de gelo esculpido a mão,',
             'Começou o banquete da mais fria coalizão!',
@@ -468,7 +468,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
             'Descia na nevasca uma sombra gigantesca e cortante.',
           ],
           [
-            'Os guardas vampiros puxaram o aço negro,',
+            'Os guardas vampiros puxaram o ferro cego,',
             'Julgando que a embaixada rompera o seu sossego;',
             'Mas os magos de Safira permaneceram sentados,',
             'Olhando para o alto com semblantes concentrados.',
@@ -505,7 +505,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
           ],
           [
             'Mas Vladislaus e Carmilla nem sequer pestanejaram,',
-            'Pois mortos não tremem quando os ventos se levantam;',
+            'Pois mortos não tremem quando os ventos dispararam;',
             'E sobre a escama branca da mandíbula brutal,',
             'A Condessa pousou sua mão fria e real!',
           ],
@@ -572,7 +572,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
           ],
           [
             'O Soberano Psiônico uniu em telepatia',
-            'Cada cláusula secreta que o tratado continha:',
+            'Cada cláusula secreta que o tratado ali trazia:',
             'As cartas de Safira dariam a visão,',
             'E as cartas do Eclipse dariam a exaustão.',
           ],
@@ -899,7 +899,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
             'Vinte cartas vermelhas de fúria e de fornalha',
             'Saltaram em faíscas prontas para a batalha;',
             'Dragões, berserkers, raios e máquinas de ardor,',
-            'Para quem busca o triunfo sem medo e sem vagar.',
+            'Para quem busca o triunfo sem medo e sem temor.',
           ],
           [
             '— "Que venha o Soberano!" bradou o Marechal,',

@@ -112,8 +112,8 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
           [
             'Doze anos marcharam os filhos da rocha,',
             'Apagando no abismo a profana tocha;',
-            'Até que em Quinhentos e Trinta e Dois se abriu',
-            'A boca de cal do sepulcro sombrio.',
+            'Até que em Quinhentos e Trinta e Dois surgiu',
+            'A boca de cal onde o morto dormiu.',
           ],
           [
             'Dos túmulos velhos da guerra sem fim,',
@@ -141,9 +141,9 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         stanzas: [
           [
             'O Behemoth Ossário das Catacumbas rugiu,',
-            'Com costelas de ferro e espinha hostil;',
+            'Com costelas de ferro que a treva fundiu;',
             'Quatro braços de fêmur brandiam correntes,',
-            'Ceifando florestas e muros inteiros na frente!',
+            'Ceifando florestas e muros nas frentes!',
           ],
           [
             'Lançou contra o rei uma nuvem de praga,',
@@ -178,7 +178,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         stanzas: [
           [
             'Passaram-se décadas de ferro e de frio,',
-            'E no Ano Quinhentos e Oitenta e Oito se ouviu',
+            'E em Quinhentos e Oitenta e Oito veio o desafio:',
             'O estalo das geleiras do polo a quebrar,',
             'Sob o peso da besta que vinha caçar.',
           ],
@@ -472,7 +472,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         locationLabel: 'Estradas da Fronteira Cinzenta',
         stanzas: [
           [
-            'Oito anos andou o velhinho de cinza,',
+            'Oito anos andou sob a túnica lisa,',
             'Atravessando a brasa e a neve que frisa;',
             'Falou com Ignis na forja de ardor,',
             'E ouviu de Vesperion o frio rancor.',

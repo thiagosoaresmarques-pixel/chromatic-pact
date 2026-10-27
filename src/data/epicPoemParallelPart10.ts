@@ -152,7 +152,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Recebia no Grimório sua exata gravura!',
           ],
           [
-            '"Nenhuma vida foi vã na história de Vaeloria!" —',
+            '"Nenhuma vida em Vaeloria foi vã na nossa história!" —',
             'Ecoava o Cetro antigo resgatando cada glória —',
             '"O que ontem foi ferida no campo de morticínio,',
             'Hoje vira sabedoria nas cartas deste domínio!"',
@@ -255,7 +255,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Refletindo o raio rubro na abóbada que reluz!',
           ],
           [
-            'Cercada pelo Oráculo, por Thaddeus e Justinian,',
+            'Cercada por Justinian e Thaddeus até a manhã,',
             'A Condessa viu frustrada a sua ambição pagã;',
             'E o Comandante Garrick, sem dar-lhe tempo de rir,',
             'Avançou com ferro frio para a intrusa repelir!',
@@ -454,7 +454,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           ],
           [
             'Mergulhando no estuário sob a escolta dos dois reis,',
-            'A Hidra seguiu o rastro das escuras fluidez;',
+            'A Hidra seguiu o rastro contra aquelas negras leis;',
             'Lá no fundo do recife, preso a uma âncora de osso,',
             'Encontraram um relicário vomitando o negro poço!',
           ],
@@ -490,7 +490,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           ],
           [
             'Foi então que das colunas da maré mais cristalina,',
-            'Soou o búzio sagrado da sabedoria marinha;',
+            'Soou o búzio sagrado da potência submarina;',
             'E trazendo nas mãos puras das Sete Marés o véu,',
             'Nereus veio unir sua força ao trabalho sob o céu!',
           ],
@@ -707,12 +707,12 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           [
             'Das fossas onde os milênios dormem em silencioso par,',
             'O Chronoleviatã subiu para o ar respirar;',
-            'Suas barbatanas tinham o desenho de relógios,',
-            'E em suas escamas brilhavam de todas as eras os elogios!',
+            'Suas barbatanas tinham de relógios os sinais,',
+            'E em suas escamas brilhavam os séculos imortais!',
           ],
           [
             'Quando aquele monstro nada para o leste da corrente,',
-            'O mundo avança tranquilo para o seu dia seguinte;',
+            'O mundo avança tranquilo para o dia que há na frente;',
             'Mas se alguém forçar seu leme a nadar na contramão,',
             'Os séculos se desfazem voltando à escuridão!',
           ],
@@ -735,7 +735,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         locationLabel: 'Costa Astral de Vórtex',
         stanzas: [
           [
-            'Vesperion, o Lich Imortal, surgiu sobre o promontório,',
+            'Vesperion, o Lich Imortal, surgiu qual sombra e sudário,',
             'Cansado de ver frustrado seu assalto ao Relicário;',
             '"Já que Valkyra e seus anjos trancaram o cofre de ouro,',
             'Voltarei antes do Pacto para tomar o tesouro!"',

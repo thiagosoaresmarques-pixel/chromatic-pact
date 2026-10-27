@@ -84,7 +84,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'Mas o sopro de um só não bastava ao labor',
             'De fundir uma arma de tanto esplendor;',
             'Era urgente que o Tempo e a Floresta descessem,',
-            'E na forja secreta seu sangue entregassem!',
+            'E na forja secreta seu sangue vertessem!',
           ],
         ],
       },
@@ -233,7 +233,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         locationLabel: 'Bigorna Oculta do Monte Axial',
         stanzas: [
           [
-            'Ergueu-se das brasas o mestre Kaelen,',
+            'Ergueu-se das brasas Kaelen também,',
             'O primeiro Artífice que a forja contém;',
             'Com sua barba de fogo e seu olho de ouro,',
             'Empunhou o cinzel sobre o grande tesouro.',
@@ -242,7 +242,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             '— "Deixai que minhas mãos de metal temperado',
             'Desenhem no cristal o destino traçado!',
             'Cinco faces farei nesta pedra fiel,',
-            'Para que cada irmão tenha o seu quinhão do céu!"',
+            'Para que cada irmão tenha parte no anel!"',
           ],
           [
             'Bateu com cadência, sem pressa ou temor,',
@@ -289,7 +289,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
           [
             'Com um sorriso contido sob o capuz azulado,',
             'Aldric soube que o Malho estava acabado;',
-            'Guardou o segredo no peito febril,',
+            'Guardou o segredo na mente que viu,',
             'Pronto p’ra a hora em que o mundo se abriu!',
           ],
         ],
@@ -404,7 +404,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'Os meteoros batiam na abóbada azul,',
             'Deslizando em faíscas de norte a sul;',
             'Mas a carga do céu era imensa demais',
-            'Para os ombros cansados de um simples mortal.',
+            'Para os ombros cansados dos simples mortais.',
           ],
           [
             'Seus joelhos dobravam na terra aquecida,',
@@ -492,7 +492,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         locationLabel: 'Garganta do Fumo Negro',
         stanzas: [
           [
-            'Saltou da fissura o esperto Zik,',
+            'Saltou da fissura Zik num repique,',
             'Com sua lança de osso e seu passo de pique;',
             'Nascido nas covas do grande dragão,',
             'Conhecia de cor cada gruta do chão.',
@@ -504,7 +504,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'Onde sopra o cheirinho de mar e de seio!"',
           ],
           [
-            'Subiu no ombro largo do mestre Kaelen,',
+            'Subiu no ombro largo de Kaelen, além,',
             'Apontando os atalhos que a rocha detém;',
             'Onde a pedra era falsa, seu rabo avisava,',
             'Onde o teto caía, seu grito salvava.',
@@ -608,7 +608,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
           ],
           [
             'Subiram os velhos, as mães e os meninos,',
-            'Guiados por Lyra e por Zik nos caminhos;',
+            'Guiados por Lyra e por Zik nos destinos;',
             'Kaelen e Aldric fecharam a fila,',
             'No instante em que a praia virava argila!',
           ],
@@ -794,7 +794,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'Cruzaramo-se no ar do salão pequeno.',
           ],
           [
-            'Mas enquanto o Arquimago detinha o Lich,',
+            'Mas enquanto o Arquimago detinha o Lich infeliz,',
             'Um vulto de seda e de rubro matiz',
             'Saltou pelas rodas de bronze no ar,',
             'Buscando a corrente do eixo cortar!',
@@ -838,8 +838,8 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
           [
             'Aldric estava preso no duelo mortal,',
             'Sem poder alcançar o anel principal;',
-            'Mas do topo da cúpula, as asas de bronze',
-            'Desceram no vento que o timbre esconde!',
+            'Mas do alto, com asas de bronze, de onde',
+            'Desce a voz do mistério que o timbre esconde!',
           ],
         ],
       },
@@ -854,7 +854,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         locationLabel: 'Zênite do Planetário de Vórtex',
         stanzas: [
           [
-            'A Esfinge do Pináculo abriu o seu voo,',
+            'A Esfinge do Pináculo as asas soltou,',
             'E o rugido de enigma na cúpula ecoou;',
             'Com garras de leão e com olhos de sol,',
             'Pousou entre a vampira e o grande farol.',
@@ -935,7 +935,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
           [
             'A tromba marinha lavou a fumaça,',
             'Desfazendo o feitiço da negra ameaça;',
-            'E o jato da onda atingiu Vesperion,',
+            'E o jato atingiu Vesperion num turbilhão,',
             'Lançando-o p’ra fora do nobre salão!',
           ],
           [
@@ -1090,7 +1090,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
           ],
           [
             'O Arcanjo abriu os braços sem medo ou broquel,',
-            'Apontando p’ra o astro que ardia no céu;',
+            'Apontando p’ra o astro que ardia cruel;',
             'Oferecia a retirada das tropas do sol,',
             'Se Varkas recolhesse o seu rubro paiol.',
           ],
@@ -1098,7 +1098,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'O silêncio caiu sobre as duas fileiras,',
             'Enquanto o vento soprava nas altas bandeiras;',
             'E do ombro do anjo, num brilho sutil,',
-            'Voou a pequena que o mundo já viu!',
+            'Voou a pequena de graça gentil!',
           ],
         ],
       },
@@ -1198,7 +1198,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'Levantando uma onda de pedra e ruína!',
           ],
           [
-            'A cegueira e o pânico tomaram as linhas,',
+            'A cegueira e o pânico tomaram a linha,',
             'Cada exército achou que a traição delas vinha;',
             'Soaram as trombetas no fumo mortal,',
             'E começou a Batalha da Cinza final!',
@@ -1256,7 +1256,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'Com seus braços mais grossos que troncos de ipê,',
             'Arrancou dois penhascos que a terra não vê;',
             'E cravando as pedras na boca da trilha,',
-            'Fez uma muralha p’ra a pobre família!',
+            'Salvou a família daquela armadilha!',
           ],
           [
             'Quando os cães de magma tentaram passar,',

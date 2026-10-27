@@ -130,13 +130,13 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
         locationLabel: 'Galeria Onze do Monte Axial',
         stanzas: [
           [
-            'O Leão de Juba Solar rugiu baixo,',
-            'Num tom que fazia tremer o riacho;',
+            'O Leão de Juba Solar ergueu seu facho,',
+            'Num rugido que fez tremer o riacho;',
             'Seu corpo era mármore vivo e quente,',
             'E a juba brilhava qual sol do oriente.',
           ],
           [
-            'Inclinou a cabeça p’ra o mestre Kaelen,',
+            'Inclinou a cabeça a Kaelen também,',
             'Mostrando o respeito que a força contém;',
             'E da própria boca tirou com firmeza',
             'Um dente de marfim de divina pureza.',
@@ -174,7 +174,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
           [
             '— "Se o Titã receia que o ouro domine,',
             'Farei um desenho que a todos ensine:',
-            'Cinco aros presos num mesmo anel,',
+            'Cinco aros presos sob o mesmo véu,',
             'Sem que um fique acima do outro no céu!"',
           ],
           [
@@ -389,7 +389,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
         locationLabel: 'Trilha das Samambaias Gigantes',
         stanzas: [
           [
-            'Lyra voou até a beira da mata,',
+            'Lyra voou até a borda mais vasta,',
             'Onde a fila de pobres na lama se arrasta;',
             'Traziam crianças do norte queimado,',
             'E velhos do sul pelo vento gelado.',
@@ -462,7 +462,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
         locationLabel: 'Círculo dos Carvalhos, Veridia',
         stanzas: [
           [
-            'O Dragão acolheu o pedido de Zik,',
+            'O Dragão acolheu o bom Zik no pique,',
             'Mas os velhos carvalhos deram repique:',
             'Temiam que o povo trouxesse o machado,',
             'Ferindo o tronco do bosque sagrado.',
@@ -492,7 +492,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
         locationLabel: 'Clareira Matriz de Veridia',
         stanzas: [
           [
-            'Aldric ergueu o seu bastão de safira,',
+            'Aldric ergueu a safira que guia,',
             'Lembrando a semente que outrora nutria:',
             '— "Ouvi, velhos troncos, quem vos ajudou',
             'Na gruta gelada onde o broto acordou!"',
@@ -715,7 +715,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
         locationLabel: 'Garganta dos Ventos Brancos',
         stanzas: [
           [
-            'No pescoço de Aureon ia o velho Aldric,',
+            'No pescoço de Aureon ia Aldric no pique,',
             'Com o Cetro Astral num firme repique;',
             'Envolvia o espelho num campo de luz',
             'Que o peso da pedra à metade reduz.',
@@ -757,7 +757,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
             'Que ele mesmo fizera em bronze dobrado!',
           ],
           [
-            '— "Segura a pressão, minha liga fiel!',
+            '— "Segura a pressão sob o imenso véu!',
             'Não deixes trincar a janela do céu!" —',
             'E abraçando os suportes com braço de brasa,',
             'Amorteceu o impacto no teto da casa!',
@@ -1123,13 +1123,13 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
             'Cravaram as lanças no piso de ferro,',
             'Aparando dos monstros o bruto desterro;',
             'Enquanto lá em cima a ponte tremia',
-            'Com o peso de Bael-Khor que já vinha!',
+            'Com o peso de Bael-Khor que descia!',
           ],
           [
             'Para soltar os quatro pinos gigantes,',
             'Fundidos nas rochas há séculos antes,',
             'Precisavam da força do braço maior,',
-            'Do fogo dracônico e do anjo do sol!',
+            'Do fogo dracônico e do solar fulgor!',
           ],
         ],
       },
@@ -1194,7 +1194,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
           [
             'Com um estalo que fez a montanha tremer,',
             'O pino gigante começou a correr;',
-            'Kongor arrancou a cavilha do eixo,',
+            'Kongor arrancou a cavilha no trecho,',
             'E jogou-a no fundo sem deixar um fecho!',
           ],
           [
@@ -1267,7 +1267,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
           [
             'Na margem segura, cansados da lida,',
             'O gorila, o dragão e a guarda aguerrida',
-            'Olhavam o abismo onde a ponte caíra,',
+            'Olhavam o abismo que a névoa cobria,',
             'Sabendo que a perda a vitória nutria.',
           ],
         ],

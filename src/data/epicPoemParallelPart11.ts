@@ -75,7 +75,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
             'Mas mãe que prepara o futuro lampejo!"',
           ],
           [
-            'No centro de cada estilhaço por vir,',
+            'No centro de cada estilhaço a brilhar,',
             'Valkyra gravou o poder de lembrar:',
             'Para que os heróis que tombassem na dor',
             'Ficassem guardados num prisma de amor.',
@@ -233,7 +233,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
         locationLabel: 'Câmara Alta do Coroa-Prisma',
         stanzas: [
           [
-            'Tocou na cabeça do jovem escriba,',
+            'Tocou na cabeça de mente tão viva,',
             'Onde a centelha do estudo se aviva:',
             '— "Vai, meu pequeno, e vira a Ampulheta,',
             'Abre p’ra os Cinco a passagem secreta!"',
@@ -269,7 +269,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
         locationLabel: 'Câmara Alta do Coroa-Prisma',
         stanzas: [
           [
-            'Por fim aproximou-se do mestre Kaelen,',
+            'Por fim aproximou-se de Kaelen também,',
             'Olhando as mãos fortes que a brasa contém:',
             '— "Ferreiro que deste cinco faces ao malho,',
             'Abençoado seja o teu nobre trabalho!"',
@@ -281,7 +281,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
             'E o coração onde os povos se almejem!"',
           ],
           [
-            'Deixou cair no martelo de Kaelen',
+            'Deixou no martelo de Kaelen também',
             'A lágrima viva que as eras contêm;',
             'O bronze bebeu as cinco cores do céu,',
             'Ficando imune à ferrugem e ao véu.',
@@ -428,7 +428,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
           [
             'Fingindo querer o monstro deter,',
             'Vesperion mandou um aviso correr;',
-            'Chamou o bom Aldric, e Lyra e Zik,',
+            'Chamou o bom Aldric, e Lyra e Zik no pique,',
             'Dizendo que o vale pedia um repique.',
           ],
           [
@@ -595,14 +595,14 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
         locationLabel: 'Leito do Vale dos Ossos',
         stanzas: [
           [
-            'Zik estava caído debaixo da cauda,',
+            'Zik estava caído sob a cauda aguda,',
             'Que descia qual foice que a morte saúda;',
             'Mas Lyra voou num risco de luz,',
             'Direto ao crânio que o medo produz!',
           ],
           [
-            'Entrou pela órbita oca do monstro,',
-            'Onde ardia o feitiço daquele encontro;',
+            'Entrou pela órbita oca de pronto,',
+            'Onde ardia o feitiço em seu último ponto;',
             'E soltou todo o pó da sua asa estelar,',
             'Fazendo a caveira por dentro brilhar!',
           ],
@@ -634,7 +634,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
           [
             'Aurarius subiu de volta p’ra o céu,',
             'Depois que o esqueleto no vale cedeu;',
-            'E Aldric, curando o ombro de Zik,',
+            'E Aldric, curando o bom Zik no pique,',
             'Olhou p’ra a fenda com triste repique.',
           ],
           [
@@ -680,7 +680,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
         stanzas: [
           [
             'Cento e sessenta e oito anos depois',
-            'Daquela colheita que a sombra compôs,',
+            'Daquela colheita que partiu em dois,',
             'No ano de cento e noventa e cinco,',
             'Vesperion chegou ao seu último afinco.',
           ],
@@ -1005,14 +1005,14 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
         locationLabel: 'Cratera de Cinzas do Leste',
         stanzas: [
           [
-            'Quinhentos e sessenta e oito marcou',
+            'Quinhentos e sessenta e oito rompeu',
             'O ano em que a guerra o juízo perdeu:',
             'Para vencer o impasse que o front travava,',
             'Acordaram no fundo o monstro da lava!',
           ],
           [
-            'Subiu da cratera o imenso Pyraxis,',
-            'Quebrando das rochas a própria sintaxe;',
+            'Subiu da cratera Pyraxis voraz,',
+            'Quebrando das rochas a antiga paz;',
             'Suas asas de fumo taparam os sóis,',
             'Cobrindo de cinza covardes e heróis.',
           ],
@@ -1053,8 +1053,8 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
             'Contanto que o outro também vá morrer!"',
           ],
           [
-            'Estalou o seu látego no lombo do monstro,',
-            'Apontando p’ra o centro daquele reencontro;',
+            'Estalou o seu látego no monstro de pronto,',
+            'Apontando p’ra o centro daquele confronto;',
             'Onde os filhos de Muspel, de Solária e da mata',
             'Jaziam misturados na terra ingrata.',
           ],
@@ -1157,7 +1157,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
           ],
           [
             'Cada murro de Kongor abria uma fenda,',
-            'Criando um barranco p’ra que a lava desça;',
+            'Criando um barranco que a várzea defenda;',
             'Suas mãos se queimavam no barro aquecido,',
             'Mas o rei da floresta não dava gemido!',
           ],
@@ -1284,14 +1284,14 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
         locationLabel: 'Trincheira Salva do Leste',
         stanzas: [
           [
-            'Com a mão trêmula, Varkas abriu o fecho,',
+            'Com a mão trêmula, Varkas olhou no desejo,',
             'Onde o broche de bronze guardava o lampejo;',
             'Entregou a relíquia p’ra a fada guardar,',
             'Com um sorriso sereno no seu respirar:',
           ],
           [
             '— "Paguei a promessa dos meus ancestrais,',
-            'Agora esta espada descansa na paz;',
+            'Agora esta espada não fere jamais;',
             'Leva este bronze p’ra quem vier depois,',
             'Para que o mundo não parta-se em dois!"',
           ],

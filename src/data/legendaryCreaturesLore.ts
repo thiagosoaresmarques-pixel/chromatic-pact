@@ -1277,8 +1277,8 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     proseStory:
       'Veterano das guerras nortenhas que abateu um dragão ancião em duelo singular e tomou seu crânio como elmo, Skrym-Khor recusou-se a jurar vassalagem a qualquer trono elemental. Desde 740 D.F., guarda as passagens da Fronteira Cinzenta com seu machado rúnico colossal.',
     sungStanza: [
-      'Com o crânio de um drago servindo de elmo,',
-      'Skrym-Khor caminha sozinho no ermo;',
+      'Com crânio de drago forjado no gelo,',
+      'Skrym-Khor guarda o monte com feroz desvelo;',
       'Quando o grande machado na rocha bateu,',
       'Toda a linha inimiga de frente cedeu!',
     ],

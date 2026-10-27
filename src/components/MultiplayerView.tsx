@@ -14,6 +14,7 @@ import {
   getRoomByCode,
   getSavedAccountsRoster,
   getSelectableAvatarCards,
+  isAdminProfile,
   isUnregisteredProfile,
   MONOCHROMATIC_STARTER_DECKS,
   MultiplayerRoom,
@@ -250,6 +251,7 @@ interface SovereignAccountModalProps {
   onClose: () => void;
   initialTab?: AccountModalTab;
   onNeedsDeckSetup?: () => void;
+  onOpenAdminPanel?: () => void;
 }
 
 export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
@@ -260,6 +262,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   onClose,
   initialTab = 'profile',
   onNeedsDeckSetup,
+  onOpenAdminPanel,
 }) => {
   const isUnregistered = isUnregisteredProfile(currentUser);
   const [tab, setTab] = useState<AccountModalTab>(
@@ -546,6 +549,41 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
               onSubmit={handleSaveProfileChanges}
               style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
             >
+              {isAdminProfile(currentUser) && onOpenAdminPanel && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '0.75rem',
+                    padding: '0.75rem 1rem',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(15, 23, 42, 0.92))',
+                    border: '1px solid rgba(251, 191, 36, 0.75)',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '0.68rem', fontWeight: 900, color: '#fde047', letterSpacing: '0.1em' }}>
+                      👑 CREDENCIAL DE ADMINISTRADOR ATIVA ({currentUser.username.toUpperCase()})
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#e2e8f0' }}>
+                      Gerencie contas, Ouro, coleção de 500 cartas, visitantes e salas 1×1.
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-primary"
+                    onClick={() => {
+                      onClose();
+                      onOpenAdminPanel();
+                    }}
+                  >
+                    👑 Abrir Painel Admin →
+                  </button>
+                </div>
+              )}
+
               {profileSavedMsg && (
                 <div
                   style={{

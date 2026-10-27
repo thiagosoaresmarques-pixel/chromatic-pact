@@ -3,6 +3,8 @@
  * Captura parâmetros de atribuição (GCLID / UTM) e despacha eventos de funil para gtag / dataLayer.
  */
 
+import { CloudVisitorSessionEntry, syncVisitorSessionToCloud } from './multiplayerEngine';
+
 export type AdsConversionEventName =
   | 'ads_visitor_landed'
   | 'quick_play_clicked'
@@ -46,7 +48,63 @@ export const GOOGLE_ADS_SIGNUP_CONVERSION_SEND_TO = 'AW-16651599167/6l9iCM_rx6od
 const ATTRIBUTION_STORAGE_KEY = 'chromatic_pact_ads_attribution_v1';
 const EVENTS_AUDIT_STORAGE_KEY = 'chromatic_pact_ads_events_v1';
 const SESSION_LANDED_KEY = 'chromatic_pact_ads_session_landed_v1';
+const VISITOR_SESSION_STORAGE_KEY = 'chromatic_pact_visitor_session_v1';
 const MAX_AUDIT_EVENTS = 50;
+
+export function getLocalAdsAuditEvents(): AdsEventAuditEntry[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(EVENTS_AUDIT_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as AdsEventAuditEntry[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function recordVisitorSessionEvent(
+  eventName: AdsConversionEventName,
+  params: Record<string, string | number | boolean>,
+  attribution: AdsAttributionData | null
+): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const now = Date.now();
+    const raw = window.localStorage.getItem(VISITOR_SESSION_STORAGE_KEY);
+    let session: CloudVisitorSessionEntry | null = raw ? JSON.parse(raw) : null;
+    if (!session || !session.sessionId) {
+      session = {
+        sessionId: `vis_${now}_${Math.random().toString(36).slice(2, 8)}`,
+        firstSeenAt: attribution?.landedAt ?? now,
+        lastSeenAt: now,
+        landingUrl: attribution?.landingUrl || window.location.href,
+        gclid: attribution?.gclid,
+        utmSource: attribution?.utmSource,
+        utmMedium: attribution?.utmMedium,
+        utmCampaign: attribution?.utmCampaign,
+        utmTerm: attribution?.utmTerm,
+        events: [],
+        userAgentSummary: navigator.userAgent ? navigator.userAgent.slice(0, 90) : undefined,
+        screenSize: `${window.innerWidth}x${window.innerHeight}`,
+      };
+    }
+    session.lastSeenAt = now;
+    if (attribution?.gclid) session.gclid = attribution.gclid;
+    if (attribution?.utmSource) session.utmSource = attribution.utmSource;
+    if (attribution?.utmMedium) session.utmMedium = attribution.utmMedium;
+    if (attribution?.utmCampaign) session.utmCampaign = attribution.utmCampaign;
+    if (attribution?.utmTerm) session.utmTerm = attribution.utmTerm;
+    if (!session.events.includes(eventName)) {
+      session.events = [...session.events, eventName];
+    }
+    if (eventName === 'register_account' && typeof params.username === 'string') {
+      session.registeredUsername = params.username;
+    }
+    window.localStorage.setItem(VISITOR_SESSION_STORAGE_KEY, JSON.stringify(session));
+    syncVisitorSessionToCloud(session);
+  } catch {
+    // Non-blocking
+  }
+}
 
 /**
  * Lê os dados de atribuição do Google Ads salvos no localStorage.
@@ -153,6 +211,8 @@ export function trackAdsEvent(
   } catch {
     // Ignora erros de quota de armazenamento
   }
+
+  recordVisitorSessionEvent(eventName, params, attribution);
 }
 
 /**
@@ -188,7 +248,7 @@ export function initAdsTelemetry(): AdsAttributionData | null {
     }
 
     const alreadyTrackedSession = window.sessionStorage.getItem(SESSION_LANDED_KEY);
-    if (!alreadyTrackedSession && (hasUrlParams || attribution)) {
+    if (!alreadyTrackedSession) {
       window.sessionStorage.setItem(SESSION_LANDED_KEY, '1');
       trackAdsEvent('ads_visitor_landed', {
         direct_landing: hasUrlParams,

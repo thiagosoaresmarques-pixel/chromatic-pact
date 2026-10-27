@@ -23,10 +23,15 @@ import {
   SovereignAccountModal,
 } from './components/MultiplayerView';
 import { WelcomeVisitorBanner } from './components/WelcomeVisitorBanner';
+import { AdminDashboardView } from './components/AdminDashboardView';
 import { CardView, CardInspectModal } from './components/CardView';
 import {
+  adminSaveCloudProfile,
   ensureStarterDeckForUser,
+  fetchGlobalAdminAnnouncement,
   getActiveTabUserProfile,
+  getSavedAccountsRoster,
+  isAdminProfile,
   isUnregisteredProfile,
   MultiplayerRoom,
   recordPvpMatchResult,
@@ -58,7 +63,8 @@ type ActiveTab =
   | 'deckbuilder'
   | 'packs'
   | 'mythology'
-  | 'rules';
+  | 'rules'
+  | 'admin';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
@@ -71,6 +77,7 @@ export const App: React.FC = () => {
   );
 
   const isGuest = isUnregisteredProfile(currentUser);
+  const isAdmin = isAdminProfile(currentUser);
 
   // Per-account economy & progression (Guests always remain at 0 Gold and 0 customDecks)
   const gold = isGuest ? 0 : currentUser.gold ?? 0;
@@ -280,6 +287,31 @@ export const App: React.FC = () => {
   }, [isGuest, currentUser.id, currentUser.username, customDecks.length, pushNotification]);
 
   // Listen for live 1v1 Multiplayer room events to notify user
+  useEffect(() => {
+    // Sync any local accounts (including tsm81) to Supabase Cloud on startup
+    const roster = getSavedAccountsRoster();
+    for (const acc of roster) {
+      if (!isUnregisteredProfile(acc)) {
+        adminSaveCloudProfile({
+          ...acc,
+          isAdmin: isAdminProfile(acc),
+        });
+      }
+    }
+    fetchGlobalAdminAnnouncement().then((ann) => {
+      if (ann && ann.title) {
+        pushNotification(
+          {
+            kicker: ann.kicker || 'COMUNICADO OFICIAL',
+            title: ann.title,
+            message: ann.message,
+          },
+          false
+        );
+      }
+    });
+  }, [pushNotification]);
+
   useEffect(() => {
     const unsub = subscribeMultiplayerBus((msg) => {
       if (msg.type === 'ROOM_UPSERT' && msg.room?.code) {
@@ -680,6 +712,25 @@ export const App: React.FC = () => {
             <span className="nav-tab-icon">🎓</span>
             <span>Tutorial</span>
           </button>
+
+          {isAdmin && (
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeTab === 'admin' ? 'active' : ''}`}
+              onClick={() => setActiveTab('admin')}
+              style={{
+                borderColor:
+                  activeTab === 'admin'
+                    ? 'rgba(251, 191, 36, 0.9)'
+                    : 'rgba(251, 191, 36, 0.45)',
+                color: '#fde047',
+              }}
+              title="Painel de Administração Exclusivo (tsm81)"
+            >
+              <span className="nav-tab-icon">👑</span>
+              <span>Admin</span>
+            </button>
+          )}
         </nav>
 
         <div className="nav-right-controls">
@@ -733,11 +784,16 @@ export const App: React.FC = () => {
               </span>
             ) : (
               <>
-                <span style={{ fontWeight: 800 }}>{currentUser.username}</span>
+                <span style={{ fontWeight: 800 }}>
+                  {isAdmin ? '👑 ' : ''}
+                  {currentUser.username}
+                </span>
                 <span className="hide-on-mobile" style={{ opacity: 0.78, fontSize: '0.68rem' }}>
                   ({currentUser.eloRating})
                 </span>
-                <span className="nav-account-badge hide-on-mobile">PERFIL</span>
+                <span className="nav-account-badge hide-on-mobile">
+                  {isAdmin ? 'ADMIN' : 'PERFIL'}
+                </span>
               </>
             )}
           </div>
@@ -1264,6 +1320,23 @@ export const App: React.FC = () => {
           />
         )}
 
+        {activeTab === 'admin' && (
+          <AdminDashboardView
+            currentUser={currentUser}
+            onUpdateCurrentUser={(updatedProfile) => {
+              const ensured = ensureStarterDeckForUser(updatedProfile);
+              setCurrentUser(ensured);
+            }}
+            onOpenAccountModal={() =>
+              setAccountModalState({
+                open: true,
+                tab: isUnregisteredProfile(currentUser) ? 'login' : 'profile',
+              })
+            }
+            onNotify={(item) => pushNotification(item, true)}
+          />
+        )}
+
         {showcaseInspectCard && (
           <CardInspectModal
             card={CARDS_BY_ID[showcaseInspectCard.id] ?? showcaseInspectCard}
@@ -1287,6 +1360,7 @@ export const App: React.FC = () => {
             initialTab={accountModalState.tab}
             onClose={() => setAccountModalState((prev) => ({ ...prev, open: false }))}
             onNeedsDeckSetup={() => setActiveTab('deckbuilder')}
+            onOpenAdminPanel={() => setActiveTab('admin')}
           />
         )}
 

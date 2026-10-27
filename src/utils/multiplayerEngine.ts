@@ -119,6 +119,22 @@ export interface SovereignUserProfile {
   extraUnlockedCards?: Record<string, number>;
   defeatedBossIds?: string[];
   arenaWins?: number;
+  isAdmin?: boolean;
+  createdAt?: number;
+  lastActiveAt?: number;
+}
+
+export const MASTER_ADMIN_USERNAMES = ['tsm81'];
+
+export function isAdminProfile(profile?: SovereignUserProfile | null): boolean {
+  if (!profile || profile.id === 'unregistered' || profile.username === 'Sem Conta') {
+    return false;
+  }
+  const cleanName = (profile.username || '').trim().toLowerCase();
+  if (MASTER_ADMIN_USERNAMES.includes(cleanName)) {
+    return true;
+  }
+  return Boolean(profile.isAdmin);
 }
 
 export interface MultiplayerRoom {
@@ -454,12 +470,19 @@ export function ensureStarterDeckForUser(profile: SovereignUserProfile): Soverei
   if (isUnregisteredProfile(profile)) {
     return profile;
   }
+  const shouldBeAdmin = isAdminProfile(profile);
   if (profile.customDecks && profile.customDecks.length > 0) {
+    if (shouldBeAdmin && !profile.isAdmin) {
+      const upgraded = { ...profile, isAdmin: true };
+      setActiveTabUserProfile(upgraded);
+      return upgraded;
+    }
     return profile;
   }
   const defaultDeck = buildDefaultStarterDeck();
   const updated: SovereignUserProfile = {
     ...profile,
+    isAdmin: shouldBeAdmin,
     customDecks: [defaultDeck],
     starterDeckCardIds:
       profile.starterDeckCardIds && profile.starterDeckCardIds.length > 0
@@ -503,6 +526,9 @@ function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
     b: profile.defeatedBossIds ?? [],
     w: profile.arenaWins ?? 0,
     pref: profile.preferredDeckId || '',
+    adm: isAdminProfile(profile),
+    ca: profile.createdAt ?? Date.now(),
+    la: Date.now(),
   });
 }
 
@@ -520,6 +546,9 @@ function decodeCloudTitleMeta(
   defeatedBossIds?: string[];
   arenaWins?: number;
   preferredDeckId?: string;
+  isAdmin?: boolean;
+  createdAt?: number;
+  lastActiveAt?: number;
 } {
   const fallbackTitle = getAvatarHonorificTitle(avatarCardId);
   if (!rawTitle) return { title: fallbackTitle };
@@ -536,6 +565,9 @@ function decodeCloudTitleMeta(
         b?: string[];
         w?: number;
         pref?: string;
+        adm?: boolean;
+        ca?: number;
+        la?: number;
       };
       return {
         title: fallbackTitle,
@@ -548,6 +580,9 @@ function decodeCloudTitleMeta(
         defeatedBossIds: Array.isArray(parsed.b) ? parsed.b : undefined,
         arenaWins: typeof parsed.w === 'number' ? parsed.w : undefined,
         preferredDeckId: parsed.pref || undefined,
+        isAdmin: Boolean(parsed.adm),
+        createdAt: typeof parsed.ca === 'number' ? parsed.ca : undefined,
+        lastActiveAt: typeof parsed.la === 'number' ? parsed.la : undefined,
       };
     } catch {
       return { title: fallbackTitle };
@@ -566,8 +601,9 @@ export function createNewSovereignAccount(params: {
   const cleanName = params.username.trim() || `Soberano_${Math.floor(100 + Math.random() * 900)}`;
   const chosenAvatar = params.avatarCardId || 'neutral_10_valkyra_pentacromatica';
   const defaultDeck = buildDefaultStarterDeck();
+  const now = Date.now();
   const profile: SovereignUserProfile = {
-    id: `sov_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    id: `sov_${now}_${Math.random().toString(36).slice(2, 7)}`,
     username: cleanName,
     email: params.email.trim().toLowerCase(),
     passwordHash: hashPassword(params.password),
@@ -583,6 +619,9 @@ export function createNewSovereignAccount(params: {
     extraUnlockedCards: {},
     defeatedBossIds: [],
     arenaWins: 0,
+    isAdmin: MASTER_ADMIN_USERNAMES.includes(cleanName.toLowerCase()),
+    createdAt: now,
+    lastActiveAt: now,
   };
   const ensured = ensureStarterDeckForUser(profile);
   setActiveTabUserProfile(ensured);
@@ -717,6 +756,8 @@ interface SupabaseProfileRow {
   elo_rating: number;
   pvp_wins: number;
   pvp_losses: number;
+  gold?: number;
+  updated_at?: string;
 }
 
 function hydrateProfileFromRow(
@@ -728,6 +769,9 @@ function hydrateProfileFromRow(
       ? row.avatar_card_id
       : 'neutral_10_valkyra_pentacromatica';
   const meta = decodeCloudTitleMeta(row.title, resolvedAvatar);
+  const updatedMs = row.updated_at ? new Date(row.updated_at).getTime() : undefined;
+  const cleanName = (row.username || '').trim();
+  const isMasterAdmin = MASTER_ADMIN_USERNAMES.includes(cleanName.toLowerCase());
   return {
     id: localMatch?.id ?? `sov_${row.id}`,
     username: row.username,
@@ -739,12 +783,15 @@ function hydrateProfileFromRow(
     pvpWins: row.pvp_wins ?? 0,
     pvpLosses: row.pvp_losses ?? 0,
     preferredDeckId: meta.preferredDeckId || localMatch?.preferredDeckId || 'deck_red_inferno',
-    gold: meta.gold ?? localMatch?.gold ?? 0,
+    gold: meta.gold ?? row.gold ?? localMatch?.gold ?? 0,
     customDecks: meta.customDecks ?? localMatch?.customDecks ?? [],
     starterDeckCardIds: meta.starterDeckCardIds ?? localMatch?.starterDeckCardIds ?? [],
     extraUnlockedCards: meta.extraUnlockedCards ?? localMatch?.extraUnlockedCards ?? {},
     defeatedBossIds: meta.defeatedBossIds ?? localMatch?.defeatedBossIds ?? [],
     arenaWins: meta.arenaWins ?? localMatch?.arenaWins ?? 0,
+    isAdmin: Boolean(isMasterAdmin || meta.isAdmin || localMatch?.isAdmin),
+    createdAt: meta.createdAt ?? localMatch?.createdAt ?? updatedMs,
+    lastActiveAt: meta.lastActiveAt ?? updatedMs ?? localMatch?.lastActiveAt,
   };
 }
 
@@ -776,7 +823,7 @@ export async function authenticateSovereignAccount(
   if (cfg.isConfigured) {
     try {
       const res = await fetch(
-        `${cfg.url}/rest/v1/sovereign_profiles?select=*&limit=100`,
+        `${cfg.url}/rest/v1/sovereign_profiles?select=*&limit=500`,
         {
           headers: getSupabaseHeaders(cfg.anonKey),
         }
@@ -784,6 +831,7 @@ export async function authenticateSovereignAccount(
       if (res.ok) {
         const rows = (await res.json()) as SupabaseProfileRow[];
         const matchedRow = rows.find((r) => {
+          if (!r.username || r.username.startsWith('__')) return false;
           if (r.username.toLowerCase() === cleanLower) return true;
           const meta = decodeCloudTitleMeta(r.title, r.avatar_card_id);
           return Boolean(meta.email && meta.email.toLowerCase() === cleanLower);
@@ -922,6 +970,8 @@ async function syncProfileToSupabaseIfConfigured(profile: SovereignUserProfile):
         elo_rating: profile.eloRating,
         pvp_wins: profile.pvpWins,
         pvp_losses: profile.pvpLosses,
+        gold: profile.gold ?? 0,
+        updated_at: new Date().toISOString(),
       }),
     });
   } catch {
@@ -1300,4 +1350,366 @@ export function generateRoomCode(): string {
     suffix += chars[Math.floor(Math.random() * chars.length)];
   }
   return `PACT-${suffix}`;
+}
+
+// ============================================================================
+// 5. SOVEREIGN ADMINISTRATION & CLOUD TELEMETRY API (FOR ADMIN tsm81)
+// ============================================================================
+
+export interface CloudVisitorSessionEntry {
+  sessionId: string;
+  firstSeenAt: number;
+  lastSeenAt: number;
+  landingUrl: string;
+  gclid?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmTerm?: string;
+  events: string[];
+  registeredUsername?: string;
+  userAgentSummary?: string;
+  screenSize?: string;
+}
+
+export interface GlobalAdminAnnouncement {
+  id: string;
+  kicker: string;
+  title: string;
+  message: string;
+  createdAt: number;
+  author: string;
+}
+
+export async function fetchAllCloudProfilesForAdmin(): Promise<{
+  profiles: SovereignUserProfile[];
+  visitorSessions: CloudVisitorSessionEntry[];
+  announcement: GlobalAdminAnnouncement | null;
+  latencyMs: number;
+  error?: string;
+}> {
+  const cfg = getSupabaseConfig();
+  const localRoster = getSavedAccountsRoster();
+  const startMs = performance.now();
+
+  if (!cfg.isConfigured) {
+    return {
+      profiles: localRoster,
+      visitorSessions: [],
+      announcement: null,
+      latencyMs: 0,
+      error: 'Supabase não configurado.',
+    };
+  }
+
+  try {
+    const res = await fetch(
+      `${cfg.url}/rest/v1/sovereign_profiles?select=*&order=updated_at.desc&limit=500`,
+      {
+        headers: getSupabaseHeaders(cfg.anonKey),
+      }
+    );
+    const latencyMs = Math.round(performance.now() - startMs);
+    if (!res.ok) {
+      return {
+        profiles: localRoster,
+        visitorSessions: [],
+        announcement: null,
+        latencyMs,
+        error: `HTTP ${res.status}`,
+      };
+    }
+
+    const rows = (await res.json()) as SupabaseProfileRow[];
+    const profiles: SovereignUserProfile[] = [];
+    const visitorSessions: CloudVisitorSessionEntry[] = [];
+    let announcement: GlobalAdminAnnouncement | null = null;
+    const seenUsernames = new Set<string>();
+
+    for (const r of rows) {
+      if (!r.username) continue;
+      if (r.username.startsWith('__telemetry_session__:')) {
+        try {
+          const parsed = JSON.parse(r.title) as CloudVisitorSessionEntry;
+          if (parsed && parsed.sessionId) {
+            visitorSessions.push(parsed);
+          }
+        } catch {
+          // Ignore malformed telemetry row
+        }
+        continue;
+      }
+      if (r.username === '__admin_global_announcement__') {
+        try {
+          const parsed = JSON.parse(r.title) as GlobalAdminAnnouncement;
+          if (parsed && parsed.title) {
+            announcement = parsed;
+          }
+        } catch {
+          // Ignore
+        }
+        continue;
+      }
+      if (r.username.startsWith('__')) continue;
+
+      const localMatch = localRoster.find(
+        (a) => a.username.toLowerCase() === r.username.toLowerCase()
+      );
+      const hydrated = hydrateProfileFromRow(r, localMatch);
+      profiles.push(hydrated);
+      seenUsernames.add(r.username.toLowerCase());
+    }
+
+    for (const localAcc of localRoster) {
+      if (!seenUsernames.has(localAcc.username.toLowerCase())) {
+        profiles.push(localAcc);
+      }
+    }
+
+    visitorSessions.sort((a, b) => b.lastSeenAt - a.lastSeenAt);
+
+    return {
+      profiles,
+      visitorSessions,
+      announcement,
+      latencyMs,
+    };
+  } catch (err) {
+    return {
+      profiles: localRoster,
+      visitorSessions: [],
+      announcement: null,
+      latencyMs: Math.round(performance.now() - startMs),
+      error: err instanceof Error ? err.message : 'Erro de conexão com Supabase',
+    };
+  }
+}
+
+export async function adminSaveCloudProfile(
+  profile: SovereignUserProfile
+): Promise<{ ok: boolean; error?: string }> {
+  const cfg = getSupabaseConfig();
+  saveAccountToRoster(profile);
+
+  // Also update active tab profile if it's the same user
+  try {
+    const active = getActiveTabUserProfile();
+    if (active.username.toLowerCase() === profile.username.toLowerCase()) {
+      setActiveTabUserProfile(profile);
+    }
+  } catch {
+    // Ignore
+  }
+
+  if (!cfg.isConfigured) {
+    return { ok: true };
+  }
+
+  try {
+    const res = await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
+      method: 'POST',
+      headers: getSupabaseHeaders(cfg.anonKey, {
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates',
+      }),
+      body: JSON.stringify({
+        username: profile.username,
+        title: encodeCloudTitleMeta(profile),
+        avatar_card_id: profile.avatarCardId,
+        elo_rating: profile.eloRating,
+        pvp_wins: profile.pvpWins,
+        pvp_losses: profile.pvpLosses,
+        gold: profile.gold ?? 0,
+        updated_at: new Date().toISOString(),
+      }),
+    });
+    if (!res.ok) {
+      return { ok: false, error: `HTTP ${res.status}` };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'Falha na gravação em nuvem' };
+  }
+}
+
+export async function adminDeleteCloudProfile(username: string): Promise<boolean> {
+  const cfg = getSupabaseConfig();
+  try {
+    const remaining = getSavedAccountsRoster().filter(
+      (a) => a.username.toLowerCase() !== username.toLowerCase()
+    );
+    localStorage.setItem(STORAGE_KEYS.ACCOUNTS_ROSTER, JSON.stringify(remaining));
+  } catch {
+    // Ignore
+  }
+
+  if (!cfg.isConfigured) return true;
+  try {
+    const res = await fetch(
+      `${cfg.url}/rest/v1/sovereign_profiles?username=eq.${encodeURIComponent(username)}`,
+      {
+        method: 'DELETE',
+        headers: getSupabaseHeaders(cfg.anonKey),
+      }
+    );
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export function buildFullUnlockedCollectionMap(): Record<string, number> {
+  const full: Record<string, number> = {};
+  for (const card of ALL_CARDS) {
+    full[card.id] = card.rarity === 'legendary' ? 1 : 2;
+  }
+  return full;
+}
+
+export async function fetchAllCloudRoomsForAdmin(): Promise<
+  Array<{
+    code: string;
+    status: string;
+    isPublicQueue: boolean;
+    updatedAt: string;
+    room: MultiplayerRoom | null;
+  }>
+> {
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) return [];
+  try {
+    const res = await fetch(
+      `${cfg.url}/rest/v1/multiplayer_rooms?select=code,status,is_public_queue,game_state,updated_at&order=updated_at.desc&limit=100`,
+      {
+        headers: getSupabaseHeaders(cfg.anonKey),
+      }
+    );
+    if (!res.ok) return [];
+    const rows = (await res.json()) as Array<{
+      code: string;
+      status: string;
+      is_public_queue: boolean;
+      updated_at: string;
+      game_state: MultiplayerRoom | null;
+    }>;
+    return rows.map((r) => ({
+      code: r.code,
+      status: r.status,
+      isPublicQueue: r.is_public_queue,
+      updatedAt: r.updated_at,
+      room: r.game_state,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export async function adminDeleteCloudRoom(roomCode: string): Promise<boolean> {
+  roomsMap.delete(roomCode);
+  persistRoomsCache();
+  await deleteRoomFromSupabaseIfConfigured(roomCode, true);
+  return true;
+}
+
+export async function syncVisitorSessionToCloud(session: CloudVisitorSessionEntry): Promise<void> {
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) return;
+  try {
+    await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
+      method: 'POST',
+      headers: getSupabaseHeaders(cfg.anonKey, {
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates',
+      }),
+      body: JSON.stringify({
+        username: `__telemetry_session__:${session.sessionId}`,
+        title: JSON.stringify(session),
+        avatar_card_id: 'neutral_10_valkyra_pentacromatica',
+        elo_rating: session.events.length,
+        pvp_wins: session.registeredUsername ? 1 : 0,
+        pvp_losses: 0,
+        gold: 0,
+        updated_at: new Date().toISOString(),
+      }),
+    });
+  } catch {
+    // Non-blocking
+  }
+}
+
+export async function clearCloudVisitorTelemetryForAdmin(): Promise<boolean> {
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) return false;
+  try {
+    const res = await fetch(
+      `${cfg.url}/rest/v1/sovereign_profiles?username=like.__telemetry_session__:*`,
+      {
+        method: 'DELETE',
+        headers: getSupabaseHeaders(cfg.anonKey),
+      }
+    );
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function publishGlobalAdminAnnouncement(
+  announcement: GlobalAdminAnnouncement | null
+): Promise<boolean> {
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) return false;
+  try {
+    if (!announcement) {
+      const res = await fetch(
+        `${cfg.url}/rest/v1/sovereign_profiles?username=eq.__admin_global_announcement__`,
+        {
+          method: 'DELETE',
+          headers: getSupabaseHeaders(cfg.anonKey),
+        }
+      );
+      return res.ok;
+    }
+    const res = await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
+      method: 'POST',
+      headers: getSupabaseHeaders(cfg.anonKey, {
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates',
+      }),
+      body: JSON.stringify({
+        username: '__admin_global_announcement__',
+        title: JSON.stringify(announcement),
+        avatar_card_id: 'neutral_10_valkyra_pentacromatica',
+        elo_rating: 1200,
+        pvp_wins: 0,
+        pvp_losses: 0,
+        gold: 0,
+        updated_at: new Date().toISOString(),
+      }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function fetchGlobalAdminAnnouncement(): Promise<GlobalAdminAnnouncement | null> {
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) return null;
+  try {
+    const res = await fetch(
+      `${cfg.url}/rest/v1/sovereign_profiles?username=eq.__admin_global_announcement__&select=title&limit=1`,
+      {
+        headers: getSupabaseHeaders(cfg.anonKey),
+      }
+    );
+    if (!res.ok) return null;
+    const rows = (await res.json()) as Array<{ title: string }>;
+    if (rows.length > 0 && rows[0].title) {
+      return JSON.parse(rows[0].title) as GlobalAdminAnnouncement;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }

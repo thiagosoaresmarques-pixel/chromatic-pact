@@ -224,7 +224,7 @@ export function playSfx(type: SfxType): void {
         playTone(ctx, 110, 26, 0.52, 'sine', 0.3, 0);
         playNoiseBurst(ctx, 0.32, 1450, 0.16, 0.06);
 
-        // 2. Dark Souls-style Abyssal Bell Toll & Descending Minor Dirge (0.35s - 2.5s)
+        // 2. Gothic Abyssal Bell Toll & Descending Minor Dirge (0.35s - 2.5s)
         playTone(ctx, 146.83, 144.0, 1.8, 'sine', 0.22, 0.32);     // Deep D3 Bell Fundamental
         playTone(ctx, 440.0, 436.0, 1.4, 'triangle', 0.12, 0.32);  // Bell Overtone
         const dirge = [

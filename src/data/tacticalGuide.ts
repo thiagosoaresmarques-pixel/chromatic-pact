@@ -69,7 +69,7 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
     },
     "playstyleOverview": "Baralho agressivo de pressão constante (100 cartas) que combina 55 feras vulcânicas de Ímpeto com 37 cartas de queima e reação piromântica (27 Feitiços e 10 Reações). O objetivo é abrir brechas na Vanguarda inimiga com dano em área e finalizar com o Sopro devastador dos Dragões Vermelhos.",
     "channelingStrategy": "Turnos 1–3: Canalize um dragão de custo 6–7 duplicado ou uma Relíquia lenta para garantir Afinidade Vermelha nível 2 rapidamente. Turnos 4+: Pare de canalizar magias de queima direta — cada feitiço na mão representa alcance letal contra o Soberano rival.",
-    "positioningAndStackingGuide": "Coloque Artilheiros Kobold e Salamandras na Retaguarda com Alcance. Na Vanguarda, espalhe atacantes de Ímpeto em colunas diferentes para forçar múltiplos bloqueios e ativar Invasão de Coluna (+1⚔️ ATQ) nos slots vazios inimigos.",
+    "positioningAndStackingGuide": "Coloque Batedores Escamados e Salamandras na Retaguarda com Alcance. Na Vanguarda, espalhe atacantes de Ímpeto em colunas diferentes para forçar múltiplos bloqueios e ativar Invasão de Coluna (+1⚔️ ATQ) nos slots vazios inimigos.",
     "phasePlan": {
       "earlyGame": "Estabeleça presença imediata na Vanguarda com Víbora de Brasa Jovem, Batedor Escamado das Brasas, Diabrete de Escória Vulcânica para disputar colunas e ativar Invasão de Território (+1 ATQ).",
       "midGame": "Domine o meio de jogo combinando Fúria de Sangue Vulcânico e Pausar e Pensar um Segundo e Botas Aladas do Mensageiro, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",
@@ -229,7 +229,7 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "averageCost": 2.75
     },
     "playstyleOverview": "Força bruta em estado puro: 80 das 100 cartas são criaturas! Com 9 unidades de Ascensão, Regeneração natural e Atropelar em massa, este baralho sufoca o tabuleiro ocupando todas as 6 colunas e empilhando esquadrões ferozes.",
-    "channelingStrategy": "Como 80% do deck são criaturas, canalize qualquer fera de custo médio redundante nos Turnos 1–4 para garantir uma curva de Essência perfeita até 7⚡ (Hidra, Tiranossauro e Zaratan).",
+    "channelingStrategy": "Como 80% do deck são criaturas, canalize qualquer fera de custo médio redundante nos Turnos 1–4 para garantir uma curva de Essência perfeita até 7⚡ (Hidra, Rex Primordial e Chelonia).",
     "positioningAndStackingGuide": "Empilhe 2 a 3 feras por slot nas colunas onde o inimigo colocou bloqueadores fracos: com Atropelar e Chamado da Selva (+bônus em área), o dano excedente esmaga o Soberano rival diretamente!",
     "phasePlan": {
       "earlyGame": "Estabeleça presença imediata na Vanguarda com Lebre Astral do Tempo Perdido, Emboscador Goblin da Mata, Lobo Atroz da Espinha Gelada para disputar colunas e ativar Invasão de Território (+1 ATQ).",
@@ -383,7 +383,7 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
     },
     "playstyleOverview": "Combina o Congelamento e compra de cartas do Azul com a reanimação e Dreno de Vida do Roxo (50 Criaturas, 28 Feitiços, 10 Reações e 12 Relíquias). O oponente fica preso em uma teia de paralisia e perda contínua de vida.",
     "channelingStrategy": "Garanta 2 Azul e 2 Roxo cedo; canalize criaturas que você pretende reanimar mais tarde ou feitiços situacionais.",
-    "positioningAndStackingGuide": "Use Aparições e Carniçais Reais com Renascer na Vanguarda para absorver pressão enquanto acumula Magos da Ilusão, Tirano Ocular e Lanterna das Almas na Retaguarda.",
+    "positioningAndStackingGuide": "Use Aparições e Carniçais Reais com Renascer na Vanguarda para absorver pressão enquanto acumula Magos da Ilusão, Serafim dos Anéis Abissais e Lanterna das Almas na Retaguarda.",
     "phasePlan": {
       "earlyGame": "Estabeleça presença imediata na Vanguarda com Tritão Guardião dos Recifes, Iniciado da Torre Astral, Garra Decepada Animada para disputar colunas e ativar Invasão de Território (+1 ATQ).",
       "midGame": "Domine o meio de jogo combinando Sentença do Oblívio e Toque da Decomposição e Códice da Ressonância Astral, punindo colunas congestionadas e preparando sua Expansão de Domínio (6/6).",

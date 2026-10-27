@@ -475,7 +475,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           ],
           [
             'Subindo nos barris de piche e alcatrão,',
-            'O Kobold soprou sua brasa de cão:',
+            'O Batedor soprou sua brasa de cão:',
             '— "Se a velha tartaruga precisa de luz,',
             'Eu faço uma chama que o porto conduz!"',
           ],
@@ -673,7 +673,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'purple_165_calice_sangue_imortal',
         domain: 'purple',
-        title: 'Cálice de Obsidiana',
+        title: 'Cálice de Obsidiana do Sangue Imortal',
         subtitle: 'A relíquia talhada em vidro vulcânico negro que precisava beber um raio do solstício para despertar',
         yearLabel: 'Ano 388 D.F.',
         locationLabel: 'Catedral de Obsidiana & Fronteira Solar',
@@ -999,7 +999,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
         kind: 'creature',
         cardId: 'green_86_tarrasque_desperto',
         domain: 'green',
-        title: 'Kragmorth, Tarrasque Desperto',
+        title: 'Kragmorth, O Devorador de Eras',
         subtitle: 'A besta-continente de carapaça impenetrável que marchou rumo ao centro do mundo em 612 D.F.',
         yearLabel: 'Ano 612 D.F.',
         locationLabel: 'Desfiladeiro Central de Vaeloria',
@@ -1007,7 +1007,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           [
             'No Ano Seiscentos e Doze, o chão se partiu,',
             'E a fome mais velha do mundo subiu:',
-            'Kragmorth, o Tarrasque, deixou seu covil,',
+            'Kragmorth, o Colosso, deixou seu covil,',
             'Com dentes de serra e couraça hostil!',
           ],
           [
@@ -1114,7 +1114,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
         locationLabel: 'Desfiladeiro Central de Vaeloria',
         stanzas: [
           [
-            'O Tarrasque bufou um bafejo de enxofre,',
+            'O Colosso bufou um bafejo de enxofre,',
             'Que fez derreter de Solária o cofre;',
             'Com a cauda varreu vinte carros de guerra,',
             'Abrindo uma vala no meio da terra.',
@@ -1175,7 +1175,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
         cardId: 'neutral_35_colosso_adamantina',
         domain: 'neutral',
         title: 'Titã Forjado em Adamantina',
-        subtitle: 'O autômato supremo da Torre dos Cinco Selos que travou a mandíbula inferior do Tarrasque',
+        subtitle: 'O autômato supremo da Torre dos Cinco Selos que travou a mandíbula inferior de Kragmorth',
         yearLabel: 'Ano 612 D.F.',
         locationLabel: 'Desfiladeiro Central de Vaeloria',
         stanzas: [
@@ -1193,7 +1193,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           ],
           [
             'O metal de adamantina rangia ao dobrar,',
-            'Impedindo o Tarrasque de os dentes fechar;',
+            'Impedindo Kragmorth de os dentes fechar;',
             'Varkas gritou: — "A boca está aberta,',
             'Mas falta um golpe que o monstro reverta!"',
           ],
@@ -1225,7 +1225,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
           [
             'Os soldados tremeram ao vê-lo correr,',
             'Achando que vinha a todos moer;',
-            'Mas Tauron-Khor olhou para o Tarrasque maior,',
+            'Mas Tauron-Khor olhou para o monstro maior,',
             'Com o ciúme feroz de quem quer ser o pior!',
           ],
           [
@@ -1259,9 +1259,9 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
             'Que ouviu-se a cem léguas qual grande trovão!',
           ],
           [
-            'O Tarrasque perdeu o equilíbrio dos pés,',
+            'O Colosso perdeu o equilíbrio dos pés,',
             'Tombando de costas no abismo ao revés;',
-            'Kongor e o Colosso saltaram a tempo,',
+            'Kongor e o Autômato saltaram a tempo,',
             'Enquanto a montanha ruía no vento!',
           ],
           [

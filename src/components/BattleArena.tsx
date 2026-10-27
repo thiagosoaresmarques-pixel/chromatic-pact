@@ -4794,7 +4794,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             ))}
           </div>
 
-          {/* Center Sweeping Herald Banner (Dark Souls / Legends of Runeterra Style) */}
+          {/* Center Sweeping Herald Banner (Cinematic Dark Fantasy Herald Style) */}
           <div className="finisher-herald-banner">
             <div className="finisher-herald-Portrait">
               {gameState.winner === 'player' ? (

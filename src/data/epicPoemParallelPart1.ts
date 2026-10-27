@@ -428,7 +428,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'Com asas de opala e coroa de flor,',
             'Lyra pousou sobre o escudo menor;',
             'A Fada Pixie do Pó Estelar',
-            'Olhou para o Kobold sem o desprezar.',
+            'Olhou p’ra o Batedor sem o desprezar.',
           ],
           [
             '— "Escamado das Brasas, que fazes aqui,',
@@ -566,7 +566,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
         stanzas: [
           [
             'A besta estrebuchou, vomitando fumaça,',
-            'Quando a chama do Kobold queimou sua couraça;',
+            'Quando a chama de Zik queimou sua couraça;',
             'Lyra teceu nos olhos do monstro um véu,',
             'E Aldric puxou um raio do céu!',
           ],
@@ -609,7 +609,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           [
             '— "Enquanto os soberanos tardavam na estrada," —',
             'Disse Zephaniel com voz de alvorada;',
-            '— "Um Kobold, uma Pixie e um Mago sem trono',
+            '— "Um Batedor, uma Pixie e um Mago sem trono',
             'Salvaram a pedra do eterno abandono!"',
           ],
           [
@@ -812,7 +812,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
         kind: 'creature',
         cardId: 'red_75_kobold_cronobomba',
         domain: 'red',
-        title: 'Sabotador Escamado de Estopim',
+        title: 'Sabotador Escamado de Roda Dentada',
         subtitle: 'Rik, neto de Zik das Brasas, que rastejou pelo duto incandescente com a cronobomba nas costas',
         yearLabel: 'Ano 164 D.F.',
         locationLabel: 'Cidadela da Caldeira, Pyros',
@@ -861,7 +861,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           ],
           [
             'Com a manopla de ferro no ar segurou',
-            'O pequeno Kobold que do tubo saltou;',
+            'O pequeno escamado que do tubo saltou;',
             'Puxando-o ao peito com força de irmão,',
             'Enquanto ajudava Kaelen no chão!',
           ],
@@ -953,7 +953,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'gold',
         title: 'O Brinde de Óleo e Sangue',
-        subtitle: 'Como o General Varkas condecorou o Kobold, o Operário e o Artífice no silêncio das galerias',
+        subtitle: 'Como o General Varkas condecorou o Sabotador, o Operário e o Artífice no silêncio das galerias',
         yearLabel: 'Ano 164 D.F.',
         locationLabel: 'Cidadela da Caldeira, Pyros',
         stanzas: [

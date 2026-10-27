@@ -21,7 +21,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'neutral_61_fragmento_coroa_prisma',
         domain: 'neutral',
-        title: 'Fragmento da Coroa-Prisma',
+        title: 'Efígie do Coroa-Prisma',
         subtitle: 'A lasca caída do zênite imaculado que revelou aos Primordiais a vulnerabilidade do feixe branco',
         yearLabel: '∞ A.F.',
         locationLabel: 'Fenda Raiz do Monte Axial',
@@ -234,7 +234,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         stanzas: [
           [
             'Ergueu-se das brasas o mestre Kaelen,',
-            'O primeiro dos Azers que a forja contém;',
+            'O primeiro Artífice que a forja contém;',
             'Com sua barba de fogo e seu olho de ouro,',
             'Empunhou o cinzel sobre o grande tesouro.',
           ],
@@ -347,7 +347,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'red_162_cataclismo_estrela_rubra',
         domain: 'red',
-        title: 'Cataclismo da Estrela Rubra',
+        title: 'Cortina de Fogo Abissal',
         subtitle: 'A tempestade de fragmentos incandescentes que se abateu sobre os vales mortais no primeiro dia após a Fratura',
         yearLabel: 'Ano 1 D.F.',
         locationLabel: 'Vale das Cinzas Primeiras',
@@ -425,7 +425,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         locationLabel: 'Desfiladeiro dos Espelhos Quebrados',
         stanzas: [
           [
-            'Era Kaelen, o Azer da barba de chama,',
+            'Era Kaelen, o Anão da barba de chama,',
             'Avançando impávido em meio à lama;',
             'Onde a lava descia querendo matar,',
             'Ele punha o seu peito de bronze a barrar!',
@@ -445,8 +445,8 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
           [
             'Porém o caminho na frente fechou:',
             'Um muro de fumo o horizonte tampou;',
-            'Nem a vista de Aldric, nem o braço do Azer',
-            'Sabiam por onde a coluna descer!',
+            'Nem a vista de Aldric, nem o braço capaz',
+            'Sabiam por onde a coluna descer em paz!',
           ],
         ],
       },
@@ -487,7 +487,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         cardId: 'red_01_kobold',
         domain: 'red',
         title: 'Zik, Batedor Escamado das Brasas',
-        subtitle: 'O pequeno kobold que farejou o vento salgado do mar através das galerias ardentes',
+        subtitle: 'O pequeno batedor escamado que farejou o vento salgado do mar através das galerias ardentes',
         yearLabel: 'Ano 1 D.F.',
         locationLabel: 'Garganta do Fumo Negro',
         stanzas: [
@@ -634,7 +634,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
           [
             'No alto do casco, olhando o horizonte,',
             'Onde ao longe fumegava o partido monte,',
-            'O mago, o ferreiro, o kobold e a fada',
+            'O mago, o ferreiro, o batedor e a fada',
             'Uniram as mãos no final da jornada.',
           ],
           [
@@ -673,7 +673,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'blue_54_planetario_arcano',
         domain: 'blue',
-        title: 'Grande Planetário de Vórtex',
+        title: 'Planetário das Esferas Celestes',
         subtitle: 'A inauguração da máquina de anéis de safira capaz de prever os eclipses e os movimentos de Noctharis',
         yearLabel: 'Ano 240 D.F.',
         locationLabel: 'Cúpula Maior do Pináculo de Vórtex',
@@ -999,7 +999,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'red_29_meteoro_draconico',
         domain: 'red',
-        title: 'Meteoro Dracônico',
+        title: 'Meteoro da Extinção Dracônica',
         subtitle: 'O presságio ardente que cruzou o céu das Planícies Centrais na véspera da maior batalha da Terceira Era',
         yearLabel: 'Ano 411 D.F.',
         locationLabel: 'Céus das Planícies Centrais',

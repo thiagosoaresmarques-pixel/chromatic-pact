@@ -1268,17 +1268,17 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   },
   neutral_116_harshnag_machado_inverno: {
     cardId: 'neutral_116_harshnag_machado_inverno',
-    properTitle: 'Harshnag, O Gigante Quebra-Tronos',
+    properTitle: 'Skrym-Khor, O Gigante Quebra-Tronos',
     yearLabel: 'Ano 740 D.F.',
     eraTitle: 'IVª Era — A Assinatura do Pacto',
     eraId: 'era_4_pacto',
     chronologicalOrder: 74,
     locationLabel: 'Cordilheira da Espinha Cinzenta',
     proseStory:
-      'Veterano das guerras nortenhas que abateu um dragão ancião em duelo singular e tomou seu crânio como elmo, Harshnag recusou-se a jurar vassalagem a qualquer trono elemental. Desde 740 D.F., guarda as passagens da Fronteira Cinzenta com seu machado rúnico colossal.',
+      'Veterano das guerras nortenhas que abateu um dragão ancião em duelo singular e tomou seu crânio como elmo, Skrym-Khor recusou-se a jurar vassalagem a qualquer trono elemental. Desde 740 D.F., guarda as passagens da Fronteira Cinzenta com seu machado rúnico colossal.',
     sungStanza: [
       'Com o crânio de um drago servindo de elmo,',
-      'Harshnag caminha sozinho no ermo;',
+      'Skrym-Khor caminha sozinho no ermo;',
       'Quando o grande machado na rocha bateu,',
       'Toda a linha inimiga de frente cedeu!',
     ],
@@ -1302,14 +1302,14 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   },
   neutral_118_volothamp_cronista_mundos: {
     cardId: 'neutral_118_volothamp_cronista_mundos',
-    properTitle: 'Volothamp, Grande Cronista do Bestiário',
+    properTitle: 'Aldous, Grande Cronista do Bestiário',
     yearLabel: 'Ano 890 D.F.',
     eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
     eraId: 'era_5_tratados',
     chronologicalOrder: 76,
     locationLabel: 'Grande Biblioteca da Fronteira',
     proseStory:
-      'Armado apenas com uma pena encantada, um chapéu emplumado e uma audácia inverossímil, Volothamp percorreu os cinco continentes de Vaeloria catalogando a anatomia e as fraquezas de cada fera, dragão e aberração.',
+      'Armado apenas com uma pena encantada, um chapéu emplumado e uma audácia inverossímil, Aldous percorreu os cinco continentes de Vaeloria catalogando a anatomia e as fraquezas de cada fera, dragão e aberração.',
     sungStanza: [
       'De pena na mão e chapéu emplumado,',
       'Deixou cada monstro em seu livro anotado;',
@@ -1319,19 +1319,19 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   },
   neutral_119_colosso_vonindod_fragmento: {
     cardId: 'neutral_119_colosso_vonindod_fragmento',
-    properTitle: 'Titã Vonindod, O Devastador de Dragões',
+    properTitle: 'Titã Ferrostor, O Devastador de Dragões',
     yearLabel: 'Ano 110 D.F.',
     eraTitle: 'Iª Era — A Grande Fratura',
     eraId: 'era_1_fratura',
     chronologicalOrder: 77,
     locationLabel: 'Cratera de Adamantina (Fronteira Cinzenta)',
     proseStory:
-      'Construído pelos antigos reis-forjadores na Iª Era para abater os dragões primordiais que disputavam os fragmentos do Coroa-Prisma, o Colosso Vonindod ergue-se com arpões de adamantina e um núcleo de fornalha capaz de estilhaçar exércitos.',
+      'Construído pelos antigos reis-forjadores na Iª Era para abater os dragões primordiais que disputavam os fragmentos do Coroa-Prisma, o Colosso Ferrostor ergue-se com arpões de adamantina e um núcleo de fornalha capaz de estilhaçar exércitos.',
     sungStanza: [
       'Forjado em segredo no ferro mais duro,',
       'Ergueu-se o colosso quebrando o ar puro;',
       'Com arpões que derrubam dragões pelo chão,',
-      'Vonindod é o terror de qualquer legião!',
+      'Ferrostor é o terror de qualquer legião!',
     ],
   },
   neutral_120_xanathar_senhor_crime: {
@@ -1353,17 +1353,17 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   },
   neutral_121_vizeran_arquimago_exilado: {
     cardId: 'neutral_121_vizeran_arquimago_exilado',
-    properTitle: 'Vizeran, O Tecelão do Ritual Abissal',
+    properTitle: 'Malphas, O Tecelão do Ritual Abissal',
     yearLabel: 'Ano 1.040 D.F.',
     eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
     eraId: 'era_5_tratados',
     chronologicalOrder: 79,
     locationLabel: 'Torre da Estalagmite Oca',
     proseStory:
-      'Exilado das cortes sombrias por recusar-se a servir aos deuses do Abismo, Vizeran esculpiu sua torre no coração de uma estalagmite colossal, onde tece rituais que jogam soberanos rivais uns contra os outros.',
+      'Exilado das cortes sombrias por recusar-se a servir aos deuses do Abismo, Malphas esculpiu sua torre no coração de uma estalagmite colossal, onde tece rituais que jogam soberanos rivais uns contra os outros.',
     sungStanza: [
       'Na torre de pedra escondida no fundo,',
-      'Vizeran manipula os senhores do mundo;',
+      'Malphas manipula os senhores do mundo;',
       'Enquanto os tiranos se matam no altar,',
       'É ele quem fica no fim a reinar!',
     ],

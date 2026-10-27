@@ -383,7 +383,7 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
         kind: 'creature',
         cardId: 'blue_54_planetario_arcano',
         domain: 'blue',
-        title: 'Grande Planetário de Vórtex',
+        title: 'Planetário das Esferas Celestes',
         subtitle: 'A máquina de anéis de safira e latão que projetou a sombra futura das feras titânicas da Sexta Era',
         yearLabel: 'Ano 1.115 D.F.',
         locationLabel: 'Câmara dos Anéis do Observatório',

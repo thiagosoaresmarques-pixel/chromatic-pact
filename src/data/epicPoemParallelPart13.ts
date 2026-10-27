@@ -338,7 +338,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
     eraNumber: 'Iª ERA • BASTIDORES DO DESERTO DE VIDRO',
     periodLabel: 'Ano 14 D.F. • Deserto Vitrificado de Vórtex',
     title: 'A Tempestade de Vorthurion e a Primeira Torre Astral de Aldric',
-    subtitle: 'Como o sopro de raios de Vorthurion transformou as dunas em agulhas de quartzo em 14 D.F., onde Aldric, Kaelen, Zik, a Esfinge e a Serpe Behir fundaram o primeiro observatório de Vórtex',
+    subtitle: 'Como o sopro de raios de Vorthurion transformou as dunas em agulhas de quartzo em 14 D.F., onde Aldric, Kaelen, Zik, a Esfinge e a Serpe Trovejante fundaram o primeiro observatório de Vórtex',
     accentColor: '#38bdf8',
     bannerImage: '/assets/arena/tabletop_blue.png',
     nodes: [
@@ -487,7 +487,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
         cardId: 'red_01_kobold',
         domain: 'red',
         title: 'Zik, o Batedor Escamado das Brasas',
-        subtitle: 'Em sua primeira missão aos quatorze anos da Fratura, o jovem Zik atrai a Serpe Behir pelas galerias de vidro',
+        subtitle: 'Em sua primeira missão aos quatorze anos da Fratura, o jovem Zik atrai a Serpe Trovejante pelas galerias de vidro',
         yearLabel: 'Ano 14 D.F.',
         locationLabel: 'Deserto Vitrificado de Vórtex',
         stanzas: [
@@ -501,7 +501,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
             'Batendo na panela de ferro e latão,',
             'Gritou para o monstro de azul corpachão:',
             '— "Aqui, lagartixa de patas demais!',
-            'Vem ver como corre um Kobold audaz!"',
+            'Vem ver como corre um Batedor audaz!"',
           ],
           [
             'Correndo por dentro dos tubos de vidro,',
@@ -541,7 +541,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
           ],
           [
             'Correndo em círculo atrás do próprio rabo,',
-            'O Behir gerava a força do cabo;',
+            'A Serpe gerava a força do cabo;',
             'Que subia direto à ponta do monte,',
             'Onde Kaelen soldava o cobre na fonte!',
           ],
@@ -971,7 +971,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
           ],
           [
             'Por isso trezentos anos mais tarde,',
-            'Quando em Seiscentos e Doze o Tarrasque arde,',
+            'Quando em Seiscentos e Doze Kragmorth arde,',
             'Bastou um olhar entre o Anjo e o Gorila',
             'Para lutarem juntos na mesma fila!',
           ],
@@ -999,7 +999,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
         kind: 'creature',
         cardId: 'green_67_tiranossauro_alfa',
         domain: 'green',
-        title: 'Rex Primordial, Tiranossauro Alfa',
+        title: 'Rex Primordial da Cratera Perdida',
         subtitle: 'O colosso sauriano que defendia seu ninho na cratera vulcânica da selva durante a invasão de 489 D.F.',
         yearLabel: 'Ano 489 D.F.',
         locationLabel: 'Vale das Presas Antigas, Veridia',
@@ -1035,7 +1035,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
         kind: 'creature',
         cardId: 'red_64_principe_fogo',
         domain: 'red',
-        title: 'Ignis-Vael, Príncipe do Fogo',
+        title: 'Ignis-Vael, Príncipe do Núcleo Ardente',
         subtitle: 'O arrogante senhor elemental que ordenou queimar a mãe sauriana para domar as crias pelo terror',
         yearLabel: 'Ano 489 D.F.',
         locationLabel: 'Vale das Presas Antigas, Veridia',

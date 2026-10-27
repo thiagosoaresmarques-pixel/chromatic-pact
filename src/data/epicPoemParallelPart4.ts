@@ -12,7 +12,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
     eraNumber: 'IVª ERA • BASTIDORES DA CODIFICAÇÃO DAS RARIDADES',
     periodLabel: 'Ano 740 D.F. • Câmara Horológica da Torre dos Cinco Selos',
     title: 'A Falsificação dos Selos Lendários e o Julgamento de Thaddeus',
-    subtitle: 'Como Mephistar tentou corromper a balança das quatro raridades em 740 D.F., e como Thaddeus, Justinian, o Capitão Garrick e o Tirano Ocular preservaram a lei da Oferenda',
+    subtitle: 'Como Mephistar tentou corromper a balança das quatro raridades em 740 D.F., e como Thaddeus, Justinian, o Capitão Garrick e o Serafim dos Anéis Abissais preservaram a lei da Oferenda',
     accentColor: '#a855f7',
     bannerImage: '/assets/arena/tabletop_purple.png',
     nodes: [
@@ -21,8 +21,8 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
         kind: 'creature',
         cardId: 'purple_06_tirano_ocular',
         domain: 'purple',
-        title: 'Tirano Ocular das Dez Lentes',
-        subtitle: 'O inspetor esférico cujas dez pupilas detectaram a anomalia nos moldes de cunhagem da Torre',
+        title: 'Serafim dos Anéis Abissais',
+        subtitle: 'O inspetor de anéis oculares cujas dez pupilas detectaram a anomalia nos moldes de cunhagem da Torre',
         yearLabel: 'Ano 740 D.F.',
         locationLabel: 'Câmara Horológica da Torre dos Cinco Selos',
         stanzas: [
@@ -40,7 +40,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
           ],
           [
             'Flutuando sobre os moldes em silêncio sepulcral,',
-            'O Tirano Ocular das Dez Lentes viu o mal;',
+            'O Serafim dos Anéis Abissais viu o mal;',
             'Com dez pupilas rubras girando em espiral,',
             'Notou um timbre falso no sinete imperial.',
           ],
@@ -48,7 +48,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
             'Um olho viu a fraude no matriz de chumbo frio,',
             'Outro olho viu na sombra quem puxava aquele fio;',
             'E antes que a fornalha selasse a corrupção,',
-            'O monstro abriu a fenda e denunciou a traição!',
+            'O vigia abriu a fenda e denunciou a traição!',
           ],
         ],
       },
@@ -81,7 +81,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
             'O demônio comprava dos escribas o caminho.',
           ],
           [
-            'Mas quando o Tirano Ocular lançou seu feixe atroz,',
+            'Mas quando o Vigia dos Anéis lançou seu feixe atroz,',
             'Derretendo o chumbo falso ao som de aguda voz,',
             'Mephistar ergueu as asas de fumaça e de carvão,',
             'Disposto a matar todos no subterrâneo salão!',
@@ -210,7 +210,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
           ],
           [
             'Enquanto Justinian aparava o golpe vil,',
-            'E o Tirano Ocular disparava um raio anil,',
+            'E o Vigia dos Anéis disparava um raio anil,',
             'A linha de defesa junto ao cofre vacilou,',
             'Pois a turba traidora sobre o altar se arremessou.',
           ],
@@ -314,7 +314,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
           [
             'Justinian apertou a mão calejada e dura',
             'Do Capitão Garrick sob a grande arquitetura;',
-            'Enquanto o Tirano Ocular gravava nas dez lentes',
+            'Enquanto o Serafim Abissal gravava nas dez lentes',
             'O registro fiel de todas as patentes.',
           ],
           [
@@ -347,7 +347,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
         kind: 'creature',
         cardId: 'purple_116_devorador_mentes',
         domain: 'purple',
-        title: 'Devorador de Mentes Abissal',
+        title: 'Soberano da Coroa Psiônica',
         subtitle: 'O emissário psíquico que sondou os pensamentos de ambas as frotas antes do banquete diplomático',
         yearLabel: 'Ano 965 D.F.',
         locationLabel: 'Tenda de Cristal Negro no Estreito Congelado',
@@ -362,7 +362,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
             'Para unir numa só mesa a mente azul e a morte atroz,',
             'Era preciso um árbitro que ouvisse sem ter voz;',
             'Por isso na tenda erguida sobre o gelo secular,',
-            'O Devorador de Mentes foi chamado a vigiar.',
+            'O Soberano Psiônico foi chamado a vigiar.',
           ],
           [
             'Seus tentáculos roxos ondulavam no ar gelado,',
@@ -443,7 +443,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
             '— "Que a Noite e a Geada formem um único punhal!"',
           ],
           [
-            'O Devorador de Mentes confirmou no mesmo instante',
+            'O Soberano Psiônico confirmou no mesmo instante',
             'Que não havia engodo na proposta fascinante;',
             'Mas antes que o sinete de Safira fosse posto,',
             'Os céus do norte abriram um rugido de desgosto!',
@@ -571,7 +571,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
             'Nem se apagasse nunca no inverno mais rigor.',
           ],
           [
-            'O Devorador de Mentes uniu em telepatia',
+            'O Soberano Psiônico uniu em telepatia',
             'Cada cláusula secreta que o tratado continha:',
             'As cartas de Safira dariam a visão,',
             'E as cartas do Eclipse dariam a exaustão.',
@@ -640,7 +640,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
           [
             'Vladislaus e Carmilla guardaram no brasão',
             'O cristal de Safira junto ao morcego ancião;',
-            'Enquanto o Devorador de Mentes apagava',
+            'Enquanto o Soberano Psiônico apagava',
             'Qualquer rastro na neve de quem ali passava.',
           ],
           [

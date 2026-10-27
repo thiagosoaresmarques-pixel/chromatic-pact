@@ -363,6 +363,34 @@ export function buildDeckTacticalProfile(deck: PrebuiltDeck): DeckTacticalProfil
     });
   }
 
+  // Enrich with top matching combos from TACTICAL_COMBOS_COMPENDIUM
+  const deckCardIdSet = new Set(deck.cardIds);
+  const matchingCompendiumCombos = TACTICAL_COMBOS_COMPENDIUM.map((tc) => {
+    const matchedIds = tc.cardIds.filter((cid) => deckCardIdSet.has(cid));
+    const domainOverlap = tc.domains.filter((d) => deck.domains.includes(d)).length;
+    return {
+      combo: tc,
+      matchedCount: matchedIds.length,
+      domainOverlap,
+    };
+  })
+    .filter((entry) => entry.matchedCount >= 2 || (entry.matchedCount >= 1 && entry.domainOverlap === entry.combo.domains.length))
+    .sort((a, b) => b.matchedCount - a.matchedCount || b.domainOverlap - a.domainOverlap)
+    .slice(0, 3);
+
+  matchingCompendiumCombos.forEach((entry, idx) => {
+    const cCards = entry.combo.cardIds
+      .map((cid) => CARDS_BY_ID[cid])
+      .filter((c): c is CardDefinition => Boolean(c));
+    if (cCards.length >= 2) {
+      signatureCombos.push({
+        title: `${signatureCombos.length + 1}. Combo do Compêndio: ${entry.combo.title} (${entry.combo.archetypeTag})`,
+        cards: cCards,
+        explanation: `${entry.combo.mechanism} Resultado: ${entry.combo.payoff}`,
+      });
+    }
+  });
+
   return {
     deck,
     cards,
@@ -621,7 +649,17 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
   >(initialViewSection ?? (initialOpponentDeckId ? 'matchup_duel' : 'deck_mastery'));
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
   const [comboTierFilter, setComboTierFilter] = useState<ComboColorTier | 'all'>('all');
+  const [comboSearchQuery, setComboSearchQuery] = useState<string>('');
+  const [onlyInDeckCombos, setOnlyInDeckCombos] = useState<boolean>(false);
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
+
+  const comboTierCounts = useMemo(() => {
+    const counts: Record<ComboColorTier, number> = { mono: 0, dual: 0, tri: 0, poly: 0 };
+    for (const c of TACTICAL_COMBOS_COMPENDIUM) {
+      counts[c.tier] = (counts[c.tier] ?? 0) + 1;
+    }
+    return counts;
+  }, []);
 
   const profilesById = useMemo(() => {
     const map: Record<string, DeckTacticalProfile> = {};
@@ -1274,10 +1312,10 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               {(
                 [
                   { id: 'all', label: `Todos (${TACTICAL_COMBOS_COMPENDIUM.length})` },
-                  { id: 'mono', label: '1 Cor • Monocromáticos (12)' },
-                  { id: 'dual', label: '2 Cores • Alianças (10)' },
-                  { id: 'tri', label: '3 Cores • Tríades (4)' },
-                  { id: 'poly', label: '4–5 Cores • Pentacromáticos (2)' },
+                  { id: 'mono', label: `1 Cor • Monocromáticos (${comboTierCounts.mono})` },
+                  { id: 'dual', label: `2 Cores • Alianças (${comboTierCounts.dual})` },
+                  { id: 'tri', label: `3 Cores • Tríades (${comboTierCounts.tri})` },
+                  { id: 'poly', label: `4–5 Cores • Pentacromáticos (${comboTierCounts.poly})` },
                 ] as const
               ).map((tab) => (
                 <button
@@ -1291,35 +1329,76 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               ))}
             </div>
 
-            {/* Domain Filter Orbs */}
-            <div className="db-domain-orbs">
+            {/* Domain Filter Orbs & Search */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <input
+                type="text"
+                value={comboSearchQuery}
+                onChange={(e) => setComboSearchQuery(e.target.value)}
+                placeholder="Buscar combo, carta ou efeito..."
+                style={{
+                  padding: '0.38rem 0.7rem',
+                  borderRadius: '8px',
+                  background: 'rgba(15, 23, 42, 0.85)',
+                  border: '1px solid rgba(212, 175, 55, 0.3)',
+                  color: '#f8fafc',
+                  fontSize: '0.76rem',
+                  minWidth: '210px',
+                }}
+              />
               <button
                 type="button"
-                className={`db-orb-btn orb-all ${domainFilter === 'all' ? 'is-active' : ''}`}
-                onClick={() => setDomainFilter('all')}
+                className={`aaa-pill-tab ${onlyInDeckCombos ? 'is-active' : ''}`}
+                onClick={() => setOnlyInDeckCombos((prev) => !prev)}
+                title="Exibir apenas combos que possuem cartas presentes no Grimório selecionado"
               >
-                Todos
+                ★ No Meu Grimório
               </button>
-              {(['red', 'blue', 'purple', 'green', 'gold', 'neutral'] as Domain[]).map((dom) => (
+              <div className="db-domain-orbs">
                 <button
-                  key={dom}
                   type="button"
-                  className={`db-orb-btn domain-${dom} ${domainFilter === dom ? 'is-active' : ''}`}
-                  onClick={() => setDomainFilter((prev) => (prev === dom ? 'all' : dom))}
+                  className={`db-orb-btn orb-all ${domainFilter === 'all' ? 'is-active' : ''}`}
+                  onClick={() => setDomainFilter('all')}
                 >
-                  <span className="db-orb-dot" style={{ background: DOMAIN_META[dom].color }} />
-                  <span>{DOMAIN_META[dom].shortName}</span>
+                  Todos
                 </button>
-              ))}
+                {(['red', 'blue', 'purple', 'green', 'gold', 'neutral'] as Domain[]).map((dom) => (
+                  <button
+                    key={dom}
+                    type="button"
+                    className={`db-orb-btn domain-${dom} ${domainFilter === dom ? 'is-active' : ''}`}
+                    onClick={() => setDomainFilter((prev) => (prev === dom ? 'all' : dom))}
+                  >
+                    <span className="db-orb-dot" style={{ background: DOMAIN_META[dom].color }} />
+                    <span>{DOMAIN_META[dom].shortName}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           <div className="tg-grid-layout" style={{ alignItems: 'stretch' }}>
-            {TACTICAL_COMBOS_COMPENDIUM.filter(
-              (combo) =>
-                (comboTierFilter === 'all' || combo.tier === comboTierFilter) &&
-                (domainFilter === 'all' || combo.domains.includes(domainFilter))
-            ).map((combo) => {
+            {TACTICAL_COMBOS_COMPENDIUM.filter((combo) => {
+              if (comboTierFilter !== 'all' && combo.tier !== comboTierFilter) return false;
+              if (domainFilter !== 'all' && !combo.domains.includes(domainFilter)) return false;
+              const deckIdSet = new Set(playerProfile.deck.cardIds);
+              if (onlyInDeckCombos && !combo.cardIds.some((cid) => deckIdSet.has(cid))) {
+                return false;
+              }
+              if (comboSearchQuery.trim()) {
+                const q = comboSearchQuery.trim().toLowerCase();
+                const cardNamesMatch = combo.cardIds.some((cid) =>
+                  CARDS_BY_ID[cid]?.name.toLowerCase().includes(q)
+                );
+                const textMatch =
+                  combo.title.toLowerCase().includes(q) ||
+                  combo.archetypeTag.toLowerCase().includes(q) ||
+                  combo.mechanism.toLowerCase().includes(q) ||
+                  combo.payoff.toLowerCase().includes(q);
+                if (!cardNamesMatch && !textMatch) return false;
+              }
+              return true;
+            }).map((combo) => {
               const comboCards = combo.cardIds
                 .map((cid) => CARDS_BY_ID[cid])
                 .filter((c): c is CardDefinition => Boolean(c));

@@ -31,6 +31,7 @@ import {
   fetchGlobalAdminAnnouncement,
   getActiveTabUserProfile,
   getSavedAccountsRoster,
+  GRIMOIRE_REPLACEMENT_GOLD_COST,
   isAdminProfile,
   isUnregisteredProfile,
   MultiplayerRoom,
@@ -116,13 +117,6 @@ export const App: React.FC = () => {
     const merged: Record<string, number> = {};
     for (const cid of baseCardIds) {
       merged[cid] = (merged[cid] ?? 0) + 1;
-    }
-    // Always ensure the neutral domain cards (neutral_01..166) are available in the Sovereign's Grimoire collection
-    for (const card of ALL_CARDS) {
-      if (card.domain === 'neutral') {
-        const copies = card.rarity === 'legendary' ? 1 : 2;
-        merged[card.id] = Math.max(merged[card.id] ?? 0, copies);
-      }
     }
     const extra = currentUser.extraUnlockedCards ?? {};
     for (const [cid, count] of Object.entries(extra)) {
@@ -372,8 +366,8 @@ export const App: React.FC = () => {
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
     if (!isGuest && customDecks.length === 0) {
-      const ensured = ensureStarterDeckForUser(currentUser);
-      setCurrentUser(ensured);
+      setActiveTab('deckbuilder');
+      return;
     }
     setActiveTab('arena');
   };
@@ -509,29 +503,45 @@ export const App: React.FC = () => {
     );
   };
 
-  const handleSaveCustomDeck = (deck: CustomSavedDeck) => {
+  const handleSaveCustomDeck = (
+    deck: CustomSavedDeck,
+    options?: { replaceBaseGrimoire?: boolean }
+  ) => {
     if (isGuest) return;
     trackAdsEvent('save_deck', { deckName: deck.name, cardsCount: deck.cardIds.length });
     const isFirst = customDecks.length === 0;
+    const isReplacingBase = Boolean(options?.replaceBaseGrimoire && !isFirst);
+    if (isReplacingBase && gold < GRIMOIRE_REPLACEMENT_GOLD_COST) {
+      return;
+    }
     const exists = customDecks.some((d) => d.id === deck.id);
-    const nextDecks = exists
+    const nextDecks = isReplacingBase
+      ? [deck]
+      : exists
       ? customDecks.map((d) => (d.id === deck.id ? deck : d))
       : [...customDecks, deck];
     const hasStarterCollection =
       currentUser.starterDeckCardIds && currentUser.starterDeckCardIds.length > 0;
+    const nextGold = isReplacingBase ? Math.max(0, gold - GRIMOIRE_REPLACEMENT_GOLD_COST) : gold;
     updateCurrentUserProgression({
+      gold: nextGold,
       customDecks: nextDecks,
-      starterDeckCardIds: hasStarterCollection ? currentUser.starterDeckCardIds : deck.cardIds,
+      starterDeckCardIds:
+        isReplacingBase || !hasStarterCollection ? deck.cardIds : currentUser.starterDeckCardIds,
       preferredDeckId: deck.id,
     });
     pushNotification({
       kicker: 'GRIMÓRIO CONSAGRADO',
-      title: isFirst
+      title: isReplacingBase
+        ? `Grimório Substituído (-${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro): "${deck.name}"`
+        : isFirst
         ? `1º Grimório Salvo: "${deck.name}" (100 Cartas)`
         : `Grimório Atualizado: "${deck.name}"`,
-      message: isFirst
+      message: isReplacingBase
+        ? `Seu novo Grimório Base de 100 cartas foi consagrado (Saldo: ${nextGold} Ouro) e todas as suas cartas do Relicário continuam na sua coleção!`
+        : isFirst
         ? 'As 100 cartas do seu deck inicial foram adicionadas à sua coleção e todos os modos de combate estão liberados!'
-        : 'Sua lista de 100 cartas foi salva e definida como ativa para combate.',
+        : 'Sua lista de 100 cartas foi salva para combate (suas demais cartas da coleção permanecem disponíveis para troca livre).',
       actionLabel: 'Entrar na Arena',
       actionTarget: 'arena',
     });
@@ -1313,8 +1323,8 @@ export const App: React.FC = () => {
             customDecks={customDecks}
             onLaunchDuel={(playerDeckId, opponentDeckId) => {
               if (!isGuest && customDecks.length === 0) {
-                const ensured = ensureStarterDeckForUser(currentUser);
-                setCurrentUser(ensured);
+                setActiveTab('deckbuilder');
+                return;
               }
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
@@ -1328,6 +1338,7 @@ export const App: React.FC = () => {
           <DeckBuilder
             unlockedCardIds={unlockedCardIds}
             customDecks={customDecks}
+            gold={gold}
             isGuest={isGuest}
             username={currentUser.username}
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}

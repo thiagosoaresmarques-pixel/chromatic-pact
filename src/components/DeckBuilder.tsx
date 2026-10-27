@@ -12,7 +12,10 @@ import {
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
 import { TACTICAL_COMBOS_COMPENDIUM } from '../data/combosCompendium';
-import { MONOCHROMATIC_STARTER_DECKS } from '../utils/multiplayerEngine';
+import {
+  GRIMOIRE_REPLACEMENT_GOLD_COST,
+  MONOCHROMATIC_STARTER_DECKS,
+} from '../utils/multiplayerEngine';
 
 export interface SynergyPackageDef {
   id: string;
@@ -116,7 +119,8 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
 export interface DeckBuilderProps {
   unlockedCardIds: Record<string, number>;
   customDecks: CustomSavedDeck[];
-  onSaveCustomDeck: (deck: CustomSavedDeck) => void;
+  gold?: number;
+  onSaveCustomDeck: (deck: CustomSavedDeck, options?: { replaceBaseGrimoire?: boolean }) => void;
   onDeleteCustomDeck: (deckId: string) => void;
   isGuest?: boolean;
   username?: string;
@@ -200,6 +204,7 @@ const VISIBLE_BATCH_STEP = 60;
 export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   unlockedCardIds,
   customDecks,
+  gold = 0,
   onSaveCustomDeck,
   onDeleteCustomDeck,
   isGuest = false,
@@ -207,12 +212,14 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   onRequireAccount,
 }) => {
   const isFirstDeckSetup = !isGuest && customDecks.length === 0;
-  const hasFreeCatalogSelection = isGuest || isFirstDeckSetup;
+  const [isReplacingGrimoire, setIsReplacingGrimoire] = useState<boolean>(false);
+  const hasFreeCatalogSelection = isGuest || isFirstDeckSetup || isReplacingGrimoire;
   const totalOwnedCopies = useMemo(
     () => Object.values(unlockedCardIds).reduce((acc, v) => acc + (v > 0 ? v : 0), 0),
     [unlockedCardIds]
   );
-  const canModifySavedGrimoire = isGuest || isFirstDeckSetup || totalOwnedCopies > 100;
+  const canModifySavedGrimoire =
+    isGuest || isFirstDeckSetup || isReplacingGrimoire || totalOwnedCopies > 100;
 
   // Filters
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
@@ -224,25 +231,29 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const [synergyFilterId, setSynergyFilterId] = useState<string | 'all' | 'recommended'>('all');
   const [showSynergyPanel, setShowSynergyPanel] = useState<boolean>(false);
 
-  // Active Deck Being Edited
+  // Active Deck Being Edited (starts empty 0/100 when user has no saved Grimoire yet)
   const [deckName, setDeckName] = useState<string>(() =>
-    customDecks[0]?.name ?? `${MONOCHROMATIC_STARTER_DECKS[0]?.name ?? 'Grimório Inicial'}`
+    customDecks[0]?.name ?? (isGuest ? MONOCHROMATIC_STARTER_DECKS[0]?.name ?? 'Grimório Visitante' : 'Meu 1º Grimório')
   );
   const [editingDeckId, setEditingDeckId] = useState<string>(
     () => customDecks[0]?.id ?? `custom_${Date.now()}`
   );
   const [deckCardIds, setDeckCardIds] = useState<string[]>(
-    () => customDecks[0]?.cardIds ?? MONOCHROMATIC_STARTER_DECKS[0]?.cardIds ?? PREBUILT_DECKS[0]?.cardIds ?? []
+    () => customDecks[0]?.cardIds ?? (isGuest ? MONOCHROMATIC_STARTER_DECKS[0]?.cardIds ?? [] : [])
   );
 
-  // Sync active deck when user switches account or saves their first Grimório
+  // Sync active deck when user switches account, resets Grimoire, or saves their first Grimório
   useEffect(() => {
     if (customDecks.length > 0 && !customDecks.some((d) => d.id === editingDeckId)) {
       setDeckName(customDecks[0].name);
       setEditingDeckId(customDecks[0].id);
       setDeckCardIds([...customDecks[0].cardIds]);
+    } else if (!isGuest && customDecks.length === 0 && editingDeckId === 'starter_deck_pyros_steel_100') {
+      setDeckName('Meu 1º Grimório');
+      setEditingDeckId(`custom_${Date.now()}`);
+      setDeckCardIds([]);
     }
-  }, [customDecks, editingDeckId]);
+  }, [customDecks, editingDeckId, isGuest]);
 
   // Modals
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
@@ -655,7 +666,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     (cardId: string) => {
       if (!canModifySavedGrimoire) {
         setSaveBanner(
-          '🔒 Grimório Consagrado! Adquira novas cartas no Relicário (+10 Ouro por vitória) para poder substituir cartas do seu Grimório.'
+          `🔒 Grimório Consagrado (100/100)! Adquira novas cartas no Relicário para trocar cartas livremente ou pague ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro para substituir todo o Grimório.`
         );
         setTimeout(() => setSaveBanner(null), 3500);
         return;
@@ -706,6 +717,37 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     setDeckCardIds(nextIds);
   };
 
+  const handleStartReplaceGrimoire = () => {
+    if (isGuest) {
+      onRequireAccount?.();
+      return;
+    }
+    if (gold < GRIMOIRE_REPLACEMENT_GOLD_COST) {
+      setSaveBanner(
+        `Saldo insuficiente! São necessários ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro para substituir seu Grimório Base (Saldo atual: ${gold} Ouro).`
+      );
+      setTimeout(() => setSaveBanner(null), 3800);
+      return;
+    }
+    setIsReplacingGrimoire(true);
+    setOnlyUnlocked(false);
+    setSaveBanner(
+      `Modo de Substituição ativado! Escolha um novo Grimório de 100 cartas e clique em Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro).`
+    );
+    setTimeout(() => setSaveBanner(null), 3800);
+  };
+
+  const handleCancelReplaceGrimoire = () => {
+    setIsReplacingGrimoire(false);
+    if (customDecks[0]) {
+      setDeckName(customDecks[0].name);
+      setEditingDeckId(customDecks[0].id);
+      setDeckCardIds([...customDecks[0].cardIds]);
+    }
+    setSaveBanner('Substituição cancelada. Seu Grimório atual e seu Ouro foram mantidos.');
+    setTimeout(() => setSaveBanner(null), 3000);
+  };
+
   const handleSaveCurrentDeck = () => {
     if (isGuest) {
       setSaveBanner('Entre ou crie sua Conta de Soberano para salvar seu Grimório de 100 cartas!');
@@ -718,7 +760,14 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       setTimeout(() => setSaveBanner(null), 3500);
       return;
     }
-    if (!isFirstDeckSetup) {
+    if (isReplacingGrimoire && gold < GRIMOIRE_REPLACEMENT_GOLD_COST) {
+      setSaveBanner(
+        `Saldo insuficiente (${gold}/${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro) para confirmar a substituição do Grimório Base.`
+      );
+      setTimeout(() => setSaveBanner(null), 3500);
+      return;
+    }
+    if (!isFirstDeckSetup && !isReplacingGrimoire) {
       for (const [cardId, count] of Object.entries(deckCountsById)) {
         const owned = unlockedCardIds[cardId] ?? 0;
         if (count > owned) {
@@ -731,19 +780,30 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       }
     }
     const cleanName = deckName.trim() || 'Grimório do Soberano';
-    onSaveCustomDeck({
-      id: editingDeckId,
-      name: cleanName,
-      cardIds: deckCardIds,
-    });
-    setSaveBanner(`Grimório "${cleanName}" (100 cartas) salvo! Todos os modos de combate estão liberados.`);
+    const wasReplacing = isReplacingGrimoire;
+    if (wasReplacing) {
+      setIsReplacingGrimoire(false);
+    }
+    onSaveCustomDeck(
+      {
+        id: editingDeckId,
+        name: cleanName,
+        cardIds: deckCardIds,
+      },
+      wasReplacing ? { replaceBaseGrimoire: true } : undefined
+    );
+    setSaveBanner(
+      wasReplacing
+        ? `Novo Grimório Base "${cleanName}" (100 cartas) consagrado por ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro!`
+        : `Grimório "${cleanName}" (100 cartas) salvo! Todos os modos de combate estão liberados.`
+    );
     setTimeout(() => setSaveBanner(null), 3500);
   };
 
   const handleLoadPrebuilt = (prebuiltId: string) => {
-    if (!isGuest && !isFirstDeckSetup) {
+    if (!isGuest && !isFirstDeckSetup && !isReplacingGrimoire) {
       setSaveBanner(
-        '🔒 Seu Grimório inicial já foi consagrado! Novos cards só podem ser integrados mediante aquisições no Relicário.'
+        `🔒 Seu Grimório inicial já foi consagrado! Para escolher outro Grimório completo, use "Substituir Grimório (${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)".`
       );
       setTimeout(() => setSaveBanner(null), 3500);
       return;
@@ -830,7 +890,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               </button>
             )}
           </div>
-        ) : customDecks.length === 0 ? (
+        ) : customDecks.length === 0 || isReplacingGrimoire ? (
           <div
             className="aaa-status-callout is-onboarding"
             style={{
@@ -851,26 +911,43 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             >
               <div>
                 <div className="aaa-callout-kicker">
-                  PASSO INICIAL OBRIGATÓRIO DO SOBERANO{' '}
+                  {isReplacingGrimoire
+                    ? `SUBSTITUIÇÃO DE GRIMÓRIO BASE (${GRIMOIRE_REPLACEMENT_GOLD_COST} OURO)`
+                    : 'PASSO INICIAL OBRIGATÓRIO DO SOBERANO'}{' '}
                   {username ? `• ${username.toUpperCase()}` : ''}
                 </div>
                 <div className="aaa-callout-title">
-                  Monte e Salve seu Grimório de Combate (100 Cartas)
+                  {isReplacingGrimoire
+                    ? 'Escolha seu Novo Grimório de Combate (100 Cartas)'
+                    : 'Monte e Salve seu Grimório de Combate (100 Cartas)'}
                 </div>
               </div>
-              <button
-                type="button"
-                className="aaa-btn aaa-btn-primary"
-                onClick={handleSaveCurrentDeck}
-              >
-                Confirmar & Salvar Grimório ({deckCardIds.length}/100)
-              </button>
+              <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+                {isReplacingGrimoire && (
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary"
+                    onClick={handleCancelReplaceGrimoire}
+                  >
+                    Cancelar
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-primary"
+                  onClick={handleSaveCurrentDeck}
+                >
+                  {isReplacingGrimoire
+                    ? `Confirmar Substituição (-${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro) (${deckCardIds.length}/100)`
+                    : `Confirmar & Salvar Grimório (${deckCardIds.length}/100)`}
+                </button>
+              </div>
             </div>
             <div className="aaa-callout-text">
               Escolha um dos <strong>5 Grimórios Monocromáticos Iniciais</strong> abaixo para usar
-              como está, edite-o livremente com seu acervo inicial ou clique em{' '}
-              <strong>Criar do Zero</strong> (respeitando até 3× Comum/Incomum, 2× Rara e 1×
-              Lendária, máx. 10 Lendas):
+              como está, edite-o livremente ou clique em{' '}
+              <strong>Criar do Zero</strong> (máximo de 100 cartas, respeitando até 3× Comum/Incomum,
+              2× Rara e 1× Lendária, máx. 10 Lendas):
             </div>
             <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
               {MONOCHROMATIC_STARTER_DECKS.map((sd) => {
@@ -900,31 +977,75 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 onClick={() => {
                   setDeckName(username ? `Grimório de ${username}` : 'Meu Grimório');
                   setDeckCardIds([]);
-                  setOnlyUnlocked(true);
+                  setOnlyUnlocked(false);
                 }}
               >
                 Criar do Zero (0/100)
               </button>
             </div>
           </div>
-        ) : !canModifySavedGrimoire ? (
-          <div className="aaa-status-callout" style={{ marginBottom: '0.85rem' }}>
-            <div>
+        ) : (
+          <div
+            className="aaa-status-callout"
+            style={{
+              marginBottom: '0.85rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
+            }}
+          >
+            <div style={{ flex: 1, minWidth: '260px' }}>
               <div className="aaa-callout-kicker">
-                GRIMÓRIO CONSAGRADO (100/100 CARTAS){' '}
+                {totalOwnedCopies > 100
+                  ? `COLEÇÃO DO SOBERANO: ${totalOwnedCopies} CARTAS (${Math.max(
+                      0,
+                      totalOwnedCopies - deckCardIds.length
+                    )} NA RESERVA)`
+                  : 'GRIMÓRIO CONSAGRADO (100/100 CARTAS)'}{' '}
                 {username ? `• ${username.toUpperCase()}` : ''}
               </div>
               <div className="aaa-callout-title">
-                Alterações no Grimório apenas mediante aquisições no Relicário
+                {totalOwnedCopies > 100
+                  ? 'Troca Livre entre Coleção e Grimório de Combate (Limite de 100 Cartas)'
+                  : 'Expanda sua Coleção no Relicário ou Substitua seu Grimório Base'}
               </div>
               <div className="aaa-callout-text">
-                Seu Grimório inicial de 100 cartas está selado. Conquiste vitórias (+10 Ouro por
-                vitória) e abra pacotes no <strong>Relicário</strong> para desbloquear novas cartas
-                e poder substituí-las no seu Grimório.
+                {totalOwnedCopies > 100 ? (
+                  <>
+                    As cartas obtidas no <strong>Relicário</strong> somam-se à sua coleção ({totalOwnedCopies} cartas).
+                    Seu <strong>Grimório de Combate</strong> permanece limitado a <strong>100 cartas</strong>: você pode
+                    tirar (<strong>−</strong>) e inserir (<strong>+</strong>) livremente qualquer carta da sua coleção!
+                  </>
+                ) : (
+                  <>
+                    Seu Grimório inicial de 100 cartas está ativo. Abra pacotes no{' '}
+                    <strong>Relicário</strong> (+10 Ouro por vitória) para ganhar novas cartas e
+                    trocá-las livremente mantendo o limite de 100 cartas em combate, ou substitua
+                    todo o seu Grimório Base por <strong>{GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro</strong>.
+                  </>
+                )}
               </div>
             </div>
+            <button
+              type="button"
+              className="aaa-btn aaa-btn-secondary"
+              onClick={handleStartReplaceGrimoire}
+              title={`Pague ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro para escolher um novo Grimório Base de 100 cartas (mantendo todas as suas cartas do Relicário)`}
+              style={{
+                borderColor:
+                  gold >= GRIMOIRE_REPLACEMENT_GOLD_COST
+                    ? 'rgba(250, 204, 21, 0.75)'
+                    : 'rgba(148, 163, 184, 0.35)',
+                color: gold >= GRIMOIRE_REPLACEMENT_GOLD_COST ? '#fde047' : '#cbd5e1',
+                flexShrink: 0,
+              }}
+            >
+              🔄 Substituir Grimório ({GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)
+            </button>
           </div>
-        ) : null}
+        )}
 
         {/* SINGLE ULTRA-CLEAN STICKY TOOLBAR */}
         <div className="db-modern-toolbar">
@@ -1342,7 +1463,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             </div>
           </div>
 
-          {(isGuest || isFirstDeckSetup) && (
+          {(isGuest || isFirstDeckSetup || isReplacingGrimoire) && (
             <select
               className="db-prebuilt-select"
               value=""
@@ -1414,7 +1535,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             >
               Completar
             </button>
-            {(isGuest || isFirstDeckSetup) && (
+            {(isGuest || isFirstDeckSetup || isReplacingGrimoire) && (
               <button
                 type="button"
                 className="db-action-btn subtle-danger"

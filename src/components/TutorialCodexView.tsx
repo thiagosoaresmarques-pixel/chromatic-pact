@@ -218,34 +218,34 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   },
   {
     stepNumber: 7,
-    badge: 'CONSTRUÇÃO DE GRIMÓRIOS',
-    title: 'Grimórios de 100 Cartas & Raridades',
-    subtitle: 'Estrutura competitiva com limite de cópias escalonado (3× / 2× / 1×) e 996 cartas.',
+    badge: 'GRIMÓRIO, COLEÇÃO & RELICÁRIO',
+    title: 'Grimório Inicial Livre, Relicário & Limite de 100',
+    subtitle: 'Escolha livre do seu 1º Grimório (sem cartas impostas), expansão no Relicário e troca por 500 de Ouro.',
     cardId: 'blue_06_dragao_azul',
     summary:
-      'Os 30 Grimórios oficiais e os baralhos criados na Forja utilizam 100 cartas com regras de cópias por raridade para equilibrar consistência e variedade.',
+      'Todo novo Soberano tem o direito de escolher livremente seu 1º Grimório de 100 cartas entre as 996 cartas do jogo (sem receber cartas Vermelhas ou Neutras impostas automaticamente). As cartas obtidas no Relicário ampliam sua coleção total, mantendo o Grimório de Combate sempre cravado em 100 cartas.',
     keyPoints: [
       {
-        tag: 'PIRÂMIDE 3×/2×/1×',
-        title: 'Limite por Raridade',
+        tag: 'ESCOLHA LIVRE • 3×/2×/1×',
+        title: '1º Grimório Sem Imposição',
         detail:
-          'Comuns e Incomuns permitem até 3 cópias; Raras permitem até 2 cópias; Lendárias são limitadas a 1 cópia única (máximo de 10 Lendárias por grimório).',
+          'Escolha 1 dos 5 Grimórios Monocromáticos Iniciais ou monte seu próprio deck de 100 cartas do zero respeitando os limites: até 3× Comum/Incomum, 2× Rara e 1× Lendária (máx. 10 Lendárias).',
       },
       {
-        tag: 'IDENTIDADE',
-        title: 'Assimetria dos 5 Domínios',
+        tag: 'RELICÁRIO • RESERVA LIVRE',
+        title: 'Coleção Expandida vs. 100 em Combate',
         detail:
-          'Cada Domínio possui proporções próprias: Verde foca em criaturas, Azul em magias e reações, Dourado em relíquias, Vermelho em agressão e Roxo na Cripta.',
+          'Cartas abertas no Relicário (+10 Ouro por vitória; 160 Ouro inicial) somam-se à sua coleção total. Seu Grimório de Combate fica sempre limitado a 100 cartas: as excedentes ficam na reserva e você pode tirar (−) e inserir (+) livremente.',
       },
       {
-        tag: 'CUSTOMIZAÇÃO',
-        title: 'Forja de Grimórios & Pacotes',
+        tag: '500 OURO • REFORJA BASE',
+        title: 'Substituir Grimório Base',
         detail:
-          'Abra pacotes no Santuário para expandir sua coleção ou edite qualquer lista na Forja de Grimórios com validação automática de regras.',
+          'Na Forja de Grimórios, você pode pagar 500 de Ouro a qualquer momento ("🔄 Substituir Grimório") para escolher um novo Grimório Base de 100 cartas, preservando 100% das cartas já ganhas no Relicário.',
       },
     ],
     proTip:
-      'Na Forja de Grimórios, mantenha cerca de 40% das suas cartas com custo entre 1 e 3 de Essência para garantir presença de mesa desde o Turno 1.',
+      'Use os botões − e + na Forja de Grimórios para testar novas cartas abertas no Relicário dentro das suas 100 vagas de combate sem perder nenhuma carta da sua coleção.',
   },
   {
     stepNumber: 8,
@@ -277,6 +277,37 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     ],
     proTip:
       'Seu Nickname é único e permanente no ranking de Reputação (calculado pela fórmula de xadrez/tênis conforme a Reputação do adversário), mas você pode alterar seu Avatar, Grimório favorito e Senha a qualquer momento na aba Meu Perfil.',
+  },
+  {
+    stepNumber: 9,
+    badge: 'SINERGIAS & COMPÊNDIO TÁTICO',
+    title: 'Combos de 1 a 5 Cores & Reações em Cadeia',
+    subtitle: 'Domine os 62 combos catalogados no Oráculo: Monocromáticos, Alianças, Tríades e Pentacromáticos.',
+    cardId: 'gold_166_trono_soberano_sol',
+    summary:
+      'As 996 cartas foram desenhadas com sinergias cruzadas entre Criaturas Ascendidas (★), Relíquias de Retaguarda, Feitiços Cataclísmicos e Emboscadas Ocultas. Consulte o Compêndio de Combos no Oráculo de Guerra para ver quais combinações já estão ativas no seu Grimório.',
+    keyPoints: [
+      {
+        tag: '1 A 2 CORES',
+        title: 'Motores Puros & As 10 Alianças',
+        detail:
+          'Combos de 1 Cor atingem 6/6 de Afinidade rapidamente para a Expansão de Domínio, enquanto as 10 Alianças de 2 Cores unem forças complementares (ex.: Rampa Verde + Trava Glacial Azul, ou Fênix Rubra + Reanimação Umbral).',
+      },
+      {
+        tag: '3 CORES • 10 TRÍADES',
+        title: 'As 10 Tríades Elementais',
+        detail:
+          'Canalizando 1 carta por turno nos 3 primeiros turnos ([C]), você habilita as 10 Tríades de 3 Cores — combinando geração de Essência, controle em área e finalizadores lendários de múltiplos Domínios.',
+      },
+      {
+        tag: '4–5 CORES • TRONOS #166',
+        title: 'Convergência Pentacromática',
+        detail:
+          'Relíquias Neutras de 0 Afinidade (Pedra Filosofal, Graal do Prisma) sustentam baralhos de 4–5 cores, permitindo reunir os Cinco Tronos Soberanos (#166) ou a Revoada da Imperatriz Pentacromática.',
+      },
+    ],
+    proTip:
+      'Abra o "Oráculo de Guerra → Compêndio de Combos" e ative o filtro "★ No Meu Grimório" para descobrir instantaneamente todos os combos compatíveis com as cartas que você possui!',
   },
 ];
 
@@ -1286,6 +1317,21 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 key: 'Conclave 1×1',
                 title: 'Fila Rápida & Código PACT',
                 desc: 'No menu Conclave Online, jogue partidas ranqueadas na Fila Rápida 1×1 ou compartilhe um código PACT-XXXX para duelos diretos.',
+              },
+              {
+                key: 'Forja • 100 Cartas',
+                title: 'Grimório Inicial & Troca Livre (−/+)',
+                desc: 'Escolha livremente seu 1º Grimório de 100 cartas (3× Comum/Incomum, 2× Rara, 1× Lendária, máx. 10 Lendárias) e alterne cartas da sua reserva quando quiser.',
+              },
+              {
+                key: 'Relicário & 500 Ouro',
+                title: 'Expansão de Acervo & Substituir Base',
+                desc: 'Cartas do Relicário somam-se à sua coleção total (mantendo 100 no Grimório de Combate). Por 500 de Ouro, substitua o Grimório Base preservando suas cartas do Relicário.',
+              },
+              {
+                key: 'Oráculo • 62 Combos',
+                title: 'Compêndio de Combos (1 a 5 Cores)',
+                desc: 'No Oráculo de Guerra, consulte os 62 combos táticos (Monocromáticos, Alianças, Tríades e Pentacromáticos) e filtre os que já estão no seu Grimório.',
               },
             ].map((sc, i) => (
               <div

@@ -277,7 +277,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   const [editNewPassword, setEditNewPassword] = useState<string>('');
   const [editAvatarId, setEditAvatarId] = useState<string>(currentUser.avatarCardId);
   const [editDeckId, setEditDeckId] = useState<string>(
-    currentUser.preferredDeckId || PREBUILT_DECKS[0]?.id || ''
+    currentUser.preferredDeckId || customDecks[0]?.id || ''
   );
   const [profileSavedMsg, setProfileSavedMsg] = useState<string | null>(null);
 
@@ -286,8 +286,8 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     setEditEmail(currentUser.email || '');
     setEditNewPassword('');
     setEditAvatarId(currentUser.avatarCardId);
-    setEditDeckId(currentUser.preferredDeckId || PREBUILT_DECKS[0]?.id || '');
-  }, [currentUser]);
+    setEditDeckId(currentUser.preferredDeckId || customDecks[0]?.id || '');
+  }, [currentUser, customDecks]);
 
   // 2. Login by Nickname/Email + Password state
   const [loginNickname, setLoginNickname] = useState<string>('');
@@ -312,17 +312,11 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
 
   const allAvailableDecks = useMemo(
     () =>
-      customDecks.length > 0
-        ? customDecks.map((cd) => ({
-            id: cd.id,
-            name: `★ ${cd.name}`,
-            subtitle: 'Grimório Autoral (100 Cartas)',
-          }))
-        : MONOCHROMATIC_STARTER_DECKS.map((d) => ({
-            id: d.id,
-            name: d.name,
-            subtitle: d.subtitle,
-          })),
+      customDecks.map((cd) => ({
+        id: cd.id,
+        name: `★ ${cd.name}`,
+        subtitle: 'Grimório Autoral (100 Cartas)',
+      })),
     [customDecks]
   );
 
@@ -672,18 +666,38 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                   <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
                     GRIMÓRIO PREFERIDO PARA DUELOS
                   </label>
-                  <select
-                    className="myth-select-compact"
-                    value={editDeckId}
-                    onChange={(e) => setEditDeckId(e.target.value)}
-                    style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
-                  >
-                    {allAvailableDecks.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.name} — {d.subtitle}
-                      </option>
-                    ))}
-                  </select>
+                  {allAvailableDecks.length > 0 ? (
+                    <select
+                      className="myth-select-compact"
+                      value={editDeckId}
+                      onChange={(e) => setEditDeckId(e.target.value)}
+                      style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+                    >
+                      {allAvailableDecks.map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.name} — {d.subtitle}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <button
+                      type="button"
+                      className="aaa-btn aaa-btn-secondary"
+                      style={{
+                        width: '100%',
+                        height: '38px',
+                        fontSize: '0.75rem',
+                        color: '#fde047',
+                        borderColor: 'rgba(250, 204, 21, 0.55)',
+                      }}
+                      onClick={() => {
+                        onClose();
+                        onNeedsDeckSetup?.();
+                      }}
+                    >
+                      ⚠️ Sem Grimório (0/100) — Escolher Meu 1º Grimório →
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -1251,14 +1265,16 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             coverCardId: cd.cardIds[0] ?? 'neutral_10_valkyra_pentacromatica',
             cardIds: cd.cardIds,
           }))
-        : MONOCHROMATIC_STARTER_DECKS.map((d) => ({
+        : isGuest
+        ? MONOCHROMATIC_STARTER_DECKS.map((d) => ({
             id: d.id,
             name: d.name,
             subtitle: d.subtitle,
             coverCardId: d.coverCardId,
             cardIds: d.cardIds,
-          })),
-    [customDecks]
+          }))
+        : [],
+    [customDecks, isGuest]
   );
 
   const selectedDeckObj = useMemo(

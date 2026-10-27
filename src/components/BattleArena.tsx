@@ -71,45 +71,51 @@ import { TutorialCodexView } from './TutorialCodexView';
 const ARENA_COACHMARK_STEPS = [
   {
     step: 1,
-    badge: 'PASSO 1 DE 7 • TURNOS ALTERNADOS & BARRAS SIMÉTRICAS',
+    badge: 'PASSO 1 DE 8 • TURNOS ALTERNADOS & BARRAS SIMÉTRICAS',
     title: 'Cada Jogador Joga no Seu Turno (40❤️, 3⚡ Inicial & 7 Cartas)',
-    text: 'Em Chromatic Pact, cada Soberano joga no seu próprio turno! Você inicia com 40❤️ de Vida, 3⚡ de Essência Máxima e 7 cartas (com Mulligan inicial). Use as barras simétricas no topo (▾ Oponente) e na base (▴ Jogador) para inspecionar Terrenos Canalizados, Afinidades e Cripta, e passe o mouse ou clique em "🃏 MÃO" para abrir ou fixar suas cartas!',
+    text: 'Em Chromatic Pact, cada Soberano joga no seu próprio turno! Você inicia com 40❤️ de Vida, 3⚡ de Essência Máxima e 7 cartas (com Mulligan inicial de 30s e 60s por turno). Use as barras simétricas no topo (▾ Oponente) e na base (▴ Jogador) para inspecionar Terrenos Canalizados, Afinidades e Cripta, e passe o mouse ou clique em "🃏 MÃO" para abrir ou fixar suas cartas!',
   },
   {
     step: 2,
-    badge: 'PASSO 2 DE 7 • PROGRESSÃO DE ESSÊNCIA, CANALIZAR & SACRIFICAR [C]',
+    badge: 'PASSO 2 DE 8 • PROGRESSÃO DE ESSÊNCIA, CANALIZAR & SACRIFICAR [C]',
     title: 'Essência Máxima Automática (+1⚡/Turno) & Canalizar 1 Carta (+1 Afinidade & Compra 1)',
     text: 'A cada turno, sua Essência Máxima sobe automaticamente em +1⚡ (até 10⚡) e sua Afinidade cresce +1! Além disso, 1x por turno, selecione uma carta da mão e pressione [C] para Canalizá-la em seus Terrenos: você ganha +1 de Afinidade Elemental extra daquela cor e compra +1 carta substituta! Precisa de mana extra imediata? Você pode Sacrificar/Queimar [C] cartas adicionais por +1⚡ temporário neste turno e +1 Afinidade.',
   },
   {
     step: 3,
-    badge: 'PASSO 3 DE 7 • TABULEIRO 6×4, VANGUARDA [V] & RETAGUARDA [R]',
+    badge: 'PASSO 3 DE 8 • TABULEIRO 6×4, VANGUARDA [V] & RETAGUARDA [R]',
     title: 'Invocar Livremente, Invasão (+1⚔️), Cobertura (+1⚔️) & Falange (+1🛡️)',
     text: 'No seu turno, invoque Criaturas na Vanguarda [V] ou Retaguarda [R], instale Relíquias [R], arme Emboscadas/Reações [R] ou lance Feitiços imediatamente. Unidades na Vanguarda bloqueiam ataques terrestres contra sua Retaguarda, ganham +1⚔️ ATQ de Invasão se a Vanguarda inimiga da mesma coluna estiver vazia, +1⚔️ ATQ de Cobertura quando apoiadas pela Retaguarda e +1🛡️ Armadura de Falange ao lado de um Guardião!',
   },
   {
     step: 4,
-    badge: 'PASSO 4 DE 7 • COMBATE IMEDIATO & PALAVRAS-CHAVE',
+    badge: 'PASSO 4 DE 8 • COMBATE IMEDIATO & PALAVRAS-CHAVE',
     title: 'Atacar no Seu Turno, Ímpeto & Botão "⚔️ ATACAR"',
     text: 'Criaturas recém-invocadas aguardam 1 turno para atacar, exceto unidades com ⚡ Ímpeto, que atacam imediatamente no turno em que entram! Para atacar, clique em uma criatura pronta e depois no alvo inimigo (ou no Soberano rival se a coluna estiver livre), ou clique em "⚔️ ATACAR" na barra inferior para disparar os ataques automaticamente.',
   },
   {
     step: 5,
-    badge: 'PASSO 5 DE 7 • DOUTRINA 3x POR SLOT',
+    badge: 'PASSO 5 DE 8 • DOUTRINA 3x POR SLOT',
     title: 'Empilhamento de até 3 Unidades por Slot vs. Dano em Área',
     text: 'Cada slot da grade 6×4 comporta até 3 unidades empilhadas! Empilhe 1 Guardião + 2 Atacantes/Suportes contra inimigos de alvo único — mas espalhe 1 unidade por coluna contra Dragões com Sopro ou feras com Atropelar, que atingem todas as 3 cartas do slot!',
   },
   {
     step: 6,
-    badge: 'PASSO 6 DE 7 • EXPANSÃO DE DOMÍNIO (⛩️ 6/6 AFINIDADE, 3⚡)',
+    badge: 'PASSO 6 DE 8 • EXPANSÃO DE DOMÍNIO (⛩️ 6/6 AFINIDADE, 3⚡)',
     title: 'Transformação Visual & Prática da Mesa de Madeira',
     text: 'A batalha ocorre sobre a mesa de guerra de madeira em tela cheia. Acumule Afinidade Elemental para destravar cartas fortes e, ao atingir 6/6 de Afinidade e 3⚡, clique em "⛩️ 6/6" na barra inferior para invocar sua Expansão de Domínio por 3 rodadas — transformando toda a mesa de madeira no santuário visual e prático do seu Domínio com Potencial 120% e Acerto Garantido!',
   },
   {
     step: 7,
-    badge: 'PASSO 7 DE 7 • RITUAIS DO SOBERANO & PASSAR TURNO',
+    badge: 'PASSO 7 DE 8 • RITUAIS DO SOBERANO & PASSAR TURNO',
     title: 'Poder do Soberano (🔥 2⚡), Pacto de Sangue (🩸 +1⚡) & [ESPAÇO]',
     text: 'Na barra inferior, ative o Poder do Soberano (🔥 2⚡), faça o Pacto de Sangue (🩸 +1⚡ pagando 3❤️), Ascenda campeões (★) ou mova unidades entre Vanguarda e Retaguarda (⇄). Quando concluir suas jogadas e ataques, clique em "⏭️ PASSAR TURNO [ESPAÇO]" para passar a vez ao oponente!',
+  },
+  {
+    step: 8,
+    badge: 'PASSO 8 DE 8 • COMBOS (1–5 CORES), RELICÁRIO & GRIMÓRIO DE 100 CARTAS',
+    title: '62 Combos no Oráculo, Troca Livre na Reserva & Substituição por 500 Ouro',
+    text: 'Seu Grimório de Combate tem sempre 100 cartas (3× Comum/Incomum, 2× Rara, 1× Lendária, máx. 10 Lendárias). Cartas ganhas no Relicário (+10🪙 por vitória) aumentam sua coleção total e podem ser trocadas (−/+) livremente; por 500🪙 você também pode substituir todo o Grimório Base. Consulte o Oráculo Estratégico para explorar os 62 Combos de 1 a 5 cores!',
   },
 ];
 

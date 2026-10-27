@@ -5,6 +5,7 @@ import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
 
 export const VICTORY_GOLD_REWARD = 10;
 export const STARTER_GOLD = 160;
+export const GRIMOIRE_REPLACEMENT_GOLD_COST = 500;
 
 export const MONOCHROMATIC_STARTER_DECKS: PrebuiltDeck[] = PREBUILT_DECKS.filter(
   (d) => d.domains.length === 1
@@ -227,14 +228,45 @@ const STORAGE_KEYS = {
   ROOMS_CACHE: 'chromatic_pact_mp_rooms_v2',
   SUPABASE_URL: 'chromatic_pact_supabase_url_v1',
   SUPABASE_KEY: 'chromatic_pact_supabase_key_v1',
+  GRIMOIRE_RESET_V4: 'chromatic_pact_grimoire_reset_v4',
 };
 
-// Purge legacy v1 pre-seeded profiles from browser storage
+// Purge legacy v1 pre-seeded profiles and run one-time Grimoire Reset v4 for existing accounts (including tsm81)
 if (typeof window !== 'undefined') {
   try {
     localStorage.removeItem('chromatic_pact_accounts_roster_v1');
     localStorage.removeItem('chromatic_pact_mp_rooms_v1');
     sessionStorage.removeItem('chromatic_pact_tab_user_v1');
+
+    if (localStorage.getItem(STORAGE_KEYS.GRIMOIRE_RESET_V4) !== 'done') {
+      const rawRoster = localStorage.getItem(STORAGE_KEYS.ACCOUNTS_ROSTER);
+      if (rawRoster) {
+        const parsedRoster = JSON.parse(rawRoster) as SovereignUserProfile[];
+        if (Array.isArray(parsedRoster)) {
+          const resetRoster = parsedRoster.map((acc) => ({
+            ...acc,
+            customDecks: [],
+            starterDeckCardIds: [],
+            preferredDeckId: '',
+          }));
+          localStorage.setItem(STORAGE_KEYS.ACCOUNTS_ROSTER, JSON.stringify(resetRoster));
+        }
+      }
+      const rawTab = sessionStorage.getItem(STORAGE_KEYS.TAB_ACTIVE_USER);
+      if (rawTab) {
+        const parsedTab = JSON.parse(rawTab) as SovereignUserProfile;
+        if (parsedTab && typeof parsedTab === 'object') {
+          const resetTab: SovereignUserProfile = {
+            ...parsedTab,
+            customDecks: [],
+            starterDeckCardIds: [],
+            preferredDeckId: '',
+          };
+          sessionStorage.setItem(STORAGE_KEYS.TAB_ACTIVE_USER, JSON.stringify(resetTab));
+        }
+      }
+      localStorage.setItem(STORAGE_KEYS.GRIMOIRE_RESET_V4, 'done');
+    }
   } catch {
     // Ignore
   }
@@ -363,7 +395,22 @@ export function getSavedAccountsRoster(): SovereignUserProfile[] {
     if (raw) {
       const parsed = JSON.parse(raw) as SovereignUserProfile[];
       if (Array.isArray(parsed)) {
-        return parsed.filter((a) => !isUnregisteredProfile(a));
+        let anyCleaned = false;
+        const cleanedRoster = parsed
+          .filter((a) => !isUnregisteredProfile(a))
+          .map((acc) => {
+            const { cleaned, wasModified } = stripImposedStarterGrimoire(acc);
+            if (wasModified) anyCleaned = true;
+            return cleaned;
+          });
+        if (anyCleaned) {
+          try {
+            localStorage.setItem(STORAGE_KEYS.ACCOUNTS_ROSTER, JSON.stringify(cleanedRoster));
+          } catch {
+            // Ignore
+          }
+        }
+        return cleanedRoster;
       }
     }
   } catch {
@@ -469,36 +516,85 @@ export function setActiveTabUserProfile(profile: SovereignUserProfile): void {
   saveAccountToRoster(profile);
 }
 
+const IMPOSED_PYROS_DECK_SIGNATURE = buildDefaultStarterDeck().cardIds.join(',');
+
+export function isImposedPyrosStarterDeck(
+  deck?: { id?: string; name?: string; cardIds?: string[] } | null
+): boolean {
+  if (!deck) return false;
+  if (deck.id === 'starter_deck_pyros_steel_100') return true;
+  if (deck.name && deck.name.includes('Pacto Inicial de Pyros & Aço')) return true;
+  if (
+    Array.isArray(deck.cardIds) &&
+    deck.cardIds.length === 100 &&
+    deck.cardIds.join(',') === IMPOSED_PYROS_DECK_SIGNATURE
+  ) {
+    return true;
+  }
+  return false;
+}
+
+export function stripImposedStarterGrimoire(profile: SovereignUserProfile): {
+  cleaned: SovereignUserProfile;
+  wasModified: boolean;
+} {
+  if (isUnregisteredProfile(profile)) {
+    return { cleaned: profile, wasModified: false };
+  }
+  const origDecks = profile.customDecks ?? [];
+  const filteredDecks = origDecks.filter((d) => !isImposedPyrosStarterDeck(d));
+  const hadImposedDeck = filteredDecks.length !== origDecks.length;
+  const origStarterSig = (profile.starterDeckCardIds ?? []).join(',');
+  const hadImposedStarterIds =
+    origStarterSig === IMPOSED_PYROS_DECK_SIGNATURE ||
+    (hadImposedDeck && filteredDecks.length === 0);
+
+  if (!hadImposedDeck && !hadImposedStarterIds) {
+    return { cleaned: profile, wasModified: false };
+  }
+
+  const nextStarterIds =
+    filteredDecks.length > 0 && !hadImposedStarterIds
+      ? profile.starterDeckCardIds ?? filteredDecks[0].cardIds
+      : filteredDecks[0]?.cardIds ?? [];
+
+  const nextPreferredId =
+    filteredDecks.length > 0
+      ? filteredDecks.some((d) => d.id === profile.preferredDeckId)
+        ? profile.preferredDeckId
+        : filteredDecks[0].id
+      : '';
+
+  return {
+    cleaned: {
+      ...profile,
+      customDecks: filteredDecks,
+      starterDeckCardIds: nextStarterIds,
+      preferredDeckId: nextPreferredId,
+    },
+    wasModified: true,
+  };
+}
+
 /**
- * Ensures any registered Sovereign account has at least 1 complete 100-card Starter Grimoire
- * so no player is ever blocked out of the Arena after registration.
+ * Validates the registered Sovereign account profile and strips any legacy imposed starter deck
+ * so the player always has the right to choose their own 100-card Grimoire.
  */
 export function ensureStarterDeckForUser(profile: SovereignUserProfile): SovereignUserProfile {
   if (isUnregisteredProfile(profile)) {
     return profile;
   }
   const shouldBeAdmin = isAdminProfile(profile);
-  if (profile.customDecks && profile.customDecks.length > 0) {
-    if (shouldBeAdmin && !profile.isAdmin) {
-      const upgraded = { ...profile, isAdmin: true };
-      setActiveTabUserProfile(upgraded);
-      return upgraded;
-    }
-    return profile;
+  const { cleaned, wasModified } = stripImposedStarterGrimoire(profile);
+  if (wasModified || (shouldBeAdmin && !cleaned.isAdmin)) {
+    const updated: SovereignUserProfile = {
+      ...cleaned,
+      isAdmin: shouldBeAdmin,
+    };
+    setActiveTabUserProfile(updated);
+    return updated;
   }
-  const defaultDeck = buildDefaultStarterDeck();
-  const updated: SovereignUserProfile = {
-    ...profile,
-    isAdmin: shouldBeAdmin,
-    customDecks: [defaultDeck],
-    starterDeckCardIds:
-      profile.starterDeckCardIds && profile.starterDeckCardIds.length > 0
-        ? profile.starterDeckCardIds
-        : defaultDeck.cardIds,
-    preferredDeckId: defaultDeck.id,
-  };
-  setActiveTabUserProfile(updated);
-  return updated;
+  return cleaned;
 }
 
 /**
@@ -607,7 +703,6 @@ export function createNewSovereignAccount(params: {
 }): SovereignUserProfile {
   const cleanName = params.username.trim() || `Soberano_${Math.floor(100 + Math.random() * 900)}`;
   const chosenAvatar = params.avatarCardId || 'neutral_10_valkyra_pentacromatica';
-  const defaultDeck = buildDefaultStarterDeck();
   const now = Date.now();
   const profile: SovereignUserProfile = {
     id: `sov_${now}_${Math.random().toString(36).slice(2, 7)}`,
@@ -619,10 +714,10 @@ export function createNewSovereignAccount(params: {
     eloRating: 1200,
     pvpWins: 0,
     pvpLosses: 0,
-    preferredDeckId: defaultDeck.id,
+    preferredDeckId: '',
     gold: STARTER_GOLD,
-    customDecks: [defaultDeck],
-    starterDeckCardIds: defaultDeck.cardIds,
+    customDecks: [],
+    starterDeckCardIds: [],
     extraUnlockedCards: {},
     defeatedBossIds: [],
     arenaWins: 0,
@@ -779,7 +874,7 @@ function hydrateProfileFromRow(
   const updatedMs = row.updated_at ? new Date(row.updated_at).getTime() : undefined;
   const cleanName = (row.username || '').trim();
   const isMasterAdmin = MASTER_ADMIN_USERNAMES.includes(cleanName.toLowerCase());
-  return {
+  const rawProfile: SovereignUserProfile = {
     id: localMatch?.id ?? `sov_${row.id}`,
     username: row.username,
     email: meta.email || localMatch?.email,
@@ -789,17 +884,22 @@ function hydrateProfileFromRow(
     eloRating: row.elo_rating ?? 1200,
     pvpWins: row.pvp_wins ?? 0,
     pvpLosses: row.pvp_losses ?? 0,
-    preferredDeckId: meta.preferredDeckId || localMatch?.preferredDeckId || 'deck_red_inferno',
+    preferredDeckId: meta.preferredDeckId || localMatch?.preferredDeckId || '',
     gold: meta.gold ?? row.gold ?? localMatch?.gold ?? 0,
     customDecks: meta.customDecks ?? localMatch?.customDecks ?? [],
     starterDeckCardIds: meta.starterDeckCardIds ?? localMatch?.starterDeckCardIds ?? [],
     extraUnlockedCards: meta.extraUnlockedCards ?? localMatch?.extraUnlockedCards ?? {},
     defeatedBossIds: meta.defeatedBossIds ?? localMatch?.defeatedBossIds ?? [],
-    arenaWins: meta.arenaWins ?? localMatch?.arenaWins ?? 0,
+    arenaWins: meta.arenaWins ?? 0,
     isAdmin: Boolean(isMasterAdmin || meta.isAdmin || localMatch?.isAdmin),
     createdAt: meta.createdAt ?? localMatch?.createdAt ?? updatedMs,
     lastActiveAt: meta.lastActiveAt ?? updatedMs ?? localMatch?.lastActiveAt,
   };
+  const { cleaned, wasModified } = stripImposedStarterGrimoire(rawProfile);
+  if (wasModified) {
+    syncProfileToSupabaseIfConfigured(cleaned);
+  }
+  return cleaned;
 }
 
 /**

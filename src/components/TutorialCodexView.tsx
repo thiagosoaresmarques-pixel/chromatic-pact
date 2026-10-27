@@ -52,10 +52,10 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
           'Sacrifique 3 pontos de Vida uma vez por turno para receber +1 de Essência temporária imediata e acelerar uma invocação decisiva.',
       },
       {
-        tag: 'PREPARAÇÃO',
-        title: 'Mulligan Tático Inicial',
+        tag: 'PREPARAÇÃO • 30s',
+        title: 'Mulligan Tático & Limite de 60s por Turno',
         detail:
-          'Antes do primeiro turno, selecione quaisquer cartas pesadas da mão inicial de 7 cartas para trocá-las por novas compras de curva baixa.',
+          'Antes do 1º turno (30s), troque cartas pesadas da mão inicial de 7 cartas. Durante o combate, cada jogador tem 60 segundos por turno (⏱️ 60s) para agir antes que o turno passe automaticamente.',
       },
     ],
     proTip:
@@ -1273,9 +1273,9 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 desc: 'Com uma carta selecionada na mão, [V] posiciona na Vanguarda e [R] posiciona na Retaguarda.',
               },
               {
-                key: '[ESPAÇO]',
-                title: 'Passar Turno',
-                desc: 'Encerra imediatamente sua rodada e transfere a ação para o Soberano adversário.',
+                key: '[ESPAÇO] • ⏱️ 60s',
+                title: 'Passar Turno & Relógio de Combate',
+                desc: 'Cada jogador possui 60 segundos por turno (com alerta nos últimos 15s). Ao zerar o relógio ou pressionar [ESPAÇO], o turno passa automaticamente.',
               },
               {
                 key: 'Perfil Soberano',

@@ -12209,22 +12209,24 @@ input:focus-visible,
   }
 
   .hud-hand-trigger-btn {
-    padding: 5px 10px !important;
-    font-size: 0.62rem !important;
-    flex: 1 1 auto !important;
+    padding: 4px 7px !important;
+    font-size: 0.56rem !important;
+    flex: 0 1 auto !important;
     text-align: center !important;
+    white-space: nowrap !important;
   }
 
   .hud-phase-segment {
-    flex: 2 1 auto !important;
+    flex: 1 1 auto !important;
     justify-content: flex-end !important;
-    gap: 4px !important;
-    flex-wrap: wrap !important;
+    gap: 3px !important;
+    flex-wrap: nowrap !important;
   }
 
   .hud-action-cta {
-    padding: 5px 8px !important;
-    font-size: 0.58rem !important;
+    padding: 4px 7px !important;
+    font-size: 0.56rem !important;
+    white-space: nowrap !important;
   }
 
   /* Popovers (Sovereign 1, Sovereign 2 & Gear Menu) on Smartphone:
@@ -12743,7 +12745,109 @@ input:focus-visible,
     max-height: 92dvh !important;
     border-radius: 12px !important;
   }
+
+  .hud-turn-timer-chip {
+    padding: 0 6px !important;
+    gap: 3px !important;
+    font-size: 0.56rem !important;
+    white-space: nowrap !important;
+  }
+
+  .turn-rope-warning-banner {
+    top: 44px !important;
+    width: 92vw !important;
+    font-size: 0.68rem !important;
+    padding: 0.4rem 0.75rem !important;
+  }
 }
+
+/* =========================================================================
+   TURN & MULLIGAN TIMER ("AMPULHETA DO TURNO" — 60s TURN / 30s MULLIGAN)
+   ========================================================================= */
+.hud-turn-timer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-variant-numeric: tabular-nums;
+  transition: all 0.2s ease;
+}
+
+.hud-turn-timer-chip .hud-timer-sep {
+  opacity: 0.55;
+}
+
+.hud-turn-timer-chip .hud-timer-val {
+  color: #fde68a;
+  font-weight: 800;
+}
+
+.hud-turn-timer-chip.is-warning {
+  border-color: rgba(251, 146, 60, 0.85) !important;
+  background: rgba(124, 45, 18, 0.78) !important;
+  color: #ffedd5 !important;
+}
+
+.hud-turn-timer-chip.is-warning .hud-timer-val {
+  color: #fdba74;
+}
+
+.hud-turn-timer-chip.is-critical {
+  border-color: #f87171 !important;
+  background: linear-gradient(90deg, rgba(153, 27, 27, 0.92), rgba(220, 38, 38, 0.88)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.8) !important;
+  animation: timerUrgentPulse 0.7s infinite alternate;
+}
+
+.hud-turn-timer-chip.is-critical .hud-timer-val {
+  color: #ffffff;
+}
+
+.mulligan-stat-pill.is-timer-urgent {
+  border-color: #f87171 !important;
+  background: rgba(153, 27, 27, 0.9) !important;
+  color: #ffffff !important;
+  animation: timerUrgentPulse 0.7s infinite alternate;
+}
+
+.turn-rope-warning-banner {
+  position: fixed;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1250;
+  padding: 0.5rem 1.15rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(124, 45, 18, 0.94), rgba(154, 52, 18, 0.94));
+  border: 1.5px solid #fb923c;
+  color: #fff7ed;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.78), 0 0 18px rgba(249, 115, 22, 0.45);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.turn-rope-warning-banner.is-critical {
+  background: linear-gradient(90deg, rgba(153, 27, 27, 0.96), rgba(220, 38, 38, 0.96));
+  border-color: #fca5a5;
+  color: #ffffff;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.85), 0 0 22px rgba(239, 68, 68, 0.75);
+  animation: timerUrgentPulse 0.6s infinite alternate;
+}
+
+@keyframes timerUrgentPulse {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.22);
+  }
+}
+
 
 
 

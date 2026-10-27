@@ -370,6 +370,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   >('none');
   const [isMulliganOpen, setIsMulliganOpen] = useState(true);
   const [mulliganSwapIndices, setMulliganSwapIndices] = useState<number[]>([]);
+  const MULLIGAN_TIME_LIMIT_SECONDS = 30;
+  const TURN_TIME_LIMIT_SECONDS = 60;
+  const [mulliganTimeLeft, setMulliganTimeLeft] = useState<number>(MULLIGAN_TIME_LIMIT_SECONDS);
+  const [turnTimeLeft, setTurnTimeLeft] = useState<number>(TURN_TIME_LIMIT_SECONDS);
   const [isHandPinnedOpen, setIsHandPinnedOpen] = useState(false);
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [isCommandDockMinimized, setIsCommandDockMinimized] = useState(false);
@@ -1126,8 +1130,132 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setRewardClaimed(false);
     setIsMulliganOpen(true);
     setMulliganSwapIndices([]);
+    setMulliganTimeLeft(MULLIGAN_TIME_LIMIT_SECONDS);
+    setTurnTimeLeft(TURN_TIME_LIMIT_SECONDS);
     playSfx('draw');
   };
+
+  // Reset Turn Timer (60s) whenever the turn number, active player, or Mulligan state changes
+  useEffect(() => {
+    setTurnTimeLeft(TURN_TIME_LIMIT_SECONDS);
+  }, [gameState.turn, gameState.activePlayer, isMulliganOpen]);
+
+  // 30-Second Mulligan Countdown Timer (Auto-confirms Mulligan at 0s so matches never stall)
+  useEffect(() => {
+    if (!isMulliganOpen || gameState.turn !== 1 || gameState.phase === 'gameover') {
+      return;
+    }
+    if (
+      !onlineMatch &&
+      (showQuickRules || showTacticalAdvisor || arenaTutorialStep !== null || showSurrenderConfirm)
+    ) {
+      return;
+    }
+
+    if (mulliganTimeLeft <= 0) {
+      handleConfirmMulligan();
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setMulliganTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    isMulliganOpen,
+    mulliganTimeLeft,
+    gameState.turn,
+    gameState.phase,
+    onlineMatch,
+    showQuickRules,
+    showTacticalAdvisor,
+    arenaTutorialStep,
+    showSurrenderConfirm,
+  ]);
+
+  // 60-Second Turn Countdown Timer ("Ampulheta do Turno") — Auto-passes turn at 0s to prevent monotony!
+  useEffect(() => {
+    if (isMulliganOpen || gameState.phase === 'gameover') {
+      return;
+    }
+    if (
+      !onlineMatch &&
+      (showQuickRules || showTacticalAdvisor || arenaTutorialStep !== null || showSurrenderConfirm)
+    ) {
+      return;
+    }
+
+    if (gameState.activePlayer === 'player' && turnTimeLeft <= 0) {
+      setSelectedHandIndex(null);
+      setSelectedAttackerId(null);
+      setFocusedBoardUnitId(null);
+      setSacrificeBreakModalOpen(false);
+      closeAllArenaDrawers();
+      playSfx('draw');
+      setGameState((prev) => {
+        if (prev.phase === 'gameover' || prev.activePlayer !== 'player') return prev;
+        const timedOutState = endTurn(prev);
+        return {
+          ...timedOutState,
+          combatLog: [
+            {
+              id: `timeout-${Date.now()}`,
+              turn: prev.turn,
+              actor: 'system',
+              category: 'turn',
+              message: `⌛ Tempo limite do turno (${TURN_TIME_LIMIT_SECONDS}s) esgotado! O turno de ${prev.player.name} foi encerrado automaticamente.`,
+            },
+            ...timedOutState.combatLog,
+          ],
+        };
+      });
+      return;
+    }
+
+    // In 1v1 Online, if the remote opponent exceeds the 60s turn limit (+2s network grace), auto-advance their turn
+    if (onlineMatch && gameState.activePlayer === 'ai' && turnTimeLeft <= -2) {
+      playSfx('draw');
+      setGameState((prev) => {
+        if (prev.phase === 'gameover' || prev.activePlayer !== 'ai') return prev;
+        const timedOutState = endTurn(prev);
+        return {
+          ...timedOutState,
+          combatLog: [
+            {
+              id: `timeout-opp-${Date.now()}`,
+              turn: prev.turn,
+              actor: 'system',
+              category: 'turn',
+              message: `⌛ Tempo limite do turno (${TURN_TIME_LIMIT_SECONDS}s) de ${prev.ai.name} esgotado! Turno encerrado automaticamente.`,
+            },
+            ...timedOutState.combatLog,
+          ],
+        };
+      });
+      return;
+    }
+
+    if (gameState.activePlayer === 'player' && (turnTimeLeft === 10 || turnTimeLeft === 5)) {
+      playSfx('channel');
+    }
+
+    const timer = window.setTimeout(() => {
+      setTurnTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    isMulliganOpen,
+    turnTimeLeft,
+    gameState.phase,
+    gameState.activePlayer,
+    onlineMatch,
+    showQuickRules,
+    showTacticalAdvisor,
+    arenaTutorialStep,
+    showSurrenderConfirm,
+  ]);
 
   // AI step-by-step execution with Physical Lunge Animation on AI Attacks!
   useEffect(() => {
@@ -1981,6 +2109,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               >
                 ← Sair da Batalha
               </button>
+              <span
+                className={`mulligan-stat-pill ${
+                  mulliganTimeLeft <= 10 ? 'is-timer-urgent' : ''
+                }`}
+                title="Tempo restante para confirmar sua mão inicial"
+              >
+                ⏳ {Math.max(0, mulliganTimeLeft)}s
+              </span>
               <button
                 type="button"
                 className="mulligan-quick-start-top-btn"
@@ -3634,8 +3770,24 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="hud-phase-segment"
                       onMouseEnter={() => setIsHandHovered(false)}
                     >
-                    <span className="hud-round-chip">
-                      T{gameState.turn}
+                    <span
+                      className={`hud-round-chip hud-turn-timer-chip ${
+                        turnTimeLeft <= 10
+                          ? 'is-critical'
+                          : turnTimeLeft <= 20
+                          ? 'is-warning'
+                          : ''
+                      }`}
+                      title={`Turno ${gameState.turn} • Limite de ${TURN_TIME_LIMIT_SECONDS}s por turno (${Math.max(
+                        0,
+                        turnTimeLeft
+                      )}s restantes)`}
+                    >
+                      <span>T{gameState.turn}</span>
+                      <span className="hud-timer-sep">•</span>
+                      <span className="hud-timer-val">
+                        {turnTimeLeft <= 10 ? '🔥' : '⏱️'} {Math.max(0, turnTimeLeft)}s
+                      </span>
                     </span>
 
                     {isPlayerTurn && readyPlayerUnits.length > 0 && (
@@ -4907,6 +5059,21 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* TURN TIMER ROPE WARNING BANNER (FINAL 15 SECONDS OF TURN) */}
+      {!isMulliganOpen && gameState.phase !== 'gameover' && turnTimeLeft <= 15 && (
+        <div
+          className={`turn-rope-warning-banner ${
+            turnTimeLeft <= 6 ? 'is-critical' : ''
+          }`}
+        >
+          <span>
+            {isPlayerTurn
+              ? `🔥 Tempo do seu turno acabando: ${Math.max(0, turnTimeLeft)}s — conclua suas ações ou passe o turno!`
+              : `⏳ Tempo do turno de ${gameState.ai.name}: ${Math.max(0, turnTimeLeft)}s`}
+          </span>
         </div>
       )}
 

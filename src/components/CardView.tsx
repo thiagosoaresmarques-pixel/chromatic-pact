@@ -363,7 +363,7 @@ export const CardView: React.FC<CardViewProps> = ({
           <div className={`mtg-token-art aura-${displayCard.domain}`}>
             {!imgError && displayCard.imagePath ? (
               <img
-                src={`${displayCard.imagePath}?v=53`}
+                src={`${displayCard.imagePath}?v=54`}
                 alt={displayName}
                 className="mtg-token-img"
                 onError={() => setImgError(true)}
@@ -520,7 +520,7 @@ export const CardView: React.FC<CardViewProps> = ({
 
           {!imgError && displayCard.imagePath ? (
             <img
-              src={`${displayCard.imagePath}?v=53`}
+              src={`${displayCard.imagePath}?v=54`}
               alt={displayName}
               className="card-cutout-img"
               onError={() => setImgError(true)}

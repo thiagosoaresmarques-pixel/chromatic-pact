@@ -309,7 +309,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
             'Envolto em panos de sombra e de luar,',
             'Kaelen levou o Malho ao patamar;',
             'Onde Vulcanis, Xylar e o resto do bando',
-            'Aguardavam a hora do grande comando.',
+            'Aguardavam o instante do grande comando.',
           ],
           [
             'Nocturnus subiu ao seu posto na fila,',

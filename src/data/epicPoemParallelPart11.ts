@@ -94,7 +94,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
         cardId: 'neutral_10_valkyra_pentacromatica',
         hideCardArt: true,
         domain: 'neutral',
-        title: 'A Audiência fora do Tempo',
+        title: 'A Audiência no Alvor Suspenso',
         subtitle: 'Como Valkyra deteve o clarão por um instante para reunir quatro testemunhas improváveis',
         yearLabel: '∞ A.F.',
         locationLabel: 'Escadaria deNuvens do Zênite',
@@ -204,7 +204,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
         stanzas: [
           [
             'Aldric caiu de joelhos a chorar:',
-            '— "Senhora, sou eu quem o tempo vai dobrar!',
+            '— "Senhora, sou eu quem o feixe vai dobrar!',
             'E Kaelen ao lado cinzelou na caverna',
             'O malho que quebra a tua paz eterna!"',
           ],
@@ -287,7 +287,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
             'Ficando imune à ferrugem e ao véu.',
           ],
           [
-            '— "Despertai na gruta, que a hora chegou!',
+            '— "Despertai na gruta, que o golpe chegou!',
             'Guardai no silêncio o que aqui se passou:',
             'Quando as cinco cores cansarem da guerra,',
             'Eu voltarei p’ra abraçar esta terra!"',
@@ -301,7 +301,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'O Silêncio antes do Martelo',
-        subtitle: 'Como os quatro despertaram em seus postos segundos antes do Golpe Pentacromático',
+        subtitle: 'Como os quatro despertaram em seus postos instantes antes do Golpe Pentacromático',
         yearLabel: '∞ A.F.',
         locationLabel: 'Zênite e Encostas do Monte Axial',
         stanzas: [

@@ -22,7 +22,7 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     chronologicalOrder: 1,
     locationLabel: 'Cume do Monte Axial (Fronteira Cinzenta)',
     proseStory:
-      'Nascida do próprio reflexo do Coroa-Prisma antes que o tempo tivesse nome, Valkyra foi a única entidade capaz de suportar em suas escamas as cinco frequências de luz simultaneamente. Quando os Cinco Titãs Primogênitos subiram ao Monte Axial no Ano Zero, Valkyra não os impediu — pois sabia que um mundo imóvel estava morto em vida. Após a Fratura, recolheu as cascas sem cor do astro partido para erguer a Torre dos Cinco Selos e tornou-se a árbitra eterna do Pacto Cromático.',
+      'Nascida do próprio reflexo do Coroa-Prisma antes que o tempo tivesse nome, Valkyra foi a única entidade capaz de suportar em suas escamas as cinco frequências de luz simultaneamente. Quando os Cinco Titãs Primogênitos subiram ao Monte Axial para romper a estase eterna, Valkyra não os impediu — pois sabia que um mundo imóvel estava morto em vida. Após a Fratura, recolheu as cascas sem cor do astro partido para erguer a Torre dos Cinco Selos e tornou-se a árbitra eterna do Pacto Cromático.',
     sungStanza: [
       'Das cinco correntes que o céu dividiu,',
       'Valkyra nas asas o espectro reuniu;',
@@ -39,9 +39,9 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     chronologicalOrder: 2,
     locationLabel: 'Fornalha Axial de Pyros',
     proseStory:
-      'O mais velho dos Cinco Primogênitos que conspiraram contra a estase do Coroa-Prisma. Durante doze anos antes da Fratura, Vulcanis bateu em segredo no núcleo líquido do mundo o malho que partiria o sol branco. Quando o Fragmento Rubro caiu no norte, seu corpo de basalto e brasa fundiu-se à maior caldeira de Pyros, de onde ainda hoje ergue o martelo para partir montanhas.',
+      'O mais velho dos Cinco Primogênitos que conspiraram contra a estase do Coroa-Prisma. No silêncio sem tempo antes da Fratura, Vulcanis bateu em segredo no núcleo líquido do mundo o malho que partiria o sol branco. Quando o Fragmento Rubro caiu no norte, seu corpo de basalto e brasa fundiu-se à maior caldeira de Pyros, de onde ainda hoje ergue o martelo para partir montanhas.',
     sungStanza: [
-      'Doze anos no escuro o malho bateu,',
+      'No abismo sem tempo o malho bateu,',
       'Até que a faísca subisse até o céu;',
       'Vulcanis ferreiro do primeiro ardor,',
       'Deu fogo às montanhas e ao sangue o calor!',
@@ -73,7 +73,7 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     chronologicalOrder: 6,
     locationLabel: 'Pináculo Polar de Vórtex',
     proseStory:
-      'Assim que a primeira trinca surgiu no Coroa-Prisma no ∞ A.F., o tempo começou a jorrar como uma torrente desgovernada que ameaçava envelhecer continentes num segundo. Chronos ergueu o Eixo Eterno nos mares polares de Vórtex, encaixando as primeiras engrenagens astrais para dividir a eternidade em horas, estações e turnos.',
+      'Assim que o Golpe Pentacromático partiu o Coroa-Prisma, o recém-nascido fluxo do tempo começou a jorrar como uma torrente desgovernada. Chronos ergueu o Eixo Eterno nos mares polares de Vórtex, encaixando as engrenagens astrais que havia preparado na estase para dividir a eternidade em horas, estações e turnos.',
     sungStanza: [
       'O tempo corria sem freio e sem cais,',
       'Mas Chronos prendeu os segundos mortais;',
@@ -572,12 +572,12 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     chronologicalOrder: 4,
     locationLabel: 'Fenda Abissal do Vale do Eclipse',
     proseStory:
-      'Manifestado durante o eclipse de três dias do Ano 489 D.F., Nocturnus caminha envolto num manto de gravidade escura que apaga tochas e feitiços solares. Por onde passa, as tumbas antigas abrem-se sozinhas, devolvendo campeões caídos à linha de frente.',
+      'Terceiro dos Cinco Irmãos Primogênitos da Era Zero, Nocturnus compadeceu-se de um mundo onde a luz branca perpétua do Coroa-Prisma impedia o sono e os sonhos. Nas cavernas abissais sob o Monte Axial, forjou em segredo a Foice Umbral para rasgar o clarão imóvel e presentear Vaeloria com o repouso da primeira noite.',
     sungStanza: [
-      'Três dias sem sol o horizonte ficou,',
-      'No dia em que a sombra na terra pisou;',
-      'Nocturnus caminha chamando os que foram,',
-      'Enquanto os escudos dos vivos descoram!',
+      'Onde o astro sem pausa cegava a visão,',
+      'Nocturnus teceu a primeira escuridão;',
+      'Ergueu sua foice de prata sideral,',
+      'Rasgando no zênite o véu imortal!',
     ],
   },
   red_64_principe_fogo: {

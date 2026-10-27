@@ -232,7 +232,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
             'O caudal do destino corria sem cais,',
             'Mas Chronos regeu os segundos mortais;',
             'E reunindo a irmandade na escarpa do norte,',
-            'Apontou para o zênite a hora mais forte!',
+            'Apontou para o zênite o golpe mais forte!',
           ],
         ],
       },
@@ -247,7 +247,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         domain: 'neutral',
         stanzas: [
           [
-            'Chegada a hora augusta no cume sagrado,',
+            'Erguida a aliança no cume sagrado,',
             'Onde o sol de seis faces brilhava intocado,',
             'Os Cinco Primogênitos juntos subiram,',
             'E contra a redoma de vidro investiram.',

@@ -12,7 +12,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
     eraNumber: 'ERA ZERO • BASTIDORES DA FORJA SUBTERRÂNEA',
     periodLabel: '∞ A.F. • Câmara Ígnea sob o Monte Axial',
     title: 'A Brasa Proibida que Aqueceu o Coração de Vulcanis',
-    subtitle: 'Como Vulcanis, o Titã da Alvorada, Kaelen, Aldric e a Salamandra do Mar de Brasas alimentaram em segredo a Fornalha Rúnica sob o gelo branco por mil anos antes da Fratura',
+    subtitle: 'Como Vulcanis, o Titã da Alvorada, Kaelen, Aldric e a Salamandra do Mar de Brasas alimentaram em segredo a Fornalha Rúnica sob o gelo branco na estase perpétua antes da Fratura',
     accentColor: '#ef4444',
     bannerImage: '/assets/arena/tabletop_red.png',
     nodes: [
@@ -179,14 +179,14 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
           ],
           [
             '— "Ferve em silêncio, serpente irmã," —',
-            'Dizia-lhe Kaelen na longa manhã;',
+            'Dizia-lhe Kaelen com alma artesã;',
             '— "Pois estamos criando no ventre do monte',
             'O vaso que vai estourar o horizonte!"',
           ],
           [
             'No centro da gruta, de ferro e rubi,',
             'Levantaram o trono do fogo dali:',
-            'O grande caldeirão que por anos sem fim',
+            'O grande caldeirão que na furna sem fim',
             'Guardou a semente do mundo carmim!',
           ],
         ],
@@ -278,7 +278,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
             '— "Então é verdade o que o sonho me diz!" —',
             'Clamou maravillado o jovem aprendiz;',
             '— "Debaixo da estase do branco tirano,',
-            'Bate a esperança de um tempo humano!"',
+            'Bate a esperança de um sopro soberano!"',
           ],
           [
             'Kaelen apertou do rapaz o antebraço,',
@@ -290,7 +290,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
             'Com giz de safira Aldric gravou',
             'O véu de silêncio que a forja ocultou;',
             'Unindo seu fado ao do nobre ferreiro,',
-            'Até que soasse o segundo primeiro!',
+            'Até que brilhasse o lampejo primeiro!',
           ],
         ],
       },
@@ -308,7 +308,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
           [
             'Com a Fornalha calada por runa e por cobre,',
             'Começou o trabalho mais longo e mais nobre:',
-            'Fundir em segredo, por anos a fio,',
+            'Fundir em segredo, vencendo o vazio,',
             'O Malho que ia quebrar o fastio.',
           ],
           [
@@ -319,7 +319,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
           ],
           [
             'Assim se explica por que lá no fim,',
-            'Na hora dos sessenta segundos carmim,',
+            'No assalto dos sessenta grãos de carmim,',
             'A forja estava pronta, acesa e leal,',
             'Para dar a Vaeloria o seu golpe imortal!',
           ],

@@ -11,8 +11,8 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
     cantoNumber: 'CANTO PARALELO I-E',
     eraNumber: 'ERA ZERO • BASTIDORES DO EIXO ETERNO',
     periodLabel: '∞ A.F. • Pêndulo Central do Monte Axial',
-    title: 'A Destrava do Primeiro Segundo no Relógio de Chronos',
-    subtitle: 'Como Chronos, o jovem Aldric, o artífice Kaelen e o Draco Horológico soltaram a trava que prendia o tempo em estase antes do Golpe Pentacromático, sob o olhar silencioso de Valkyra',
+    title: 'A Destrava do Pêndulo Central no Eixo de Chronos',
+    subtitle: 'Como Chronos, o jovem Aldric, o artífice Kaelen e o Draco Horológico soltaram a trava do Eixo Central para que o tempo pudesse nascer no Golpe Pentacromático, sob o olhar silencioso de Valkyra',
     accentColor: '#38bdf8',
     bannerImage: '/assets/arena/tabletop_blue.png',
     nodes: [
@@ -22,7 +22,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
         cardId: 'blue_81_arconte_cronos',
         domain: 'blue',
         title: 'Chronos, Guardião do Eixo Eterno',
-        subtitle: 'O arconte das horas imóveis que se cansou de contar segundos que jamais avançavam',
+        subtitle: 'O arconte do Eixo imóvel que ansiava por dar início ao primeiro giro do cosmos',
         yearLabel: '∞ A.F.',
         locationLabel: 'Pêndulo Central do Monte Axial',
         stanzas: [
@@ -58,7 +58,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
         cardId: 'neutral_44_dragao_relogio',
         domain: 'neutral',
         title: 'Draco Horológico de Aeternus',
-        subtitle: 'A serpente mecânica cujas escamas de bronze travavam os dentes da roda do tempo',
+        subtitle: 'A serpente mecânica cujas escamas de bronze travavam os dentes da roda primordial',
         yearLabel: '∞ A.F.',
         locationLabel: 'Pêndulo Central do Monte Axial',
         stanzas: [
@@ -95,7 +95,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'blue',
         title: 'Os Conspiradores na Câmara do Pêndulo',
-        subtitle: 'Quando Aldric e Kaelen entraram no salão proibido das horas antes da subida ao cume',
+        subtitle: 'Quando Aldric e Kaelen entraram no salão proibido do Eixo antes da subida ao cume',
         yearLabel: '∞ A.F.',
         locationLabel: 'Pêndulo Central do Monte Axial',
         stanzas: [
@@ -144,8 +144,8 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
           [
             'O Draco Horológico olhou admirado',
             'O belo desenho do céu libertado;',
-            'Sentindo nas molas do peito de bronze',
-            'A vontade de bater as dez e as onze!',
+            'Sentindo nas molas do peito de aço',
+            'A vontade de abrir o primeiro compasso!',
           ],
           [
             'Porém a ferrugem do gelo ancestral',
@@ -175,7 +175,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
             '— "Tu não és carcereiro de um mundo sem fim,',
             'És o próprio compasso do nosso festim!',
             'Abre a tua boca de bronze e cristal,',
-            'E deixa correr o segundo inicial!"',
+            'E deixa nascer o compasso inicial!"',
           ],
           [
             'Suas runas azuis derreteram o selo',
@@ -205,7 +205,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
             'Kaelen saltou sobre o monstro disposto,',
             'Com a barba de fogo brilhando no rosto;',
             'O Artífice Bronze-Ardente abraçou',
-            'A trava gelada que o tempo trancou!',
+            'A trava gelada que o giro trancou!',
           ],
           [
             'Sem dar martelada que fizesse barulho,',
@@ -234,7 +234,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'gold',
         title: 'A Primeira Oscilação do Pêndulo',
-        subtitle: 'Quando o vento do primeiro segundo soprou nos cabelos de Valkyra na varanda superior',
+        subtitle: 'Quando o sopro da primeira oscilação moveu os cabelos de Valkyra na varanda superior',
         yearLabel: '∞ A.F.',
         locationLabel: 'Pêndulo Central do Monte Axial',
         stanzas: [
@@ -247,8 +247,8 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
           [
             'Chronos deteve a corrente na mão,',
             'Segurando o "Taque" da continuação:',
-            'Para soltar o resto somente na hora',
-            'Em que o Malho batesse no cume lá fora!',
+            'Para soltar o giro sem mais demora',
+            'Quando o Malho batesse no cume lá fora!',
           ],
           [
             'Olhando para o alto da ponte de luar,',
@@ -264,7 +264,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
         cardId: 'neutral_10_valkyra_pentacromatica',
         domain: 'gold',
         title: 'Valkyra, Imperatriz Pentacromática',
-        subtitle: 'A guardiã suprema que sentiu a brisa do tempo no rosto e permitiu que Chronos mantivesse o pino solto',
+        subtitle: 'A guardiã suprema que sentiu a brisa do movimento no rosto e permitiu que Chronos mantivesse o pino solto',
         yearLabel: '∞ A.F.',
         locationLabel: 'Pêndulo Central do Monte Axial',
         stanzas: [
@@ -321,7 +321,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
             'Quando o Prisma quebrou, o Pêndulo voou,',
             'E o relógio de Vaeloria nunca mais parou:',
             'Marcando em cada batida de dor e de paz',
-            'O segundo que o trio arrancou lá de trás!',
+            'O impulso que o trio arrancou lá de trás!',
           ],
         ],
       },

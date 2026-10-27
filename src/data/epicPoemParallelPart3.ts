@@ -69,7 +69,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'E a voz do dragão na caverna ecoou:',
           ],
           [
-            '— "Há milênios servimos à estátua de gelo,',
+            '— "Na estase servimos à estátua de gelo,',
             'Sem direito à paixão, à mudança ou ao zelo!',
             'Mas olhai esta lasca que o topo perdeu:',
             'Ela guarda o incêndio que o Branco prendeu!"',
@@ -83,7 +83,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
           [
             'Mas o sopro de um só não bastava ao labor',
             'De fundir uma arma de tanto esplendor;',
-            'Era urgente que o Tempo e a Floresta descessem,',
+            'Era urgente que o Eixo e a Floresta descessem,',
             'E na forja secreta seu sangue vertessem!',
           ],
         ],
@@ -131,12 +131,12 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
         stanzas: [
           [
             'Avançou o Arconte de manto estrelado,',
-            'Cujo peito trazia o relógio parado;',
+            'Cujo peito trazia o pêndulo parado;',
             'Chronos viu no fragmento a promessa do giro,',
             'E soltou na caverna um profundo suspiro.',
           ],
           [
-            '— "De que serve ser mestre da roda e da hora,',
+            '— "De que serve guardar o compasso da aurora,',
             'Se o ponteiro não move e não nasce a aurora?',
             'Arrancai do meu peito este eixo de metal,',
             'Para ser o punho do Malho fatal!"',
@@ -145,13 +145,13 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'Com as próprias mãos frias de azul reluzente,',
             'Desprendeu a engrenagem da sua corrente;',
             'E entregou a Vulcanis a barra sagrada,',
-            'Onde a marcha dos séculos jazia gravada.',
+            'Onde a força do giro jazia trancada.',
           ],
           [
             'Quando o bronze de Chronos tocou o braseiro,',
             'Um compasso bateu no silêncio primeiro:',
             'Pela vez inaugural desde a criação,',
-            'O tic-tac do tempo soou no salão!',
+            'O pulso do eixo vibrou no salão!',
           ],
         ],
       },
@@ -184,7 +184,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'Abraçando a haste de Chronos na mão.',
           ],
           [
-            'Madeira, relógio e lasca encantada',
+            'Madeira, engrenagem e lasca encantada',
             'Já formavam o esboço da arma sonhada;',
             'Mas faltava o artífice de pulso certeiro',
             'Para dar acabamento ao prodigioso malheiro!',
@@ -290,7 +290,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
             'Com um sorriso contido sob o capuz azulado,',
             'Aldric soube que o Malho estava acabado;',
             'Guardou o segredo na mente que viu,',
-            'Pronto p’ra a hora em que o mundo se abriu!',
+            'Pronto p’ra o golpe em que o mundo se abriu!',
           ],
         ],
       },

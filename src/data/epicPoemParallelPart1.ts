@@ -11,7 +11,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
     cantoNumber: 'CANTO PARALELO I-A',
     eraNumber: 'ERA ZERO • BASTIDORES DO GOLPE PENTACROMÁTICO',
     periodLabel: '∞ A.F. • Zênite do Monte Axial',
-    title: 'Os Sessenta Segundos Cegos do Golpe Pentacromático',
+    title: 'Os Sessenta Grãos Cegos do Golpe Pentacromático',
     subtitle: 'Como Aldric, Kaelen, o Autômato de Quartzo e a silenciosa conivência de Valkyra ocultaram a subida dos Cinco Conjuradores no instante da Fratura',
     accentColor: '#94a3b8',
     bannerImage: '/assets/arena/tabletop_neutral.png',
@@ -22,7 +22,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
         cardId: 'neutral_15_ampulheta_tempo',
         domain: 'neutral',
         title: 'Ampulheta das Areias Eternas',
-        subtitle: 'O relógio proibido que dobrou a refração do Zênite para abrir sessenta segundos de sombra',
+        subtitle: 'O vaso gravitacional que dobrou a refração do Zênite enquanto sessenta grãos de poeira estelar caíam',
         yearLabel: '∞ A.F.',
         locationLabel: 'Encosta Oculta do Monte Axial',
         stanzas: [
@@ -36,13 +36,13 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'Para que Vulcanis e seus quatro irmãos',
             'Pudessem subir com o Malho nas mãos,',
             'Era preciso que o feixe sagrado',
-            'Ficasse um minuto inteiro cegado.',
+            'Ficasse por sessenta grãos ocultado.',
           ],
           [
             'Na cripta de vidro da encosta inferior,',
             'A Ampulheta das Areias Eternas, sem cor,',
             'Repousava em correntes de prata estelar,',
-            'Guardando o segundo que ia sangrar.',
+            'Guardando o lampejo que ia sangrar.',
           ],
           [
             'Quando o sino mudo deu a batida,',
@@ -66,13 +66,13 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'Aldric, o Iniciado da Torre Astral,',
             'Sustentava o compasso do giro fatal;',
             'Com os dedos feridos no giz de safira,',
-            'Traçava a espiral onde o tempo delira.',
+            'Traçava a espiral onde o feixe se vira.',
           ],
           [
-            '— "Vinte segundos já foram!" — gritou,',
+            '— "Vinte grãos já caíram no vaso!" — gritou,',
             'Enquanto uma veia na fronte estalou;',
             '— "O feixe do Prisma percebe a mentira,',
-            'E contra a abóbada oculta se vira!"',
+            'E contra a abóbada oculta delira!"',
           ],
           [
             'Dos lábios do jovem escorria o carmim,',
@@ -106,14 +106,14 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'Buscando apagar dos rebeldes a sorte.',
           ],
           [
-            'Trinta segundos marcava a Ampulheta,',
+            'A metade da areia marcava a Ampulheta,',
             'E lá na subida da escarpa secreta,',
             'Os Cinco Senhores corriam sem ar,',
             'Ouvindo nas rochas o céu estalar.',
           ],
           [
             'Se aquele clarão escapasse da furna,',
-            'Desfaria na hora a conjura noturna;',
+            'Desfaria de pronto a conjura noturna;',
             'Mas entre a centelha e o jovem aprendiz,',
             'Ergueu-se a muralha que o fado bendiz!',
           ],
@@ -198,12 +198,12 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'red',
         title: 'A Alquimia de Gelo e Brasa',
-        subtitle: 'O diálogo entre Aldric e Kaelen nos últimos quinze segundos antes do impacto no cume',
+        subtitle: 'O diálogo entre Aldric e Kaelen nos últimos quinze grãos de areia antes do impacto no cume',
         yearLabel: '∞ A.F.',
         locationLabel: 'Encosta Oculta do Monte Axial',
         stanzas: [
           [
-            'Quarenta e cinco segundos passados,',
+            'Quase todos os grãos no cristal esgotados,',
             'Os dedos de Aldric estavam queimados;',
             'O Autômato tinha metade do rosto',
             'Em cinza de quartzo no solo deposto.',
@@ -236,7 +236,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'A Fornalha Rúnica de Muspel rugiu,',
             'Quando o feixe do Prisma em seu ventre caiu;',
             'Fervendo num vórtice rubro e dourado,',
-            'Fundiu o presente ao futuro e ao passado.',
+            'Derreteu a couraça do gelo estagnado.',
           ],
           [
             'Nas bordas do imenso caldeirão de metal,',
@@ -253,7 +253,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           [
             'Porém, no terraço da guarda celeste,',
             'Alguém avistou a fumaça agreste:',
-            'A três segundos do golpe descer,',
+            'A três grãos de areia do golpe descer,',
             'A Imperatriz veio a trama ver!',
           ],
         ],
@@ -281,14 +281,14 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
             'Brilhava o cansaço do gelo eternal.',
           ],
           [
-            '— "Há eras vigio um sepulcro sem vida," —',
+            '— "No gelo vigio um sepulcro sem vida," —',
             'Disse ela, baixando a trombeta polida;',
             '— "Se o preço da alma é o Prisma partir,',
             'Que bata o martelo e comece o porvir!"',
           ],
           [
             'Valkyra fechou a cortina de luar,',
-            'Deixando o segundo final se esgotar;',
+            'Deixando a poeira final se esgotar;',
             'Quando o último grão na Ampulheta bateu,',
             'O Malho lá em cima nos ares desceu!',
           ],
@@ -319,7 +319,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           ],
           [
             'Ninguém nas crônicas do alto escreveu',
-            'Quem deu o minuto em que o mundo nasceu;',
+            'Quem abriu a cortina em que o tempo nasceu;',
             'Mas Aldric e Kaelen sabiam muito bem:',
             'Sem a sombra de baixo, não há luz além!',
           ],
@@ -332,7 +332,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'Convergência dos Cinco Pactos',
         subtitle: 'O instante exato em que o golpe simultâneo dos Cinco Primogênitos estilhaçou o Coroa-Prisma em cinco sóis cromáticos',
-        yearLabel: 'Hora Zero • 1 D.F.',
+        yearLabel: 'Marco Zero • 1 D.F.',
         locationLabel: 'Zênite do Monte Axial',
         stanzas: [
           [
@@ -350,7 +350,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           [
             'Em cinco coroas a luz se abriu,',
             'E o Dia dos Cinco Sóis no horizonte surgiu;',
-            'Fechando na Hora Zero a vigília sem cor,',
+            'Fechando no Marco Zero a vigília sem cor,',
             'Para abrir Vaeloria ao seu tempo e clamor!',
           ],
         ],

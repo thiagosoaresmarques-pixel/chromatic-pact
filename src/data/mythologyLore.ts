@@ -69,7 +69,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
     proseOverview: [
       'Antes que os relógios de Vórtex tivessem ponteiros ou que as forjas de Pyros conhecessem a primeira fagulha, o continente de Vaeloria jazia sob o Coroa-Prisma: um sol hexagonal de luz branca absoluta suspenso no zênite do firmamento.',
       'Sob sua claridade imóvel, nenhuma folha caía nas matas, nenhuma maré subia nos mares e nenhum mortal envelhecia. Mas a perfeição sem mudança era também uma prisão de vidro: nada podia nascer, nada podia ser sonhado e nenhuma canção tinha fim.',
-      'Foi no silêncio do Ano Zero que os Cinco Titãs Primogênitos — forjados a partir da própria crosta do mundo — ergueram cinco armas colossais contra o céu para libertar o fluxo do tempo.',
+      'Foi no silêncio daquela vigília sem tempo que os Cinco Titãs Primogênitos — forjados a partir da própria crosta do mundo — ergueram cinco armas colossais contra o céu para inaugurar o fluxo do tempo.',
     ],
     bardBallad: [
       'Não havia aurora nem vinha o luar,',
@@ -366,7 +366,7 @@ export const MYTHOLOGY_BOOKS: MythologyBook[] = [
         chronicleYear: 'Era Zero (∞ A.F.)',
         proseParagraphs: [
           'Dizem as tábuas mais antigas da Torre dos Cinco Selos que, antes da contagem dos anos, Vaeloria era um espelho sem rugas. No alto do firmamento ardia o Coroa-Prisma, um astro de seis faces perfeitas cujo clarão branco impedia que qualquer sombra se deitasse sobre a relva. As árvores não cresciam nem secavam; os rios não corriam para o mar; e os corações dos primeiros seres batiam um único compasso interminável.',
-          'Mas no silêncio daquela eternidade de porcelana, cinco espíritos primordiais ouviram o chamado daquilo que ainda não existia: o calor da paixão, o mistério do amanhã, a dignidade do fim, a fome de crescer e a justiça escolhida por vontade própria. Na véspera do Ano Zero, os Cinco Primogênitos subiram ao Monte Axial e golpearam o Coroa-Prisma.',
+          'Mas no silêncio daquela eternidade de porcelana, cinco espíritos primordiais ouviram o chamado daquilo que ainda não existia: o calor da paixão, o mistério do amanhã, a dignidade do fim, a fome de crescer e a justiça escolhida por vontade própria. No clímax daquela vigília imemorial, os Cinco Primogênitos subiram ao Monte Axial e golpearam o Coroa-Prisma, criando o primeiro segundo do tempo.',
         ],
         sungStanzas: [
           [

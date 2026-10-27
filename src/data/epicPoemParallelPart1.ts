@@ -325,6 +325,36 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
           ],
         ],
       },
+      {
+        id: 'node_1a_convergencia_golpe',
+        kind: 'interlude',
+        cardId: 'neutral_55_ruptura_planar',
+        domain: 'neutral',
+        title: 'Convergência dos Cinco Pactos',
+        subtitle: 'O instante exato em que o golpe simultâneo dos Cinco Primogênitos estilhaçou o Coroa-Prisma em cinco sóis cromáticos',
+        yearLabel: 'Hora Zero • 1 D.F.',
+        locationLabel: 'Zênite do Monte Axial',
+        stanzas: [
+          [
+            'No topo sagrado, em uníssono ardor,',
+            'Os Cinco cravaram seu golpe maior;',
+            'A branca redoma do trono estalou,',
+            'E a Era do Gelo p’ra sempre findou!',
+          ],
+          [
+            'Do núcleo partido em fulgor imortal,',
+            'Saltaram as chamas do espectro ancestral:',
+            'Rubi, Esmeralda, Safira e o Sol Dourado,',
+            'Com a Sombra Ametista no céu libertado!',
+          ],
+          [
+            'Em cinco coroas a luz se abriu,',
+            'E o Dia dos Cinco Sóis no horizonte surgiu;',
+            'Fechando na Hora Zero a vigília sem cor,',
+            'Para abrir Vaeloria ao seu tempo e clamor!',
+          ],
+        ],
+      },
     ],
   },
   {

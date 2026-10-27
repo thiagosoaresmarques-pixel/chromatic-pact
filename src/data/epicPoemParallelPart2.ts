@@ -684,7 +684,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
     eraNumber: 'VIª ERA • CRÔNICA PARALELA',
     periodLabel: 'Ano 1.121 D.F. • Subsolo da Torre dos Cinco Selos',
     title: 'A Noite da Fenda Áurea e o Decreto do Relicário',
-    subtitle: 'O embate titânico entre Garrick, Vesperion, Kongor, Zephaniel e Valkyra quando a Pedra Filosofal abriu o cofre das 891 Memórias',
+    subtitle: 'O embate titânico entre Garrick, Vesperion, Kongor, Zephaniel e Valkyra quando a Pedra Filosofal abriu o cofre das 996 Memórias',
     accentColor: '#eab308',
     bannerImage: '/assets/arena/tabletop_gold.png',
     nodes: [
@@ -718,7 +718,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           ],
           [
             'Lá dentro brilhavam soltas, como estrelas em prisão,',
-            'Oitocentas e noventa e uma Memórias da criação;',
+            'Novecentas e noventa e seis Memórias da criação;',
             'Das Cem originais até os prodígios novos,',
             'Todo o acervo de Vaeloria fulgia perante os povos!',
           ],
@@ -797,7 +797,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'purple_07_lich',
         domain: 'purple',
         title: 'Vesperion, Arquimago Lich Imortal',
-        subtitle: 'O soberano da não-vida que estendeu seu cajado para absorver as 891 Memórias num único vórtice',
+        subtitle: 'O soberano da não-vida que estendeu seu cajado para absorver as 996 Memórias num único vórtice',
         yearLabel: 'Ano 1.121 D.F.',
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
@@ -805,7 +805,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Vesperion, o Lich Imortal, ergueu o cetro de crânio,',
             'Iluminando de roxo o abismo subterrâneo;',
             '"Cem memórias não bastaram para a minha eternidade,',
-            'Mas Oitocentas e Noventa me darão a divindade!"',
+            'Mas Novecentas e Noventa e Seis me dão divindade!"',
           ],
           [
             'Sua mão esquelética abriu um vórtice de absorção,',
@@ -884,7 +884,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Cada choque entre os dois reis fazia a fenda alargar,',
             'E a Pedra Filosofal ameaçava estilhaçar;',
             'Se o núcleo explodisse ali sob o peso da ambição,',
-            'As Oitocentas e Noventa cairiam na perdição!',
+            'As Novecentas e Noventa e Seis cairiam na perdição!',
           ],
           [
             'Foi quando a trompa de Garrick teve enfim sua resposta:',
@@ -967,7 +967,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'neutral_10_valkyra_pentacromatica',
         domain: 'neutral',
         title: 'Valkyra e a Fundação do Relicário Astral',
-        subtitle: 'Como a Imperatriz e Zephaniel selaram as 891 Memórias em Pacotes Áureos conquistados apenas pelo Ouro da Arena',
+        subtitle: 'Como a Imperatriz e Zephaniel selaram as 996 Memórias em Pacotes Áureos conquistados apenas pelo Ouro da Arena',
         yearLabel: 'Ano 1.121 D.F.',
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
@@ -978,7 +978,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Subiu formando envelopes de ligadura astral!',
           ],
           [
-            'As Oitocentas e Noventa e Uma memórias do mundo',
+            'As Novecentas e Noventa e Seis memórias do mundo',
             'Foram lacradas em Pacotes naquele cofre profundo:',
             'Cinco relíquias por invólucro, guardadas pelo esplendor,',
             'Imunes ao roubo bruto de qualquer usurpador!',

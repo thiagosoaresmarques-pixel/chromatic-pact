@@ -552,7 +552,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
     eraNumber: 'VIª ERA',
     periodLabel: '1.121 D.F. — 1.240 D.F. (Presente)',
     title: 'O Eclipse do Sétimo Selo e a Guerra dos Relicários',
-    subtitle: 'Quando as fissuras do Vazio se abriram e as 890 Memórias despertaram para o duelo final',
+    subtitle: 'Quando as fissuras do Vazio se abriram e as 996 Memórias despertaram para o duelo final',
     accentColor: '#f43f5e',
     bannerImage: '/assets/arena/tabletop_purple.png',
     nodes: [

@@ -19,11 +19,15 @@ import { EPIC_POEM_PARALLEL_PART_13 } from './epicPoemParallelPart13';
 import { EPIC_POEM_PARALLEL_PART_14 } from './epicPoemParallelPart14';
 import { EPIC_POEM_PARALLEL_PART_15 } from './epicPoemParallelPart15';
 import { EPIC_POEM_PARALLEL_PART_16 } from './epicPoemParallelPart16';
+import { EPIC_POEM_PARALLEL_PART_17 } from './epicPoemParallelPart17';
+import { EPIC_POEM_PARALLEL_PART_18 } from './epicPoemParallelPart18';
+import { EPIC_POEM_PARALLEL_PART_19 } from './epicPoemParallelPart19';
 
 /**
  * O GRANDE POEMA ÉPICO DE VAELORIA — A CANÇÃO DA FRATURA CROMÁTICA (∞ A.F. — 1.240 D.F.)
- * Reúne os 7 Cantos Cronológicos (Era Zero à VIª Era) em um único poema contínuo
- * de coluna única, contendo Prelúdios, Interlúdios Históricos e todas as 73 Criaturas Lendárias (#1 a #73).
+ * Estrutura das 7 Grandes Eras Cronológicas (Era Zero à VIª Era), cujos capítulos narrativos
+ * contínuos (63 Capítulos Canônicos) contam a História Principal de Vaeloria integrando as
+ * 82 Criaturas Lendárias e todas as Relíquias e Ecos das Seis Eras.
  */
 export const EPIC_POEM_CANTOS: EpicPoemCanto[] = [
   ...EPIC_POEM_PART_1,
@@ -33,8 +37,8 @@ export const EPIC_POEM_CANTOS: EpicPoemCanto[] = [
 ];
 
 /**
- * CRÔNICAS PARALELAS DE VAELORIA (CANTOS I-A a VII-A)
- * Ramificações opcionais derivadas dos 7 Cantos principais, integrando as demais criaturas e relíquias.
+ * CAPÍTULOS NARRATIVOS DA CRÔNICA PRINCIPAL DE VAELORIA (CAPÍTULOS I-A a VII-I)
+ * Os 63 capítulos contínuos distribuídos nos 7 Cantos cronológicos.
  */
 const ROMAN_BY_CANTO_ID: Record<string, string> = {
   canto_1_vigilia: 'I',
@@ -63,23 +67,45 @@ const RAW_PARALLEL_CANTOS: EpicPoemCanto[] = [
   ...EPIC_POEM_PARALLEL_PART_14,
   ...EPIC_POEM_PARALLEL_PART_15,
   ...EPIC_POEM_PARALLEL_PART_16,
+  ...EPIC_POEM_PARALLEL_PART_17,
+  ...EPIC_POEM_PARALLEL_PART_18,
+  ...EPIC_POEM_PARALLEL_PART_19,
 ];
 
 /**
- * Ordena os Cantos Paralelos na exata ordem cronológica dos nós-âncora de cada Canto Principal
+ * Ordena os Capítulos Narrativos na exata ordem cronológica dos marcos de cada Canto
  * e normaliza automaticamente os códigos (I-A, I-B, I-C...) para que a régua lateral e o fluxo
- * da página estejam sempre 100% sincronizados.
+ * do livro iluminado estejam sempre 100% sincronizados.
  */
 export const PARALLEL_EPIC_POEM_CANTOS: EpicPoemCanto[] = EPIC_POEM_CANTOS.flatMap((mainCanto) => {
   const roman = ROMAN_BY_CANTO_ID[mainCanto.id] || 'I';
   const children = RAW_PARALLEL_CANTOS.filter((p) => p.parentCantoId === mainCanto.id);
 
   children.sort((a, b) => {
+    // No Canto VII, garante que o Capítulo de Gorgonoth & Deus-Máquina (1.180–1.240 D.F.)
+    // venha imediatamente antes do Epílogo do Último Conselho na Arena (1.240 D.F.).
+    if (a.id === 'canto_7b_ultimo_conselho_arena' && b.id !== 'canto_7b_ultimo_conselho_arena') {
+      return 1;
+    }
+    if (b.id === 'canto_7b_ultimo_conselho_arena' && a.id !== 'canto_7b_ultimo_conselho_arena') {
+      return -1;
+    }
+
     const idxA = mainCanto.nodes.findIndex((n) => n.id === a.anchorNodeId);
     const idxB = mainCanto.nodes.findIndex((n) => n.id === b.anchorNodeId);
     const posA = idxA === -1 ? 999 : idxA;
     const posB = idxB === -1 ? 999 : idxB;
     if (posA !== posB) return posA - posB;
+
+    // Caso dois capítulos compartilhem o mesmo anchorNodeId (ex: 680 D.F. vs 689 D.F. no Canto V),
+    // garante que Valerius & Skrym-Khor (680 D.F.) venha antes dos Conclaves Ocultos (689 D.F.).
+    if (a.id === 'canto_5i_valerius_skrym_pacto' && b.id === 'canto_5a_conclaves_ocultos') {
+      return -1;
+    }
+    if (b.id === 'canto_5i_valerius_skrym_pacto' && a.id === 'canto_5a_conclaves_ocultos') {
+      return 1;
+    }
+
     return (a.parallelCode || '').localeCompare(b.parallelCode || '');
   });
 
@@ -89,7 +115,7 @@ export const PARALLEL_EPIC_POEM_CANTOS: EpicPoemCanto[] = EPIC_POEM_CANTOS.flatM
     return {
       ...child,
       parallelCode: code,
-      cantoNumber: `CANTO PARALELO ${code}`,
+      cantoNumber: `CAPÍTULO ${code}`,
     };
   });
 });
@@ -114,30 +140,47 @@ export const ALL_PARALLEL_POEM_NODES: EpicPoemNode[] = PARALLEL_EPIC_POEM_CANTOS
 );
 
 /**
- * Todos os nós poéticos (Prelúdios, as 73 Criaturas Lendárias e Interlúdios) em ordem cronológica linear.
+ * Nós de referência dos marcos originais dos 7 Cantos.
  */
 export const ALL_EPIC_POEM_NODES: EpicPoemNode[] = EPIC_POEM_CANTOS.flatMap((canto) => canto.nodes);
 
 /**
- * Mapa direto por cardId para os nós das 73 Criaturas Lendárias no Grande Poema Épico.
+ * Mapa direto por cardId para todos os nós ilustrados da História Principal unificada
+ * (incluindo todas as 82 Criaturas Lendárias e relíquias), usando ALL_EPIC_POEM_NODES como fallback.
  */
-export const EPIC_POEM_CREATURE_NODES_BY_CARD_ID: Record<string, EpicPoemNode> =
-  ALL_EPIC_POEM_NODES.reduce<Record<string, EpicPoemNode>>((acc, node) => {
-    if (node.kind === 'creature') {
-      acc[node.cardId] = node;
+export const EPIC_POEM_CREATURE_NODES_BY_CARD_ID: Record<string, EpicPoemNode> = (() => {
+  const map: Record<string, EpicPoemNode> = {};
+
+  for (const node of ALL_EPIC_POEM_NODES) {
+    if (node.cardId && (!map[node.cardId] || node.kind === 'creature')) {
+      map[node.cardId] = node;
     }
-    return acc;
-  }, {});
+  }
+
+  for (const node of ALL_PARALLEL_POEM_NODES) {
+    if (!node.cardId || node.hideCardArt) continue;
+    const existing = map[node.cardId];
+    const isFromMainParallel = ALL_PARALLEL_POEM_NODES.includes(existing);
+    if (!existing || !isFromMainParallel || (node.kind === 'creature' && existing.kind !== 'creature')) {
+      map[node.cardId] = node;
+    }
+  }
+
+  return map;
+})();
 
 /**
- * Contagem total de versos e estrofes do Grande Poema Épico.
+ * Contagem total de capítulos, nós, estrofes e versos da História Principal Unificada de Vaeloria.
  */
 export const EPIC_POEM_STATS = {
   totalCantos: EPIC_POEM_CANTOS.length,
-  totalNodes: ALL_EPIC_POEM_NODES.length,
-  totalLegendaryCreatures: ALL_EPIC_POEM_NODES.filter((n) => n.kind === 'creature').length,
-  totalStanzas: ALL_EPIC_POEM_NODES.reduce((sum, n) => sum + n.stanzas.length, 0),
-  totalVerses: ALL_EPIC_POEM_NODES.reduce(
+  totalChapters: PARALLEL_EPIC_POEM_CANTOS.length,
+  totalNodes: ALL_PARALLEL_POEM_NODES.length,
+  totalLegendaryCreatures: new Set(
+    ALL_PARALLEL_POEM_NODES.filter((n) => n.kind === 'creature' && !n.hideCardArt).map((n) => n.cardId)
+  ).size,
+  totalStanzas: ALL_PARALLEL_POEM_NODES.reduce((sum, n) => sum + n.stanzas.length, 0),
+  totalVerses: ALL_PARALLEL_POEM_NODES.reduce(
     (sum, n) => sum + n.stanzas.reduce((sSum, st) => sSum + st.length, 0),
     0
   ),

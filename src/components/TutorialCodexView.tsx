@@ -220,7 +220,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     stepNumber: 7,
     badge: 'CONSTRUÇÃO DE GRIMÓRIOS',
     title: 'Grimórios de 100 Cartas & Raridades',
-    subtitle: 'Estrutura competitiva com limite de cópias escalonado (3× / 2× / 1×) e 890 cartas.',
+    subtitle: 'Estrutura competitiva com limite de cópias escalonado (3× / 2× / 1×) e 996 cartas.',
     cardId: 'blue_06_dragao_azul',
     summary:
       'Os 30 Grimórios oficiais e os baralhos criados na Forja utilizam 100 cartas com regras de cópias por raridade para equilibrar consistência e variedade.',

@@ -3,12 +3,12 @@ import { EpicPoemCanto } from './epicPoemTypes';
 /**
  * CANTOS PARALELOS — PARTE 10 (V-E, VI-E e VII-E)
  * Crônicas paralelas da Onda E (33 estrofes / 132 versos por Canto),
- * aprofundando o Censo das 891 Memórias (702 D.F.), a Purificação dos Recifes Profundos (948 D.F.)
+ * aprofundando o Censo das 996 Memórias (702 D.F.), a Purificação dos Recifes Profundos (948 D.F.)
  * e a Âncora do Chronoleviatã na Costa Astral de Vórtex (1.166 D.F.).
  */
 export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
   // ==========================================================================
-  // CANTO PARALELO V-E: CENSO DAS 891 MEMÓRIAS (Ano 702 D.F. • Biblioteca Astral da Torre dos Cinco Selos)
+  // CANTO PARALELO V-E: CENSO DAS 996 MEMÓRIAS (Ano 702 D.F. • Biblioteca Astral da Torre dos Cinco Selos)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
@@ -17,12 +17,12 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
     parentCantoId: 'canto_5_pacto',
     anchorNodeId: 'node_creature_44_thaddeus',
     parallelCode: 'V-E',
-    shortTitle: 'Censo das 891 Memórias',
+    shortTitle: 'Censo das 996 Memórias',
     cantoNumber: 'CANTO PARALELO V-E',
     eraNumber: 'IVª ERA • BASTIDORES DO ARQUIVO TEMPORAL',
     periodLabel: 'Ano 702 D.F. • Biblioteca Astral da Torre dos Cinco Selos',
-    title: 'A Catalogação das Oitocentas e Noventa e Uma Almas no Grimório Maior',
-    subtitle: 'Como Thaddeus, Justinian, a Esfinge do Pináculo e o Comandante Garrick usaram o Cetro de Aldric para gravar todas as 891 cartas e frustraram a infiltração de Carmilla',
+    title: 'A Catalogação das Novecentas e Noventa e Seis Almas no Grimório Maior',
+    subtitle: 'Como Thaddeus, Justinian, a Esfinge do Pináculo e o Comandante Garrick usaram o Cetro de Aldric para gravar todas as 996 cartas e frustraram a infiltração de Carmilla',
     accentColor: '#38bdf8',
     bannerImage: '/assets/arena/tabletop_blue.png',
     nodes: [
@@ -68,7 +68,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'neutral_13_grimorio_astral',
         domain: 'neutral',
         title: 'A Expansão do Tomo das Estrelas Viajantes',
-        subtitle: 'O livro matriz se multiplica em oitocentas e noventa e uma lâminas de luz suspensas no salão',
+        subtitle: 'O livro matriz se multiplica em novecentas e noventa e seis lâminas de luz suspensas no salão',
         yearLabel: 'Ano 702 D.F.',
         locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
         stanzas: [
@@ -122,7 +122,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Pintando cada estampa com perfeita simetria!',
           ],
           [
-            'Setecentas, oitocentas lâminas iam se enchendo,',
+            'Oitocentas, novecentas lâminas iam se enchendo,',
             'Enquanto os olhos de todos aquele prodígio iam vendo;',
             'Mas para julgar o custo e o atributo de cada ser,',
             'Desceu do alto pináculo quem os enigmas sabe ler!',
@@ -158,7 +158,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Hoje vira sabedoria nas cartas deste domínio!"',
           ],
           [
-            'Já passavam de oitocentas as memórias catalogadas,',
+            'Já passavam de novecentas as memórias catalogadas,',
             'Quando as sombras das estantes mexeram-se disfarçadas;',
             'Pois o cheiro de tanto sangue lembrado naquele altar',
             'Atraíra uma condessa sedenta de usurpar!',
@@ -171,7 +171,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'blue_03_esfinge',
         domain: 'blue',
         title: 'O Julgamento do Oráculo Esfinge do Pináculo',
-        subtitle: 'A guardiã alada dos enigmas que pesou o ataque, a vida e o custo de mana das 891 cartas, e farejou a intrusa no salão',
+        subtitle: 'A guardiã alada dos enigmas que pesou o ataque, a vida e o custo de mana das 996 cartas, e farejou a intrusa no salão',
         yearLabel: 'Ano 702 D.F.',
         locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
         stanzas: [
@@ -188,8 +188,8 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'O ataque, a vitalidade e o custo da sua fé.',
           ],
           [
-            'Ao chegar à carta Oitocentos e Noventa e Um,',
-            'A Esfinge virou o rosto sentindo um odor incomum:',
+            'Ao chegar à carta Novecentas e Noventa e Seis,',
+            'A Esfinge virou o rosto guardando as antigas leis:',
             '"Há um coração sem batida escondido no balcão,',
             'Querendo beber a tinta da nossa catalogação!"',
           ],
@@ -275,7 +275,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'A Própria Carta da Condessa',
-        subtitle: 'Em vez de destruir a memória de Carmilla, o Cetro de Aldric grava a própria tentativa de furto como uma das 891 cartas',
+        subtitle: 'Em vez de destruir a memória de Carmilla, o Cetro de Aldric grava a própria tentativa de furto como uma das 996 cartas',
         yearLabel: 'Ano 702 D.F.',
         locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
         stanzas: [
@@ -294,8 +294,8 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           [
             'Justinian bateu o selo e a Esfinge deu seu aval,',
             'Enquanto Garrick guardava a porta do tribunal;',
-            'Estavam completas as Oitocentas e Noventa e Uma,',
-            'Sem faltar uma só alma naquela estelar coluna!',
+            'Estavam completas as Novecentas e Noventa e Seis,',
+            'Sem faltar uma só alma no livro dos cinco reis!',
           ],
         ],
       },
@@ -330,7 +330,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           [
             'Assim terminou o Censo no Ano Setecentos e Dois,',
             'Deixando pronto o tesouro para os séculos depois;',
-            'Oitocentas e noventa e uma lendas de esplendor,',
+            'Novecentas e noventa e seis lendas de esplendor,',
             'Esperando nos Grimórios a mão do invocador!',
           ],
         ],

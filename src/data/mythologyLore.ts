@@ -318,7 +318,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
     bannerImage: '/assets/arena/tabletop_gold.png',
     proseOverview: [
       'Chegamos ao Ano 1.240 D.F. Após mais de meio milênio de estabilidade, os Cinco Selos da Torre Cinzenta começaram a vibrar com uma frequência desconhecida.',
-      'Antigos cofres da Primeira Era — os Relicários — emergiram das fendas trazendo à tona 890 ecos de criaturas, feitiços e artefatos de todas as eras passadas. Ao mesmo tempo, vinte Senhores da Guerra rebeldes ocuparam as rotas da Campanha em cinco atos, desafiando a autoridade da Torre.',
+      'Antigos cofres da Primeira Era — os Relicários — emergiram das fendas trazendo à tona 996 ecos de criaturas, feitiços e artefatos de todas as eras passadas. Ao mesmo tempo, vinte Senhores da Guerra rebeldes ocuparam as rotas da Campanha em cinco atos, desafiando a autoridade da Torre.',
       'Agora, o destino do Coroa-Prisma repousa nas mãos de quem abrir os Grimórios, atravessar a Expedição do Vazio e cantar a última estrofe de Vaeloria.',
     ],
     bardBallad: [
@@ -337,9 +337,9 @@ export const TIMELINE_ERAS: TimelineEra[] = [
       },
       {
         yearLabel: '1.240 D.F.',
-        title: 'A Convocação dos Oitocentos e Noventa Ecos',
-        summary: 'Todas as 890 cartas das seis eras despertam simultaneamente nos Relicários de Vaeloria.',
-        sungCouplet: 'Oitocentas e noventa memórias no ar: / Qual delas tua voz hoje vai invocar?',
+        title: 'A Convocação dos Novecentos e Noventa e Seis Ecos',
+        summary: 'Todas as 996 cartas das seis eras despertam simultaneamente nos Relicários de Vaeloria.',
+        sungCouplet: 'Novecentas e noventa e seis lendas no ar: / Qual delas tua voz hoje vai invocar?',
         cardId: 'gold_166_trono_soberano_sol',
       },
     ],
@@ -722,7 +722,7 @@ const DOMAIN_META: Record<
 
 /**
  * Gera a Crônica Histórica (para ser lida) e a Estrofe Rimada (para ser cantada),
- * além do Ano Cronológico oficial (D.F.), para QUALQUER uma das 890 cartas do jogo.
+ * além do Ano Cronológico oficial (D.F.), para QUALQUER uma das 996 cartas do jogo.
  */
 export function getCardChronicleAndSong(card: CardDefinition): CardMythologyEntry {
   const bespokeLegendary = LEGENDARY_CREATURE_BIOGRAPHIES[card.id];

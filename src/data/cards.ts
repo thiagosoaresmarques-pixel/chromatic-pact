@@ -1,7 +1,7 @@
 import { CardDefinition } from '../types/game';
 
 /**
- * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (890 CARTAS)
+ * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (996 CARTAS)
  * 100% Original Dark Fantasy IP — Sem Nomes, Anatomias ou Frases Protegidos por Direito Autoral.
  */
 export const ALL_CARDS: CardDefinition[] = [

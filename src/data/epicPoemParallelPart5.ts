@@ -1000,15 +1000,15 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
         cardId: 'green_86_tarrasque_desperto',
         domain: 'green',
         title: 'Kragmorth, O Devorador de Eras',
-        subtitle: 'A besta-continente de carapaça impenetrável que marchou rumo ao centro do mundo em 612 D.F.',
+        subtitle: 'A besta-continente que despertou nas fendas profundas em 599 D.F. após o uivo sísmico de Fenris-Vael no norte, marchando até o Desfiladeiro Central em 612 D.F.',
         yearLabel: 'Ano 612 D.F.',
         locationLabel: 'Desfiladeiro Central de Vaeloria',
         stanzas: [
           [
-            'No Ano Seiscentos e Doze, o chão se partiu,',
-            'E a fome mais velha do mundo subiu:',
-            'Kragmorth, o Colosso, deixou seu covil,',
-            'Com dentes de serra e couraça hostil!',
+            'No Ano Quinhentos e Noventa e Nove acordou,',
+            'Quando o uivo do Lobo as cavernas rachou;',
+            'E em Seiscentos e Doze, do fundo covil,',
+            'Kragmorth veio ao vale com fome febril!',
           ],
           [
             'Não queria coroa, tratado ou altar,',

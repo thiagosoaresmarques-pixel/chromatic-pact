@@ -4,6 +4,7 @@ import {
   adminDeleteCloudProfile,
   adminDeleteCloudRoom,
   adminSaveCloudProfile,
+  authenticateSovereignAccount,
   buildFullUnlockedCollectionMap,
   clearCloudVisitorTelemetryForAdmin,
   CloudVisitorSessionEntry,
@@ -79,6 +80,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [annKicker, setAnnKicker] = useState<string>('COMUNICADO OFICIAL • ADMINISTRAÇÃO');
   const [annTitle, setAnnTitle] = useState<string>('');
   const [annMessage, setAnnMessage] = useState<string>('');
+  const [adminLoginId, setAdminLoginId] = useState<string>('tsm81');
+  const [adminLoginPass, setAdminLoginPass] = useState<string>('');
+  const [adminLoginError, setAdminLoginError] = useState<string>('');
+  const [adminLoginBusy, setAdminLoginBusy] = useState<boolean>(false);
 
   const isAuthorizedAdmin = isAdminProfile(currentUser);
 
@@ -314,19 +319,41 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   };
 
   if (!isAuthorizedAdmin) {
+    const handleQuickAdminLogin = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setAdminLoginError('');
+      setAdminLoginBusy(true);
+      const res = await authenticateSovereignAccount(adminLoginId.trim() || 'tsm81', adminLoginPass);
+      setAdminLoginBusy(false);
+      if (!res.ok || !res.profile) {
+        setAdminLoginError(res.error || 'Falha ao autenticar administrador.');
+        return;
+      }
+      if (!isAdminProfile(res.profile)) {
+        setAdminLoginError(`A conta "${res.profile.username}" não possui privilégios de Administrador.`);
+        return;
+      }
+      onUpdateCurrentUser(res.profile);
+      onNotify({
+        kicker: 'CONSELHO SUPREMO DE VAELORIA',
+        title: `Bem-vindo, Administrador ${res.profile.username}!`,
+        message: 'Acesso total ao Painel de Administração liberado.',
+      });
+    };
+
     return (
-      <div className="aaa-page-shell" style={{ maxWidth: '860px', margin: '2.5rem auto' }}>
+      <div className="aaa-page-shell" style={{ maxWidth: '640px', margin: '2.5rem auto' }}>
         <div
           style={{
             background: 'linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(30, 18, 45, 0.94))',
-            border: '1px solid rgba(245, 158, 11, 0.45)',
+            border: '1px solid rgba(245, 158, 11, 0.55)',
             borderRadius: '18px',
-            padding: '2.5rem 2rem',
+            padding: '2.25rem 2rem',
             textAlign: 'center',
             boxShadow: '0 24px 60px rgba(0, 0, 0, 0.65)',
           }}
         >
-          <div style={{ fontSize: '3rem', marginBottom: '0.75rem' }}>👑</div>
+          <div style={{ fontSize: '2.8rem', marginBottom: '0.5rem' }}>👑</div>
           <div
             style={{
               fontSize: '0.74rem',
@@ -334,33 +361,134 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               letterSpacing: '0.16em',
               color: '#fbbf24',
               textTransform: 'uppercase',
-              marginBottom: '0.5rem',
+              marginBottom: '0.4rem',
             }}
           >
             ACESSO RESTRITO • CONSELHO SUPREMO DE VAELORIA
           </div>
-          <h2 style={{ fontSize: '1.65rem', color: '#f8fafc', marginBottom: '0.75rem' }}>
-            Painel de Administração Exclusivo (`tsm81`)
+          <h2 style={{ fontSize: '1.55rem', color: '#f8fafc', marginBottom: '0.6rem' }}>
+            Painel de Administração (`tsm81`)
           </h2>
           <p
             style={{
               color: '#cbd5e1',
-              fontSize: '0.95rem',
-              maxWidth: '560px',
-              margin: '0 auto 1.5rem',
-              lineHeight: 1.6,
+              fontSize: '0.9rem',
+              maxWidth: '500px',
+              margin: '0 auto 1.25rem',
+              lineHeight: 1.55,
             }}
           >
-            Esta área é reservada ao Administrador Mestre <strong>tsm81</strong>. Entre com a conta{' '}
-            <strong>tsm81</strong> (ou crie-a se ainda não tiver cadastrado neste navegador) para
-            desbloquear todas as telas de administração do site.
+            Informe a senha da sua conta <strong>tsm81</strong> abaixo para desbloquear todas as
+            telas de administração do site:
           </p>
+
+          <form
+            onSubmit={handleQuickAdminLogin}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+              maxWidth: '380px',
+              margin: '0 auto 1.1rem',
+              textAlign: 'left',
+            }}
+          >
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  color: '#fbbf24',
+                  marginBottom: '0.3rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                }}
+              >
+                Usuário / E-mail Administrador
+              </label>
+              <input
+                type="text"
+                value={adminLoginId}
+                onChange={(e) => setAdminLoginId(e.target.value)}
+                placeholder="tsm81"
+                style={{
+                  width: '100%',
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(251, 191, 36, 0.4)',
+                  background: 'rgba(15, 23, 42, 0.9)',
+                  color: '#f8fafc',
+                  fontSize: '0.9rem',
+                  fontWeight: 700,
+                }}
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  color: '#fbbf24',
+                  marginBottom: '0.3rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                }}
+              >
+                Senha da Conta `tsm81`
+              </label>
+              <input
+                type="password"
+                value={adminLoginPass}
+                onChange={(e) => setAdminLoginPass(e.target.value)}
+                placeholder="Digite sua senha..."
+                autoFocus
+                style={{
+                  width: '100%',
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(251, 191, 36, 0.4)',
+                  background: 'rgba(15, 23, 42, 0.9)',
+                  color: '#f8fafc',
+                  fontSize: '0.9rem',
+                }}
+              />
+            </div>
+
+            {adminLoginError && (
+              <div
+                style={{
+                  padding: '0.55rem 0.75rem',
+                  borderRadius: '8px',
+                  background: 'rgba(239, 68, 68, 0.16)',
+                  border: '1px solid rgba(239, 68, 68, 0.45)',
+                  color: '#fca5a5',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                }}
+              >
+                {adminLoginError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="aaa-btn aaa-btn-primary"
+              disabled={adminLoginBusy}
+              style={{ width: '100%', justifyContent: 'center', marginTop: '0.25rem' }}
+            >
+              {adminLoginBusy ? 'Autenticando...' : '👑 Desbloquear Painel de Administração'}
+            </button>
+          </form>
+
           <button
             type="button"
-            className="aaa-btn aaa-btn-primary"
+            className="btn-fantasy"
             onClick={onOpenAccountModal}
+            style={{ fontSize: '0.72rem', opacity: 0.85 }}
           >
-            👑 Entrar / Ativar Conta Administrador (tsm81)
+            Ou abrir Gerenciador de Contas / Recuperar Senha
           </button>
         </div>
       </div>

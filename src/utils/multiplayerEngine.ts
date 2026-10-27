@@ -125,13 +125,18 @@ export interface SovereignUserProfile {
 }
 
 export const MASTER_ADMIN_USERNAMES = ['tsm81'];
+export const MASTER_ADMIN_EMAILS = ['thiago_actuary@yahoo.com.br'];
 
 export function isAdminProfile(profile?: SovereignUserProfile | null): boolean {
   if (!profile || profile.id === 'unregistered' || profile.username === 'Sem Conta') {
     return false;
   }
   const cleanName = (profile.username || '').trim().toLowerCase();
-  if (MASTER_ADMIN_USERNAMES.includes(cleanName)) {
+  const cleanEmail = (profile.email || '').trim().toLowerCase();
+  if (
+    MASTER_ADMIN_USERNAMES.includes(cleanName) ||
+    (cleanEmail && MASTER_ADMIN_EMAILS.includes(cleanEmail))
+  ) {
     return true;
   }
   return Boolean(profile.isAdmin);
@@ -438,7 +443,9 @@ export function getActiveTabUserProfile(): SovereignUserProfile {
 
   const existingRooms = getCachedRooms();
   const hostIdsInWaiting = new Set(existingRooms.map((r) => r.host.id));
-  const picked = roster.find((acc) => !hostIdsInWaiting.has(acc.id)) ?? roster[0];
+  const adminAcc = roster.find((acc) => isAdminProfile(acc) && !hostIdsInWaiting.has(acc.id)) ??
+    roster.find((acc) => isAdminProfile(acc));
+  const picked = adminAcc ?? roster.find((acc) => !hostIdsInWaiting.has(acc.id)) ?? roster[0];
 
   const ensured = ensureStarterDeckForUser(picked);
   setActiveTabUserProfile(ensured);

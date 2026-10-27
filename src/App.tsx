@@ -77,7 +77,23 @@ export const App: React.FC = () => {
   );
 
   const isGuest = isUnregisteredProfile(currentUser);
-  const isAdmin = isAdminProfile(currentUser);
+  const savedAdminProfile = useMemo(
+    () => getSavedAccountsRoster().find((acc) => isAdminProfile(acc)) ?? null,
+    [currentUser]
+  );
+  const isAdmin = isAdminProfile(currentUser) || Boolean(savedAdminProfile);
+
+  const handleOpenAdminTab = useCallback(() => {
+    if (!isAdminProfile(currentUser) && savedAdminProfile) {
+      const ensured = ensureStarterDeckForUser(savedAdminProfile);
+      setActiveTabUserProfile(ensured);
+      setCurrentUser(ensured);
+    }
+    setActiveCampaignBoss(null);
+    setActiveOnlineMatch(null);
+    setIsArenaNavExpanded(false);
+    setActiveTab('admin');
+  }, [currentUser, savedAdminProfile]);
 
   // Per-account economy & progression (Guests always remain at 0 Gold and 0 customDecks)
   const gold = isGuest ? 0 : currentUser.gold ?? 0;
@@ -713,27 +729,51 @@ export const App: React.FC = () => {
             <span>Tutorial</span>
           </button>
 
-          {isAdmin && (
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeTab === 'admin' ? 'active' : ''}`}
-              onClick={() => setActiveTab('admin')}
-              style={{
-                borderColor:
-                  activeTab === 'admin'
-                    ? 'rgba(251, 191, 36, 0.9)'
-                    : 'rgba(251, 191, 36, 0.45)',
-                color: '#fde047',
-              }}
-              title="Painel de Administração Exclusivo (tsm81)"
-            >
-              <span className="nav-tab-icon">👑</span>
-              <span>Admin</span>
-            </button>
-          )}
+          <button
+            type="button"
+            className={`nav-tab-btn ${activeTab === 'admin' ? 'active' : ''}`}
+            onClick={handleOpenAdminTab}
+            style={{
+              borderColor:
+                activeTab === 'admin'
+                  ? 'rgba(251, 191, 36, 0.95)'
+                  : 'rgba(251, 191, 36, 0.5)',
+              background:
+                activeTab === 'admin'
+                  ? 'linear-gradient(180deg, rgba(217, 119, 6, 0.35) 0%, rgba(146, 64, 14, 0.55) 100%)'
+                  : 'rgba(251, 191, 36, 0.1)',
+              color: '#fde047',
+              fontWeight: 800,
+            }}
+            title="Painel de Administração Exclusivo (tsm81)"
+          >
+            <span>👑 Admin</span>
+          </button>
         </nav>
 
         <div className="nav-right-controls">
+          <button
+            type="button"
+            className="btn-fantasy"
+            onClick={handleOpenAdminTab}
+            style={{
+              borderColor:
+                activeTab === 'admin'
+                  ? 'rgba(253, 224, 71, 0.95)'
+                  : 'rgba(251, 191, 36, 0.65)',
+              background:
+                activeTab === 'admin'
+                  ? 'linear-gradient(180deg, rgba(217, 119, 6, 0.55) 0%, rgba(120, 53, 15, 0.85) 100%)'
+                  : 'linear-gradient(180deg, rgba(120, 53, 15, 0.45) 0%, rgba(69, 26, 3, 0.75) 100%)',
+              color: '#fde047',
+              fontWeight: 800,
+              cursor: 'pointer',
+            }}
+            title="Abrir Painel de Administração do Site (tsm81)"
+          >
+            <span>👑</span>
+            <span className="hide-on-mobile">ADMIN</span>
+          </button>
           {activeTab === 'arena' && (
             <button
               type="button"

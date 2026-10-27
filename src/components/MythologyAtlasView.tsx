@@ -342,7 +342,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
                         title={`Clique para inspecionar ${card.name}`}
                       >
                         <img
-                          src={`${card.imagePath}?v=12`}
+                          src={`${card.imagePath}?v=13`}
                           alt={card.name}
                           className="poem-card-medallion-img"
                           loading="lazy"

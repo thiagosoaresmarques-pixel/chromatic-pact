@@ -1567,6 +1567,22 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   Identifica automaticamente cliques com <code>gclid</code>, <code>ttclid</code>, <code>fbclid</code>, <code>utm_source</code> ou vindos da Bio do TikTok/Instagram.
                 </div>
               </div>
+              <a
+                href="https://www.tiktok.com/@chromaticpact"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-notif-mini-btn"
+                style={{
+                  textDecoration: 'none',
+                  borderColor: 'rgba(244, 63, 94, 0.65)',
+                  color: '#fda4af',
+                  fontWeight: 800,
+                  fontSize: '0.74rem',
+                  padding: '0.35rem 0.75rem',
+                }}
+              >
+                🎵 TikTok Oficial: @chromaticpact ↗
+              </a>
             </div>
 
             <div

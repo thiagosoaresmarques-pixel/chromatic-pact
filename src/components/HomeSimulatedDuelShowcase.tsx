@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { BoardUnit, CardDefinition, Domain, FloatingFeedback, Keyword, RowType } from '../types/game';
 import { setMusicState, startAdaptiveMusic } from '../utils/musicEngine';
-import { playSfx, SfxType } from '../utils/soundEngine';
+import { getSharedAudioContext, onAudioUnlocked, playSfx, SfxType } from '../utils/soundEngine';
 import {
   CARD_TYPE_LABELS,
   CardView,
@@ -1889,10 +1889,17 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
   const [subPhase, setSubPhase] = useState<SimSubPhase>('hand');
   const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(true);
   const [paceMode, setPaceMode] = useState<'human' | 'fast'>('human');
-  const [isAudioLive, setIsAudioLive] = useState<boolean>(false);
+  const [isAudioLive, setIsAudioLive] = useState<boolean>(() => !soundMuted);
 
   const scenario = SIM_DUEL_SCENARIOS[scenarioIdx] ?? SIM_DUEL_SCENARIOS[0];
   const step = scenario.steps[stepIdx] ?? scenario.steps[0];
+
+  // Keep showcase audio synced with global navbar mute button
+  useEffect(() => {
+    if (soundMuted !== undefined) {
+      setIsAudioLive(!soundMuted);
+    }
+  }, [soundMuted]);
 
   // Realistic Human Match Pacing:
   // 'hand' (Player 1 inspecting hand & choosing card): 4.5s
@@ -1924,28 +1931,114 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     return () => window.clearTimeout(timer);
   }, [isAutoPlaying, paceMode, subPhase, stepIdx, scenario.steps.length]);
 
-  // Trigger real game audio when audio is enabled
+  // Trigger real game audio & multi-layered combat SFX on every phase transition
   useEffect(() => {
-    if (!isAudioLive) return;
+    if (!isAudioLive || soundMuted) return undefined;
+
+    setBattleMusicTrack(step.musicTrack);
+    const timers: number[] = [];
+
     if (subPhase === 'hand') {
       playSoundEffect('card_draw');
     } else if (subPhase === 'dock') {
       playSoundEffect('button_click');
+      timers.push(
+        window.setTimeout(() => {
+          playSfx('draw');
+        }, 260),
+      );
     } else if (subPhase === 'impact') {
-      setBattleMusicTrack(step.musicTrack);
       playSoundEffect(step.sfx);
+
+      const allAfterUnits = [
+        ...step.afterBoard.aiRearguard,
+        ...step.afterBoard.playerVanguard,
+        ...step.afterBoard.aiVanguard,
+        ...step.afterBoard.playerRearguard,
+      ];
+      const hasNewlySummoned = allAfterUnits.some((u) => u.isNewlySummoned);
+      const hasLunging = allAfterUnits.some((u) => u.isLunging);
+      const hasHitTarget =
+        allAfterUnits.some((u) => u.isHitTarget) ||
+        Boolean(step.afterBoard.p2Feedback && step.afterBoard.p2Feedback.color === 'damage');
+      const isLethalVictory = step.afterBoard.p2Hp <= 0;
+
+      if (hasNewlySummoned && step.sfx !== 'summon_heavy') {
+        timers.push(
+          window.setTimeout(() => {
+            playSfx('summon');
+          }, 180),
+        );
+      }
+      if (step.breathWaveLane) {
+        timers.push(
+          window.setTimeout(() => {
+            playSfx('spell');
+          }, 220),
+        );
+      }
+      if (hasLunging) {
+        timers.push(
+          window.setTimeout(() => {
+            playSfx('attack');
+          }, 260),
+        );
+        timers.push(
+          window.setTimeout(() => {
+            playSfx('hit');
+          }, 480),
+        );
+      } else if (hasHitTarget) {
+        timers.push(
+          window.setTimeout(() => {
+            playSfx('hit');
+          }, 340),
+        );
+      }
+      if (isLethalVictory) {
+        timers.push(
+          window.setTimeout(() => {
+            playSfx('victory');
+          }, 680),
+        );
+      }
     }
-  }, [isAudioLive, scenarioIdx, stepIdx, subPhase, step.musicTrack, step.sfx]);
+
+    return () => {
+      for (const t of timers) {
+        window.clearTimeout(t);
+      }
+    };
+  }, [isAudioLive, soundMuted, scenarioIdx, stepIdx, subPhase, step]);
+
+  // As soon as browser unlocks Web Audio on the user's first gesture anywhere on the page, start current step audio
+  useEffect(() => {
+    let hasTriggeredInitialUnlock = false;
+    const unsub = onAudioUnlocked(() => {
+      if (hasTriggeredInitialUnlock) return;
+      hasTriggeredInitialUnlock = true;
+      if (isAudioLive && !soundMuted) {
+        setBattleMusicTrack(step.musicTrack);
+        if (subPhase === 'hand') {
+          playSoundEffect('card_draw');
+        } else if (subPhase === 'dock') {
+          playSoundEffect('button_click');
+        } else {
+          playSoundEffect(step.sfx);
+        }
+      }
+    });
+    return () => unsub();
+  }, [isAudioLive, soundMuted, step.musicTrack, step.sfx, subPhase]);
 
   useEffect(() => {
     return () => {
-      if (isAudioLive) {
-        stopBattleMusic();
-      }
+      stopBattleMusic();
     };
-  }, [isAudioLive]);
+  }, []);
 
   const handleToggleAudio = () => {
+    getSharedAudioContext();
     const next = !isAudioLive;
     setIsAudioLive(next);
     if (next) {
@@ -1955,6 +2048,9 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
       setBattleMusicTrack(step.musicTrack);
       playSoundEffect(step.sfx);
     } else {
+      if (!soundMuted && onToggleSound) {
+        onToggleSound();
+      }
       stopBattleMusic();
     }
   };

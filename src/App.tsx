@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { CampaignBoss, CardDefinition } from './types/game';
 import { ALL_CARDS, CARDS_BY_ID } from './data/cards';
-import { isMuted, toggleMute } from './utils/soundEngine';
+import { getSharedAudioContext, isMuted, toggleMute } from './utils/soundEngine';
 import {
   getCurrentMusicState,
   MusicStateDescriptor,
@@ -388,14 +388,19 @@ export const App: React.FC = () => {
   useEffect(() => {
     const unsub = subscribeMusicState(setMusicInfo);
     const unlockAudio = () => {
+      getSharedAudioContext();
       startAdaptiveMusic();
     };
-    window.addEventListener('pointerdown', unlockAudio);
-    window.addEventListener('keydown', unlockAudio);
+    window.addEventListener('pointerdown', unlockAudio, { passive: true });
+    window.addEventListener('touchstart', unlockAudio, { passive: true });
+    window.addEventListener('keydown', unlockAudio, { passive: true });
+    window.addEventListener('click', unlockAudio, { passive: true });
     return () => {
       unsub();
       window.removeEventListener('pointerdown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
       window.removeEventListener('keydown', unlockAudio);
+      window.removeEventListener('click', unlockAudio);
     };
   }, []);
 

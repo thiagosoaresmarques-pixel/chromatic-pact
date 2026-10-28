@@ -38,6 +38,48 @@ export function getSharedAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
+let audioUnlockListenersAttached = false;
+let onAudioUnlockedCallbacks: Array<() => void> = [];
+
+export function onAudioUnlocked(cb: () => void): () => void {
+  onAudioUnlockedCallbacks.push(cb);
+  return () => {
+    onAudioUnlockedCallbacks = onAudioUnlockedCallbacks.filter((fn) => fn !== cb);
+  };
+}
+
+export function ensureGlobalAudioUnlockListeners(): void {
+  if (typeof window === 'undefined' || audioUnlockListenersAttached) return;
+  audioUnlockListenersAttached = true;
+
+  const unlockHandler = () => {
+    const ctx = getSharedAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx
+        .resume()
+        .then(() => {
+          for (const cb of onAudioUnlockedCallbacks) {
+            cb();
+          }
+        })
+        .catch(() => {});
+    } else if (ctx && ctx.state === 'running') {
+      for (const cb of onAudioUnlockedCallbacks) {
+        cb();
+      }
+    }
+  };
+
+  window.addEventListener('pointerdown', unlockHandler, { passive: true });
+  window.addEventListener('touchstart', unlockHandler, { passive: true });
+  window.addEventListener('keydown', unlockHandler, { passive: true });
+  window.addEventListener('click', unlockHandler, { passive: true });
+}
+
+if (typeof window !== 'undefined') {
+  ensureGlobalAudioUnlockListeners();
+}
+
 function getAudioContext(): AudioContext | null {
   return getSharedAudioContext();
 }
@@ -125,11 +167,7 @@ function playNoiseBurst(
   source.start(startTime);
 }
 
-export function playSfx(type: SfxType): void {
-  if (muted) return;
-  const ctx = getAudioContext();
-  if (!ctx) return;
-
+function dispatchSfxOnContext(ctx: AudioContext, type: SfxType): void {
   try {
     switch (type) {
       case 'draw': {
@@ -252,4 +290,24 @@ export function playSfx(type: SfxType): void {
   } catch {
     // Ignore Web Audio errors in headless environments
   }
+}
+
+export function playSfx(type: SfxType): void {
+  if (muted) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  if (ctx.state === 'suspended') {
+    ctx
+      .resume()
+      .then(() => {
+        if (!muted && ctx.state === 'running') {
+          dispatchSfxOnContext(ctx, type);
+        }
+      })
+      .catch(() => {});
+    return;
+  }
+
+  dispatchSfxOnContext(ctx, type);
 }

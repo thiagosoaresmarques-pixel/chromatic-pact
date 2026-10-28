@@ -18,12 +18,68 @@ export type AdsConversionEventName =
 
 export interface AdsAttributionData {
   gclid?: string;
+  ttclid?: string;
+  fbclid?: string;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
   utmTerm?: string;
   landedAt: number;
   landingUrl: string;
+}
+
+export type TrafficChannelId = 'google_ads' | 'tiktok' | 'instagram' | 'organic';
+
+/**
+ * Classifica o canal de aquisição de uma sessão de visitante (Google Ads, TikTok, Instagram ou Orgânico/Direto).
+ */
+export function classifyVisitorChannel(session: {
+  gclid?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  landingUrl?: string;
+}): TrafficChannelId {
+  const src = (session.utmSource || '').toLowerCase();
+  const med = (session.utmMedium || '').toLowerCase();
+  const camp = (session.utmCampaign || '').toLowerCase();
+  const url = (session.landingUrl || '').toLowerCase();
+
+  if (
+    src.includes('tiktok') ||
+    src === 'tt' ||
+    camp.includes('tiktok') ||
+    url.includes('ttclid=') ||
+    url.includes('utm_source=tiktok')
+  ) {
+    return 'tiktok';
+  }
+
+  if (
+    src.includes('instagram') ||
+    src.includes('insta') ||
+    src === 'ig' ||
+    src.includes('meta') ||
+    med.includes('reels') ||
+    camp.includes('instagram') ||
+    camp.includes('reels') ||
+    url.includes('fbclid=') ||
+    url.includes('utm_source=instagram')
+  ) {
+    return 'instagram';
+  }
+
+  if (
+    Boolean(session.gclid) ||
+    src.includes('google') ||
+    src.includes('adwords') ||
+    url.includes('gclid=') ||
+    url.includes('utm_source=google')
+  ) {
+    return 'google_ads';
+  }
+
+  return 'organic';
 }
 
 export interface AdsEventAuditEntry {
@@ -226,17 +282,38 @@ export function initAdsTelemetry(): AdsAttributionData | null {
   try {
     const searchParams = new URLSearchParams(window.location.search);
     const gclid = searchParams.get('gclid') ?? undefined;
-    const utmSource = searchParams.get('utm_source') ?? undefined;
-    const utmMedium = searchParams.get('utm_medium') ?? undefined;
+    const ttclid = searchParams.get('ttclid') ?? undefined;
+    const fbclid = searchParams.get('fbclid') ?? undefined;
+    let utmSource = searchParams.get('utm_source') ?? undefined;
+    let utmMedium = searchParams.get('utm_medium') ?? undefined;
     const utmCampaign = searchParams.get('utm_campaign') ?? undefined;
     const utmTerm = searchParams.get('utm_term') ?? undefined;
 
-    const hasUrlParams = Boolean(gclid || utmSource || utmMedium || utmCampaign || utmTerm);
+    // Fallback inteligente para cliques vindos da Bio/Vídeo do TikTok ou Instagram mesmo sem UTM manual
+    const ref = (typeof document !== 'undefined' ? document.referrer || '' : '').toLowerCase();
+    if (!utmSource) {
+      if (ttclid || ref.includes('tiktok.com')) {
+        utmSource = 'tiktok';
+        if (!utmMedium) utmMedium = ttclid ? 'paid_social' : 'bio_referral';
+      } else if (fbclid || ref.includes('instagram.com')) {
+        utmSource = 'instagram';
+        if (!utmMedium) utmMedium = fbclid ? 'paid_social' : 'bio_referral';
+      } else if (gclid) {
+        utmSource = 'google_ads';
+        if (!utmMedium) utmMedium = 'cpc';
+      }
+    }
+
+    const hasUrlParams = Boolean(
+      gclid || ttclid || fbclid || utmSource || utmMedium || utmCampaign || utmTerm
+    );
     let attribution = getAdsAttribution();
 
     if (hasUrlParams) {
       attribution = {
         gclid: gclid ?? attribution?.gclid,
+        ttclid: ttclid ?? attribution?.ttclid,
+        fbclid: fbclid ?? attribution?.fbclid,
         utmSource: utmSource ?? attribution?.utmSource,
         utmMedium: utmMedium ?? attribution?.utmMedium,
         utmCampaign: utmCampaign ?? attribution?.utmCampaign,

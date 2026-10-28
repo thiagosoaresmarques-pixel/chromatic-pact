@@ -19,9 +19,11 @@ import {
   SovereignUserProfile,
 } from '../utils/multiplayerEngine';
 import {
+  classifyVisitorChannel,
   getLocalAdsAuditEvents,
   GOOGLE_ADS_SIGNUP_CONVERSION_SEND_TO,
   GOOGLE_ADS_TAG_ID,
+  TrafficChannelId,
 } from '../utils/adsTelemetry';
 
 interface AdminDashboardViewProps {
@@ -84,6 +86,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [adminLoginPass, setAdminLoginPass] = useState<string>('');
   const [adminLoginError, setAdminLoginError] = useState<string>('');
   const [adminLoginBusy, setAdminLoginBusy] = useState<boolean>(false);
+
+  // Social & Multi-channel marketing tools state
+  const [channelFilter, setChannelFilter] = useState<'all' | TrafficChannelId>('all');
+  const [customUtmSource, setCustomUtmSource] = useState<string>('tiktok');
+  const [customUtmMedium, setCustomUtmMedium] = useState<string>('video_organico');
+  const [customUtmCampaign, setCustomUtmCampaign] = useState<string>('desafio_xequemate');
 
   const isAuthorizedAdmin = isAdminProfile(currentUser);
 
@@ -150,6 +158,28 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       (s) => s.events.includes('register_account') || Boolean(s.registeredUsername)
     ).length;
 
+    const buildChannelMetric = (ch: TrafficChannelId) => {
+      const list = visitorSessions.filter((s) => classifyVisitorChannel(s) === ch);
+      const visitors = list.length;
+      const quickPlay = list.filter((s) => s.events.includes('quick_play_clicked')).length;
+      const duels = list.filter(
+        (s) => s.events.includes('start_duel') || s.events.includes('start_campaign_boss')
+      ).length;
+      const victories = list.filter((s) => s.events.includes('match_victory')).length;
+      const signups = list.filter(
+        (s) => s.events.includes('register_account') || Boolean(s.registeredUsername)
+      ).length;
+      const convRate = visitors > 0 ? Math.round((signups / visitors) * 100) : 0;
+      return { visitors, quickPlay, duels, victories, signups, convRate };
+    };
+
+    const channelBreakdown = {
+      google_ads: buildChannelMetric('google_ads'),
+      tiktok: buildChannelMetric('tiktok'),
+      instagram: buildChannelMetric('instagram'),
+      organic: buildChannelMetric('organic'),
+    };
+
     return {
       totalUsers,
       totalAdmins,
@@ -165,6 +195,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       firstCardSessions,
       victorySessions,
       registeredFromSessions,
+      channelBreakdown,
     };
   }, [profiles, visitorSessions]);
 
@@ -606,7 +637,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           [
             { id: 'overview', icon: '📊', label: 'Visão Geral & Poderes Mestre' },
             { id: 'users', icon: '👥', label: `Contas Cadastradas (${stats.totalUsers})` },
-            { id: 'telemetry', icon: '📈', label: `Visitantes & Google Ads (${stats.totalVisitors})` },
+            { id: 'telemetry', icon: '📈', label: `Marketing: Ads, TikTok & Instagram (${stats.totalVisitors})` },
             { id: 'rooms', icon: '🌐', label: `Salas 1×1 (${cloudRooms.length})` },
             { id: 'system', icon: '📢', label: 'Comunicados & Sistema' },
           ] as Array<{ id: AdminSectionTab; icon: string; label: string }>
@@ -1505,10 +1536,451 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       )}
 
       {/* =====================================================================
-          TAB 3: TRAFFIC, VISITORS & GOOGLE ADS FUNNEL
+          TAB 3: TRAFFIC, VISITORS & GOOGLE ADS / TIKTOK / INSTAGRAM FUNNEL
          ===================================================================== */}
       {section === 'telemetry' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+          {/* Multi-Channel Attribution Comparison Cards */}
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.9)',
+              border: '1px solid rgba(251, 191, 36, 0.35)',
+              borderRadius: '16px',
+              padding: '1.15rem 1.35rem',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '0.6rem',
+                marginBottom: '0.9rem',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#fbbf24', textTransform: 'uppercase' }}>
+                  📊 COMPARATIVO DE AQUISIÇÃO POR CANAL (GOOGLE ADS × TIKTOK × INSTAGRAM × ORGÂNICO)
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                  Identifica automaticamente cliques com <code>gclid</code>, <code>ttclid</code>, <code>fbclid</code>, <code>utm_source</code> ou vindos da Bio do TikTok/Instagram.
+                </div>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(225px, 1fr))',
+                gap: '0.8rem',
+              }}
+            >
+              {(
+                [
+                  {
+                    id: 'google_ads' as TrafficChannelId,
+                    title: '🎯 Google Ads (Pesquisa / Display)',
+                    badgeColor: '#38bdf8',
+                    borderColor: 'rgba(56, 189, 248, 0.4)',
+                    data: stats.channelBreakdown.google_ads,
+                  },
+                  {
+                    id: 'tiktok' as TrafficChannelId,
+                    title: '🎵 TikTok (Vídeos & Link da Bio)',
+                    badgeColor: '#f43f5e',
+                    borderColor: 'rgba(244, 63, 94, 0.45)',
+                    data: stats.channelBreakdown.tiktok,
+                  },
+                  {
+                    id: 'instagram' as TrafficChannelId,
+                    title: '📸 Instagram (Reels, Bio & Meta Ads)',
+                    badgeColor: '#c084fc',
+                    borderColor: 'rgba(192, 132, 252, 0.45)',
+                    data: stats.channelBreakdown.instagram,
+                  },
+                  {
+                    id: 'organic' as TrafficChannelId,
+                    title: '🌐 Orgânico / Direto / Outros',
+                    badgeColor: '#34d399',
+                    borderColor: 'rgba(52, 211, 153, 0.35)',
+                    data: stats.channelBreakdown.organic,
+                  },
+                ]
+              ).map((ch) => (
+                <div
+                  key={ch.id}
+                  style={{
+                    background: 'rgba(2, 6, 23, 0.72)',
+                    border: `1px solid ${ch.borderColor}`,
+                    borderRadius: '12px',
+                    padding: '0.9rem 1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.45rem',
+                  }}
+                >
+                  <div style={{ fontSize: '0.76rem', fontWeight: 900, color: ch.badgeColor }}>
+                    {ch.title}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                    <div>
+                      <span style={{ fontSize: '1.65rem', fontWeight: 900, color: '#f8fafc' }}>
+                        {ch.data.visitors}
+                      </span>
+                      <span style={{ fontSize: '0.73rem', color: '#94a3b8', marginLeft: '0.35rem' }}>
+                        visitante(s)
+                      </span>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 900,
+                        padding: '0.12rem 0.48rem',
+                        borderRadius: '999px',
+                        background: 'rgba(251, 191, 36, 0.16)',
+                        color: '#fde047',
+                      }}
+                    >
+                      Conv. Conta: {ch.data.convRate}%
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      gap: '0.3rem 0.6rem',
+                      fontSize: '0.73rem',
+                      color: '#cbd5e1',
+                      borderTop: '1px solid rgba(148, 163, 184, 0.14)',
+                      paddingTop: '0.45rem',
+                    }}
+                  >
+                    <div>⚡ 1-Clique: <strong>{ch.data.quickPlay}</strong></div>
+                    <div>⚔️ Duelos: <strong>{ch.data.duels}</strong></div>
+                    <div>🏆 Vitórias: <strong>{ch.data.victories}</strong></div>
+                    <div>👑 Contas: <strong style={{ color: '#fbbf24' }}>{ch.data.signups}</strong></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 1-Click UTM Link Generator for TikTok & Instagram */}
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.88)',
+              border: '1px solid rgba(244, 63, 94, 0.35)',
+              borderRadius: '16px',
+              padding: '1.15rem 1.35rem',
+            }}
+          >
+            <div style={{ marginBottom: '0.85rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#fb7185', textTransform: 'uppercase' }}>
+                🔗 GERADOR DE LINKS RASTREADOS (UTM) • COPIAR EM 1 CLIQUE PARA BIO & ANÚNCIOS
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                Use estes links no perfil do <strong>TikTok</strong>, na Bio do <strong>Instagram</strong> e nos botões de <strong>Reels / Meta Ads</strong> para separar exatamente de onde vem cada jogador:
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '0.65rem',
+                marginBottom: '0.9rem',
+              }}
+            >
+              {[
+                {
+                  badge: '🎵 TIKTOK BIO',
+                  color: '#f43f5e',
+                  label: 'Link Oficial da Bio do TikTok',
+                  url: 'https://chromaticpact.com/?utm_source=tiktok&utm_medium=bio&utm_campaign=perfil_oficial',
+                },
+                {
+                  badge: '🎵 TIKTOK VÍDEO',
+                  color: '#fb7185',
+                  label: 'Link para Vídeo de Problemas / Xeque-Mate',
+                  url: 'https://chromaticpact.com/?utm_source=tiktok&utm_medium=video_organico&utm_campaign=puzzle_xequemate',
+                },
+                {
+                  badge: '📸 INSTAGRAM BIO',
+                  color: '#c084fc',
+                  label: 'Link Oficial da Bio do Instagram',
+                  url: 'https://chromaticpact.com/?utm_source=instagram&utm_medium=bio&utm_campaign=perfil_oficial',
+                },
+                {
+                  badge: '📸 INSTAGRAM REELS / STORIES',
+                  color: '#e879f9',
+                  label: 'Link para Sticker de Stories / Reels',
+                  url: 'https://chromaticpact.com/?utm_source=instagram&utm_medium=reels&utm_campaign=dominio_clash',
+                },
+                {
+                  badge: '🚀 META / IG ADS (PAGO)',
+                  color: '#38bdf8',
+                  label: 'Link para Tráfego Pago (Instagram / Facebook Ads)',
+                  url: 'https://chromaticpact.com/?utm_source=instagram&utm_medium=paid_social&utm_campaign=meta_ads_conversao',
+                },
+              ].map((preset) => (
+                <div
+                  key={preset.url}
+                  style={{
+                    background: 'rgba(2, 6, 23, 0.75)',
+                    border: '1px solid rgba(148, 163, 184, 0.22)',
+                    borderRadius: '10px',
+                    padding: '0.7rem 0.85rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '0.45rem',
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.4rem' }}>
+                      <span
+                        style={{
+                          fontSize: '0.64rem',
+                          fontWeight: 900,
+                          color: preset.color,
+                          letterSpacing: '0.06em',
+                        }}
+                      >
+                        {preset.badge}
+                      </span>
+                      <button
+                        type="button"
+                        className="nav-notif-mini-btn"
+                        style={{ padding: '0.18rem 0.55rem', fontSize: '0.68rem', color: '#fde047', borderColor: 'rgba(251, 191, 36, 0.5)' }}
+                        onClick={() => {
+                          navigator.clipboard?.writeText(preset.url);
+                          onNotify({
+                            kicker: 'LINK RASTREADO COPIADO',
+                            title: preset.label,
+                            message: preset.url,
+                          });
+                        }}
+                      >
+                        📋 Copiar Link
+                      </button>
+                    </div>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f8fafc', marginTop: '0.2rem' }}>
+                      {preset.label}
+                    </div>
+                  </div>
+                  <code
+                    style={{
+                      fontSize: '0.66rem',
+                      color: '#94a3b8',
+                      background: 'rgba(15, 23, 42, 0.9)',
+                      padding: '0.28rem 0.45rem',
+                      borderRadius: '6px',
+                      wordBreak: 'break-all',
+                    }}
+                  >
+                    {preset.url}
+                  </code>
+                </div>
+              ))}
+            </div>
+
+            {/* Custom UTM Link Builder */}
+            <div
+              style={{
+                background: 'rgba(2, 6, 23, 0.65)',
+                border: '1px solid rgba(148, 163, 184, 0.2)',
+                borderRadius: '10px',
+                padding: '0.75rem 0.9rem',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                gap: '0.55rem',
+              }}
+            >
+              <span style={{ fontSize: '0.73rem', fontWeight: 800, color: '#fde68a' }}>
+                🛠️ Criar Link Personalizado:
+              </span>
+              <input
+                type="text"
+                value={customUtmSource}
+                onChange={(e) => setCustomUtmSource(e.target.value.replace(/\s+/g, '_').toLowerCase())}
+                placeholder="utm_source (ex: tiktok)"
+                style={{
+                  background: 'rgba(15, 23, 42, 0.9)',
+                  border: '1px solid rgba(148, 163, 184, 0.3)',
+                  borderRadius: '7px',
+                  padding: '0.35rem 0.6rem',
+                  color: '#f8fafc',
+                  fontSize: '0.74rem',
+                  width: '130px',
+                }}
+              />
+              <input
+                type="text"
+                value={customUtmMedium}
+                onChange={(e) => setCustomUtmMedium(e.target.value.replace(/\s+/g, '_').toLowerCase())}
+                placeholder="utm_medium (ex: reels)"
+                style={{
+                  background: 'rgba(15, 23, 42, 0.9)',
+                  border: '1px solid rgba(148, 163, 184, 0.3)',
+                  borderRadius: '7px',
+                  padding: '0.35rem 0.6rem',
+                  color: '#f8fafc',
+                  fontSize: '0.74rem',
+                  width: '140px',
+                }}
+              />
+              <input
+                type="text"
+                value={customUtmCampaign}
+                onChange={(e) => setCustomUtmCampaign(e.target.value.replace(/\s+/g, '_').toLowerCase())}
+                placeholder="utm_campaign (ex: video_01)"
+                style={{
+                  background: 'rgba(15, 23, 42, 0.9)',
+                  border: '1px solid rgba(148, 163, 184, 0.3)',
+                  borderRadius: '7px',
+                  padding: '0.35rem 0.6rem',
+                  color: '#f8fafc',
+                  fontSize: '0.74rem',
+                  width: '170px',
+                }}
+              />
+              <button
+                type="button"
+                className="nav-notif-mini-btn"
+                style={{ borderColor: 'rgba(56, 189, 248, 0.55)', color: '#7dd3fc', fontSize: '0.73rem' }}
+                onClick={() => {
+                  const built = `https://chromaticpact.com/?utm_source=${encodeURIComponent(
+                    customUtmSource || 'tiktok'
+                  )}&utm_medium=${encodeURIComponent(
+                    customUtmMedium || 'social'
+                  )}&utm_campaign=${encodeURIComponent(customUtmCampaign || 'campanha')}`;
+                  navigator.clipboard?.writeText(built);
+                  onNotify({
+                    kicker: 'UTM PERSONALIZADO COPIADO',
+                    title: 'Link copiado para a área de transferência',
+                    message: built,
+                  });
+                }}
+              >
+                📋 Copiar UTM Personalizado
+              </button>
+            </div>
+          </div>
+
+          {/* Viral Scripts & Captions Kit for TikTok & Reels */}
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.88)',
+              border: '1px solid rgba(192, 132, 252, 0.35)',
+              borderRadius: '16px',
+              padding: '1.15rem 1.35rem',
+            }}
+          >
+            <div style={{ marginBottom: '0.85rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#c084fc', textTransform: 'uppercase' }}>
+                🎬 ROTEIROS VIRAIS & LEGENDAS PRONTAS (TIKTOK & INSTAGRAM REELS — 15 A 25 SEGUNDOS)
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                Grave a tela vertical (9:16) usando estes 3 formatos de alta retenção e copie a legenda com hashtags em 1 clique:
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+                gap: '0.75rem',
+              }}
+            >
+              {[
+                {
+                  tag: '🔥 FORMATO #1 • TOPO DE FUNIL VIRAL (COMENTÁRIOS)',
+                  title: 'Desafio de Xeque-Mate Tático em 1 Turno',
+                  hook: '0–3s (Gancho): "95% dos jogadores erram essa jogada. Você consegue achar o letal em 1 turno com apenas 5 de Mana?"',
+                  scene: '3–15s (Tela): Abra o Problema #01 ou #05 na aba Problemas, mostre a mão e o campo adversário sem jogar a última carta.',
+                  cta: '15–20s (CTA): "Pausa o vídeo e comenta qual carta você jogaria primeiro! Ou teste ao vivo sem baixar nada no link da Bio."',
+                  caption:
+                    '95% erram essa sequência tática! ♟️🔥 Você consegue achar o Xeque-Mate em 1 turno com apenas 5 de Mana? Comente sua jogada abaixo ou resolva os 100 Problemas Táticos direto no navegador (link na bio: chromaticpact.com)! #cardgame #tcg #jogosdecartas #estrategia #xadrez #rpgbrasil #chromaticpact #indiegamebrasil',
+                },
+                {
+                  tag: '⚡ FORMATO #2 • MECÂNICA ÚNICA (RETENÇÃO VISUAL)',
+                  title: 'Confronto de Expansão de Domínio 50/50',
+                  hook: '0–3s (Gancho): "Esqueça jogos de cartas lentos: aqui o seu Domínio Elemental toma o território físico da arena!"',
+                  scene: '3–15s (Tela): Grave o momento em que Ignis (Forja Rubra) e Glacius (Abismo Glacial) ativam seus Domínios dividindo o tabuleiro 50/50.',
+                  cta: '15–20s (CTA): "Qual dos 5 Domínios Soberanos você escolheria? Jogue de graça em 1 clique no celular ou PC pelo link da Bio!"',
+                  caption:
+                    'Quando dois Domínios Soberanos colidem na arena, o tabuleiro se divide ao meio! 🔥❄️ Qual facção você domina em Vaeloria: Forja Rubra, Abismo Glacial, Selva Titânica, Eclipse Cinzento ou Sol Soberano? Jogue grátis direto no navegador (link na bio)! #tcgbrasil #magicbrasil #yugiohbrasil #hearthstonebrasil #rpgdemesa #jogosonline #chromaticpact',
+                },
+                {
+                  tag: '👑 FORMATO #3 • CONVERSÃO DE CONTA & RECOMPENSA',
+                  title: '+160 Ouro de Boas-Vindas & +500 Cartas no Navegador',
+                  hook: '0–3s (Gancho): "Quer jogar um TCG completo com mais de 500 cartas sem instalar 10 GB no celular ou PC?"',
+                  scene: '3–15s (Tela): Mostre a abertura de um Pacote Místico no Mercado revelando uma carta Mítica e os 5 Grimórios Soberanos prontos.',
+                  cta: '15–20s (CTA): "Crie sua conta gratuita agora e receba +160 de Ouro + 5 Decks completos para duelar contra a IA ou 1×1!"',
+                  caption:
+                    'Mais de 500 cartas originais, 7 Chefes de Campanha, 100 Problemas Táticos e Duelos 1×1 direto no navegador — sem precisar baixar nada! 👑🐉 Crie sua conta Soberana grátis e comece com +160 de Ouro no link da bio (chromaticpact.com)! #jogosgratis #browsergames #cardgames #dndbrasil #fantasia #gamerbrasil #chromaticpact',
+                },
+              ].map((script) => (
+                <div
+                  key={script.title}
+                  style={{
+                    background: 'rgba(2, 6, 23, 0.76)',
+                    border: '1px solid rgba(192, 132, 252, 0.28)',
+                    borderRadius: '12px',
+                    padding: '0.85rem 0.95rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '0.55rem',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '0.63rem', fontWeight: 900, color: '#e879f9', letterSpacing: '0.05em' }}>
+                      {script.tag}
+                    </div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#f8fafc', margin: '0.2rem 0 0.45rem' }}>
+                      {script.title}
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: '#fde68a', marginBottom: '0.28rem', lineHeight: 1.4 }}>
+                      🎤 {script.hook}
+                    </div>
+                    <div style={{ fontSize: '0.73rem', color: '#cbd5e1', marginBottom: '0.28rem', lineHeight: 1.4 }}>
+                      🎥 {script.scene}
+                    </div>
+                    <div style={{ fontSize: '0.73rem', color: '#6ee7b7', lineHeight: 1.4 }}>
+                      🚀 {script.cta}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="nav-notif-mini-btn"
+                    style={{
+                      width: '100%',
+                      justifyContent: 'center',
+                      borderColor: 'rgba(192, 132, 252, 0.55)',
+                      color: '#f3e8ff',
+                      padding: '0.4rem 0.6rem',
+                      fontSize: '0.73rem',
+                    }}
+                    onClick={() => {
+                      navigator.clipboard?.writeText(script.caption);
+                      onNotify({
+                        kicker: 'LEGENDA + HASHTAGS COPIADAS',
+                        title: script.title,
+                        message: 'Cole diretamente na descrição do seu TikTok ou Instagram Reels.',
+                      });
+                    }}
+                  >
+                    📋 Copiar Legenda Pronta + Hashtags
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Funnel Conversion Bars */}
           <div
             style={{
@@ -1530,7 +2002,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             >
               <div>
                 <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#38bdf8', textTransform: 'uppercase' }}>
-                  🎯 FUNIL DE CONVERSÃO EM TEMPO REAL • TAG GOOGLE ADS: {GOOGLE_ADS_TAG_ID}
+                  🎯 FUNIL GLOBAL DE CONVERSÃO EM TEMPO REAL • TAG GOOGLE ADS: {GOOGLE_ADS_TAG_ID}
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#94a3b8', marginTop: '0.2rem' }}>
                   Snippet de Conversão de Inscrição: <code>{GOOGLE_ADS_SIGNUP_CONVERSION_SEND_TO}</code>
@@ -1625,7 +2097,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             </div>
           </div>
 
-          {/* Visitor Sessions List */}
+          {/* Visitor Sessions List with Channel Filter */}
           <div
             style={{
               background: 'rgba(15, 23, 42, 0.88)',
@@ -1634,99 +2106,171 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               padding: '1.15rem',
             }}
           >
-            <h3 style={{ margin: '0 0 0.85rem', fontSize: '1rem', color: '#f8fafc' }}>
-              Sessões de Visitantes Sincronizadas na Nuvem ({visitorSessions.length})
-            </h3>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '0.6rem',
+                marginBottom: '0.85rem',
+              }}
+            >
+              <h3 style={{ margin: 0, fontSize: '1rem', color: '#f8fafc' }}>
+                Sessões de Visitantes Sincronizadas na Nuvem ({visitorSessions.length})
+              </h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                {(
+                  [
+                    { id: 'all', label: `Todos (${visitorSessions.length})` },
+                    { id: 'google_ads', label: `🎯 Google Ads (${stats.channelBreakdown.google_ads.visitors})` },
+                    { id: 'tiktok', label: `🎵 TikTok (${stats.channelBreakdown.tiktok.visitors})` },
+                    { id: 'instagram', label: `📸 Instagram (${stats.channelBreakdown.instagram.visitors})` },
+                    { id: 'organic', label: `🌐 Orgânico (${stats.channelBreakdown.organic.visitors})` },
+                  ] as Array<{ id: 'all' | TrafficChannelId; label: string }>
+                ).map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setChannelFilter(f.id)}
+                    style={{
+                      background:
+                        channelFilter === f.id ? 'rgba(251, 191, 36, 0.22)' : 'rgba(2, 6, 23, 0.7)',
+                      border:
+                        channelFilter === f.id
+                          ? '1px solid rgba(251, 191, 36, 0.75)'
+                          : '1px solid rgba(148, 163, 184, 0.25)',
+                      color: channelFilter === f.id ? '#fde047' : '#cbd5e1',
+                      borderRadius: '999px',
+                      padding: '0.24rem 0.65rem',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {visitorSessions.length === 0 ? (
               <div style={{ color: '#94a3b8', fontSize: '0.84rem' }}>
                 Nenhuma sessão registrada ainda. Assim que visitantes acessarem o site, eles aparecerão aqui em tempo real.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-                {visitorSessions.map((s) => {
-                  const isAds = Boolean(s.gclid || s.utmSource || s.utmCampaign || s.utmTerm);
-                  return (
-                    <div
-                      key={s.sessionId}
-                      style={{
-                        padding: '0.75rem 0.9rem',
-                        borderRadius: '10px',
-                        background: 'rgba(30, 41, 59, 0.6)',
-                        border: '1px solid rgba(148, 163, 184, 0.16)',
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: 'space-between',
-                        gap: '0.65rem',
-                      }}
-                    >
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                          <span
-                            style={{
-                              fontSize: '0.65rem',
-                              fontWeight: 900,
-                              padding: '0.12rem 0.5rem',
-                              borderRadius: '999px',
-                              background: isAds ? 'rgba(56, 189, 248, 0.22)' : 'rgba(148, 163, 184, 0.2)',
-                              color: isAds ? '#7dd3fc' : '#cbd5e1',
-                            }}
-                          >
-                            {isAds ? '🎯 GOOGLE ADS' : '🌐 ACESSO DIRETO'}
-                          </span>
-                          <span style={{ fontWeight: 800, color: '#f8fafc', fontSize: '0.84rem' }}>
-                            {s.registeredUsername
-                              ? `Converteu Conta: ${s.registeredUsername}`
-                              : `Sessão ${s.sessionId.slice(0, 14)}`}
-                          </span>
-                          {s.screenSize && (
-                            <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-                              • Tela {s.screenSize}
-                            </span>
-                          )}
-                        </div>
-                        {(s.gclid || s.utmSource || s.utmCampaign || s.utmTerm) && (
-                          <div style={{ fontSize: '0.72rem', color: '#7dd3fc', marginTop: '0.2rem' }}>
-                            {s.gclid ? `GCLID: ${s.gclid} ` : ''}
-                            {s.utmSource ? `| Fonte: ${s.utmSource} ` : ''}
-                            {s.utmCampaign ? `| Campanha: ${s.utmCampaign} ` : ''}
-                            {s.utmTerm ? `| Termo: ${s.utmTerm}` : ''}
-                          </div>
-                        )}
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.4rem' }}>
-                          {s.events.map((ev) => (
+                {visitorSessions
+                  .filter((s) => channelFilter === 'all' || classifyVisitorChannel(s) === channelFilter)
+                  .map((s) => {
+                    const ch = classifyVisitorChannel(s);
+                    const badgeMeta =
+                      ch === 'tiktok'
+                        ? {
+                            label: '🎵 TIKTOK',
+                            bg: 'rgba(244, 63, 94, 0.22)',
+                            color: '#fda4af',
+                          }
+                        : ch === 'instagram'
+                        ? {
+                            label: '📸 INSTAGRAM',
+                            bg: 'rgba(192, 132, 252, 0.22)',
+                            color: '#e9d5ff',
+                          }
+                        : ch === 'google_ads'
+                        ? {
+                            label: '🎯 GOOGLE ADS',
+                            bg: 'rgba(56, 189, 248, 0.22)',
+                            color: '#7dd3fc',
+                          }
+                        : {
+                            label: '🌐 ACESSO DIRETO',
+                            bg: 'rgba(148, 163, 184, 0.2)',
+                            color: '#cbd5e1',
+                          };
+                    return (
+                      <div
+                        key={s.sessionId}
+                        style={{
+                          padding: '0.75rem 0.9rem',
+                          borderRadius: '10px',
+                          background: 'rgba(30, 41, 59, 0.6)',
+                          border: '1px solid rgba(148, 163, 184, 0.16)',
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          justifyContent: 'space-between',
+                          gap: '0.65rem',
+                        }}
+                      >
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                             <span
-                              key={ev}
                               style={{
-                                fontSize: '0.66rem',
-                                padding: '0.1rem 0.45rem',
-                                borderRadius: '6px',
-                                background: 'rgba(15, 23, 42, 0.85)',
-                                border: '1px solid rgba(148, 163, 184, 0.25)',
-                                color: '#e2e8f0',
+                                fontSize: '0.65rem',
+                                fontWeight: 900,
+                                padding: '0.12rem 0.5rem',
+                                borderRadius: '999px',
+                                background: badgeMeta.bg,
+                                color: badgeMeta.color,
                               }}
                             >
-                              ✓ {ev}
+                              {badgeMeta.label}
                             </span>
-                          ))}
+                            <span style={{ fontWeight: 800, color: '#f8fafc', fontSize: '0.84rem' }}>
+                              {s.registeredUsername
+                                ? `Converteu Conta: ${s.registeredUsername}`
+                                : `Sessão ${s.sessionId.slice(0, 14)}`}
+                            </span>
+                            {s.screenSize && (
+                              <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                                • Tela {s.screenSize}
+                              </span>
+                            )}
+                          </div>
+                          {(s.gclid || s.utmSource || s.utmMedium || s.utmCampaign || s.utmTerm) && (
+                            <div style={{ fontSize: '0.72rem', color: '#7dd3fc', marginTop: '0.2rem' }}>
+                              {s.gclid ? `GCLID: ${s.gclid} ` : ''}
+                              {s.utmSource ? `| Fonte: ${s.utmSource} ` : ''}
+                              {s.utmMedium ? `| Mídia: ${s.utmMedium} ` : ''}
+                              {s.utmCampaign ? `| Campanha: ${s.utmCampaign} ` : ''}
+                              {s.utmTerm ? `| Termo: ${s.utmTerm}` : ''}
+                            </div>
+                          )}
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: '0.4rem' }}>
+                            {s.events.map((ev) => (
+                              <span
+                                key={ev}
+                                style={{
+                                  fontSize: '0.66rem',
+                                  padding: '0.1rem 0.45rem',
+                                  borderRadius: '6px',
+                                  background: 'rgba(15, 23, 42, 0.85)',
+                                  border: '1px solid rgba(148, 163, 184, 0.25)',
+                                  color: '#e2e8f0',
+                                }}
+                              >
+                                ✓ {ev}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'right', fontSize: '0.73rem', color: '#94a3b8' }}>
+                          <div>
+                            Último acesso:{' '}
+                            {new Date(s.lastSeenAt).toLocaleString('pt-BR', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </div>
+                          <div style={{ opacity: 0.7, maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {s.landingUrl}
+                          </div>
                         </div>
                       </div>
-                      <div style={{ textAlign: 'right', fontSize: '0.73rem', color: '#94a3b8' }}>
-                        <div>
-                          Último acesso:{' '}
-                          {new Date(s.lastSeenAt).toLocaleString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </div>
-                        <div style={{ opacity: 0.7, maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {s.landingUrl}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
             )}
           </div>

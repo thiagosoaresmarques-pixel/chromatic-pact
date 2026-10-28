@@ -2297,14 +2297,18 @@ function executeCardEffect(
       let targetRowName: RowType = 'vanguard';
       if (options?.targetId) {
         const found = findUnitOnBoard(state, options.targetId);
-        if (found && found.owner === enemyActor) {
+        if (found && found.owner === enemyActor && !found.unit.isTrap && found.unit.currentHp > 0) {
           targetRowName = found.row;
         }
-      } else if (getRowUnits(enemyState, 'vanguard').filter((u) => !u.isTrap).length === 0) {
+      } else if (
+        getRowUnits(enemyState, 'vanguard').filter((u) => !u.isTrap && u.currentHp > 0).length === 0
+      ) {
         targetRowName = 'rearguard';
       }
 
-      const rowUnits = getRowUnits(enemyState, targetRowName).filter((u) => !u.isTrap);
+      const rowUnits = getRowUnits(enemyState, targetRowName).filter(
+        (u) => !u.isTrap && u.currentHp > 0
+      );
       for (const unit of rowUnits) {
         dealEffectDamageToUnit(state, unit, dmg, sourceCard.name);
       }
@@ -2326,6 +2330,8 @@ function executeCardEffect(
         if (
           found &&
           found.owner === enemyActor &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0 &&
           !(state.roundSubPhase === 'deploy' && found.unit.isConcealedDeploy)
         ) {
           targetUnit = found.unit;
@@ -2334,10 +2340,18 @@ function executeCardEffect(
 
       if (!targetUnit) {
         const allEnemies = getAllBoardUnits(enemyState).filter(
-          (u) => !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+          (u) =>
+            !u.isTrap &&
+            u.currentHp > 0 &&
+            !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
         );
         if (allEnemies.length > 0) {
-          allEnemies.sort((a, b) => b.currentAtk - a.currentAtk || a.currentHp - b.currentHp);
+          allEnemies.sort((a, b) => {
+            const aIsCreature = a.card.type === 'creature' ? 1 : 0;
+            const bIsCreature = b.card.type === 'creature' ? 1 : 0;
+            if (bIsCreature !== aIsCreature) return bIsCreature - aIsCreature;
+            return b.currentAtk - a.currentAtk || a.currentHp - b.currentHp;
+          });
           targetUnit = allEnemies[0];
         }
       }
@@ -2368,7 +2382,7 @@ function executeCardEffect(
       const dmg = effect.value + bonusDmg;
       for (const owner of ['player', 'ai'] as const) {
         for (const unit of getAllBoardUnits(state[owner])) {
-          if (unit.instanceId !== options?.sourceInstanceId) {
+          if (!unit.isTrap && unit.currentHp > 0 && unit.instanceId !== options?.sourceInstanceId) {
             dealEffectDamageToUnit(state, unit, dmg, sourceCard.name);
           }
         }
@@ -2413,7 +2427,7 @@ function executeCardEffect(
 
     case 'heal_all_allies': {
       const healAmount = effect.value;
-      for (const unit of getAllBoardUnits(actorState)) {
+      for (const unit of getAllBoardUnits(actorState).filter((u) => !u.isTrap && u.currentHp > 0)) {
         unit.currentHp = Math.min(unit.maxHp, unit.currentHp + healAmount);
         addFeedback(state, unit.instanceId, `+${healAmount}`, 'heal');
       }
@@ -2433,14 +2447,17 @@ function executeCardEffect(
       let targetUnit: BoardUnit | null = null;
       if (options?.targetId) {
         const found = findUnitOnBoard(state, options.targetId);
-        if (found && found.owner === actor) {
+        if (found && found.owner === actor && !found.unit.isTrap && found.unit.currentHp > 0) {
           targetUnit = found.unit;
         }
       }
       if (!targetUnit) {
-        const allies = getAllBoardUnits(actorState);
+        const allies = getAllBoardUnits(actorState).filter((u) => !u.isTrap && u.currentHp > 0);
         if (allies.length > 0) {
-          allies.sort((a, b) => b.maxHp - b.currentHp - (a.maxHp - a.currentHp));
+          allies.sort(
+            (a, b) =>
+              b.maxHp - b.currentHp - (a.maxHp - a.currentHp) || b.currentAtk - a.currentAtk
+          );
           targetUnit = allies[0];
         }
       }
@@ -2477,15 +2494,30 @@ function executeCardEffect(
       let targetUnit: BoardUnit | null = null;
       if (options?.targetId) {
         const found = findUnitOnBoard(state, options.targetId);
-        if (found && found.owner === enemyActor) {
+        if (
+          found &&
+          found.owner === enemyActor &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0
+        ) {
           targetUnit = found.unit;
         }
       }
       if (!targetUnit) {
-        const enemies = getAllBoardUnits(enemyState).filter((u) => !u.isFrozen && u.card.type !== 'relic');
-        const pool = enemies.length > 0 ? enemies : getAllBoardUnits(enemyState);
+        const prefersVanguard = /Vanguarda/i.test(
+          `${effect.description || ''} ${sourceCard.description || ''}`
+        );
+        const livingEnemies = getAllBoardUnits(enemyState).filter(
+          (u) => !u.isTrap && u.currentHp > 0 && u.card.type !== 'relic'
+        );
+        const unfrozen = livingEnemies.filter((u) => !u.isFrozen);
+        const basePool = unfrozen.length > 0 ? unfrozen : livingEnemies;
+        const vanguardPool = prefersVanguard
+          ? basePool.filter((u) => u.row === 'vanguard')
+          : [];
+        const pool = vanguardPool.length > 0 ? vanguardPool : basePool;
         if (pool.length > 0) {
-          pool.sort((a, b) => b.currentAtk - a.currentAtk);
+          pool.sort((a, b) => b.currentAtk - a.currentAtk || b.currentHp - a.currentHp);
           targetUnit = pool[0];
         }
       }
@@ -2504,11 +2536,23 @@ function executeCardEffect(
     }
 
     case 'freeze_enemy_vanguard': {
-      const vanUnits = getRowUnits(enemyState, 'vanguard').filter((u) => !u.isTrap && !u.isFrozen);
-      const rearUnits = getRowUnits(enemyState, 'rearguard').filter((u) => !u.isTrap && !u.isFrozen);
-      const candidates = vanUnits.length > 0 ? vanUnits : rearUnits;
-      candidates.sort((a, b) => b.currentAtk - a.currentAtk);
-      const maxTargets = Math.max(3, effect.value > 1 ? effect.value * 2 : 3);
+      const combinedDesc = `${effect.description || ''} ${sourceCard.description || ''}`;
+      const freezeAllRows = /todos os inimigos/i.test(combinedDesc);
+      const hasExplicitCap = /até \d+/i.test(combinedDesc);
+      const vanUnits = getRowUnits(enemyState, 'vanguard').filter(
+        (u) => !u.isTrap && u.currentHp > 0 && !u.isFrozen && u.card.type !== 'relic'
+      );
+      const rearUnits = getRowUnits(enemyState, 'rearguard').filter(
+        (u) => !u.isTrap && u.currentHp > 0 && !u.isFrozen && u.card.type !== 'relic'
+      );
+      const candidates = freezeAllRows
+        ? [...vanUnits, ...rearUnits]
+        : vanUnits.length > 0
+        ? vanUnits
+        : rearUnits;
+      candidates.sort((a, b) => b.currentAtk - a.currentAtk || b.currentHp - a.currentHp);
+      const maxTargets =
+        hasExplicitCap && effect.value > 0 ? effect.value : candidates.length;
       for (const unit of candidates.slice(0, maxTargets)) {
         unit.isFrozen = true;
         addFeedback(state, unit.instanceId, 'Congelado!', 'freeze');
@@ -2526,14 +2570,26 @@ function executeCardEffect(
       let targetFound: { unit: BoardUnit; row: RowType; slotIndex: number } | null = null;
       if (options?.targetId) {
         const found = findUnitOnBoard(state, options.targetId);
-        if (found && found.owner === enemyActor) {
+        if (
+          found &&
+          found.owner === enemyActor &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0
+        ) {
           targetFound = { unit: found.unit, row: found.row, slotIndex: found.slotIndex };
         }
       }
       if (!targetFound) {
-        const enemies = getAllBoardUnits(enemyState);
+        const enemies = getAllBoardUnits(enemyState).filter(
+          (u) => !u.isTrap && u.currentHp > 0
+        );
         if (enemies.length > 0) {
-          enemies.sort((a, b) => b.card.cost - a.card.cost || b.currentAtk - a.currentAtk);
+          enemies.sort((a, b) => {
+            const aIsCreature = a.card.type === 'creature' ? 1 : 0;
+            const bIsCreature = b.card.type === 'creature' ? 1 : 0;
+            if (bIsCreature !== aIsCreature) return bIsCreature - aIsCreature;
+            return b.card.cost - a.card.cost || b.currentAtk - a.currentAtk;
+          });
           const pick = enemies[0];
           targetFound = { unit: pick, row: pick.row, slotIndex: pick.slotIndex };
         }
@@ -2560,14 +2616,26 @@ function executeCardEffect(
       let targetUnit: BoardUnit | null = null;
       if (options?.targetId) {
         const found = findUnitOnBoard(state, options.targetId);
-        if (found && found.owner === enemyActor) {
+        if (
+          found &&
+          found.owner === enemyActor &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0
+        ) {
           targetUnit = found.unit;
         }
       }
       if (!targetUnit) {
-        const enemies = getAllBoardUnits(enemyState);
+        const enemies = getAllBoardUnits(enemyState).filter(
+          (u) => !u.isTrap && u.currentHp > 0
+        );
         if (enemies.length > 0) {
-          enemies.sort((a, b) => b.currentAtk + b.currentHp - (a.currentAtk + a.currentHp));
+          enemies.sort((a, b) => {
+            const aIsCreature = a.card.type === 'creature' ? 1 : 0;
+            const bIsCreature = b.card.type === 'creature' ? 1 : 0;
+            if (bIsCreature !== aIsCreature) return bIsCreature - aIsCreature;
+            return b.currentAtk + b.currentHp - (a.currentAtk + a.currentHp);
+          });
           targetUnit = enemies[0];
         }
       }
@@ -2587,30 +2655,35 @@ function executeCardEffect(
     }
 
     case 'revive_from_crypt': {
-      const creaturesInCrypt = actorState.crypt
-        .map((c, idx) => ({ card: c, idx }))
-        .filter((item) => item.card.type === 'creature');
+      const isCostCap = effect.value >= 5;
+      const maxCost = isCostCap ? effect.value : 99;
+      const reviveCount = isCostCap ? 1 : Math.max(1, effect.value || 1);
 
-      if (creaturesInCrypt.length > 0) {
-        const maxCost = effect.value > 0 ? effect.value : 99;
+      for (let r = 0; r < reviveCount; r++) {
+        const creaturesInCrypt = actorState.crypt
+          .map((c, idx) => ({ card: c, idx }))
+          .filter((item) => item.card && item.card.type === 'creature');
+
+        if (creaturesInCrypt.length === 0) break;
+
         const eligible = creaturesInCrypt.filter((item) => item.card.cost <= maxCost);
         const pool = eligible.length > 0 ? eligible : creaturesInCrypt;
         pool.sort((a, b) => b.card.cost - a.card.cost || b.card.atk - a.card.atk);
 
         const chosen = pool[0];
         const slot = findAvailableSlot(actorState, chosen.card.preferredRow);
-        if (slot) {
-          actorState.crypt.splice(chosen.idx, 1);
-          const revivedUnit = createBoardUnit(chosen.card, actor, slot.row, slot.slotIndex, 0);
-          addUnitToSlot(actorState, slot.row, slot.slotIndex, revivedUnit);
-          addFeedback(state, revivedUnit.instanceId, 'Reanimado!', 'buff');
-          addLog(
-            state,
-            actor,
-            'effect',
-            `[${sourceCard.name}] reanimou [${chosen.card.name}] da Cripta!`
-          );
-        }
+        if (!slot) break;
+
+        actorState.crypt.splice(chosen.idx, 1);
+        const revivedUnit = createBoardUnit(chosen.card, actor, slot.row, slot.slotIndex, 0);
+        addUnitToSlot(actorState, slot.row, slot.slotIndex, revivedUnit);
+        addFeedback(state, revivedUnit.instanceId, 'Reanimado!', 'buff');
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] reanimou [${chosen.card.name}] da Cripta!`
+        );
       }
       break;
     }
@@ -2622,20 +2695,40 @@ function executeCardEffect(
 
       if (options?.targetId) {
         const found = findUnitOnBoard(state, options.targetId);
-        if (found && found.owner === actor && found.unit.card.type === 'creature') {
+        if (
+          found &&
+          found.owner === actor &&
+          found.unit.card.type === 'creature' &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0
+        ) {
           targetUnit = found.unit;
         }
       }
       if (!targetUnit) {
-        const allies = getAllBoardUnits(actorState).filter(
-          (u) => u.card.type === 'creature' && u.instanceId !== options?.sourceInstanceId
+        const prefersVanguard = /Vanguarda/i.test(
+          `${effect.description || ''} ${sourceCard.description || ''}`
         );
+        const livingAllies = getAllBoardUnits(actorState).filter(
+          (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+        );
+        const otherAllies = livingAllies.filter(
+          (u) => u.instanceId !== options?.sourceInstanceId
+        );
+        const baseCandidates = otherAllies.length > 0 ? otherAllies : livingAllies;
+        const vanguardCandidates = prefersVanguard
+          ? baseCandidates.filter((u) => u.row === 'vanguard')
+          : [];
         const fallbackAllies =
-          allies.length > 0
-            ? allies
-            : getAllBoardUnits(actorState).filter((u) => u.card.type === 'creature');
+          vanguardCandidates.length > 0 ? vanguardCandidates : baseCandidates;
+
         if (fallbackAllies.length > 0) {
-          fallbackAllies.sort((a, b) => b.currentAtk - a.currentAtk);
+          fallbackAllies.sort((a, b) => {
+            const aReady = !a.isFrozen && !a.hasAttackedThisTurn ? 1 : 0;
+            const bReady = !b.isFrozen && !b.hasAttackedThisTurn ? 1 : 0;
+            if (bReady !== aReady) return bReady - aReady;
+            return b.currentAtk - a.currentAtk || b.currentHp - a.currentHp;
+          });
           targetUnit = fallbackAllies[0];
         }
       }
@@ -2658,7 +2751,14 @@ function executeCardEffect(
     case 'buff_all_allies': {
       const atkBuff = effect.value;
       const hpBuff = effect.secondaryValue ?? effect.value;
-      const allies = getAllBoardUnits(actorState).filter((u) => u.card.type === 'creature');
+      const livingAllies = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      const onlyVanguard = /na Vanguarda/i.test(effect.description || '');
+      const vanguardAllies = onlyVanguard
+        ? livingAllies.filter((u) => u.row === 'vanguard')
+        : [];
+      const allies = vanguardAllies.length > 0 ? vanguardAllies : livingAllies;
       for (const unit of allies) {
         unit.currentAtk += atkBuff;
         unit.maxHp += hpBuff;
@@ -2678,7 +2778,9 @@ function executeCardEffect(
 
     case 'debuff_enemy_vanguard_atk': {
       const debuff = effect.value;
-      const targetUnits = getAllBoardUnits(enemyState);
+      const targetUnits = getAllBoardUnits(enemyState).filter(
+        (u) => !u.isTrap && u.currentHp > 0 && u.card.type === 'creature'
+      );
       for (const unit of targetUnits) {
         unit.currentAtk = Math.max(0, unit.currentAtk - debuff);
         addFeedback(state, unit.instanceId, `-${debuff} ATQ`, 'freeze');
@@ -2734,20 +2836,52 @@ function executeCardEffect(
     }
 
     case 'shield_all_allies': {
-      const allies = getAllBoardUnits(actorState).filter((u) => u.card.type === 'creature');
-      for (const unit of allies) {
+      const livingAllies = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      const isSingleAlly = /a um aliado|a ele/i.test(
+        `${effect.description || ''} ${sourceCard.description || ''}`
+      );
+      let targets: BoardUnit[] = livingAllies;
+
+      if (isSingleAlly && livingAllies.length > 0) {
+        let chosen: BoardUnit | null = null;
+        if (options?.targetId) {
+          const found = findUnitOnBoard(state, options.targetId);
+          if (
+            found &&
+            found.owner === actor &&
+            found.unit.card.type === 'creature' &&
+            !found.unit.isTrap &&
+            found.unit.currentHp > 0
+          ) {
+            chosen = found.unit;
+          }
+        }
+        if (!chosen) {
+          const unshielded = livingAllies.filter((u) => !u.hasDivineShield);
+          const pool = unshielded.length > 0 ? unshielded : livingAllies;
+          pool.sort((a, b) => b.currentAtk + b.currentHp - (a.currentAtk + a.currentHp));
+          chosen = pool[0];
+        }
+        targets = chosen ? [chosen] : [];
+      }
+
+      for (const unit of targets) {
         unit.hasDivineShield = true;
-        if (effect.value > 0) {
-          unit.currentArmor += effect.value;
+        if (effect.secondaryValue && effect.secondaryValue > 0) {
+          unit.currentArmor += effect.secondaryValue;
         }
         addFeedback(state, unit.instanceId, 'Escudo Divino!', 'shield');
       }
-      if (allies.length > 0) {
+      if (targets.length > 0) {
         addLog(
           state,
           actor,
           'effect',
-          `[${sourceCard.name}] protegeu todos os aliados com Escudo Divino!`
+          isSingleAlly
+            ? `[${sourceCard.name}] concedeu Escudo Divino a [${targets[0].card.name}]!`
+            : `[${sourceCard.name}] protegeu todos os aliados com Escudo Divino!`
         );
       }
       break;
@@ -2763,6 +2897,8 @@ function executeCardEffect(
           found &&
           found.owner === enemyActor &&
           found.unit.card.type === 'creature' &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0 &&
           found.unit.currentAtk <= maxAtk
         ) {
           targetFound = { unit: found.unit, row: found.row, slotIndex: found.slotIndex };
@@ -2771,7 +2907,11 @@ function executeCardEffect(
 
       if (!targetFound) {
         const candidates = getAllBoardUnits(enemyState).filter(
-          (u) => u.card.type === 'creature' && u.currentAtk <= maxAtk
+          (u) =>
+            u.card.type === 'creature' &&
+            !u.isTrap &&
+            u.currentHp > 0 &&
+            u.currentAtk <= maxAtk
         );
         if (candidates.length > 0) {
           candidates.sort((a, b) => b.currentAtk + b.currentHp - (a.currentAtk + a.currentHp));
@@ -3071,10 +3211,14 @@ export function playCard(
     // Blue Biome Terrain Effect (Condutor Rúnico): Casting a spell when Blue Terrain is awakened (3+) grants +1 ATK and +1 HP to an allied creature!
     if (isDomainTerrainAwakened(actorState, 'blue')) {
       const alliedCreatures = getAllBoardUnits(actorState).filter(
-        (u) => u.card.type === 'creature' && !u.isTrap
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
       );
       if (alliedCreatures.length > 0) {
-        const targetAlly = alliedCreatures[0];
+        const explicitAlly = options?.targetId
+          ? alliedCreatures.find((u) => u.instanceId === options.targetId)
+          : undefined;
+        alliedCreatures.sort((a, b) => b.currentAtk - a.currentAtk || b.currentHp - a.currentHp);
+        const targetAlly = explicitAlly || alliedCreatures[0];
         targetAlly.currentAtk += 1;
         targetAlly.maxHp += 1;
         targetAlly.currentHp += 1;
@@ -3090,8 +3234,12 @@ export function playCard(
 
     if (card.breathDamage && card.breathDamage > 0) {
       const breathDmg = card.breathDamage + spellDamageBonus;
-      const vanEnemies = getRowUnits(enemyState, 'vanguard').filter((u) => !u.isTrap);
-      const rearEnemies = getRowUnits(enemyState, 'rearguard').filter((u) => !u.isTrap);
+      const vanEnemies = getRowUnits(enemyState, 'vanguard').filter(
+        (u) => !u.isTrap && u.currentHp > 0
+      );
+      const rearEnemies = getRowUnits(enemyState, 'rearguard').filter(
+        (u) => !u.isTrap && u.currentHp > 0
+      );
       const targetRowUnits = vanEnemies.length > 0 ? vanEnemies : rearEnemies;
       for (const enemyUnit of targetRowUnits) {
         dealEffectDamageToUnit(next, enemyUnit, breathDmg, card.name);
@@ -3115,11 +3263,13 @@ export function playCard(
 
     // Trigger spell_cast listeners on friendly board units (e.g., Arcanists / Relics)
     for (const boardUnit of getAllBoardUnits(actorState)) {
+      if (boardUnit.isTrap || boardUnit.currentHp <= 0) continue;
       for (const eff of boardUnit.card.effects) {
         if (eff.trigger === 'spell_cast') {
           executeCardEffect(next, actor, boardUnit.card, eff, {
             targetId: options?.targetId,
             sourceInstanceId: boardUnit.instanceId,
+            spellDamageBonus,
           });
         }
       }
@@ -3172,12 +3322,15 @@ export function ascendUnit(
 
   actorState.currentEssence -= spec.cost;
 
-  const hpGain = Math.max(1, spec.newMaxHp - unit.maxHp);
+  // Preserve any permanent +ATQ / +ARM / +VID buffs accumulated before Ascension!
+  const baseAtkDelta = Math.max(0, spec.newAtk - unit.card.atk);
+  const baseArmorDelta = Math.max(0, spec.newArmor - unit.card.armor);
+  const baseHpDelta = Math.max(1, spec.newMaxHp - unit.card.hp);
   unit.isAscended = true;
-  unit.currentAtk = Math.max(unit.currentAtk, spec.newAtk);
-  unit.currentArmor = Math.max(unit.currentArmor, spec.newArmor);
-  unit.maxHp = spec.newMaxHp;
-  unit.currentHp = Math.min(unit.maxHp, unit.currentHp + hpGain);
+  unit.currentAtk = Math.max(spec.newAtk, unit.currentAtk + baseAtkDelta);
+  unit.currentArmor = Math.max(spec.newArmor, unit.currentArmor + baseArmorDelta);
+  unit.maxHp = Math.max(spec.newMaxHp, unit.maxHp + baseHpDelta);
+  unit.currentHp = Math.min(unit.maxHp, unit.currentHp + baseHpDelta);
 
   for (const kw of spec.addedKeywords) {
     if (!unit.keywords.includes(kw)) {

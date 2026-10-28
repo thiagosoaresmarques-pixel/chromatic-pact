@@ -1364,7 +1364,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Atropelar"
     ],
-    "breathDamage": 1,
+    "breathDamage": 2,
     "effects": [],
     "description": "Atropelar. Armadura 1. Sopro 2: Dispara um feixe de relâmpago que causa 2 de dano à fileira alvo antes de atacar.",
     "flavorText": "Até mesmo os dragões evitam as cavernas onde o trovão rasteja.",
@@ -1422,7 +1422,7 @@ export const ALL_CARDS: CardDefinition[] = [
       "Voo",
       "Alcance"
     ],
-    "breathDamage": 2,
+    "breathDamage": 3,
     "effects": [
       {
         "trigger": "on_enter",
@@ -1777,7 +1777,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "hp": 4,
     "preferredRow": "rearguard",
     "keywords": [
-      "Alcance"
+      "Alcance",
+      "Toque Letal"
     ],
     "effects": [
       {
@@ -2690,8 +2691,8 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "revive_from_crypt",
-        "value": 6,
-        "description": "Ao Entrar: Reanima uma criatura de custo até 6 da sua Cripta."
+        "value": 5,
+        "description": "Ao Entrar: Reanima uma criatura de custo até 5 da sua Cripta."
       }
     ],
     "description": "Alcance, Renascer. Armadura 1. Ao Entrar: Reanima uma criatura (custo <= 5) da Cripta.",
@@ -2845,7 +2846,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "hp": 3,
     "preferredRow": "rearguard",
     "keywords": [
-      "Voo"
+      "Voo",
+      "Dreno de Vida"
     ],
     "effects": [
       {
@@ -2933,7 +2935,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "preferredRow": "rearguard",
     "keywords": [
       "Voo",
-      "Alcance"
+      "Alcance",
+      "Dreno de Vida"
     ],
     "effects": [],
     "description": "Voo, Alcance, Dreno de Vida. Atravessa armaduras mundanas para drenar a força vital.",
@@ -3021,7 +3024,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião",
-      "Toque Letal"
+      "Toque Letal",
+      "Renascer"
     ],
     "effects": [],
     "description": "Guardião, Toque Letal, Renascer. Armadura 1. Sua maldição apodrece quem ousa tocá-lo.",
@@ -3049,7 +3053,7 @@ export const ALL_CARDS: CardDefinition[] = [
       "Dreno de Vida",
       "Renascer"
     ],
-    "regeneration": 1,
+    "regeneration": 2,
     "ascension": {
       "cost": 4,
       "newName": "Nosferatu, Imperador da Noite Eterna",
@@ -3083,7 +3087,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "hp": 5,
     "preferredRow": "rearguard",
     "keywords": [
-      "Alcance"
+      "Alcance",
+      "Toque Letal"
     ],
     "effects": [
       {
@@ -3148,7 +3153,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "preferredRow": "rearguard",
     "keywords": [
       "Voo",
-      "Alcance"
+      "Alcance",
+      "Toque Letal"
     ],
     "corruptionCost": 1,
     "effects": [
@@ -3184,7 +3190,7 @@ export const ALL_CARDS: CardDefinition[] = [
       "Renascer",
       "Toque Letal"
     ],
-    "breathDamage": 2,
+    "breathDamage": 3,
     "corruptionCost": 2,
     "effects": [],
     "description": "Corrupção +2. Voo, Toque Letal, Renascer. Sopro 3: Exala miasma necrótico que causa 3 de dano à fileira alvo.",
@@ -3808,7 +3814,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Concede +1/+1 aos aliados."
       }
     ],
-    "description": "Ímpeto, Escudo Divino (Névoa). O primeiro ataque contra ele erra em meio à bruma esmeralda.",
+    "description": "Ímpeto, Escudo Divino. Ao Entrar: Concede +1/+1 aos aliados.",
     "flavorText": "Onde a bruma esmeralda toca a relva, a lâmina inimiga encontra apenas o vento.",
     "imagePath": "/assets/cards/green_04_pantera_miragem.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Spectral Mist Lynx, a sleek four-legged forest lynx predator with dark emerald fur, glowing jade runes on its shoulders, sharp tufted ears, and twin ethereal green mist tails, strictly four legs, no tentacles."
@@ -3825,7 +3831,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 4,
     "affinityReq": 2,
     "atk": 5,
-    "armor": 0,
+    "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
@@ -3929,8 +3935,15 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "heal_all_allies",
-        "value": 2,
-        "description": "Ao Entrar: Cura 2 de VIDA de todos os aliados."
+        "value": 3,
+        "description": "Ao Entrar: Cura 3 de VIDA de todos os aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +1/+1 a todos os aliados."
       }
     ],
     "description": "Guardião, Alcance. Armadura 2, Regeneração 2. Ao Entrar: Cura 3 de VIDA e concede +1/+1 a todos os aliados.",
@@ -3950,7 +3963,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 6,
     "affinityReq": 3,
     "atk": 8,
-    "armor": 1,
+    "armor": 2,
     "hp": 9,
     "preferredRow": "vanguard",
     "keywords": [
@@ -3959,7 +3972,14 @@ export const ALL_CARDS: CardDefinition[] = [
       "Fúria Crescente"
     ],
     "regeneration": 3,
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano à Vanguarda inimiga."
+      }
+    ],
     "description": "Atropelar, Alcance, Fúria Crescente. Armadura 2, Regeneração 3, Sopro 2. Ao Entrar: Causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Cinco gargantas famintas, e cada ferida faz brotar mais duas.",
     "imagePath": "/assets/cards/green_09_hidra.png",
@@ -4081,9 +4101,10 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
+        "type": "buff_target_ally",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +2 ATQ e +1 VIDA ao aliado mais forte."
       }
     ],
     "description": "Alcance. Ao Entrar: Sua melodia selvagem inspira o aliado mais forte (+2 ATQ / +1 VIDA).",
@@ -4430,7 +4451,7 @@ export const ALL_CARDS: CardDefinition[] = [
       "Alcance",
       "Toque Letal"
     ],
-    "breathDamage": 3,
+    "breathDamage": 2,
     "effects": [
       {
         "trigger": "on_enter",
@@ -4632,7 +4653,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 3,
     "affinityReq": 1,
     "atk": 5,
-    "armor": 2,
+    "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
     "keywords": [
@@ -4981,17 +5002,25 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 6,
     "affinityReq": 2,
     "atk": 3,
-    "armor": 1,
+    "armor": 2,
     "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião"
     ],
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao Entrar: Cura 3 de VIDA do seu Soberano."
+      }
+    ],
     "description": "Guardião. Armadura 2, Regeneração 1. Ao Entrar: Transfere proteção arcana curando 3 de VIDA do seu Soberano.",
     "flavorText": "Gravado com o selo do mestre, ele recebe cada golpe sem dar um passo atrás.",
     "imagePath": "/assets/cards/gold_05_automato_guardiao.png",
-    "aiArtPrompt": "Dark fantasy TCG art, heavy iron and wood shield guardian construct with glowing golden runes on its chest."
+    "aiArtPrompt": "Dark fantasy TCG art, heavy iron and wood shield guardian construct with glowing golden runes on its chest.",
+    "regeneration": 1
   },
   {
     "id": "gold_06_deva",
@@ -5222,7 +5251,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 3,
     "affinityReq": 1,
     "atk": 1,
-    "armor": 0,
+    "armor": 1,
     "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
@@ -5450,7 +5479,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 7,
     "affinityReq": 2,
     "atk": 5,
-    "armor": 1,
+    "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
     "keywords": [
@@ -6760,7 +6789,14 @@ export const ALL_CARDS: CardDefinition[] = [
       "Ímpeto",
       "Pele Incandescente"
     ],
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Cospe fagulhas causando 1 de dano a um inimigo."
+      }
+    ],
     "description": "Ímpeto, Pele Incandescente. Ao Entrar: Cospe fagulhas causando 1 de dano a um inimigo.",
     "flavorText": "Onde ela rasteja, a pedra racha e a grama vira fuligem.",
     "imagePath": "/assets/cards/red_38_serpente_fogo.png",
@@ -6802,7 +6838,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 2,
     "affinityReq": 1,
     "atk": 2,
-    "armor": 0,
+    "armor": 1,
     "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
@@ -6812,7 +6848,7 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "buff_target_ally",
-        "value": 1,
+        "value": 2,
         "secondaryValue": 1,
         "description": "Ao Entrar: Forja armas em brasa, concedendo +2 ATQ e +1 VIDA a um aliado."
       }
@@ -6916,7 +6952,14 @@ export const ALL_CARDS: CardDefinition[] = [
       "Fúria Crescente"
     ],
     "breathDamage": 1,
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Ao Entrar: Queima a fileira inimiga em 1 de dano."
+      }
+    ],
     "description": "Voo, Fúria Crescente. Sopro 1: Queima a fileira inimiga em 1 ao entrar.",
     "flavorText": "Três gargantas, três rugidos e uma única sentença de cinzas.",
     "imagePath": "/assets/cards/red_43_quimera_vulcanica.png",
@@ -7596,13 +7639,19 @@ export const ALL_CARDS: CardDefinition[] = [
       "Voo",
       "Escudo Divino"
     ],
-    "breathDamage": 1,
+    "breathDamage": 2,
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "freeze_enemy",
+        "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Ao Entrar: Congela 1 inimigo."
+        "description": "Ao Entrar: Congela toda a Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
       }
     ],
     "description": "Voo, Escudo Divino. Armadura 1. Sopro 2. Ao Entrar: Congela toda a Vanguarda inimiga e compra 1 carta.",
@@ -9008,7 +9057,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Sopro de esmeralda causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Voo, Toque Letal. Armadura 1. Regeneração 2. Sopro 2: Nuvem de gás venenoso varre a fileira inimiga.",
+    "description": "Voo, Toque Letal. Armadura 1. Regeneração 2. Sopro 2. Ao Entrar: Causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Cada árvore da floresta é uma espiã a serviço de sua coroa de espinhos.",
     "imagePath": "/assets/cards/green_49_dragao_esmeralda.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ancient emerald-green dragon with curved wooden horns and wings exhaling a cloud of glowing toxic green gas."
@@ -9538,14 +9587,14 @@ export const ALL_CARDS: CardDefinition[] = [
       "Voo",
       "Escudo Divino"
     ],
-    "breathDamage": 1,
+    "breathDamage": 2,
     "effects": [
       {
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao Entrar: Concede +1 ATQ e +1 VIDA a todos os aliados."
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Concede +1 ATQ e +2 VIDA a todos os aliados."
       }
     ],
     "description": "Voo, Escudo Divino. Armadura 2. Sopro 2. Ao Entrar: Inspira a falange concedendo +1 ATQ e +2 VIDA a todos os aliados.",
@@ -9767,16 +9816,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
+        "type": "shield_all_allies",
         "value": 1,
-        "secondaryValue": 2,
-        "description": "Ao Entrar: Concede +1/+2 a todos os aliados."
+        "description": "Ao Entrar: Concede Escudo Divino a todos os aliados."
       },
       {
         "trigger": "turn_start",
-        "type": "heal_sovereign",
-        "value": 2,
-        "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Início do Turno: Concede +1 ATQ e +2 VIDA a um aliado."
       }
     ],
     "description": "Ao Entrar: Concede Escudo Divino aos aliados. Início do Turno: Concede +1 ATQ e +2 VIDA a um aliado.",
@@ -9803,10 +9852,10 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 2,
-        "description": "Ao Entrar: Concede +1 ATQ e +2 VIDA a um aliado."
+        "description": "Ao Entrar: Concede +1 ATQ e +2 VIDA a todos os aliados."
       },
       {
         "trigger": "turn_end",
@@ -11506,7 +11555,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Causa 1 de dano a um inimigo."
       }
     ],
-    "description": "Dreno de Vida. Ascensão (4⚡): Matriarca Aracnídea (4/1/6, Toque Letal, Dreno de Vida).",
+    "description": "Dreno de Vida. Ao Entrar: Causa 1 de dano a um inimigo. Ascensão (4⚡): Matriarca Aracnídea (4/1/6, Toque Letal, Dreno de Vida).",
     "flavorText": "Nas cidades sem sol, toda prece é paga com veneno e seda negra.",
     "imagePath": "/assets/cards/purple_56_sacerdotisa_aranha.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), dark-elf spider priestess with obsidian-violet armor, silver hair, and a venomous fang-headed scourge whip."
@@ -12854,7 +12903,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 1,
-        "secondaryValue": 1,
+        "secondaryValue": 2,
         "description": "Ao Entrar: Seu rugido sagrado concede +1/+2 a todos os seus aliados."
       }
     ],
@@ -13760,10 +13809,10 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao Entrar: Sincronia temporal concede +1/+1 a todos os aliados."
+        "type": "buff_target_ally",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Concede +2/+2 a um aliado."
       }
     ],
     "description": "Escudo Divino, Alcance. Ao Entrar: Concede +2/+2 a um aliado.",
@@ -14291,7 +14340,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Guardião, Escudo Divino. Desvia o primeiro impacto com precisão cronométrica.",
+    "description": "Guardião, Escudo Divino. Ao Entrar: Cura 2 de VIDA do seu Soberano.",
     "flavorText": "Seu pulso gira como um pêndulo; nenhum golpe o encontra onde ele estava.",
     "imagePath": "/assets/cards/gold_76_monge_relogio.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), disciplined martial monk wearing golden clock-dial gauntlets surrounded by a geometric light shield."
@@ -14480,7 +14529,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 1,
-        "secondaryValue": 1,
+        "secondaryValue": 2,
         "description": "Ao Entrar: Concede +1/+2 a todos os seus aliados."
       }
     ],
@@ -14762,16 +14811,22 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao Entrar: Concede +1/+1 a um aliado."
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Concede +1/+2 a todos os aliados."
       },
       {
         "trigger": "turn_start",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Início do Turno: Gera +1 de Essência."
+        "description": "Início do Turno: Gera +1⚡ de Essência."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "heal_all_allies",
+        "value": 2,
+        "description": "Início do Turno: Cura 2 de VIDA em todos os aliados."
       }
     ],
     "description": "Ao Entrar: Dá +1/+2 aos aliados. Início do Turno: Gera +1⚡ e cura 2 nos aliados.",
@@ -15669,7 +15724,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Onda de táquions causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Voo, Ímpeto, Renascer. Sopro 2. Retorna das próprias cinzas ao ser abatida.",
+    "description": "Voo, Ímpeto, Renascer. Sopro 2. Ao Entrar: Causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Para uma ave que vive fora do tempo, a morte é apenas uma faísca entre dois voos.",
     "imagePath": "/assets/cards/red_82_fenix_taquion.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), radiant crimson-and-gold phoenix with clockwork tail-feathers and blazing tachyon fire wings."
@@ -16016,11 +16071,19 @@ export const ALL_CARDS: CardDefinition[] = [
         "Guardião"
       ]
     },
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao Atacar: Cura 2 de VIDA no seu Soberano."
+      }
+    ],
     "description": "Regeneração 1. Ao Atacar: Cura 2 no Soberano. Ascensão (4⚡): Arquidruida do Ciclo Eterno (5/1/6, Guardião).",
     "flavorText": "Primavera, verão, outono e inverno giram na ponta de seu cajado.",
     "imagePath": "/assets/cards/green_75_druida_ciclos.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), elven season-druid with antlers adorned in spring blossoms, summer leaves, autumn amber, and winter frost."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), elven season-druid with antlers adorned in spring blossoms, summer leaves, autumn amber, and winter frost.",
+    "regeneration": 1
   },
   {
     "id": "green_76_louva_deus_gigante",
@@ -16259,8 +16322,8 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao Entrar: Chamado da manada concede +1/+1 a todos os seus aliados."
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Concede +1/+2 a todos os seus aliados."
       }
     ],
     "description": "Guardião, Atropelar. Ao Entrar: Concede +1/+2 a todos os seus aliados.",
@@ -16339,16 +16402,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Concede +1/+1 a todos os aliados."
+        "type": "heal_all_allies",
+        "value": 3,
+        "description": "Cura 3 de VIDA em todos os seus aliados."
       },
       {
         "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Compra 1 carta."
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Cura 3 de VIDA no seu Soberano."
       }
     ],
     "description": "Cura 3 de VIDA em todos os seus aliados e 3 de VIDA no seu Soberano.",
@@ -16479,9 +16541,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "draw_cards",
+        "type": "heal_sovereign",
         "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
+        "description": "Ao Entrar: Cura 1 de VIDA no seu Soberano."
       }
     ],
     "description": "Voo. Ao Entrar: Cura 1 de VIDA no seu Soberano.",
@@ -16775,9 +16837,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "freeze_enemy",
+        "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Ao Entrar: Congela 1 inimigo."
+        "description": "Ao Entrar: Congela a Vanguarda rival."
       },
       {
         "trigger": "on_enter",
@@ -16787,10 +16849,16 @@ export const ALL_CARDS: CardDefinition[] = [
       },
       {
         "trigger": "turn_start",
-        "type": "buff_target_ally",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Início do Turno: Gera +1⚡ de Essência."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 1,
-        "description": "Início do Turno: Concede +1/+1 a um aliado."
+        "description": "Início do Turno: Concede +1/+1 a todos os aliados."
       }
     ],
     "description": "Ao Entrar: Congela a Vanguarda rival e compra 1 carta. Início do Turno: Gera +1⚡ e dá +1/+1 aos aliados.",
@@ -16925,7 +16993,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Causa 2 de dano a um inimigo."
       }
     ],
-    "description": "Fúria Crescente, Ímpeto. Ascensão (3): Desperta como Senhor da Guerra Escama-Rubra (7/6, ARM 1, Atropelar, Voo).",
+    "description": "Fúria Crescente, Ímpeto. Ao Entrar: Causa 2 de dano a um inimigo. Ascensão (3): Senhor da Guerra Escama-Rubra (7/6, ARM 1, Atropelar, Voo).",
     "flavorText": "Cada cicatriz em seu peito ferve com o sangue dos primeiros dragões.",
     "imagePath": "/assets/cards/red_94_berserker_draconico.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), muscular crimson draconic champion berserker dual-wielding jagged volcanic greataxes with burning aura and draconic horns."
@@ -17192,7 +17260,7 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "buff_target_ally",
-        "value": 2,
+        "value": 3,
         "secondaryValue": 1,
         "description": "Concede +3 ATQ e +1 VIDA a um aliado."
       }
@@ -17253,6 +17321,12 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "damage_enemy_row",
         "value": 2,
         "description": "Causa 2 de dano à fileira inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
       }
     ],
     "description": "Feitiço: Sufoca a fileira inimiga com 2 de dano em área e compra 1 carta.",
@@ -17509,9 +17583,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "draw_cards",
+        "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
+        "description": "Ao Entrar: Gera +1⚡ de Essência."
       }
     ],
     "description": "Alcance. Ao Entrar: Gera +1⚡ de Essência. Ascensão (4): Oráculo Supremo do Continuum (6/7, ARM 1, Voo, Escudo Divino).",
@@ -17766,6 +17840,12 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "bounce_enemy",
         "value": 1,
         "description": "Devolve 1 unidade inimiga para a mão do dono."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
       }
     ],
     "description": "Feitiço: Abre uma fenda dimensional que devolve 1 inimigo para a mão do oponente e compra 1 carta.",
@@ -18001,6 +18081,12 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Congela 1 inimigo."
+      },
+      {
         "trigger": "spell_cast",
         "type": "damage_enemy_row",
         "value": 1,
@@ -18067,7 +18153,14 @@ export const ALL_CARDS: CardDefinition[] = [
       "Voo",
       "Alcance"
     ],
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga."
+      }
+    ],
     "description": "Voo, Alcance. Ao Entrar: Reduz em -1 o ATQ de toda a Vanguarda inimiga.",
     "flavorText": "Quem ouve sua canção esquece como erguer a própria espada.",
     "imagePath": "/assets/cards/purple_92_espectro_agonia.png",
@@ -18089,7 +18182,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
-      "Toque Letal"
+      "Toque Letal",
+      "Renascer"
     ],
     "effects": [],
     "description": "Toque Letal, Renascer. Mesmo esmagada, ergue-se mais uma vez para abater gigantes.",
@@ -18172,11 +18266,12 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 5,
     "affinityReq": 1,
     "atk": 3,
-    "armor": 0,
+    "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
-      "Atropelar"
+      "Atropelar",
+      "Renascer"
     ],
     "effects": [],
     "description": "Atropelar, Renascer. Armadura 1. Erguido com as partes dos mais fortes guerreiros caídos.",
@@ -18303,7 +18398,7 @@ export const ALL_CARDS: CardDefinition[] = [
       "Dreno de Vida",
       "Renascer"
     ],
-    "breathDamage": 2,
+    "breathDamage": 3,
     "effects": [
       {
         "trigger": "on_enter",
@@ -18337,8 +18432,14 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Reduz em -2 o ATQ da Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
         "value": 1,
-        "description": "Reduz em -1 o ATQ da Vanguarda inimiga."
+        "description": "Compra 1 carta."
       }
     ],
     "description": "Feitiço: Corrói a força da Vanguarda inimiga em -2 de ATQ e compra 1 carta.",
@@ -18368,6 +18469,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "revive_from_crypt",
         "value": 1,
         "description": "Reanima 1 criatura da sua Cripta."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Concede +1/+1 a todos os seus aliados."
       }
     ],
     "description": "Feitiço: Abre os túmulos ancestrais para reanimar 1 criatura da Cripta e conceder +1/+1 a todos os seus aliados.",
@@ -18658,7 +18766,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "hp": 1,
     "preferredRow": "rearguard",
     "keywords": [
-      "Voo"
+      "Voo",
+      "Toque Letal"
     ],
     "effects": [],
     "description": "Voo, Toque Letal. Seu ferrão perfura a couraça do maior dos dragões.",
@@ -18772,7 +18881,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 3,
     "affinityReq": 1,
     "atk": 3,
-    "armor": 0,
+    "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
@@ -18803,7 +18912,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 4,
     "affinityReq": 2,
     "atk": 4,
-    "armor": 0,
+    "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
@@ -18828,13 +18937,13 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 5,
     "affinityReq": 2,
     "atk": 4,
-    "armor": 1,
+    "armor": 2,
     "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião"
     ],
-    "regeneration": 1,
+    "regeneration": 2,
     "effects": [
       {
         "trigger": "on_enter",
@@ -18894,7 +19003,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Atropelar",
       "Fúria Crescente"
     ],
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +1/+1 a todos os seus aliados."
+      }
+    ],
     "description": "Atropelar, Fúria Crescente. Armadura 1. Ao Entrar: Concede +1/+1 a todos os seus aliados.",
     "flavorText": "O rei indiscutível da primeira era do mundo.",
     "imagePath": "/assets/cards/green_101_tiranossauro_alfa.png",
@@ -18920,7 +19037,7 @@ export const ALL_CARDS: CardDefinition[] = [
       "Toque Letal",
       "Fúria Crescente"
     ],
-    "regeneration": 1,
+    "regeneration": 2,
     "effects": [],
     "description": "Atropelar, Toque Letal, Fúria Crescente. Armadura 1. Regeneração 2.",
     "flavorText": "Corte uma cabeça e duas mais venenosas despertarão no mesmo instante.",
@@ -18947,14 +19064,14 @@ export const ALL_CARDS: CardDefinition[] = [
       "Guardião",
       "Atropelar"
     ],
-    "regeneration": 1,
+    "regeneration": 2,
     "breathDamage": 2,
     "effects": [
       {
         "trigger": "on_enter",
         "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
+        "value": 2,
+        "secondaryValue": 2,
         "description": "Ao Entrar: Concede +2/+2 a todos os seus aliados."
       }
     ],
@@ -18983,7 +19100,7 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "buff_all_allies",
-        "value": 1,
+        "value": 2,
         "secondaryValue": 2,
         "description": "Concede +2 ATQ e +2 VIDA a todos os aliados."
       }
@@ -19079,8 +19196,8 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "buff_target_ally",
-        "value": 1,
-        "secondaryValue": 1,
+        "value": 2,
+        "secondaryValue": 2,
         "description": "Ao Entrar: Concede +2/+2 a um aliado."
       },
       {
@@ -19115,21 +19232,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "Ao Entrar: Gera +1 de Essência."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
+        "type": "heal_all_allies",
+        "value": 2,
+        "description": "Ao Entrar: Cura 2 de VIDA em todos os aliados."
       },
       {
         "trigger": "turn_start",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Início do Turno: Gera +1 de Essência."
+        "description": "Início do Turno: Gera +1⚡ de Essência."
       }
     ],
     "description": "Ao Entrar: Cura 2 em todos os aliados. Início do Turno: Gera +1⚡ de Essência.",
@@ -19294,7 +19405,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 1,
-        "secondaryValue": 1,
+        "secondaryValue": 2,
         "description": "Ao Entrar: Inspira um aliado com +1/+2."
       }
     ],
@@ -19347,7 +19458,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 5,
     "affinityReq": 2,
     "atk": 4,
-    "armor": 1,
+    "armor": 2,
     "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
@@ -19357,10 +19468,10 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 2,
-        "description": "Ao Entrar: Concede +1/+2 a um aliado."
+        "description": "Ao Entrar: Concede +1/+2 a todos os seus aliados."
       }
     ],
     "description": "Guardião, Escudo Divino. Armadura 2. Ao Entrar: Concede +1/+2 a todos os seus aliados.",
@@ -19451,7 +19562,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 7,
     "affinityReq": 3,
     "atk": 6,
-    "armor": 1,
+    "armor": 2,
     "hp": 7,
     "preferredRow": "vanguard",
     "keywords": [
@@ -19464,8 +19575,8 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
+        "value": 2,
+        "secondaryValue": 2,
         "description": "Ao Entrar: Concede +2/+2 a todos os seus aliados."
       }
     ],
@@ -19664,16 +19775,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 2,
-        "description": "Ao Entrar: Concede +1/+1 a todos os aliados."
+        "type": "heal_all_allies",
+        "value": 2,
+        "description": "Ao Entrar: Cura 2 de VIDA em todos os aliados."
       },
       {
         "trigger": "turn_start",
         "type": "heal_sovereign",
         "value": 2,
-        "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
+        "description": "Início do Turno: Cura 2 de VIDA no seu Soberano."
       }
     ],
     "description": "Ao Entrar: Cura 2 em todos os aliados. Início do Turno: Cura 2 de VIDA no seu Soberano.",
@@ -20006,7 +20116,7 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "turn_start",
         "type": "buff_target_ally",
-        "value": 1,
+        "value": 2,
         "secondaryValue": 0,
         "description": "Início do Turno: Concede +2 de ATQ a um aliado."
       }
@@ -20070,16 +20180,28 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Ao Entrar: Gera +2⚡ de Essência."
+      },
+      {
+        "trigger": "on_enter",
         "type": "heal_sovereign",
         "value": 3,
         "description": "Ao Entrar: Cura 3 de VIDA do seu Soberano."
       },
       {
         "trigger": "turn_start",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 1,
-        "description": "Início do Turno: Concede +1/+1 a um aliado."
+        "description": "Início do Turno: Concede +1/+1 a todos os aliados."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Início do Turno: Compra 1 carta."
       }
     ],
     "description": "Ao Entrar: Gera +2⚡ e cura 3 no Soberano. Início do Turno: Dá +1/+1 aos aliados e compra 1 carta.",
@@ -21912,7 +22034,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Concede +1/+1 aos aliados."
       }
     ],
-    "description": "Atropelar. Armadura 1. Sua cabeça revestida de granito e musgo derruba qualquer paliçada.",
+    "description": "Atropelar. Armadura 1. Ao Entrar: Concede +1/+1 a todos os aliados.",
     "flavorText": "Ele não desvia de árvores nem de escudeiros.",
     "imagePath": "/assets/cards/green_110_javali_couraca_pedra.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), charging stone-hide war boar with mossy granite armor plates and curved ivory tusks."
@@ -23106,7 +23228,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 1,
-        "secondaryValue": 0,
+        "secondaryValue": 1,
         "description": "Ao Entrar: Tempera as armas aliadas concedendo +1/+1 a todos os aliados."
       }
     ],
@@ -23224,10 +23346,11 @@ export const ALL_CARDS: CardDefinition[] = [
       "Pele Incandescente"
     ],
     "effects": [],
-    "description": "Atropelar, Sopro. Suas costas vulcânicas expelem jatos de magma sobre a fileira rival.",
+    "description": "Atropelar. Sopro 2. Suas costas vulcânicas expelem jatos de magma sobre a fileira rival.",
     "flavorText": "Um vulcão ambulante que respira enxofre.",
     "imagePath": "/assets/cards/red_135_behemoth_piroclastico.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Hulking horned Pyroclastic Behemoth beast with erupting geysers along its spine."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Hulking horned Pyroclastic Behemoth beast with erupting geysers along its spine.",
+    "breathDamage": 2
   },
   {
     "id": "red_136_arquidemonio_brasas",
@@ -23282,10 +23405,11 @@ export const ALL_CARDS: CardDefinition[] = [
       "Pele Incandescente"
     ],
     "effects": [],
-    "description": "Voo, Ímpeto, Sopro. Cai como um meteoro vivo varrendo a linha de frente.",
+    "description": "Voo, Ímpeto. Sopro 2. Cai como um meteoro vivo varrendo a linha de frente.",
     "flavorText": "Quando cruza o céu noturno, os astrólogos anunciam o fim de um império.",
     "imagePath": "/assets/cards/red_137_dragao_cometa_rubro.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Colossal Comet-Strike Red Dragon diving inside a blazing meteor corona."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Colossal Comet-Strike Red Dragon diving inside a blazing meteor corona.",
+    "breathDamage": 2
   },
   {
     "id": "red_138_colosso_vulcano_primordial",
@@ -23320,10 +23444,11 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Atropelar, Sopro. Ao Entrar: Causa 3 de dano a todos os inimigos e 2 ao Soberano rival.",
+    "description": "Atropelar. Sopro 2. Ao Entrar: Causa 3 de dano a todos os inimigos e 2 ao Soberano rival.",
     "flavorText": "Ele não habita a cratera ardente — ele é a própria cratera.",
     "imagePath": "/assets/cards/red_138_colosso_vulcano_primordial.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Titanic Primordial Volcano Colossus forged of tectonic plates and rivers of lava."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Titanic Primordial Volcano Colossus forged of tectonic plates and rivers of lava.",
+    "breathDamage": 2
   },
   {
     "id": "red_139_rajada_escoria",
@@ -24542,10 +24667,11 @@ export const ALL_CARDS: CardDefinition[] = [
       "Dreno de Vida"
     ],
     "effects": [],
-    "description": "Voo, Sopro, Vínculo Vital. Seu sopro sombrio varre a fileira inimiga e drena vida.",
+    "description": "Voo, Dreno de Vida. Sopro 2. Seu sopro sombrio varre a fileira inimiga e drena vida.",
     "flavorText": "Dentro de suas costelas translúcidas gira uma galáxia de almas.",
     "imagePath": "/assets/cards/purple_136_dragao_espectral_abismo.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Spectral Abyssal Wraith-Dragon with translucent ribcage filled with purple galaxies."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Spectral Abyssal Wraith-Dragon with translucent ribcage filled with purple galaxies.",
+    "breathDamage": 2
   },
   {
     "id": "purple_137_arauto_sol_negro",
@@ -25020,7 +25146,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 1,
-        "secondaryValue": 0,
+        "secondaryValue": 1,
         "description": "Ao Entrar: Concede +1/+1 a todos os seus aliados."
       }
     ],
@@ -25229,10 +25355,11 @@ export const ALL_CARDS: CardDefinition[] = [
       "Atropelar"
     ],
     "effects": [],
-    "description": "Voo, Sopro, Atropelar. Coroado com galhadas de carvalho vivo e sopro esmeralda.",
+    "description": "Voo, Atropelar. Sopro 2. Coroado com galhadas de carvalho vivo e sopro esmeralda.",
     "flavorText": "Mais antigo que as próprias árvores-mãe.",
     "imagePath": "/assets/cards/green_139_dragao_floresta_antiga.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Ancient Primeval-Canopy Green Dragon with antlers of living oak."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Ancient Primeval-Canopy Green Dragon with antlers of living oak.",
+    "breathDamage": 2
   },
   {
     "id": "green_140_colosso_pangeia",
@@ -25746,10 +25873,11 @@ export const ALL_CARDS: CardDefinition[] = [
       "Escudo Divino"
     ],
     "effects": [],
-    "description": "Voo, Sopro, Escudo Divino. Seu sopro de luz purificadora varre a Vanguarda rival.",
+    "description": "Voo, Escudo Divino. Sopro 2. Seu sopro de luz purificadora varre a Vanguarda rival.",
     "flavorText": "Suas escamas de platina refletem a glória eterna da Cidadela.",
     "imagePath": "/assets/cards/gold_136_dragao_platina_celeste.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Majestic Celestial Platinum-and-Gold Dragon breathing purifying diamond starlight."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Majestic Celestial Platinum-and-Gold Dragon breathing purifying diamond starlight.",
+    "breathDamage": 2
   },
   {
     "id": "gold_137_colosso_cidadela_eterna",
@@ -26160,9 +26288,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
-        "value": 2,
-        "description": "Ao Entrar: Causa 2 de dano ao Soberano inimigo."
+        "type": "damage_single_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Causa 1 de dano de fogo ao inimigo à frente."
       }
     ],
     "description": "Sopro Dracônico 1. Ao Entrar: Causa 1 de dano de fogo ao inimigo à frente.",
@@ -26189,7 +26317,14 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Alcance"
     ],
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao Entrar: Conjura uma espiral vulcânica que causa 2 de dano à Vanguarda inimiga."
+      }
+    ],
     "description": "Ao Entrar: Conjura uma espiral vulcânica que causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Com um giro de seu cajado de basalto, transforma o ar da trincheira em um redemoinho de labaredas.",
     "imagePath": "/assets/cards/red_149_mastim_piroclastico.png",
@@ -26242,9 +26377,10 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_single_enemy",
-        "value": 2,
-        "description": "Ao Entrar: Causa 2 de dano a um inimigo."
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 0,
+        "description": "Ao Entrar: Concede +1 ATQ aos aliados na Vanguarda."
       }
     ],
     "description": "Armadura 1. Ao Entrar: Seu tridente incandescente concede +1 ATQ aos aliados na Vanguarda.",
@@ -26343,7 +26479,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Armadura 1. Soberano elemental do deserto de cinzas cuja cimitarra flamejante incinera bloqueadores.",
+    "description": "Armadura 1. Ao Entrar: Causa 2 de dano à Vanguarda inimiga. Soberano elemental do deserto de cinzas.",
     "flavorText": "Dos terraços da Cidadela de Bronze, sua cimitarra corta o vento em arcos de fogo branco.",
     "imagePath": "/assets/cards/red_154_juggernaut_escoria.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Slag and Bronze Juggernaut construct with spinning spiked rollers and fire vents."
@@ -26371,9 +26507,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_single_enemy",
-        "value": 4,
-        "description": "Ao Entrar: Causa 4 de dano a um inimigo."
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano a toda a fileira inimiga."
       }
     ],
     "description": "Sopro Dracônico 3. Armadura 1. Ao Entrar: Causa 2 de dano a toda a fileira inimiga com jato de lava líquida.",
@@ -26477,7 +26613,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 3,
-        "description": "Causa 3 de dano a um inimigo."
+        "description": "Causa 3 de dano a uma unidade inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Causa 1 de dano ao Soberano rival."
       }
     ],
     "description": "Causa 3 de dano a uma unidade inimiga e 1 de dano ao Soberano rival.",
@@ -26506,13 +26648,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 2,
-        "description": "Causa 2 de dano à Vanguarda inimiga."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
-        "value": 2,
-        "description": "Causa 2 de dano ao Soberano inimigo."
+        "description": "Causa 2 de dano a todas as unidades na Vanguarda inimiga."
       }
     ],
     "description": "Causa 2 de dano a todas as unidades na Vanguarda inimiga.",
@@ -26541,8 +26677,14 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 2,
-        "secondaryValue": 1,
-        "description": "Concede +2/+1 a todos os aliados."
+        "secondaryValue": 0,
+        "description": "Concede +2 ATQ a todos os seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
       }
     ],
     "description": "Concede +2 ATQ a todos os seus aliados neste turno e compra 1 carta.",
@@ -26570,14 +26712,14 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_enemy_row",
-        "value": 4,
-        "description": "Causa 4 de dano à Vanguarda inimiga."
+        "value": 3,
+        "description": "Causa 3 de dano a toda a fileira inimiga."
       },
       {
         "trigger": "on_enter",
         "type": "damage_enemy_sovereign",
         "value": 2,
-        "description": "Causa 2 de dano ao Soberano inimigo."
+        "description": "Causa 2 de dano ao Soberano rival."
       }
     ],
     "description": "Causa 3 de dano a toda a fileira inimiga e 2 de dano ao Soberano rival.",
@@ -26605,14 +26747,14 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_enemy_row",
-        "value": 5,
-        "description": "Causa 5 de dano à Vanguarda inimiga."
+        "value": 4,
+        "description": "Causa 4 de dano a todas as unidades na Vanguarda inimiga."
       },
       {
         "trigger": "on_enter",
         "type": "damage_enemy_sovereign",
-        "value": 5,
-        "description": "Causa 5 de dano ao Soberano inimigo."
+        "value": 3,
+        "description": "Causa 3 de dano ao Soberano rival."
       }
     ],
     "description": "Causa 4 de dano a todas as unidades na Vanguarda inimiga e 3 de dano ao Soberano rival.",
@@ -26640,14 +26782,8 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 4,
-        "description": "Causa 4 de dano ao atacante."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
-        "value": 2,
-        "description": "Causa 2 de dano ao Soberano inimigo."
+        "value": 3,
+        "description": "Causa 3 de dano ao atacante."
       }
     ],
     "description": "Emboscada: Quando um inimigo atacar, seu broquel de obsidiana repele o golpe causando 3 de dano ao atacante.",
@@ -26675,14 +26811,8 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_enemy_row",
-        "value": 3,
-        "description": "Causa 3 de dano à Vanguarda inimiga."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
         "value": 2,
-        "description": "Causa 2 de dano ao Soberano inimigo."
+        "description": "Causa 2 de dano a toda a Vanguarda inimiga."
       }
     ],
     "description": "Emboscada: Quando o inimigo invocar ou atacar na Vanguarda, causa 2 de dano a toda a Vanguarda inimiga.",
@@ -26708,17 +26838,11 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
+        "trigger": "turn_start",
         "type": "buff_all_allies",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao Entrar: +1/+1 aos aliados."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "damage_enemy_sovereign",
-        "value": 2,
-        "description": "Início do Turno: Causa 2 de dano ao Soberano inimigo."
+        "secondaryValue": 0,
+        "description": "Início do Turno: Concede +1 ATQ aos seus aliados na Vanguarda."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, concede +1 ATQ aos seus aliados na Vanguarda.",
@@ -26744,23 +26868,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "damage_enemy_row",
-        "value": 3,
-        "description": "Ao Entrar: Causa 3 de dano à Vanguarda inimiga."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "buff_all_allies",
-        "value": 2,
-        "secondaryValue": 0,
-        "description": "Início do Turno: Concede +2 ATQ aos aliados."
-      },
-      {
         "trigger": "turn_start",
         "type": "damage_enemy_sovereign",
         "value": 2,
         "description": "Início do Turno: Causa 2 de dano ao Soberano inimigo."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Início do Turno: Causa 1 de dano à Vanguarda rival."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, causa 2 de dano ao Soberano inimigo e 1 de dano à Vanguarda rival.",
@@ -26852,15 +26969,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "draw_cards",
+        "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
+        "description": "Ao Entrar: Congela 1 inimigo com runas astrais."
       },
       {
         "trigger": "on_enter",
-        "type": "grant_bonus_essence",
+        "type": "draw_cards",
         "value": 1,
-        "description": "Ao Entrar: +1⚡ neste turno."
+        "description": "Ao Entrar: Compra 1 carta."
       }
     ],
     "description": "Ao Entrar: Congela um inimigo com runas astrais e compra 1 carta.",
@@ -26885,7 +27002,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "preferredRow": "vanguard",
     "keywords": [
       "Voo",
-      "Escudo Divino"
+      "Escudo Divino",
+      "Guardião"
     ],
     "effects": [],
     "description": "Armadura 1. Guardião místico dos ventos astrais com escamas de safira e chifre de relâmpago.",
@@ -26946,16 +27064,16 @@ export const ALL_CARDS: CardDefinition[] = [
     ],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "bounce_enemy",
+        "trigger": "spell_cast",
+        "type": "draw_cards",
         "value": 1,
-        "description": "Ao Entrar: Devolve 1 inimigo à mão."
+        "description": "Ao Lançar Feitiço: Compra 1 carta."
       },
       {
         "trigger": "spell_cast",
-        "type": "damage_enemy_sovereign",
-        "value": 2,
-        "description": "Ao Lançar Feitiço: Causa 2 de dano ao Soberano inimigo."
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Ao Lançar Feitiço: Causa 1 de dano à Vanguarda inimiga."
       }
     ],
     "description": "Armadura 2. Sempre que você conjurar um Feitiço, compra 1 carta e causa 1 de dano à Vanguarda inimiga.",
@@ -26986,9 +27104,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "freeze_enemy_vanguard",
+        "type": "bounce_enemy",
         "value": 1,
-        "description": "Ao Entrar: Congela toda a Vanguarda inimiga."
+        "description": "Ao Entrar: Devolve 1 unidade inimiga para a mão do dono."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Congela 1 unidade inimiga."
       }
     ],
     "description": "Armadura 1. Ao Entrar: Seus ciclones devolvem uma unidade inimiga para a mão do dono e congelam outra.",
@@ -27089,9 +27213,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "freeze_enemy",
-        "value": 1,
-        "description": "Congela 1 inimigo."
+        "type": "freeze_enemy_vanguard",
+        "value": 2,
+        "description": "Congela até 2 inimigos."
       },
       {
         "trigger": "on_enter",
@@ -27127,6 +27251,12 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "draw_cards",
         "value": 2,
         "description": "Compra 2 cartas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Concede +1⚡ de Essência neste turno."
       }
     ],
     "description": "Lâminas espectrais cortam o vento: compra 2 cartas e concede +1⚡ de Essência neste turno.",
@@ -27154,8 +27284,14 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_enemy_row",
-        "value": 3,
-        "description": "Causa 3 de dano à Vanguarda inimiga."
+        "value": 2,
+        "description": "Causa 2 de dano a todas as unidades na Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Congela os sobreviventes da Vanguarda inimiga."
       }
     ],
     "description": "Causa 2 de dano a todas as unidades na Vanguarda inimiga e congela os sobreviventes.",
@@ -27254,13 +27390,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Congela toda a Vanguarda inimiga."
+        "description": "Congela todos os inimigos em campo."
       },
       {
         "trigger": "on_enter",
-        "type": "bounce_enemy",
-        "value": 1,
-        "description": "Devolve 1 inimigo à mão."
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Causa 2 de dano aos inimigos."
       },
       {
         "trigger": "on_enter",
@@ -27330,13 +27466,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Concede Escudo Divino aos aliados."
+        "description": "Concede Escudo Divino a um aliado."
       },
       {
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Congela 1 inimigo."
+        "description": "Congela o agressor."
       }
     ],
     "description": "Emboscada: Quando um aliado for atacado, concede Escudo Divino a ele e congela o agressor.",
@@ -27365,13 +27501,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "bounce_enemy",
         "value": 1,
-        "description": "Devolve 1 inimigo à mão."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Compra 1 carta."
+        "description": "Devolve o atacante inimigo para a mão do oponente."
       }
     ],
     "description": "Emboscada: Devolve o atacante inimigo para a mão do oponente antes do golpe conectar.",
@@ -27397,16 +27527,10 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
+        "trigger": "turn_start",
         "type": "draw_cards",
         "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "Início do Turno: +1⚡ de Essência."
+        "description": "Início do Turno: Compra 1 carta extra."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, compra 1 carta extra.",
@@ -27432,22 +27556,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "freeze_enemy_vanguard",
+        "trigger": "turn_start",
+        "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao Entrar: Congela a Vanguarda inimiga."
+        "description": "Início do Turno: Congela 1 inimigo."
       },
       {
         "trigger": "turn_start",
-        "type": "draw_cards",
+        "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Início do Turno: Compra 1 carta."
-      },
-      {
-        "trigger": "spell_cast",
-        "type": "damage_enemy_sovereign",
-        "value": 2,
-        "description": "Ao Lançar Feitiço: Causa 2 de dano ao Soberano inimigo."
+        "description": "Início do Turno: Concede +1⚡ de Essência."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, congela um inimigo aleatório e concede +1⚡ de Essência.",
@@ -27578,9 +27696,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "debuff_enemy_vanguard_atk",
-        "value": 1,
-        "description": "Ao Entrar: Reduz o ATQ da Vanguarda inimiga em -1."
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Ao Entrar: Drena 2 de Vida do Soberano inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao Entrar: Cura 2 de VIDA no seu Soberano."
       }
     ],
     "description": "Ao Entrar: Dispara grilhões astrais que drenam 2 de Vida do Soberano inimigo.",
@@ -27616,7 +27740,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Último Suspiro: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Armadura 2. General morto-vivo em armadura gótica negra cuja espada espiritual jamais falha.",
+    "description": "Armadura 2. Último Suspiro: Causa 2 de dano ao Soberano inimigo. General morto-vivo em armadura gótica negra.",
     "flavorText": "Mesmo após a queda de seu império, sua montante negra continua cumprindo a ordem de execução.",
     "imagePath": "/assets/cards/purple_152_abominacao_carne_negra.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Flesh and Shadow Abomination stitched undead colossus with glowing purple runes."
@@ -27710,7 +27834,20 @@ export const ALL_CARDS: CardDefinition[] = [
         "Renascer"
       ]
     },
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 3,
+        "description": "Ao Entrar: Drena 3 de Vida do Soberano inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao Entrar: Cura 3 de VIDA no seu Soberano."
+      }
+    ],
     "description": "Armadura 1. Ao Entrar: Sua foice de sombra pura drena 3 de Vida do Soberano inimigo.",
     "flavorText": "Caminha entre os estandartes rasgados colhendo o último fôlego dos caídos.",
     "imagePath": "/assets/cards/purple_155_lorde_vampiro_soberano.png",
@@ -27741,13 +27878,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "revive_from_crypt",
         "value": 1,
-        "description": "Ao Entrar: Revive 1 aliado da Cripta."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "revive_from_crypt",
-        "value": 1,
-        "description": "Início do Turno: Revive 1 aliado da Cripta."
+        "description": "Ao Entrar: Reanima 1 criatura da sua Cripta."
       }
     ],
     "description": "Sopro Necrótico 3. Armadura 1. Ao Entrar: Reanima 1 criatura da sua Cripta.",
@@ -27791,7 +27922,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Revive 1 aliado da Cripta."
       }
     ],
-    "description": "Sopro de Morte 3. Armadura 2. Soberano de três crânios coroados que comanda legiões de mortos-vivos.",
+    "description": "Sopro de Morte 3. Armadura 2. Ao Entrar: Destrói 1 inimigo e reanima 1 criatura da sua Cripta.",
     "flavorText": "Três coroas antigas, três vozes em uníssono comandando a marcha dos imortais.",
     "imagePath": "/assets/cards/purple_157_dragao_sombra_abissal.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Nyxarion Sovereign Abyssal Shadow Dragon breathing necrotic violet flames."
@@ -27859,6 +27990,12 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "heal_sovereign",
         "value": 3,
         "description": "Cura 3 de VIDA no seu Soberano."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
       }
     ],
     "description": "Drena 3 de Vida do Soberano inimigo, cura 3 de Vida do seu Soberano e compra 1 carta.",
@@ -27887,14 +28024,14 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "revive_from_crypt",
         "value": 1,
-        "description": "Revive 1 criatura da Cripta."
+        "description": "Reanima 1 criatura da sua Cripta."
       },
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
+        "type": "buff_target_ally",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Concede +1/+1 aos aliados."
+        "secondaryValue": 0,
+        "description": "Concede +1 ATQ a um aliado."
       }
     ],
     "description": "Ondas de choque mental reanimam uma criatura da sua Cripta e concedem +1 ATQ a ela.",
@@ -27921,15 +28058,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "destroy_enemy",
-        "value": 1,
-        "description": "Destrói 1 unidade inimiga."
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Causa 2 de dano a todos os inimigos."
       },
       {
         "trigger": "on_enter",
         "type": "heal_sovereign",
-        "value": 2,
-        "description": "Cura 2 de VIDA no seu Soberano."
+        "value": 3,
+        "description": "Cura 3 de VIDA do seu Soberano."
       }
     ],
     "description": "Chamas necróticas causam 2 de dano a todos os inimigos e curam 3 de Vida do seu Soberano.",
@@ -27956,15 +28093,21 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_enemy_row",
-        "value": 4,
-        "description": "Causa 4 de dano à Vanguarda inimiga."
+        "type": "destroy_enemy",
+        "value": 1,
+        "description": "Destrói a unidade inimiga mais forte."
       },
       {
         "trigger": "on_enter",
-        "type": "revive_from_crypt",
-        "value": 2,
-        "description": "Revive até 2 aliados da Cripta."
+        "type": "damage_enemy_sovereign",
+        "value": 3,
+        "description": "Causa 3 de dano ao Soberano rival."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Cura 3 de VIDA do seu Soberano."
       }
     ],
     "description": "A foice abissal destrói a unidade inimiga mais forte e drena 3 de Vida do Soberano rival.",
@@ -27992,14 +28135,14 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 4,
-        "description": "Causa 4 de dano a um inimigo."
+        "value": 3,
+        "description": "Causa 3 de dano ao atacante."
       },
       {
         "trigger": "on_enter",
         "type": "heal_sovereign",
         "value": 2,
-        "description": "Cura 2 de VIDA no seu Soberano."
+        "description": "Cura 2 de VIDA do seu Soberano."
       }
     ],
     "description": "Emboscada: Quando um inimigo atacar, o espelho amaldiçoado reflete 3 de dano ao atacante e cura 2 de Vida.",
@@ -28026,9 +28169,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "destroy_enemy",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Causa 2 de dano ao atacante."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
         "value": 1,
-        "description": "Destrói 1 unidade inimiga."
+        "description": "Compra 1 carta."
       }
     ],
     "description": "Emboscada: Quando um aliado morrer em combate, teias venenosas causam 2 de dano ao atacante e compram 1 carta.",
@@ -28054,22 +28203,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "heal_sovereign",
-        "value": 3,
-        "description": "Ao Entrar: Cura 3 no seu Soberano."
-      },
-      {
         "trigger": "turn_start",
         "type": "damage_enemy_sovereign",
-        "value": 2,
-        "description": "Início do Turno: Drena 2 do Soberano inimigo."
+        "value": 1,
+        "description": "Início do Turno: Drena 1 de Vida do Soberano rival."
       },
       {
         "trigger": "turn_start",
         "type": "heal_sovereign",
-        "value": 2,
-        "description": "Início do Turno: Cura 2 no seu Soberano."
+        "value": 1,
+        "description": "Início do Turno: Cura 1 de Vida do seu Soberano."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, drena 1 de Vida do Soberano rival e cura 1 de Vida do seu Soberano.",
@@ -28095,22 +28238,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "revive_from_crypt",
-        "value": 1,
-        "description": "Ao Entrar: Revive 1 aliado da Cripta."
-      },
-      {
         "trigger": "turn_start",
-        "type": "revive_from_crypt",
-        "value": 1,
-        "description": "Início do Turno: Revive 1 aliado da Cripta."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "damage_enemy_sovereign",
+        "type": "damage_enemy_row",
         "value": 2,
-        "description": "Início do Turno: Causa 2 de dano ao Soberano inimigo."
+        "description": "Início do Turno: Causa 2 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Início do Turno: Compra 1 carta."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, causa 2 de dano à Vanguarda inimiga e compra 1 carta.",
@@ -28213,9 +28350,10 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "grant_bonus_essence",
+        "type": "buff_all_allies",
         "value": 1,
-        "description": "Ao Entrar: +1⚡ neste turno."
+        "secondaryValue": 0,
+        "description": "Ao Entrar: Concede +1 ATQ aos aliados."
       }
     ],
     "description": "Pterossauro gigante de plumagem esmeralda que mergulha dos céus concedendo +1 ATQ aos aliados na coluna.",
@@ -28361,7 +28499,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Cura 2 de VIDA em todos os aliados."
       }
     ],
-    "description": "Armadura 1. Regeneração 2. Predador pré-histórico encouraçado em pedra rúnica e raízes de carvalho.",
+    "description": "Armadura 1. Regeneração 2. Ao Entrar: Cura 2 de VIDA em todos os aliados. Predador pré-histórico encouraçado em pedra rúnica.",
     "flavorText": "Dormiu por três séculos no fundo do pântano até que suas costas virassem rocha e carvalho.",
     "imagePath": "/assets/cards/green_155_ente_carvalho_anciao.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Swamp Monolith Crocodile, a colossal prehistoric crocodile behemoth covered in ancient moss, stone runes, and gnarled oak roots on its armored back snapping its jaws in a swamp surge, two eyes only, no tentacles."
@@ -28384,7 +28522,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Alcance"
     ],
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +1 ATQ / +1 VID aos seus aliados."
+      }
+    ],
     "description": "Regeneração 2. Ao Entrar: Invoca espíritos da floresta concedendo +1 ATQ / +1 VID aos seus aliados.",
     "flavorText": "Sua coroa de galhada viva floresce a cada estação e convoca a fúria do bosque.",
     "imagePath": "/assets/cards/green_156_mamute_brasa_selvagem.png",
@@ -28473,7 +28619,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Concede +1/+1 a todos os aliados."
       }
     ],
-    "description": "Sopro Venenoso 2. Armadura 1. Regeneração 3. Hidra de sete cabeças que regenera pescoços decepados.",
+    "description": "Sopro Venenoso 2. Armadura 1. Regeneração 3. Ao Entrar: Concede +1/+1 a todos os aliados.",
     "flavorText": "Cortar uma de suas cabeças apenas dobra o veneno que escorre sobre a relva.",
     "imagePath": "/assets/cards/green_159_tiranossauro_imperador.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Crater Emperor Tyrannosaurus Rex roaring with primal green aura and bone plates.",
@@ -28499,7 +28645,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Atropelar"
     ],
     "regeneration": 2,
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Concede +2 ATQ / +2 VID aos seus aliados."
+      }
+    ],
     "description": "Armadura 3. Regeneração 2. Titã de granito e cristais tectônicos que concede +2 ATQ / +2 VID aos seus aliados.",
     "flavorText": "Terrakhor é a própria montanha que decidiu marchar em defesa da floresta.",
     "imagePath": "/assets/cards/green_160_behemoth_cratera_viva.png",
@@ -28535,7 +28689,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Concede +2/+2 a todos os aliados."
       }
     ],
-    "description": "Sopro de Espinhos 3. Armadura 2. Regeneração 2. Soberano ancestral das florestas com chifres de madeira viva.",
+    "description": "Sopro de Espinhos 3. Armadura 2. Regeneração 2. Ao Entrar: Concede +2/+2 a todos os aliados.",
     "flavorText": "De seu sopro nascem espinheiros gigantes que engolem muralhas e catapultas.",
     "imagePath": "/assets/cards/green_161_dragao_esmeralda_primordial.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Sylvarion Sovereign Emerald Jungle Dragon with ancient root horns and toxic breath."
@@ -28560,9 +28714,9 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "buff_all_allies",
-        "value": 1,
+        "value": 2,
         "secondaryValue": 2,
-        "description": "Concede +1/+2 a todos os aliados."
+        "description": "Concede +2 ATQ e +2 VID a todos os seus aliados na Vanguarda."
       }
     ],
     "description": "Espinhos de pedra e raízes gigantes concedem +2 ATQ e +2 VID a todos os seus aliados na Vanguarda.",
@@ -28592,13 +28746,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "buff_all_allies",
         "value": 2,
         "secondaryValue": 2,
-        "description": "Concede +2/+2 a todos os aliados."
+        "description": "Concede +2 ATQ / +2 VID a todos os seus aliados."
       },
       {
         "trigger": "on_enter",
         "type": "heal_sovereign",
-        "value": 3,
-        "description": "Cura 3 de VIDA no seu Soberano."
+        "value": 4,
+        "description": "Cura 4 de VIDA do seu Soberano."
       }
     ],
     "description": "O espírito do urso ancestral desperta: concede +2 ATQ / +2 VID a todos os seus aliados e cura 4 de Vida do seu Soberano.",
@@ -28625,16 +28779,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_enemy_row",
-        "value": 2,
-        "description": "Causa 2 de dano à Vanguarda inimiga."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Concede +1/+1 aos aliados."
+        "type": "damage_single_enemy",
+        "value": 3,
+        "description": "Causa 3 de dano ao atacante."
       }
     ],
     "description": "Emboscada: Quando um inimigo atacar, mandíbulas de planta carnívora causam 3 de dano ao atacante.",
@@ -28660,17 +28807,11 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "buff_all_allies",
+        "trigger": "turn_start",
+        "type": "buff_target_ally",
         "value": 1,
         "secondaryValue": 1,
-        "description": "Ao Entrar: +1/+1 aos aliados."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "Início do Turno: +1⚡ de Essência."
+        "description": "Início do Turno: Concede +1 ATQ / +1 VID a um aliado na Vanguarda."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, concede +1 ATQ / +1 VID a um aliado na Vanguarda.",
@@ -28696,23 +28837,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 2,
-        "secondaryValue": 2,
-        "description": "Ao Entrar: +2/+2 a todos os aliados."
-      },
-      {
         "trigger": "turn_start",
         "type": "heal_all_allies",
         "value": 2,
-        "description": "Início do Turno: Cura 2 em todos os aliados."
+        "description": "Início do Turno: Cura 2 de VIDA de todos os seus aliados."
       },
       {
         "trigger": "turn_start",
         "type": "heal_sovereign",
         "value": 2,
-        "description": "Início do Turno: Cura 2 no seu Soberano."
+        "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, cura 2 de Vida de todos os seus aliados e do seu Soberano.",
@@ -28771,7 +28905,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Cura 2 de VIDA no seu Soberano."
       }
     ],
-    "description": "Armadura 2. Cavaleiro mecânico forjado em prata real e engrenagens douradas com alabarda solar.",
+    "description": "Armadura 2. Ao Entrar: Cura 2 de VIDA no seu Soberano. Cavaleiro mecânico forjado em prata real.",
     "flavorText": "Forjado pelos relojoeiros reais de Solária para guardar os salões do trono sem descanso.",
     "imagePath": "/assets/cards/gold_148_clerigo_chama_sagrada.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Consecrated Flame Cleric raising a golden sun-staff with healing light."
@@ -28830,7 +28964,14 @@ export const ALL_CARDS: CardDefinition[] = [
         "Dreno de Vida"
       ]
     },
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao Entrar: Cura 3 de VIDA do seu Soberano."
+      }
+    ],
     "description": "Armadura 1. Ao Entrar: Sua maça de luz da alvorada cura 3 de Vida do seu Soberano.",
     "flavorText": "Desce entre as nuvens douradas trazendo alívio aos feridos e sentença aos invasores.",
     "imagePath": "/assets/cards/gold_150_paladino_juramento_eterno.png",
@@ -28883,10 +29024,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
+        "type": "buff_target_ally",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao Entrar: Concede +1/+1 a todos os aliados."
+        "secondaryValue": 0,
+        "description": "Ao Entrar: Concede +1 ATQ a um aliado."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Ao Entrar: Concede Escudo Divino a um aliado."
       }
     ],
     "description": "Armadura 1. Ao Entrar: O som da trombeta dourada concede +1 ATQ e Escudo Divino a um aliado.",
@@ -28937,7 +29084,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Ímpeto",
       "Escudo Divino"
     ],
-    "effects": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 0,
+        "description": "Ao Entrar: Concede +1 ATQ aos seus aliados na Vanguarda."
+      }
+    ],
     "description": "Armadura 1. Ao Entrar: Seu rugido radiante concede +1 ATQ aos seus aliados na Vanguarda.",
     "flavorText": "Sua juba arde como chamas solares quando lidera a carga da cavalaria sagrada.",
     "imagePath": "/assets/cards/gold_154_colosso_marmore_sagrado.png",
@@ -28971,7 +29126,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Causa 3 de dano a um inimigo."
       }
     ],
-    "description": "Armadura 2. General angelical de seis asas douradas que empunha uma montante de luz solar.",
+    "description": "Armadura 2. Ao Entrar: Causa 3 de dano a um inimigo. General angelical de seis asas douradas.",
     "flavorText": "Empunha a lâmina da verdade com a serenidade de quem nunca conheceu a derrota.",
     "imagePath": "/assets/cards/gold_155_arconte_lanca_solar.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Zenith Spear Archon angel in gleaming golden plate hurling a spear of sunlight."
@@ -29033,16 +29188,21 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 2,
-        "secondaryValue": 2,
-        "description": "Ao Entrar: Concede +2/+2 a todos os aliados."
-      },
-      {
-        "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
         "description": "Ao Entrar: Concede Escudo Divino a todos os aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 4,
+        "description": "Ao Entrar: Cura 4 de VIDA em todos os aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 4,
+        "description": "Ao Entrar: Cura 4 de VIDA do seu Soberano."
       }
     ],
     "description": "Sopro Solar 3. Armadura 3. Ao Entrar: Suas asas de luz divina concedem Escudo Divino aos aliados e curam 4 de Vida.",
@@ -29069,16 +29229,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
+        "type": "shield_all_allies",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Concede +1/+1 a todos os aliados."
+        "description": "Concede Escudo Divino a todos os seus aliados."
       },
       {
         "trigger": "on_enter",
-        "type": "heal_sovereign",
-        "value": 2,
-        "description": "Cura 2 de VIDA no seu Soberano."
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 0,
+        "description": "Concede +1 ATQ a todos os seus aliados na Vanguarda."
       }
     ],
     "description": "Escudos flutuantes de luz concedem Escudo Divino e +1 ATQ a todos os seus aliados na Vanguarda.",
@@ -29105,15 +29265,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_single_enemy",
-        "value": 5,
-        "description": "Causa 5 de dano a um inimigo."
+        "type": "damage_enemy_row",
+        "value": 3,
+        "description": "Causa 3 de dano à Vanguarda inimiga."
       },
       {
         "trigger": "on_enter",
         "type": "heal_sovereign",
         "value": 3,
-        "description": "Cura 3 de VIDA no seu Soberano."
+        "description": "Cura 3 de VIDA do seu Soberano."
       }
     ],
     "description": "Sete halos solares chovem lanças de fogo divino: causa 3 de dano à Vanguarda inimiga e cura 3 de Vida do seu Soberano.",
@@ -29142,14 +29302,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Concede Escudo Divino a todos os aliados."
+        "description": "Concede Escudo Divino a todos os seus aliados."
       },
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 2,
-        "description": "Concede +1/+2 a todos os aliados."
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Compra 2 cartas."
       }
     ],
     "description": "Cúpula de asas seráficas concede Escudo Divino a todos os seus aliados e compra 2 cartas.",
@@ -29178,7 +29337,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Concede Escudo Divino aos aliados."
+        "description": "Concede Escudo Divino a um aliado."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Causa 2 de dano ao atacante."
       }
     ],
     "description": "Emboscada: Quando um aliado for atacado, o escudo-espelho concede Escudo Divino a ele e causa 2 de dano ao atacante.",
@@ -29206,14 +29371,14 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 4,
-        "description": "Causa 4 de dano ao atacante."
+        "value": 3,
+        "description": "Causa 3 de dano ao atacante inimigo."
       },
       {
         "trigger": "on_enter",
         "type": "heal_sovereign",
         "value": 3,
-        "description": "Cura 3 de VIDA no seu Soberano."
+        "description": "Cura 3 de VIDA do seu Soberano."
       }
     ],
     "description": "Emboscada: Correntes douradas da lei causam 3 de dano ao atacante inimigo e curam 3 de Vida do seu Soberano.",
@@ -29239,17 +29404,17 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "buff_all_allies",
+        "trigger": "turn_start",
+        "type": "buff_target_ally",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao Entrar: +1/+1 aos aliados."
+        "secondaryValue": 0,
+        "description": "Início do Turno: Concede +1 ATQ a um aliado na Vanguarda."
       },
       {
         "trigger": "turn_start",
         "type": "heal_sovereign",
         "value": 1,
-        "description": "Início do Turno: Cura 1 no seu Soberano."
+        "description": "Início do Turno: Cura 1 de VIDA do seu Soberano."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, concede +1 ATQ a um aliado na Vanguarda e cura 1 de Vida do seu Soberano.",
@@ -29275,17 +29440,11 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "shield_all_allies",
-        "value": 1,
-        "description": "Ao Entrar: Escudo Divino aos aliados."
-      },
-      {
         "trigger": "turn_start",
         "type": "buff_target_ally",
         "value": 1,
         "secondaryValue": 1,
-        "description": "Início do Turno: +1/+1 a um aliado."
+        "description": "Início do Turno: Concede +1 ATQ / +1 VID a um aliado na Vanguarda."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, concede +1 ATQ / +1 VID a um aliado na Vanguarda.",
@@ -29311,17 +29470,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
-        "type": "buff_all_allies",
+        "trigger": "turn_start",
+        "type": "draw_cards",
         "value": 1,
-        "secondaryValue": 2,
-        "description": "Ao Entrar: +1/+2 aos aliados."
+        "description": "Início do Turno: Compra 1 carta."
       },
       {
         "trigger": "turn_start",
         "type": "heal_sovereign",
         "value": 2,
-        "description": "Início do Turno: Cura 2 no seu Soberano."
+        "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, compra 1 carta e cura 2 de Vida do seu Soberano.",
@@ -29347,23 +29505,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
-        "trigger": "on_enter",
+        "trigger": "turn_start",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Ao Entrar: Escudo Divino aos aliados."
+        "description": "Início do Turno: Concede Escudo Divino a um aliado."
       },
       {
         "trigger": "turn_start",
-        "type": "buff_all_allies",
+        "type": "grant_bonus_essence",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Início do Turno: +1/+1 a todos os aliados."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "heal_sovereign",
-        "value": 2,
-        "description": "Início do Turno: Cura 2 no seu Soberano."
+        "description": "Início do Turno: Concede +1⚡ de Essência."
       }
     ],
     "description": "Relíquia Contínua: No início do seu turno, concede Escudo Divino a um aliado e +1⚡ de Essência.",
@@ -31651,6 +31802,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 3,
+        "secondaryValue": 3,
         "description": "Ao Entrar: Concede +3 ATQ e +3 VIDA a um aliado."
       },
       {
@@ -32075,6 +32227,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "buff_all_allies",
         "value": 2,
+        "secondaryValue": 2,
         "description": "Concede +2 ATQ e +2 VIDA a todos os aliados."
       }
     ],

@@ -1634,11 +1634,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   const handleQuickCastSpell = (handIdx: number, targetId?: string) => {
     if (!isPlayerTurn) return;
+    const effectiveTargetId = targetId ?? focusedBoardUnitId ?? undefined;
     const card = gameState.player.hand[handIdx];
     if (card) {
-      triggerCardPlaySpectacle('player', card, gameState, targetId);
+      triggerCardPlaySpectacle('player', card, gameState, effectiveTargetId);
     }
-    const next = playCard(gameState, 'player', handIdx, { targetId });
+    const next = playCard(gameState, 'player', handIdx, { targetId: effectiveTargetId });
     playSfx('spell');
     setGameState(next);
     clearHandSelectionAndDrawers();
@@ -1699,7 +1700,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     );
   };
 
-  const handleDeployToPlayerSlot = (row: RowType, slotIndex: number) => {
+  const handleDeployToPlayerSlot = (
+    row: RowType,
+    slotIndex: number,
+    explicitTargetId?: string
+  ) => {
     if (!isPlayerTurn || combatAnim) return;
     if (selectedHandIndex === null || !selectedHandCard || !canPlaySelectedHandCard.allowed) return;
     if (!canDeployToSlot(gameState.player, row, slotIndex)) return;
@@ -1712,10 +1717,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       return;
     }
     if (selectedHandCard.type === 'creature' || selectedHandCard.type === 'relic') {
-      triggerCardPlaySpectacle('player', selectedHandCard, gameState);
+      const effectiveTargetId = explicitTargetId ?? focusedBoardUnitId ?? undefined;
+      triggerCardPlaySpectacle('player', selectedHandCard, gameState, effectiveTargetId);
       const next = playCard(gameState, 'player', selectedHandIndex, {
         row,
         slotIndex,
+        targetId: effectiveTargetId,
       });
       playSfx('summon');
       setGameState(next);
@@ -1737,15 +1744,36 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         handleQuickCastSpell(selectedHandIndex, unit.instanceId);
         return;
       }
-      // 2. If holding a Creature, Relic, or Trap and clicking a slot that can stack (< 3 cards), stack it right into this slot!
+      // 2. If holding a Creature, Relic, or Trap and clicking a slot that can stack (< 3 cards), stack it right into this slot and target this ally if applicable!
       if (
         (selectedHandCard.type === 'creature' ||
           (selectedHandCard.type === 'relic' && unit.row === 'rearguard') ||
           (selectedHandCard.type === 'reaction' && unit.row === 'rearguard')) &&
         canDeployToSlot(gameState.player, unit.row, unit.slotIndex)
       ) {
-        handleDeployToPlayerSlot(unit.row, unit.slotIndex);
+        handleDeployToPlayerSlot(unit.row, unit.slotIndex, unit.instanceId);
         return;
+      }
+      // 2b. If holding an ally-targeted Creature or Relic (e.g. Relic clicked on a Vanguard unit or full slot), deploy to best slot targeting this unit!
+      if (
+        (selectedHandCard.type === 'creature' || selectedHandCard.type === 'relic') &&
+        targetMode === 'ally'
+      ) {
+        const targetRow: RowType =
+          selectedHandCard.type === 'relic' ? 'rearguard' : selectedHandCard.preferredRow;
+        const bestSlot = findBestDeploySlot(targetRow);
+        const fallbackRow: RowType = targetRow === 'vanguard' ? 'rearguard' : 'vanguard';
+        const finalRow =
+          bestSlot !== -1
+            ? targetRow
+            : selectedHandCard.type === 'creature'
+            ? fallbackRow
+            : targetRow;
+        const finalSlot = bestSlot !== -1 ? bestSlot : findBestDeploySlot(finalRow);
+        if (finalSlot !== -1) {
+          handleDeployToPlayerSlot(finalRow, finalSlot, unit.instanceId);
+          return;
+        }
       }
     }
 
@@ -1832,6 +1860,30 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     ) {
       handleQuickCastSpell(selectedHandIndex, enemyUnit.instanceId);
       return;
+    }
+
+    if (
+      selectedHandIndex !== null &&
+      selectedHandCard &&
+      canPlaySelectedHandCard.allowed &&
+      (selectedHandCard.type === 'creature' || selectedHandCard.type === 'relic') &&
+      doesCardUseTarget(selectedHandCard) === 'enemy'
+    ) {
+      const targetRow: RowType =
+        selectedHandCard.type === 'relic' ? 'rearguard' : selectedHandCard.preferredRow;
+      const bestSlot = findBestDeploySlot(targetRow);
+      const fallbackRow: RowType = targetRow === 'vanguard' ? 'rearguard' : 'vanguard';
+      const finalRow =
+        bestSlot !== -1
+          ? targetRow
+          : selectedHandCard.type === 'creature'
+          ? fallbackRow
+          : targetRow;
+      const finalSlot = bestSlot !== -1 ? bestSlot : findBestDeploySlot(finalRow);
+      if (finalSlot !== -1) {
+        handleDeployToPlayerSlot(finalRow, finalSlot, enemyUnit.instanceId);
+        return;
+      }
     }
 
     if (!enemyUnit.isTrap) {

@@ -19,8 +19,8 @@ const STAGE_LABELS: Record<MusicIntensityStage, string> = {
   sanctuary: 'Santuário Cromático',
   tactical: 'Abertura Tática',
   battle: 'Guerra de Formações',
-  domain_clash: 'Expansão de Domínio',
-  climax: 'CLÍMAX: Beira do Abismo',
+  domain_clash: ' Pressão Arcana',
+  climax: 'CLÍMAX MÁXIMO: Expansão de Domínio',
 };
 
 const DOMAIN_MUSIC_TITLES: Record<Domain, string> = {
@@ -40,12 +40,12 @@ const STAGE_MP3_PATHS: Record<MusicIntensityStage, string> = {
   climax: '/assets/music/climax.mp3',
 };
 
-const STAGE_TARGET_VOLUMES: Record<MusicIntensityStage, number> = {
-  sanctuary: 0.72,
-  tactical: 0.76,
-  battle: 0.82,
-  domain_clash: 0.88,
-  climax: 0.95,
+export const STAGE_TARGET_VOLUMES: Record<MusicIntensityStage, number> = {
+  sanctuary: 0.52,
+  tactical: 0.58,
+  battle: 0.65,
+  domain_clash: 0.82,
+  climax: 1.0,
 };
 
 let currentDescriptor: MusicStateDescriptor = {
@@ -105,11 +105,17 @@ function runCrossfadeTick(): void {
     if (!el) return;
 
     const desiredVol = !muted && st === targetStage ? STAGE_TARGET_VOLUMES[st] : 0;
+
+    if (!muted && st === targetStage && el.paused) {
+      el.play().catch(() => {});
+    }
+
     const diff = desiredVol - el.volume;
 
     if (Math.abs(diff) > 0.02) {
       anyStillFading = true;
-      const step = diff > 0 ? 0.045 : -0.055;
+      const upStep = st === 'climax' ? 0.095 : 0.055;
+      const step = diff > 0 ? upStep : -0.065;
       el.volume = Math.max(0, Math.min(1, el.volume + step));
     } else {
       el.volume = desiredVol;
@@ -129,15 +135,20 @@ function triggerCrossfadeTo(stage: MusicIntensityStage): void {
   if (typeof window === 'undefined') return;
 
   const targetEl = getOrCreateAudio(stage);
-  if (targetEl.paused && !isMuted()) {
-    targetEl.play().catch(() => {
-      // Wait for user interaction if blocked by browser autoplay policy
-    });
+  if (!isMuted()) {
+    if (stage === 'climax' && targetEl.volume < 0.35) {
+      targetEl.volume = 0.35;
+    }
+    if (targetEl.paused) {
+      targetEl.play().catch(() => {
+        // Wait for user interaction if blocked by browser autoplay policy
+      });
+    }
   }
   activeStage = stage;
 
   if (fadeTimer === null) {
-    fadeTimer = window.setInterval(runCrossfadeTick, 60);
+    fadeTimer = window.setInterval(runCrossfadeTick, 50);
   }
 }
 
@@ -151,14 +162,22 @@ export function syncMusicMuteState(muted: boolean): void {
   }
 
   if (fadeTimer === null) {
-    fadeTimer = window.setInterval(runCrossfadeTick, 60);
+    fadeTimer = window.setInterval(runCrossfadeTick, 50);
   }
 }
 
 registerMuteListener(syncMusicMuteState);
 
+let allStagesPreloaded = false;
+
 export function startAdaptiveMusic(): void {
   if (typeof window === 'undefined') return;
+  if (!allStagesPreloaded) {
+    allStagesPreloaded = true;
+    (Object.keys(STAGE_MP3_PATHS) as MusicIntensityStage[]).forEach((st) => {
+      getOrCreateAudio(st);
+    });
+  }
   const stage = currentDescriptor.stage;
   const el = getOrCreateAudio(stage);
   if (!isMuted() && el.paused) {
@@ -173,7 +192,7 @@ export function setMusicState(
   domain: Domain = 'neutral',
   isBossMatch = false
 ): void {
-  const stageLabel = STAGE_LABELS[stage];
+  const stageLabel = STAGE_LABELS[stage].trim();
   const domTitle = domain !== 'neutral' ? ` • ${DOMAIN_MUSIC_TITLES[domain]}` : '';
   const nextLabel = `${stageLabel}${domTitle}`;
 
@@ -191,7 +210,8 @@ export function setMusicState(
     notifyListeners();
   }
 
-  if (stageChanged) {
+  const targetEl = getOrCreateAudio(stage);
+  if (stageChanged || (!isMuted() && (targetEl.paused || targetEl.volume < STAGE_TARGET_VOLUMES[stage] - 0.03))) {
     triggerCrossfadeTo(stage);
   }
 }

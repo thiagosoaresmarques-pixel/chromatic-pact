@@ -750,7 +750,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
       if (wasShattered) {
         triggerScreenShake('heavy');
-        playSfx('hit');
+        playSfx('domain_shatter');
         const reason = recentLogsText.includes('QUEBRA DE CONCENTRAÇÃO')
           ? `💥 QUEBRA DE CONCENTRAÇÃO! [${prev.name.toUpperCase()}] ESTILHAÇADO!`
           : `💥 BARREIRA ROMPIDA! [${prev.name.toUpperCase()}] ESTILHAÇADO!`;
@@ -782,7 +782,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (prev && curr && prev.owner !== curr.owner && !curr.clashRival) {
       // Overwhelming Affinity shattered the previous Domain Expansion and replaced it!
       triggerScreenShake('heavy');
-      playSfx('hit');
+      playSfx('domain_shatter');
       setDomainExitAnim({
         domain: prev.domain,
         name: prev.name,
@@ -798,7 +798,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (prev && curr && !prev.clashRival && curr.clashRival) {
       // Entered Domain Clash (Two Domains fighting on the table)!
       triggerScreenShake('heavy');
-      playSfx('ascend');
+      playSfx('domain_clash');
       const rivalOwner = curr.clashRival.owner;
       const rivalCard =
         CARDS_BY_ID[gameState[rivalOwner].avatarCardId] ?? ALL_CARDS[0];
@@ -811,6 +811,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       );
     } else if (!prev && curr && curr.owner === 'ai') {
       // AI invoked Domain Expansion on its turn
+      playSfx('domain_expand');
       const aiCard = CARDS_BY_ID[gameState.ai.avatarCardId] ?? ALL_CARDS[0];
       triggerSovereignSpectacle(
         'ai',
@@ -1363,15 +1364,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       activeDomain = pTerrain.domain;
     }
 
-    // Determine musical intensity stage (0..4)
+    // Determine musical intensity stage (0..4) — Domain Expansion always escalates to maximum intensity ('climax')
     let stage: MusicIntensityStage = 'tactical';
     const isNearDeath = gameState.player.hp <= 14 || gameState.ai.hp <= 14;
     const isLateBossClimax = Boolean(campaignBoss) && gameState.turn >= 7;
-    const isDomainClash = Boolean(gameState.domainExpansion?.clashRival);
+    const hasDomainExpansion = Boolean(gameState.domainExpansion);
 
-    if (isNearDeath || hasAscendedUnit || isDomainClash || isLateBossClimax) {
+    if (hasDomainExpansion || isNearDeath || hasAscendedUnit || isLateBossClimax) {
       stage = 'climax';
-    } else if (gameState.domainExpansion || hasLegendaryUnit) {
+    } else if (hasLegendaryUnit) {
       stage = 'domain_clash';
     } else if (
       (!isMulliganOpen && gameState.turn >= 4) ||
@@ -1574,15 +1575,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (!check.allowed) return;
     const spec = getDomainExpansionSpec(check.domain);
     const pCard = CARDS_BY_ID[gameState.player.avatarCardId] ?? ALL_CARDS[0];
+    const isClash = Boolean(gameState.domainExpansion && gameState.domainExpansion.owner !== 'player');
     triggerSovereignSpectacle(
       'player',
-      `⛩️ EXPANSÃO DE DOMÍNIO: ${spec.name.toUpperCase()}`,
-      `${spec.potencyDesc} • ${spec.sureHitDesc}`,
+      isClash
+        ? `⚡⛩️ DISPUTA DE DOMÍNIOS: ${spec.name.toUpperCase()} vs ${gameState.domainExpansion!.name.toUpperCase()}`
+        : `⛩️ EXPANSÃO DE DOMÍNIO: ${spec.name.toUpperCase()}`,
+      isClash
+        ? 'As duas barreiras colidem 50/50 no centro da mesa! O Acerto Garantido de ambos foi anulado!'
+        : `${spec.potencyDesc} • ${spec.sureHitDesc}`,
       check.domain,
       pCard
     );
     const next = invokeDomainExpansion(gameState, 'player');
-    playSfx('ascend');
+    playSfx(isClash ? 'domain_clash' : 'domain_expand');
     setGameState(next);
   };
 

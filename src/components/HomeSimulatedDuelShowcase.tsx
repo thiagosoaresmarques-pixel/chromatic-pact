@@ -36,7 +36,15 @@ import {
   GameState,
   RowType,
 } from '../types/game';
-import { MusicIntensityStage, setMusicState, startAdaptiveMusic } from '../utils/musicEngine';
+import {
+  getCurrentMusicState,
+  MusicIntensityStage,
+  MusicStateDescriptor,
+  setMusicState,
+  STAGE_TARGET_VOLUMES,
+  startAdaptiveMusic,
+  subscribeMusicState,
+} from '../utils/musicEngine';
 import { getSharedAudioContext, onAudioUnlocked, playSfx } from '../utils/soundEngine';
 import {
   CARD_TYPE_LABELS,
@@ -62,11 +70,13 @@ interface SimEngineStep {
   turnNumber: number;
   p1Essence: number;
   p1MaxEssence: number;
-  kind: 'play_card' | 'domain_and_ascend' | 'attack_lethal';
+  kind: 'play_card' | 'invoke_domain' | 'domain_clash' | 'domain_and_ascend' | 'attack_lethal';
   handIndex?: number;
   deployRow?: RowType;
   deploySlotIndex?: number;
   alsoInvokeDomainExpansion?: boolean;
+  rivalInvokesDomain?: boolean;
+  shatterRivalDomain?: boolean;
   ascendSlotIndex?: number;
   ascendRow?: RowType;
   spellTargetSlotIndex?: number;
@@ -205,9 +215,9 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
   {
     id: 'crimson_forge_domain',
     shortTab: '🔥 Forja Carmesim',
-    badge: 'COMBO #2 • EXPANSÃO DE DOMÍNIO & ASCENSÃO DRACÔNICA',
+    badge: 'COMBO #2 • EXPANSÃO DE DOMÍNIO, CONFRONTO 50/50 & QUEBRA DE BARREIRA',
     title: 'Caldeira do Fogo Primordial',
-    subtitle: 'Campeão Dracônico + Bigorna do Rei da Fornalha + Vulcanis, Soberano Carmesim',
+    subtitle: 'Bigorna do Rei da Fornalha + Expansão Carmesim + Confronto 50/50 + Vulcanis',
     comboRef: 'Grimório: Fúria de Pyros • Combo Oficial #2',
     accentColor: '#ef4444',
     p1Name: 'Ignis Rex (Você)',
@@ -230,8 +240,8 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     ],
     initialHandCardIds: [
       'red_36_bigorna_fogo',
-      'red_123_cataclismo_solar',
       'red_157_dragao_tiamat_carmesim',
+      'red_123_cataclismo_solar',
       'red_18_marechal_rubro',
       'red_01_kobold',
     ],
@@ -245,7 +255,7 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     steps: [
       {
         id: 'red-step-1',
-        stepBadge: 'PASSO 1/4 • RELÍQUIA DE FORJA',
+        stepBadge: 'PASSO 1/5 • RELÍQUIA DE FORJA',
         title: 'Posicionar Bigorna do Rei da Fornalha na Retaguarda',
         narrative:
           'O Jogador 1 abre sua mão, seleciona a Relíquia Bigorna do Rei da Fornalha e a posiciona na Retaguarda [R], concedendo +1/+1 aos seus aliados e forjando uma Cria Dracônica 2/1 com Ímpeto!',
@@ -259,39 +269,143 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
       },
       {
         id: 'red-step-2',
-        stepBadge: 'PASSO 2/4 • EXPANSÃO DE DOMÍNIO + ASCENSÃO',
-        title: 'Expansão: Caldeira do Fogo Primordial & Ascensão Dracônica',
+        stepBadge: 'PASSO 2/5 • ⛩️ ENTRADA DA EXPANSÃO DE DOMÍNIO (CLÍMAX SONORO 100%)',
+        title: 'Invocar Expansão de Domínio: Caldeira do Fogo Primordial',
         narrative:
-          'Com 6/6 de Afinidade Carmesim, o Jogador 1 invoca sua Expansão de Domínio (+1/+1, Ímpeto e Acerto Garantido) e ascende o Campeão Dracônico para ★ Soberano Meio-Dragão!',
+          'Com 6/6 de Afinidade Carmesim, o Jogador 1 abre seus Terrenos e invoca a Caldeira do Fogo Primordial (3⚡)! A onda vulcânica toma toda a mesa de madeira (+1/+1, Ímpeto e Acerto Garantido) e a música salta para intensidade máxima (CLÍMAX 100%)!',
         turnNumber: 7,
-        p1Essence: 8,
-        p1MaxEssence: 8,
-        kind: 'domain_and_ascend',
+        p1Essence: 7,
+        p1MaxEssence: 7,
+        kind: 'invoke_domain',
+      },
+      {
+        id: 'red-step-3',
+        stepBadge: 'PASSO 3/5 • ⚡⛩️ CONFRONTO DE DOMÍNIOS 50/50 & ASCENSÃO',
+        title: 'Confronto de Domínios (50/50): Caldeira vs Eclipse do Trono + Ascensão',
+        narrative:
+          'O Arquilich rival responde expandindo o Eclipse do Trono de Ossos! As duas barreiras colidem no centro da mesa numa Disputa 50/50 (anulando os Acertos Garantidos), enquanto o Jogador 1 ascende o Campeão Dracônico para ★ Soberano Meio-Dragão!',
+        turnNumber: 7,
+        p1Essence: 5,
+        p1MaxEssence: 7,
+        kind: 'domain_clash',
+        rivalInvokesDomain: true,
         ascendRow: 'vanguard',
         ascendSlotIndex: 1,
       },
       {
-        id: 'red-step-3',
-        stepBadge: 'PASSO 3/4 • ENTRADA LENDÁRIA & SOPRO ELEMENTAL',
-        title: 'Invocar Vulcanis, Soberano Carmesim & Sopro de Chamas',
+        id: 'red-step-4',
+        stepBadge: 'PASSO 4/5 • 💥 QUEBRA DO DOMÍNIO RIVAL & SOPRO DRACÔNICO',
+        title: 'Invocar Vulcanis, Soberano Carmesim & Estilhaçar Barreira Inimiga',
         narrative:
-          'O Jogador 1 escolhe a Lendária Vulcanis, Soberano Carmesim na mão e a invoca na Vanguarda [V], disparando seu Sopro Elemental em toda a Vanguarda inimiga!',
+          'O Jogador 1 invoca a Lendária Vulcanis, Soberano Carmesim na Vanguarda [V]! Seu Sopro Elemental varre a Vanguarda inimiga e causa dano massivo ao Arquilich, estilhaçando o domínio rival em 8 fragmentos para que a Caldeira reine absoluta!',
         turnNumber: 8,
         p1Essence: 9,
         p1MaxEssence: 9,
         kind: 'play_card',
-        handIndex: 1,
+        handIndex: 0,
         deployRow: 'vanguard',
         deploySlotIndex: 4,
+        shatterRivalDomain: true,
       },
       {
-        id: 'red-step-4',
-        stepBadge: 'PASSO 4/4 • PREVISÃO TÁTICA & GOLPE FINAL',
+        id: 'red-step-5',
+        stepBadge: 'PASSO 5/5 • ⚔️ PREVISÃO TÁTICA & GOLPE FINAL',
         title: 'Ataque com Acerto Garantido Direto no Soberano Rival',
         narrative:
-          'Sob a Expansão de Domínio ativa, toda a Vanguarda Dracônica ataca diretamente o Soberano rival com Acerto Garantido, zerando seus Pontos de Vida!',
+          'Com o domínio rival rompido e a Caldeira do Fogo Primordial soberana na mesa, toda a Vanguarda Dracônica ataca diretamente o Soberano rival com Acerto Garantido para conquistar a vitória!',
         turnNumber: 8,
-        p1Essence: 4,
+        p1Essence: 3,
+        p1MaxEssence: 9,
+        kind: 'attack_lethal',
+      },
+    ],
+  },
+  {
+    id: 'golden_citadel_clash',
+    shortTab: '☀️ Cidadela & Colisão',
+    badge: 'COMBO #15 • DISPUTA DE DOMÍNIOS 50/50 & ROMPIMENTO DE BARREIRA',
+    title: 'Cidadela da Aurora vs Eclipse Abissal',
+    subtitle: 'Trono do Imperador Eterno + Colisão de Domínios 50/50 + Aurelius, Soberano da Alvorada',
+    comboRef: 'Grimório: Bastião de Aurelius • Combo Oficial #15',
+    accentColor: '#eab308',
+    p1Name: 'Aurelius (Você)',
+    p1AvatarCardId: 'gold_157_dragao_soberano_alvorada',
+    p1Domain: 'gold',
+    p1StartingHp: 22,
+    p2Name: 'Monarca dos Três Crânios',
+    p2AvatarCardId: 'purple_157_dragao_sombra_abissal',
+    p2Domain: 'purple',
+    p2StartingHp: 18,
+    initialEnemyDomain: 'purple',
+    initialPlayerUnits: [
+      { cardId: 'gold_26_muralha_aco', row: 'vanguard', slotIndex: 1 },
+      { cardId: 'gold_07_dragao_ouro', row: 'vanguard', slotIndex: 2 },
+    ],
+    initialAiUnits: [
+      { cardId: 'purple_138_soberano_carnica', row: 'vanguard', slotIndex: 2, damageTaken: 2 },
+      { cardId: 'purple_126_campanario_mortos', row: 'rearguard', slotIndex: 2 },
+    ],
+    initialHandCardIds: [
+      'gold_146_trono_imperador_eterno',
+      'gold_157_dragao_soberano_alvorada',
+      'gold_160_decreto_invulnerabilidade',
+    ],
+    initialChanneledCardIds: [
+      'gold_26_muralha_aco',
+      'gold_07_dragao_ouro',
+      'gold_146_trono_imperador_eterno',
+      'gold_160_decreto_invulnerabilidade',
+    ],
+    initialCryptCardIds: ['gold_26_muralha_aco'],
+    steps: [
+      {
+        id: 'gld-step-1',
+        stepBadge: 'PASSO 1/4 • RELÍQUIA IMPERIAL SOB DOMÍNIO RIVAL',
+        title: 'Posicionar Trono Supremo do Imperador Eterno na Retaguarda',
+        narrative:
+          'Sob o Eclipse do Trono de Ossos inimigo, o Jogador 1 escolhe a Relíquia Trono Supremo do Imperador Eterno na mão e a posiciona na Retaguarda [R], concedendo +1/+2 e Escudo Divino aos seus aliados!',
+        turnNumber: 6,
+        p1Essence: 6,
+        p1MaxEssence: 6,
+        kind: 'play_card',
+        handIndex: 0,
+        deployRow: 'rearguard',
+        deploySlotIndex: 3,
+      },
+      {
+        id: 'gld-step-2',
+        stepBadge: 'PASSO 2/4 • ⚡⛩️ CONFRONTO DE DOMÍNIOS 50/50 (CLÍMAX SONORO 100%)',
+        title: 'Confronto de Domínios: Cidadela da Aurora vs Eclipse do Trono de Ossos',
+        narrative:
+          'O Jogador 1 contra-ataca invocando sua própria Expansão de Domínio (3⚡)! O tabuleiro se divide 50/50 com o feixe sísmico central, anulando o Acerto Garantido inimigo e elevando a trilha ao CLÍMAX MÁXIMO (100%)!',
+        turnNumber: 7,
+        p1Essence: 8,
+        p1MaxEssence: 8,
+        kind: 'domain_clash',
+      },
+      {
+        id: 'gld-step-3',
+        stepBadge: 'PASSO 3/4 • 💥 QUEBRA DE BARREIRA & DRAGÃO DA ALVORADA',
+        title: 'Invocar Aurelius, Soberano da Alvorada & Estilhaçar o Eclipse Rival',
+        narrative:
+          'O Jogador 1 invoca Aurelius, Dragão Soberano da Alvorada na Vanguarda [V]. Seu Sopro Solar devasta a linha inimiga e rompe a barreira roxa em 8 fragmentos, fazendo a Cidadela da Aurora reinar em 100% da mesa!',
+        turnNumber: 8,
+        p1Essence: 9,
+        p1MaxEssence: 9,
+        kind: 'play_card',
+        handIndex: 0,
+        deployRow: 'vanguard',
+        deploySlotIndex: 3,
+        shatterRivalDomain: true,
+      },
+      {
+        id: 'gld-step-4',
+        stepBadge: 'PASSO 4/4 • ⚔️ JULGAMENTO DA AURORA',
+        title: 'Marcha Inabalável da Falange Dourada com Acerto Garantido',
+        narrative:
+          'Com todas as unidades fortalecidas pela Cidadela da Aurora e o domínio rival estilhaçado, o Jogador 1 ataca diretamente o Soberano inimigo para conquistar a Vitória Soberana!',
+        turnNumber: 8,
+        p1Essence: 2,
         p1MaxEssence: 9,
         kind: 'attack_lethal',
       },
@@ -300,9 +414,9 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
   {
     id: 'eternal_frost_domain',
     shortTab: '❄️ Gelo Eterno',
-    badge: 'COMBO #6 • CONGELAMENTO TOTAL & OLHO DO MAELSTROM',
+    badge: 'COMBO #6 • CONGELAMENTO TOTAL & OLHO DO MAELSTROM ASTRAL',
     title: 'Olho do Maelstrom Astral',
-    subtitle: 'Ruptura do Relógio Astral + Trono do Inverno Eterno + Dragão de Safira Sônico',
+    subtitle: 'Ruptura do Relógio Astral + Expansão Glacial + Dragão de Safira Sônico',
     comboRef: 'Grimório: Conclave da Geada • Combo Oficial #6',
     accentColor: '#38bdf8',
     p1Name: 'Hydrissa (Você)',
@@ -323,10 +437,9 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     ],
     initialHandCardIds: [
       'blue_141_ruptura_temporal',
-      'blue_146_trono_inverno_eterno',
       'blue_154_dragao_safira_soberano',
+      'blue_146_trono_inverno_eterno',
       'blue_161_singularidade_temporal',
-      'blue_136_leviata_cronos',
     ],
     initialChanneledCardIds: [
       'blue_37_mago_aprendiz',
@@ -350,32 +463,28 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
       },
       {
         id: 'blu-step-2',
-        stepBadge: 'PASSO 2/4 • RELÍQUIA GLACIAL',
-        title: 'Posicionar Trono do Inverno Eterno na Retaguarda',
+        stepBadge: 'PASSO 2/4 • ⛩️ ENTRADA DA EXPANSÃO DE DOMÍNIO (CLÍMAX SONORO 100%)',
+        title: 'Invocar Expansão de Domínio: Olho do Maelstrom Astral',
         narrative:
-          'O Jogador 1 seleciona a Relíquia Trono do Inverno Eterno na mão e a posiciona na Retaguarda [R], congelando ameaças e comprando cartas extras.',
+          'Com 6/6 de Afinidade Astral, o Jogador 1 invoca o Olho do Maelstrom Astral (3⚡)! A barreira glacial expande-se por toda a mesa (+1/+1, Ímpeto e Acerto Garantido) e a trilha sonora sobe para intensidade máxima (CLÍMAX 100%)!',
         turnNumber: 7,
         p1Essence: 7,
         p1MaxEssence: 7,
-        kind: 'play_card',
-        handIndex: 0,
-        deployRow: 'rearguard',
-        deploySlotIndex: 3,
+        kind: 'invoke_domain',
       },
       {
         id: 'blu-step-3',
-        stepBadge: 'PASSO 3/4 • EXPANSÃO DE DOMÍNIO & DRAGÃO DE SAFIRA',
-        title: 'Expansão: Olho do Maelstrom Astral + Dragão de Safira Sônico',
+        stepBadge: 'PASSO 3/4 • ENTRADA LENDÁRIA & SOPRO SÔNICO',
+        title: 'Invocar Dragão de Safira Sônico na Vanguarda',
         narrative:
-          'Com 6/6 de Afinidade Astral, o Jogador 1 expande o Olho do Maelstrom Astral e invoca o Dragão de Safira Sônico na Vanguarda, varrendo a linha inimiga com Sopro Sônico!',
+          'Sob o Maelstrom Astral ativo, o Jogador 1 seleciona o Dragão de Safira Sônico na mão e o invoca na Vanguarda [V], varrendo a linha inimiga com Sopro Sônico!',
         turnNumber: 8,
-        p1Essence: 10,
-        p1MaxEssence: 10,
+        p1Essence: 9,
+        p1MaxEssence: 9,
         kind: 'play_card',
         handIndex: 0,
         deployRow: 'vanguard',
         deploySlotIndex: 3,
-        alsoInvokeDomainExpansion: true,
       },
       {
         id: 'blu-step-4',
@@ -385,7 +494,7 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
           'Com os inimigos congelados e a Expansão de Domínio ativa, o Dragão de Safira Sônico e a tropa astral atacam diretamente o Soberano rival para vencer a partida!',
         turnNumber: 8,
         p1Essence: 2,
-        p1MaxEssence: 10,
+        p1MaxEssence: 9,
         kind: 'attack_lethal',
       },
     ],
@@ -393,9 +502,9 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
   {
     id: 'abyssal_crypt_domain',
     shortTab: '💀 Cripta Abissal',
-    badge: 'COMBO #10 • REANIMAÇÃO DA CRIPTA & ECLIPSE DO TRONO',
+    badge: 'COMBO #10 • ECLIPSE DO TRONO DE OSSOS & REANIMAÇÃO DA CRIPTA',
     title: 'Eclipse do Trono de Ossos',
-    subtitle: 'Campanário dos Mortos + Exumar a Legião Caída + Lich da Coroa da Entropia',
+    subtitle: 'Campanário dos Mortos + Expansão Abissal + Lich da Coroa da Entropia',
     comboRef: 'Grimório: Legião da Cripta • Combo Oficial #10',
     accentColor: '#a855f7',
     p1Name: 'Vesperion, Lich (Você)',
@@ -415,8 +524,8 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     ],
     initialHandCardIds: [
       'purple_126_campanario_mortos',
-      'purple_68_exumar_legiao',
       'purple_156_lich_coroa_entropia',
+      'purple_68_exumar_legiao',
       'purple_123_eclipse_abissal',
     ],
     initialChanneledCardIds: [
@@ -443,23 +552,21 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
       },
       {
         id: 'pur-step-2',
-        stepBadge: 'PASSO 2/4 • EXPANSÃO DE DOMÍNIO + REANIMAÇÃO',
-        title: 'Expansão: Eclipse do Trono de Ossos & Exumar a Legião Caída',
+        stepBadge: 'PASSO 2/4 • ⛩️ ENTRADA DA EXPANSÃO DE DOMÍNIO (CLÍMAX SONORO 100%)',
+        title: 'Invocar Expansão de Domínio: Eclipse do Trono de Ossos',
         narrative:
-          'Com 6/6 de Afinidade do Abismo, o Jogador 1 expande o Eclipse do Trono de Ossos e lança Exumar a Legião Caída, reanimando diretamente da Cripta!',
+          'Com 6/6 de Afinidade do Abismo, o Jogador 1 expande o Eclipse do Trono de Ossos (3⚡)! O santuário necrótico envolve o tabuleiro (+1/+1, Ímpeto e Acerto Garantido) e leva a trilha sonora ao CLÍMAX MÁXIMO (100%)!',
         turnNumber: 7,
-        p1Essence: 9,
-        p1MaxEssence: 9,
-        kind: 'play_card',
-        handIndex: 0,
-        alsoInvokeDomainExpansion: true,
+        p1Essence: 8,
+        p1MaxEssence: 8,
+        kind: 'invoke_domain',
       },
       {
         id: 'pur-step-3',
         stepBadge: 'PASSO 3/4 • DESCIDA DO ARQUILICH SUPREMO',
         title: 'Invocar Lich da Coroa da Entropia na Vanguarda',
         narrative:
-          'O Jogador 1 seleciona Lich da Coroa da Entropia na mão e o invoca na Vanguarda [V], fortalecendo toda a fileira imortal e drenando a vida inimiga!',
+          'Sob o Eclipse do Trono de Ossos, o Jogador 1 seleciona Lich da Coroa da Entropia na mão e o invoca na Vanguarda [V], fortalecendo toda a fileira imortal e drenando a vida inimiga!',
         turnNumber: 8,
         p1Essence: 9,
         p1MaxEssence: 9,
@@ -476,98 +583,6 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
           'Com Acerto Garantido ativo pelo Eclipse do Trono de Ossos, toda a Legião Imortal ataca diretamente o Soberano rival, drenando seus últimos Pontos de Vida!',
         turnNumber: 8,
         p1Essence: 3,
-        p1MaxEssence: 9,
-        kind: 'attack_lethal',
-      },
-    ],
-  },
-  {
-    id: 'golden_citadel_clash',
-    shortTab: '☀️ Cidadela & Colisão',
-    badge: 'COMBO #15 • ESCUDO DIVINO EM MASSA & COLISÃO DE DOMÍNIOS 50/50',
-    title: 'Cidadela da Aurora vs Eclipse Abissal',
-    subtitle: 'Trono do Imperador Eterno + Cúpula das Asas Seráficas + Aurelius, Soberano da Alvorada',
-    comboRef: 'Grimório: Bastião de Aurelius • Combo Oficial #15',
-    accentColor: '#eab308',
-    p1Name: 'Aurelius (Você)',
-    p1AvatarCardId: 'gold_157_dragao_soberano_alvorada',
-    p1Domain: 'gold',
-    p1StartingHp: 22,
-    p2Name: 'Monarca dos Três Crânios',
-    p2AvatarCardId: 'purple_157_dragao_sombra_abissal',
-    p2Domain: 'purple',
-    p2StartingHp: 18,
-    initialEnemyDomain: 'purple',
-    initialPlayerUnits: [
-      { cardId: 'gold_26_muralha_aco', row: 'vanguard', slotIndex: 1 },
-      { cardId: 'gold_07_dragao_ouro', row: 'vanguard', slotIndex: 2 },
-    ],
-    initialAiUnits: [
-      { cardId: 'purple_138_soberano_carnica', row: 'vanguard', slotIndex: 2, damageTaken: 2 },
-      { cardId: 'purple_126_campanario_mortos', row: 'rearguard', slotIndex: 2 },
-    ],
-    initialHandCardIds: [
-      'gold_146_trono_imperador_eterno',
-      'gold_160_decreto_invulnerabilidade',
-      'gold_157_dragao_soberano_alvorada',
-    ],
-    initialChanneledCardIds: [
-      'gold_26_muralha_aco',
-      'gold_07_dragao_ouro',
-      'gold_146_trono_imperador_eterno',
-      'gold_160_decreto_invulnerabilidade',
-    ],
-    initialCryptCardIds: ['gold_26_muralha_aco'],
-    steps: [
-      {
-        id: 'gld-step-1',
-        stepBadge: 'PASSO 1/4 • RELÍQUIA IMPERIAL',
-        title: 'Posicionar Trono Supremo do Imperador Eterno na Retaguarda',
-        narrative:
-          'Sob o domínio inimigo, o Jogador 1 escolhe a Relíquia Trono Supremo do Imperador Eterno na mão e a posiciona na Retaguarda [R], concedendo +1/+2 e Escudo Divino aos seus aliados!',
-        turnNumber: 6,
-        p1Essence: 6,
-        p1MaxEssence: 6,
-        kind: 'play_card',
-        handIndex: 0,
-        deployRow: 'rearguard',
-        deploySlotIndex: 3,
-      },
-      {
-        id: 'gld-step-2',
-        stepBadge: 'PASSO 2/4 • COLISÃO DE DOMÍNIOS 50/50!',
-        title: 'Colisão de Domínios: Cidadela da Aurora vs Eclipse Abissal',
-        narrative:
-          'O Jogador 1 responde com sua própria Expansão de Domínio! O tabuleiro se divide 50/50 numa Colisão de Domínios (anulando o Acerto Garantido rival) enquanto lança Cúpula das Asas Seráficas!',
-        turnNumber: 7,
-        p1Essence: 9,
-        p1MaxEssence: 9,
-        kind: 'play_card',
-        handIndex: 0,
-        alsoInvokeDomainExpansion: true,
-      },
-      {
-        id: 'gld-step-3',
-        stepBadge: 'PASSO 3/4 • DESCIDA DO DRAGÃO DA ALVORADA',
-        title: 'Invocar Aurelius, Soberano da Alvorada & Sopro Solar',
-        narrative:
-          'O Jogador 1 seleciona Aurelius, Dragão Soberano da Alvorada na mão e o invoca na Vanguarda [V]. Seu Sopro Solar devasta a linha inimiga e restaura +4❤️ ao Soberano!',
-        turnNumber: 8,
-        p1Essence: 9,
-        p1MaxEssence: 9,
-        kind: 'play_card',
-        handIndex: 0,
-        deployRow: 'vanguard',
-        deploySlotIndex: 3,
-      },
-      {
-        id: 'gld-step-4',
-        stepBadge: 'PASSO 4/4 • JULGAMENTO DA AURORA',
-        title: 'Marcha Inabalável da Falange Dourada',
-        narrative:
-          'Com todas as unidades protegidas por Escudo Divino e fortalecidas pela Cidadela da Aurora, o Jogador 1 ataca para conquistar a Vitória Soberana!',
-        turnNumber: 8,
-        p1Essence: 2,
         p1MaxEssence: 9,
         kind: 'attack_lethal',
       },
@@ -715,7 +730,26 @@ function applyStepResolution(preState: GameState, step: SimEngineStep): GameStat
     state.player.currentEssence = step.p1Essence;
   }
 
-  if (step.kind === 'play_card') {
+  if (step.kind === 'invoke_domain') {
+    state.player.currentEssence = Math.max(state.player.currentEssence, 3);
+    state = invokeDomainExpansion(state, 'player');
+  } else if (step.kind === 'domain_clash') {
+    if (step.rivalInvokesDomain) {
+      state.ai.currentEssence = Math.max(state.ai.currentEssence, 3);
+      state = invokeDomainExpansion(state, 'ai');
+    } else {
+      state.player.currentEssence = Math.max(state.player.currentEssence, 3);
+      state = invokeDomainExpansion(state, 'player');
+    }
+    if (step.ascendRow !== undefined && step.ascendSlotIndex !== undefined) {
+      const targetUnit = getSlotUnits(state.player, step.ascendRow, step.ascendSlotIndex)[0];
+      if (targetUnit) {
+        const ascCost = targetUnit.card.ascension?.cost ?? 4;
+        state.player.currentEssence = Math.max(state.player.currentEssence, ascCost);
+        state = ascendUnit(state, 'player', targetUnit.instanceId);
+      }
+    }
+  } else if (step.kind === 'play_card') {
     const hIdx = step.handIndex ?? 0;
     const card = state.player.hand[hIdx];
     if (card) {
@@ -730,6 +764,28 @@ function applyStepResolution(preState: GameState, step: SimEngineStep): GameStat
         row: step.deployRow,
         slotIndex: step.deploySlotIndex,
         targetId: targetUnitId,
+      });
+    }
+    if (step.shatterRivalDomain && state.domainExpansion) {
+      const pDomCheck = canInvokeDomainExpansion(state, 'player');
+      const pSpec = getDomainExpansionSpec(pDomCheck.domain);
+      state.domainExpansion = {
+        owner: 'player',
+        domain: pSpec.domain,
+        name: pSpec.name,
+        subtitle: pSpec.subtitle,
+        icon: pSpec.icon,
+        potencyDesc: pSpec.potencyDesc,
+        sureHitDesc: pSpec.sureHitDesc,
+        turnsRemaining: 2,
+        damageTakenByOwnerThisRound: 0,
+        simpleDomainProtectedActor: null,
+      };
+      state.feedbacks.push({
+        id: `fb-shatter-${Date.now()}`,
+        targetId: 'ai-sovereign',
+        text: '💥 BARREIRA ROMPIDA!',
+        color: 'damage',
       });
     }
   } else if (step.kind === 'domain_and_ascend') {
@@ -801,6 +857,9 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
   const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(true);
   const [paceMode, setPaceMode] = useState<'human' | 'fast'>('human');
   const [isAudioLive, setIsAudioLive] = useState<boolean>(() => !soundMuted);
+  const [musicState, setLiveMusicState] = useState<MusicStateDescriptor>(() =>
+    getCurrentMusicState(),
+  );
 
   const [isP2DrawerPinned, setIsP2DrawerPinned] = useState<boolean>(false);
   const [isP1DrawerPinned, setIsP1DrawerPinned] = useState<boolean>(false);
@@ -811,6 +870,13 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
   } | null>(null);
 
   const [arenaShake, setArenaShake] = useState<'light' | 'heavy' | null>(null);
+  const [domainExitAnim, setDomainExitAnim] = useState<{
+    domain: Exclude<Domain, 'neutral'>;
+    name: string;
+    icon: string;
+    mode: 'expire' | 'shatter';
+    reasonText: string;
+  } | null>(null);
   const [combatAnim, setCombatAnim] = useState<{
     attackerId: string;
     targetId: string;
@@ -844,6 +910,10 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
 
   const stageRef = useRef<HTMLDivElement | null>(null);
 
+  useEffect(() => {
+    return subscribeMusicState(setLiveMusicState);
+  }, []);
+
   const scenario = SIM_DUEL_SCENARIOS[scenarioIdx] ?? SIM_DUEL_SCENARIOS[0];
   const step = scenario.steps[stepIdx] ?? scenario.steps[0];
 
@@ -876,7 +946,11 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     subPhase === 'hand' && step.kind === 'play_card' ? (step.handIndex ?? 0) : null;
 
   const focusedBoardUnitId: string | null = useMemo(() => {
-    if (step.kind === 'domain_and_ascend' && subPhase === 'dock') {
+    if (
+      (step.kind === 'domain_and_ascend' ||
+        (step.kind === 'domain_clash' && step.ascendRow !== undefined)) &&
+      subPhase === 'dock'
+    ) {
       const u = getSlotUnits(
         beforeState.player,
         step.ascendRow ?? 'vanguard',
@@ -907,17 +981,25 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     return null;
   }, [step, subPhase, beforeState, selectedAttackerId]);
 
-  // Auto-open Sovereign 1 drawer during 'hand' phase of 'domain_and_ascend'
+  // Auto-open Sovereign 1 drawer during 'hand' phase of Domain Expansion invocation steps
   useEffect(() => {
-    if (step.kind === 'domain_and_ascend' && subPhase === 'hand') {
+    if (
+      (step.kind === 'invoke_domain' ||
+        (step.kind === 'domain_clash' && !step.rivalInvokesDomain) ||
+        step.kind === 'domain_and_ascend') &&
+      subPhase === 'hand'
+    ) {
       setIsP1DrawerPinned(true);
       setIsP2DrawerPinned(false);
+    } else if (step.kind === 'domain_clash' && step.rivalInvokesDomain && subPhase === 'hand') {
+      setIsP2DrawerPinned(true);
+      setIsP1DrawerPinned(false);
     } else {
       setIsP1DrawerPinned(false);
       setIsP2DrawerPinned(false);
     }
     setIsCommandDockMinimized(false);
-  }, [scenarioIdx, stepIdx, subPhase, step.kind]);
+  }, [scenarioIdx, stepIdx, subPhase, step.kind, step.rivalInvokesDomain]);
 
   // Keep showcase audio synced with global navbar mute button
   useEffect(() => {
@@ -926,11 +1008,11 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     }
   }, [soundMuted]);
 
-  // Real-time Adaptive Music Intensity & Domain Escalation (Exact BattleArena.tsx logic!)
+  // Real-time Adaptive Music Intensity & Domain Escalation:
+  // Whenever Player 1's Domain Expansion or a 50/50 Domain Clash is active or being invoked, music reaches MAXIMUM INTENSITY ('climax' 100%)!
   useEffect(() => {
     if (!isAudioLive || soundMuted) return;
 
-    startAdaptiveMusic();
     const pUnits = getAllBoardUnits(gameState.player);
     const aiUnits = getAllBoardUnits(gameState.ai);
     const allUnits = [...pUnits, ...aiUnits];
@@ -941,11 +1023,23 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
       ? gameState.domainExpansion.domain
       : scenario.p1Domain;
 
-    let stage: MusicIntensityStage = 'battle';
+    const isPlayerDomainActive =
+      gameState.domainExpansion?.owner === 'player' ||
+      Boolean(gameState.domainExpansion?.clashRival);
+    const isInvokingDomainStep =
+      step.kind === 'invoke_domain' ||
+      step.kind === 'domain_clash' ||
+      step.kind === 'domain_and_ascend';
     const isNearDeath = gameState.player.hp <= 14 || gameState.ai.hp <= 14;
-    const isDomainClash = Boolean(gameState.domainExpansion?.clashRival);
 
-    if (isNearDeath || hasAscendedUnit || isDomainClash || gameState.phase === 'gameover') {
+    let stage: MusicIntensityStage = 'battle';
+    if (
+      isPlayerDomainActive ||
+      isInvokingDomainStep ||
+      hasAscendedUnit ||
+      isNearDeath ||
+      gameState.phase === 'gameover'
+    ) {
       stage = 'climax';
     } else if (gameState.domainExpansion || hasLegendaryUnit) {
       stage = 'domain_clash';
@@ -954,7 +1048,8 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     }
 
     setMusicState(stage, activeDomain, false);
-  }, [gameState, isAudioLive, soundMuted, scenario.p1Domain]);
+    startAdaptiveMusic();
+  }, [gameState, step.kind, isAudioLive, soundMuted, scenario.p1Domain]);
 
   // Helper to measure element coordinates relative to .arena-fullscreen-stage
   const getStageRelativeCenter = (selector: string): { x: number; y: number } | null => {
@@ -975,10 +1070,11 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     window.setTimeout(() => setArenaShake(null), intensity === 'heavy' ? 520 : 340);
   };
 
-  // Trigger authentic BattleArena.tsx spectacles, combat lunges & soundEngine SFX on subPhase change
+  // Trigger authentic BattleArena.tsx spectacles, domain entrance/clash/shatter, combat lunges & soundEngine SFX on subPhase change
   useEffect(() => {
     setCombatAnim(null);
     setSpectacleFx(null);
+    setDomainExitAnim(null);
 
     const canPlaySound = isAudioLive && !soundMuted;
 
@@ -995,7 +1091,54 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     // subPhase === 'impact': Trigger authentic BattleArena.tsx visual & audio spectacles!
     const timers: number[] = [];
 
-    if (step.kind === 'play_card') {
+    if (step.kind === 'invoke_domain') {
+      const spec = getDomainExpansionSpec(scenario.p1Domain);
+      const pCard = CARDS_BY_ID[beforeState.player.avatarCardId] ?? ALL_CARDS[0];
+      const sovPos = getStageRelativeCenter('[data-combat-id="player-sovereign"]') ?? {
+        x: 420,
+        y: 590,
+      };
+      triggerScreenShake('heavy');
+      setSpectacleFx({
+        kind: 'sovereign',
+        card: pCard,
+        domain: spec.domain,
+        title: `⛩️ EXPANSÃO DE DOMÍNIO: ${spec.name.toUpperCase()}`,
+        subtitle: `${spec.potencyDesc} • ${spec.sureHitDesc}`,
+        targetX: sovPos.x,
+        targetY: sovPos.y,
+      });
+      if (canPlaySound) {
+        playSfx('domain_expand');
+      }
+    } else if (step.kind === 'domain_clash') {
+      const pSpec = getDomainExpansionSpec(scenario.p1Domain);
+      const aiSpec = getDomainExpansionSpec(scenario.p2Domain);
+      const actorOwner = step.rivalInvokesDomain ? 'ai' : 'player';
+      const actorCard =
+        CARDS_BY_ID[beforeState[actorOwner].avatarCardId] ?? ALL_CARDS[0];
+      const sovPos = getStageRelativeCenter(`[data-combat-id="${actorOwner}-sovereign"]`) ?? {
+        x: 420,
+        y: actorOwner === 'player' ? 590 : 32,
+      };
+      triggerScreenShake('heavy');
+      setSpectacleFx({
+        kind: 'sovereign',
+        card: actorCard,
+        domain: step.rivalInvokesDomain ? aiSpec.domain : pSpec.domain,
+        title: `⚡⛩️ DISPUTA DE DOMÍNIOS: ${pSpec.name.toUpperCase()} vs ${aiSpec.name.toUpperCase()}`,
+        subtitle:
+          'As duas barreiras colidem 50/50 no centro da mesa! O Acerto Garantido de ambos os Soberanos foi ANULADO!',
+        targetX: sovPos.x,
+        targetY: sovPos.y,
+      });
+      if (canPlaySound) {
+        playSfx('domain_clash');
+        if (step.ascendRow !== undefined) {
+          timers.push(window.setTimeout(() => playSfx('ascend'), 280));
+        }
+      }
+    } else if (step.kind === 'play_card') {
       const card = beforeState.player.hand[step.handIndex ?? 0];
       if (card) {
         const isRowSpell = card.effects.some(
@@ -1076,8 +1219,18 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
           }
         }
 
-        if (step.alsoInvokeDomainExpansion && canPlaySound) {
-          timers.push(window.setTimeout(() => playSfx('ascend'), 260));
+        if (step.shatterRivalDomain) {
+          const rivalSpec = getDomainExpansionSpec(scenario.p2Domain);
+          setDomainExitAnim({
+            domain: rivalSpec.domain,
+            name: rivalSpec.name,
+            icon: rivalSpec.icon,
+            mode: 'shatter',
+            reasonText: `💥 BARREIRA RIVAL ROMPIDA! [${rivalSpec.name.toUpperCase()}] ESTILHAÇADO!`,
+          });
+          if (canPlaySound) {
+            timers.push(window.setTimeout(() => playSfx('domain_shatter'), 240));
+          }
         }
       }
     } else if (step.kind === 'domain_and_ascend') {
@@ -1106,8 +1259,8 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
         });
       }
       if (canPlaySound) {
-        playSfx('ascend');
-        timers.push(window.setTimeout(() => playSfx('summon'), 280));
+        playSfx('domain_expand');
+        timers.push(window.setTimeout(() => playSfx('ascend'), 280));
       }
     } else if (step.kind === 'attack_lethal') {
       const ready = getAllBoardUnits(beforeState.player);
@@ -1152,13 +1305,19 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
       window.setTimeout(() => {
         setSpectacleFx(null);
         setCombatAnim(null);
-      }, 1650),
+      }, 2150),
+    );
+
+    timers.push(
+      window.setTimeout(() => {
+        setDomainExitAnim(null);
+      }, 2350),
     );
 
     return () => {
       for (const t of timers) window.clearTimeout(t);
     };
-  }, [subPhase, step, beforeState, afterState, isAudioLive, soundMuted]);
+  }, [subPhase, step, beforeState, afterState, isAudioLive, soundMuted, scenario.p1Domain, scenario.p2Domain]);
 
   // Unlock Web Audio on first user interaction anywhere on the page
   useEffect(() => {
@@ -1462,6 +1621,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                     : undefined
                 }
                 onClick={() => {
+                  if (isAudioLive && !soundMuted) startAdaptiveMusic();
                   setScenarioIdx(idx);
                   setStepIdx(0);
                   setSubPhase('hand');
@@ -1482,6 +1642,33 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
           >
             {isAudioLive ? '🔊 Som: ON' : '🔇 Ativar Som & Música'}
           </button>
+          <span
+            className={`sim-arena-ctrl-btn ${musicState.stage === 'climax' ? 'is-active' : ''}`}
+            style={{
+              cursor: 'default',
+              borderColor:
+                musicState.stage === 'climax'
+                  ? 'rgba(239, 68, 68, 0.9)'
+                  : 'rgba(148, 163, 184, 0.35)',
+              background:
+                musicState.stage === 'climax'
+                  ? 'linear-gradient(135deg, rgba(153, 27, 27, 0.85), rgba(180, 83, 9, 0.85))'
+                  : 'rgba(15, 23, 42, 0.78)',
+              color: musicState.stage === 'climax' ? '#fef08a' : '#cbd5e1',
+              fontWeight: 800,
+            }}
+            title={`Intensidade Musical Atual: ${musicState.label} (${Math.round(
+              (STAGE_TARGET_VOLUMES[musicState.stage] ?? 0.65) * 100,
+            )}% Volume)`}
+          >
+            {!isAudioLive || soundMuted
+              ? '🔇 Trilha Silenciada'
+              : musicState.stage === 'climax'
+              ? '🎵🔥 Trilha: CLÍMAX MÁXIMO (100%)'
+              : musicState.stage === 'domain_clash'
+              ? '🎵⚡ Trilha: Pressão Arcana (82%)'
+              : '🎵⚔️ Trilha: Combate (65%)'}
+          </span>
           <button
             type="button"
             className="sim-arena-ctrl-btn"
@@ -1493,7 +1680,10 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
           <button
             type="button"
             className={`sim-arena-ctrl-btn ${isAutoPlaying ? 'is-active' : ''}`}
-            onClick={() => setIsAutoPlaying((prev) => !prev)}
+            onClick={() => {
+              if (isAudioLive && !soundMuted) startAdaptiveMusic();
+              setIsAutoPlaying((prev) => !prev);
+            }}
           >
             {isAutoPlaying ? '⏸ Pausar' : '▶ Continuar'}
           </button>
@@ -1533,12 +1723,13 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               type="button"
               className={`sim-step-pill-btn ${idx === stepIdx ? 'is-active' : ''}`}
               onClick={() => {
+                if (isAudioLive && !soundMuted) startAdaptiveMusic();
                 setIsAutoPlaying(false);
                 setStepIdx(idx);
                 setSubPhase('hand');
               }}
             >
-              Passo {idx + 1}/4
+              Passo {idx + 1}/{scenario.steps.length}
             </button>
           ))}
         </div>
@@ -1548,6 +1739,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             type="button"
             className={`sim-subphase-btn ${subPhase === 'hand' ? 'is-active' : ''}`}
             onClick={() => {
+              if (isAudioLive && !soundMuted) startAdaptiveMusic();
               setIsAutoPlaying(false);
               setSubPhase('hand');
             }}
@@ -1559,6 +1751,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             type="button"
             className={`sim-subphase-btn ${subPhase === 'dock' ? 'is-active' : ''}`}
             onClick={() => {
+              if (isAudioLive && !soundMuted) startAdaptiveMusic();
               setIsAutoPlaying(false);
               setSubPhase('dock');
             }}
@@ -1570,6 +1763,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             type="button"
             className={`sim-subphase-btn ${subPhase === 'impact' ? 'is-active' : ''}`}
             onClick={() => {
+              if (isAudioLive && !soundMuted) startAdaptiveMusic();
               setIsAutoPlaying(false);
               setSubPhase('impact');
             }}
@@ -2212,6 +2406,62 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             </div>
           </header>
 
+          {/* FLOATING DOMAIN EXPANSION & 50/50 DOMAIN CLASH ARENA BANNER */}
+          {gameState.domainExpansion && !isP1DrawerPinned && !isP2DrawerPinned && (
+            <div
+              className={`domain-expansion-arena-banner ${
+                gameState.domainExpansion.owner === 'ai' ? 'owner-ai' : 'owner-player'
+              } ${gameState.domainExpansion.clashRival ? 'is-domain-clash' : ''}`}
+              style={{ top: '38px' }}
+            >
+              <span className="de-banner-icon">
+                {gameState.domainExpansion.clashRival ? '⛩️⚔️' : gameState.domainExpansion.icon}
+              </span>
+              <div className="de-banner-info">
+                <div className="de-banner-title-row">
+                  <span className="de-banner-kicker">
+                    {gameState.domainExpansion.clashRival
+                      ? 'DISPUTA DE DOMÍNIOS 50/50'
+                      : gameState.domainExpansion.owner === 'ai'
+                      ? 'EXPANSÃO DE DOMÍNIO INIMIGA'
+                      : 'EXPANSÃO DE DOMÍNIO ATIVA'}
+                  </span>
+                  <span className="de-banner-name">
+                    {gameState.domainExpansion.clashRival
+                      ? `${gameState.domainExpansion.name} vs ${gameState.domainExpansion.clashRival.name}`
+                      : gameState.domainExpansion.name}
+                  </span>
+                  {gameState.domainExpansion.clashRival ? (
+                    <span className="de-clash-pill">⚖️ ACERTO GARANTIDO ANULADO</span>
+                  ) : (
+                    <span className="de-surehit-pill">🎯 ACERTO GARANTIDO ATIVO</span>
+                  )}
+                </div>
+                <div className="de-banner-desc">
+                  {gameState.domainExpansion.clashRival
+                    ? 'As duas barreiras colidem 50/50! Cause 8+ dano ao Soberano rival para estilhaçar a barreira inimiga!'
+                    : `${gameState.domainExpansion.potencyDesc} • ${gameState.domainExpansion.sureHitDesc}`}
+                </div>
+              </div>
+              {gameState.domainExpansion.owner === 'ai' &&
+                !gameState.domainExpansion.clashRival && (
+                  <div className="de-counter-actions">
+                    <button
+                      type="button"
+                      className="de-counter-btn simple-domain-btn"
+                      onClick={() => {
+                        setIsAutoPlaying(false);
+                        setSubPhase('impact');
+                      }}
+                    >
+                      ⛩️ Confrontar (3⚡)
+                    </button>
+                  </div>
+                )}
+              <span className="de-banner-turns">{gameState.domainExpansion.turnsRemaining}r</span>
+            </div>
+          )}
+
           {/* 2. TABULEIRO 6×4 EM TELA CHEIA (MESA DE MADEIRA + EXPANSÃO DE DOMÍNIO — Exact BattleArena.tsx) */}
           <div
             className={`mtg-battlefield-surface wooden-tabletop-surface ${
@@ -2236,7 +2486,9 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               {/* 1. SINGLE ACTIVE DOMAIN EXPANSION */}
               {gameState.domainExpansion && !gameState.domainExpansion.clashRival && (
                 <div
-                  key={`domain-tabletop-${gameState.domainExpansion.domain}-${gameState.domainExpansion.owner}`}
+                  key={`domain-tabletop-${gameState.domainExpansion.domain}-${gameState.domainExpansion.owner}-${
+                    step.kind === 'invoke_domain' && subPhase === 'impact' ? step.id : 'steady'
+                  }`}
                   className={`tabletop-domain-takeover-img domain-${gameState.domainExpansion.domain}`}
                 >
                   <div
@@ -2257,7 +2509,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                   const bottomColor = DOMAIN_META[bottomDom.domain]?.color || '#ef4444';
                   return (
                     <div
-                      key={`domain-clash-${topDom.domain}-${bottomDom.domain}`}
+                      key={`domain-clash-${topDom.domain}-${bottomDom.domain}-${step.id}-${subPhase}`}
                       className="tabletop-domain-clash-stage"
                       style={
                         {
@@ -2285,6 +2537,40 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                     </div>
                   );
                 })()}
+
+              {/* 3. NATURAL EXPIRATION ANIMATION (Smooth Radial Retraction Back to Wooden Table) */}
+              {domainExitAnim && domainExitAnim.mode === 'expire' && (
+                <div
+                  key={`domain-expire-${domainExitAnim.domain}`}
+                  className={`tabletop-domain-expire-layer domain-${domainExitAnim.domain}`}
+                >
+                  <div className={`tabletop-domain-flow-fx domain-${domainExitAnim.domain}`} />
+                  <div className="domain-expire-retract-ring" />
+                  <div className="domain-exit-status-banner expire-banner">
+                    {domainExitAnim.reasonText}
+                  </div>
+                </div>
+              )}
+
+              {/* 4. DESTRUCTION / SHATTER ANIMATION (8 Polygonal Barrier Shards + Fracture Flash — Exact BattleArena.tsx) */}
+              {domainExitAnim && domainExitAnim.mode === 'shatter' && (
+                <div
+                  key={`domain-shatter-${domainExitAnim.domain}-${step.id}`}
+                  className={`tabletop-domain-shatter-layer domain-${domainExitAnim.domain}`}
+                >
+                  <div className="domain-shatter-impact-flash" />
+                  <div className="domain-shatter-fracture-web" />
+                  {[0, 1, 2, 3, 4, 5, 6, 7].map((shardIdx) => (
+                    <div
+                      key={shardIdx}
+                      className={`domain-shatter-shard shard-${shardIdx} domain-${domainExitAnim.domain}`}
+                    />
+                  ))}
+                  <div className="domain-exit-status-banner shatter-banner">
+                    {domainExitAnim.reasonText}
+                  </div>
+                </div>
+              )}
 
               <div className="tabletop-center-frontier-seam" />
             </div>
@@ -3028,9 +3314,113 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               : null;
           const activeBoardUnitOwner = activeBoardUnitFound?.owner ?? null;
 
+          const isDomainRitualDock =
+            !anyHudPopoverOpen &&
+            subPhase === 'dock' &&
+            (step.kind === 'invoke_domain' ||
+              (step.kind === 'domain_clash' && !step.rivalInvokesDomain));
+          const domainDockSpec = getDomainExpansionSpec(scenario.p1Domain);
+          const enemyDomainSpec = getDomainExpansionSpec(scenario.p2Domain);
+
           return (
             <div className="mtg-bottom-zone floating-bottom-hud">
-              {activeHandCard && selectedHandIndex !== null ? (
+              {isDomainRitualDock ? (
+                <div
+                  className={`selected-card-command-dock domain-dock-${domainDockSpec.domain} ${
+                    isCommandDockMinimized ? 'is-minimized' : ''
+                  }`}
+                >
+                  <div className="sccd-top-row">
+                    <div
+                      className="sccd-card-chip"
+                      onClick={() => onInspectCard(playerAvatarCard)}
+                    >
+                      <div className="sccd-thumb-wrap">
+                        <span className="sccd-cost">3</span>
+                        {playerAvatarCard.imagePath && (
+                          <img
+                            src={playerAvatarCard.imagePath}
+                            alt={playerAvatarCard.name}
+                            className="sccd-thumb"
+                          />
+                        )}
+                      </div>
+                      <div className="sccd-meta">
+                        <span className="sccd-name">
+                          {domainDockSpec.icon} {domainDockSpec.name}
+                        </span>
+                        <div className="sccd-stats-pills-row">
+                          <span
+                            className="sccd-stat-pill domain-pill"
+                            style={{
+                              borderColor: DOMAIN_META[domainDockSpec.domain]?.color,
+                              color: DOMAIN_META[domainDockSpec.domain]?.color,
+                            }}
+                          >
+                            ⛩️ Afinidade 6/6 • Custo 3⚡
+                          </span>
+                          <span className="sccd-stat-pill atk-pill">⚔️ +1/+1 & Ímpeto</span>
+                          <span className="sccd-stat-pill hp-pill">
+                            {step.kind === 'domain_clash'
+                              ? '⚖️ Disputa 50/50 (Anula Acerto Garantido)'
+                              : '🎯 Acerto Garantido no Soberano'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="sccd-header-controls">
+                      <button
+                        type="button"
+                        className="sccd-toggle-btn"
+                        onClick={() => setIsP1DrawerPinned(true)}
+                      >
+                        ⛰️ Ver Terrenos (6/6)
+                      </button>
+                      <button
+                        type="button"
+                        className="sccd-toggle-btn"
+                        onClick={() => setIsCommandDockMinimized((prev) => !prev)}
+                      >
+                        {isCommandDockMinimized ? '▲ Ler Texto' : '▼ Compactar'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {!isCommandDockMinimized && (
+                    <>
+                      <div className="sccd-readable-card-box">
+                        <p className="sccd-description-text">
+                          {step.kind === 'domain_clash'
+                            ? `Contra-ataque a Expansão de Domínio inimiga (${enemyDomainSpec.name})! As duas barreiras dividirão o tabuleiro em 50/50 e anularão o Acerto Garantido de ambos os Soberanos!`
+                            : `${domainDockSpec.potencyDesc} • ${domainDockSpec.sureHitDesc}`}
+                        </p>
+                        <div className="sccd-play-status-line is-ready">
+                          {step.kind === 'domain_clash'
+                            ? '⚡⛩️ Pronto para Confronto de Domínios 50/50: Toque no botão abaixo para colidir sua barreira contra o domínio rival!'
+                            : '⛩️ Ritual de Expansão Pronto (6/6 Afinidade): Toque abaixo para transformar a mesa e elevar a música ao Clímax (100%)!'}
+                        </div>
+                      </div>
+
+                      <div className="sccd-actions">
+                        <button
+                          type="button"
+                          className="quick-act-btn act-spell"
+                          onClick={() => {
+                            if (isAudioLive && !soundMuted) startAdaptiveMusic();
+                            setIsAutoPlaying(false);
+                            setSubPhase('impact');
+                          }}
+                        >
+                          {step.kind === 'domain_clash'
+                            ? `⚡⛩️ Colidir Domínio 50/50: ${domainDockSpec.name} (3⚡)`
+                            : `⛩️ Invocar Expansão de Domínio: ${domainDockSpec.name} (3⚡)`}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : activeHandCard && selectedHandIndex !== null ? (
                 <div
                   className={`selected-card-command-dock domain-dock-${activeHandCard.domain} ${
                     isCommandDockMinimized ? 'is-minimized' : ''

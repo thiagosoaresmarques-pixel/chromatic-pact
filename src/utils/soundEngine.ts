@@ -8,6 +8,9 @@ export type SfxType =
   | 'heal'
   | 'freeze'
   | 'ascend'
+  | 'domain_expand'
+  | 'domain_clash'
+  | 'domain_shatter'
   | 'victory'
   | 'defeat'
   | 'pack_open';
@@ -227,6 +230,49 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType): void {
         notes.forEach((n, idx) => {
           playTone(ctx, n, n * 1.03, 0.25, 'triangle', 0.11, idx * 0.06);
         });
+        break;
+      }
+
+      case 'domain_expand': {
+        // 1. Deep Sub-Bass Tectonic Drop & Reality Seal Release (0.0s - 0.65s)
+        playNoiseBurst(ctx, 0.42, 320, 0.26, 0);
+        playTone(ctx, 110, 36.71, 0.62, 'sine', 0.3, 0);
+        playTone(ctx, 146.83, 73.42, 0.52, 'sawtooth', 0.15, 0.02);
+
+        // 2. Ascending Sovereign Sanctuary Choir & Brass Swell (0.12s - 1.15s)
+        const chord = [
+          { freq: 146.83, delay: 0.1, dur: 0.95, type: 'sawtooth' as OscillatorType, gain: 0.14 }, // D3
+          { freq: 220.0, delay: 0.16, dur: 0.9, type: 'triangle' as OscillatorType, gain: 0.16 },  // A3
+          { freq: 293.66, delay: 0.22, dur: 0.88, type: 'triangle' as OscillatorType, gain: 0.18 }, // D4
+          { freq: 369.99, delay: 0.28, dur: 0.85, type: 'sine' as OscillatorType, gain: 0.15 },     // F#4
+          { freq: 440.0, delay: 0.34, dur: 0.82, type: 'triangle' as OscillatorType, gain: 0.17 },  // A4
+          { freq: 587.33, delay: 0.42, dur: 0.9, type: 'sine' as OscillatorType, gain: 0.2 },       // D5
+        ];
+        chord.forEach((c) => {
+          playTone(ctx, c.freq * 0.98, c.freq, c.dur, c.type, c.gain, c.delay);
+        });
+        playNoiseBurst(ctx, 0.28, 2600, 0.12, 0.35);
+        break;
+      }
+
+      case 'domain_clash': {
+        // Dual opposing barrier impact + high-voltage faultline crackle
+        playNoiseBurst(ctx, 0.36, 420, 0.28, 0);
+        playTone(ctx, 130.81, 41.2, 0.48, 'sawtooth', 0.26, 0);
+        playNoiseBurst(ctx, 0.32, 2800, 0.18, 0.14);
+        playTone(ctx, 196.0, 293.66, 0.55, 'square', 0.14, 0.12);
+        playTone(ctx, 277.18, 440.0, 0.65, 'sawtooth', 0.16, 0.2);
+        playTone(ctx, 587.33, 587.33, 0.78, 'triangle', 0.18, 0.28);
+        break;
+      }
+
+      case 'domain_shatter': {
+        // Crystalline polygonal barrier fracture + heavy collapse boom
+        playNoiseBurst(ctx, 0.35, 320, 0.3, 0);
+        playTone(ctx, 140, 34, 0.48, 'sine', 0.3, 0);
+        playNoiseBurst(ctx, 0.24, 3200, 0.22, 0.04);
+        playNoiseBurst(ctx, 0.28, 1850, 0.18, 0.12);
+        playTone(ctx, 880, 220, 0.32, 'triangle', 0.15, 0.06);
         break;
       }
 

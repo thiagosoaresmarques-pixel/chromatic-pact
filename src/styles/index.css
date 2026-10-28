@@ -9397,18 +9397,50 @@ html, body, #root {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  animation: domainTabletopExpandIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: domainTabletopExpandIn 0.88s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.tabletop-domain-takeover-img::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.2);
+  border: 3.5px solid rgba(254, 240, 138, 0.95);
+  box-shadow:
+    0 0 28px rgba(250, 204, 21, 0.9),
+    inset 0 0 20px rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+  animation: domainBarrierWaveRing 1.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes domainBarrierWaveRing {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  70% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(52);
+  }
 }
 
 @keyframes domainTabletopExpandIn {
   0% {
     opacity: 0;
-    clip-path: circle(8% at 50% 50%);
-    filter: brightness(1.6) saturate(1.4);
+    clip-path: circle(6% at 50% 50%);
+    filter: brightness(1.85) saturate(1.55);
   }
-  65% {
+  60% {
     opacity: 1;
-    clip-path: circle(85% at 50% 50%);
+    clip-path: circle(82% at 50% 50%);
+    filter: brightness(1.25) saturate(1.25);
   }
   100% {
     opacity: 1;
@@ -9599,21 +9631,21 @@ html, body, #root {
   position: absolute;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 4px;
   border-radius: 999px;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--top-clash-color, #38bdf8) 18%,
-    #fffbeb 50%,
-    var(--bottom-clash-color, #ef4444) 82%,
+    var(--top-clash-color, #38bdf8) 15%,
+    #ffffff 50%,
+    var(--bottom-clash-color, #ef4444) 85%,
     transparent 100%
   );
   box-shadow:
-    0 -2px 10px var(--top-clash-color, rgba(56, 189, 248, 0.65)),
-    0 2px 10px var(--bottom-clash-color, rgba(239, 68, 68, 0.65)),
-    0 0 6px rgba(255, 255, 255, 0.75);
-  animation: clashSeamPulse 2.8s ease-in-out infinite alternate;
+    0 -4px 16px var(--top-clash-color, rgba(56, 189, 248, 0.85)),
+    0 4px 16px var(--bottom-clash-color, rgba(239, 68, 68, 0.85)),
+    0 0 12px rgba(255, 255, 255, 0.95);
+  animation: clashSeamPulse 1.6s ease-in-out infinite alternate;
 }
 
 @keyframes clashSeamPulse {

@@ -2315,7 +2315,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 type="button"
                 onClick={() =>
                   setProblemHintStage((prev) => {
-                    const nextStage = ((prev + 1) % 4) as 0 | 1 | 2 | 3;
+                    const nextStage = ((prev + 1) % 3) as 0 | 1 | 2;
                     if (nextStage > 0) {
                       recordProblemHintUsed(tacticalProblem.id, nextStage);
                     }
@@ -2334,11 +2334,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 }}
               >
                 {problemHintStage === 0
-                  ? '💡 Dica 1/3'
+                  ? '💡 Dica 1/2'
                   : problemHintStage === 1
-                  ? '💡 Dica 2/3'
-                  : problemHintStage === 2
-                  ? '📖 Ver Solução'
+                  ? '💡 Dica 2/2'
                   : '✕ Ocultar Dica'}
               </button>
               <button
@@ -2409,24 +2407,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             >
               {problemHintStage === 1 && (
                 <div>
-                  <strong>💡 Dica Conceitual (1/3):</strong> {tacticalProblem.hint1}
+                  <strong>💡 Dica 1/2 (Tema Tático):</strong> {tacticalProblem.mechanicTag}
                 </div>
               )}
-              {problemHintStage === 2 && (
+              {problemHintStage >= 2 && (
                 <div>
-                  <strong>💡 Caminho do Xeque-Mate (2/3):</strong> {tacticalProblem.hint2}
-                </div>
-              )}
-              {problemHintStage === 3 && (
-                <div>
-                  <strong style={{ color: '#4ade80' }}>📖 Sequência Exata da Solução:</strong>
-                  <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    {tacticalProblem.solutionSteps.map((st, idx) => (
-                      <div key={idx} style={{ color: '#e2e8f0' }}>
-                        {st}
-                      </div>
-                    ))}
-                  </div>
+                  <strong>💡 Dica 2/2 (Pista Conceitual):</strong> {tacticalProblem.hint1}
                 </div>
               )}
             </div>
@@ -2462,25 +2448,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             >
               O SOBERANO RIVAL SOBREVIVEU ({gameState.ai.hp} ❤️)!
             </h3>
-            <p style={{ color: '#cbd5e1', fontSize: '0.86rem', lineHeight: 1.5, marginBottom: 14 }}>
+            <p style={{ color: '#cbd5e1', fontSize: '0.86rem', lineHeight: 1.5, marginBottom: 16 }}>
               Nos <strong>Problemas Táticos</strong>, a vitória precisa ser conquistada{' '}
-              <strong>neste exato turno</strong> com a sequência única e indefensável!
+              <strong>neste exato turno</strong>. Revise a mesa, sua mão e sua Essência — ou consulte uma{' '}
+              <strong>💡 Dica</strong> se precisar de uma pista conceitual!
             </p>
-            <div
-              style={{
-                padding: '10px 12px',
-                borderRadius: 10,
-                background: 'rgba(250, 204, 21, 0.1)',
-                border: '1px solid rgba(250, 204, 21, 0.35)',
-                color: '#fef08a',
-                fontSize: '0.8rem',
-                lineHeight: 1.45,
-                marginBottom: 16,
-                textAlign: 'left',
-              }}
-            >
-              <strong>⚠️ Por que faltou dano?</strong> {tacticalProblem.whyIndefensible}
-            </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
               <button
                 type="button"
@@ -2511,12 +2483,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 onClick={() => {
                   setShowProblemIncompleteModal(false);
                   setIsProblemHudMinimized(false);
-                  const nextStage = problemHintStage < 2 ? 2 : 3;
+                  const nextStage = problemHintStage < 1 ? 1 : 2;
                   recordProblemHintUsed(tacticalProblem.id, nextStage);
                   setProblemHintStage(nextStage);
                 }}
               >
-                💡 Ver Dica Detalhada
+                💡 Consultar Dica
               </button>
               <button
                 type="button"

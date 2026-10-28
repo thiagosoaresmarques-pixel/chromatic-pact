@@ -3219,15 +3219,19 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
 ];
 
 // Combina os 50 problemas base + 50 problemas de expansão agrupados por Grau (20 por Grau = 100 Problemas)
+// Remove qualquer spoiler de mecânica do título e padroniza o objetivo para não entregar a resposta no enunciado
 export const TACTICAL_PROBLEMS: TacticalProblem[] = PROBLEM_TIERS_ORDER.flatMap((tier) => [
   ...BASE_50_TACTICAL_PROBLEMS.filter((p) => p.difficulty === tier),
   ...EXTRA_50_TACTICAL_PROBLEMS.filter((p) => p.difficulty === tier),
 ]).map((problem, index) => {
   const num = index + 1;
+  const cleanTitle = problem.title.replace(/\s*\([^)]*\)\s*$/, '').trim();
   return {
     ...problem,
     number: num,
     code: `PROBLEMA #${String(num).padStart(2, '0')}`,
+    title: cleanTitle,
+    objectiveText: `Derrote ${problem.p2Name} (${problem.p2Hp} ❤️) neste turno.`,
   };
 });
 

@@ -8,6 +8,7 @@ import {
   PROBLEM_TIERS_ORDER,
   ProblemDifficultyTier,
   ProblemHistoryEntry,
+  recordProblemHintUsed,
   TACTICAL_PROBLEMS,
   TacticalProblem,
 } from '../data/problems';
@@ -22,10 +23,12 @@ export interface ProblemsViewProps {
 type HistoryFilterType = 'all' | 'pending' | 'failed' | 'solved' | 'first_try';
 
 export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) => {
-  const [selectedTier, setSelectedTier] = useState<'all' | ProblemDifficultyTier>('all');
+  const [selectedTier, setSelectedTier] = useState<'all' | ProblemDifficultyTier>('iniciante');
   const [historyFilter, setHistoryFilter] = useState<HistoryFilterType>('all');
   const [solvedIds] = useState<string[]>(() => getSolvedProblemIds());
-  const [historyMap] = useState<Record<string, ProblemHistoryEntry>>(() => getProblemHistoryMap());
+  const [historyMap, setHistoryMap] = useState<Record<string, ProblemHistoryEntry>>(() =>
+    getProblemHistoryMap()
+  );
   const [expandedHintId, setExpandedHintId] = useState<string | null>(null);
 
   const solvedSet = useMemo(() => new Set(solvedIds), [solvedIds]);
@@ -48,7 +51,6 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
     });
   }, [solvedIds, solvedSet]);
 
-  // Próximo problema recomendado na trilha progressiva (primeiro não resolvido de um Grau desbloqueado)
   const nextTrailProblem = useMemo(() => {
     for (const p of TACTICAL_PROBLEMS) {
       if (!solvedSet.has(p.id) && isProblemTierUnlocked(p.difficulty, solvedIds)) {
@@ -58,7 +60,6 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
     return TACTICAL_PROBLEMS[0] ?? null;
   }, [solvedIds, solvedSet]);
 
-  // Estatísticas globais do Histórico do Jogador
   const historyStats = useMemo(() => {
     const entries = Object.values(historyMap);
     const totalAttempts = entries.reduce((acc, e) => acc + e.attempts, 0);
@@ -108,390 +109,234 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
     [solvedSet]
   );
 
-  const tiers: {
-    id: 'all' | ProblemDifficultyTier;
-    label: string;
-    count: number;
-    stars?: string;
-    unlocked: boolean;
-  }[] = [
-    {
-      id: 'all',
-      label: 'Todos os Graus',
-      count: TACTICAL_PROBLEMS.length,
-      unlocked: true,
-    },
-    {
-      id: 'iniciante',
-      label: 'Grau I • Iniciante (2🪙)',
-      count: 20,
-      stars: '★☆☆☆☆',
-      unlocked: isProblemTierUnlocked('iniciante', solvedIds),
-    },
-    {
-      id: 'intermediario',
-      label: 'Grau II • Intermediário (3🪙)',
-      count: 20,
-      stars: '★★☆☆☆',
-      unlocked: isProblemTierUnlocked('intermediario', solvedIds),
-    },
-    {
-      id: 'avancado',
-      label: 'Grau III • Avançado (5🪙)',
-      count: 20,
-      stars: '★★★☆☆',
-      unlocked: isProblemTierUnlocked('avancado', solvedIds),
-    },
-    {
-      id: 'mestre',
-      label: 'Grau IV • Mestre (7🪙)',
-      count: 20,
-      stars: '★★★★☆',
-      unlocked: isProblemTierUnlocked('mestre', solvedIds),
-    },
-    {
-      id: 'grao_mestre',
-      label: 'Grau V • Grão-Mestre (10🪙)',
-      count: 20,
-      stars: '★★★★★',
-      unlocked: isProblemTierUnlocked('grao_mestre', solvedIds),
-    },
-  ];
-
   return (
     <div
       style={{
-        maxWidth: 1340,
+        maxWidth: 1380,
         margin: '0 auto',
-        padding: '24px 20px 64px',
+        padding: '14px 16px 48px',
         color: '#f8fafc',
       }}
     >
-      {/* Hero Banner */}
+      {/* Compact Header Strip */}
       <div
         style={{
           background:
-            'radial-gradient(circle at 18% 20%, rgba(234, 179, 8, 0.18), rgba(15, 23, 42, 0.96) 65%)',
-          border: '1px solid rgba(250, 204, 21, 0.38)',
-          borderRadius: 18,
-          padding: '24px 28px',
-          marginBottom: 18,
-          boxShadow: '0 20px 48px rgba(0, 0, 0, 0.55)',
+            'radial-gradient(circle at 15% 20%, rgba(234, 179, 8, 0.14), rgba(15, 23, 42, 0.95) 70%)',
+          border: '1px solid rgba(250, 204, 21, 0.32)',
+          borderRadius: 12,
+          padding: '12px 16px',
+          marginBottom: 12,
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 20,
+          gap: 12,
         }}
       >
-        <div style={{ maxWidth: 680 }}>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '4px 12px',
-              borderRadius: 999,
-              background: 'rgba(250, 204, 21, 0.16)',
-              border: '1px solid rgba(250, 204, 21, 0.45)',
-              color: '#fde047',
-              fontSize: '0.74rem',
-              fontWeight: 900,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              marginBottom: 10,
-            }}
-          >
-            ♟️ TRILHA PROGRESSIVA • 100 PROBLEMAS TÁTICOS (ZERO RNG)
-          </div>
-          <h1
-            style={{
-              margin: '0 0 8px',
-              fontSize: 'clamp(1.4rem, 2.3vw, 2.02rem)',
-              fontFamily: 'Cinzel, serif',
-              fontWeight: 900,
-              color: '#fef08a',
-              textShadow: '0 2px 12px rgba(0,0,0,0.7)',
-            }}
-          >
-            {TACTICAL_PROBLEMS.length} Desafios de Xeque-Mate em 1 Único Turno
-          </h1>
-          <p
-            style={{
-              margin: '0 0 14px',
-              fontSize: '0.9rem',
-              lineHeight: 1.55,
-              color: '#cbd5e1',
-            }}
-          >
-            Inspirado nos problemas de Xadrez: a mesa, a mão, a Essência (⚡) e as Afinidades começam travadas num
-            cenário determinístico. Complete todos os <strong style={{ color: '#fde047' }}>20 problemas de cada Grau</strong>{' '}
-            para destravar o Grau seguinte! Se errar um exercício, você pode tentar novamente na hora ou pular para o
-            próximo problema do mesmo Grau e voltar depois.
-          </p>
-
-          {nextTrailProblem && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={() => onSelectProblem(nextTrailProblem)}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span
                 style={{
-                  padding: '10px 18px',
-                  borderRadius: 10,
-                  border: '1px solid rgba(250, 204, 21, 0.85)',
-                  background: 'linear-gradient(135deg, #facc15, #ca8a04)',
-                  color: '#0f172a',
+                  fontSize: '1.1rem',
+                  fontFamily: 'Cinzel, serif',
                   fontWeight: 900,
-                  fontSize: '0.86rem',
-                  cursor: 'pointer',
-                  boxShadow: '0 8px 22px rgba(234, 179, 8, 0.35)',
+                  color: '#fef08a',
                 }}
               >
-                ▶️ CONTINUAR TRILHA: {nextTrailProblem.code} — {nextTrailProblem.title}
-              </button>
-              <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 700 }}>
-                ({PROBLEM_DIFFICULTY_META[nextTrailProblem.difficulty].label})
+                ♟️ 100 Problemas Táticos (Xeque-Mate em 1T)
+              </span>
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  padding: '2px 8px',
+                  borderRadius: 999,
+                  background: 'rgba(250, 204, 21, 0.14)',
+                  border: '1px solid rgba(250, 204, 21, 0.4)',
+                  color: '#fde047',
+                  fontWeight: 800,
+                }}
+              >
+                Trilha Progressiva (20/20 por Grau)
               </span>
             </div>
+            <div style={{ fontSize: '0.76rem', color: '#94a3b8', marginTop: 2 }}>
+              Sem spoilers no enunciado: analise a mesa e encontre o letal em 1 turno (use 💡 Dica apenas se precisar).
+            </div>
+          </div>
+
+          {nextTrailProblem && (
+            <button
+              type="button"
+              onClick={() => onSelectProblem(nextTrailProblem)}
+              style={{
+                padding: '7px 13px',
+                borderRadius: 8,
+                border: '1px solid rgba(250, 204, 21, 0.85)',
+                background: 'linear-gradient(135deg, #facc15, #ca8a04)',
+                color: '#0f172a',
+                fontWeight: 900,
+                fontSize: '0.78rem',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              ▶️ Continuar: #{String(nextTrailProblem.number).padStart(2, '0')} {nextTrailProblem.title}
+            </button>
           )}
         </div>
 
-        {/* Player History & Gold Summary Cards */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, minmax(148px, 1fr))',
-            gap: 12,
-          }}
-        >
+        {/* Inline Compact KPIs */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <div
             style={{
-              background: 'rgba(15, 23, 42, 0.88)',
+              background: 'rgba(15, 23, 42, 0.9)',
               border: '1px solid rgba(74, 222, 128, 0.35)',
-              borderRadius: 14,
-              padding: '12px 16px',
-              textAlign: 'center',
+              borderRadius: 8,
+              padding: '5px 10px',
+              fontSize: '0.75rem',
             }}
           >
-            <div style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>
-              Resolvidos
-            </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#4ade80', marginTop: 3 }}>
-              {solvedIds.length} / {TACTICAL_PROBLEMS.length}
-            </div>
+            <span style={{ color: '#94a3b8' }}>Resolvidos: </span>
+            <strong style={{ color: '#4ade80' }}>
+              {solvedIds.length}/{TACTICAL_PROBLEMS.length}
+            </strong>
           </div>
-
           <div
             style={{
-              background: 'rgba(15, 23, 42, 0.88)',
+              background: 'rgba(15, 23, 42, 0.9)',
               border: '1px solid rgba(56, 189, 248, 0.35)',
-              borderRadius: 14,
-              padding: '12px 16px',
-              textAlign: 'center',
+              borderRadius: 8,
+              padding: '5px 10px',
+              fontSize: '0.75rem',
             }}
           >
-            <div style={{ fontSize: '0.68rem', color: '#7dd3fc', fontWeight: 800, textTransform: 'uppercase' }}>
-              De 1ª (Sem Dica)
-            </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#38bdf8', marginTop: 3 }}>
-              🏆 {historyStats.totalFirstTry}
-            </div>
+            <span style={{ color: '#94a3b8' }}>De 1ª s/ Dica: </span>
+            <strong style={{ color: '#38bdf8' }}>🏆 {historyStats.totalFirstTry}</strong>
           </div>
-
           <div
             style={{
-              background: 'rgba(15, 23, 42, 0.88)',
+              background: 'rgba(15, 23, 42, 0.9)',
               border: '1px solid rgba(248, 113, 113, 0.35)',
-              borderRadius: 14,
-              padding: '12px 16px',
-              textAlign: 'center',
+              borderRadius: 8,
+              padding: '5px 10px',
+              fontSize: '0.75rem',
             }}
           >
-            <div style={{ fontSize: '0.68rem', color: '#fca5a5', fontWeight: 800, textTransform: 'uppercase' }}>
-              Erros / Precisão
-            </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f87171', marginTop: 4 }}>
-              ❌ {historyStats.totalFailures} • {historyStats.accuracyPct}%
-            </div>
+            <span style={{ color: '#94a3b8' }}>Erros: </span>
+            <strong style={{ color: '#f87171' }}>
+              ❌ {historyStats.totalFailures} ({historyStats.accuracyPct}%)
+            </strong>
           </div>
-
           <div
             style={{
-              background: 'rgba(15, 23, 42, 0.88)',
+              background: 'rgba(15, 23, 42, 0.9)',
               border: '1px solid rgba(250, 204, 21, 0.38)',
-              borderRadius: 14,
-              padding: '12px 16px',
-              textAlign: 'center',
+              borderRadius: 8,
+              padding: '5px 10px',
+              fontSize: '0.75rem',
             }}
           >
-            <div style={{ fontSize: '0.68rem', color: '#fde047', fontWeight: 800, textTransform: 'uppercase' }}>
-              Ouro Conquistado
-            </div>
-            <div style={{ fontSize: '1.45rem', fontWeight: 900, color: '#facc15', marginTop: 3 }}>
-              🪙 {earnedGold} / {totalGoldAvailable}
-            </div>
+            <span style={{ color: '#94a3b8' }}>Ouro: </span>
+            <strong style={{ color: '#facc15' }}>
+              🪙 {earnedGold}/{totalGoldAvailable}
+            </strong>
           </div>
         </div>
       </div>
 
-      {/* Trilha Progressiva por Grau (5 Graus de 20 Problemas) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 12,
-          marginBottom: 18,
-        }}
-      >
-        {tierProgress.map((tp) => {
-          const pct = tp.total > 0 ? Math.round((tp.solvedCount / tp.total) * 100) : 0;
-          const isSelected = selectedTier === tp.tier;
-          return (
-            <div
-              key={tp.tier}
-              onClick={() => setSelectedTier(isSelected ? 'all' : tp.tier)}
-              style={{
-                background: tp.unlocked
-                  ? 'linear-gradient(160deg, rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.95))'
-                  : 'rgba(15, 23, 42, 0.55)',
-                border: isSelected
-                  ? `2px solid ${tp.meta.color}`
-                  : tp.unlocked
-                    ? `1px solid ${tp.meta.border}`
-                    : '1px dashed rgba(148, 163, 184, 0.25)',
-                borderRadius: 14,
-                padding: '12px 14px',
-                cursor: 'pointer',
-                opacity: tp.unlocked ? 1 : 0.72,
-                transition: 'all 0.16s ease',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 6,
-                  marginBottom: 6,
-                }}
-              >
-                <span style={{ fontSize: '0.78rem', fontWeight: 900, color: tp.meta.color }}>
-                  {tp.meta.label}
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    fontWeight: 900,
-                    color: tp.isCompleted ? '#4ade80' : tp.unlocked ? '#e2e8f0' : '#94a3b8',
-                  }}
-                >
-                  {tp.isCompleted
-                    ? '✅ 20/20'
-                    : tp.unlocked
-                      ? `🔓 ${tp.solvedCount}/${tp.total}`
-                      : `🔒 ${tp.solvedCount}/${tp.total}`}
-                </span>
-              </div>
-
-              {/* Barra de Progresso do Grau */}
-              <div
-                style={{
-                  height: 7,
-                  borderRadius: 999,
-                  background: 'rgba(2, 6, 23, 0.85)',
-                  overflow: 'hidden',
-                  border: '1px solid rgba(148, 163, 184, 0.18)',
-                  marginBottom: 6,
-                }}
-              >
-                <div
-                  style={{
-                    width: `${pct}%`,
-                    height: '100%',
-                    background: tp.isCompleted ? '#4ade80' : tp.meta.color,
-                    transition: 'width 0.3s ease',
-                  }}
-                />
-              </div>
-
-              <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-                {tp.isCompleted
-                  ? 'Grau dominado! Próximo Grau liberado.'
-                  : tp.unlocked
-                    ? `Faltam ${tp.total - tp.solvedCount} para liberar o próximo Grau`
-                    : `Complete 20/20 do ${tp.prevTierLabel?.split('•')[0].trim()} para abrir`}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Filter Bars: Tier + Player History */}
+      {/* Compact 5-Grau Progressive Strip + Status Filters */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 12,
+          gap: 10,
           flexWrap: 'wrap',
-          marginBottom: 20,
+          marginBottom: 12,
         }}
       >
-        {/* Difficulty Filter Bar */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {tiers.map((t) => {
-            const isActive = selectedTier === t.id;
-            const meta = t.id !== 'all' ? PROBLEM_DIFFICULTY_META[t.id] : null;
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => setSelectedTier('all')}
+            style={{
+              padding: '6px 11px',
+              borderRadius: 8,
+              border:
+                selectedTier === 'all'
+                  ? '1.5px solid #facc15'
+                  : '1px solid rgba(148, 163, 184, 0.25)',
+              background:
+                selectedTier === 'all'
+                  ? 'rgba(250, 204, 21, 0.16)'
+                  : 'rgba(15, 23, 42, 0.8)',
+              color: selectedTier === 'all' ? '#fef08a' : '#cbd5e1',
+              fontWeight: 800,
+              fontSize: '0.74rem',
+              cursor: 'pointer',
+            }}
+          >
+            Todos (100)
+          </button>
+
+          {tierProgress.map((tp) => {
+            const isSelected = selectedTier === tp.tier;
             return (
               <button
-                key={t.id}
+                key={tp.tier}
                 type="button"
-                onClick={() => setSelectedTier(t.id)}
+                onClick={() => setSelectedTier(tp.tier)}
                 style={{
-                  padding: '8px 13px',
-                  borderRadius: 10,
-                  border: isActive
-                    ? `1.5px solid ${meta?.color ?? '#facc15'}`
-                    : '1px solid rgba(148, 163, 184, 0.25)',
-                  background: isActive
-                    ? meta?.bg ?? 'rgba(250, 204, 21, 0.18)'
-                    : 'rgba(15, 23, 42, 0.78)',
-                  color: isActive ? meta?.color ?? '#fef08a' : '#cbd5e1',
+                  padding: '6px 11px',
+                  borderRadius: 8,
+                  border: isSelected
+                    ? `1.5px solid ${tp.meta.color}`
+                    : tp.unlocked
+                      ? `1px solid ${tp.meta.border}`
+                      : '1px dashed rgba(148, 163, 184, 0.25)',
+                  background: isSelected
+                    ? tp.meta.bg
+                    : tp.unlocked
+                      ? 'rgba(15, 23, 42, 0.85)'
+                      : 'rgba(15, 23, 42, 0.5)',
+                  color: isSelected ? tp.meta.color : tp.unlocked ? '#e2e8f0' : '#94a3b8',
                   fontWeight: 800,
-                  fontSize: '0.8rem',
+                  fontSize: '0.74rem',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 7,
+                  gap: 6,
                 }}
               >
-                {!t.unlocked && <span>🔒</span>}
-                {t.stars && <span style={{ letterSpacing: 1 }}>{t.stars}</span>}
-                <span>{t.label}</span>
+                <span>{tp.isCompleted ? '✅' : tp.unlocked ? '🔓' : '🔒'}</span>
+                <span>{tp.meta.label}</span>
                 <span
                   style={{
-                    padding: '1px 7px',
+                    padding: '1px 6px',
                     borderRadius: 999,
-                    background: 'rgba(0,0,0,0.35)',
-                    fontSize: '0.7rem',
+                    background: 'rgba(0,0,0,0.4)',
+                    fontSize: '0.68rem',
+                    color: tp.isCompleted ? '#4ade80' : tp.meta.color,
                   }}
                 >
-                  {t.count}
+                  {tp.solvedCount}/{tp.total}
                 </span>
               </button>
             );
           })}
         </div>
 
-        {/* History Status Filter Bar */}
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {/* History Filter Pills */}
+        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
           {(
             [
               { id: 'all', label: '📋 Todos' },
               { id: 'pending', label: `⏳ Pendentes (${TACTICAL_PROBLEMS.length - solvedIds.length})` },
               { id: 'failed', label: `❌ Com Erros (${historyStats.problemsWithErrors})` },
               { id: 'solved', label: `✅ Resolvidos (${solvedIds.length})` },
-              { id: 'first_try', label: `🏆 De 1ª Sem Dica (${historyStats.totalFirstTry})` },
+              { id: 'first_try', label: `🏆 De 1ª (${historyStats.totalFirstTry})` },
             ] as { id: HistoryFilterType; label: string }[]
           ).map((hf) => {
             const active = historyFilter === hf.id;
@@ -501,7 +346,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
                 type="button"
                 onClick={() => setHistoryFilter(hf.id)}
                 style={{
-                  padding: '7px 12px',
+                  padding: '5px 10px',
                   borderRadius: 999,
                   border: active
                     ? '1px solid rgba(56, 189, 248, 0.75)'
@@ -509,7 +354,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
                   background: active ? 'rgba(56, 189, 248, 0.18)' : 'rgba(15, 23, 42, 0.75)',
                   color: active ? '#7dd3fc' : '#94a3b8',
                   fontWeight: 800,
-                  fontSize: '0.76rem',
+                  fontSize: '0.72rem',
                   cursor: 'pointer',
                 }}
               >
@@ -524,24 +369,25 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
       {filteredProblems.length === 0 && (
         <div
           style={{
-            padding: '36px 24px',
+            padding: '24px',
             textAlign: 'center',
-            borderRadius: 16,
+            borderRadius: 12,
             background: 'rgba(15, 23, 42, 0.75)',
             border: '1px solid rgba(148, 163, 184, 0.25)',
             color: '#94a3b8',
+            fontSize: '0.84rem',
           }}
         >
-          Nenhum problema encontrado para a combinação atual de filtros de Grau e Histórico.
+          Nenhum problema encontrado para este filtro.
         </div>
       )}
 
-      {/* Problems Grid */}
+      {/* Compact Spoiler-Free Problems Grid (Fits 4-5 per row on Desktop) */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
-          gap: 18,
+          gridTemplateColumns: 'repeat(auto-fill, minmax(252px, 1fr))',
+          gap: 10,
         }}
       >
         {filteredProblems.map((prob) => {
@@ -554,268 +400,191 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
           const isHintOpen = expandedHintId === prob.id;
           const tierIdx = PROBLEM_TIERS_ORDER.indexOf(prob.difficulty);
           const prevTierLabel =
-            tierIdx > 0 ? PROBLEM_DIFFICULTY_META[PROBLEM_TIERS_ORDER[tierIdx - 1]].label : '';
+            tierIdx > 0
+              ? PROBLEM_DIFFICULTY_META[PROBLEM_TIERS_ORDER[tierIdx - 1]].label.split('•')[0].trim()
+              : '';
 
           return (
             <div
               key={prob.id}
               style={{
                 background:
-                  'linear-gradient(165deg, rgba(15, 23, 42, 0.95), rgba(9, 13, 24, 0.98))',
+                  'linear-gradient(165deg, rgba(15, 23, 42, 0.94), rgba(9, 13, 24, 0.98))',
                 border: !isTierUnlocked
-                  ? '1px dashed rgba(148, 163, 184, 0.28)'
+                  ? '1px dashed rgba(148, 163, 184, 0.24)'
                   : isSolved
-                    ? '1.5px solid rgba(74, 222, 128, 0.55)'
+                    ? '1.5px solid rgba(74, 222, 128, 0.5)'
                     : (entry?.failures ?? 0) > 0
-                      ? '1.5px solid rgba(248, 113, 113, 0.5)'
+                      ? '1.5px solid rgba(248, 113, 113, 0.48)'
                       : `1px solid ${diffMeta.border}`,
-                borderRadius: 16,
-                padding: '18px 20px',
+                borderRadius: 11,
+                padding: '10px 12px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                gap: 14,
-                boxShadow: '0 14px 32px rgba(0, 0, 0, 0.45)',
-                position: 'relative',
-                overflow: 'hidden',
-                opacity: isTierUnlocked ? 1 : 0.78,
+                gap: 8,
+                opacity: isTierUnlocked ? 1 : 0.72,
               }}
             >
               <div>
-                {/* Top Badges */}
+                {/* Row 1: Compact Code + Stars + Domain + Status Badge */}
                 <div
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    gap: 8,
-                    marginBottom: 10,
+                    gap: 6,
+                    marginBottom: 6,
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                     <span
                       style={{
-                        padding: '3px 9px',
-                        borderRadius: 6,
+                        padding: '2px 6px',
+                        borderRadius: 5,
                         background: diffMeta.bg,
                         border: `1px solid ${diffMeta.border}`,
                         color: diffMeta.color,
-                        fontSize: '0.7rem',
+                        fontSize: '0.66rem',
                         fontWeight: 900,
-                        letterSpacing: '0.05em',
                       }}
                     >
-                      {prob.code} • {diffMeta.starsText}
+                      #{String(prob.number).padStart(2, '0')} • {diffMeta.starsText}
                     </span>
                     <span
-                      style={{
-                        padding: '3px 9px',
-                        borderRadius: 6,
-                        background: 'rgba(30, 41, 59, 0.85)',
-                        border: '1px solid rgba(148, 163, 184, 0.25)',
-                        color: '#e2e8f0',
-                        fontSize: '0.7rem',
-                        fontWeight: 700,
-                      }}
+                      title={`Domínio ${domMeta.name}`}
+                      style={{ fontSize: '0.78rem' }}
                     >
-                      {domMeta.icon} {prob.mechanicTag}
+                      {domMeta.icon}
                     </span>
                   </div>
 
                   {!isTierUnlocked ? (
                     <span
                       style={{
-                        padding: '3px 10px',
-                        borderRadius: 999,
-                        background: 'rgba(51, 65, 85, 0.65)',
-                        border: '1px solid rgba(148, 163, 184, 0.4)',
-                        color: '#cbd5e1',
-                        fontSize: '0.7rem',
-                        fontWeight: 900,
+                        fontSize: '0.66rem',
+                        color: '#94a3b8',
+                        fontWeight: 800,
                       }}
                     >
-                      🔒 BLOQUEADO (+{prob.goldReward}🪙)
+                      🔒 +{prob.goldReward}🪙
                     </span>
                   ) : isSolved ? (
                     <span
                       style={{
-                        padding: '3px 10px',
+                        padding: '1px 7px',
                         borderRadius: 999,
                         background: entry?.solvedOnFirstTry
-                          ? 'rgba(56, 189, 248, 0.2)'
-                          : 'rgba(34, 197, 94, 0.2)',
-                        border: entry?.solvedOnFirstTry
-                          ? '1px solid rgba(56, 189, 248, 0.6)'
-                          : '1px solid rgba(74, 222, 128, 0.55)',
+                          ? 'rgba(56, 189, 248, 0.18)'
+                          : 'rgba(34, 197, 94, 0.18)',
                         color: entry?.solvedOnFirstTry ? '#38bdf8' : '#4ade80',
-                        fontSize: '0.7rem',
+                        fontSize: '0.66rem',
                         fontWeight: 900,
                       }}
                     >
-                      {entry?.solvedOnFirstTry
-                        ? '🏆 DE 1ª SEM DICA'
-                        : `✅ RESOLVIDO (${entry?.attempts ?? 1}ª tent.)`}
+                      {entry?.solvedOnFirstTry ? '🏆 1ª s/ Dica' : '✅ Resolvido'}
                     </span>
                   ) : (entry?.failures ?? 0) > 0 ? (
                     <span
                       style={{
-                        padding: '3px 10px',
+                        padding: '1px 7px',
                         borderRadius: 999,
                         background: 'rgba(239, 68, 68, 0.18)',
-                        border: '1px solid rgba(248, 113, 113, 0.55)',
                         color: '#fca5a5',
-                        fontSize: '0.7rem',
+                        fontSize: '0.66rem',
                         fontWeight: 900,
                       }}
                     >
-                      ❌ {entry?.failures} ERRO(S) • +{prob.goldReward}🪙
+                      ❌ {entry?.failures} erro(s) • +{prob.goldReward}🪙
                     </span>
                   ) : (
                     <span
                       style={{
-                        padding: '3px 10px',
+                        padding: '1px 7px',
                         borderRadius: 999,
-                        background: 'rgba(250, 204, 21, 0.16)',
-                        border: '1px solid rgba(250, 204, 21, 0.45)',
+                        background: 'rgba(250, 204, 21, 0.14)',
                         color: '#fde047',
-                        fontSize: '0.72rem',
+                        fontSize: '0.68rem',
                         fontWeight: 900,
                       }}
                     >
-                      🪙 +{prob.goldReward} Ouro
+                      🪙 +{prob.goldReward}
                     </span>
                   )}
                 </div>
 
-                {/* Title & Subtitle */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+                {/* Row 2: Avatar + Clean Title + Compact 1-Line Matchup Stats (ZERO SPOILERS) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                   {avatarCard?.imagePath && (
                     <img
                       src={avatarCard.imagePath}
                       alt={prob.title}
                       style={{
-                        width: 48,
-                        height: 48,
-                        borderRadius: 10,
+                        width: 36,
+                        height: 36,
+                        borderRadius: 8,
                         objectFit: 'cover',
-                        border: `1.5px solid ${diffMeta.color}`,
+                        border: `1px solid ${diffMeta.color}`,
                         flexShrink: 0,
-                        filter: isTierUnlocked ? 'none' : 'grayscale(0.65)',
+                        filter: isTierUnlocked ? 'none' : 'grayscale(0.7)',
                       }}
                     />
                   )}
-                  <div>
-                    <h3
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div
                       style={{
-                        margin: 0,
-                        fontSize: '1.05rem',
+                        fontSize: '0.86rem',
                         fontFamily: 'Cinzel, serif',
                         fontWeight: 900,
                         color: '#f8fafc',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                       }}
+                      title={prob.title}
                     >
                       {prob.title}
-                    </h3>
-                    <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: 2 }}>
-                      {prob.subtitle}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '0.71rem',
+                        color: '#94a3b8',
+                        marginTop: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 4,
+                      }}
+                    >
+                      <span>
+                        T{prob.turnNumber} • ⚡{prob.p1Essence}/{prob.p1MaxEssence} • 🃏{prob.p1HandCardIds.length}
+                      </span>
+                      <strong style={{ color: '#f87171' }}>🎯 {prob.p2Hp} ❤️</strong>
                     </div>
                   </div>
                 </div>
 
-                {/* Scenario Lore */}
-                <p
-                  style={{
-                    margin: '0 0 12px',
-                    fontSize: '0.82rem',
-                    lineHeight: 1.5,
-                    color: '#cbd5e1',
-                  }}
-                >
-                  {prob.scenarioLore}
-                </p>
-
-                {/* Matchup Snapshot Bar */}
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: 8,
-                    padding: '9px 12px',
-                    borderRadius: 10,
-                    background: 'rgba(2, 6, 23, 0.75)',
-                    border: '1px solid rgba(148, 163, 184, 0.18)',
-                    fontSize: '0.76rem',
-                  }}
-                >
-                  <div>
-                    <div style={{ color: '#94a3b8', fontSize: '0.68rem', fontWeight: 700 }}>
-                      SEU SOBERANO (TURNO {prob.turnNumber})
-                    </div>
-                    <div style={{ color: '#f8fafc', fontWeight: 800, marginTop: 2 }}>
-                      ❤️ {prob.p1Hp} • ⚡ {prob.p1Essence}/{prob.p1MaxEssence} • 🃏 {prob.p1HandCardIds.length} Mão
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ color: '#94a3b8', fontSize: '0.68rem', fontWeight: 700 }}>
-                      ALVO: {prob.p2Name.toUpperCase()}
-                    </div>
-                    <div style={{ color: '#f87171', fontWeight: 900, marginTop: 2 }}>
-                      🎯 {prob.p2Hp} ❤️ (Xeque-Mate em 1T)
-                    </div>
-                  </div>
-                </div>
-
-                {/* History Detail Strip if attempted */}
-                {entry && (entry.attempts > 0 || entry.maxHintStageUsed > 0) && (
-                  <div
-                    style={{
-                      marginTop: 8,
-                      padding: '6px 10px',
-                      borderRadius: 8,
-                      background: 'rgba(15, 23, 42, 0.8)',
-                      border: '1px solid rgba(148, 163, 184, 0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      fontSize: '0.72rem',
-                      color: '#94a3b8',
-                    }}
-                  >
-                    <span>
-                      📊 Tentativas: <strong style={{ color: '#e2e8f0' }}>{entry.attempts}</strong> • Erros:{' '}
-                      <strong style={{ color: entry.failures > 0 ? '#f87171' : '#4ade80' }}>
-                        {entry.failures}
-                      </strong>
-                    </span>
-                    <span>
-                      {entry.maxHintStageUsed === 0
-                        ? '✨ Sem dicas usadas'
-                        : `💡 Dica nível ${entry.maxHintStageUsed} consultada`}
-                    </span>
-                  </div>
-                )}
-
-                {/* Optional Hint Preview */}
+                {/* Optional Hint Preview (Only shown when player clicks 💡 Dica) */}
                 {isHintOpen && isTierUnlocked && (
                   <div
                     style={{
-                      marginTop: 10,
-                      padding: '10px 12px',
-                      borderRadius: 10,
+                      marginTop: 7,
+                      padding: '7px 9px',
+                      borderRadius: 8,
                       background: 'rgba(250, 204, 21, 0.1)',
                       border: '1px solid rgba(250, 204, 21, 0.35)',
-                      fontSize: '0.78rem',
+                      fontSize: '0.72rem',
                       color: '#fef08a',
-                      lineHeight: 1.45,
+                      lineHeight: 1.4,
                     }}
                   >
-                    <strong>💡 Pista Tática:</strong> {prob.hint1}
+                    <strong>💡 Dica:</strong> {prob.hint1}
                   </div>
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+              {/* Row 3: Compact Action Buttons */}
+              <div style={{ display: 'flex', gap: 6 }}>
                 {isTierUnlocked ? (
                   <>
                     <button
@@ -823,40 +592,47 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
                       onClick={() => onSelectProblem(prob)}
                       style={{
                         flex: 1,
-                        padding: '10px 14px',
-                        borderRadius: 10,
-                        border: '1px solid rgba(250, 204, 21, 0.6)',
+                        padding: '6px 10px',
+                        borderRadius: 7,
+                        border: '1px solid rgba(250, 204, 21, 0.55)',
                         background:
                           'linear-gradient(135deg, rgba(234, 179, 8, 0.92), rgba(202, 138, 4, 0.95))',
                         color: '#0f172a',
                         fontWeight: 900,
-                        fontSize: '0.84rem',
+                        fontSize: '0.75rem',
                         cursor: 'pointer',
-                        boxShadow: '0 6px 18px rgba(234, 179, 8, 0.28)',
                       }}
                     >
                       {isSolved
-                        ? `♟️ REJOGAR PROBLEMA #${prob.number}`
+                        ? `♟️ Rejogar #${prob.number}`
                         : (entry?.failures ?? 0) > 0
-                          ? `🔄 TENTAR NOVAMENTE (#${prob.number})`
-                          : `♟️ RESOLVER PROBLEMA #${prob.number} NA MESA`}
+                          ? `🔄 Tentar #${prob.number}`
+                          : `♟️ Resolver #${prob.number}`}
                     </button>
                     <button
                       type="button"
-                      onClick={() => setExpandedHintId(isHintOpen ? null : prob.id)}
-                      title="Ver Pista Conceitual"
+                      onClick={() => {
+                        if (!isHintOpen) {
+                          const updated = recordProblemHintUsed(prob.id, 1);
+                          setHistoryMap((prev) => ({ ...prev, [prob.id]: updated }));
+                        }
+                        setExpandedHintId(isHintOpen ? null : prob.id);
+                      }}
+                      title="Consultar Dica Conceitual"
                       style={{
-                        padding: '10px 12px',
-                        borderRadius: 10,
+                        padding: '6px 9px',
+                        borderRadius: 7,
                         border: '1px solid rgba(148, 163, 184, 0.3)',
-                        background: 'rgba(30, 41, 59, 0.85)',
+                        background: isHintOpen
+                          ? 'rgba(250, 204, 21, 0.22)'
+                          : 'rgba(30, 41, 59, 0.85)',
                         color: '#fde047',
                         fontWeight: 800,
-                        fontSize: '0.8rem',
+                        fontSize: '0.73rem',
                         cursor: 'pointer',
                       }}
                     >
-                      💡 Pista
+                      {isHintOpen ? '✕' : '💡 Dica'}
                     </button>
                   </>
                 ) : (
@@ -865,17 +641,17 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
                     disabled
                     style={{
                       flex: 1,
-                      padding: '10px 14px',
-                      borderRadius: 10,
-                      border: '1px solid rgba(148, 163, 184, 0.28)',
-                      background: 'rgba(30, 41, 59, 0.65)',
+                      padding: '6px 8px',
+                      borderRadius: 7,
+                      border: '1px solid rgba(148, 163, 184, 0.22)',
+                      background: 'rgba(30, 41, 59, 0.55)',
                       color: '#94a3b8',
                       fontWeight: 800,
-                      fontSize: '0.78rem',
+                      fontSize: '0.7rem',
                       cursor: 'not-allowed',
                     }}
                   >
-                    🔒 RESOLVA 20/20 DO {prevTierLabel.toUpperCase()} PARA DESBLOQUEAR
+                    🔒 Complete 20/20 do {prevTierLabel}
                   </button>
                 )}
               </div>

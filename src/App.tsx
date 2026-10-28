@@ -775,27 +775,6 @@ export const App: React.FC = () => {
             <span className="nav-tab-icon">🎓</span>
             <span>Tutorial</span>
           </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'admin' ? 'active' : ''}`}
-            onClick={handleOpenAdminTab}
-            style={{
-              borderColor:
-                activeTab === 'admin'
-                  ? 'rgba(251, 191, 36, 0.95)'
-                  : 'rgba(251, 191, 36, 0.5)',
-              background:
-                activeTab === 'admin'
-                  ? 'linear-gradient(180deg, rgba(217, 119, 6, 0.35) 0%, rgba(146, 64, 14, 0.55) 100%)'
-                  : 'rgba(251, 191, 36, 0.1)',
-              color: '#fde047',
-              fontWeight: 800,
-            }}
-            title="Painel de Administração Exclusivo (tsm81)"
-          >
-            <span>👑 Admin</span>
-          </button>
         </nav>
 
         <div className="nav-right-controls">
@@ -1087,7 +1066,7 @@ export const App: React.FC = () => {
                       setActiveTab('problems');
                     }}
                   >
-                    ♟️ PROBLEMAS (50 XEQUE-MATES)
+                    ♟️ PROBLEMAS (100 XEQUE-MATES)
                   </button>
                   <button
                     type="button"
@@ -1172,10 +1151,10 @@ export const App: React.FC = () => {
                   className="aaa-portal-bg-art"
                 />
                 <div className="aaa-portal-content">
-                  <span className="aaa-kicker">50 DESAFIOS • 5 GRAUS DE DIFICULDADE</span>
+                  <span className="aaa-kicker">100 DESAFIOS • TRILHA PROGRESSIVA</span>
                   <h3 className="font-cinzel">♟️ Problemas (Xeque-Mate)</h3>
-                  <p>Encontre a única sequência indefensável que derrota o Soberano rival naquele exato turno.</p>
-                  <span className="aaa-portal-cta">Resolver Problemas (+270 🪙) →</span>
+                  <p>Complete os 20 desafios de cada Grau para destravar o Grau seguinte e registre seu histórico de maestria.</p>
+                  <span className="aaa-portal-cta">Resolver Problemas (+540 🪙) →</span>
                 </div>
               </div>
 

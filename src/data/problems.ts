@@ -6,6 +6,7 @@ import {
   recalculateFormationBonuses,
 } from '../engine/gameEngine';
 import { BoardUnit, CardDefinition, Domain, GameState, RowType } from '../types/game';
+import { EXTRA_50_TACTICAL_PROBLEMS } from './problemsExpansion100';
 
 export type ProblemDifficultyTier =
   | 'iniciante'
@@ -13,6 +14,14 @@ export type ProblemDifficultyTier =
   | 'avancado'
   | 'mestre'
   | 'grao_mestre';
+
+export const PROBLEM_TIERS_ORDER: ProblemDifficultyTier[] = [
+  'iniciante',
+  'intermediario',
+  'avancado',
+  'mestre',
+  'grao_mestre',
+];
 
 export interface ProblemUnitPlacement {
   cardId: string;
@@ -136,9 +145,9 @@ function resolveProblemCard(cardId: string): CardDefinition {
   return CARDS_BY_ID[cardId] ?? ALL_CARDS[0];
 }
 
-export const TACTICAL_PROBLEMS: TacticalProblem[] = [
+const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
   // ============================================================================
-  // GRAU I — INICIANTE (★☆☆☆☆ • 10 PROBLEMAS • 2 🪙 OURO CADA)
+  // GRAU I — INICIANTE (★☆☆☆☆ • 20 PROBLEMAS • 2 🪙 OURO CADA)
   // ============================================================================
   {
     id: 'prob_01_forja_impeto',
@@ -3209,6 +3218,19 @@ export const TACTICAL_PROBLEMS: TacticalProblem[] = [
   },
 ];
 
+// Combina os 50 problemas base + 50 problemas de expansão agrupados por Grau (20 por Grau = 100 Problemas)
+export const TACTICAL_PROBLEMS: TacticalProblem[] = PROBLEM_TIERS_ORDER.flatMap((tier) => [
+  ...BASE_50_TACTICAL_PROBLEMS.filter((p) => p.difficulty === tier),
+  ...EXTRA_50_TACTICAL_PROBLEMS.filter((p) => p.difficulty === tier),
+]).map((problem, index) => {
+  const num = index + 1;
+  return {
+    ...problem,
+    number: num,
+    code: `PROBLEMA #${String(num).padStart(2, '0')}`,
+  };
+});
+
 export function buildProblemInitialGameState(problem: TacticalProblem): GameState {
   const pDeck = problem.p1DeckTopCardIds.map(resolveProblemCard);
   const aiDeck = [resolveProblemCard(problem.p2AvatarCardId)];
@@ -3353,6 +3375,18 @@ export function buildProblemInitialGameState(problem: TacticalProblem): GameStat
 }
 
 const SOLVED_PROBLEMS_STORAGE_KEY = 'chromatic_pact_solved_problems_v1';
+const PROBLEM_HISTORY_STORAGE_KEY = 'chromatic_pact_problem_history_v1';
+
+export interface ProblemHistoryEntry {
+  problemId: string;
+  attempts: number;
+  failures: number;
+  solved: boolean;
+  solvedOnFirstTry: boolean;
+  maxHintStageUsed: number;
+  lastAttemptAt: string;
+  firstSolvedAt?: string;
+}
 
 export function getSolvedProblemIds(): string[] {
   if (typeof window === 'undefined') return [];
@@ -3366,18 +3400,231 @@ export function getSolvedProblemIds(): string[] {
   }
 }
 
-export function markProblemAsSolved(problemId: string): { isFirstTime: boolean; allSolved: string[] } {
-  const current = getSolvedProblemIds();
-  if (current.includes(problemId)) {
-    return { isFirstTime: false, allSolved: current };
+export function getProblemHistoryMap(): Record<string, ProblemHistoryEntry> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = window.localStorage.getItem(PROBLEM_HISTORY_STORAGE_KEY);
+    const map: Record<string, ProblemHistoryEntry> = raw ? JSON.parse(raw) : {};
+    // Migra problemas já resolvidos da chave legada caso ainda não estejam no mapa de histórico
+    const legacySolved = getSolvedProblemIds();
+    let changed = false;
+    for (const id of legacySolved) {
+      if (!map[id]) {
+        map[id] = {
+          problemId: id,
+          attempts: 1,
+          failures: 0,
+          solved: true,
+          solvedOnFirstTry: true,
+          maxHintStageUsed: 0,
+          lastAttemptAt: new Date().toISOString(),
+          firstSolvedAt: new Date().toISOString(),
+        };
+        changed = true;
+      } else if (!map[id].solved) {
+        map[id].solved = true;
+        changed = true;
+      }
+    }
+    if (changed) {
+      window.localStorage.setItem(PROBLEM_HISTORY_STORAGE_KEY, JSON.stringify(map));
+    }
+    return map;
+  } catch {
+    return {};
   }
-  const updated = [...current, problemId];
-  if (typeof window !== 'undefined') {
+}
+
+function saveProblemHistoryMap(map: Record<string, ProblemHistoryEntry>): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(PROBLEM_HISTORY_STORAGE_KEY, JSON.stringify(map));
+  } catch {
+    // ignore storage errors
+  }
+}
+
+export function recordProblemAttemptFailed(problemId: string): ProblemHistoryEntry {
+  const map = getProblemHistoryMap();
+  const now = new Date().toISOString();
+  const existing = map[problemId];
+  const updated: ProblemHistoryEntry = existing
+    ? {
+        ...existing,
+        attempts: existing.attempts + 1,
+        failures: existing.failures + 1,
+        lastAttemptAt: now,
+      }
+    : {
+        problemId,
+        attempts: 1,
+        failures: 1,
+        solved: false,
+        solvedOnFirstTry: false,
+        maxHintStageUsed: 0,
+        lastAttemptAt: now,
+      };
+  map[problemId] = updated;
+  saveProblemHistoryMap(map);
+  return updated;
+}
+
+export function recordProblemHintUsed(problemId: string, hintStage: number): ProblemHistoryEntry {
+  const map = getProblemHistoryMap();
+  const now = new Date().toISOString();
+  const existing = map[problemId];
+  const updated: ProblemHistoryEntry = existing
+    ? {
+        ...existing,
+        maxHintStageUsed: Math.max(existing.maxHintStageUsed, hintStage),
+        lastAttemptAt: now,
+      }
+    : {
+        problemId,
+        attempts: 0,
+        failures: 0,
+        solved: false,
+        solvedOnFirstTry: false,
+        maxHintStageUsed: hintStage,
+        lastAttemptAt: now,
+      };
+  map[problemId] = updated;
+  saveProblemHistoryMap(map);
+  return updated;
+}
+
+export function isProblemTierUnlocked(
+  tier: ProblemDifficultyTier,
+  solvedIdsInput?: string[]
+): boolean {
+  const tierIdx = PROBLEM_TIERS_ORDER.indexOf(tier);
+  if (tierIdx <= 0) return true; // Grau I (Iniciante) está sempre desbloqueado
+  const solvedSet = new Set(solvedIdsInput ?? getSolvedProblemIds());
+  // Para desbloquear um Grau, todos os Graus anteriores devem estar 100% resolvidos (20/20)
+  for (let i = 0; i < tierIdx; i++) {
+    const prevTier = PROBLEM_TIERS_ORDER[i];
+    const prevTierProblems = TACTICAL_PROBLEMS.filter((p) => p.difficulty === prevTier);
+    const allPrevSolved = prevTierProblems.every((p) => solvedSet.has(p.id));
+    if (!allPrevSolved) return false;
+  }
+  return true;
+}
+
+export function markProblemAsSolved(problemId: string): {
+  isFirstTime: boolean;
+  allSolved: string[];
+  entry: ProblemHistoryEntry;
+  unlockedNewTier: ProblemDifficultyTier | null;
+} {
+  const current = getSolvedProblemIds();
+  const map = getProblemHistoryMap();
+  const now = new Date().toISOString();
+  const existing = map[problemId];
+  const isFirstTime = !current.includes(problemId);
+
+  // Verifica quais tiers estavam desbloqueados antes
+  const unlockedBefore = new Set(
+    PROBLEM_TIERS_ORDER.filter((t) => isProblemTierUnlocked(t, current))
+  );
+
+  const updatedSolved = isFirstTime ? [...current, problemId] : current;
+  if (isFirstTime && typeof window !== 'undefined') {
     try {
-      window.localStorage.setItem(SOLVED_PROBLEMS_STORAGE_KEY, JSON.stringify(updated));
+      window.localStorage.setItem(SOLVED_PROBLEMS_STORAGE_KEY, JSON.stringify(updatedSolved));
     } catch {
       // ignore storage errors
     }
   }
-  return { isFirstTime: true, allSolved: updated };
+
+  const priorFailures = existing?.failures ?? 0;
+  const priorHints = existing?.maxHintStageUsed ?? 0;
+  const solvedOnFirstTry = existing?.solved
+    ? existing.solvedOnFirstTry
+    : priorFailures === 0 && priorHints === 0;
+
+  const entry: ProblemHistoryEntry = {
+    problemId,
+    attempts: (existing?.attempts ?? 0) + 1,
+    failures: priorFailures,
+    solved: true,
+    solvedOnFirstTry,
+    maxHintStageUsed: priorHints,
+    lastAttemptAt: now,
+    firstSolvedAt: existing?.firstSolvedAt ?? now,
+  };
+  map[problemId] = entry;
+  saveProblemHistoryMap(map);
+
+  let unlockedNewTier: ProblemDifficultyTier | null = null;
+  for (const t of PROBLEM_TIERS_ORDER) {
+    if (!unlockedBefore.has(t) && isProblemTierUnlocked(t, updatedSolved)) {
+      unlockedNewTier = t;
+    }
+  }
+
+  return { isFirstTime, allSolved: updatedSolved, entry, unlockedNewTier };
+}
+
+export function getNextPlayableProblem(
+  currentProblemId: string,
+  solvedIdsInput?: string[]
+): {
+  nextProblem: TacticalProblem | null;
+  isCyclingUnsolvedInTier: boolean;
+  pendingInCurrentTier: number;
+} {
+  const solvedSet = new Set(solvedIdsInput ?? getSolvedProblemIds());
+  const currentProblem = TACTICAL_PROBLEMS.find((p) => p.id === currentProblemId);
+  if (!currentProblem) {
+    return {
+      nextProblem: TACTICAL_PROBLEMS[0] ?? null,
+      isCyclingUnsolvedInTier: false,
+      pendingInCurrentTier: 0,
+    };
+  }
+
+  const currentTier = currentProblem.difficulty;
+  const tierProblems = TACTICAL_PROBLEMS.filter((p) => p.difficulty === currentTier);
+  const posInTier = tierProblems.findIndex((p) => p.id === currentProblemId);
+  const pendingList = tierProblems.filter((p) => !solvedSet.has(p.id) && p.id !== currentProblemId);
+
+  // 1) Tenta o próximo problema sequencial dentro do mesmo Grau
+  if (posInTier >= 0 && posInTier + 1 < tierProblems.length) {
+    return {
+      nextProblem: tierProblems[posInTier + 1],
+      isCyclingUnsolvedInTier: false,
+      pendingInCurrentTier: pendingList.length,
+    };
+  }
+
+  // 2) Se chegou ao último problema deste Grau (#20, #40, #60, #80, #100):
+  //    Verifica se ainda há problemas pendentes (pulados/errados) neste Grau que impedem o avanço ao próximo Grau
+  if (pendingList.length > 0) {
+    return {
+      nextProblem: pendingList[0],
+      isCyclingUnsolvedInTier: true,
+      pendingInCurrentTier: pendingList.length,
+    };
+  }
+
+  // 3) Todos os 20 problemas deste Grau estão resolvidos! Avança para o 1º problema do próximo Grau se existir
+  const globalIdx = TACTICAL_PROBLEMS.findIndex((p) => p.id === currentProblemId);
+  const nextGlobal =
+    globalIdx >= 0 && globalIdx + 1 < TACTICAL_PROBLEMS.length
+      ? TACTICAL_PROBLEMS[globalIdx + 1]
+      : null;
+
+  if (nextGlobal && isProblemTierUnlocked(nextGlobal.difficulty, Array.from(solvedSet))) {
+    return {
+      nextProblem: nextGlobal,
+      isCyclingUnsolvedInTier: false,
+      pendingInCurrentTier: 0,
+    };
+  }
+
+  return {
+    nextProblem: null,
+    isCyclingUnsolvedInTier: false,
+    pendingInCurrentTier: 0,
+  };
 }

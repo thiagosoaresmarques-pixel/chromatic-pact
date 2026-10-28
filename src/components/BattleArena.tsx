@@ -69,9 +69,11 @@ import { TacticalGuideView } from './TacticalGuideView';
 import { TutorialCodexView } from './TutorialCodexView';
 import {
   buildProblemInitialGameState,
+  getNextPlayableProblem,
   markProblemAsSolved,
   PROBLEM_DIFFICULTY_META,
-  TACTICAL_PROBLEMS,
+  recordProblemAttemptFailed,
+  recordProblemHintUsed,
   TacticalProblem,
 } from '../data/problems';
 
@@ -2041,6 +2043,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const handleEndPlayerTurn = () => {
     if (!isPlayerTurn || combatAnim) return;
     if (tacticalProblem && gameState.ai.hp > 0) {
+      recordProblemAttemptFailed(tacticalProblem.id);
       setShowProblemIncompleteModal(true);
       playSfx('hit');
       return;
@@ -2308,7 +2311,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               <button
                 type="button"
                 onClick={() =>
-                  setProblemHintStage((prev) => ((prev + 1) % 4) as 0 | 1 | 2 | 3)
+                  setProblemHintStage((prev) => {
+                    const nextStage = ((prev + 1) % 4) as 0 | 1 | 2 | 3;
+                    if (nextStage > 0) {
+                      recordProblemHintUsed(tacticalProblem.id, nextStage);
+                    }
+                    return nextStage;
+                  })
                 }
                 style={{
                   padding: '4px 10px',
@@ -2458,14 +2467,32 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 className="btn-fantasy btn-fantasy-primary"
                 onClick={restartCurrentProblem}
               >
-                🔄 Reiniciar Turno Agora
+                🔄 Tentar Novamente (Reiniciar Turno)
               </button>
+              {onSelectProblem && (() => {
+                const { nextProblem } = getNextPlayableProblem(tacticalProblem.id);
+                if (!nextProblem || nextProblem.id === tacticalProblem.id) return null;
+                return (
+                  <button
+                    type="button"
+                    className="btn-fantasy"
+                    onClick={() => {
+                      setShowProblemIncompleteModal(false);
+                      onSelectProblem(nextProblem);
+                    }}
+                  >
+                    ⏭️ Pular p/ {nextProblem.code} (Mesmo Grau)
+                  </button>
+                );
+              })()}
               <button
                 type="button"
                 className="btn-fantasy"
                 onClick={() => {
                   setShowProblemIncompleteModal(false);
-                  setProblemHintStage((prev) => (prev < 2 ? 2 : 3));
+                  const nextStage = problemHintStage < 2 ? 2 : 3;
+                  recordProblemHintUsed(tacticalProblem.id, nextStage);
+                  setProblemHintStage(nextStage);
                 }}
               >
                 💡 Ver Dica Detalhada
@@ -5352,18 +5379,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
               {tacticalProblem && onSelectProblem && (() => {
-                const curIdx = TACTICAL_PROBLEMS.findIndex((p) => p.id === tacticalProblem.id);
-                const nextProb = curIdx >= 0 && curIdx < TACTICAL_PROBLEMS.length - 1
-                  ? TACTICAL_PROBLEMS[curIdx + 1]
-                  : null;
-                if (!nextProb) return null;
+                const { nextProblem, isCyclingUnsolvedInTier, pendingInCurrentTier } =
+                  getNextPlayableProblem(tacticalProblem.id);
+                if (!nextProblem) return null;
                 return (
                   <button
                     type="button"
                     className="btn-fantasy btn-fantasy-primary"
-                    onClick={() => onSelectProblem(nextProb)}
+                    onClick={() => onSelectProblem(nextProblem)}
                   >
-                    ⏭️ Próximo: {nextProb.code}
+                    {isCyclingUnsolvedInTier
+                      ? `⏭️ Resolver Pendente deste Grau: ${nextProblem.code} (Falta(m) ${pendingInCurrentTier} p/ novo Grau)`
+                      : nextProblem.difficulty !== tacticalProblem.difficulty
+                        ? `🎉 Avançar ao Novo Grau: ${nextProblem.code}`
+                        : `⏭️ Próximo: ${nextProblem.code}`}
                   </button>
                 );
               })()}

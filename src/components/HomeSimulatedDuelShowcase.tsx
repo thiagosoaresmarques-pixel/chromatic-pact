@@ -1,2229 +1,2457 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { CardDefinition, Domain } from '../types/game';
-import { CARDS_BY_ID, ALL_CARDS } from '../data/cards';
-import { DOMAIN_META } from './CardView';
-import { playSfx, SfxType, isMuted, toggleMute } from '../utils/soundEngine';
-import { setMusicState, startAdaptiveMusic, MusicIntensityStage } from '../utils/musicEngine';
+import React, { useEffect, useState } from 'react';
+import { CARDS_BY_ID } from '../data/cards';
+import { BoardUnit, CardDefinition, Domain, FloatingFeedback, Keyword, RowType } from '../types/game';
+import { setMusicState, startAdaptiveMusic } from '../utils/musicEngine';
+import { playSfx, SfxType } from '../utils/soundEngine';
+import {
+  CARD_TYPE_LABELS,
+  CardView,
+  DOMAIN_META,
+  KEYWORD_TOOLTIPS,
+} from './CardView';
 
-export interface HomeSimulatedDuelShowcaseProps {
-  onInspectCard?: (card: CardDefinition) => void;
-  onPlayDuelNow?: () => void;
-  onOpenCombosCompendium?: () => void;
-  soundMuted?: boolean;
-  onToggleSound?: () => void;
+type SoundEffectType =
+  | 'summon_heavy'
+  | 'domain_expand'
+  | 'dragon_breath'
+  | 'ascend'
+  | 'freeze'
+  | 'shield_up'
+  | 'spell_arcane'
+  | 'attack_hit'
+  | 'victory'
+  | 'card_draw'
+  | 'button_click';
+
+type BattleMusicTrackId =
+  | 'ambient_battle'
+  | 'domain_red'
+  | 'domain_blue'
+  | 'domain_purple'
+  | 'domain_gold'
+  | 'domain_clash';
+
+function playSoundEffect(effect: SoundEffectType): void {
+  const map: Record<SoundEffectType, SfxType> = {
+    summon_heavy: 'summon',
+    domain_expand: 'ascend',
+    dragon_breath: 'spell',
+    ascend: 'ascend',
+    freeze: 'freeze',
+    shield_up: 'heal',
+    spell_arcane: 'spell',
+    attack_hit: 'hit',
+    victory: 'victory',
+    card_draw: 'draw',
+    button_click: 'channel',
+  };
+  playSfx(map[effect] ?? 'summon');
 }
 
-interface SimulatedSlotUnit {
+function setBattleMusicTrack(track: BattleMusicTrackId): void {
+  startAdaptiveMusic();
+  if (track === 'ambient_battle') {
+    setMusicState('battle', 'neutral', false);
+  } else if (track === 'domain_red') {
+    setMusicState('domain_clash', 'red', false);
+  } else if (track === 'domain_blue') {
+    setMusicState('domain_clash', 'blue', false);
+  } else if (track === 'domain_purple') {
+    setMusicState('domain_clash', 'purple', false);
+  } else if (track === 'domain_gold') {
+    setMusicState('domain_clash', 'gold', false);
+  } else {
+    setMusicState('climax', 'gold', true);
+  }
+}
+
+function stopBattleMusic(): void {
+  setMusicState('sanctuary', 'neutral', false);
+}
+
+export type SimSubPhase = 'hand' | 'dock' | 'impact';
+
+interface SimSlotSpec {
+  slotIndex: number;
   cardId: string;
-  atk: number;
-  hp: number;
-  maxHp: number;
+  atk?: number;
+  hp?: number;
+  maxHp?: number;
   armor?: number;
-  stackCount?: number;
-  isAscended?: boolean;
-  ascendedName?: string;
-  hasShield?: boolean;
+  hasDivineShield?: boolean;
   isFrozen?: boolean;
-  isTrapHidden?: boolean;
-  isTrapRevealed?: boolean;
-  isAttacking?: boolean;
-  isHit?: boolean;
-  floatingText?: string;
-  floatingColor?: string;
+  isAscended?: boolean;
+  stance?: 'attack' | 'defend';
+  feedback?: { text: string; color: FloatingFeedback['color'] };
+  isHitTarget?: boolean;
+  isLunging?: boolean;
+  isBurstTarget?: boolean;
+  burstKind?: 'spell' | 'ascend';
 }
 
-interface SimulatedDomainState {
-  mode: 'none' | 'single' | 'clash_50_50';
-  owner?: 'player' | 'enemy';
-  domain: Domain;
-  name: string;
-  rivalDomain?: Domain;
-  rivalName?: string;
-  effectSummary: string;
+interface SimStepBoardState {
+  aiRearguard: SimSlotSpec[];
+  playerVanguard: SimSlotSpec[];
+  aiVanguard: SimSlotSpec[];
+  playerRearguard: SimSlotSpec[];
+  p1Hp: number;
+  p1Essence: number;
+  p1MaxEssence: number;
+  p2Hp: number;
+  p2Essence: number;
+  p2MaxEssence: number;
+  p1Feedback?: { text: string; color: FloatingFeedback['color'] };
+  p2Feedback?: { text: string; color: FloatingFeedback['color'] };
 }
 
-interface SimulatedDuelStep {
-  stepIndex: number;
-  turnLabel: string;
-  phaseBadge: string;
-  comboTitle: string;
-  narrative: string;
-  sfx: SfxType;
-  musicStage: MusicIntensityStage;
-  musicDomain: Domain;
-  spotlightCardId?: string;
-  spotlightLabel?: string;
-  playerHp: number;
-  playerEssence: string;
-  playerAffinity: string;
-  enemyHp: number;
-  enemyEssence: string;
-  enemyAffinity: string;
-  domainState: SimulatedDomainState;
-  // 4 columns for Desktop ( Smartphone focuses on columns 0 and 1 )
-  enemyRearguard: (SimulatedSlotUnit | null)[];
-  enemyVanguard: (SimulatedSlotUnit | null)[];
-  playerVanguard: (SimulatedSlotUnit | null)[];
-  playerRearguard: (SimulatedSlotUnit | null)[];
-}
-
-interface SimulatedDuelScenario {
+interface SimDuelStep {
   id: string;
-  shortTabLabel: string;
+  stepBadge: string;
+  title: string;
+  narrative: string;
+  sfx: SoundEffectType;
+  musicTrack: BattleMusicTrackId;
+  activeDomain?: Exclude<Domain, 'neutral'> | 'clash_gold_purple';
+  domainBannerTitle?: string;
+  domainBannerSubtitle?: string;
+  // Player 1's hand before playing the card (5 cards in fan)
+  handCardIds: string[];
+  selectedHandIndex: number;
+  // Action button shown & highlighted in the Command Dock
+  dockActionLabel: string;
+  dockActionType: 'vanguard' | 'rearguard' | 'spell' | 'ascend' | 'domain';
+  dockStatusText: string;
+  // Target highlight on the board during 'dock' subPhase
+  targetLane?: 'aiRearguard' | 'playerVanguard' | 'aiVanguard' | 'playerRearguard';
+  targetSlotIndex?: number;
+  targetWatermark?: string;
+  // Spectacle Herald & Breath Wave during 'impact' subPhase
+  heraldTitle: string;
+  heraldSubtitle: string;
+  heraldDomain: Domain;
+  breathWaveLane?: 'aiRearguard' | 'aiVanguard' | 'playerVanguard' | 'playerRearguard';
+  breathWaveDomain?: Exclude<Domain, 'neutral'>;
+  // Board state during 'hand' & 'dock' (BEFORE the card/action resolves)
+  beforeBoard: SimStepBoardState;
+  // Board state during 'impact' (AFTER the card/action resolves)
+  afterBoard: SimStepBoardState;
+}
+
+interface SimDuelScenario {
+  id: string;
+  shortTab: string;
+  badge: string;
   title: string;
   subtitle: string;
-  comboBadge: string;
-  playerSovereign: {
-    name: string;
-    title: string;
-    domain: Domain;
-    avatarCardId: string;
-  };
-  enemySovereign: {
-    name: string;
-    title: string;
-    domain: Domain;
-    avatarCardId: string;
-  };
-  steps: SimulatedDuelStep[];
+  comboRef: string;
+  accentColor: string;
+  p1Name: string;
+  p1AvatarCardId: string;
+  p1Domain: Exclude<Domain, 'neutral'>;
+  p2Name: string;
+  p2AvatarCardId: string;
+  p2Domain: Exclude<Domain, 'neutral'>;
+  steps: SimDuelStep[];
 }
 
-const SIMULATED_DUEL_SCENARIOS: SimulatedDuelScenario[] = [
-  // =========================================================================
-  // CENÁRIO 1: CHAMA vs TEMPESTADE (CHOQUE DE DOMÍNIOS 50/50 & SUPERNOVA)
-  // =========================================================================
+const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
   {
-    id: 'duel_red_vs_blue_clash',
-    shortTabLabel: '🔥 vs ❄️ Choque 50/50',
-    title: 'Cataclismo Solar vs. Zero Absoluto',
-    subtitle: 'Combo Artilharia Piromante + Choque de Domínios 50/50 + Sopro Vulcânico',
-    comboBadge: 'COMBO: ORBE DO SOL (#166) + CATACLISMO SOLAR',
-    playerSovereign: {
-      name: 'Igniskar',
-      title: 'Tirano da Cratera',
-      domain: 'red',
-      avatarCardId: 'red_08_dragao_vermelho',
-    },
-    enemySovereign: {
-      name: 'Vorthurion',
-      title: 'Tempestade do Deserto',
-      domain: 'blue',
-      avatarCardId: 'blue_06_dragao_azul',
-    },
+    id: 'crimson_forge_domain',
+    shortTab: '🔥 Forja Carmesim',
+    badge: 'COMBO #1 • EXPANSÃO DE DOMÍNIO & ASCENSÃO DRACÔNICA',
+    title: 'Caldeira do Fogo Primordial',
+    subtitle: 'Draconato Escama-Ardente + Forja de Obsidiana + Ignis Rex, Soberano das Cinzas',
+    comboRef: 'Grimório: Fúria de Ignis • Combo Oficial #1',
+    accentColor: '#ef4444',
+    p1Name: 'Ignis Rex (Você)',
+    p1AvatarCardId: 'red-011',
+    p1Domain: 'red',
+    p2Name: 'Vaelen, Rei-Lich',
+    p2AvatarCardId: 'pur-010',
+    p2Domain: 'purple',
     steps: [
       {
-        stepIndex: 1,
-        turnLabel: 'TURNO 4 • PREPARAÇÃO DO COMBO',
-        phaseBadge: 'MOTOR DE RELÍQUIAS [R]',
-        comboTitle: 'Orbe do Sol Aprisionado + Piromante na Retaguarda',
+        id: 'red-step-1',
+        stepBadge: 'PASSO 1/4 • RELÍQUIA CONTÍNUA',
+        title: 'Posicionar Forja de Obsidiana na Retaguarda',
         narrative:
-          'Igniskar instala o Orbe do Sol Aprisionado (#166) e o Piromante na Retaguarda [R] com Cobertura (+1⚔️). Vorthurion arma uma Emboscada Oculta e o Cetro Astral.',
-        sfx: 'summon',
-        musicStage: 'tactical',
-        musicDomain: 'red',
-        spotlightCardId: 'red_166_coroa_imperador_vulcao',
-        spotlightLabel: 'RELÍQUIA LENDÁRIA #166 EM CAMPO',
-        playerHp: 36,
-        playerEssence: '6/6⚡',
-        playerAffinity: '5/6 🔥',
-        enemyHp: 34,
-        enemyEssence: '6/6⚡',
-        enemyAffinity: '5/6 ❄️',
-        domainState: {
-          mode: 'none',
-          domain: 'red',
-          name: 'Mesa de Guerra',
-          effectSummary: 'Ambos os Soberanos a 1 ponto da Expansão de Domínio (5/6)',
+          'O Jogador 1 abre a mão em leque, escolhe a Relíquia Forja de Obsidiana (3⚡) e a posiciona na Retaguarda [R], concedendo +1/+1 no início do turno a um aliado e preparando a sinergia dracônica.',
+        sfx: 'summon_heavy',
+        musicTrack: 'ambient_battle',
+        handCardIds: ['red-001', 'red-019', 'red-013', 'red-011', 'red-015'],
+        selectedHandIndex: 1,
+        dockActionLabel: '+ Posicionar Relíquia [R]',
+        dockActionType: 'rearguard',
+        dockStatusText: '✅ Casa de Retaguarda selecionada: Posicionando Forja de Obsidiana (0/5 PV, 1🛡️)!',
+        targetLane: 'playerRearguard',
+        targetSlotIndex: 2,
+        targetWatermark: '+ Relíquia [R]',
+        heraldTitle: '🏛️ FORJA DE OBSIDIANA ATIVADA!',
+        heraldSubtitle: 'Relíquia em campo: +1/+1 ao Draconato Escama-Ardente (4/4 ⚔️)!',
+        heraldDomain: 'red',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 3, cardId: 'pur-005', atk: 2, hp: 3, maxHp: 3 }],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'red-001', atk: 3, hp: 3, maxHp: 3, stance: 'attack' },
+            { slotIndex: 2, cardId: 'red-006', atk: 2, hp: 4, maxHp: 4, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 1, cardId: 'pur-002', atk: 2, hp: 2, maxHp: 2, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-006', atk: 3, hp: 4, maxHp: 4, stance: 'defend' },
+          ],
+          playerRearguard: [],
+          p1Hp: 26,
+          p1Essence: 6,
+          p1MaxEssence: 6,
+          p2Hp: 24,
+          p2Essence: 5,
+          p2MaxEssence: 6,
         },
-        enemyRearguard: [
-          { cardId: 'blue_166_trono_oniciencia_astral', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'blue_144_espelho_geada', atk: 0, hp: 1, maxHp: 1, isTrapHidden: true },
-          { cardId: 'blue_152_arquimago_vortice', atk: 4, hp: 5, maxHp: 5, armor: 2 },
-          null,
-        ],
-        enemyVanguard: [
-          { cardId: 'blue_116_kraken_tempestade', atk: 6, hp: 7, maxHp: 7, armor: 2 },
-          { cardId: 'blue_131_cavaleiro_geada_real', atk: 3, hp: 5, maxHp: 5, armor: 1 },
-          null,
-          null,
-        ],
-        playerVanguard: [
-          {
-            cardId: 'red_153_elemental_fornalha_viva',
-            atk: 5,
-            hp: 5,
-            maxHp: 5,
-            floatingText: '+1⚔️ COBERTURA',
-            floatingColor: '#fde047',
-          },
-          { cardId: 'red_115_centuriao_obsidiana', atk: 4, hp: 6, maxHp: 6, armor: 1, stackCount: 2 },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          {
-            cardId: 'red_166_coroa_imperador_vulcao',
-            atk: 0,
-            hp: 5,
-            maxHp: 5,
-            floatingText: '🔥 MOTOR ATIVO',
-            floatingColor: '#fb923c',
-          },
-          { cardId: 'red_97_lancador_chamas', atk: 4, hp: 4, maxHp: 4 },
-          { cardId: 'red_107_fornalha_draconica', atk: 0, hp: 4, maxHp: 4 },
-          null,
-        ],
+        afterBoard: {
+          aiRearguard: [{ slotIndex: 3, cardId: 'pur-005', atk: 2, hp: 3, maxHp: 3 }],
+          playerVanguard: [
+            {
+              slotIndex: 1,
+              cardId: 'red-001',
+              atk: 4,
+              hp: 4,
+              maxHp: 4,
+              stance: 'attack',
+              isBurstTarget: true,
+              feedback: { text: '+1/+1 Forja!', color: 'buff' },
+            },
+            { slotIndex: 2, cardId: 'red-006', atk: 2, hp: 4, maxHp: 4, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 1, cardId: 'pur-002', atk: 2, hp: 2, maxHp: 2, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-006', atk: 3, hp: 4, maxHp: 4, stance: 'defend' },
+          ],
+          playerRearguard: [
+            {
+              slotIndex: 2,
+              cardId: 'red-019',
+              atk: 0,
+              hp: 5,
+              maxHp: 5,
+              armor: 1,
+              isBurstTarget: true,
+              feedback: { text: 'Relíquia Ativa!', color: 'shield' },
+            },
+          ],
+          p1Hp: 26,
+          p1Essence: 3,
+          p1MaxEssence: 6,
+          p2Hp: 24,
+          p2Essence: 5,
+          p2MaxEssence: 6,
+        },
       },
       {
-        stepIndex: 2,
-        turnLabel: 'TURNO 5 • EMBOSCADA & ASCENSÃO ★',
-        phaseBadge: '★ ASCENSÃO EM CAMPO',
-        comboTitle: 'Emboscada Revelada vs. Titã da Fornalha Solar (★)',
+        id: 'red-step-2',
+        stepBadge: 'PASSO 2/4 • EXPANSÃO DE DOMÍNIO',
+        title: 'Expansão de Domínio: Caldeira do Fogo Primordial',
         narrative:
-          'Vorthurion revela a Emboscada Espelho Congelante, mas Igniskar paga 4⚡ para Ascender a Quimera em ★ Titã da Fornalha Solar (8/8, Sopro Dracônico 2)!',
+          'Com 6/6 de Afinidade Carmesim, o Jogador 1 ativa o Santuário Caldeira do Fogo Primordial e lança Chuva de Escória (3⚡), varrendo a Vanguarda inimiga com Acerto Garantido!',
+        sfx: 'domain_expand',
+        musicTrack: 'domain_red',
+        activeDomain: 'red',
+        domainBannerTitle: '⛩️ CALDEIRA DO FOGO PRIMORDIAL (3 TURNOS)',
+        domainBannerSubtitle: 'Potência: Aliados +2 ATQ • Acerto Garantido: 1 de dano ígneo por turno!',
+        handCardIds: ['red-001', 'red-013', 'red-011', 'red-015', 'red-014'],
+        selectedHandIndex: 1,
+        dockActionLabel: '🔥 Lançar Agora + Expandir Domínio',
+        dockActionType: 'spell',
+        dockStatusText: '⛩️ Domínio Carmesim 6/6 Pronto: Lançando Chuva de Escória em toda a Vanguarda inimiga!',
+        targetLane: 'aiVanguard',
+        targetSlotIndex: 3,
+        heraldTitle: '⛩️ EXPANSÃO: CALDEIRA DO FOGO PRIMORDIAL',
+        heraldSubtitle: 'O tabuleiro se transforma em magma vivo! Chuva de Escória incinera a Vanguarda rival!',
+        heraldDomain: 'red',
+        breathWaveLane: 'aiVanguard',
+        breathWaveDomain: 'red',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 3, cardId: 'pur-005', atk: 2, hp: 3, maxHp: 3 }],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'red-001', atk: 4, hp: 4, maxHp: 4, stance: 'attack' },
+            { slotIndex: 2, cardId: 'red-006', atk: 2, hp: 4, maxHp: 4, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 1, cardId: 'pur-002', atk: 2, hp: 2, maxHp: 2, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-006', atk: 3, hp: 4, maxHp: 4, stance: 'defend' },
+          ],
+          playerRearguard: [{ slotIndex: 2, cardId: 'red-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 26,
+          p1Essence: 6,
+          p1MaxEssence: 6,
+          p2Hp: 24,
+          p2Essence: 5,
+          p2MaxEssence: 6,
+        },
+        afterBoard: {
+          aiRearguard: [{ slotIndex: 3, cardId: 'pur-005', atk: 2, hp: 3, maxHp: 3 }],
+          playerVanguard: [
+            {
+              slotIndex: 1,
+              cardId: 'red-001',
+              atk: 6,
+              hp: 4,
+              maxHp: 4,
+              stance: 'attack',
+              feedback: { text: '+2 ATQ Domínio!', color: 'buff' },
+            },
+            {
+              slotIndex: 2,
+              cardId: 'red-006',
+              atk: 4,
+              hp: 4,
+              maxHp: 4,
+              armor: 1,
+              stance: 'defend',
+              feedback: { text: '+2 ATQ Domínio!', color: 'buff' },
+            },
+          ],
+          aiVanguard: [
+            {
+              slotIndex: 3,
+              cardId: 'pur-006',
+              atk: 3,
+              hp: 1,
+              maxHp: 4,
+              stance: 'defend',
+              isHitTarget: true,
+              feedback: { text: '-3 🔥 Escória!', color: 'damage' },
+            },
+          ],
+          playerRearguard: [{ slotIndex: 2, cardId: 'red-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 26,
+          p1Essence: 3,
+          p1MaxEssence: 6,
+          p2Hp: 21,
+          p2Essence: 5,
+          p2MaxEssence: 6,
+          p2Feedback: { text: '-3 🔥 Acerto Garantido', color: 'damage' },
+        },
+      },
+      {
+        id: 'red-step-3',
+        stepBadge: 'PASSO 3/4 • INVOCAÇÃO LENDÁRIA',
+        title: 'Invocar Ignis Rex, Soberano das Cinzas',
+        narrative:
+          'O Jogador 1 seleciona a carta Lendária Ignis Rex, Soberano das Cinzas (8⚡) na mão e a invoca na Vanguarda [V]. Ao Entrar, seu Sopro Dracônico varre todas as fileiras inimigas!',
+        sfx: 'dragon_breath',
+        musicTrack: 'domain_red',
+        activeDomain: 'red',
+        domainBannerTitle: '⛩️ CALDEIRA DO FOGO PRIMORDIAL (2 TURNOS)',
+        domainBannerSubtitle: 'Potência: Aliados +2 ATQ • Acerto Garantido: 1 de dano ígneo por turno!',
+        handCardIds: ['red-001', 'red-011', 'red-015', 'red-014', 'red-016'],
+        selectedHandIndex: 1,
+        dockActionLabel: '+ Vanguarda [V]',
+        dockActionType: 'vanguard',
+        dockStatusText: '🐉 Invocação Lendária: Posicionando Ignis Rex na Casa 3 da Vanguarda!',
+        targetLane: 'playerVanguard',
+        targetSlotIndex: 3,
+        targetWatermark: '+ Vanguarda [V]',
+        heraldTitle: '🐉 LENDÁRIA: IGNIS REX, SOBERANO DAS CINZAS',
+        heraldSubtitle: 'Sopro Dracônico devasta as fileiras inimigas em 3 de dano de fogo!',
+        heraldDomain: 'red',
+        breathWaveLane: 'aiRearguard',
+        breathWaveDomain: 'red',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 3, cardId: 'pur-005', atk: 2, hp: 3, maxHp: 3 }],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'red-001', atk: 6, hp: 4, maxHp: 4, stance: 'attack' },
+            { slotIndex: 2, cardId: 'red-006', atk: 4, hp: 4, maxHp: 4, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [{ slotIndex: 3, cardId: 'pur-006', atk: 3, hp: 1, maxHp: 4, stance: 'defend' }],
+          playerRearguard: [{ slotIndex: 2, cardId: 'red-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 26,
+          p1Essence: 8,
+          p1MaxEssence: 8,
+          p2Hp: 21,
+          p2Essence: 6,
+          p2MaxEssence: 8,
+        },
+        afterBoard: {
+          aiRearguard: [
+            {
+              slotIndex: 3,
+              cardId: 'pur-005',
+              atk: 2,
+              hp: 1,
+              maxHp: 3,
+              isHitTarget: true,
+              feedback: { text: '-3 🔥 Sopro!', color: 'damage' },
+            },
+          ],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'red-001', atk: 6, hp: 4, maxHp: 4, stance: 'attack' },
+            { slotIndex: 2, cardId: 'red-006', atk: 4, hp: 4, maxHp: 4, armor: 1, stance: 'defend' },
+            {
+              slotIndex: 3,
+              cardId: 'red-011',
+              atk: 10,
+              hp: 8,
+              maxHp: 8,
+              armor: 2,
+              stance: 'attack',
+              isBurstTarget: true,
+              feedback: { text: 'Sopro 3 🔥!', color: 'buff' },
+            },
+          ],
+          aiVanguard: [],
+          playerRearguard: [{ slotIndex: 2, cardId: 'red-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 26,
+          p1Essence: 0,
+          p1MaxEssence: 8,
+          p2Hp: 15,
+          p2Essence: 6,
+          p2MaxEssence: 8,
+          p2Feedback: { text: '-6 🔥 Devastação', color: 'damage' },
+        },
+      },
+      {
+        id: 'red-step-4',
+        stepBadge: 'PASSO 4/4 • ASCENSÃO & GOLPE LETAL',
+        title: 'Ascensão do Draconato & Investida Final',
+        narrative:
+          'O Jogador 1 seleciona o Draconato Escama-Ardente já em campo, ativa 👑 Ascender (5⚡) para evoluí-lo em Campeão Draconato (8/6 com Voo & Atropelar) e desfere o golpe letal contra o Soberano rival!',
         sfx: 'ascend',
-        musicStage: 'battle',
-        musicDomain: 'red',
-        spotlightCardId: 'red_153_elemental_fornalha_viva',
-        spotlightLabel: '★ ASCENSÃO: TITÃ DA FORNALHA (8/8)',
-        playerHp: 36,
-        playerEssence: '4/7⚡',
-        playerAffinity: '6/6 🔥',
-        enemyHp: 31,
-        enemyEssence: '6/6⚡',
-        enemyAffinity: '6/6 ❄️',
-        domainState: {
-          mode: 'none',
-          domain: 'red',
-          name: 'Mesa de Guerra',
-          effectSummary: 'Afinidade 6/6 atingida! Ritual de Expansão de Domínio disponível.',
+        musicTrack: 'domain_red',
+        activeDomain: 'red',
+        domainBannerTitle: '⛩️ CALDEIRA DO FOGO PRIMORDIAL (VITÓRIA IMINENTE)',
+        domainBannerSubtitle: 'Ascensão preservou todos os bônus acumulados da Forja (+3/+1)!',
+        handCardIds: ['red-015', 'red-014', 'red-016', 'red-004'],
+        selectedHandIndex: 0,
+        dockActionLabel: '👑 Ascender (5⚡) + Atacar Soberano',
+        dockActionType: 'ascend',
+        dockStatusText: '👑 Evoluindo Draconato Escama-Ardente → Campeão Draconato (8⚔️ / 6❤️, Voo, Atropelar)!',
+        targetLane: 'playerVanguard',
+        targetSlotIndex: 1,
+        heraldTitle: '👑 ASCENSÃO: CAMPEÃO DRACONATO + ATAQUE TOTAL!',
+        heraldSubtitle: 'Ignis Rex (10⚔️) + Campeão Draconato (8⚔️) zeram a Vida do Soberano rival!',
+        heraldDomain: 'gold',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 3, cardId: 'pur-005', atk: 2, hp: 1, maxHp: 3 }],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'red-001', atk: 6, hp: 4, maxHp: 4, stance: 'attack' },
+            { slotIndex: 2, cardId: 'red-006', atk: 4, hp: 4, maxHp: 4, armor: 1, stance: 'defend' },
+            { slotIndex: 3, cardId: 'red-011', atk: 10, hp: 8, maxHp: 8, armor: 2, stance: 'attack' },
+          ],
+          aiVanguard: [],
+          playerRearguard: [{ slotIndex: 2, cardId: 'red-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 26,
+          p1Essence: 8,
+          p1MaxEssence: 8,
+          p2Hp: 15,
+          p2Essence: 6,
+          p2MaxEssence: 8,
         },
-        enemyRearguard: [
-          { cardId: 'blue_166_trono_oniciencia_astral', atk: 0, hp: 5, maxHp: 5 },
-          {
-            cardId: 'blue_144_espelho_geada',
-            atk: 0,
-            hp: 1,
-            maxHp: 1,
-            isTrapRevealed: true,
-            floatingText: '⚠️ EMBOSCADA!',
-            floatingColor: '#38bdf8',
-          },
-          { cardId: 'blue_152_arquimago_vortice', atk: 4, hp: 5, maxHp: 5, armor: 2 },
-          null,
-        ],
-        enemyVanguard: [
-          { cardId: 'blue_116_kraken_tempestade', atk: 6, hp: 7, maxHp: 7, armor: 2, hasShield: true },
-          { cardId: 'blue_131_cavaleiro_geada_real', atk: 3, hp: 5, maxHp: 5, armor: 1 },
-          null,
-          null,
-        ],
-        playerVanguard: [
-          {
-            cardId: 'red_153_elemental_fornalha_viva',
-            atk: 8,
-            hp: 8,
-            maxHp: 8,
-            armor: 2,
-            isAscended: true,
-            ascendedName: '★ Titã da Fornalha Solar',
-            floatingText: '★ ASCENSÃO 8/8!',
-            floatingColor: '#fde047',
-          },
-          { cardId: 'red_115_centuriao_obsidiana', atk: 4, hp: 6, maxHp: 6, armor: 1, isFrozen: true, stackCount: 2 },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'red_166_coroa_imperador_vulcao', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'red_97_lancador_chamas', atk: 4, hp: 4, maxHp: 4 },
-          { cardId: 'red_107_fornalha_draconica', atk: 0, hp: 4, maxHp: 4 },
-          null,
-        ],
-      },
-      {
-        stepIndex: 3,
-        turnLabel: 'TURNO 6 • EXPANSÃO DE DOMÍNIO (⛩️ 6/6)',
-        phaseBadge: '⛩️ EXPANSÃO DE DOMÍNIO',
-        comboTitle: '⛩️ Caldeira do Sol Carmesim (Potencial 120% + Acerto Garantido)',
-        narrative:
-          'Com 6/6 de Afinidade e 3⚡, Igniskar manifesta a Caldeira do Sol Carmesim! A mesa de madeira transforma-se em magma vivo (+2 ATQ a todos os aliados e queima de 2🔥 por turno).',
-        sfx: 'channel',
-        musicStage: 'domain_clash',
-        musicDomain: 'red',
-        spotlightCardId: 'red_08_dragao_vermelho',
-        spotlightLabel: '⛩️ EXPANSÃO: CALDEIRA DO SOL CARMESIM',
-        playerHp: 36,
-        playerEssence: '5/8⚡',
-        playerAffinity: '⛩️ ATIVO (3T)',
-        enemyHp: 27,
-        enemyEssence: '7/7⚡',
-        enemyAffinity: '6/6 ❄️',
-        domainState: {
-          mode: 'single',
-          owner: 'player',
-          domain: 'red',
-          name: '⛩️ Caldeira do Sol Carmesim',
-          effectSummary: 'Potencial 120% (+2⚔️ ATQ às tropas Rubras) + Acerto Garantido ativo!',
+        afterBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            {
+              slotIndex: 1,
+              cardId: 'red-001',
+              atk: 8,
+              hp: 6,
+              maxHp: 6,
+              armor: 1,
+              isAscended: true,
+              stance: 'attack',
+              isLunging: true,
+              isBurstTarget: true,
+              burstKind: 'ascend',
+              feedback: { text: '👑 Ascendido 8/6!', color: 'buff' },
+            },
+            { slotIndex: 2, cardId: 'red-006', atk: 4, hp: 4, maxHp: 4, armor: 1, stance: 'defend' },
+            {
+              slotIndex: 3,
+              cardId: 'red-011',
+              atk: 10,
+              hp: 8,
+              maxHp: 8,
+              armor: 2,
+              stance: 'attack',
+              isLunging: true,
+              feedback: { text: '⚔️ -10 Letal!', color: 'damage' },
+            },
+          ],
+          aiVanguard: [],
+          playerRearguard: [{ slotIndex: 2, cardId: 'red-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 26,
+          p1Essence: 3,
+          p1MaxEssence: 8,
+          p2Hp: 0,
+          p2Essence: 6,
+          p2MaxEssence: 8,
+          p2Feedback: { text: '💥 -18 VITÓRIA!', color: 'damage' },
         },
-        enemyRearguard: [
-          { cardId: 'blue_166_trono_oniciencia_astral', atk: 0, hp: 5, maxHp: 5 },
-          null,
-          { cardId: 'blue_152_arquimago_vortice', atk: 4, hp: 5, maxHp: 5, armor: 2 },
-          null,
-        ],
-        enemyVanguard: [
-          {
-            cardId: 'blue_116_kraken_tempestade',
-            atk: 6,
-            hp: 5,
-            maxHp: 7,
-            armor: 2,
-            isHit: true,
-            floatingText: '-2 🔥 PULSO',
-            floatingColor: '#f87171',
-          },
-          {
-            cardId: 'blue_131_cavaleiro_geada_real',
-            atk: 3,
-            hp: 3,
-            maxHp: 5,
-            armor: 1,
-            isHit: true,
-            floatingText: '-2 🔥 PULSO',
-            floatingColor: '#f87171',
-          },
-          null,
-          null,
-        ],
-        playerVanguard: [
-          {
-            cardId: 'red_153_elemental_fornalha_viva',
-            atk: 10,
-            hp: 8,
-            maxHp: 8,
-            armor: 2,
-            isAscended: true,
-            floatingText: '+2⚔️ DOMÍNIO',
-            floatingColor: '#fb923c',
-          },
-          {
-            cardId: 'red_115_centuriao_obsidiana',
-            atk: 6,
-            hp: 6,
-            maxHp: 6,
-            armor: 1,
-            stackCount: 2,
-            floatingText: '+2⚔️ DOMÍNIO',
-            floatingColor: '#fb923c',
-          },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'red_166_coroa_imperador_vulcao', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'red_97_lancador_chamas', atk: 6, hp: 4, maxHp: 4 },
-          { cardId: 'red_107_fornalha_draconica', atk: 0, hp: 4, maxHp: 4 },
-          null,
-        ],
-      },
-      {
-        stepIndex: 4,
-        turnLabel: 'TURNO 6 (RIVAL) • CHOQUE DE DOMÍNIOS 50/50!',
-        phaseBadge: '⚡ CHOQUE DE DOMÍNIOS 50/50',
-        comboTitle: 'Caldeira do Sol Carmesim ⚡ Vazio Infinito de Cronos',
-        narrative:
-          'Vorthurion responde expandindo o Vazio Infinito de Cronos (6/6) e invocando o Dragão de Safira Sônico (#154)! O tabuleiro divide-se ao meio em um Choque 50/50!',
-        sfx: 'freeze',
-        musicStage: 'domain_clash',
-        musicDomain: 'blue',
-        spotlightCardId: 'blue_154_dragao_safira_soberano',
-        spotlightLabel: '⚡ CHOQUE DE DOMÍNIOS 50/50!',
-        playerHp: 33,
-        playerEssence: '8/8⚡',
-        playerAffinity: '⛩️ CHOQUE 50/50',
-        enemyHp: 27,
-        enemyEssence: '2/8⚡',
-        enemyAffinity: '⛩️ CHOQUE 50/50',
-        domainState: {
-          mode: 'clash_50_50',
-          owner: 'player',
-          domain: 'red',
-          name: 'Caldeira do Sol Carmesim',
-          rivalDomain: 'blue',
-          rivalName: 'Vazio Infinito de Cronos',
-          effectSummary: 'CHOQUE 50/50: Acerto Garantido anulado! Cause 8+ dano ao Soberano para quebrar o Domínio rival!',
-        },
-        enemyRearguard: [
-          { cardId: 'blue_166_trono_oniciencia_astral', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'blue_152_arquimago_vortice', atk: 5, hp: 5, maxHp: 5, armor: 2 },
-          null,
-          null,
-        ],
-        enemyVanguard: [
-          { cardId: 'blue_116_kraken_tempestade', atk: 7, hp: 5, maxHp: 7, armor: 2 },
-          {
-            cardId: 'blue_154_dragao_safira_soberano',
-            atk: 9,
-            hp: 8,
-            maxHp: 8,
-            armor: 2,
-            floatingText: '❄️ SOPRO SÔNICO 3',
-            floatingColor: '#38bdf8',
-          },
-          { cardId: 'blue_131_cavaleiro_geada_real', atk: 4, hp: 3, maxHp: 5, armor: 1 },
-          null,
-        ],
-        playerVanguard: [
-          {
-            cardId: 'red_153_elemental_fornalha_viva',
-            atk: 10,
-            hp: 6,
-            maxHp: 8,
-            armor: 2,
-            isAscended: true,
-            isFrozen: true,
-            floatingText: '❄️ CONGELADO',
-            floatingColor: '#38bdf8',
-          },
-          { cardId: 'red_115_centuriao_obsidiana', atk: 8, hp: 4, maxHp: 6, armor: 1, stackCount: 2 },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'red_166_coroa_imperador_vulcao', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'red_97_lancador_chamas', atk: 6, hp: 4, maxHp: 4 },
-          { cardId: 'red_107_fornalha_draconica', atk: 0, hp: 4, maxHp: 4 },
-          null,
-        ],
-      },
-      {
-        stepIndex: 5,
-        turnLabel: 'TURNO 7 • COMBO SUPERNOVA & QUEBRA DE DOMÍNIO!',
-        phaseBadge: '🔥 COMBO EM CADEIA',
-        comboTitle: 'Detonação do Sol Carmesim (#123) + Gatilhos de Fornalha',
-        narrative:
-          'Igniskar conjura Detonação do Sol Carmesim! O feitiço causa 5🔥 a todos os inimigos e dispara o Piromante + Fornalha (-9💥 no Soberano rival), estilhaçando o Domínio Azul!',
-        sfx: 'spell',
-        musicStage: 'climax',
-        musicDomain: 'red',
-        spotlightCardId: 'red_123_cataclismo_solar',
-        spotlightLabel: '💥 QUEBRA DE DOMÍNIO (-9 NO SOBERANO!)',
-        playerHp: 33,
-        playerEssence: '3/9⚡',
-        playerAffinity: '⛩️ SOBERANIA RUBRA',
-        enemyHp: 14,
-        enemyEssence: '2/8⚡',
-        enemyAffinity: '💔 ESTILHAÇADO!',
-        domainState: {
-          mode: 'single',
-          owner: 'player',
-          domain: 'red',
-          name: '⛩️ Caldeira do Sol Carmesim (Domínio Rival Estilhaçado!)',
-          effectSummary: 'O Domínio inimigo colapsou após sofrer 9 de dano! Acerto Garantido restaurado!',
-        },
-        enemyRearguard: [
-          { cardId: 'blue_166_trono_oniciencia_astral', atk: 0, hp: 2, maxHp: 5, isHit: true },
-          {
-            cardId: 'blue_152_arquimago_vortice',
-            atk: 5,
-            hp: 1,
-            maxHp: 5,
-            armor: 2,
-            isHit: true,
-            floatingText: '-5 🔥 SOLAR',
-            floatingColor: '#ef4444',
-          },
-          null,
-          null,
-        ],
-        enemyVanguard: [
-          null,
-          {
-            cardId: 'blue_154_dragao_safira_soberano',
-            atk: 9,
-            hp: 3,
-            maxHp: 8,
-            armor: 2,
-            isHit: true,
-            floatingText: '-5 🔥 CATACLISMO',
-            floatingColor: '#ef4444',
-          },
-          null,
-          null,
-        ],
-        playerVanguard: [
-          {
-            cardId: 'red_153_elemental_fornalha_viva',
-            atk: 10,
-            hp: 6,
-            maxHp: 8,
-            armor: 2,
-            isAscended: true,
-          },
-          { cardId: 'red_115_centuriao_obsidiana', atk: 8, hp: 4, maxHp: 6, armor: 1, stackCount: 2 },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          {
-            cardId: 'red_166_coroa_imperador_vulcao',
-            atk: 0,
-            hp: 5,
-            maxHp: 5,
-            floatingText: '+2🔥 GATILHO',
-            floatingColor: '#fde047',
-          },
-          {
-            cardId: 'red_97_lancador_chamas',
-            atk: 6,
-            hp: 4,
-            maxHp: 4,
-            floatingText: '+2🔥 GATILHO',
-            floatingColor: '#fde047',
-          },
-          {
-            cardId: 'red_107_fornalha_draconica',
-            atk: 0,
-            hp: 4,
-            maxHp: 4,
-            floatingText: '+2🔥 GATILHO',
-            floatingColor: '#fde047',
-          },
-          null,
-        ],
-      },
-      {
-        stepIndex: 6,
-        turnLabel: 'TURNO 7 • EXECUÇÃO SOBERANA (SOPRO 3)',
-        phaseBadge: '👑 VITÓRIA POR COMBO',
-        comboTitle: 'Vulcanis (#157) + Investida com Acerto Garantido',
-        narrative:
-          'Vulcanis, Titã da Bigorna Primordial (#157) desce partindo a linha rival com Sopro Vulcânico 3 e o Titã Ascendido desfere o golpe final com Acerto Garantido (0❤️)!',
-        sfx: 'victory',
-        musicStage: 'climax',
-        musicDomain: 'red',
-        spotlightCardId: 'red_157_dragao_tiamat_carmesim',
-        spotlightLabel: '👑 VITÓRIA DE IGNISKAR (-14 LETAL!)',
-        playerHp: 33,
-        playerEssence: '0/9⚡',
-        playerAffinity: '⛩️ VITÓRIA',
-        enemyHp: 0,
-        enemyEssence: '0/8⚡',
-        enemyAffinity: '0❤️ DERROTADO',
-        domainState: {
-          mode: 'single',
-          owner: 'player',
-          domain: 'red',
-          name: '👑 TRIUNFO: CALDEIRA DO SOL CARMESIM',
-          effectSummary: 'Soberano rival reduzido a 0❤️! Recompensa: +10 Ouro & +Reputação.',
-        },
-        enemyRearguard: [null, null, null, null],
-        enemyVanguard: [null, null, null, null],
-        playerVanguard: [
-          {
-            cardId: 'red_153_elemental_fornalha_viva',
-            atk: 10,
-            hp: 6,
-            maxHp: 8,
-            armor: 2,
-            isAscended: true,
-            isAttacking: true,
-            floatingText: '⚔️ -10 DIRETO!',
-            floatingColor: '#fde047',
-          },
-          {
-            cardId: 'red_157_dragao_tiamat_carmesim',
-            atk: 10,
-            hp: 9,
-            maxHp: 9,
-            armor: 2,
-            isAttacking: true,
-            floatingText: '🌋 SOPRO VULCÂNICO 3!',
-            floatingColor: '#ef4444',
-          },
-          { cardId: 'red_115_centuriao_obsidiana', atk: 8, hp: 4, maxHp: 6, armor: 1, stackCount: 2 },
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'red_166_coroa_imperador_vulcao', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'red_97_lancador_chamas', atk: 6, hp: 4, maxHp: 4 },
-          { cardId: 'red_107_fornalha_draconica', atk: 0, hp: 4, maxHp: 4 },
-          null,
-        ],
       },
     ],
   },
-
-  // =========================================================================
-  // CENÁRIO 2: ABISMO vs ORDEM (SOBREPOSIÇÃO DE DOMÍNIO & CRIPTA IMORTAL)
-  // =========================================================================
   {
-    id: 'duel_purple_vs_gold_crypt',
-    shortTabLabel: '💀 vs ☀️ Cripta & Sol',
-    title: 'Catedral das Almas vs. Corte de Hyperion',
-    subtitle: 'Combo Eclipse Abissal + Ascensão Vampírica + Sobreposição de Domínio (7/6 > 6/6)',
-    comboBadge: 'COMBO: VISAGEM DA PESTE (#166) + ECLIPSE ABISSAL',
-    playerSovereign: {
-      name: 'Vesperion',
-      title: 'Arquimago Lich Imortal',
-      domain: 'purple',
-      avatarCardId: 'purple_07_lich',
-    },
-    enemySovereign: {
-      name: 'Hyperion',
-      title: 'Deus-Imperador da Aurora',
-      domain: 'gold',
-      avatarCardId: 'gold_138_imperador_sol_supremo',
-    },
+    id: 'eternal_frost_domain',
+    shortTab: '❄️ Gelo Eterno',
+    badge: 'COMBO #4 • CONGELAMENTO TOTAL & OLHO DO MAELSTROM',
+    title: 'Olho do Maelstrom Astral',
+    subtitle: 'Glacius, Sopro do Inverno + Prisão de Gelo + Astrolábio de Safira',
+    comboRef: 'Grimório: Conclave da Geada • Combo Oficial #4',
+    accentColor: '#38bdf8',
+    p1Name: 'Glacius (Você)',
+    p1AvatarCardId: 'blu-010',
+    p1Domain: 'blue',
+    p2Name: 'Kaelen, Senhor da Guerra',
+    p2AvatarCardId: 'red-011',
+    p2Domain: 'red',
     steps: [
       {
-        stepIndex: 1,
-        turnLabel: 'TURNO 4 • PACTO & CATEDRAL NEGRA',
-        phaseBadge: 'ACELERAÇÃO UMBRAL',
-        comboTitle: 'Pacto de Sangue (#104) + Visagem do Dragão da Peste (#166)',
+        id: 'blu-step-1',
+        stepBadge: 'PASSO 1/4 • FEITIÇO DE CONTROLE',
+        title: 'Lançar Prisão de Gelo na Vanguarda Inimiga',
         narrative:
-          'Hyperion ergue uma falange com Escudo Divino. Vesperion lança Pacto de Sangue (+2⚡) para instalar a Visagem do Dragão da Peste (#166) e o Campanário dos Mortos.',
-        sfx: 'channel',
-        musicStage: 'tactical',
-        musicDomain: 'purple',
-        spotlightCardId: 'purple_166_altar_ceifador_supremo',
-        spotlightLabel: 'VISAGEM DO DRAGÃO DA PESTE (#166)',
-        playerHp: 35,
-        playerEssence: '6/6⚡',
-        playerAffinity: '5/6 💀',
-        enemyHp: 38,
-        enemyEssence: '6/6⚡',
-        enemyAffinity: '6/6 ☀️',
-        domainState: {
-          mode: 'none',
-          domain: 'purple',
-          name: 'Mesa de Guerra',
-          effectSummary: 'Visagem da Peste pronta para corroer os Escudos Divinos dourados.',
+          'O Jogador 1 escolhe Prisão de Gelo (2⚡) na mão e a lança sobre a Vanguarda agressiva inimiga, aplicando ❄️ Congelado a todas as unidades da fileira!',
+        sfx: 'freeze',
+        musicTrack: 'ambient_battle',
+        handCardIds: ['blu-012', 'blu-019', 'blu-010', 'blu-016', 'blu-002'],
+        selectedHandIndex: 0,
+        dockActionLabel: '❄️ Lançar Agora',
+        dockActionType: 'spell',
+        dockStatusText: '❄️ Alvo em Área: Congelando toda a Vanguarda inimiga por 1 turno!',
+        targetLane: 'aiVanguard',
+        targetSlotIndex: 2,
+        heraldTitle: '❄️ FEITIÇO: PRISÃO DE GELO',
+        heraldSubtitle: 'Toda a Vanguarda inimiga foi Congelada e perde sua próxima ação de ataque!',
+        heraldDomain: 'blue',
+        breathWaveLane: 'aiVanguard',
+        breathWaveDomain: 'blue',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 4, cardId: 'red-003', atk: 3, hp: 2, maxHp: 2 }],
+          playerVanguard: [
+            { slotIndex: 2, cardId: 'blu-006', atk: 2, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 1, cardId: 'red-002', atk: 3, hp: 2, maxHp: 2, stance: 'attack' },
+            { slotIndex: 2, cardId: 'red-007', atk: 5, hp: 4, maxHp: 4, stance: 'attack' },
+            { slotIndex: 4, cardId: 'red-005', atk: 4, hp: 3, maxHp: 3, stance: 'attack' },
+          ],
+          playerRearguard: [{ slotIndex: 1, cardId: 'blu-002', atk: 2, hp: 3, maxHp: 3 }],
+          p1Hp: 24,
+          p1Essence: 6,
+          p1MaxEssence: 6,
+          p2Hp: 25,
+          p2Essence: 4,
+          p2MaxEssence: 6,
         },
-        enemyRearguard: [
-          { cardId: 'gold_146_trono_imperador_eterno', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'gold_166_trono_soberano_sol', atk: 0, hp: 5, maxHp: 5 },
-          null,
-          null,
-        ],
-        enemyVanguard: [
-          { cardId: 'gold_118_colosso_sol_invicto', atk: 6, hp: 7, maxHp: 7, armor: 2, hasShield: true },
-          { cardId: 'gold_116_centuriao_forja_dourada', atk: 5, hp: 6, maxHp: 6, armor: 2, hasShield: true },
-          null,
-          null,
-        ],
-        playerVanguard: [
-          { cardId: 'purple_155_lorde_vampiro_soberano', atk: 6, hp: 6, maxHp: 6, armor: 1 },
-          { cardId: 'purple_115_golem_ossario', atk: 4, hp: 6, maxHp: 6, armor: 2, stackCount: 2 },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          {
-            cardId: 'purple_166_altar_ceifador_supremo',
-            atk: 0,
-            hp: 5,
-            maxHp: 5,
-            floatingText: '☠️ MIASMA ATIVO',
-            floatingColor: '#c084fc',
-          },
-          { cardId: 'purple_126_campanario_mortos', atk: 0, hp: 4, maxHp: 4 },
-          null,
-          null,
-        ],
+        afterBoard: {
+          aiRearguard: [{ slotIndex: 4, cardId: 'red-003', atk: 3, hp: 2, maxHp: 2 }],
+          playerVanguard: [
+            { slotIndex: 2, cardId: 'blu-006', atk: 2, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            {
+              slotIndex: 1,
+              cardId: 'red-002',
+              atk: 3,
+              hp: 2,
+              maxHp: 2,
+              isFrozen: true,
+              isHitTarget: true,
+              feedback: { text: '❄️ Congelado!', color: 'freeze' },
+            },
+            {
+              slotIndex: 2,
+              cardId: 'red-007',
+              atk: 5,
+              hp: 4,
+              maxHp: 4,
+              isFrozen: true,
+              isHitTarget: true,
+              feedback: { text: '❄️ Congelado!', color: 'freeze' },
+            },
+            {
+              slotIndex: 4,
+              cardId: 'red-005',
+              atk: 4,
+              hp: 3,
+              maxHp: 3,
+              isFrozen: true,
+              isHitTarget: true,
+              feedback: { text: '❄️ Congelado!', color: 'freeze' },
+            },
+          ],
+          playerRearguard: [{ slotIndex: 1, cardId: 'blu-002', atk: 2, hp: 3, maxHp: 3 }],
+          p1Hp: 24,
+          p1Essence: 4,
+          p1MaxEssence: 6,
+          p2Hp: 25,
+          p2Essence: 4,
+          p2MaxEssence: 6,
+        },
       },
       {
-        stepIndex: 2,
-        turnLabel: 'TURNO 5 • EXPANSÃO SOLAR RIVAL & ASCENSÃO ★',
-        phaseBadge: '⛩️ DOMÍNIO RIVAL vs ★ ASCENSÃO',
-        comboTitle: 'Tribunal Dourado (6/6) vs. ★ Patriarca Imortal da Noite',
+        id: 'blu-step-2',
+        stepBadge: 'PASSO 2/4 • RELÍQUIA ASTRAL',
+        title: 'Posicionar Astrolábio de Safira na Retaguarda',
         narrative:
-          'Hyperion expande o Tribunal da Sentença Dourada (6/6)! Vesperion responde Ascendendo o Ceifador do Eclipse em ★ Patriarca Imortal da Noite (9/9, Dreno de Vida)!',
-        sfx: 'ascend',
-        musicStage: 'domain_clash',
-        musicDomain: 'gold',
-        spotlightCardId: 'purple_155_lorde_vampiro_soberano',
-        spotlightLabel: '★ PATRIARCA IMORTAL DA NOITE (9/9)',
-        playerHp: 38,
-        playerEssence: '5/7⚡',
-        playerAffinity: '6/6 💀',
-        enemyHp: 34,
-        enemyEssence: '4/7⚡',
-        enemyAffinity: '⛩️ ATIVO (6/6)',
-        domainState: {
-          mode: 'single',
-          owner: 'enemy',
-          domain: 'gold',
-          name: '⛩️ Tribunal da Sentença Dourada (Rival)',
-          effectSummary: 'O oponente ativou Expansão de Domínio! Canalize +1 carta para sobrepujar com 7/6!',
+          'O Jogador 1 seleciona o Astrolábio de Safira (3⚡) na mão e o posiciona na Retaguarda [R], comprando 1 carta extra todo início de turno.',
+        sfx: 'shield_up',
+        musicTrack: 'ambient_battle',
+        handCardIds: ['blu-019', 'blu-010', 'blu-016', 'blu-002'],
+        selectedHandIndex: 0,
+        dockActionLabel: '+ Posicionar Relíquia [R]',
+        dockActionType: 'rearguard',
+        dockStatusText: '🏛️ Posicionando Astrolábio de Safira na Casa 3 da Retaguarda (+1 Carta/turno)!',
+        targetLane: 'playerRearguard',
+        targetSlotIndex: 3,
+        targetWatermark: '+ Relíquia [R]',
+        heraldTitle: '🏛️ RELÍQUIA: ASTROLÁBIO DE SAFIRA',
+        heraldSubtitle: 'Motor de compra contínua ativado na Retaguarda (+1 carta no início de cada turno)!',
+        heraldDomain: 'blue',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 4, cardId: 'red-003', atk: 3, hp: 2, maxHp: 2 }],
+          playerVanguard: [
+            { slotIndex: 2, cardId: 'blu-006', atk: 2, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 1, cardId: 'red-002', atk: 3, hp: 2, maxHp: 2, isFrozen: true },
+            { slotIndex: 2, cardId: 'red-007', atk: 5, hp: 4, maxHp: 4, isFrozen: true },
+            { slotIndex: 4, cardId: 'red-005', atk: 4, hp: 3, maxHp: 3, isFrozen: true },
+          ],
+          playerRearguard: [{ slotIndex: 1, cardId: 'blu-002', atk: 2, hp: 3, maxHp: 3 }],
+          p1Hp: 24,
+          p1Essence: 4,
+          p1MaxEssence: 6,
+          p2Hp: 25,
+          p2Essence: 4,
+          p2MaxEssence: 6,
         },
-        enemyRearguard: [
-          { cardId: 'gold_146_trono_imperador_eterno', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'gold_166_trono_soberano_sol', atk: 0, hp: 5, maxHp: 5 },
-          null,
-          null,
-        ],
-        enemyVanguard: [
-          { cardId: 'gold_118_colosso_sol_invicto', atk: 7, hp: 7, maxHp: 7, armor: 3, hasShield: true },
-          { cardId: 'gold_116_centuriao_forja_dourada', atk: 6, hp: 6, maxHp: 6, armor: 3, hasShield: true },
-          { cardId: 'gold_138_imperador_sol_supremo', atk: 8, hp: 8, maxHp: 8, armor: 2, hasShield: true },
-          null,
-        ],
-        playerVanguard: [
-          {
-            cardId: 'purple_155_lorde_vampiro_soberano',
-            atk: 9,
-            hp: 9,
-            maxHp: 9,
-            armor: 2,
-            isAscended: true,
-            floatingText: '★ ASCENSÃO 9/9!',
-            floatingColor: '#e879f9',
-          },
-          { cardId: 'purple_115_golem_ossario', atk: 4, hp: 6, maxHp: 6, armor: 2, stackCount: 2 },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'purple_166_altar_ceifador_supremo', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'purple_126_campanario_mortos', atk: 0, hp: 4, maxHp: 4 },
-          null,
-          null,
-        ],
+        afterBoard: {
+          aiRearguard: [{ slotIndex: 4, cardId: 'red-003', atk: 3, hp: 2, maxHp: 2 }],
+          playerVanguard: [
+            { slotIndex: 2, cardId: 'blu-006', atk: 2, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 1, cardId: 'red-002', atk: 3, hp: 2, maxHp: 2, isFrozen: true },
+            { slotIndex: 2, cardId: 'red-007', atk: 5, hp: 4, maxHp: 4, isFrozen: true },
+            { slotIndex: 4, cardId: 'red-005', atk: 4, hp: 3, maxHp: 3, isFrozen: true },
+          ],
+          playerRearguard: [
+            { slotIndex: 1, cardId: 'blu-002', atk: 2, hp: 3, maxHp: 3 },
+            {
+              slotIndex: 3,
+              cardId: 'blu-019',
+              atk: 0,
+              hp: 5,
+              maxHp: 5,
+              armor: 1,
+              isBurstTarget: true,
+              feedback: { text: '+1 Carta/Turno!', color: 'shield' },
+            },
+          ],
+          p1Hp: 24,
+          p1Essence: 1,
+          p1MaxEssence: 6,
+          p2Hp: 25,
+          p2Essence: 4,
+          p2MaxEssence: 6,
+        },
       },
       {
-        stepIndex: 3,
-        turnLabel: 'TURNO 6 • QUEBRA DE ESCUDOS & ECLIPSE ABISSAL',
-        phaseBadge: '💀 COMBO DE ERRADICAÇÃO',
-        comboTitle: 'Visagem da Peste (-2 em área) + Eclipse do Sol Abissal (#123)',
+        id: 'blu-step-3',
+        stepBadge: 'PASSO 3/4 • EXPANSÃO DE DOMÍNIO',
+        title: 'Expansão: Olho do Maelstrom Astral + Glacius',
         narrative:
-          'No início do turno, a Visagem da Peste estoura todos os Escudos Divinos! Em seguida, Eclipse do Sol Abissal varre a fileira desprotegida (-4💀) e drena +4❤️ do Soberano!',
-        sfx: 'spell',
-        musicStage: 'domain_clash',
-        musicDomain: 'purple',
-        spotlightCardId: 'purple_123_eclipse_abissal',
-        spotlightLabel: '🌑 ECLIPSE DO SOL ABISSAL (-4 EM ÁREA)',
-        playerHp: 40,
-        playerEssence: '3/8⚡',
-        playerAffinity: '7/6 💀',
-        enemyHp: 26,
-        enemyEssence: '4/7⚡',
-        enemyAffinity: '⛩️ ATIVO (6/6)',
-        domainState: {
-          mode: 'single',
-          owner: 'enemy',
-          domain: 'gold',
-          name: '⛩️ Tribunal da Sentença Dourada (Escudos Rompidos!)',
-          effectSummary: 'Combo Umbral removeu os Escudos Divinos antes do impacto do Feitiço Lendário!',
+          'Com 6/6 de Afinidade da Tempestade, o Jogador 1 expande o Olho do Maelstrom Astral e invoca Glacius, Sopro do Inverno (7⚡) na Vanguarda, congelando e varrendo a linha inimiga!',
+        sfx: 'domain_expand',
+        musicTrack: 'domain_blue',
+        activeDomain: 'blue',
+        domainBannerTitle: '⛩️ OLHO DO MAELSTROM ASTRAL (3 TURNOS)',
+        domainBannerSubtitle: 'Acerto Garantido: Congela a maior ameaça inimiga e compra cartas extras!',
+        handCardIds: ['blu-010', 'blu-016', 'blu-002', 'blu-014'],
+        selectedHandIndex: 0,
+        dockActionLabel: '+ Vanguarda [V] + Expandir Domínio',
+        dockActionType: 'vanguard',
+        dockStatusText: '🐉 Invocando Glacius, Sopro do Inverno na Vanguarda sob o Maelstrom Astral!',
+        targetLane: 'playerVanguard',
+        targetSlotIndex: 3,
+        targetWatermark: '+ Vanguarda [V]',
+        heraldTitle: '⛩️ OLHO DO MAELSTROM + GLACIUS!',
+        heraldSubtitle: 'Sopro Glacial causa 2 de dano em área e mantém o campo inimigo paralisado!',
+        heraldDomain: 'blue',
+        breathWaveLane: 'aiVanguard',
+        breathWaveDomain: 'blue',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 4, cardId: 'red-003', atk: 3, hp: 2, maxHp: 2 }],
+          playerVanguard: [
+            { slotIndex: 2, cardId: 'blu-006', atk: 2, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 1, cardId: 'red-002', atk: 3, hp: 2, maxHp: 2, isFrozen: true },
+            { slotIndex: 2, cardId: 'red-007', atk: 5, hp: 4, maxHp: 4, isFrozen: true },
+            { slotIndex: 4, cardId: 'red-005', atk: 4, hp: 3, maxHp: 3, isFrozen: true },
+          ],
+          playerRearguard: [
+            { slotIndex: 1, cardId: 'blu-002', atk: 2, hp: 3, maxHp: 3 },
+            { slotIndex: 3, cardId: 'blu-019', atk: 0, hp: 5, maxHp: 5, armor: 1 },
+          ],
+          p1Hp: 24,
+          p1Essence: 7,
+          p1MaxEssence: 7,
+          p2Hp: 25,
+          p2Essence: 5,
+          p2MaxEssence: 7,
         },
-        enemyRearguard: [
-          { cardId: 'gold_146_trono_imperador_eterno', atk: 0, hp: 3, maxHp: 5, isHit: true },
-          { cardId: 'gold_166_trono_soberano_sol', atk: 0, hp: 3, maxHp: 5, isHit: true },
-          null,
-          null,
-        ],
-        enemyVanguard: [
-          {
-            cardId: 'gold_118_colosso_sol_invicto',
-            atk: 7,
-            hp: 3,
-            maxHp: 7,
-            armor: 3,
-            isHit: true,
-            floatingText: '💔 ESCUDO QUEBRADO -4',
-            floatingColor: '#c084fc',
-          },
-          {
-            cardId: 'gold_116_centuriao_forja_dourada',
-            atk: 6,
-            hp: 2,
-            maxHp: 6,
-            armor: 3,
-            isHit: true,
-            floatingText: '-4 💀 ECLIPSE',
-            floatingColor: '#c084fc',
-          },
-          {
-            cardId: 'gold_138_imperador_sol_supremo',
-            atk: 8,
-            hp: 4,
-            maxHp: 8,
-            armor: 2,
-            isHit: true,
-            floatingText: '-4 💀 ECLIPSE',
-            floatingColor: '#c084fc',
-          },
-          null,
-        ],
-        playerVanguard: [
-          { cardId: 'purple_155_lorde_vampiro_soberano', atk: 9, hp: 9, maxHp: 9, armor: 2, isAscended: true },
-          { cardId: 'purple_115_golem_ossario', atk: 5, hp: 7, maxHp: 7, armor: 2, stackCount: 2 },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          {
-            cardId: 'purple_166_altar_ceifador_supremo',
-            atk: 0,
-            hp: 5,
-            maxHp: 5,
-            floatingText: '☠️ QUEBROU ESCUDOS!',
-            floatingColor: '#fde047',
-          },
-          {
-            cardId: 'purple_126_campanario_mortos',
-            atk: 0,
-            hp: 4,
-            maxHp: 4,
-            floatingText: '+2❤️ DRENO REAL',
-            floatingColor: '#4ade80',
-          },
-          null,
-          null,
-        ],
+        afterBoard: {
+          aiRearguard: [{ slotIndex: 4, cardId: 'red-003', atk: 3, hp: 2, maxHp: 2, isFrozen: true }],
+          playerVanguard: [
+            { slotIndex: 2, cardId: 'blu-006', atk: 3, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
+            {
+              slotIndex: 3,
+              cardId: 'blu-010',
+              atk: 7,
+              hp: 7,
+              maxHp: 7,
+              armor: 1,
+              stance: 'attack',
+              isBurstTarget: true,
+              feedback: { text: 'Sopro Glacial!', color: 'freeze' },
+            },
+          ],
+          aiVanguard: [
+            {
+              slotIndex: 2,
+              cardId: 'red-007',
+              atk: 5,
+              hp: 2,
+              maxHp: 4,
+              isFrozen: true,
+              isHitTarget: true,
+              feedback: { text: '-2 ❄️ Sopro!', color: 'damage' },
+            },
+            {
+              slotIndex: 4,
+              cardId: 'red-005',
+              atk: 4,
+              hp: 1,
+              maxHp: 3,
+              isFrozen: true,
+              isHitTarget: true,
+              feedback: { text: '-2 ❄️ Sopro!', color: 'damage' },
+            },
+          ],
+          playerRearguard: [
+            { slotIndex: 1, cardId: 'blu-002', atk: 3, hp: 3, maxHp: 3 },
+            { slotIndex: 3, cardId: 'blu-019', atk: 0, hp: 5, maxHp: 5, armor: 1 },
+          ],
+          p1Hp: 24,
+          p1Essence: 0,
+          p1MaxEssence: 7,
+          p2Hp: 20,
+          p2Essence: 5,
+          p2MaxEssence: 7,
+          p2Feedback: { text: '-5 ❄️ Tempestade', color: 'damage' },
+        },
       },
       {
-        stepIndex: 4,
-        turnLabel: 'TURNO 6 • SOBREPOSIÇÃO DE DOMÍNIO (7/6 > 6/6)!',
-        phaseBadge: '⛩️ ESMAGAMENTO DE DOMÍNIO',
-        comboTitle: '⛩️ Santuário Malevolente das Almas Sobrepõe o Tribunal!',
+        id: 'blu-step-4',
+        stepBadge: 'PASSO 4/4 • EXECUÇÃO EM ÁREA',
+        title: 'Zero Absoluto Estilhaça o Tabuleiro Rival',
         narrative:
-          'Com 7 de Afinidade Umbral contra 6 de Hyperion, Vesperion invoca o Santuário Malevolente das Almas! O domínio maior esmaga o menor instantaneamente!',
-        sfx: 'hit',
-        musicStage: 'climax',
-        musicDomain: 'purple',
-        spotlightCardId: 'purple_07_lich',
-        spotlightLabel: '⛩️ SANTUÁRIO MALEVOLENTE (7/6 > 6/6)',
-        playerHp: 40,
-        playerEssence: '0/8⚡',
-        playerAffinity: '⛩️ SUPREMO (7/6)',
-        enemyHp: 12,
-        enemyEssence: '4/7⚡',
-        enemyAffinity: '💔 ESMAGADO!',
-        domainState: {
-          mode: 'single',
-          owner: 'player',
-          domain: 'purple',
-          name: '⛩️ Santuário Malevolente das Almas',
-          effectSummary: 'Afinidade 7/6 sobrepujou 6/6! +2⚔️ ATQ, Dreno de Vida e Acerto Garantido!',
+          'No turno seguinte, o Jogador 1 seleciona Zero Absoluto na mão e o lança para estilhaçar todas as unidades congeladas e atacar livremente com Glacius!',
+        sfx: 'spell_arcane',
+        musicTrack: 'domain_blue',
+        activeDomain: 'blue',
+        domainBannerTitle: '⛩️ OLHO DO MAELSTROM ASTRAL (DOMÍNIO TOTAL)',
+        domainBannerSubtitle: 'Tabuleiro inimigo estilhaçado — ataque direto com Voo!',
+        handCardIds: ['blu-016', 'blu-002', 'blu-014', 'blu-015'],
+        selectedHandIndex: 0,
+        dockActionLabel: '⚡ Lançar Zero Absoluto',
+        dockActionType: 'spell',
+        dockStatusText: '💥 Estilhaçando todas as unidades inimigas congeladas e atacando com Glacius!',
+        targetLane: 'aiVanguard',
+        targetSlotIndex: 2,
+        heraldTitle: '❄️ ZERO ABSOLUTO + VOO DE GLACIUS!',
+        heraldSubtitle: 'Unidades congeladas são estilhaçadas! Glacius e Arcanista atacam sem bloqueio!',
+        heraldDomain: 'blue',
+        breathWaveLane: 'aiVanguard',
+        breathWaveDomain: 'blue',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 4, cardId: 'red-003', atk: 3, hp: 2, maxHp: 2, isFrozen: true }],
+          playerVanguard: [
+            { slotIndex: 2, cardId: 'blu-006', atk: 3, hp: 5, maxHp: 5, armor: 1, stance: 'attack' },
+            { slotIndex: 3, cardId: 'blu-010', atk: 7, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
+          ],
+          aiVanguard: [
+            { slotIndex: 2, cardId: 'red-007', atk: 5, hp: 2, maxHp: 4, isFrozen: true },
+            { slotIndex: 4, cardId: 'red-005', atk: 4, hp: 1, maxHp: 3, isFrozen: true },
+          ],
+          playerRearguard: [
+            { slotIndex: 1, cardId: 'blu-002', atk: 3, hp: 3, maxHp: 3 },
+            { slotIndex: 3, cardId: 'blu-019', atk: 0, hp: 5, maxHp: 5, armor: 1 },
+          ],
+          p1Hp: 24,
+          p1Essence: 8,
+          p1MaxEssence: 8,
+          p2Hp: 20,
+          p2Essence: 5,
+          p2MaxEssence: 8,
         },
-        enemyRearguard: [
-          { cardId: 'gold_146_trono_imperador_eterno', atk: 0, hp: 3, maxHp: 5 },
-          null,
-          null,
-          null,
-        ],
-        enemyVanguard: [
-          null,
-          null,
-          {
-            cardId: 'gold_138_imperador_sol_supremo',
-            atk: 8,
-            hp: 2,
-            maxHp: 8,
-            armor: 2,
-            isHit: true,
-            floatingText: '-2 💀 SANTUÁRIO',
-            floatingColor: '#e879f9',
-          },
-          null,
-        ],
-        playerVanguard: [
-          {
-            cardId: 'purple_155_lorde_vampiro_soberano',
-            atk: 11,
-            hp: 9,
-            maxHp: 9,
-            armor: 2,
-            isAscended: true,
-            floatingText: '+2⚔️ POTENCIAL 120%',
-            floatingColor: '#e879f9',
-          },
-          { cardId: 'purple_115_golem_ossario', atk: 7, hp: 7, maxHp: 7, armor: 2, stackCount: 2 },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'purple_166_altar_ceifador_supremo', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'purple_126_campanario_mortos', atk: 0, hp: 4, maxHp: 4 },
-          null,
-          null,
-        ],
-      },
-      {
-        stepIndex: 5,
-        turnLabel: 'TURNO 7 • MONARCA DOS TRÊS CRÂNIOS & CEIFA FINAL',
-        phaseBadge: '👑 VITÓRIA UMBRAL',
-        comboTitle: 'Monarca dos Três Crânios (#157) + Sopro de Morte 3',
-        narrative:
-          'O Monarca dos Três Crânios (#157) surge com Sopro de Morte 3 e o Patriarca Imortal ataca diretamente o Soberano rival com Acerto Garantido (40❤️ vs 0❤️)!',
-        sfx: 'victory',
-        musicStage: 'climax',
-        musicDomain: 'purple',
-        spotlightCardId: 'purple_157_dragao_sombra_abissal',
-        spotlightLabel: '👑 VITÓRIA IMORTAL (40❤️ INTACTO!)',
-        playerHp: 40,
-        playerEssence: '1/9⚡',
-        playerAffinity: '⛩️ VITÓRIA',
-        enemyHp: 0,
-        enemyEssence: '0/8⚡',
-        enemyAffinity: '0❤️ DERROTADO',
-        domainState: {
-          mode: 'single',
-          owner: 'player',
-          domain: 'purple',
-          name: '👑 TRIUNFO: SANTUÁRIO MALEVOLENTE DAS ALMAS',
-          effectSummary: 'Dreno contínuo manteve Vesperion com 40/40❤️ enquanto zerava o Soberano rival!',
+        afterBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            {
+              slotIndex: 2,
+              cardId: 'blu-006',
+              atk: 3,
+              hp: 5,
+              maxHp: 5,
+              armor: 1,
+              stance: 'attack',
+              isLunging: true,
+              feedback: { text: '⚔️ +3 Dano!', color: 'buff' },
+            },
+            {
+              slotIndex: 3,
+              cardId: 'blu-010',
+              atk: 9,
+              hp: 7,
+              maxHp: 7,
+              armor: 1,
+              stance: 'attack',
+              isLunging: true,
+              isBurstTarget: true,
+              feedback: { text: '❄️ -9 Direto!', color: 'damage' },
+            },
+          ],
+          aiVanguard: [],
+          playerRearguard: [
+            { slotIndex: 1, cardId: 'blu-002', atk: 3, hp: 3, maxHp: 3, isLunging: true },
+            { slotIndex: 3, cardId: 'blu-019', atk: 0, hp: 5, maxHp: 5, armor: 1 },
+          ],
+          p1Hp: 24,
+          p1Essence: 3,
+          p1MaxEssence: 8,
+          p2Hp: 0,
+          p2Essence: 5,
+          p2MaxEssence: 8,
+          p2Feedback: { text: '💥 -20 VITÓRIA!', color: 'damage' },
         },
-        enemyRearguard: [null, null, null, null],
-        enemyVanguard: [null, null, null, null],
-        playerVanguard: [
-          {
-            cardId: 'purple_155_lorde_vampiro_soberano',
-            atk: 11,
-            hp: 9,
-            maxHp: 9,
-            armor: 2,
-            isAscended: true,
-            isAttacking: true,
-            floatingText: '🩸 -11 LETAL!',
-            floatingColor: '#e879f9',
-          },
-          {
-            cardId: 'purple_157_dragao_sombra_abissal',
-            atk: 11,
-            hp: 9,
-            maxHp: 9,
-            armor: 2,
-            isAttacking: true,
-            floatingText: '☠️ SOPRO DE MORTE 3!',
-            floatingColor: '#c084fc',
-          },
-          { cardId: 'purple_115_golem_ossario', atk: 7, hp: 7, maxHp: 7, armor: 2, stackCount: 2 },
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'purple_166_altar_ceifador_supremo', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'purple_126_campanario_mortos', atk: 0, hp: 4, maxHp: 4 },
-          null,
-          null,
-        ],
       },
     ],
   },
-
-  // =========================================================================
-  // CENÁRIO 3: CONVERGÊNCIA PENTACROMÁTICA (5 TRONOS #166 & VALKYRA)
-  // =========================================================================
   {
-    id: 'duel_poly_five_thrones',
-    shortTabLabel: '🌈 5 Cores & Valkyra',
-    title: 'Convergência dos Tronos (#166) & Valkyra',
-    subtitle: 'Combo Pentacromático de Relíquias #166 + Mar de Árvores Primordial + Sopro 4',
-    comboBadge: 'COMBO: TRONOS SOBERANOS (#166) + IMPERATRIZ VALKYRA',
-    playerSovereign: {
-      name: 'Valkyra',
-      title: 'Imperatriz Pentacromática',
-      domain: 'green',
-      avatarCardId: 'neutral_10_valkyra_pentacromatica',
-    },
-    enemySovereign: {
-      name: 'Baelgor',
-      title: 'Senhor do Fosso Ardente',
-      domain: 'red',
-      avatarCardId: 'red_22_tirano_fogo',
-    },
+    id: 'abyssal_crypt_domain',
+    shortTab: '💀 Cripta Abissal',
+    badge: 'COMBO #7 • REANIMAÇÃO DA CRIPTA & ECLIPSE DO TRONO',
+    title: 'Eclipse do Trono de Ossos',
+    subtitle: 'Trono de Ossos + Vaelen, o Rei-Lich + Ceifador de Almas',
+    comboRef: 'Grimório: Legião de Vaelen • Combo Oficial #7',
+    accentColor: '#a855f7',
+    p1Name: 'Vaelen, Rei-Lich (Você)',
+    p1AvatarCardId: 'pur-010',
+    p1Domain: 'purple',
+    p2Name: 'Sylvanus, Titã',
+    p2AvatarCardId: 'grn-010',
+    p2Domain: 'green',
     steps: [
       {
-        stepIndex: 1,
-        turnLabel: 'TURNO 4 • CONVERGÊNCIA DOS TRONOS (#166)',
-        phaseBadge: '🌈 SINERGIA PENTACROMÁTICA',
-        comboTitle: 'Totem Urso (#166) + Diadema Orbital (#166) + Cetro Astral (#166)',
+        id: 'pur-step-1',
+        stepBadge: 'PASSO 1/4 • RELÍQUIA NECRÓTICA',
+        title: 'Posicionar Trono de Ossos na Retaguarda',
         narrative:
-          'Valkyra alinha 3 Tronos Soberanos #166 na Retaguarda! Todo início de turno gera +2⚡ extras, compra +1 carta, concede Escudo Divino, congela 1 inimigo e cura +2❤️ em todos!',
-        sfx: 'channel',
-        musicStage: 'tactical',
-        musicDomain: 'green',
-        spotlightCardId: 'gold_166_trono_soberano_sol',
-        spotlightLabel: 'CONVERGÊNCIA DOS TRONOS #166',
-        playerHp: 39,
-        playerEssence: '8/6⚡',
-        playerAffinity: '5/6 🌿✨❄️',
-        enemyHp: 34,
-        enemyEssence: '6/6⚡',
-        enemyAffinity: '5/6 🔥💀',
-        domainState: {
-          mode: 'none',
-          domain: 'green',
-          name: 'Mesa de Guerra',
-          effectSummary: 'Motor Pentacromático ativo na Retaguarda (+2⚡, Escudo Divino e Cura global/turno).',
+          'O Jogador 1 seleciona a Relíquia Trono de Ossos (3⚡) na mão e a posiciona na Retaguarda [R], drenando 1 PV do Soberano inimigo todo início de turno.',
+        sfx: 'summon_heavy',
+        musicTrack: 'ambient_battle',
+        handCardIds: ['pur-019', 'pur-010', 'pur-014', 'pur-009', 'pur-001'],
+        selectedHandIndex: 0,
+        dockActionLabel: '+ Posicionar Relíquia [R]',
+        dockActionType: 'rearguard',
+        dockStatusText: '🏛️ Posicionando Trono de Ossos na Casa 2 da Retaguarda (Dreno Contínuo)!',
+        targetLane: 'playerRearguard',
+        targetSlotIndex: 2,
+        targetWatermark: '+ Relíquia [R]',
+        heraldTitle: '🏛️ RELÍQUIA: TRONO DE OSSOS',
+        heraldSubtitle: 'Drena 1 PV do Soberano rival e fortalece a Cripta Abissal!',
+        heraldDomain: 'purple',
+        beforeBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'pur-001', atk: 2, hp: 1, maxHp: 1, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-006', atk: 3, hp: 4, maxHp: 4, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 2, cardId: 'grn-006', atk: 4, hp: 5, maxHp: 5, stance: 'attack' },
+            { slotIndex: 4, cardId: 'grn-007', atk: 5, hp: 5, maxHp: 5, stance: 'attack' },
+          ],
+          playerRearguard: [],
+          p1Hp: 22,
+          p1Essence: 6,
+          p1MaxEssence: 6,
+          p2Hp: 22,
+          p2Essence: 4,
+          p2MaxEssence: 6,
         },
-        enemyRearguard: [
-          { cardId: 'red_146_coroa_chama_eterna', atk: 0, hp: 4, maxHp: 4 },
-          { cardId: 'purple_145_orgao_catedrais_negras', atk: 0, hp: 4, maxHp: 4 },
-          null,
-          null,
-        ],
-        enemyVanguard: [
-          { cardId: 'red_138_colosso_vulcano_primordial', atk: 7, hp: 7, maxHp: 7, armor: 1 },
-          { cardId: 'purple_138_soberano_carnica', atk: 7, hp: 7, maxHp: 7, armor: 1 },
-          null,
-          null,
-        ],
-        playerVanguard: [
-          {
-            cardId: 'green_160_behemoth_cratera_viva',
-            atk: 7,
-            hp: 9,
-            maxHp: 9,
-            armor: 3,
-            hasShield: true,
-            floatingText: '✨ ESCUDO +2❤️',
-            floatingColor: '#fde047',
-          },
-          {
-            cardId: 'green_141_soberano_fera_primordial',
-            atk: 8,
-            hp: 7,
-            maxHp: 7,
-            hasShield: true,
-          },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'green_166_coracao_arvore_mundo', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'gold_166_trono_soberano_sol', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'blue_166_trono_oniciencia_astral', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'neutral_166_protocolo_torre_axial', atk: 0, hp: 1, maxHp: 1, isTrapHidden: true },
-        ],
+        afterBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'pur-001', atk: 2, hp: 1, maxHp: 1, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-006', atk: 3, hp: 4, maxHp: 4, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 2, cardId: 'grn-006', atk: 4, hp: 5, maxHp: 5, stance: 'attack' },
+            { slotIndex: 4, cardId: 'grn-007', atk: 5, hp: 5, maxHp: 5, stance: 'attack' },
+          ],
+          playerRearguard: [
+            {
+              slotIndex: 2,
+              cardId: 'pur-019',
+              atk: 0,
+              hp: 5,
+              maxHp: 5,
+              armor: 1,
+              isBurstTarget: true,
+              feedback: { text: 'Dreno Ativo!', color: 'heal' },
+            },
+          ],
+          p1Hp: 23,
+          p1Essence: 3,
+          p1MaxEssence: 6,
+          p2Hp: 21,
+          p2Essence: 4,
+          p2MaxEssence: 6,
+          p1Feedback: { text: '+1 ❤️ Dreno', color: 'heal' },
+          p2Feedback: { text: '-1 💀 Trono', color: 'damage' },
+        },
       },
       {
-        stepIndex: 2,
-        turnLabel: 'TURNO 5 • EMBOSCADA DA TORRE AXIAL (#166)',
-        phaseBadge: '⚠️ REAÇÃO PENTACROMÁTICA',
-        comboTitle: 'Decreto de Paz Armada da Torre (#166) Trava o Ataque Rival!',
+        id: 'pur-step-2',
+        stepBadge: 'PASSO 2/4 • EXPANSÃO DE DOMÍNIO',
+        title: 'Expansão: Eclipse do Trono de Ossos',
         narrative:
-          'Quando Baelgor avança com seus dois colossos, a Emboscada Decreto de Paz Armada (#166) dispara: congela toda a Vanguarda inimiga, compra 2 cartas e restaura +3❤️!',
-        sfx: 'freeze',
-        musicStage: 'battle',
-        musicDomain: 'blue',
-        spotlightCardId: 'neutral_166_protocolo_torre_axial',
-        spotlightLabel: '⚠️ EMBOSCADA: CONGELAMENTO TOTAL!',
-        playerHp: 40,
-        playerEssence: '8/7⚡',
-        playerAffinity: '6/6 🌿✨',
-        enemyHp: 32,
-        enemyEssence: '6/7⚡',
-        enemyAffinity: '5/6 🔥💀',
-        domainState: {
-          mode: 'none',
-          domain: 'green',
-          name: 'Mesa de Guerra',
-          effectSummary: 'Toda a Vanguarda inimiga está Congelada! Caminho livre para a Expansão.',
+          'Com 6/6 de Afinidade do Abismo, o Jogador 1 invoca a Expansão de Domínio Eclipse do Trono de Ossos: todas as unidades aliadas ganham Dreno de Vida e o Soberano inimigo sofre 1 de dano necrótico por turno!',
+        sfx: 'domain_expand',
+        musicTrack: 'domain_purple',
+        activeDomain: 'purple',
+        domainBannerTitle: '⛩️ ECLIPSE DO TRONO DE OSSOS (3 TURNOS)',
+        domainBannerSubtitle: 'Potência: Aliados recebem +1 ATQ e Dreno de Vida • Acerto Garantido: Drena 1 PV/turno!',
+        handCardIds: ['pur-010', 'pur-014', 'pur-009', 'pur-001'],
+        selectedHandIndex: 2,
+        dockActionLabel: '+ Vanguarda [V] + Expandir Domínio',
+        dockActionType: 'domain',
+        dockStatusText: '⛩️ Expandindo Eclipse do Trono de Ossos e invocando Ceifador de Almas (Toque Letal)!',
+        targetLane: 'playerVanguard',
+        targetSlotIndex: 2,
+        targetWatermark: '+ Vanguarda [V]',
+        heraldTitle: '⛩️ EXPANSÃO: ECLIPSE DO TRONO DE OSSOS',
+        heraldSubtitle: 'O Abismo engole a arena! Ceifador de Almas entra com Toque Letal e Dreno de Vida!',
+        heraldDomain: 'purple',
+        beforeBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'pur-001', atk: 2, hp: 1, maxHp: 1, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-006', atk: 3, hp: 4, maxHp: 4, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 2, cardId: 'grn-006', atk: 4, hp: 5, maxHp: 5, stance: 'attack' },
+            { slotIndex: 4, cardId: 'grn-007', atk: 5, hp: 5, maxHp: 5, stance: 'attack' },
+          ],
+          playerRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 23,
+          p1Essence: 6,
+          p1MaxEssence: 6,
+          p2Hp: 21,
+          p2Essence: 4,
+          p2MaxEssence: 6,
         },
-        enemyRearguard: [
-          { cardId: 'red_146_coroa_chama_eterna', atk: 0, hp: 4, maxHp: 4 },
-          { cardId: 'purple_145_orgao_catedrais_negras', atk: 0, hp: 4, maxHp: 4 },
-          null,
-          null,
-        ],
-        enemyVanguard: [
-          {
-            cardId: 'red_138_colosso_vulcano_primordial',
-            atk: 7,
-            hp: 7,
-            maxHp: 7,
-            isFrozen: true,
-            floatingText: '❄️ CONGELADO',
-            floatingColor: '#38bdf8',
-          },
-          {
-            cardId: 'purple_138_soberano_carnica',
-            atk: 7,
-            hp: 7,
-            maxHp: 7,
-            isFrozen: true,
-            floatingText: '❄️ CONGELADO',
-            floatingColor: '#38bdf8',
-          },
-          null,
-          null,
-        ],
-        playerVanguard: [
-          { cardId: 'green_160_behemoth_cratera_viva', atk: 8, hp: 10, maxHp: 10, armor: 3, hasShield: true },
-          { cardId: 'green_141_soberano_fera_primordial', atk: 9, hp: 8, maxHp: 8, hasShield: true },
-          null,
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'green_166_coracao_arvore_mundo', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'gold_166_trono_soberano_sol', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'blue_166_trono_oniciencia_astral', atk: 0, hp: 5, maxHp: 5 },
-          {
-            cardId: 'neutral_166_protocolo_torre_axial',
-            atk: 0,
-            hp: 1,
-            maxHp: 1,
-            isTrapRevealed: true,
-            floatingText: '⚠️ PAZ ARMADA!',
-            floatingColor: '#fde047',
-          },
-        ],
+        afterBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'pur-001', atk: 3, hp: 1, maxHp: 1, stance: 'attack' },
+            {
+              slotIndex: 2,
+              cardId: 'pur-009',
+              atk: 5,
+              hp: 3,
+              maxHp: 3,
+              stance: 'attack',
+              isBurstTarget: true,
+              feedback: { text: '☠ Toque Letal!', color: 'buff' },
+            },
+            { slotIndex: 3, cardId: 'pur-006', atk: 4, hp: 4, maxHp: 4, stance: 'defend' },
+          ],
+          aiVanguard: [
+            {
+              slotIndex: 2,
+              cardId: 'grn-006',
+              atk: 4,
+              hp: 2,
+              maxHp: 5,
+              isHitTarget: true,
+              feedback: { text: '-3 💀 Eclipse!', color: 'damage' },
+            },
+            { slotIndex: 4, cardId: 'grn-007', atk: 5, hp: 5, maxHp: 5, stance: 'attack' },
+          ],
+          playerRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 25,
+          p1Essence: 2,
+          p1MaxEssence: 6,
+          p2Hp: 18,
+          p2Essence: 4,
+          p2MaxEssence: 6,
+          p1Feedback: { text: '+2 ❤️ Dreno', color: 'heal' },
+          p2Feedback: { text: '-3 💀 Acerto Garantido', color: 'damage' },
+        },
       },
       {
-        stepIndex: 3,
-        turnLabel: 'TURNO 6 • EXPANSÃO: MAR DE ÁRVORES PRIMORDIAL (⛩️ 6/6)',
-        phaseBadge: '⛩️ EXPANSÃO DE DOMÍNIO',
-        comboTitle: '⛩️ Mar de Árvores Primordial + Dragão Esmeralda (#161)',
+        id: 'pur-step-3',
+        stepBadge: 'PASSO 3/4 • INVOCAÇÃO DO REI-LICH',
+        title: 'Vaelen, o Rei-Lich Reanima a Cripta',
         narrative:
-          'Valkyra expande o Mar de Árvores Primordial (6/6) e invoca o Dragão Esmeralda de Galhada Viva (#161)! Todas as unidades recebem +2⚔️, +1🛡️, Atropelar e Acerto Garantido!',
-        sfx: 'summon',
-        musicStage: 'domain_clash',
-        musicDomain: 'green',
-        spotlightCardId: 'green_161_dragao_esmeralda_primordial',
-        spotlightLabel: '⛩️ MAR DE ÁRVORES + DRAGÃO #161',
-        playerHp: 40,
-        playerEssence: '7/9⚡',
-        playerAffinity: '⛩️ ATIVO (3T)',
-        enemyHp: 22,
-        enemyEssence: '6/7⚡',
-        enemyAffinity: '5/6 🔥💀',
-        domainState: {
-          mode: 'single',
-          owner: 'player',
-          domain: 'green',
-          name: '⛩️ Mar de Árvores Primordial',
-          effectSummary: 'Potencial 120%: +2⚔️ ATQ, +1🛡️ ARM, Atropelar global e Acerto Garantido!',
+          'O Jogador 1 seleciona Vaelen, o Rei-Lich (7⚡) na mão e o invoca na Vanguarda [V]. Ao Entrar, Vaelen reanima automaticamente a criatura mais forte da Cripta para lutar ao seu lado!',
+        sfx: 'summon_heavy',
+        musicTrack: 'domain_purple',
+        activeDomain: 'purple',
+        domainBannerTitle: '⛩️ ECLIPSE DO TRONO DE OSSOS (2 TURNOS)',
+        domainBannerSubtitle: 'Reanimação da Cripta ativa — o exército imortal se ergue!',
+        handCardIds: ['pur-010', 'pur-014', 'pur-001'],
+        selectedHandIndex: 0,
+        dockActionLabel: '+ Vanguarda [V]',
+        dockActionType: 'vanguard',
+        dockStatusText: '👑 Invocando Vaelen, o Rei-Lich: Reanimando Cavaleiro da Morte da Cripta!',
+        targetLane: 'playerVanguard',
+        targetSlotIndex: 4,
+        targetWatermark: '+ Vanguarda [V]',
+        heraldTitle: '💀 LENDÁRIA: VAELEN, O REI-LICH',
+        heraldSubtitle: 'Ao Entrar: Reanima uma criatura da Cripta diretamente para a sua Vanguarda!',
+        heraldDomain: 'purple',
+        beforeBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'pur-001', atk: 3, hp: 1, maxHp: 1, stance: 'attack' },
+            { slotIndex: 2, cardId: 'pur-009', atk: 5, hp: 3, maxHp: 3, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-006', atk: 4, hp: 4, maxHp: 4, stance: 'defend' },
+          ],
+          aiVanguard: [{ slotIndex: 4, cardId: 'grn-007', atk: 5, hp: 5, maxHp: 5, stance: 'attack' }],
+          playerRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 25,
+          p1Essence: 7,
+          p1MaxEssence: 7,
+          p2Hp: 18,
+          p2Essence: 5,
+          p2MaxEssence: 7,
         },
-        enemyRearguard: [
-          { cardId: 'red_146_coroa_chama_eterna', atk: 0, hp: 4, maxHp: 4 },
-          null,
-          null,
-          null,
-        ],
-        enemyVanguard: [
-          {
-            cardId: 'red_138_colosso_vulcano_primordial',
-            atk: 7,
-            hp: 4,
-            maxHp: 7,
-            isFrozen: true,
-            isHit: true,
-            floatingText: '-3 🌿 ESPINHOS',
-            floatingColor: '#4ade80',
-          },
-          {
-            cardId: 'purple_138_soberano_carnica',
-            atk: 7,
-            hp: 4,
-            maxHp: 7,
-            isFrozen: true,
-            isHit: true,
-            floatingText: '-3 🌿 ESPINHOS',
-            floatingColor: '#4ade80',
-          },
-          null,
-          null,
-        ],
-        playerVanguard: [
-          { cardId: 'green_160_behemoth_cratera_viva', atk: 10, hp: 11, maxHp: 11, armor: 4, hasShield: true },
-          { cardId: 'green_141_soberano_fera_primordial', atk: 11, hp: 9, maxHp: 9, armor: 1, hasShield: true },
-          {
-            cardId: 'green_161_dragao_esmeralda_primordial',
-            atk: 11,
-            hp: 10,
-            maxHp: 10,
-            armor: 3,
-            floatingText: '🐉 SOPRO ESPINHOS 3',
-            floatingColor: '#4ade80',
-          },
-          null,
-        ],
-        playerRearguard: [
-          { cardId: 'green_166_coracao_arvore_mundo', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'gold_166_trono_soberano_sol', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'blue_166_trono_oniciencia_astral', atk: 0, hp: 5, maxHp: 5 },
-          null,
-        ],
+        afterBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'pur-001', atk: 3, hp: 1, maxHp: 1, stance: 'attack' },
+            { slotIndex: 2, cardId: 'pur-009', atk: 5, hp: 3, maxHp: 3, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-006', atk: 4, hp: 4, maxHp: 4, stance: 'defend' },
+            {
+              slotIndex: 4,
+              cardId: 'pur-010',
+              atk: 7,
+              hp: 7,
+              maxHp: 7,
+              armor: 1,
+              stance: 'attack',
+              isBurstTarget: true,
+              feedback: { text: 'Rei-Lich!', color: 'buff' },
+            },
+            {
+              slotIndex: 5,
+              cardId: 'pur-008',
+              atk: 6,
+              hp: 5,
+              maxHp: 5,
+              armor: 1,
+              stance: 'attack',
+              isBurstTarget: true,
+              feedback: { text: '🪦 Reanimado!', color: 'heal' },
+            },
+          ],
+          aiVanguard: [{ slotIndex: 4, cardId: 'grn-007', atk: 5, hp: 5, maxHp: 5, stance: 'attack' }],
+          playerRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 27,
+          p1Essence: 0,
+          p1MaxEssence: 7,
+          p2Hp: 14,
+          p2Essence: 5,
+          p2MaxEssence: 7,
+        },
       },
       {
-        stepIndex: 4,
-        turnLabel: 'TURNO 6 • DESCIDA DE VALKYRA & INVESTIDA LETAL',
-        phaseBadge: '👑 VITÓRIA PENTACROMÁTICA',
-        comboTitle: 'Valkyra, Imperatriz Pentacromática (Sopro 4) + Atropelar Total!',
+        id: 'pur-step-4',
+        stepBadge: 'PASSO 4/4 • CEIFA ABISSAL',
+        title: 'Toque Letal + Dreno de Vida Total',
         narrative:
-          'Valkyra desce aos céus varrendo os defensores congelados com Sopro Pentacromático 4 e lidera a investida de 32⚔️ com Atropelar e Acerto Garantido (0❤️)!',
+          'O Jogador 1 lança Explosão Necrótica (4⚡) da mão e ordena Ataque Total com a Legião de Vaelen, abatendo o colosso inimigo com Toque Letal e drenando toda a Vida do Soberano rival!',
+        sfx: 'attack_hit',
+        musicTrack: 'domain_purple',
+        activeDomain: 'purple',
+        domainBannerTitle: '⛩️ ECLIPSE DO TRONO DE OSSOS (VITÓRIA IMORTAL)',
+        domainBannerSubtitle: 'Dreno de Vida restaura o Soberano para 30 PV enquanto finaliza o oponente!',
+        handCardIds: ['pur-014', 'pur-001', 'pur-012'],
+        selectedHandIndex: 0,
+        dockActionLabel: '💀 Lançar + Ataque Total',
+        dockActionType: 'spell',
+        dockStatusText: '⚔️ Ceifando a Vanguarda inimiga e desferindo 18 de dano necrótico ao Soberano rival!',
+        targetLane: 'aiVanguard',
+        targetSlotIndex: 4,
+        heraldTitle: '💀 CEIFA IMORTAL DA LEGIÃO DE VAELEN!',
+        heraldSubtitle: 'Toque Letal destrói o defensor e a Vanguarda drena os últimos 14 PV do rival!',
+        heraldDomain: 'purple',
+        breathWaveLane: 'aiVanguard',
+        breathWaveDomain: 'purple',
+        beforeBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'pur-001', atk: 3, hp: 1, maxHp: 1, stance: 'attack' },
+            { slotIndex: 2, cardId: 'pur-009', atk: 5, hp: 3, maxHp: 3, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-006', atk: 4, hp: 4, maxHp: 4, stance: 'attack' },
+            { slotIndex: 4, cardId: 'pur-010', atk: 7, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
+            { slotIndex: 5, cardId: 'pur-008', atk: 6, hp: 5, maxHp: 5, armor: 1, stance: 'attack' },
+          ],
+          aiVanguard: [{ slotIndex: 4, cardId: 'grn-007', atk: 5, hp: 5, maxHp: 5, stance: 'defend' }],
+          playerRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 27,
+          p1Essence: 8,
+          p1MaxEssence: 8,
+          p2Hp: 14,
+          p2Essence: 5,
+          p2MaxEssence: 8,
+        },
+        afterBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'pur-001', atk: 3, hp: 1, maxHp: 1, stance: 'attack', isLunging: true },
+            {
+              slotIndex: 2,
+              cardId: 'pur-009',
+              atk: 5,
+              hp: 3,
+              maxHp: 3,
+              stance: 'attack',
+              isLunging: true,
+              feedback: { text: '☠ Abate Letal!', color: 'damage' },
+            },
+            { slotIndex: 3, cardId: 'pur-006', atk: 4, hp: 4, maxHp: 4, stance: 'attack', isLunging: true },
+            {
+              slotIndex: 4,
+              cardId: 'pur-010',
+              atk: 7,
+              hp: 7,
+              maxHp: 7,
+              armor: 1,
+              stance: 'attack',
+              isLunging: true,
+              feedback: { text: '💀 -7 Dreno!', color: 'heal' },
+            },
+            {
+              slotIndex: 5,
+              cardId: 'pur-008',
+              atk: 6,
+              hp: 5,
+              maxHp: 5,
+              armor: 1,
+              stance: 'attack',
+              isLunging: true,
+              feedback: { text: '⚔️ -6 Letal!', color: 'damage' },
+            },
+          ],
+          aiVanguard: [],
+          playerRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 30,
+          p1Essence: 4,
+          p1MaxEssence: 8,
+          p2Hp: 0,
+          p2Essence: 5,
+          p2MaxEssence: 8,
+          p1Feedback: { text: '+3 ❤️ Vida Máxima!', color: 'heal' },
+          p2Feedback: { text: '💥 -14 VITÓRIA!', color: 'damage' },
+        },
+      },
+    ],
+  },
+  {
+    id: 'golden_citadel_clash',
+    shortTab: '☀️ Cidadela & Colisão',
+    badge: 'COMBO #13 • ESCUDO DIVINO EM MASSA & COLISÃO DE DOMÍNIOS 50/50',
+    title: 'Cidadela da Aurora vs Eclipse Abissal',
+    subtitle: 'Estandarte do Sol Invicto + Decreto de Égide + Aurelius, Arcanjo Solar',
+    comboRef: 'Grimório: Bastião de Aurelius • Combo Oficial #13',
+    accentColor: '#eab308',
+    p1Name: 'Aurelius (Você)',
+    p1AvatarCardId: 'gld-010',
+    p1Domain: 'gold',
+    p2Name: 'Malakor, Senhor do Abismo',
+    p2AvatarCardId: 'pur-010',
+    p2Domain: 'purple',
+    steps: [
+      {
+        id: 'gld-step-1',
+        stepBadge: 'PASSO 1/4 • RELÍQUIA SOLAR',
+        title: 'Estandarte do Sol Invicto na Retaguarda',
+        narrative:
+          'Sob o domínio inimigo, o Jogador 1 escolhe a Relíquia Estandarte do Sol Invicto (3⚡) na mão e a posiciona na Retaguarda [R], concedendo +1/+1 contínuo e preparando a virada dourada!',
+        sfx: 'shield_up',
+        musicTrack: 'domain_purple',
+        activeDomain: 'purple',
+        domainBannerTitle: '⛩️ DOMÍNIO INIMIGO ATIVO: ECLIPSE DO TRONO DE OSSOS',
+        domainBannerSubtitle: 'O oponente tenta dominar o tabuleiro — prepare sua resposta de Ordem & Ferro!',
+        handCardIds: ['gld-019', 'gld-013', 'gld-010', 'gld-001', 'gld-006'],
+        selectedHandIndex: 0,
+        dockActionLabel: '+ Posicionar Relíquia [R]',
+        dockActionType: 'rearguard',
+        dockStatusText: '🏛️ Posicionando Estandarte do Sol Invicto na Casa 3 da Retaguarda!',
+        targetLane: 'playerRearguard',
+        targetSlotIndex: 3,
+        targetWatermark: '+ Relíquia [R]',
+        heraldTitle: '🏛️ RELÍQUIA: ESTANDARTE DO SOL INVICTO',
+        heraldSubtitle: 'Aura Solar concede +1/+1 à Falange da Ordem na Vanguarda!',
+        heraldDomain: 'gold',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'gld-001', atk: 2, hp: 3, maxHp: 3, armor: 1, stance: 'defend' },
+            { slotIndex: 2, cardId: 'gld-006', atk: 3, hp: 4, maxHp: 4, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 2, cardId: 'pur-008', atk: 5, hp: 4, maxHp: 5, armor: 1, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-010', atk: 6, hp: 6, maxHp: 7, armor: 1, stance: 'attack' },
+          ],
+          playerRearguard: [],
+          p1Hp: 21,
+          p1Essence: 6,
+          p1MaxEssence: 6,
+          p2Hp: 22,
+          p2Essence: 4,
+          p2MaxEssence: 6,
+        },
+        afterBoard: {
+          aiRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          playerVanguard: [
+            {
+              slotIndex: 1,
+              cardId: 'gld-001',
+              atk: 3,
+              hp: 4,
+              maxHp: 4,
+              armor: 1,
+              stance: 'defend',
+              isBurstTarget: true,
+              feedback: { text: '+1/+1 Estandarte!', color: 'buff' },
+            },
+            {
+              slotIndex: 2,
+              cardId: 'gld-006',
+              atk: 4,
+              hp: 5,
+              maxHp: 5,
+              armor: 1,
+              stance: 'defend',
+              feedback: { text: '+1/+1 Solar!', color: 'buff' },
+            },
+          ],
+          aiVanguard: [
+            { slotIndex: 2, cardId: 'pur-008', atk: 5, hp: 4, maxHp: 5, armor: 1, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-010', atk: 6, hp: 6, maxHp: 7, armor: 1, stance: 'attack' },
+          ],
+          playerRearguard: [
+            {
+              slotIndex: 3,
+              cardId: 'gld-019',
+              atk: 0,
+              hp: 5,
+              maxHp: 5,
+              armor: 1,
+              isBurstTarget: true,
+              feedback: { text: 'Relíquia Solar!', color: 'shield' },
+            },
+          ],
+          p1Hp: 21,
+          p1Essence: 3,
+          p1MaxEssence: 6,
+          p2Hp: 22,
+          p2Essence: 4,
+          p2MaxEssence: 6,
+        },
+      },
+      {
+        id: 'gld-step-2',
+        stepBadge: 'PASSO 2/4 • COLISÃO DE DOMÍNIOS 50/50!',
+        title: 'Colisão de Domínios: Cidadela da Aurora Inabalável!',
+        narrative:
+          'O Jogador 1 responde com sua própria Expansão de Domínio! O tabuleiro racha ao meio em uma Colisão de Domínios 50/50 (anulando o Acerto Garantido inimigo) enquanto lança Decreto de Égide concedendo Escudo Divino a todos os aliados!',
+        sfx: 'domain_expand',
+        musicTrack: 'domain_clash',
+        activeDomain: 'clash_gold_purple',
+        domainBannerTitle: '⚡ COLISÃO DE DOMÍNIOS: CIDADELA DA AURORA vs ECLIPSE ABISSAL',
+        domainBannerSubtitle: 'Fenda Central ativa! Acertos Garantidos anulados — Potências colidem 50/50!',
+        handCardIds: ['gld-013', 'gld-010', 'gld-001', 'gld-006'],
+        selectedHandIndex: 0,
+        dockActionLabel: '⛩️ Expandir Domínio + Decreto de Égide',
+        dockActionType: 'domain',
+        dockStatusText: '⚡ Colisão de Domínios! Concedendo ✦ Escudo Divino a todas as unidades aliadas!',
+        targetLane: 'playerVanguard',
+        targetSlotIndex: 2,
+        heraldTitle: '⚡ COLISÃO DE DOMÍNIOS + DECRETO DE ÉGIDE!',
+        heraldSubtitle: 'Cidadela da Aurora divide o tabuleiro ao meio e blinda toda a sua tropa com Escudo Divino!',
+        heraldDomain: 'gold',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'gld-001', atk: 3, hp: 4, maxHp: 4, armor: 1, stance: 'defend' },
+            { slotIndex: 2, cardId: 'gld-006', atk: 4, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 2, cardId: 'pur-008', atk: 5, hp: 4, maxHp: 5, armor: 1, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-010', atk: 6, hp: 6, maxHp: 7, armor: 1, stance: 'attack' },
+          ],
+          playerRearguard: [{ slotIndex: 3, cardId: 'gld-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          p1Hp: 21,
+          p1Essence: 6,
+          p1MaxEssence: 6,
+          p2Hp: 22,
+          p2Essence: 4,
+          p2MaxEssence: 6,
+        },
+        afterBoard: {
+          aiRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          playerVanguard: [
+            {
+              slotIndex: 1,
+              cardId: 'gld-001',
+              atk: 4,
+              hp: 4,
+              maxHp: 4,
+              armor: 2,
+              hasDivineShield: true,
+              stance: 'defend',
+              isBurstTarget: true,
+              feedback: { text: '✦ Escudo Divino!', color: 'shield' },
+            },
+            {
+              slotIndex: 2,
+              cardId: 'gld-006',
+              atk: 5,
+              hp: 5,
+              maxHp: 5,
+              armor: 2,
+              hasDivineShield: true,
+              stance: 'defend',
+              isBurstTarget: true,
+              feedback: { text: '✦ Escudo Divino!', color: 'shield' },
+            },
+          ],
+          aiVanguard: [
+            { slotIndex: 2, cardId: 'pur-008', atk: 5, hp: 4, maxHp: 5, armor: 1, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-010', atk: 6, hp: 6, maxHp: 7, armor: 1, stance: 'attack' },
+          ],
+          playerRearguard: [
+            {
+              slotIndex: 3,
+              cardId: 'gld-019',
+              atk: 0,
+              hp: 5,
+              maxHp: 5,
+              armor: 2,
+              hasDivineShield: true,
+              feedback: { text: '✦ Protegida!', color: 'shield' },
+            },
+          ],
+          p1Hp: 24,
+          p1Essence: 3,
+          p1MaxEssence: 6,
+          p2Hp: 22,
+          p2Essence: 4,
+          p2MaxEssence: 6,
+          p1Feedback: { text: '+3 ❤️ Égide Solar', color: 'heal' },
+        },
+      },
+      {
+        id: 'gld-step-3',
+        stepBadge: 'PASSO 3/4 • DESCIDA DO ARCANJO',
+        title: 'Invocar Aurelius, Arcanjo Solar & Quebrar o Domínio Inimigo',
+        narrative:
+          'O Jogador 1 seleciona Aurelius, Arcanjo Solar (8⚡) na mão e o invoca na Vanguarda [V]. Sua luz purificadora destrói a linha de frente inimiga e quebra o domínio rival, fazendo a Cidadela da Aurora reinar absoluta!',
+        sfx: 'ascend',
+        musicTrack: 'domain_gold',
+        activeDomain: 'gold',
+        domainBannerTitle: '⛩️ CIDADELA DA AURORA INABALÁVEL (DOMÍNIO SOBERANO)',
+        domainBannerSubtitle: 'Domínio inimigo estilhaçado! Toda a sua tropa recebe +2/+2 e Escudo Divino!',
+        handCardIds: ['gld-010', 'gld-001', 'gld-006', 'gld-015'],
+        selectedHandIndex: 0,
+        dockActionLabel: '+ Vanguarda [V]',
+        dockActionType: 'vanguard',
+        dockStatusText: '☀️ Invocação Lendária: Aurelius, Arcanjo Solar pousa na Casa 3 da Vanguarda!',
+        targetLane: 'playerVanguard',
+        targetSlotIndex: 3,
+        targetWatermark: '+ Vanguarda [V]',
+        heraldTitle: '☀️ LENDÁRIA: AURELIUS, ARCANJO SOLAR',
+        heraldSubtitle: 'Domínio inimigo quebrado! Aurelius concede +2/+2 a todos os aliados e pune o Abismo!',
+        heraldDomain: 'gold',
+        breathWaveLane: 'aiVanguard',
+        breathWaveDomain: 'gold',
+        beforeBoard: {
+          aiRearguard: [{ slotIndex: 2, cardId: 'pur-019', atk: 0, hp: 5, maxHp: 5, armor: 1 }],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'gld-001', atk: 4, hp: 4, maxHp: 4, armor: 2, hasDivineShield: true, stance: 'defend' },
+            { slotIndex: 2, cardId: 'gld-006', atk: 5, hp: 5, maxHp: 5, armor: 2, hasDivineShield: true, stance: 'defend' },
+          ],
+          aiVanguard: [
+            { slotIndex: 2, cardId: 'pur-008', atk: 5, hp: 4, maxHp: 5, armor: 1, stance: 'attack' },
+            { slotIndex: 3, cardId: 'pur-010', atk: 6, hp: 6, maxHp: 7, armor: 1, stance: 'attack' },
+          ],
+          playerRearguard: [{ slotIndex: 3, cardId: 'gld-019', atk: 0, hp: 5, maxHp: 5, armor: 2, hasDivineShield: true }],
+          p1Hp: 24,
+          p1Essence: 8,
+          p1MaxEssence: 8,
+          p2Hp: 22,
+          p2Essence: 4,
+          p2MaxEssence: 8,
+        },
+        afterBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            {
+              slotIndex: 1,
+              cardId: 'gld-001',
+              atk: 6,
+              hp: 6,
+              maxHp: 6,
+              armor: 2,
+              hasDivineShield: true,
+              stance: 'attack',
+              feedback: { text: '+2/+2 Aurelius!', color: 'buff' },
+            },
+            {
+              slotIndex: 2,
+              cardId: 'gld-006',
+              atk: 7,
+              hp: 7,
+              maxHp: 7,
+              armor: 2,
+              hasDivineShield: true,
+              stance: 'attack',
+              feedback: { text: '+2/+2 Aurelius!', color: 'buff' },
+            },
+            {
+              slotIndex: 3,
+              cardId: 'gld-010',
+              atk: 9,
+              hp: 9,
+              maxHp: 9,
+              armor: 2,
+              hasDivineShield: true,
+              stance: 'attack',
+              isBurstTarget: true,
+              burstKind: 'ascend',
+              feedback: { text: '☀️ Arcanjo 9/9!', color: 'buff' },
+            },
+          ],
+          aiVanguard: [
+            {
+              slotIndex: 3,
+              cardId: 'pur-010',
+              atk: 6,
+              hp: 2,
+              maxHp: 7,
+              armor: 0,
+              isHitTarget: true,
+              feedback: { text: '-4 ☀️ Julgamento!', color: 'damage' },
+            },
+          ],
+          playerRearguard: [{ slotIndex: 3, cardId: 'gld-019', atk: 0, hp: 5, maxHp: 5, armor: 2, hasDivineShield: true }],
+          p1Hp: 28,
+          p1Essence: 0,
+          p1MaxEssence: 8,
+          p2Hp: 14,
+          p2Essence: 4,
+          p2MaxEssence: 8,
+          p1Feedback: { text: '+4 ❤️ Luz Solar', color: 'heal' },
+          p2Feedback: { text: '-8 ☀️ Domínio Quebrado!', color: 'damage' },
+        },
+      },
+      {
+        id: 'gld-step-4',
+        stepBadge: 'PASSO 4/4 • JULGAMENTO DA AURORA',
+        title: 'Marcha Inabalável da Falange Dourada',
+        narrative:
+          'Com todas as unidades protegidas por Escudo Divino e fortalecidas pela Cidadela da Aurora, o Jogador 1 aciona ⚔️ ATACAR para desferir 22 de dano solar e conquistar a vitória!',
         sfx: 'victory',
-        musicStage: 'climax',
-        musicDomain: 'gold',
-        spotlightCardId: 'neutral_10_valkyra_pentacromatica',
-        spotlightLabel: '👑 SOPRO PENTACROMÁTICO 4 (-22 LETAL!)',
-        playerHp: 40,
-        playerEssence: '0/9⚡',
-        playerAffinity: '⛩️ VITÓRIA',
-        enemyHp: 0,
-        enemyEssence: '0/7⚡',
-        enemyAffinity: '0❤️ DERROTADO',
-        domainState: {
-          mode: 'single',
-          owner: 'player',
-          domain: 'green',
-          name: '👑 TRIUNFO: CONVERGÊNCIA PENTACROMÁTICA',
-          effectSummary: 'Os Tronos #166 e Valkyra aniquilaram toda a mesa rival em um único turno!',
+        musicTrack: 'domain_gold',
+        activeDomain: 'gold',
+        domainBannerTitle: '⛩️ CIDADELA DA AURORA INABALÁVEL (VITÓRIA SUPREMA)',
+        domainBannerSubtitle: '22 de Poder de Ataque com Escudo Divino intacto!',
+        handCardIds: ['gld-001', 'gld-006', 'gld-015'],
+        selectedHandIndex: 2,
+        dockActionLabel: '⚔️ ATACAR COM TODOS (22 ⚔️)',
+        dockActionType: 'spell',
+        dockStatusText: '☀️ Marcha Solar: Aurelius (9⚔️) + Paladino (7⚔️) + Sentinela (6⚔️) atacam em formação!',
+        targetLane: 'aiVanguard',
+        targetSlotIndex: 3,
+        heraldTitle: '☀️ VITÓRIA SOBERANA: JULGAMENTO DA AURORA!',
+        heraldSubtitle: 'A Falange Dourada marcha invulnerável e reduz o Soberano rival a 0 PV!',
+        heraldDomain: 'gold',
+        beforeBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            { slotIndex: 1, cardId: 'gld-001', atk: 6, hp: 6, maxHp: 6, armor: 2, hasDivineShield: true, stance: 'attack' },
+            { slotIndex: 2, cardId: 'gld-006', atk: 7, hp: 7, maxHp: 7, armor: 2, hasDivineShield: true, stance: 'attack' },
+            { slotIndex: 3, cardId: 'gld-010', atk: 9, hp: 9, maxHp: 9, armor: 2, hasDivineShield: true, stance: 'attack' },
+          ],
+          aiVanguard: [{ slotIndex: 3, cardId: 'pur-010', atk: 6, hp: 2, maxHp: 7, armor: 0, stance: 'defend' }],
+          playerRearguard: [{ slotIndex: 3, cardId: 'gld-019', atk: 0, hp: 5, maxHp: 5, armor: 2, hasDivineShield: true }],
+          p1Hp: 28,
+          p1Essence: 8,
+          p1MaxEssence: 8,
+          p2Hp: 14,
+          p2Essence: 4,
+          p2MaxEssence: 8,
         },
-        enemyRearguard: [null, null, null, null],
-        enemyVanguard: [null, null, null, null],
-        playerVanguard: [
-          {
-            cardId: 'green_160_behemoth_cratera_viva',
-            atk: 10,
-            hp: 11,
-            maxHp: 11,
-            armor: 4,
-            hasShield: true,
-            isAttacking: true,
-          },
-          {
-            cardId: 'neutral_10_valkyra_pentacromatica',
-            atk: 10,
-            hp: 9,
-            maxHp: 9,
-            armor: 3,
-            hasShield: true,
-            isAttacking: true,
-            floatingText: '🌈 SOPRO 4 + ATROPELAR!',
-            floatingColor: '#fde047',
-          },
-          {
-            cardId: 'green_161_dragao_esmeralda_primordial',
-            atk: 11,
-            hp: 10,
-            maxHp: 10,
-            armor: 3,
-            isAttacking: true,
-          },
-          {
-            cardId: 'green_141_soberano_fera_primordial',
-            atk: 11,
-            hp: 9,
-            maxHp: 9,
-            armor: 1,
-            isAttacking: true,
-          },
-        ],
-        playerRearguard: [
-          { cardId: 'green_166_coracao_arvore_mundo', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'gold_166_trono_soberano_sol', atk: 0, hp: 5, maxHp: 5 },
-          { cardId: 'blue_166_trono_oniciencia_astral', atk: 0, hp: 5, maxHp: 5 },
-          null,
-        ],
+        afterBoard: {
+          aiRearguard: [],
+          playerVanguard: [
+            {
+              slotIndex: 1,
+              cardId: 'gld-001',
+              atk: 6,
+              hp: 6,
+              maxHp: 6,
+              armor: 2,
+              hasDivineShield: true,
+              stance: 'attack',
+              isLunging: true,
+              feedback: { text: '⚔️ -6 Solar!', color: 'buff' },
+            },
+            {
+              slotIndex: 2,
+              cardId: 'gld-006',
+              atk: 7,
+              hp: 7,
+              maxHp: 7,
+              armor: 2,
+              hasDivineShield: true,
+              stance: 'attack',
+              isLunging: true,
+              feedback: { text: '⚔️ -7 Solar!', color: 'buff' },
+            },
+            {
+              slotIndex: 3,
+              cardId: 'gld-010',
+              atk: 9,
+              hp: 9,
+              maxHp: 9,
+              armor: 2,
+              hasDivineShield: true,
+              stance: 'attack',
+              isLunging: true,
+              isBurstTarget: true,
+              burstKind: 'ascend',
+              feedback: { text: '☀️ -9 Letal!', color: 'damage' },
+            },
+          ],
+          aiVanguard: [],
+          playerRearguard: [{ slotIndex: 3, cardId: 'gld-019', atk: 0, hp: 5, maxHp: 5, armor: 2, hasDivineShield: true }],
+          p1Hp: 30,
+          p1Essence: 5,
+          p1MaxEssence: 8,
+          p2Hp: 0,
+          p2Essence: 4,
+          p2MaxEssence: 8,
+          p2Feedback: { text: '💥 -20 VITÓRIA!', color: 'damage' },
+        },
       },
     ],
   },
 ];
 
-const DOMAIN_BOARD_BACKGROUNDS: Record<Domain, string> = {
-  red: 'radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.36) 0%, rgba(69, 10, 10, 0.92) 70%, #090507 100%)',
-  blue: 'radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.34) 0%, rgba(12, 34, 64, 0.92) 70%, #050914 100%)',
-  purple: 'radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.35) 0%, rgba(42, 11, 64, 0.93) 70%, #07040d 100%)',
-  green: 'radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.32) 0%, rgba(10, 46, 26, 0.92) 70%, #040b07 100%)',
-  gold: 'radial-gradient(circle at 50% 50%, rgba(250, 204, 21, 0.34) 0%, rgba(66, 46, 8, 0.92) 70%, #0d0a04 100%)',
-  neutral: 'radial-gradient(circle at 50% 50%, rgba(148, 163, 184, 0.22) 0%, rgba(15, 23, 42, 0.94) 70%, #070a12 100%)',
-};
+function buildSyntheticUnit(
+  spec: SimSlotSpec,
+  owner: 'player' | 'ai',
+  row: RowType,
+): BoardUnit | null {
+  const baseCard = CARDS_BY_ID[spec.cardId];
+  if (!baseCard) return null;
 
-const WOOD_WAR_TABLE_BG =
-  'radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.08) 0%, transparent 65%), linear-gradient(180deg, #1b130d 0%, #241911 48%, #160f0a 100%)';
+  const isAscended = Boolean(spec.isAscended && baseCard.ascension);
+  const effectiveCard: CardDefinition =
+    isAscended && baseCard.ascension
+      ? {
+          ...baseCard,
+          name: baseCard.ascension.newName,
+          atk: baseCard.ascension.newAtk,
+          armor: baseCard.ascension.newArmor,
+          hp: baseCard.ascension.newMaxHp,
+          keywords: Array.from(
+            new Set([...baseCard.keywords, ...baseCard.ascension.addedKeywords]),
+          ) as Keyword[],
+        }
+      : baseCard;
+
+  return {
+    instanceId: `sim-${owner}-${row}-${spec.slotIndex}-${spec.cardId}`,
+    cardId: effectiveCard.id,
+    card: effectiveCard,
+    owner,
+    row,
+    slotIndex: spec.slotIndex,
+    currentAtk: spec.atk ?? effectiveCard.atk,
+    currentArmor: spec.armor ?? effectiveCard.armor,
+    currentHp: spec.hp ?? effectiveCard.hp,
+    maxHp: spec.maxHp ?? effectiveCard.hp,
+    keywords: [...effectiveCard.keywords],
+    regeneration: effectiveCard.regeneration ?? 0,
+    hasSummoningSickness: false,
+    hasAttackedThisTurn: false,
+    isFrozen: Boolean(spec.isFrozen),
+    hasDivineShield: Boolean(
+      spec.hasDivineShield ?? effectiveCard.keywords.includes('Escudo Divino'),
+    ),
+    isAscended,
+    hasRebornTriggered: false,
+    stance: spec.stance ?? 'attack',
+    isInvading: row === 'vanguard',
+    invasionAtkBonus: row === 'vanguard' ? 1 : 0,
+  };
+}
+
+export interface HomeSimulatedDuelShowcaseProps {
+  onInspectCard: (card: CardDefinition) => void;
+  onPlayDuelNow?: () => void;
+  onEnterArena?: () => void;
+  onOpenCombosCompendium?: () => void;
+  onOpenCombosGuide?: () => void;
+  soundMuted?: boolean;
+  onToggleSound?: () => void;
+}
 
 export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps> = ({
   onInspectCard,
   onPlayDuelNow,
+  onEnterArena,
   onOpenCombosCompendium,
+  onOpenCombosGuide,
   soundMuted,
   onToggleSound,
 }) => {
+  const handleEnterArena = onPlayDuelNow ?? onEnterArena ?? (() => {});
+  const handleOpenCombos = onOpenCombosCompendium ?? onOpenCombosGuide ?? (() => {});
   const [scenarioIdx, setScenarioIdx] = useState<number>(0);
   const [stepIdx, setStepIdx] = useState<number>(0);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() =>
-    typeof window !== 'undefined' ? window.innerWidth <= 768 : false
-  );
-  const [isVisibleOnScreen, setIsVisibleOnScreen] = useState<boolean>(true);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [subPhase, setSubPhase] = useState<SimSubPhase>('hand');
+  const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(true);
+  const [isAudioLive, setIsAudioLive] = useState<boolean>(false);
 
-  const scenario = SIMULATED_DUEL_SCENARIOS[scenarioIdx] ?? SIMULATED_DUEL_SCENARIOS[0];
+  const scenario = SIM_DUEL_SCENARIOS[scenarioIdx] ?? SIM_DUEL_SCENARIOS[0];
   const step = scenario.steps[stepIdx] ?? scenario.steps[0];
 
-  // Detect Desktop vs Smartphone viewport
+  // Auto-advance micro-phases: 'hand' (Player 1 choosing card in hand) -> 'dock' (Command Dock & Target selection) -> 'impact' (Card enters board + VFX + SFX)
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mq = window.matchMedia('(max-width: 768px)');
-    const update = () => setIsMobileViewport(mq.matches);
-    update();
-    mq.addEventListener('change', update);
-    return () => mq.removeEventListener('change', update);
-  }, []);
+    if (!isAutoPlaying) return undefined;
 
-  // Pause simulation when scrolled out of view to save battery/CPU
-  useEffect(() => {
-    const node = containerRef.current;
-    if (!node || typeof IntersectionObserver === 'undefined') return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]) {
-          setIsVisibleOnScreen(entries[0].isIntersecting);
-        }
-      },
-      { threshold: 0.2 }
-    );
-    obs.observe(node);
-    return () => obs.disconnect();
-  }, []);
+    const durationMs =
+      subPhase === 'hand' ? 2100 : subPhase === 'dock' ? 2200 : 2800;
 
-  // Trigger real match SFX & Adaptive Music whenever the step changes while visible
-  useEffect(() => {
-    if (!isVisibleOnScreen) return;
-    setMusicState(step.musicStage, step.musicDomain);
-    if (!isMuted()) {
-      playSfx(step.sfx);
-    }
-  }, [scenarioIdx, stepIdx, isVisibleOnScreen, step.musicStage, step.musicDomain, step.sfx]);
-
-  // Auto-advance step every 3.4s and auto-rotate across the 3 thematic duels
-  useEffect(() => {
-    if (isPaused || !isVisibleOnScreen) return;
-    const durationMs = stepIdx === scenario.steps.length - 1 ? 4200 : 3300;
     const timer = window.setTimeout(() => {
-      if (stepIdx < scenario.steps.length - 1) {
-        setStepIdx((prev) => prev + 1);
+      if (subPhase === 'hand') {
+        setSubPhase('dock');
+      } else if (subPhase === 'dock') {
+        setSubPhase('impact');
       } else {
-        setScenarioIdx((prev) => (prev + 1) % SIMULATED_DUEL_SCENARIOS.length);
-        setStepIdx(0);
+        setSubPhase('hand');
+        if (stepIdx < scenario.steps.length - 1) {
+          setStepIdx((prev) => prev + 1);
+        } else {
+          setStepIdx(0);
+          setScenarioIdx((prev) => (prev + 1) % SIM_DUEL_SCENARIOS.length);
+        }
       }
     }, durationMs);
+
     return () => window.clearTimeout(timer);
-  }, [isPaused, isVisibleOnScreen, stepIdx, scenario.steps.length]);
+  }, [isAutoPlaying, subPhase, stepIdx, scenario.steps.length]);
 
-  const handleSelectScenario = (idx: number) => {
-    startAdaptiveMusic();
-    setScenarioIdx(idx);
-    setStepIdx(0);
-  };
-
-  const handleNextStep = () => {
-    startAdaptiveMusic();
-    if (stepIdx < scenario.steps.length - 1) {
-      setStepIdx((prev) => prev + 1);
-    } else {
-      setScenarioIdx((prev) => (prev + 1) % SIMULATED_DUEL_SCENARIOS.length);
-      setStepIdx(0);
+  // Trigger real game audio when audio is enabled
+  useEffect(() => {
+    if (!isAudioLive) return;
+    if (subPhase === 'hand') {
+      playSoundEffect('card_draw');
+    } else if (subPhase === 'dock') {
+      playSoundEffect('button_click');
+    } else if (subPhase === 'impact') {
+      setBattleMusicTrack(step.musicTrack);
+      playSoundEffect(step.sfx);
     }
-  };
+  }, [isAudioLive, scenarioIdx, stepIdx, subPhase, step.musicTrack, step.sfx]);
 
-  const handlePrevStep = () => {
-    startAdaptiveMusic();
-    if (stepIdx > 0) {
-      setStepIdx((prev) => prev - 1);
-    } else {
-      const prevScen =
-        (scenarioIdx - 1 + SIMULATED_DUEL_SCENARIOS.length) % SIMULATED_DUEL_SCENARIOS.length;
-      setScenarioIdx(prevScen);
-      setStepIdx(SIMULATED_DUEL_SCENARIOS[prevScen].steps.length - 1);
-    }
-  };
-
-  const handleSoundButton = () => {
-    startAdaptiveMusic();
-    if (onToggleSound) {
-      onToggleSound();
-    } else {
-      toggleMute();
-    }
-  };
-
-  const playerAvatarCard =
-    CARDS_BY_ID[scenario.playerSovereign.avatarCardId] ?? ALL_CARDS[0];
-  const enemyAvatarCard =
-    CARDS_BY_ID[scenario.enemySovereign.avatarCardId] ?? ALL_CARDS[1];
-  const spotlightCard = step.spotlightCardId ? CARDS_BY_ID[step.spotlightCardId] : null;
-
-  const boardSurfaceStyle = useMemo((): React.CSSProperties => {
-    const ds = step.domainState;
-    if (ds.mode === 'clash_50_50' && ds.rivalDomain) {
-      return {
-        background: `linear-gradient(180deg, rgba(14, 116, 144, 0.44) 0%, rgba(15, 23, 42, 0.92) 49%, rgba(250, 204, 21, 0.55) 50%, rgba(185, 28, 28, 0.45) 51%, rgba(30, 10, 10, 0.94) 100%)`,
-        borderColor: '#fde047',
-        boxShadow: '0 0 28px rgba(56, 189, 248, 0.35), inset 0 0 32px rgba(239, 68, 68, 0.35)',
-      };
-    }
-    if (ds.mode === 'single') {
-      const domColor = DOMAIN_META[ds.domain]?.color ?? '#d4af37';
-      return {
-        background: DOMAIN_BOARD_BACKGROUNDS[ds.domain] ?? WOOD_WAR_TABLE_BG,
-        borderColor: domColor,
-        boxShadow: `0 0 28px ${domColor}44, inset 0 0 36px ${domColor}2e`,
-      };
-    }
-    return {
-      background: WOOD_WAR_TABLE_BG,
-      borderColor: 'rgba(212, 175, 55, 0.38)',
-      boxShadow: 'inset 0 0 28px rgba(0, 0, 0, 0.75)',
+  useEffect(() => {
+    return () => {
+      if (isAudioLive) {
+        stopBattleMusic();
+      }
     };
-  }, [step.domainState]);
+  }, [isAudioLive]);
 
-  const renderSlotUnit = (
-    unit: SimulatedSlotUnit | null,
-    rowKey: string,
-    colIdx: number,
-    compactMobile = false
+  const handleToggleAudio = () => {
+    const next = !isAudioLive;
+    setIsAudioLive(next);
+    if (next) {
+      if (soundMuted && onToggleSound) {
+        onToggleSound();
+      }
+      setBattleMusicTrack(step.musicTrack);
+      playSoundEffect(step.sfx);
+    } else {
+      stopBattleMusic();
+    }
+  };
+
+  const boardState = subPhase === 'impact' ? step.afterBoard : step.beforeBoard;
+  const handCards = step.handCardIds
+    .map((id) => CARDS_BY_ID[id])
+    .filter((c): c is CardDefinition => Boolean(c));
+  const selectedHandCard =
+    handCards[step.selectedHandIndex] ?? handCards[0] ?? CARDS_BY_ID['red-011'];
+
+  const p1AvatarCard = CARDS_BY_ID[scenario.p1AvatarCardId];
+  const p2AvatarCard = CARDS_BY_ID[scenario.p2AvatarCardId];
+
+  const renderAuthenticLane = (
+    laneKey: 'aiRearguard' | 'playerVanguard' | 'aiVanguard' | 'playerRearguard',
+    laneClassName: string,
+    tagClassName: string,
+    tagLabel: string,
+    owner: 'player' | 'ai',
+    row: RowType,
+    slotsList: SimSlotSpec[],
   ) => {
-    if (!unit) {
-      return (
-        <div
-          key={`${rowKey}-${colIdx}`}
-          style={{
-            minHeight: compactMobile ? '64px' : '72px',
-            borderRadius: '7px',
-            border: '1px dashed rgba(212, 175, 55, 0.16)',
-            background: 'rgba(5, 8, 15, 0.34)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '0.58rem',
-            color: 'rgba(148, 163, 184, 0.28)',
-            fontWeight: 700,
-          }}
-        >
-          {rowKey.includes('Vanguard') ? '[V]' : '[R]'}
-        </div>
-      );
-    }
-
-    const card = CARDS_BY_ID[unit.cardId];
-    if (!card) return null;
-    const domColor = DOMAIN_META[card.domain]?.color ?? '#d4af37';
-
-    if (unit.isTrapHidden) {
-      return (
-        <div
-          key={`${rowKey}-${colIdx}`}
-          onClick={() => onInspectCard?.(card)}
-          title="Emboscada Oculta na Retaguarda (Clique para espiar)"
-          style={{
-            minHeight: compactMobile ? '64px' : '72px',
-            borderRadius: '7px',
-            border: '1.5px solid rgba(56, 189, 248, 0.55)',
-            background: 'linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            position: 'relative',
-            padding: '4px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.6)',
-          }}
-        >
-          <span style={{ fontSize: '1.1rem' }}>🪤</span>
-          <span
-            style={{
-              fontSize: '0.56rem',
-              fontWeight: 800,
-              color: '#bae6fd',
-              textAlign: 'center',
-              letterSpacing: '0.04em',
-            }}
-          >
-            EMBOSCADA OCULTA
-          </span>
-        </div>
-      );
-    }
-
-    const displayName = unit.ascendedName || card.name;
+    const hasBreathWave =
+      subPhase === 'impact' &&
+      step.breathWaveLane === laneKey &&
+      Boolean(step.breathWaveDomain);
 
     return (
-      <div
-        key={`${rowKey}-${colIdx}-${unit.cardId}`}
-        onClick={() => onInspectCard?.(card)}
-        title={`${displayName} — Clique para inspecionar em 3D`}
-        style={{
-          minHeight: compactMobile ? '64px' : '72px',
-          borderRadius: '7px',
-          position: 'relative',
-          cursor: 'pointer',
-          overflow: 'hidden',
-          border: unit.isAscended
-            ? '1.5px solid #fde047'
-            : unit.hasShield
-            ? '1.5px solid #fef08a'
-            : unit.isFrozen
-            ? '1.5px solid #38bdf8'
-            : `1.5px solid ${domColor}`,
-          background: '#070a12',
-          boxShadow: unit.isAscended
-            ? '0 0 16px rgba(250, 204, 21, 0.55)'
-            : unit.isHit
-            ? '0 0 16px rgba(239, 68, 68, 0.7)'
-            : '0 4px 12px rgba(0,0,0,0.65)',
-          transform: unit.isAttacking
-            ? 'translateY(-7px) scale(1.05)'
-            : unit.isHit
-            ? 'scale(0.96)'
-            : 'none',
-          transition: 'all 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
-        }}
-      >
-        {card.imagePath && (
-          <img
-            src={card.imagePath}
-            alt={displayName}
-            style={{
-              width: '100%',
-              height: compactMobile ? '64px' : '72px',
-              objectFit: 'cover',
-              objectPosition: 'center 22%',
-              display: 'block',
-              filter: unit.isFrozen
-                ? 'saturate(0.4) brightness(1.1) hue-rotate(170deg)'
-                : unit.isHit
-                ? 'brightness(1.25) contrast(1.15)'
-                : 'brightness(0.92)',
-            }}
-          />
+      <div className={`mtg-board-lane ${laneClassName}`}>
+        <div className={`mtg-lane-tag ${tagClassName}`}>{tagLabel}</div>
+
+        {hasBreathWave && step.breathWaveDomain && (
+          <div className={`dragon-breath-wave-fx domain-${step.breathWaveDomain}`} />
         )}
 
-        {/* Top Badges: Stack 2x/3x, Shield, Frozen, Ascended */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '2px',
-            left: '3px',
-            right: '3px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <span
-            style={{
-              fontSize: '0.54rem',
-              fontWeight: 900,
-              padding: '1px 4px',
-              borderRadius: '4px',
-              background: 'rgba(2, 6, 23, 0.86)',
-              color: unit.isAscended ? '#fde047' : domColor,
-              border: `1px solid ${domColor}77`,
-            }}
-          >
-            {unit.isAscended ? '★ ASC' : `${card.cost}⚡`}
-          </span>
+        <div className="mtg-lane-slots">
+          {[0, 1, 2, 3, 4, 5].map((slotIdx) => {
+            const spec = slotsList.find((s) => s.slotIndex === slotIdx);
+            const unit = spec ? buildSyntheticUnit(spec, owner, row) : null;
+            const isTargetSlotInDock =
+              subPhase === 'dock' &&
+              step.targetLane === laneKey &&
+              step.targetSlotIndex === slotIdx;
 
-          <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
-            {unit.stackCount && unit.stackCount > 1 && (
-              <span
-                style={{
-                  fontSize: '0.54rem',
-                  fontWeight: 900,
-                  padding: '1px 4px',
-                  borderRadius: '4px',
-                  background: '#d4af37',
-                  color: '#050811',
-                }}
+            const feedbackObj: FloatingFeedback | null =
+              subPhase === 'impact' && spec?.feedback && unit
+                ? {
+                    id: `fb-${laneKey}-${slotIdx}-${step.id}`,
+                    targetId: unit.instanceId,
+                    text: spec.feedback.text,
+                    color: spec.feedback.color,
+                  }
+                : null;
+
+            return (
+              <div
+                key={`${laneKey}-slot-${slotIdx}`}
+                className={`mtg-slot ${
+                  isTargetSlotInDock && !unit ? 'can-deploy sim-slot-pulse-target' : ''
+                }`}
               >
-                {unit.stackCount}×
-              </span>
-            )}
-            {unit.hasShield && (
-              <span
-                style={{
-                  fontSize: '0.58rem',
-                  padding: '0 3px',
-                  borderRadius: '4px',
-                  background: 'rgba(250, 204, 21, 0.9)',
-                  color: '#050811',
-                  fontWeight: 900,
-                }}
-              >
-                ✨
-              </span>
-            )}
-            {unit.isFrozen && (
-              <span
-                style={{
-                  fontSize: '0.58rem',
-                  padding: '0 3px',
-                  borderRadius: '4px',
-                  background: 'rgba(56, 189, 248, 0.92)',
-                  color: '#050811',
-                  fontWeight: 900,
-                }}
-              >
-                ❄️
-              </span>
-            )}
-          </div>
-        </div>
+                {unit ? (
+                  <div
+                    className={`organic-tabletop-card ${
+                      row === 'vanguard'
+                        ? owner === 'player'
+                          ? 'is-crossing-border-player'
+                          : 'is-crossing-border-ai'
+                        : ''
+                    } ${subPhase === 'impact' && spec?.isLunging ? 'is-lunging-attacker' : ''} ${
+                      subPhase === 'impact' && spec?.isHitTarget ? 'is-hit-target' : ''
+                    }`}
+                    style={
+                      {
+                        '--lunge-x': '0px',
+                        '--lunge-y': owner === 'player' ? '-75px' : '75px',
+                      } as React.CSSProperties
+                    }
+                  >
+                    <CardView
+                      card={unit.card}
+                      unit={unit}
+                      mode="board"
+                      isSelected={isTargetSlotInDock && owner === 'player'}
+                      isValidTarget={isTargetSlotInDock && owner === 'ai'}
+                      feedback={feedbackObj}
+                      onInspect={onInspectCard}
+                      onClick={() => onInspectCard(unit.card)}
+                    />
 
-        {/* Floating Combat Callout Pill */}
-        {unit.floatingText && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              background: 'rgba(2, 6, 23, 0.92)',
-              border: `1px solid ${unit.floatingColor ?? '#fde047'}`,
-              color: unit.floatingColor ?? '#fde047',
-              fontSize: compactMobile ? '0.56rem' : '0.58rem',
-              fontWeight: 900,
-              padding: '2px 5px',
-              borderRadius: '999px',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.85)',
-              zIndex: 4,
-            }}
-          >
-            {unit.floatingText}
-          </div>
-        )}
+                    {unit.card.type === 'creature' && (
+                      <div
+                        className={`unit-stance-floating-pill ${
+                          unit.stance === 'defend' ? 'stance-defend' : 'stance-attack'
+                        }`}
+                      >
+                        {unit.stance === 'defend' ? '🛡️ DEF' : '⚔️ ATQ'}
+                      </div>
+                    )}
 
-        {/* Bottom Name & Stats Strip */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: 'linear-gradient(180deg, transparent 0%, rgba(2, 6, 23, 0.95) 42%)',
-            padding: '8px 4px 2px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-end',
-            gap: '2px',
-          }}
-        >
-          <span
-            style={{
-              fontSize: '0.55rem',
-              fontWeight: 700,
-              color: '#f8fafc',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxWidth: '62%',
-            }}
-          >
-            {displayName}
-          </span>
+                    {isTargetSlotInDock && (
+                      <div className="sim-board-target-indicator">
+                        🎯 {owner === 'ai' ? 'ALVO MIRA' : 'UNIDADE ESCOLHIDA'}
+                      </div>
+                    )}
+                  </div>
+                ) : isTargetSlotInDock ? (
+                  <span className="mtg-slot-watermark">
+                    🎯 {step.targetWatermark || '+ Posicionar'}
+                  </span>
+                ) : null}
 
-          {card.type === 'creature' ? (
-            <span
-              style={{
-                fontSize: '0.56rem',
-                fontWeight: 900,
-                color: '#fde047',
-                background: 'rgba(2, 6, 23, 0.9)',
-                padding: '0 4px',
-                borderRadius: '4px',
-                border: '1px solid rgba(250, 204, 21, 0.35)',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {unit.atk}⚔️/{unit.hp}❤️
-            </span>
-          ) : (
-            <span
-              style={{
-                fontSize: '0.53rem',
-                fontWeight: 800,
-                color: '#cbd5e1',
-                background: 'rgba(2, 6, 23, 0.85)',
-                padding: '0 4px',
-                borderRadius: '4px',
-              }}
-            >
-              {card.type === 'relic' ? '🏛️' : '⚡'}
-            </span>
-          )}
+                {/* Authentic Spectacle Target Burst (Mandala Ring + Ascension Pillar) */}
+                {subPhase === 'impact' && spec?.isBurstTarget && (
+                  <div
+                    className={`spectacle-target-burst sim-slot-centered-fx domain-${step.heraldDomain} ${
+                      spec.burstKind === 'ascend' ? 'kind-ascend' : ''
+                    }`}
+                  >
+                    <div className="arcane-mandala-ring outer-ring" />
+                    <div className="arcane-mandala-ring inner-ring" />
+                    {spec.burstKind === 'ascend' && <div className="ascension-light-pillar" />}
+                    <span className="spectacle-burst-center-icon">
+                      {spec.burstKind === 'ascend' ? '👑' : '✨'}
+                    </span>
+                  </div>
+                )}
+
+                {/* Authentic Combat Impact FX (Shockwave + Slash Cross + 12 Sparks) */}
+                {subPhase === 'impact' && spec?.isHitTarget && (
+                  <div
+                    className={`combat-impact-fx sim-slot-centered-fx is-heavy-impact domain-${step.heraldDomain}`}
+                  >
+                    <div className="impact-shockwave-ring" />
+                    <div className="impact-shockwave-ring secondary-ring" />
+                    <div className="impact-particles-ring">
+                      {Array.from({ length: 12 }).map((_, pIdx) => (
+                        <span
+                          key={pIdx}
+                          className="impact-particle-spark"
+                          style={
+                            {
+                              '--p-angle': `${pIdx * 30}deg`,
+                              '--p-dist': `${54 + (pIdx % 3) * 14}px`,
+                            } as React.CSSProperties
+                          }
+                        />
+                      ))}
+                    </div>
+                    <div className="impact-slash-cross" />
+                    <span className="impact-burst-icon">💥</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
   };
 
-  // Columns to display: 4 columns on Desktop, 2 main action columns on Smartphone
-  const visibleColumnIndices = isMobileViewport ? [0, 1] : [0, 1, 2, 3];
-
   return (
-    <div
-      ref={containerRef}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.55rem',
-        width: '100%',
-        maxWidth: '640px',
-        margin: '0 auto',
-        padding: isMobileViewport ? '0.6rem' : '0.75rem 0.85rem',
-        borderRadius: '10px',
-        background: 'linear-gradient(160deg, rgba(13, 18, 30, 0.96) 0%, rgba(7, 10, 18, 0.98) 100%)',
-        border: '1px solid rgba(212, 175, 55, 0.42)',
-        boxShadow: '0 18px 44px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.08)',
-        textAlign: 'left',
-      }}
-    >
-      {/* TOP BAR: SCENARIO TABS + AUDIO / PAUSE CONTROLS */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '0.35rem',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
-          {SIMULATED_DUEL_SCENARIOS.map((sc, idx) => {
-            const active = idx === scenarioIdx;
+    <div className="home-simulated-arena">
+      {/* Top Scenario Switcher & Live Controls */}
+      <div className="sim-arena-top-controls">
+        <div className="sim-arena-scenario-tabs" role="tablist" aria-label="Duelos Temáticos Simulados">
+          {SIM_DUEL_SCENARIOS.map((sc, idx) => {
+            const isActive = idx === scenarioIdx;
             return (
               <button
                 key={sc.id}
                 type="button"
-                onClick={() => handleSelectScenario(idx)}
-                style={{
-                  padding: isMobileViewport ? '3px 7px' : '4px 9px',
-                  borderRadius: '6px',
-                  fontSize: isMobileViewport ? '0.62rem' : '0.66rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  background: active
-                    ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.28), rgba(30, 41, 59, 0.95))'
-                    : 'rgba(15, 23, 42, 0.75)',
-                  border: active
-                    ? '1px solid #fde047'
-                    : '1px solid rgba(148, 163, 184, 0.22)',
-                  color: active ? '#fef08a' : '#cbd5e1',
+                role="tab"
+                aria-selected={isActive}
+                className={`sim-arena-tab-btn ${isActive ? 'is-active' : ''}`}
+                style={
+                  isActive
+                    ? ({
+                        borderColor: sc.accentColor,
+                        boxShadow: `0 0 14px ${sc.accentColor}44`,
+                      } as React.CSSProperties)
+                    : undefined
+                }
+                onClick={() => {
+                  setScenarioIdx(idx);
+                  setStepIdx(0);
+                  setSubPhase('hand');
                 }}
               >
-                {sc.shortTabLabel}
+                {sc.shortTab}
               </button>
             );
           })}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+        <div className="sim-arena-playback-bar">
           <button
             type="button"
-            onClick={handleSoundButton}
-            title="Ativar/Silenciar Efeitos Sonoros e Trilha Orquestral da Partida"
-            style={{
-              padding: '3px 7px',
-              borderRadius: '6px',
-              fontSize: '0.62rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              background: soundMuted ? 'rgba(15, 23, 42, 0.8)' : 'rgba(22, 101, 52, 0.35)',
-              border: soundMuted
-                ? '1px solid rgba(148, 163, 184, 0.28)'
-                : '1px solid rgba(74, 222, 128, 0.55)',
-              color: soundMuted ? '#94a3b8' : '#86efac',
-            }}
+            className={`sim-arena-ctrl-btn ${isAudioLive ? 'is-audio-live' : ''}`}
+            onClick={handleToggleAudio}
+            title="Ativar efeitos sonoros e trilha sonora real da Arena"
           >
-            {soundMuted ? '🔇 Som Off' : '🔊 Som Real'}
+            {isAudioLive ? '🔊 Som da Partida: ON' : '🔇 Ativar Som & Música'}
           </button>
           <button
             type="button"
-            onClick={() => setIsPaused((p) => !p)}
-            title={isPaused ? 'Retomar Simulação' : 'Pausar Simulação'}
-            style={{
-              padding: '3px 7px',
-              borderRadius: '6px',
-              fontSize: '0.62rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              background: 'rgba(15, 23, 42, 0.82)',
-              border: '1px solid rgba(212, 175, 55, 0.32)',
-              color: '#fde047',
-            }}
+            className={`sim-arena-ctrl-btn ${isAutoPlaying ? 'is-active' : ''}`}
+            onClick={() => setIsAutoPlaying((prev) => !prev)}
           >
-            {isPaused ? '▶' : '⏸'}
+            {isAutoPlaying ? '⏸ Pausar' : '▶ Auto'}
           </button>
           <button
             type="button"
-            onClick={handlePrevStep}
-            title="Jogada Anterior"
-            style={{
-              padding: '3px 6px',
-              borderRadius: '6px',
-              fontSize: '0.62rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              background: 'rgba(15, 23, 42, 0.82)',
-              border: '1px solid rgba(148, 163, 184, 0.25)',
-              color: '#e2e8f0',
-            }}
+            className="sim-arena-ctrl-btn"
+            onClick={handleOpenCombos}
+            title="Ver os 62 Combos no Guia Tático"
           >
-            ◀
-          </button>
-          <button
-            type="button"
-            onClick={handleNextStep}
-            title="Próxima Jogada"
-            style={{
-              padding: '3px 6px',
-              borderRadius: '6px',
-              fontSize: '0.62rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              background: 'rgba(15, 23, 42, 0.82)',
-              border: '1px solid rgba(148, 163, 184, 0.25)',
-              color: '#e2e8f0',
-            }}
-          >
-            ▶
+            📖 {scenario.comboRef}
           </button>
         </div>
       </div>
 
-      {/* ENEMY SOVEREIGN HUD BAR */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0.38rem 0.6rem',
-          borderRadius: '7px',
-          background: 'rgba(15, 23, 42, 0.88)',
-          border: `1px solid ${DOMAIN_META[scenario.enemySovereign.domain].color}55`,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-          {enemyAvatarCard?.imagePath && (
-            <img
-              src={enemyAvatarCard.imagePath}
-              alt={scenario.enemySovereign.name}
-              onClick={() => onInspectCard?.(enemyAvatarCard)}
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                border: `1.5px solid ${DOMAIN_META[scenario.enemySovereign.domain].color}`,
-                cursor: 'pointer',
+      {/* Step & Micro-Phase Strip: Lets user see or click 1. Mão -> 2. Comando/Alvo -> 3. Efeito na Mesa */}
+      <div className="sim-arena-director-strip">
+        <div className="sim-arena-step-pills">
+          {scenario.steps.map((st, idx) => (
+            <button
+              key={st.id}
+              type="button"
+              className={`sim-step-pill-btn ${idx === stepIdx ? 'is-active' : ''}`}
+              onClick={() => {
+                setIsAutoPlaying(false);
+                setStepIdx(idx);
+                setSubPhase('hand');
               }}
-            />
-          )}
-          <div>
-            <div
-              className="font-cinzel"
-              style={{ fontSize: '0.72rem', fontWeight: 800, color: '#f8fafc', lineHeight: 1.1 }}
             >
-              {scenario.enemySovereign.name}
-            </div>
-            {!isMobileViewport && (
-              <div style={{ fontSize: '0.58rem', color: '#94a3b8' }}>
-                {scenario.enemySovereign.title}
-              </div>
-            )}
-          </div>
+              Passo {idx + 1}/4
+            </button>
+          ))}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-          <span
-            style={{
-              fontSize: '0.62rem',
-              fontWeight: 800,
-              padding: '2px 6px',
-              borderRadius: '999px',
-              background: 'rgba(30, 41, 59, 0.9)',
-              color: '#bae6fd',
-              border: '1px solid rgba(56, 189, 248, 0.35)',
+        <div className="sim-arena-subphase-pills">
+          <button
+            type="button"
+            className={`sim-subphase-btn ${subPhase === 'hand' ? 'is-active' : ''}`}
+            onClick={() => {
+              setIsAutoPlaying(false);
+              setSubPhase('hand');
             }}
           >
-            {step.enemyAffinity}
-          </span>
-          <span
-            style={{
-              fontSize: '0.62rem',
-              fontWeight: 800,
-              padding: '2px 6px',
-              borderRadius: '999px',
-              background: 'rgba(30, 41, 59, 0.9)',
-              color: '#fde047',
+            1. 🃏 Escolhendo na Mão
+          </button>
+          <span className="sim-subphase-arrow">→</span>
+          <button
+            type="button"
+            className={`sim-subphase-btn ${subPhase === 'dock' ? 'is-active' : ''}`}
+            onClick={() => {
+              setIsAutoPlaying(false);
+              setSubPhase('dock');
             }}
           >
-            {step.enemyEssence}
-          </span>
-          <span
-            style={{
-              fontSize: '0.68rem',
-              fontWeight: 900,
-              padding: '2px 8px',
-              borderRadius: '999px',
-              background: step.enemyHp <= 0 ? 'rgba(239, 68, 68, 0.35)' : 'rgba(127, 29, 29, 0.65)',
-              color: '#fecaca',
-              border: '1px solid rgba(248, 113, 113, 0.6)',
+            2. 🎯 Comando & Alvo
+          </button>
+          <span className="sim-subphase-arrow">→</span>
+          <button
+            type="button"
+            className={`sim-subphase-btn ${subPhase === 'impact' ? 'is-active' : ''}`}
+            onClick={() => {
+              setIsAutoPlaying(false);
+              setSubPhase('impact');
             }}
           >
-            {step.enemyHp}❤️
-          </span>
+            3. 💥 Efeitos na Mesa
+          </button>
         </div>
       </div>
 
-      {/* WAR TABLE / DOMAIN EXPANSION BATTLEFIELD */}
-      <div
-        style={{
-          ...boardSurfaceStyle,
-          borderRadius: '9px',
-          borderWidth: '1.5px',
-          borderStyle: 'solid',
-          padding: isMobileViewport ? '0.45rem' : '0.55rem',
-          position: 'relative',
-          transition: 'all 0.45s ease',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.35rem',
-        }}
-      >
-        {/* Domain Expansion Active Banner Inside Table */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '2px 7px',
-            borderRadius: '5px',
-            background:
-              step.domainState.mode === 'none'
-                ? 'rgba(2, 6, 23, 0.65)'
-                : 'rgba(2, 6, 23, 0.88)',
-            border:
-              step.domainState.mode === 'clash_50_50'
-                ? '1px solid #fde047'
-                : step.domainState.mode === 'single'
-                ? `1px solid ${DOMAIN_META[step.domainState.domain].color}`
-                : '1px solid rgba(255,255,255,0.08)',
-            fontSize: '0.6rem',
-            fontWeight: 800,
-            color: step.domainState.mode === 'none' ? '#cbd5e1' : '#fde047',
-          }}
-        >
-          <span>
-            {step.domainState.mode === 'clash_50_50'
-              ? `⚡ CHOQUE 50/50: ${step.domainState.name} vs ${step.domainState.rivalName}`
-              : step.domainState.name}
-          </span>
-          <span style={{ color: '#94a3b8', fontSize: '0.56rem' }}>
-            {isMobileViewport ? '📱 Visão Mobile 2 Colunas' : '🖥️ Mesa Tática 4 Colunas'}
-          </span>
+      {/* Narrative Callout Banner */}
+      <div className="sim-arena-narrative-bar">
+        <div className="sim-narrative-main">
+          <span className="sim-narrative-badge">{step.stepBadge}</span>
+          <strong className="sim-narrative-title">{step.title}:</strong>{' '}
+          <span className="sim-narrative-text">{step.narrative}</span>
         </div>
+      </div>
 
-        {/* Enemy Rearguard [R] (Hidden on Mobile if empty to prioritize front clash legibility, or shown as 2 cols) */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${visibleColumnIndices.length}, 1fr)`,
-            gap: '0.35rem',
-          }}
-        >
-          {visibleColumnIndices.map((cIdx) =>
-            renderSlotUnit(step.enemyRearguard[cIdx] ?? null, 'enemyRearguard', cIdx, isMobileViewport)
+      {/* =====================================================================
+          AUTHENTIC BATTLE ARENA STAGE (Uses exact BattleArena.tsx DOM & CSS!)
+          ===================================================================== */}
+      <div className="arena-main-column mtg-arena-table sim-authentic-arena-table">
+        <div className="arena-fullscreen-stage sim-authentic-fullscreen-stage">
+          {/* 1. TOP-CENTER UNIFIED P2 PILL (OPPONENT SOVEREIGN) */}
+          <header className="hud-unified-top-bar">
+            <div
+              className={`hud-top-pill ${
+                subPhase === 'impact' && boardState.p2Feedback ? 'is-valid-attack-target' : ''
+              }`}
+              onClick={() => p2AvatarCard && onInspectCard(p2AvatarCard)}
+              title="Clique para inspecionar o Soberano Oponente"
+            >
+              <div className="hud-mini-avatar opponent">
+                {p2AvatarCard?.imagePath ? (
+                  <img src={p2AvatarCard.imagePath} alt={scenario.p2Name} />
+                ) : (
+                  <span>👑</span>
+                )}
+              </div>
+              <span className="hud-pill-name">{scenario.p2Name}</span>
+              <span className="hud-pill-stat hp">❤️ {boardState.p2Hp}</span>
+              <span className="hud-pill-stat mana">
+                ⚡ {boardState.p2Essence}/{boardState.p2MaxEssence}
+              </span>
+              <span className="hud-pill-stat">🃏 4</span>
+              <span className="hud-pill-stat deck">📚 82 • 🪦 5</span>
+              {step.activeDomain && (
+                <span className="hud-pill-env-chip domain">
+                  ⛩️{' '}
+                  {step.activeDomain === 'clash_gold_purple'
+                    ? 'Colisão 50/50'
+                    : DOMAIN_META[step.activeDomain]?.shortName}
+                </span>
+              )}
+
+              {subPhase === 'impact' && boardState.p2Feedback && (
+                <div
+                  className={`floating-feedback-pill color-${boardState.p2Feedback.color}`}
+                  style={{ top: '34px' }}
+                >
+                  {boardState.p2Feedback.text}
+                </div>
+              )}
+            </div>
+          </header>
+
+          {/* SPECTACLE HERALD BANNER DURING 'impact' SUB-PHASE */}
+          {subPhase === 'impact' && (
+            <div className={`spectacle-herald-banner domain-${step.heraldDomain}`}>
+              <div className="spectacle-herald-art">
+                {selectedHandCard?.imagePath ? (
+                  <img src={selectedHandCard.imagePath} alt={selectedHandCard.name} />
+                ) : (
+                  <span>✨</span>
+                )}
+              </div>
+              <div>
+                <div className="spectacle-herald-title">{step.heraldTitle}</div>
+                <div className="spectacle-herald-sub">{step.heraldSubtitle}</div>
+              </div>
+            </div>
           )}
-        </div>
 
-        {/* Enemy Vanguard [V] */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${visibleColumnIndices.length}, 1fr)`,
-            gap: '0.35rem',
-          }}
-        >
-          {visibleColumnIndices.map((cIdx) =>
-            renderSlotUnit(step.enemyVanguard[cIdx] ?? null, 'enemyVanguard', cIdx, isMobileViewport)
-          )}
-        </div>
-
-        {/* Center Clash Line + Spotlight Card Pill */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            margin: '1px 0',
-          }}
-        >
+          {/* 2. AUTHENTIC WOODEN TABLETOP & DOMAIN EXPANSION BATTLEFIELD (4 LANES) */}
           <div
-            style={{
-              height: '1px',
-              width: '100%',
-              background:
-                step.domainState.mode === 'clash_50_50'
-                  ? 'linear-gradient(90deg, #38bdf8, #fde047, #ef4444)'
-                  : 'linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.55), transparent)',
-            }}
-          />
-          {spotlightCard && (
-            <div
-              onClick={() => onInspectCard?.(spotlightCard)}
-              title={`Clique para inspecionar ${spotlightCard.name} em 3D`}
-              style={{
-                position: 'absolute',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.35rem',
-                padding: '2px 8px',
-                borderRadius: '999px',
-                background: 'rgba(2, 6, 23, 0.94)',
-                border: '1px solid #fde047',
-                color: '#fef08a',
-                fontSize: '0.58rem',
-                fontWeight: 900,
-                cursor: 'pointer',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.85)',
-                zIndex: 5,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <span>{step.spotlightLabel}</span>
-              <span style={{ color: '#94a3b8' }}>🔍</span>
+            className={`mtg-battlefield-surface wooden-tabletop-surface ${
+              step.activeDomain === 'clash_gold_purple'
+                ? 'is-domain-clash-active'
+                : step.activeDomain
+                ? `is-domain-expanded domain-surface-${step.activeDomain}`
+                : ''
+            }`}
+          >
+            {/* Physical Wooden Tabletop Base + Domain Expansion Takeover / 50-50 Clash */}
+            <div className="tabletop-wood-and-domain-layer" aria-hidden="true">
+              <div className="tabletop-wood-base-img" />
+
+              {step.activeDomain === 'clash_gold_purple' ? (
+                <div className="tabletop-domain-clash-stage">
+                  <div className="tabletop-domain-clash-half top-half domain-purple" />
+                  <div className="tabletop-domain-clash-half bottom-half domain-gold" />
+                  <div className="tabletop-domain-clash-faultline">
+                    <span className="clash-faultline-core" />
+                    <span className="clash-faultline-sparks" />
+                  </div>
+                </div>
+              ) : step.activeDomain ? (
+                <div className={`tabletop-domain-takeover-img domain-${step.activeDomain}`}>
+                  <div className={`tabletop-domain-flow-fx domain-${step.activeDomain}`} />
+                </div>
+              ) : null}
+
+              <div className="tabletop-center-frontier-seam" />
             </div>
-          )}
-        </div>
 
-        {/* Player Vanguard [V] */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${visibleColumnIndices.length}, 1fr)`,
-            gap: '0.35rem',
-          }}
-        >
-          {visibleColumnIndices.map((cIdx) =>
-            renderSlotUnit(step.playerVanguard[cIdx] ?? null, 'playerVanguard', cIdx, isMobileViewport)
-          )}
-        </div>
-
-        {/* Player Rearguard [R] */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${visibleColumnIndices.length}, 1fr)`,
-            gap: '0.35rem',
-          }}
-        >
-          {visibleColumnIndices.map((cIdx) =>
-            renderSlotUnit(step.playerRearguard[cIdx] ?? null, 'playerRearguard', cIdx, isMobileViewport)
-          )}
-        </div>
-      </div>
-
-      {/* PLAYER SOVEREIGN HUD BAR */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0.38rem 0.6rem',
-          borderRadius: '7px',
-          background: 'rgba(15, 23, 42, 0.92)',
-          border: `1px solid ${DOMAIN_META[scenario.playerSovereign.domain].color}77`,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-          {playerAvatarCard?.imagePath && (
-            <img
-              src={playerAvatarCard.imagePath}
-              alt={scenario.playerSovereign.name}
-              onClick={() => onInspectCard?.(playerAvatarCard)}
-              style={{
-                width: '28px',
-                height: '28px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                border: `1.5px solid ${DOMAIN_META[scenario.playerSovereign.domain].color}`,
-                cursor: 'pointer',
-              }}
-            />
-          )}
-          <div>
-            <div
-              className="font-cinzel"
-              style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fde047', lineHeight: 1.1 }}
-            >
-              {scenario.playerSovereign.name} (Você)
-            </div>
-            {!isMobileViewport && (
-              <div style={{ fontSize: '0.58rem', color: '#cbd5e1' }}>
-                {scenario.comboBadge}
+            {/* Active Domain Expansion / Clash Top Ribbon inside Battlefield */}
+            {step.domainBannerTitle && (
+              <div className="sim-domain-active-ribbon">
+                <strong>{step.domainBannerTitle}</strong>
+                <span>{step.domainBannerSubtitle}</span>
               </div>
             )}
+
+            {/* 1ª FILEIRA (TOPO): RETAGUARDA DA IA */}
+            {renderAuthenticLane(
+              'aiRearguard',
+              'ai-rearguard-lane',
+              'ai-tag',
+              '🛡️ Retaguarda IA',
+              'ai',
+              'rearguard',
+              boardState.aiRearguard,
+            )}
+
+            {/* 2ª FILEIRA: VANGUARDA DO JOGADOR 1 (INVASÃO) */}
+            {renderAuthenticLane(
+              'playerVanguard',
+              'player-vanguard-in-enemy-field',
+              'player-invader-tag',
+              '⚔️ Sua Vanguarda (Invasão +1 ATQ)',
+              'player',
+              'vanguard',
+              boardState.playerVanguard,
+            )}
+
+            {/* FRONTEIRA CENTRAL */}
+            <div className="tabletop-clash-gap" />
+
+            {/* 3ª FILEIRA: VANGUARDA DA IA (INVASÃO) */}
+            {renderAuthenticLane(
+              'aiVanguard',
+              'ai-vanguard-in-player-field',
+              'ai-invader-tag',
+              '🔥 Vanguarda Inimiga (Invasão)',
+              'ai',
+              'vanguard',
+              boardState.aiVanguard,
+            )}
+
+            {/* 4ª FILEIRA (BASE): RETAGUARDA DO JOGADOR 1 (ALCANCE / RELÍQUIAS) */}
+            {renderAuthenticLane(
+              'playerRearguard',
+              'player-lane',
+              'player-tag',
+              '🏛️ Sua Retaguarda (Alcance / Relíquias)',
+              'player',
+              'rearguard',
+              boardState.playerRearguard,
+            )}
           </div>
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-          <span
-            style={{
-              fontSize: '0.62rem',
-              fontWeight: 800,
-              padding: '2px 6px',
-              borderRadius: '999px',
-              background: 'rgba(212, 175, 55, 0.16)',
-              color: '#fde047',
-              border: '1px solid rgba(250, 204, 21, 0.45)',
-            }}
-          >
-            {step.playerAffinity}
-          </span>
-          <span
-            style={{
-              fontSize: '0.62rem',
-              fontWeight: 800,
-              padding: '2px 6px',
-              borderRadius: '999px',
-              background: 'rgba(30, 41, 59, 0.9)',
-              color: '#fde047',
-            }}
-          >
-            {step.playerEssence}
-          </span>
-          <span
-            style={{
-              fontSize: '0.68rem',
-              fontWeight: 900,
-              padding: '2px 8px',
-              borderRadius: '999px',
-              background: 'rgba(20, 83, 45, 0.65)',
-              color: '#bbf7d0',
-              border: '1px solid rgba(74, 222, 128, 0.55)',
-            }}
-          >
-            {step.playerHp}❤️
-          </span>
-        </div>
-      </div>
+          {/* 3. BOTTOM-CENTER UNIFIED COMMAND BAR (SOVEREIGN 1 + HAND BUTTON + PHASE) */}
+          <footer className="hud-unified-bottom-bar">
+            <div className="hud-bottom-strip-inner">
+              <div className="hud-p1-segment">
+                <div
+                  className="hud-mini-avatar player"
+                  onClick={() => p1AvatarCard && onInspectCard(p1AvatarCard)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {p1AvatarCard?.imagePath ? (
+                    <img src={p1AvatarCard.imagePath} alt={scenario.p1Name} />
+                  ) : (
+                    <span>🧙‍♂️</span>
+                  )}
+                </div>
+                <span className="hud-pill-name player">{scenario.p1Name}</span>
+                <span className="hud-pill-stat hp">❤️ {boardState.p1Hp}</span>
+                <span className="hud-pill-stat mana">
+                  ⚡ {boardState.p1Essence}/{boardState.p1MaxEssence}
+                </span>
+                <span className="hud-pill-stat deck">📚 84 • 🪦 4</span>
 
-      {/* LIVE TACTICAL NARRATOR & STEP PROGRESS FOOTER */}
-      <div
-        style={{
-          padding: '0.5rem 0.65rem',
-          borderRadius: '8px',
-          background: 'rgba(2, 6, 23, 0.88)',
-          border: '1px solid rgba(212, 175, 55, 0.28)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.32rem',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '0.4rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <span
-            style={{
-              fontSize: '0.6rem',
-              fontWeight: 900,
-              color: '#fde047',
-              letterSpacing: '0.06em',
-            }}
-          >
-            {step.turnLabel} • {step.phaseBadge}
-          </span>
-          <div style={{ display: 'flex', gap: '4px' }}>
-            {scenario.steps.map((s, idx) => (
+                <div className="hud-p1-rituals">
+                  <button type="button" className="hud-ritual-chip" onClick={handleEnterArena}>
+                    🔥 2⚡
+                  </button>
+                  <button type="button" className="hud-ritual-chip" onClick={handleEnterArena}>
+                    🩸 +1⚡
+                  </button>
+                  <button
+                    type="button"
+                    className="hud-ritual-chip ready"
+                    onClick={() => {
+                      setIsAutoPlaying(false);
+                      setSubPhase('impact');
+                    }}
+                  >
+                    ⛩️ 6/6
+                  </button>
+                </div>
+
+                {subPhase === 'impact' && boardState.p1Feedback && (
+                  <div
+                    className={`floating-feedback-pill color-${boardState.p1Feedback.color}`}
+                    style={{ top: '-28px' }}
+                  >
+                    {boardState.p1Feedback.text}
+                  </div>
+                )}
+              </div>
+
+              <div className="hud-strip-divider" />
+
               <button
-                key={s.stepIndex}
                 type="button"
+                className={`hud-hand-trigger-btn ${subPhase === 'hand' ? 'active' : ''}`}
                 onClick={() => {
-                  startAdaptiveMusic();
-                  setStepIdx(idx);
-                }}
-                title={`Ir para Passo ${idx + 1}`}
-                style={{
-                  width: idx === stepIdx ? '18px' : '7px',
-                  height: '7px',
-                  borderRadius: '999px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: idx === stepIdx ? '#fde047' : 'rgba(148, 163, 184, 0.35)',
-                  transition: 'all 0.2s ease',
-                  padding: 0,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div
-          className="font-cinzel"
-          style={{ fontSize: '0.76rem', fontWeight: 800, color: '#f8fafc' }}
-        >
-          {step.comboTitle}
-        </div>
-        <p style={{ fontSize: '0.7rem', color: '#cbd5e1', lineHeight: 1.42, margin: 0 }}>
-          {step.narrative}
-        </p>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            gap: '0.45rem',
-            marginTop: '0.15rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <span style={{ fontSize: '0.6rem', color: '#94a3b8' }}>
-            💡 Clique em qualquer carta da mesa para inspecionar em 3D
-          </span>
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
-            {onOpenCombosCompendium && (
-              <button
-                type="button"
-                onClick={onOpenCombosCompendium}
-                style={{
-                  padding: '3px 8px',
-                  borderRadius: '6px',
-                  fontSize: '0.62rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  background: 'rgba(15, 23, 42, 0.9)',
-                  border: '1px solid rgba(212, 175, 55, 0.45)',
-                  color: '#fde68a',
+                  setIsAutoPlaying(false);
+                  setSubPhase(subPhase === 'hand' ? 'dock' : 'hand');
                 }}
               >
-                ⚡ Ver 62 Combos
+                🃏 MÃO ({handCards.length}) {subPhase === 'hand' ? '▼' : '▲'}
               </button>
-            )}
-            {onPlayDuelNow && (
-              <button
-                type="button"
-                onClick={onPlayDuelNow}
-                style={{
-                  padding: '3px 9px',
-                  borderRadius: '6px',
-                  fontSize: '0.62rem',
-                  fontWeight: 900,
-                  cursor: 'pointer',
-                  background: 'linear-gradient(135deg, #d4af37, #b45309)',
-                  border: 'none',
-                  color: '#050811',
-                }}
-              >
-                ⚔️ Jogar Agora →
-              </button>
-            )}
-          </div>
+
+              <div className="hud-strip-divider" />
+
+              <div className="hud-phase-segment">
+                <span className="hud-round-chip hud-turn-timer-chip">
+                  <span>T6 • ⚔️ COMBATE</span>
+                  <span className="hud-timer-sep">•</span>
+                  <span className="hud-timer-val">⏱️ 48s</span>
+                </span>
+
+                <button
+                  type="button"
+                  className="hud-action-cta attack-all"
+                  onClick={() => {
+                    setIsAutoPlaying(false);
+                    setSubPhase('impact');
+                  }}
+                >
+                  ⚔️ ATACAR
+                </button>
+                <button
+                  type="button"
+                  className="hud-action-cta primary combat"
+                  onClick={handleEnterArena}
+                >
+                  ⚔️ JOGAR AGORA
+                </button>
+              </div>
+            </div>
+          </footer>
+        </div>
+
+        {/* =====================================================================
+            4. AUTHENTIC PLAYER 1 HAND FAN ('hand') OR SELECTED CARD COMMAND DOCK ('dock')
+            ===================================================================== */}
+        <div className="mtg-bottom-zone floating-bottom-hud">
+          {subPhase === 'dock' && selectedHandCard ? (
+            <div
+              className={`selected-card-command-dock domain-dock-${selectedHandCard.domain}`}
+            >
+              <div className="sccd-top-row">
+                <div
+                  className="sccd-card-chip"
+                  onClick={() => onInspectCard(selectedHandCard)}
+                >
+                  <div className="sccd-thumb-wrap">
+                    <span className="sccd-cost">{selectedHandCard.cost}</span>
+                    {selectedHandCard.imagePath && (
+                      <img
+                        src={selectedHandCard.imagePath}
+                        alt={selectedHandCard.name}
+                        className="sccd-thumb"
+                      />
+                    )}
+                    <span className="sccd-zoom-badge" title="Toque para ampliar a carta">
+                      🔍
+                    </span>
+                  </div>
+                  <div className="sccd-meta">
+                    <span className="sccd-name">{selectedHandCard.name}</span>
+                    <div className="sccd-stats-pills-row">
+                      <span
+                        className="sccd-stat-pill domain-pill"
+                        style={{
+                          borderColor: DOMAIN_META[selectedHandCard.domain]?.color,
+                          color: DOMAIN_META[selectedHandCard.domain]?.color,
+                        }}
+                      >
+                        {DOMAIN_META[selectedHandCard.domain]?.icon}{' '}
+                        {DOMAIN_META[selectedHandCard.domain]?.shortName}
+                        {selectedHandCard.affinityReq > 0
+                          ? ` • Afin. ${selectedHandCard.affinityReq}`
+                          : ''}
+                      </span>
+                      <span className="sccd-stat-pill type-pill">
+                        {CARD_TYPE_LABELS[selectedHandCard.type]}
+                        {selectedHandCard.subtype ? ` • ${selectedHandCard.subtype}` : ''}
+                      </span>
+                      {(selectedHandCard.type === 'creature' ||
+                        selectedHandCard.type === 'relic') && (
+                        <>
+                          {selectedHandCard.type === 'creature' && (
+                            <span className="sccd-stat-pill atk-pill">
+                              ⚔️ {selectedHandCard.atk} ATQ
+                            </span>
+                          )}
+                          {selectedHandCard.armor > 0 && (
+                            <span className="sccd-stat-pill arm-pill">
+                              🛡️ {selectedHandCard.armor} ARM
+                            </span>
+                          )}
+                          <span className="sccd-stat-pill hp-pill">
+                            ❤️ {selectedHandCard.hp} PV
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sccd-header-controls">
+                  <button
+                    type="button"
+                    className="sccd-toggle-btn"
+                    onClick={() => onInspectCard(selectedHandCard)}
+                  >
+                    🔍 Ampliar Carta
+                  </button>
+                  <button
+                    type="button"
+                    className="sccd-toggle-btn"
+                    onClick={() => {
+                      setIsAutoPlaying(false);
+                      setSubPhase('hand');
+                    }}
+                  >
+                    🃏 Voltar à Mão ({handCards.length})
+                  </button>
+                  <button
+                    type="button"
+                    className="sccd-toggle-btn"
+                    onClick={() => {
+                      setIsAutoPlaying(false);
+                      setSubPhase('impact');
+                    }}
+                  >
+                    💥 Ver Efeito
+                  </button>
+                </div>
+              </div>
+
+              <div className="sccd-readable-card-box">
+                {selectedHandCard.keywords.length > 0 && (
+                  <div className="sccd-keywords-row">
+                    {selectedHandCard.keywords.map((kw) => (
+                      <span key={kw} className="sccd-kw-badge">
+                        <strong>✦ {kw}:</strong> {KEYWORD_TOOLTIPS[kw]}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <p className="sccd-description-text">{selectedHandCard.description}</p>
+                {selectedHandCard.ascension && (
+                  <div className="sccd-ascension-line">
+                    <strong>👑 Ascensão ({selectedHandCard.ascension.cost}⚡):</strong> Evolui
+                    para <em>{selectedHandCard.ascension.newName}</em> (
+                    {selectedHandCard.ascension.newAtk}⚔️ /{' '}
+                    {selectedHandCard.ascension.newArmor}🛡️ /{' '}
+                    {selectedHandCard.ascension.newMaxHp}❤️)
+                  </div>
+                )}
+                <div className="sccd-play-status-line is-ready">{step.dockStatusText}</div>
+              </div>
+
+              <div className="sccd-actions">
+                <button
+                  type="button"
+                  className={`quick-act-btn ${
+                    step.dockActionType === 'vanguard'
+                      ? 'act-vanguard'
+                      : step.dockActionType === 'rearguard'
+                      ? 'act-rearguard'
+                      : step.dockActionType === 'domain'
+                      ? 'act-channel'
+                      : 'act-spell'
+                  } sim-dock-chosen-cta`}
+                  onClick={() => {
+                    setIsAutoPlaying(false);
+                    setSubPhase('impact');
+                  }}
+                >
+                  👆 {step.dockActionLabel}
+                </button>
+                <button
+                  type="button"
+                  className="quick-act-btn act-channel"
+                  onClick={() => {
+                    setIsAutoPlaying(false);
+                    setSubPhase('impact');
+                  }}
+                >
+                  Canalizar (+1 Afin. & Compra) [C]
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div
+              className={`mtg-hand-drawer ${
+                subPhase === 'hand' ? 'is-expanded' : 'is-collapsed'
+              }`}
+            >
+              <div className="hand-drawer-handle-bar">
+                <button
+                  type="button"
+                  className="hand-drawer-toggle-btn is-pinned"
+                  onClick={() => {
+                    setIsAutoPlaying(false);
+                    setSubPhase(subPhase === 'hand' ? 'dock' : 'hand');
+                  }}
+                >
+                  🃏 MÃO DO JOGADOR 1 ({handCards.length}) • 👆 ESCOLHENDO:{' '}
+                  {selectedHandCard?.name.toUpperCase()}
+                </button>
+              </div>
+
+              <div className="mtg-hand-fan">
+                {handCards.map((card, idx) => {
+                  const isSelected = idx === step.selectedHandIndex;
+                  const total = handCards.length;
+                  const mid = (total - 1) / 2;
+                  const offsetIdx = idx - mid;
+                  const rotDeg = isSelected ? 0 : offsetIdx * 2.4;
+                  const liftY = isSelected ? -26 : Math.abs(offsetIdx) * 3;
+
+                  return (
+                    <div
+                      key={`${card.id}-sim-hand-${idx}`}
+                      className={`mtg-hand-card-slot ${isSelected ? 'is-selected-slot' : ''}`}
+                      style={{
+                        transform: `translateY(${liftY}px) rotate(${rotDeg}deg)`,
+                        zIndex: isSelected ? 65 : idx + 10,
+                        marginLeft: idx === 0 ? '0px' : '-26px',
+                      }}
+                    >
+                      {isSelected && (
+                        <div className="sim-hand-selected-pointer">
+                          👆 CARTA ESCOLHIDA
+                        </div>
+                      )}
+                      <CardView
+                        card={card}
+                        mode="hand"
+                        isPlayable={true}
+                        isSelected={isSelected}
+                        onInspect={onInspectCard}
+                        onClick={() => {
+                          setIsAutoPlaying(false);
+                          setSubPhase('dock');
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

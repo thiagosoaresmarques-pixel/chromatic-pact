@@ -274,7 +274,7 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
         musicTrack: 'domain_red',
         activeDomain: 'red',
         domainBannerTitle: '⛩️ CALDEIRA DO FOGO PRIMORDIAL (3 TURNOS)',
-        domainBannerSubtitle: 'Potência: Aliados +2 ATQ • Acerto Garantido: 1 de dano ígneo por turno!',
+        domainBannerSubtitle: 'Bônus de Domínio: Aliados +1/+1 e Ímpeto • Acerto Garantido direto no Soberano!',
         handCardIds: [
           'red_01_kobold',
           'red_123_cataclismo_solar',
@@ -378,7 +378,7 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
         musicTrack: 'domain_red',
         activeDomain: 'red',
         domainBannerTitle: '⛩️ CALDEIRA DO FOGO PRIMORDIAL (2 TURNOS)',
-        domainBannerSubtitle: 'Potência: Aliados +2 ATQ • Acerto Garantido: 1 de dano ígneo por turno!',
+        domainBannerSubtitle: 'Bônus de Domínio: Aliados +1/+1 e Ímpeto • Acerto Garantido direto no Soberano!',
         handCardIds: [
           'red_01_kobold',
           'red_157_dragao_tiamat_carmesim',
@@ -763,7 +763,7 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
         musicTrack: 'domain_blue',
         activeDomain: 'blue',
         domainBannerTitle: '⛩️ OLHO DO MAELSTROM ASTRAL (3 TURNOS)',
-        domainBannerSubtitle: 'Acerto Garantido: Congela a maior ameaça inimiga e compra cartas extras!',
+        domainBannerSubtitle: 'Bônus de Domínio: Aliados +1/+1 e Ímpeto • Acerto Garantido direto no Soberano!',
         handCardIds: [
           'blue_154_dragao_safira_soberano',
           'blue_161_singularidade_temporal',
@@ -1057,7 +1057,7 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
         musicTrack: 'domain_purple',
         activeDomain: 'purple',
         domainBannerTitle: '⛩️ ECLIPSE DO TRONO DE OSSOS (3 TURNOS)',
-        domainBannerSubtitle: 'Potência: Aliados recebem +1 ATQ e Dreno de Vida • Acerto Garantido: Drena 1 PV/turno!',
+        domainBannerSubtitle: 'Bônus de Domínio: Aliados +1/+1 e Ímpeto • Acerto Garantido direto no Soberano!',
         handCardIds: [
           'purple_68_exumar_legiao',
           'purple_156_lich_coroa_entropia',

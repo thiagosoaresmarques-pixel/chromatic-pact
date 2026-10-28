@@ -878,7 +878,7 @@ export function recalculateFormationBonuses(state: GameState): void {
       u.isInvading = false;
     }
 
-    // 1a. Apply Domain Expansion 120% Potential Bonuses & Defensive Stance (+1 Armor Bastion)
+    // 1a. Apply Domain Expansion (+1/+1 & Ímpeto) & Defensive Stance (+1 Armor Bastion)
     const activeDomExp = state.domainExpansion;
     const myExpandedDomain =
       activeDomExp?.owner === owner
@@ -896,33 +896,27 @@ export function recalculateFormationBonuses(state: GameState): void {
       }
 
       if (myExpandedDomain && u.card.type === 'creature') {
-        if (myExpandedDomain === 'red') {
-          u.domainExpansionAtkBonus = 2;
-          u.currentAtk += 2;
-        } else if (myExpandedDomain === 'blue') {
-          u.domainExpansionAtkBonus = 1;
-          u.domainExpansionArmorBonus = 1;
-          u.currentAtk += 1;
-          u.currentArmor += 1;
-        } else if (myExpandedDomain === 'purple') {
-          u.domainExpansionAtkBonus = 2;
-          u.currentAtk += 2;
-          if (!u.keywords.includes('Dreno de Vida')) {
-            u.keywords.push('Dreno de Vida');
-          }
-        } else if (myExpandedDomain === 'green') {
-          u.domainExpansionAtkBonus = 2;
-          u.domainExpansionArmorBonus = 1;
-          u.currentAtk += 2;
-          u.currentArmor += 1;
-          if (!u.keywords.includes('Atropelar')) {
-            u.keywords.push('Atropelar');
-          }
-        } else if (myExpandedDomain === 'gold') {
-          u.domainExpansionAtkBonus = 1;
-          u.domainExpansionArmorBonus = 2;
-          u.currentAtk += 1;
-          u.currentArmor += 2;
+        u.domainExpansionAtkBonus = 1;
+        u.currentAtk += 1;
+        if (!u.domainExpansionHpBonus) {
+          u.domainExpansionHpBonus = 1;
+          u.maxHp += 1;
+          u.currentHp += 1;
+        }
+        if (!u.keywords.includes('Ímpeto')) {
+          u.keywords.push('Ímpeto');
+          u.domainExpansionGrantedImpeto = true;
+        }
+        u.hasSummoningSickness = false;
+      } else {
+        if (u.domainExpansionHpBonus) {
+          u.maxHp = Math.max(1, u.maxHp - u.domainExpansionHpBonus);
+          u.currentHp = Math.min(u.maxHp, u.currentHp);
+          u.domainExpansionHpBonus = 0;
+        }
+        if (u.domainExpansionGrantedImpeto) {
+          u.keywords = u.keywords.filter((k) => k !== 'Ímpeto');
+          u.domainExpansionGrantedImpeto = false;
         }
       }
     }
@@ -1122,6 +1116,10 @@ export function getDomainExpansionSpec(domain: Exclude<Domain, 'neutral'>): {
   potencyDesc: string;
   sureHitDesc: string;
 } {
+  const unifiedPotency = 'Bônus de Domínio: Suas criaturas ganham +1/+1 e Ímpeto.';
+  const unifiedSureHit =
+    'Acerto Garantido: Suas criaturas aptas atravessam toda a defesa para atacar diretamente o Soberano rival (ou escolha atacar qualquer criatura inimiga).';
+
   switch (domain) {
     case 'red':
       return {
@@ -1129,9 +1127,8 @@ export function getDomainExpansionSpec(domain: Exclude<Domain, 'neutral'>): {
         name: 'Caldeira do Sol Carmesim',
         subtitle: 'Expansão de Domínio Rubra',
         icon: '⛩️🔥',
-        potencyDesc: 'Potencial 120%: Aliados Rubros ganham +2⚔️ ATQ.',
-        sureHitDesc:
-          'Acerto Garantido: Suas criaturas aptas atravessam toda a defesa para atacar o Soberano rival + 2🔥 de queima vulcânica por rodada!',
+        potencyDesc: unifiedPotency,
+        sureHitDesc: unifiedSureHit,
       };
     case 'blue':
       return {
@@ -1139,9 +1136,8 @@ export function getDomainExpansionSpec(domain: Exclude<Domain, 'neutral'>): {
         name: 'Vazio Infinito de Cronos',
         subtitle: 'Expansão de Domínio Cobalto',
         icon: '⛩️❄️',
-        potencyDesc: 'Potencial 120%: Aliados Cobalto ganham +1⚔️ ATQ e +1🛡️ Armadura.',
-        sureHitDesc:
-          'Acerto Garantido: Suas criaturas aptas atravessam toda a defesa para atacar o Soberano rival + Congela 1 inimigo e compra +1 carta!',
+        potencyDesc: unifiedPotency,
+        sureHitDesc: unifiedSureHit,
       };
     case 'purple':
       return {
@@ -1149,9 +1145,8 @@ export function getDomainExpansionSpec(domain: Exclude<Domain, 'neutral'>): {
         name: 'Santuário Malevolente das Almas',
         subtitle: 'Expansão de Domínio Umbral',
         icon: '⛩️💀',
-        potencyDesc: 'Potencial 120%: Aliados Umbrais ganham +2⚔️ ATQ e Dreno de Vida.',
-        sureHitDesc:
-          'Acerto Garantido: Suas criaturas aptas atravessam toda a defesa para atacar o Soberano rival + Drena 2❤️ do Soberano inimigo por rodada!',
+        potencyDesc: unifiedPotency,
+        sureHitDesc: unifiedSureHit,
       };
     case 'green':
       return {
@@ -1159,9 +1154,8 @@ export function getDomainExpansionSpec(domain: Exclude<Domain, 'neutral'>): {
         name: 'Mar de Árvores Primordial',
         subtitle: 'Expansão de Domínio Silvestre',
         icon: '⛩️🌿',
-        potencyDesc: 'Potencial 120%: Aliados Silvestres ganham +2⚔️ ATQ, +1🛡️ ARM e Atropelar.',
-        sureHitDesc:
-          'Acerto Garantido: Suas criaturas aptas atravessam toda a defesa para atacar o Soberano rival + Regenera +2❤️ em todas as suas criaturas!',
+        potencyDesc: unifiedPotency,
+        sureHitDesc: unifiedSureHit,
       };
     case 'gold':
       return {
@@ -1169,9 +1163,8 @@ export function getDomainExpansionSpec(domain: Exclude<Domain, 'neutral'>): {
         name: 'Tribunal da Sentença Dourada',
         subtitle: 'Expansão de Domínio Solar',
         icon: '⛩️☀️',
-        potencyDesc: 'Potencial 120%: Aliados Solares ganham +1⚔️ ATQ e +2🛡️ Armadura.',
-        sureHitDesc:
-          'Acerto Garantido: Suas criaturas aptas atravessam toda a defesa para atacar o Soberano rival + Escudo Divino no maior aliado e -2⚔️ ATQ no maior inimigo!',
+        potencyDesc: unifiedPotency,
+        sureHitDesc: unifiedSureHit,
       };
   }
 }
@@ -1271,81 +1264,12 @@ export function canInvokeDomainExpansion(
 }
 
 export function applyDomainExpansionPulseEffects(
-  state: GameState,
-  actor: 'player' | 'ai',
-  domain: Exclude<Domain, 'neutral'>
+  _state: GameState,
+  _actor: 'player' | 'ai',
+  _domain: Exclude<Domain, 'neutral'>
 ): void {
-  const actorState = state[actor];
-  const enemyActor: 'player' | 'ai' = actor === 'player' ? 'ai' : 'player';
-  const enemyState = state[enemyActor];
-
-  switch (domain) {
-    case 'red': {
-      enemyState.hp = Math.max(0, enemyState.hp - 2);
-      addFeedback(state, `${enemyActor}-sovereign`, '-2🔥 Caldeira Carmesim!', 'damage');
-      break;
-    }
-    case 'blue': {
-      const enemies = getAllBoardUnits(enemyState).filter(
-        (u) => !u.isTrap && !u.isConcealedDeploy && u.card.type === 'creature' && !u.isFrozen
-      );
-      if (enemies.length > 0) {
-        enemies.sort((a, b) => b.currentAtk - a.currentAtk);
-        enemies[0].isFrozen = true;
-        addFeedback(state, enemies[0].instanceId, '❄️ Vazio Infinito!', 'freeze');
-      }
-      drawCardsForActor(state, actor, 1);
-      break;
-    }
-    case 'purple': {
-      enemyState.hp = Math.max(0, enemyState.hp - 2);
-      actorState.hp = Math.min(actorState.maxHp, actorState.hp + 2);
-      addFeedback(state, `${enemyActor}-sovereign`, '-2💀 Santuário Malevolente!', 'damage');
-      addFeedback(state, `${actor}-sovereign`, '+2❤️ Santuário Malevolente', 'heal');
-      for (const u of getAllBoardUnits(actorState)) {
-        if (
-          u.card.type === 'creature' &&
-          !u.isTrap &&
-          u.card.domain === 'purple' &&
-          !u.keywords.includes('Dreno de Vida')
-        ) {
-          u.keywords.push('Dreno de Vida');
-        }
-      }
-      break;
-    }
-    case 'green': {
-      for (const u of getAllBoardUnits(actorState)) {
-        if (u.card.type === 'creature' && !u.isTrap) {
-          u.currentHp = Math.min(u.maxHp, u.currentHp + 2);
-          addFeedback(state, u.instanceId, '+2🌿 Mar de Árvores', 'heal');
-          if (u.card.domain === 'green' && !u.keywords.includes('Atropelar')) {
-            u.keywords.push('Atropelar');
-          }
-        }
-      }
-      break;
-    }
-    case 'gold': {
-      const allies = getAllBoardUnits(actorState).filter(
-        (u) => u.card.type === 'creature' && !u.isTrap
-      );
-      if (allies.length > 0) {
-        allies.sort((a, b) => b.currentAtk - a.currentAtk);
-        allies[0].hasDivineShield = true;
-        addFeedback(state, allies[0].instanceId, '✨ Sentença Dourada!', 'shield');
-      }
-      const enemies = getAllBoardUnits(enemyState).filter(
-        (u) => !u.isTrap && !u.isConcealedDeploy && u.card.type === 'creature'
-      );
-      if (enemies.length > 0) {
-        enemies.sort((a, b) => b.currentAtk - a.currentAtk);
-        enemies[0].currentAtk = Math.max(0, enemies[0].currentAtk - 2);
-        addFeedback(state, enemies[0].instanceId, '-2⚔️ Confisco!', 'freeze');
-      }
-      break;
-    }
-  }
+  // Pulso Elemental desativado: a Expansão de Domínio concede exclusivamente +1/+1, Ímpeto e Acerto Garantido!
+  return;
 }
 
 export function invokeDomainExpansion(state: GameState, actor: 'player' | 'ai'): GameState {

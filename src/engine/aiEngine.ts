@@ -18,7 +18,7 @@ import {
   getSovereignPowerInfo,
   getTotalAvailableSacrificePool,
   getValidAttackTargets,
-  invokeDomainExpansion,
+  invokeDomainExpansion, isSureHitActiveFor,
   playCard,
   setUnitAttackTarget,
   toggleUnitStance,
@@ -474,7 +474,7 @@ function chooseBestTargetForAttacker(
   const canHitFace = validTargets.includes(enemySovId);
 
   // Check if all ready AI units combined have lethal on enemy Sovereign
-  if (canHitFace && enemyState.hp <= attacker.currentAtk) {
+  if (canHitFace && (isSureHitActiveFor(state, actor) || enemyState.hp <= attacker.currentAtk)) {
     return enemySovId;
   }
 

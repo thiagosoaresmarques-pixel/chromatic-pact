@@ -1664,7 +1664,30 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     clearHandSelectionAndDrawers();
   };
 
-  // Auto-attack with all ready units
+  const handleExecuteUnitAttackOnTarget = (attackerUnit: BoardUnit, targetId: string) => {
+    if (!isPlayerTurn || combatAnim) return;
+    const targets = getValidAttackTargets(gameState, attackerUnit.instanceId);
+    if (!targets.includes(targetId)) return;
+
+    const isRanged =
+      attackerUnit.row === 'rearguard' && attackerUnit.keywords.includes('Alcance');
+    const isHeavy = attackerUnit.currentAtk >= 5 || targetId === 'ai-sovereign';
+    setSelectedAttackerId(null);
+    setFocusedBoardUnitId(null);
+
+    measureAndTriggerLunge(
+      attackerUnit.instanceId,
+      targetId,
+      attackerUnit.card.domain,
+      isRanged,
+      () => {
+        setGameState((prev) => executeAttack(prev, attackerUnit.instanceId, targetId));
+      },
+      isHeavy
+    );
+  };
+
+  // Auto-attack with all ready units: when Sovereign is a valid target (e.g. Domain Expansion Sure-Hit or open lane), ALWAYS attacks the Sovereign directly!
   const handleAutoAttackAll = () => {
     if (!isPlayerTurn || combatAnim) return;
     const units = getAllBoardUnits(gameState.player);
@@ -1675,29 +1698,17 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     const targets = getValidAttackTargets(gameState, firstReady.instanceId);
     let chosenTarget = targets.includes('ai-sovereign') ? 'ai-sovereign' : targets[0];
-    const enemyUnits = getAllBoardUnits(gameState.ai).filter((eu) =>
-      targets.includes(eu.instanceId)
-    );
-    const killableEnemy = enemyUnits.find((eu) => eu.currentHp <= firstReady.currentAtk);
-    if (killableEnemy && gameState.ai.hp > firstReady.currentAtk) {
-      chosenTarget = killableEnemy.instanceId;
+    if (!targets.includes('ai-sovereign')) {
+      const enemyUnits = getAllBoardUnits(gameState.ai).filter((eu) =>
+        targets.includes(eu.instanceId)
+      );
+      const killableEnemy = enemyUnits.find((eu) => eu.currentHp <= firstReady.currentAtk);
+      if (killableEnemy) {
+        chosenTarget = killableEnemy.instanceId;
+      }
     }
 
-    const isRanged =
-      firstReady.row === 'rearguard' && firstReady.keywords.includes('Alcance');
-    const isHeavy = firstReady.currentAtk >= 5 || Boolean(killableEnemy);
-    setSelectedAttackerId(null);
-
-    measureAndTriggerLunge(
-      firstReady.instanceId,
-      chosenTarget,
-      firstReady.card.domain,
-      isRanged,
-      () => {
-        setGameState((prev) => executeAttack(prev, firstReady.instanceId, chosenTarget));
-      },
-      isHeavy
-    );
+    handleExecuteUnitAttackOnTarget(firstReady, chosenTarget);
   };
 
   const handleDeployToPlayerSlot = (
@@ -4465,7 +4476,56 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       </div>
 
                       {activeBoardUnitOwner === 'player' && isPlayerTurn && (
-                        <div className="sccd-actions">
+                        <div className="sccd-actions" style={{ flexWrap: 'wrap' }}>
+                          {(() => {
+                            const unitTargets = getValidAttackTargets(
+                              gameState,
+                              activeBoardUnit.instanceId
+                            );
+                            const canHitSovereign = unitTargets.includes('ai-sovereign');
+                            const targetableEnemies = getAllBoardUnits(gameState.ai).filter((eu) =>
+                              unitTargets.includes(eu.instanceId)
+                            );
+                            return (
+                              <>
+                                {canHitSovereign && (
+                                  <button
+                                    type="button"
+                                    className="quick-act-btn act-vanguard"
+                                    onClick={() =>
+                                      handleExecuteUnitAttackOnTarget(
+                                        activeBoardUnit,
+                                        'ai-sovereign'
+                                      )
+                                    }
+                                    onMouseEnter={() => setHoveredAttackTargetId('ai-sovereign')}
+                                    onMouseLeave={() => setHoveredAttackTargetId(null)}
+                                  >
+                                    {isSureHitActiveFor(gameState, 'player') ? '⛩️ ' : '👑 '}
+                                    Atacar Soberano ({gameState.ai.name} • ❤️ {gameState.ai.hp})
+                                  </button>
+                                )}
+                                {targetableEnemies.map((eu) => (
+                                  <button
+                                    key={`unit-atk-tgt-${eu.instanceId}`}
+                                    type="button"
+                                    className="quick-act-btn act-burn"
+                                    onClick={() =>
+                                      handleExecuteUnitAttackOnTarget(
+                                        activeBoardUnit,
+                                        eu.instanceId
+                                      )
+                                    }
+                                    onMouseEnter={() => setHoveredAttackTargetId(eu.instanceId)}
+                                    onMouseLeave={() => setHoveredAttackTargetId(null)}
+                                  >
+                                    ⚔️ Atacar {eu.card.name} (C{eu.slotIndex + 1} • {eu.currentAtk}/
+                                    {eu.currentHp})
+                                  </button>
+                                ))}
+                              </>
+                            );
+                          })()}
                           {canAscendUnit(gameState, 'player', activeBoardUnit.instanceId) && (
                             <button
                               type="button"

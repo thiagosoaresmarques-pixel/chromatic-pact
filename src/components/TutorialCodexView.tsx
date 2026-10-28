@@ -196,9 +196,9 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     keyPoints: [
       {
         tag: 'OFENSIVA TOTAL',
-        title: 'Potencial 120% & Acerto Garantido',
+        title: '+1/+1, Ímpeto & Acerto Garantido',
         detail:
-          'Suas unidades daquele Domínio recebem bônus de atributos, um pulso elemental por rodada e podem atacar o Soberano rival ignorando bloqueadores comuns.',
+          'Todas as suas criaturas ganham +1/+1 e Ímpeto, e todas as unidades aptas a atacar atravessam qualquer defesa para atingir diretamente o Soberano rival (no ataque automático focam sempre o Soberano, ou você pode escolher atacar qualquer criatura inimiga em cada carta).',
       },
       {
         tag: 'COLISÃO',
@@ -930,7 +930,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 domain: 'red' as Domain,
                 sovereignPower: 'Chama Soberana (2 de Essência): Causa 2 de dano a um inimigo e 1 ao Soberano rival (ou 3 ao Soberano se o campo estiver vazio).',
                 domainExpansion:
-                  'Caldeira do Sol Carmesim: Concede +2 ATQ às unidades Rubras, Acerto Garantido e 2 de dano de queima por rodada.',
+                  'Caldeira do Sol Carmesim: Suas criaturas ganham +1/+1, Ímpeto e Acerto Garantido direto no Soberano rival.',
                 archetype: 'Agressão explosiva, Ímpeto, Fúria Crescente, Dragões de Sopro e dano direto.',
                 cardId: 'red_08_dragao_vermelho',
               },
@@ -938,7 +938,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 domain: 'purple' as Domain,
                 sovereignPower: 'Dreno Umbroso (2 de Essência): Causa 2 de dano a um alvo, restaura 2 de Vida ao seu Soberano e gera +1 Corrupção.',
                 domainExpansion:
-                  'Santuário Malevolente das Almas: Concede +2 ATQ e Dreno de Vida às unidades Umbrais, Acerto Garantido e drena 2 de Vida por rodada.',
+                  'Santuário Malevolente das Almas: Suas criaturas ganham +1/+1, Ímpeto e Acerto Garantido direto no Soberano rival.',
                 archetype: 'Reanimação da Cripta, Toque Letal, Dreno de Vida, Renascer e Pactos de Sangue.',
                 cardId: 'purple_07_lich',
               },
@@ -946,7 +946,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 domain: 'blue' as Domain,
                 sovereignPower: 'Pulso Rúnico (2 de Essência): Congela um inimigo causando 2 de dano e concede +1/+1 a um aliado (ou compra 1 carta).',
                 domainExpansion:
-                  'Vazio Infinito de Cronos: Concede +1 ATQ e +1 ARM às unidades Azuis, Acerto Garantido, congela 1 inimigo e compra 1 carta por rodada.',
+                  'Vazio Infinito de Cronos: Suas criaturas ganham +1/+1, Ímpeto e Acerto Garantido direto no Soberano rival.',
                 archetype: 'Controle glacial, compra de cartas, Voo, Alcance e Reações de contra-ataque.',
                 cardId: 'blue_06_dragao_azul',
               },
@@ -954,7 +954,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 domain: 'green' as Domain,
                 sovereignPower: 'Rugido Alfa (2 de Essência): Concede +1 ATQ e +2 de Vida ao aliado mais forte (ou restaura 3 de Vida ao Soberano).',
                 domainExpansion:
-                  'Mar de Árvores Primordial: Concede +2 ATQ, +1 ARM e Atropelar às unidades Verdes, Acerto Garantido e regenera +2 de Vida por rodada.',
+                  'Mar de Árvores Primordial: Suas criaturas ganham +1/+1, Ímpeto e Acerto Garantido direto no Soberano rival.',
                 archetype: 'Supremacia de criaturas, Atropelar, Regeneração, aceleração de Afinidade e Ascensões.',
                 cardId: 'green_09_hidra',
               },
@@ -962,7 +962,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 domain: 'gold' as Domain,
                 sovereignPower: 'Baluarte Imperial (2 de Essência): Concede +1 ARM e +2 de Vida ao aliado mais ferido (ou restaura 3 de Vida ao Soberano).',
                 domainExpansion:
-                  'Tribunal da Sentença Dourada: Concede +1 ATQ e +2 ARM às unidades Douradas, Escudo Divino ao maior aliado e -2 ATQ ao maior inimigo.',
+                  'Tribunal da Sentença Dourada: Suas criaturas ganham +1/+1, Ímpeto e Acerto Garantido direto no Soberano rival.',
                 archetype: 'Guardiões, Escudo Divino, Armadura pesada e Cidadela de Relíquias na Retaguarda.',
                 cardId: 'gold_09_serafim_solar',
               },

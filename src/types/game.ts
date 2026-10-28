@@ -114,6 +114,8 @@ export interface BoardUnit {
   weatherAtkBonus?: number;
   domainExpansionAtkBonus?: number;
   domainExpansionArmorBonus?: number;
+  domainExpansionHpBonus?: number;
+  domainExpansionGrantedImpeto?: boolean;
   stance?: 'attack' | 'defend';
   plannedTargetId?: string | null;
   bastionArmorBonus?: number;

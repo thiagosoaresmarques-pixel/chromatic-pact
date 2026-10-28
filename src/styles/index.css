@@ -13032,14 +13032,30 @@ input:focus-visible,
   position: relative;
   width: 100%;
   border-radius: 10px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .home-simulated-arena .sim-authentic-fullscreen-stage {
-  height: 610px;
-  min-height: 610px;
-  max-height: 610px;
+  position: relative;
+  height: 640px;
+  min-height: 640px;
+  max-height: 640px;
   width: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.home-simulated-arena .sim-anchored-bottom-hud {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  height: 0 !important;
+  margin-top: 0 !important;
+  overflow: visible !important;
+  z-index: 255 !important;
+  pointer-events: none !important;
 }
 
 .home-simulated-arena .spectacle-herald-banner {
@@ -13060,10 +13076,34 @@ input:focus-visible,
 .home-simulated-arena .selected-card-command-dock {
   width: min(96%, 920px);
   max-width: min(96%, 920px);
+  bottom: 44px !important;
 }
 
-.home-simulated-arena .mtg-hand-drawer {
+.home-simulated-arena .mtg-hand-drawer.is-expanded {
   max-width: 96%;
+  bottom: 40px !important;
+}
+
+/* 3D Card Flight & Slam from Player 1's Hand onto the Board Slot */
+.sim-card-flight-slam {
+  animation: simCardFlightFromHand 0.68s cubic-bezier(0.2, 0.9, 0.3, 1.12) both !important;
+}
+
+@keyframes simCardFlightFromHand {
+  0% {
+    opacity: 0;
+    transform: perspective(700px) translateY(155px) scale(1.42) rotateX(28deg);
+    filter: drop-shadow(0 28px 36px rgba(250, 204, 21, 0.95)) brightness(1.65);
+  }
+  65% {
+    opacity: 1;
+    transform: perspective(700px) translateY(-6px) scale(0.95) rotateX(0deg);
+    filter: drop-shadow(0 12px 20px rgba(250, 204, 21, 0.7)) brightness(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(700px) translateY(0px) scale(1) rotateX(0deg);
+  }
 }
 
 .sim-domain-active-ribbon {
@@ -13168,6 +13208,17 @@ input:focus-visible,
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .home-simulated-arena .sim-anchored-bottom-hud {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    height: auto !important;
+    margin-top: 4px !important;
+    pointer-events: auto !important;
   }
 
   .home-simulated-arena .mtg-slot {

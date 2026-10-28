@@ -26,6 +26,8 @@ import { WelcomeVisitorBanner } from './components/WelcomeVisitorBanner';
 import { AdminDashboardView } from './components/AdminDashboardView';
 import { CardView, CardInspectModal } from './components/CardView';
 import { HomeSimulatedDuelShowcase } from './components/HomeSimulatedDuelShowcase';
+import { ProblemsView } from './components/ProblemsView';
+import { TacticalProblem } from './data/problems';
 import {
   adminSaveCloudProfile,
   ensureStarterDeckForUser,
@@ -58,6 +60,7 @@ export interface SovereignNotification {
 type ActiveTab =
   | 'home'
   | 'arena'
+  | 'problems'
   | 'multiplayer'
   | 'campaign'
   | 'expedition'
@@ -128,8 +131,9 @@ export const App: React.FC = () => {
     return merged;
   }, [isGuest, currentUser.starterDeckCardIds, customDecks, currentUser.extraUnlockedCards]);
 
-  // Active Campaign / Expedition Match State
+  // Active Campaign / Expedition / Tactical Problem Match State
   const [activeCampaignBoss, setActiveCampaignBoss] = useState<CampaignBoss | null>(null);
+  const [activeProblem, setActiveProblem] = useState<TacticalProblem | null>(null);
   const [campaignPlayerDeckIds, setCampaignPlayerDeckIds] = useState<string[] | null>(null);
   const [isExpeditionBattle, setIsExpeditionBattle] = useState<boolean>(false);
   const [lastClearedExpeditionBossId, setLastClearedExpeditionBossId] = useState<string | null>(
@@ -364,12 +368,21 @@ export const App: React.FC = () => {
   const handleOpenArenaSolo = () => {
     trackAdsEvent('start_duel', { mode: 'solo_arena', isGuest });
     setActiveCampaignBoss(null);
+    setActiveProblem(null);
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
     if (!isGuest && customDecks.length === 0) {
       setActiveTab('deckbuilder');
       return;
     }
+    setActiveTab('arena');
+  };
+
+  const handleStartProblem = (problem: TacticalProblem) => {
+    setActiveCampaignBoss(null);
+    setActiveOnlineMatch(null);
+    setIsExpeditionBattle(false);
+    setActiveProblem(problem);
     setActiveTab('arena');
   };
 
@@ -407,7 +420,7 @@ export const App: React.FC = () => {
   // Update non-arena tabs' ambient music mood
   useEffect(() => {
     if (activeTab === 'arena' || activeTab === 'home') return; // BattleArena & HomeSimulatedDuelShowcase manage real-time combat intensity
-    if (activeTab === 'campaign' || activeTab === 'expedition') {
+    if (activeTab === 'campaign' || activeTab === 'expedition' || activeTab === 'problems') {
       setMusicState('tactical', 'purple');
     } else if (activeTab === 'packs') {
       setMusicState('sanctuary', 'gold');
@@ -421,6 +434,7 @@ export const App: React.FC = () => {
   const handleStartBossBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
     trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: false });
     setActiveOnlineMatch(null);
+    setActiveProblem(null);
     setIsExpeditionBattle(false);
     setActiveCampaignBoss(boss);
     setCampaignPlayerDeckIds(playerDeckIds);
@@ -430,6 +444,7 @@ export const App: React.FC = () => {
   const handleStartExpeditionBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
     trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: true });
     setActiveOnlineMatch(null);
+    setActiveProblem(null);
     setIsExpeditionBattle(true);
     setActiveCampaignBoss(boss);
     setCampaignPlayerDeckIds(playerDeckIds);
@@ -651,12 +666,28 @@ export const App: React.FC = () => {
           <button
             type="button"
             className={`nav-tab-btn ${
-              activeTab === 'arena' && !activeCampaignBoss && !activeOnlineMatch ? 'active' : ''
+              activeTab === 'arena' && !activeCampaignBoss && !activeOnlineMatch && !activeProblem ? 'active' : ''
             }`}
             onClick={handleOpenArenaSolo}
           >
             <span className="nav-tab-icon">⚔️</span>
             <span>Arena Solo</span>
+          </button>
+
+          <button
+            type="button"
+            className={`nav-tab-btn ${
+              activeTab === 'problems' || (activeTab === 'arena' && !!activeProblem)
+                ? 'active'
+                : ''
+            }`}
+            onClick={() => {
+              setActiveProblem(null);
+              setActiveTab('problems');
+            }}
+          >
+            <span className="nav-tab-icon">♟️</span>
+            <span>Problemas</span>
           </button>
 
           <button
@@ -1051,6 +1082,16 @@ export const App: React.FC = () => {
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
+                    onClick={() => {
+                      setActiveProblem(null);
+                      setActiveTab('problems');
+                    }}
+                  >
+                    ♟️ PROBLEMAS (15 XEQUE-MATES)
+                  </button>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
                     onClick={() => setActiveTab('multiplayer')}
                   >
                     CONCLAVE 1×1 ONLINE
@@ -1115,6 +1156,26 @@ export const App: React.FC = () => {
                   <h3 className="font-cinzel">Arena de Batalha</h3>
                   <p>Comande grimórios lendários ou listas autorais em combates táticos de vanguarda e retaguarda.</p>
                   <span className="aaa-portal-cta">Entrar em Combate →</span>
+                </div>
+              </div>
+
+              <div
+                className="aaa-portal-card"
+                onClick={() => {
+                  setActiveProblem(null);
+                  setActiveTab('problems');
+                }}
+              >
+                <img
+                  src="/assets/cards/red_157_dragao_tiamat_carmesim.png"
+                  alt="Problemas Táticos"
+                  className="aaa-portal-bg-art"
+                />
+                <div className="aaa-portal-content">
+                  <span className="aaa-kicker">15 DESAFIOS • 5 GRAUS DE DIFICULDADE</span>
+                  <h3 className="font-cinzel">♟️ Problemas (Xeque-Mate)</h3>
+                  <p>Encontre a única sequência indefensável que derrota o Soberano rival naquele exato turno.</p>
+                  <span className="aaa-portal-cta">Resolver Problemas (+990 🪙) →</span>
                 </div>
               </div>
 
@@ -1230,17 +1291,31 @@ export const App: React.FC = () => {
           />
         )}
 
+        {activeTab === 'problems' && (
+          <ProblemsView
+            onSelectProblem={handleStartProblem}
+            onInspectCard={setShowcaseInspectCard}
+          />
+        )}
+
         {activeTab === 'arena' && (
           <BattleArena
             customDecks={customDecks}
             isGuest={isGuest}
             campaignBoss={activeCampaignBoss}
             campaignPlayerDeckIds={campaignPlayerDeckIds}
+            tacticalProblem={activeProblem}
+            onSelectProblem={(nextProb) => setActiveProblem(nextProb)}
+            onExitProblems={() => {
+              setActiveProblem(null);
+              setActiveTab('problems');
+            }}
             initialPlayerDeckId={quickDuelDecks.playerDeckId}
             initialAiDeckId={quickDuelDecks.aiDeckId}
             onCampaignVictory={handleCampaignVictory}
             onExitArena={() => {
               setActiveCampaignBoss(null);
+              setActiveProblem(null);
               setActiveOnlineMatch(null);
               setIsExpeditionBattle(false);
               setActiveTab('home');

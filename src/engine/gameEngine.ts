@@ -911,7 +911,7 @@ export function recalculateFormationBonuses(state: GameState): void {
       } else {
         if (u.domainExpansionHpBonus) {
           u.maxHp = Math.max(1, u.maxHp - u.domainExpansionHpBonus);
-          u.currentHp = Math.min(u.maxHp, u.currentHp);
+          u.currentHp = Math.max(1, Math.min(u.maxHp, u.currentHp - u.domainExpansionHpBonus));
           u.domainExpansionHpBonus = 0;
         }
         if (u.domainExpansionGrantedImpeto) {

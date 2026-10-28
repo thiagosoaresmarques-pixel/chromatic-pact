@@ -67,6 +67,13 @@ import {
 import { CardView, CardInspectModal, CARD_TYPE_LABELS, DOMAIN_META, KEYWORD_TOOLTIPS } from './CardView';
 import { TacticalGuideView } from './TacticalGuideView';
 import { TutorialCodexView } from './TutorialCodexView';
+import {
+  buildProblemInitialGameState,
+  markProblemAsSolved,
+  PROBLEM_DIFFICULTY_META,
+  TACTICAL_PROBLEMS,
+  TacticalProblem,
+} from '../data/problems';
 
 const ARENA_COACHMARK_STEPS = [
   {
@@ -130,6 +137,9 @@ export interface BattleArenaProps {
   isGuest?: boolean;
   campaignBoss?: CampaignBoss | null;
   campaignPlayerDeckIds?: string[] | null;
+  tacticalProblem?: TacticalProblem | null;
+  onSelectProblem?: (problem: TacticalProblem) => void;
+  onExitProblems?: () => void;
   initialPlayerDeckId?: string;
   initialAiDeckId?: string;
   onCampaignVictory?: (boss: CampaignBoss) => void;
@@ -269,6 +279,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   isGuest = false,
   campaignBoss,
   campaignPlayerDeckIds,
+  tacticalProblem,
+  onSelectProblem,
+  onExitProblems,
   initialPlayerDeckId,
   initialAiDeckId,
   onCampaignVictory,
@@ -280,6 +293,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const handleExitBattle = () => {
     if (onlineMatch) {
       onlineMatch.onExitPvp();
+    } else if (tacticalProblem && onExitProblems) {
+      onExitProblems();
     } else if (campaignBoss && onExitCampaign) {
       onExitCampaign();
     } else if (onExitArena) {
@@ -314,6 +329,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   );
 
   const [gameState, setGameState] = useState<GameState>(() => {
+    if (tacticalProblem) {
+      return buildProblemInitialGameState(tacticalProblem);
+    }
     if (onlineMatch?.room.canonicalState) {
       return onlineMatch.role === 'host'
         ? onlineMatch.room.canonicalState
@@ -374,7 +392,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const [gameoverStage, setGameoverStage] = useState<
     'none' | 'cinematic' | 'modal' | 'dismissed'
   >('none');
-  const [isMulliganOpen, setIsMulliganOpen] = useState(true);
+  const [isMulliganOpen, setIsMulliganOpen] = useState<boolean>(() => !tacticalProblem);
+  const [problemHintStage, setProblemHintStage] = useState<0 | 1 | 2 | 3>(0);
+  const [showProblemIncompleteModal, setShowProblemIncompleteModal] = useState(false);
   const [mulliganSwapIndices, setMulliganSwapIndices] = useState<number[]>([]);
   const MULLIGAN_TIME_LIMIT_SECONDS = 30;
   const TURN_TIME_LIMIT_SECONDS = 60;
@@ -1134,7 +1154,39 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     });
   }, [gameState, onlineMatch]);
 
+  const restartCurrentProblem = () => {
+    if (!tacticalProblem) return;
+    setGameState(buildProblemInitialGameState(tacticalProblem));
+    setSelectedHandIndex(null);
+    setSelectedAttackerId(null);
+    setFocusedBoardUnitId(null);
+    setRewardClaimed(false);
+    setGameoverStage('none');
+    setIsMulliganOpen(false);
+    setShowProblemIncompleteModal(false);
+    setShowSacrificeBreakModal(false);
+    playSfx('draw');
+  };
+
+  useEffect(() => {
+    if (!tacticalProblem) return;
+    setGameState(buildProblemInitialGameState(tacticalProblem));
+    setSelectedHandIndex(null);
+    setSelectedAttackerId(null);
+    setFocusedBoardUnitId(null);
+    setRewardClaimed(false);
+    setGameoverStage('none');
+    setIsMulliganOpen(false);
+    setProblemHintStage(0);
+    setShowProblemIncompleteModal(false);
+    setShowSacrificeBreakModal(false);
+  }, [tacticalProblem?.id]);
+
   const startNewQuickMatch = (pDeckId: string, aDeckId: string) => {
+    if (tacticalProblem) {
+      restartCurrentProblem();
+      return;
+    }
     const pDeck = allowedPlayerDecks.find((d) => d.id === pDeckId) ?? allowedPlayerDecks[0];
     const aDeck = PREBUILT_DECKS.find((d) => d.id === aDeckId) ?? PREBUILT_DECKS[1] ?? PREBUILT_DECKS[0];
 
@@ -1167,7 +1219,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   // 30-Second Mulligan Countdown Timer (Auto-confirms Mulligan at 0s so matches never stall)
   useEffect(() => {
-    if (!isMulliganOpen || gameState.turn !== 1 || gameState.phase === 'gameover') {
+    if (tacticalProblem || !isMulliganOpen || gameState.turn !== 1 || gameState.phase === 'gameover') {
       return;
     }
     if (
@@ -1188,6 +1240,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     return () => window.clearTimeout(timer);
   }, [
+    tacticalProblem,
     isMulliganOpen,
     mulliganTimeLeft,
     gameState.turn,
@@ -1201,7 +1254,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   // 60-Second Turn Countdown Timer ("Ampulheta do Turno") — Auto-passes turn at 0s to prevent monotony!
   useEffect(() => {
-    if (isMulliganOpen || gameState.phase === 'gameover') {
+    if (tacticalProblem || isMulliganOpen || gameState.phase === 'gameover') {
       return;
     }
     if (
@@ -1419,7 +1472,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
       if (gameState.winner === 'player') {
         playSfx('victory');
-        if (onlineMatch) {
+        if (tacticalProblem) {
+          const solvedRes = markProblemAsSolved(tacticalProblem.id);
+          if (solvedRes.isFirstTime && onRewardGold) {
+            onRewardGold(tacticalProblem.goldReward, `Resolução do ${tacticalProblem.code}: ${tacticalProblem.title}`);
+          }
+        } else if (onlineMatch) {
           onlineMatch.onPvpResult(true);
           if (onRewardGold) onRewardGold(VICTORY_GOLD_REWARD, 'Vitória em Duelo Online 1x1');
         } else if (campaignBoss && onCampaignVictory) {
@@ -1982,6 +2040,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   const handleEndPlayerTurn = () => {
     if (!isPlayerTurn || combatAnim) return;
+    if (tacticalProblem && gameState.ai.hp > 0) {
+      setShowProblemIncompleteModal(true);
+      playSfx('hit');
+      return;
+    }
     setSelectedHandIndex(null);
     setSelectedAttackerId(null);
     const next = endTurn(gameState);
@@ -2189,6 +2252,235 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   return (
     <div className={`arena-wrapper ${showLogSidebar ? '' : 'log-collapsed'}`}>
+      {/* FLOATING TACTICAL PROBLEM HUD BAR (1-TURN LETHAL PUZZLE MODE) */}
+      {tacticalProblem && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 48,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1180,
+            width: 'min(960px, 95vw)',
+            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(9, 13, 24, 0.98))',
+            border: `1.5px solid ${PROBLEM_DIFFICULTY_META[tacticalProblem.difficulty].color}`,
+            borderRadius: 12,
+            padding: '7px 12px',
+            boxShadow: '0 10px 28px rgba(0, 0, 0, 0.78)',
+            color: '#f8fafc',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 6,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: 6,
+                  background: PROBLEM_DIFFICULTY_META[tacticalProblem.difficulty].bg,
+                  border: `1px solid ${PROBLEM_DIFFICULTY_META[tacticalProblem.difficulty].border}`,
+                  color: PROBLEM_DIFFICULTY_META[tacticalProblem.difficulty].color,
+                  fontSize: '0.68rem',
+                  fontWeight: 900,
+                }}
+              >
+                ♟️ {tacticalProblem.code} • {PROBLEM_DIFFICULTY_META[tacticalProblem.difficulty].starsText}
+              </span>
+              <strong style={{ fontSize: '0.84rem', fontFamily: 'Cinzel, serif', color: '#fef08a' }}>
+                {tacticalProblem.title}
+              </strong>
+              <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
+                — 🎯 {tacticalProblem.objectiveText} (Rival: <strong style={{ color: '#f87171' }}>{gameState.ai.hp} ❤️</strong>)
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() =>
+                  setProblemHintStage((prev) => ((prev + 1) % 4) as 0 | 1 | 2 | 3)
+                }
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: 8,
+                  border: '1px solid rgba(250, 204, 21, 0.55)',
+                  background: 'rgba(250, 204, 21, 0.16)',
+                  color: '#fde047',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                {problemHintStage === 0
+                  ? '💡 Dica 1/3'
+                  : problemHintStage === 1
+                  ? '💡 Dica 2/3'
+                  : problemHintStage === 2
+                  ? '📖 Ver Solução'
+                  : '✕ Ocultar Dica'}
+              </button>
+              <button
+                type="button"
+                onClick={restartCurrentProblem}
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: 8,
+                  border: '1px solid rgba(56, 189, 248, 0.55)',
+                  background: 'rgba(56, 189, 248, 0.16)',
+                  color: '#7dd3fc',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                🔄 Reiniciar Turno
+              </button>
+              {onExitProblems && (
+                <button
+                  type="button"
+                  onClick={onExitProblems}
+                  style={{
+                    padding: '4px 10px',
+                    borderRadius: 8,
+                    border: '1px solid rgba(148, 163, 184, 0.38)',
+                    background: 'rgba(30, 41, 59, 0.85)',
+                    color: '#e2e8f0',
+                    fontSize: '0.72rem',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                  }}
+                >
+                  📋 Lista de Problemas
+                </button>
+              )}
+            </div>
+          </div>
+
+          {problemHintStage > 0 && (
+            <div
+              style={{
+                padding: '7px 10px',
+                borderRadius: 8,
+                background: 'rgba(2, 6, 23, 0.85)',
+                border: '1px solid rgba(250, 204, 21, 0.35)',
+                fontSize: '0.76rem',
+                lineHeight: 1.45,
+                color: '#fef9c3',
+              }}
+            >
+              {problemHintStage === 1 && (
+                <div>
+                  <strong>💡 Dica Conceitual (1/3):</strong> {tacticalProblem.hint1}
+                </div>
+              )}
+              {problemHintStage === 2 && (
+                <div>
+                  <strong>💡 Caminho do Xeque-Mate (2/3):</strong> {tacticalProblem.hint2}
+                </div>
+              )}
+              {problemHintStage === 3 && (
+                <div>
+                  <strong style={{ color: '#4ade80' }}>📖 Sequência Exata da Solução:</strong>
+                  <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {tacticalProblem.solutionSteps.map((st, idx) => (
+                      <div key={idx} style={{ color: '#e2e8f0' }}>
+                        {st}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* INCOMPLETE 1-TURN LETHAL PROBLEM MODAL */}
+      {tacticalProblem && showProblemIncompleteModal && gameState.phase !== 'gameover' && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setShowProblemIncompleteModal(false)}
+        >
+          <div
+            className="modal-panel"
+            style={{ maxWidth: 480, textAlign: 'center', padding: '1.75rem' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="font-cinzel"
+              style={{
+                fontSize: '0.74rem',
+                letterSpacing: '0.14em',
+                color: '#fde047',
+                marginBottom: 6,
+              }}
+            >
+              ♟️ {tacticalProblem.code} • XEQUE-MATE EM 1 TURNO
+            </div>
+            <h3
+              className="font-cinzel gold-gradient-text"
+              style={{ fontSize: '1.3rem', marginBottom: 10 }}
+            >
+              O SOBERANO RIVAL SOBREVIVEU ({gameState.ai.hp} ❤️)!
+            </h3>
+            <p style={{ color: '#cbd5e1', fontSize: '0.86rem', lineHeight: 1.5, marginBottom: 14 }}>
+              Nos <strong>Problemas Táticos</strong>, a vitória precisa ser conquistada{' '}
+              <strong>neste exato turno</strong> com a sequência única e indefensável!
+            </p>
+            <div
+              style={{
+                padding: '10px 12px',
+                borderRadius: 10,
+                background: 'rgba(250, 204, 21, 0.1)',
+                border: '1px solid rgba(250, 204, 21, 0.35)',
+                color: '#fef08a',
+                fontSize: '0.8rem',
+                lineHeight: 1.45,
+                marginBottom: 16,
+                textAlign: 'left',
+              }}
+            >
+              <strong>⚠️ Por que faltou dano?</strong> {tacticalProblem.whyIndefensible}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn-fantasy btn-fantasy-primary"
+                onClick={restartCurrentProblem}
+              >
+                🔄 Reiniciar Turno Agora
+              </button>
+              <button
+                type="button"
+                className="btn-fantasy"
+                onClick={() => {
+                  setShowProblemIncompleteModal(false);
+                  setProblemHintStage((prev) => (prev < 2 ? 2 : 3));
+                }}
+              >
+                💡 Ver Dica Detalhada
+              </button>
+              <button
+                type="button"
+                className="btn-fantasy"
+                onClick={() => setShowProblemIncompleteModal(false)}
+              >
+                Voltar à Mesa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* CINEMATIC FLOATING MULLIGAN HUD (7 Cards in a Panoramic Arc Over the Battlefield!) */}
       {isMulliganOpen && gameState.turn === 1 && gameState.phase !== 'gameover' && (
         <div className="mulligan-modal-backdrop">
@@ -5027,7 +5319,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     fontWeight: 700,
                   }}
                 >
-                  {isGuest
+                  {tacticalProblem
+                    ? `♟️ ${tacticalProblem.code} Resolvido! Recompensa: +${tacticalProblem.goldReward} Ouro (1ª conclusão)`
+                    : isGuest
                     ? 'Modo Visitante: Crie sua Conta de Soberano para conquistar +10 Ouro por vitória!'
                     : `Recompensa: +${VICTORY_GOLD_REWARD} Ouro`}
                 </div>
@@ -5057,13 +5351,34 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             )}
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+              {tacticalProblem && onSelectProblem && (() => {
+                const curIdx = TACTICAL_PROBLEMS.findIndex((p) => p.id === tacticalProblem.id);
+                const nextProb = curIdx >= 0 && curIdx < TACTICAL_PROBLEMS.length - 1
+                  ? TACTICAL_PROBLEMS[curIdx + 1]
+                  : null;
+                if (!nextProb) return null;
+                return (
+                  <button
+                    type="button"
+                    className="btn-fantasy btn-fantasy-primary"
+                    onClick={() => onSelectProblem(nextProb)}
+                  >
+                    ⏭️ Próximo: {nextProb.code}
+                  </button>
+                );
+              })()}
               {!onlineMatch && (
                 <button
                   type="button"
-                  className="btn-fantasy btn-fantasy-primary"
+                  className={tacticalProblem ? 'btn-fantasy' : 'btn-fantasy btn-fantasy-primary'}
                   onClick={() => startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId)}
                 >
-                  ⚔️ Jogar Novamente
+                  {tacticalProblem ? '🔄 Repetir Problema' : '⚔️ Jogar Novamente'}
+                </button>
+              )}
+              {tacticalProblem && onExitProblems && (
+                <button type="button" className="btn-fantasy" onClick={onExitProblems}>
+                  📋 Lista de Problemas
                 </button>
               )}
               {onlineMatch && (
@@ -5080,7 +5395,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   🏰 Voltar à Campanha
                 </button>
               )}
-              {!onlineMatch && !campaignBoss && onExitArena && (
+              {!onlineMatch && !campaignBoss && !tacticalProblem && onExitArena && (
                 <button type="button" className="btn-fantasy" onClick={onExitArena}>
                   🏠 Voltar ao Início
                 </button>

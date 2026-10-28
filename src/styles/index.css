@@ -11771,7 +11771,11 @@ input:focus-visible,
 
   /* 2. Battle Arena Wrapper & Floating Combat Log Drawer */
   .arena-wrapper {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .combat-log-sidebar {
@@ -11787,7 +11791,7 @@ input:focus-visible,
 
   /* 3. DeckBuilder: Move Deck Summary / Save Panel to Top on Tablet & Mobile */
   .db-modern-shell {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 
   .db-modern-sidebar {
@@ -12126,6 +12130,10 @@ input:focus-visible,
     padding: 2px 2px calc(68px + env(safe-area-inset-bottom, 0px)) !important;
     min-height: calc(100dvh - 34px) !important;
     height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: flex-start !important;
@@ -12135,6 +12143,10 @@ input:focus-visible,
   .arena-fullscreen-stage {
     height: auto !important;
     min-height: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     flex: 0 0 auto !important;
     display: flex !important;
     flex-direction: column !important;
@@ -12152,6 +12164,9 @@ input:focus-visible,
     left: auto !important;
     transform: none !important;
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     flex-shrink: 0 !important;
     margin: 0 !important;
     z-index: 70 !important;
@@ -12161,6 +12176,10 @@ input:focus-visible,
     flex: 0 0 auto !important;
     height: auto !important;
     min-height: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     padding: 6px 2px 12px 2px !important;
     margin: 0 !important;
     border-radius: 8px !important;
@@ -12178,7 +12197,9 @@ input:focus-visible,
     left: auto !important;
     transform: none !important;
     width: 100% !important;
-    max-width: 100vw !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     flex-shrink: 0 !important;
     margin: 0 !important;
     z-index: 105 !important;
@@ -12190,6 +12211,9 @@ input:focus-visible,
     left: auto !important;
     right: auto !important;
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     height: auto !important;
     margin-top: 2px !important;
     z-index: 260 !important;
@@ -12200,16 +12224,21 @@ input:focus-visible,
   .mtg-board-lane {
     flex: 0 0 auto !important;
     min-height: 82px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .mtg-lane-slots {
     display: grid !important;
     grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-    gap: 3px !important;
+    gap: 2px !important;
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;
     justify-items: center !important;
-    padding: 0 3px !important;
+    padding: 0 2px !important;
     box-sizing: border-box !important;
   }
 
@@ -12221,6 +12250,7 @@ input:focus-visible,
     height: 80px !important;
     border-radius: 6px !important;
     margin: 0 auto !important;
+    box-sizing: border-box !important;
   }
 
   .card-frame.mode-board.mtg-board-token,
@@ -12229,6 +12259,7 @@ input:focus-visible,
     max-width: 62px !important;
     min-width: 0 !important;
     height: 78px !important;
+    box-sizing: border-box !important;
   }
 
   .mtg-token-header {
@@ -12335,13 +12366,19 @@ input:focus-visible,
   /* Top Opponent Unified Pill on Smartphone */
   .hud-unified-top-bar {
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .hud-top-pill {
-    max-width: 98vw !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     height: auto !important;
     min-height: 30px !important;
-    padding: 3px 8px !important;
+    padding: 3px 6px !important;
     gap: 4px !important;
     flex-wrap: wrap !important;
     justify-content: center !important;
@@ -12360,7 +12397,9 @@ input:focus-visible,
   /* Bottom Player Unified Command Bar on Smartphone (2 Clean Touch Rows) */
   .hud-unified-bottom-bar {
     width: 100% !important;
-    max-width: 100vw !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     left: 0 !important;
     transform: none !important;
   }
@@ -12368,11 +12407,13 @@ input:focus-visible,
   .hud-bottom-strip-inner {
     position: relative !important;
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     height: auto !important;
     min-height: 54px !important;
     flex-wrap: wrap !important;
     justify-content: space-between !important;
-    padding: 4px 6px !important;
+    padding: 4px 5px !important;
     gap: 4px !important;
     border-radius: 8px !important;
     border-bottom: 1px solid rgba(212, 175, 55, 0.35) !important;
@@ -12392,29 +12433,36 @@ input:focus-visible,
 
   .hud-p1-segment {
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     justify-content: space-between !important;
     gap: 4px !important;
     flex-wrap: wrap !important;
   }
 
   .hud-hand-trigger-btn {
-    padding: 4px 7px !important;
-    font-size: 0.56rem !important;
+    padding: 4px 6px !important;
+    font-size: 0.54rem !important;
     flex: 0 1 auto !important;
+    min-width: 0 !important;
     text-align: center !important;
     white-space: nowrap !important;
   }
 
   .hud-phase-segment {
     flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
     justify-content: flex-end !important;
     gap: 3px !important;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
   }
 
   .hud-action-cta {
-    padding: 4px 7px !important;
-    font-size: 0.56rem !important;
+    padding: 4px 6px !important;
+    font-size: 0.54rem !important;
     white-space: nowrap !important;
   }
 
@@ -12479,6 +12527,15 @@ input:focus-visible,
   }
 
   /* Hand Drawer on Smartphone: Swipeable horizontal touch carousel */
+  .mtg-hand-drawer,
+  .mtg-hand-drawer.is-collapsed,
+  .mtg-hand-drawer.is-expanded {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
   .mtg-hand-drawer.is-collapsed {
     display: none !important;
   }
@@ -13287,6 +13344,7 @@ input:focus-visible,
   transform: none !important;
   width: 100% !important;
   max-width: 100% !important;
+  min-width: 0 !important;
   margin: 0 auto !important;
   box-sizing: border-box !important;
 }
@@ -13369,18 +13427,42 @@ input:focus-visible,
 }
 
 @media (max-width: 768px) {
+  .aaa-page-shell {
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
   .aaa-home-showcase-hero {
-    padding: 0.65rem 0.35rem !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 0.55rem 0.3rem !important;
     border-radius: 12px !important;
+    overflow: hidden !important;
   }
 
   .home-simulated-arena {
-    padding: 6px 4px;
-    gap: 5px;
-    border-radius: 10px;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding: 6px 4px !important;
+    gap: 5px !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
   }
 
   .sim-arena-top-controls {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     flex-direction: column;
     align-items: stretch;
     gap: 6px;
@@ -13390,6 +13472,10 @@ input:focus-visible,
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     gap: 4px;
     padding-bottom: 2px;
     -webkit-overflow-scrolling: touch;
@@ -13405,6 +13491,10 @@ input:focus-visible,
   .sim-arena-playback-bar {
     display: flex;
     flex-wrap: wrap;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     gap: 4px;
     justify-content: flex-start;
   }
@@ -13418,30 +13508,53 @@ input:focus-visible,
     display: none !important;
   }
 
-  .sim-arena-narrative-bar {
+  .sim-arena-narrative-bar,
+  .sim-narrative-main {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     padding: 5px 8px;
     font-size: 0.68rem;
-    line-height: 1.32;
+    line-height: 1.34;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
   }
 
   .home-simulated-arena .mtg-lane-slots {
-    gap: 3px !important;
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 2px !important;
     padding: 0 2px !important;
+    width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
   }
 
   .home-simulated-arena .mtg-slot {
-    max-width: 62px !important;
-    height: 78px !important;
+    width: 100% !important;
+    max-width: 60px !important;
+    min-width: 0 !important;
+    height: 76px !important;
+    box-sizing: border-box !important;
   }
 
   .home-simulated-arena .card-frame.mode-board.mtg-board-token,
   .home-simulated-arena .tabletop-facedown-card {
-    max-width: 60px !important;
-    height: 76px !important;
+    width: 100% !important;
+    max-width: 58px !important;
+    min-width: 0 !important;
+    height: 74px !important;
+    box-sizing: border-box !important;
   }
 
   .home-simulated-arena .sim-authentic-arena-table {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     height: auto !important;
     min-height: 0 !important;
     padding: 2px 0 4px !important;
@@ -13449,6 +13562,10 @@ input:focus-visible,
   }
 
   .home-simulated-arena .sim-authentic-fullscreen-stage {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
@@ -13460,6 +13577,10 @@ input:focus-visible,
     bottom: auto !important;
     left: auto !important;
     right: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
     height: auto !important;
     margin-top: 2px !important;
     pointer-events: auto !important;

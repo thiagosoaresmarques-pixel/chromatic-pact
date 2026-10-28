@@ -12,26 +12,61 @@ import {
   TACTICAL_PROBLEMS,
   TacticalProblem,
 } from '../data/problems';
+import {
+  claimDailyQuestReward,
+  DAILY_PROBLEM_BONUS_GOLD,
+  DailyStateData,
+  getDailyState,
+  getTimeUntilNextDailyReset,
+  recordDailyProblemAttemptResult,
+} from '../utils/dailyQuestsEngine';
 import { CardDefinition } from '../types/game';
 import { DOMAIN_META } from './CardView';
 
 export interface ProblemsViewProps {
   onSelectProblem: (problem: TacticalProblem) => void;
   onInspectCard?: (card: CardDefinition) => void;
+  onRewardGold?: (amount: number, reason: string) => void;
 }
 
 type HistoryFilterType = 'all' | 'pending' | 'failed' | 'solved' | 'first_try';
 
-export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) => {
+export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onRewardGold }) => {
   const [selectedTier, setSelectedTier] = useState<'all' | ProblemDifficultyTier>('iniciante');
   const [historyFilter, setHistoryFilter] = useState<HistoryFilterType>('all');
   const [solvedIds] = useState<string[]>(() => getSolvedProblemIds());
   const [historyMap, setHistoryMap] = useState<Record<string, ProblemHistoryEntry>>(() =>
     getProblemHistoryMap()
   );
+  const [dailyState, setDailyState] = useState<DailyStateData>(() => getDailyState());
+  const [isDailyPanelMinimized, setIsDailyPanelMinimized] = useState<boolean>(false);
   const [expandedHintId, setExpandedHintId] = useState<string | null>(null);
 
   const solvedSet = useMemo(() => new Set(solvedIds), [solvedIds]);
+
+  const dailyProblem = useMemo(
+    () =>
+      TACTICAL_PROBLEMS.find((p) => p.id === dailyState.dailyProblemId) ?? TACTICAL_PROBLEMS[0],
+    [dailyState.dailyProblemId]
+  );
+
+  const completedQuestsCount = useMemo(
+    () => dailyState.quests.filter((q) => q.progress >= q.target).length,
+    [dailyState.quests]
+  );
+
+  const unclaimedCompletedCount = useMemo(
+    () => dailyState.quests.filter((q) => q.progress >= q.target && !q.claimed).length,
+    [dailyState.quests]
+  );
+
+  const handleClaimQuest = (questId: string) => {
+    const { state, claimedQuest } = claimDailyQuestReward(questId);
+    setDailyState({ ...state });
+    if (claimedQuest && onRewardGold) {
+      onRewardGold(claimedQuest.goldReward, `Contrato Diário: ${claimedQuest.title}`);
+    }
+  };
 
   const tierProgress = useMemo(() => {
     return PROBLEM_TIERS_ORDER.map((tier, idx) => {
@@ -126,7 +161,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
           border: '1px solid rgba(250, 204, 21, 0.32)',
           borderRadius: 12,
           padding: '12px 16px',
-          marginBottom: 12,
+          marginBottom: 10,
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
@@ -244,6 +279,235 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
             </strong>
           </div>
         </div>
+      </div>
+
+      {/* Collapsible Daily Problem & 3 Daily Quests Strip */}
+      <div
+        style={{
+          background: 'rgba(15, 23, 42, 0.88)',
+          border: '1px solid rgba(56, 189, 248, 0.32)',
+          borderRadius: 11,
+          padding: isDailyPanelMinimized ? '7px 14px' : '10px 14px',
+          marginBottom: 12,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 10,
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#7dd3fc' }}>
+              🎯 PROBLEMA DO DIA & CONTRATOS DIÁRIOS ({completedQuestsCount}/3 concluídos)
+            </span>
+            {unclaimedCompletedCount > 0 && (
+              <span
+                style={{
+                  padding: '1px 8px',
+                  borderRadius: 999,
+                  background: 'rgba(34, 197, 94, 0.22)',
+                  border: '1px solid rgba(74, 222, 128, 0.6)',
+                  color: '#4ade80',
+                  fontSize: '0.68rem',
+                  fontWeight: 900,
+                }}
+              >
+                🎁 {unclaimedCompletedCount} Recompensa(s) para Resgatar!
+              </span>
+            )}
+            <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+              ⏱️ Renova em {getTimeUntilNextDailyReset()}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsDailyPanelMinimized((prev) => !prev)}
+            style={{
+              padding: '4px 10px',
+              borderRadius: 7,
+              border: '1px solid rgba(148, 163, 184, 0.3)',
+              background: 'rgba(30, 41, 59, 0.8)',
+              color: '#cbd5e1',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+            }}
+          >
+            {isDailyPanelMinimized ? '▾ Mostrar Diárias' : '▴ Ocultar'}
+          </button>
+        </div>
+
+        {!isDailyPanelMinimized && (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(235px, 1fr))',
+              gap: 8,
+              marginTop: 9,
+            }}
+          >
+            {/* Card 0: Problema Tático do Dia */}
+            {dailyProblem && (
+              <div
+                style={{
+                  background:
+                    'linear-gradient(135deg, rgba(234, 179, 8, 0.14), rgba(15, 23, 42, 0.95))',
+                  border: '1px solid rgba(250, 204, 21, 0.48)',
+                  borderRadius: 9,
+                  padding: '8px 10px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: 6,
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 6,
+                  }}
+                >
+                  <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#fde047' }}>
+                    🎯 PROBLEMA DO DIA (#{String(dailyProblem.number).padStart(2, '0')})
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.66rem',
+                      fontWeight: 900,
+                      color: dailyState.dailyProblemBonusClaimed
+                        ? '#4ade80'
+                        : dailyState.dailyProblemFailedToday || dailyState.dailyProblemHintUsedToday
+                          ? '#94a3b8'
+                          : '#fde047',
+                    }}
+                  >
+                    {dailyState.dailyProblemBonusClaimed
+                      ? '🏆 +3🪙 GANHO'
+                      : dailyState.dailyProblemFailedToday || dailyState.dailyProblemHintUsedToday
+                        ? 'Sem bônus de 1ª hoje'
+                        : `🪙 +${DAILY_PROBLEM_BONUS_GOLD} Bônus (1ª s/ Dica)`}
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#f8fafc' }}>
+                  {dailyProblem.title}{' '}
+                  <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 600 }}>
+                    ({PROBLEM_DIFFICULTY_META[dailyProblem.difficulty].starsText})
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onSelectProblem(dailyProblem)}
+                  style={{
+                    padding: '5px 9px',
+                    borderRadius: 6,
+                    border: '1px solid rgba(250, 204, 21, 0.7)',
+                    background: 'rgba(250, 204, 21, 0.2)',
+                    color: '#fef08a',
+                    fontWeight: 900,
+                    fontSize: '0.72rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {dailyState.dailyProblemSolvedToday
+                    ? `✅ Rejogar Problema do Dia (#${dailyProblem.number})`
+                    : `▶️ Jogar Problema do Dia (#${dailyProblem.number})`}
+                </button>
+              </div>
+            )}
+
+            {/* 3 Contratos Diários */}
+            {dailyState.quests.map((q) => {
+              const isDone = q.progress >= q.target;
+              return (
+                <div
+                  key={q.id}
+                  style={{
+                    background: 'rgba(2, 6, 23, 0.75)',
+                    border: q.claimed
+                      ? '1px solid rgba(74, 222, 128, 0.35)'
+                      : isDone
+                        ? '1.5px solid rgba(250, 204, 21, 0.75)'
+                        : '1px solid rgba(148, 163, 184, 0.22)',
+                    borderRadius: 9,
+                    padding: '8px 10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: 5,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 6,
+                    }}
+                  >
+                    <span style={{ fontSize: '0.74rem', fontWeight: 900, color: '#e2e8f0' }}>
+                      {q.icon} {q.title}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 900,
+                        color: q.claimed ? '#4ade80' : '#facc15',
+                      }}
+                    >
+                      {q.claimed ? '✅ Resgatado' : `🪙 +${q.goldReward}`}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: '#94a3b8', lineHeight: 1.3 }}>
+                    {q.description}
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 8,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 800,
+                        color: isDone ? '#4ade80' : '#cbd5e1',
+                      }}
+                    >
+                      Progresso: {q.progress}/{q.target}
+                    </span>
+                    {isDone && !q.claimed && (
+                      <button
+                        type="button"
+                        onClick={() => handleClaimQuest(q.id)}
+                        style={{
+                          padding: '3px 9px',
+                          borderRadius: 6,
+                          border: '1px solid rgba(250, 204, 21, 0.85)',
+                          background: 'linear-gradient(135deg, #facc15, #ca8a04)',
+                          color: '#0f172a',
+                          fontWeight: 900,
+                          fontSize: '0.7rem',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        🪙 Resgatar +{q.goldReward}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Compact 5-Grau Progressive Strip + Status Filters */}
@@ -392,6 +656,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
       >
         {filteredProblems.map((prob) => {
           const isSolved = solvedSet.has(prob.id);
+          const isDaily = prob.id === dailyState.dailyProblemId;
           const entry = historyMap[prob.id];
           const isTierUnlocked = isProblemTierUnlocked(prob.difficulty, solvedIds);
           const diffMeta = PROBLEM_DIFFICULTY_META[prob.difficulty];
@@ -412,11 +677,13 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
                   'linear-gradient(165deg, rgba(15, 23, 42, 0.94), rgba(9, 13, 24, 0.98))',
                 border: !isTierUnlocked
                   ? '1px dashed rgba(148, 163, 184, 0.24)'
-                  : isSolved
-                    ? '1.5px solid rgba(74, 222, 128, 0.5)'
-                    : (entry?.failures ?? 0) > 0
-                      ? '1.5px solid rgba(248, 113, 113, 0.48)'
-                      : `1px solid ${diffMeta.border}`,
+                  : isDaily
+                    ? '1.5px solid rgba(250, 204, 21, 0.85)'
+                    : isSolved
+                      ? '1.5px solid rgba(74, 222, 128, 0.5)'
+                      : (entry?.failures ?? 0) > 0
+                        ? '1.5px solid rgba(248, 113, 113, 0.48)'
+                        : `1px solid ${diffMeta.border}`,
                 borderRadius: 11,
                 padding: '10px 12px',
                 display: 'flex',
@@ -457,6 +724,20 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
                     >
                       {domMeta.icon}
                     </span>
+                    {isDaily && (
+                      <span
+                        style={{
+                          padding: '1px 5px',
+                          borderRadius: 4,
+                          background: 'rgba(250, 204, 21, 0.2)',
+                          color: '#fde047',
+                          fontSize: '0.62rem',
+                          fontWeight: 900,
+                        }}
+                      >
+                        🎯 DO DIA
+                      </span>
+                    )}
                   </div>
 
                   {!isTierUnlocked ? (
@@ -615,6 +896,8 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
                         if (!isHintOpen) {
                           const updated = recordProblemHintUsed(prob.id, 1);
                           setHistoryMap((prev) => ({ ...prev, [prob.id]: updated }));
+                          const dRes = recordDailyProblemAttemptResult(prob.id, 'hint_used');
+                          setDailyState({ ...dRes.state });
                         }
                         setExpandedHintId(isHintOpen ? null : prob.id);
                       }}

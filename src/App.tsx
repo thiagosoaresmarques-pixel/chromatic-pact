@@ -1289,6 +1289,7 @@ export const App: React.FC = () => {
           <ProblemsView
             onSelectProblem={handleStartProblem}
             onInspectCard={setShowcaseInspectCard}
+            onRewardGold={handleRewardGold}
           />
         )}
 

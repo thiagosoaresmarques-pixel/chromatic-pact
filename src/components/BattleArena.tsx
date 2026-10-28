@@ -76,6 +76,10 @@ import {
   recordProblemHintUsed,
   TacticalProblem,
 } from '../data/problems';
+import {
+  recordDailyProblemAttemptResult,
+  recordDailyQuestEvent,
+} from '../utils/dailyQuestsEngine';
 
 const ARENA_COACHMARK_STEPS = [
   {
@@ -1482,12 +1486,25 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           if (solvedRes.isFirstTime && onRewardGold) {
             onRewardGold(tacticalProblem.goldReward, `Resolução do ${tacticalProblem.code}: ${tacticalProblem.title}`);
           }
+          const dailyRes = recordDailyProblemAttemptResult(tacticalProblem.id, 'solved');
+          if (solvedRes.entry.solvedOnFirstTry) {
+            recordDailyQuestEvent('problem_solved_clean', 1);
+          }
+          if (dailyRes.earnedDailyBonusGold > 0 && onRewardGold) {
+            onRewardGold(
+              dailyRes.earnedDailyBonusGold,
+              `🎯 Bônus do Problema do Dia (${tacticalProblem.code} de 1ª sem Dica)`
+            );
+          }
         } else if (onlineMatch) {
+          recordDailyQuestEvent('match_won', 1);
           onlineMatch.onPvpResult(true);
           if (onRewardGold) onRewardGold(VICTORY_GOLD_REWARD, 'Vitória em Duelo Online 1x1');
         } else if (campaignBoss && onCampaignVictory) {
+          recordDailyQuestEvent('match_won', 1);
           onCampaignVictory(campaignBoss);
         } else if (onRewardGold) {
+          recordDailyQuestEvent('match_won', 1);
           onRewardGold(VICTORY_GOLD_REWARD, 'Vitória em Duelo na Arena');
         }
       } else {
@@ -1668,6 +1685,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       check.domain,
       pCard
     );
+    recordDailyQuestEvent('domain_invoked', 1);
+    if (isClash) {
+      recordDailyQuestEvent('domain_clashed_or_broken', 1);
+    }
     const next = invokeDomainExpansion(gameState, 'player');
     playSfx(isClash ? 'domain_clash' : 'domain_expand');
     setGameState(next);
@@ -1684,6 +1705,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       pTerrain.domain,
       pCard
     );
+    recordDailyQuestEvent('domain_clashed_or_broken', 1);
     const next = activateSimpleDomain(gameState, 'player');
     playSfx('spell');
     setGameState(next);
@@ -1706,6 +1728,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         'red',
         pCard
       );
+      recordDailyQuestEvent('domain_clashed_or_broken', 1);
       playSfx('hit');
       setGameState(next);
       setShowSacrificeBreakModal(false);
@@ -2038,6 +2061,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const handleAscendFriendlyUnit = (unit: BoardUnit) => {
     if (!canAscendUnit(gameState, 'player', unit.instanceId)) return;
     triggerAscendSpectacle(unit);
+    recordDailyQuestEvent('unit_ascended', 1);
     const next = ascendUnit(gameState, 'player', unit.instanceId);
     playSfx('ascend');
     setGameState(next);
@@ -2047,6 +2071,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (!isPlayerTurn || combatAnim) return;
     if (tacticalProblem && gameState.ai.hp > 0) {
       recordProblemAttemptFailed(tacticalProblem.id);
+      recordDailyProblemAttemptResult(tacticalProblem.id, 'failed');
       setShowProblemIncompleteModal(true);
       playSfx('hit');
       return;
@@ -2318,6 +2343,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     const nextStage = ((prev + 1) % 3) as 0 | 1 | 2;
                     if (nextStage > 0) {
                       recordProblemHintUsed(tacticalProblem.id, nextStage);
+                      recordDailyProblemAttemptResult(tacticalProblem.id, 'hint_used');
                     }
                     return nextStage;
                   })
@@ -2485,6 +2511,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   setIsProblemHudMinimized(false);
                   const nextStage = problemHintStage < 1 ? 1 : 2;
                   recordProblemHintUsed(tacticalProblem.id, nextStage);
+                  recordDailyProblemAttemptResult(tacticalProblem.id, 'hint_used');
                   setProblemHintStage(nextStage);
                 }}
               >

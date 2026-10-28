@@ -13634,6 +13634,233 @@ input:focus-visible,
   }
 }
 
+/* ============================================================================
+   SOBER DARK FANTASY UI UNIFICATION (ARENA-GRADE MATTE OBSIDIAN, STONE & GOLD)
+   Eliminates visual clutter, rainbow UI borders, and excess boxes outside of cards
+   ============================================================================ */
+
+.aaa-home-lobby-shell {
+  padding-top: 0.75rem !important;
+  padding-bottom: 1.25rem !important;
+  gap: 0.75rem !important;
+}
+
+.aaa-home-showcase-hero {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important;
+  padding: 0.9rem 1rem !important;
+  background: #0a0d14 !important;
+  border: 1px solid rgba(212, 175, 55, 0.24) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85) !important;
+}
+
+.aaa-home-showcase-hero::before,
+.aaa-home-showcase-hero::after {
+  display: none !important;
+}
+
+.aaa-home-lobby-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.aaa-home-lobby-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.aaa-home-lobby-brand .aaa-home-hero-heading {
+  font-size: 1.35rem !important;
+  line-height: 1.15 !important;
+  margin: 0 !important;
+  letter-spacing: 0.06em !important;
+}
+
+.aaa-home-lobby-brand .aaa-home-hero-tagline {
+  font-family: var(--font-sans) !important;
+  font-size: 0.76rem !important;
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+}
+
+.aaa-home-lobby-bar .aaa-home-cta-group {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 0.45rem !important;
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.aaa-home-lobby-bar .aaa-hero-cta-main {
+  padding: 0.52rem 1.05rem !important;
+  font-size: 0.76rem !important;
+  border-radius: 6px !important;
+  background: linear-gradient(180deg, #b48a28 0%, #7c5813 100%) !important;
+  border: 1px solid #eab308 !important;
+  color: #fffbeb !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65) !important;
+}
+
+.aaa-home-lobby-bar .aaa-hero-cta-alt {
+  padding: 0.48rem 0.82rem !important;
+  font-size: 0.72rem !important;
+  border-radius: 6px !important;
+  background: #111622 !important;
+  border: 1px solid rgba(148, 163, 184, 0.24) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+.aaa-home-lobby-bar .aaa-hero-cta-alt:hover {
+  background: #192030 !important;
+  border-color: rgba(212, 175, 55, 0.48) !important;
+  color: #f8fafc !important;
+}
+
+/* Sober Top Navbar & Controls (Matte Obsidian + Aged Bronze) */
+.top-navbar {
+  background: #090c12 !important;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.24) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.8) !important;
+}
+
+.nav-tab-btn {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+}
+
+.nav-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #e2e8f0 !important;
+}
+
+.nav-tab-btn.active {
+  background: #141a26 !important;
+  border-color: rgba(212, 175, 55, 0.5) !important;
+  color: #f3e3b0 !important;
+  box-shadow: none !important;
+}
+
+.gold-pill,
+.btn-fantasy,
+.nav-notif-btn {
+  background: #111622 !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+.gold-pill:hover,
+.btn-fantasy:hover,
+.nav-notif-btn:hover,
+.btn-fantasy.active {
+  background: #181f2e !important;
+  border-color: rgba(212, 175, 55, 0.48) !important;
+  color: #f3e3b0 !important;
+}
+
+/* Sober Simulated Duel Container & Controls */
+.home-simulated-arena {
+  background: #080b11 !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+  box-shadow: none !important;
+}
+
+.sim-arena-tab-btn {
+  border-radius: 6px !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  background: #101520 !important;
+  color: #94a3b8 !important;
+  box-shadow: none !important;
+}
+
+.sim-arena-tab-btn.is-active {
+  background: #181f2e !important;
+  border-color: rgba(212, 175, 55, 0.58) !important;
+  color: #f3e3b0 !important;
+  box-shadow: none !important;
+}
+
+.sim-arena-ctrl-btn {
+  border-radius: 6px !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  background: #101520 !important;
+  color: #cbd5e1 !important;
+  padding: 4px 9px !important;
+  box-shadow: none !important;
+}
+
+.sim-arena-ctrl-btn.is-active {
+  background: #181f2e !important;
+  border-color: rgba(212, 175, 55, 0.55) !important;
+  color: #f3e3b0 !important;
+}
+
+.sim-arena-narrative-bar {
+  background: #0e131d !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  border-left: 2px solid rgba(212, 175, 55, 0.65) !important;
+  border-radius: 6px !important;
+  padding: 5px 10px !important;
+  font-size: 0.74rem !important;
+  color: #cbd5e1 !important;
+}
+
+.sim-narrative-badge {
+  background: rgba(212, 175, 55, 0.12) !important;
+  border: 1px solid rgba(212, 175, 55, 0.35) !important;
+  color: #e6c875 !important;
+}
+
+.sim-narrative-title {
+  color: #f1f5f9 !important;
+}
+
+@media (max-width: 768px) {
+  .aaa-home-lobby-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .aaa-home-lobby-brand .aaa-home-hero-heading {
+    font-size: 1.1rem !important;
+  }
+
+  .aaa-home-lobby-brand .aaa-home-hero-tagline {
+    font-size: 0.68rem !important;
+  }
+
+  .aaa-home-lobby-bar .aaa-home-cta-group {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    width: 100% !important;
+    gap: 0.38rem !important;
+  }
+
+  .aaa-home-lobby-bar .aaa-hero-cta-main {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+}
+
+
 
 
 

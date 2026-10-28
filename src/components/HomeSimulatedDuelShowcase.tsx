@@ -1566,7 +1566,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
 
   return (
     <div className="home-simulated-arena">
-      {/* Top Scenario Switcher & Live Controls */}
+      {/* Sober Single-Row Scenario Switcher & Compact Playback Controls */}
       <div className="sim-arena-top-controls">
         <div
           className="sim-arena-scenario-tabs"
@@ -1582,14 +1582,6 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                 role="tab"
                 aria-selected={isActive}
                 className={`sim-arena-tab-btn ${isActive ? 'is-active' : ''}`}
-                style={
-                  isActive
-                    ? ({
-                        borderColor: sc.accentColor,
-                        boxShadow: `0 0 14px ${sc.accentColor}44`,
-                      } as React.CSSProperties)
-                    : undefined
-                }
                 onClick={() => {
                   if (isAudioLive && !soundMuted) startAdaptiveMusic();
                   setScenarioIdx(idx);
@@ -1606,46 +1598,11 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
         <div className="sim-arena-playback-bar">
           <button
             type="button"
-            className={`sim-arena-ctrl-btn ${isAudioLive ? 'is-audio-live' : ''}`}
-            onClick={handleToggleAudio}
-            title="Ativar efeitos sonoros e trilha sonora real da Arena"
-          >
-            {isAudioLive ? '🔊 Som: ON' : '🔇 Ativar Som & Música'}
-          </button>
-          <span
-            className={`sim-arena-ctrl-btn ${musicState.stage === 'climax' ? 'is-active' : ''}`}
-            style={{
-              cursor: 'default',
-              borderColor:
-                musicState.stage === 'climax'
-                  ? 'rgba(239, 68, 68, 0.9)'
-                  : 'rgba(148, 163, 184, 0.35)',
-              background:
-                musicState.stage === 'climax'
-                  ? 'linear-gradient(135deg, rgba(153, 27, 27, 0.85), rgba(180, 83, 9, 0.85))'
-                  : 'rgba(15, 23, 42, 0.78)',
-              color: musicState.stage === 'climax' ? '#fef08a' : '#cbd5e1',
-              fontWeight: 800,
-            }}
-            title={`Intensidade Musical Atual: ${musicState.label} (${Math.round(
-              (STAGE_TARGET_VOLUMES[musicState.stage] ?? 0.65) * 100,
-            )}% Volume)`}
-          >
-            {!isAudioLive || soundMuted
-              ? '🔇 Trilha Silenciada'
-              : musicState.stage === 'climax'
-              ? '🎵🔥 Trilha: CLÍMAX MÁXIMO (100%)'
-              : musicState.stage === 'domain_clash'
-              ? '🎵⚡ Trilha: Pressão Arcana (82%)'
-              : '🎵⚔️ Trilha: Combate (65%)'}
-          </span>
-          <button
-            type="button"
             className="sim-arena-ctrl-btn"
             onClick={handlePrevStep}
-            title="Voltar fase/passo anterior"
+            title="Passo anterior"
           >
-            ⏮ Anterior
+            ⏮
           </button>
           <button
             type="button"
@@ -1654,113 +1611,41 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               if (isAudioLive && !soundMuted) startAdaptiveMusic();
               setIsAutoPlaying((prev) => !prev);
             }}
+            title={isAutoPlaying ? 'Pausar demonstração' : 'Continuar demonstração'}
           >
-            {isAutoPlaying ? '⏸ Pausar' : '▶ Continuar'}
+            {isAutoPlaying ? '⏸' : '▶'}
           </button>
           <button
             type="button"
             className="sim-arena-ctrl-btn"
             onClick={handleNextStep}
-            title="Avançar para a próxima fase/passo"
+            title="Próximo passo"
           >
-            ⏭ Próximo
+            ⏭
           </button>
           <button
             type="button"
-            className={`sim-arena-ctrl-btn ${paceMode === 'human' ? 'is-active' : ''}`}
-            onClick={() => setPaceMode((prev) => (prev === 'human' ? 'fast' : 'human'))}
-            title="Alternar entre o ritmo natural de uma partida humana e ritmo rápido"
+            className={`sim-arena-ctrl-btn ${isAudioLive ? 'is-active' : ''}`}
+            onClick={handleToggleAudio}
+            title="Alternar áudio da demonstração"
           >
-            {paceMode === 'human' ? '🧑 Ritmo Humano (1x)' : '⚡ Rápido (1.8x)'}
-          </button>
-          <button
-            type="button"
-            className="sim-arena-ctrl-btn"
-            onClick={handleOpenCombos}
-            title="Ver os 62 Combos no Guia Tático"
-          >
-            📖 {scenario.comboRef}
-          </button>
-          <button
-            type="button"
-            className={`sim-arena-ctrl-btn ${isSimMinimized ? 'is-active' : ''}`}
-            onClick={() => setIsSimMinimized((prev) => !prev)}
-            title="Minimizar ou expandir o tabuleiro simulado"
-          >
-            {isSimMinimized ? '▴ Mostrar Mesa' : '▾ Minimizar Mesa'}
+            {isAudioLive ? '🔊' : '🔇'}
           </button>
         </div>
       </div>
 
       {!isSimMinimized && (
         <>
-          {/* Step & Micro-Phase Strip */}
-          <div className="sim-arena-director-strip">
-        <div className="sim-arena-step-pills">
-          {scenario.steps.map((st, idx) => (
-            <button
-              key={st.id}
-              type="button"
-              className={`sim-step-pill-btn ${idx === stepIdx ? 'is-active' : ''}`}
-              onClick={() => {
-                if (isAudioLive && !soundMuted) startAdaptiveMusic();
-                setIsAutoPlaying(false);
-                setStepIdx(idx);
-                setSubPhase('hand');
-              }}
-            >
-              Passo {idx + 1}/{scenario.steps.length}
-            </button>
-          ))}
-        </div>
-
-        <div className="sim-arena-subphase-pills">
-          <button
-            type="button"
-            className={`sim-subphase-btn ${subPhase === 'hand' ? 'is-active' : ''}`}
-            onClick={() => {
-              if (isAudioLive && !soundMuted) startAdaptiveMusic();
-              setIsAutoPlaying(false);
-              setSubPhase('hand');
-            }}
-          >
-            1. 🃏 Mão / Preparação
-          </button>
-          <span className="sim-subphase-arrow">→</span>
-          <button
-            type="button"
-            className={`sim-subphase-btn ${subPhase === 'dock' ? 'is-active' : ''}`}
-            onClick={() => {
-              if (isAudioLive && !soundMuted) startAdaptiveMusic();
-              setIsAutoPlaying(false);
-              setSubPhase('dock');
-            }}
-          >
-            2. 🎯 Comando & Alvo
-          </button>
-          <span className="sim-subphase-arrow">→</span>
-          <button
-            type="button"
-            className={`sim-subphase-btn ${subPhase === 'impact' ? 'is-active' : ''}`}
-            onClick={() => {
-              if (isAudioLive && !soundMuted) startAdaptiveMusic();
-              setIsAutoPlaying(false);
-              setSubPhase('impact');
-            }}
-          >
-            3. 💥 Resolução na Mesa
-          </button>
-        </div>
-      </div>
-
-      {/* Narrative Callout Banner */}
-      <div className="sim-arena-narrative-bar">
-        <div className="sim-narrative-main">
-          <span className="sim-narrative-badge">{step.stepBadge}</span>
-          <strong className="sim-narrative-title">{step.title}:</strong>{' '}
-          <span className="sim-narrative-text">{step.narrative}</span>
-        </div>
-      </div>
+          {/* Concise Sober Narrative Strip */}
+          <div className="sim-arena-narrative-bar">
+            <div className="sim-narrative-main">
+              <span className="sim-narrative-badge">
+                PASSO {stepIdx + 1}/{scenario.steps.length}
+              </span>
+              <strong className="sim-narrative-title">{step.title}:</strong>{' '}
+              <span className="sim-narrative-text">{step.narrative}</span>
+            </div>
+          </div>
 
       {/* =====================================================================
           AUTHENTIC BATTLE ARENA STAGE (100% IDENTICAL DOM, CSS & ENGINE TO BattleArena.tsx!)

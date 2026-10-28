@@ -867,22 +867,9 @@ export const App: React.FC = () => {
         <div className="nav-right-controls">
           <button
             type="button"
-            className="btn-fantasy"
+            className={`btn-fantasy ${activeTab === 'admin' ? 'active' : ''}`}
             onClick={handleOpenAdminTab}
-            style={{
-              borderColor:
-                activeTab === 'admin'
-                  ? 'rgba(253, 224, 71, 0.95)'
-                  : 'rgba(251, 191, 36, 0.65)',
-              background:
-                activeTab === 'admin'
-                  ? 'linear-gradient(180deg, rgba(217, 119, 6, 0.55) 0%, rgba(120, 53, 15, 0.85) 100%)'
-                  : 'linear-gradient(180deg, rgba(120, 53, 15, 0.45) 0%, rgba(69, 26, 3, 0.75) 100%)',
-              color: '#fde047',
-              fontWeight: 800,
-              cursor: 'pointer',
-            }}
-            title="Abrir Painel de Administração do Site (tsm81)"
+            title="Painel de Administração"
           >
             <span>👑</span>
             <span className="hide-on-mobile">ADMIN</span>
@@ -1119,98 +1106,72 @@ export const App: React.FC = () => {
           )}
 
         {activeTab === 'home' && (
-          <div className="aaa-page-shell">
-            {isGuest && (
-              <WelcomeVisitorBanner
-                onQuickPlayArena={() => {
-                  trackAdsEvent('quick_play_clicked', { source: 'welcome_banner' });
-                  handleOpenArenaSolo();
-                }}
-                onOpenCreateAccount={() => setAccountModalState({ open: true, tab: 'create' })}
-                onOpenCampaign={() => setActiveTab('campaign')}
-              />
-            )}
-
-            {/* Split Cinematic Hero with Interactive 3D Card Fan */}
+          <div className="aaa-page-shell aaa-home-lobby-shell">
+            {/* Sober Dark Fantasy Lobby Header + Live Arena Table */}
             <div className="aaa-home-showcase-hero">
-              <div className="aaa-home-hero-copy">
-                <div className="aaa-kicker aaa-hero-badge">
-                  OS CINCO DOMÍNIOS AGUARDAM O SEU PACTO
+              <div className="aaa-home-lobby-bar">
+                <div className="aaa-home-lobby-brand">
+                  <h1 className="font-cinzel gold-gradient-text aaa-home-hero-heading">
+                    CHROMATIC PACT
+                  </h1>
+                  <span className="aaa-home-hero-tagline">
+                    Combate Tático em Formação 6×4 • Vanguarda, Retaguarda &amp; Expansão de Domínio
+                  </span>
                 </div>
-                <h1 className="font-cinzel gold-gradient-text aaa-home-hero-heading">
-                  CHROMATIC PACT
-                </h1>
-                <div className="font-cinzel aaa-home-hero-tagline">
-                  Quebre o Selo. Domine os Elementos. Governe o Tabuleiro.
-                </div>
-                <p className="aaa-home-hero-lead">
-                  Forje alianças profanas entre o Fogo, o Gelo, a Sombra, a Vida e o Sol.
-                  Comande legiões em um campo de batalha vivo onde cada formação decide a guerra,
-                  expanda seu Domínio sobre a arena e derrube os Soberanos que despedaçaram o mundo.
-                </p>
 
                 <div className="aaa-home-cta-group">
                   <button
                     type="button"
-                    className="aaa-btn aaa-btn-primary aaa-btn-lg aaa-hero-cta-main"
+                    className="aaa-btn aaa-btn-primary aaa-hero-cta-main"
                     onClick={handleOpenArenaSolo}
                   >
+                    ⚔️{' '}
                     {!isGuest && customDecks.length === 0
                       ? 'FORJAR GRIMÓRIO (100 CARTAS)'
-                      : 'ENTRAR NA ARENA'}
+                      : 'JOGAR NA ARENA'}
                   </button>
                   <button
                     type="button"
-                    className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
+                    className="aaa-btn aaa-btn-secondary aaa-hero-cta-alt"
                     onClick={() => {
                       setActiveProblem(null);
                       setActiveTab('problems');
                     }}
                   >
-                    ♟️ PROBLEMAS (100 XEQUE-MATES)
+                    ♟️ Problemas (100)
                   </button>
                   <button
                     type="button"
-                    className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
-                    onClick={() => setActiveTab('multiplayer')}
-                  >
-                    CONCLAVE 1×1 ONLINE
-                  </button>
-                  <button
-                    type="button"
-                    className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
+                    className="aaa-btn aaa-btn-secondary aaa-hero-cta-alt"
                     onClick={() => setActiveTab('campaign')}
                   >
-                    MODO CAMPANHA
+                    🏰 Campanha ({defeatedBossIds.length}/20)
                   </button>
                   <button
                     type="button"
-                    className="aaa-btn aaa-btn-secondary aaa-btn-lg aaa-hero-cta-alt"
-                    onClick={() =>
-                      setAccountModalState({
-                        open: true,
-                        tab: isUnregisteredProfile(currentUser) ? 'create' : 'profile',
-                      })
-                    }
+                    className="aaa-btn aaa-btn-secondary aaa-hero-cta-alt"
+                    onClick={() => setActiveTab('deckbuilder')}
                   >
-                    {isUnregisteredProfile(currentUser) ? 'CRIAR CONTA / LOGIN' : 'MEU PERFIL'}
+                    📖 Grimório
                   </button>
-                </div>
-
-                <div className="aaa-home-domain-pillars">
-                  <span className="domain-pillar-item pillar-red">Fúria Rubra</span>
-                  <span className="domain-pillar-sep">•</span>
-                  <span className="domain-pillar-item pillar-blue">Véu Glacial</span>
-                  <span className="domain-pillar-sep">•</span>
-                  <span className="domain-pillar-item pillar-purple">Ecos Umbrais</span>
-                  <span className="domain-pillar-sep">•</span>
-                  <span className="domain-pillar-item pillar-green">Seiva Ancestral</span>
-                  <span className="domain-pillar-sep">•</span>
-                  <span className="domain-pillar-item pillar-gold">Zênite Solar</span>
+                  {isUnregisteredProfile(currentUser) && (
+                    <button
+                      type="button"
+                      className="aaa-btn aaa-btn-secondary aaa-hero-cta-alt"
+                      onClick={() =>
+                        setAccountModalState({
+                          open: true,
+                          tab: 'create',
+                        })
+                      }
+                    >
+                      👤 Criar Conta / Entrar
+                    </button>
+                  )}
                 </div>
               </div>
 
-              {/* Live Simulated Duel Showcase (Desktop 4-column War Table / Mobile 2-column Close-Up) */}
+              {/* Authentic BattleArena Combat Table Showcase */}
               <HomeSimulatedDuelShowcase
                 onInspectCard={setShowcaseInspectCard}
                 onPlayDuelNow={handleOpenArenaSolo}
@@ -1218,136 +1179,6 @@ export const App: React.FC = () => {
                 soundMuted={soundMuted}
                 onToggleSound={handleToggleSound}
               />
-            </div>
-
-            {/* 6 Illustrated Client Portals */}
-            <div className="aaa-home-portals-grid">
-              <div
-                className="aaa-portal-card"
-                onClick={handleOpenArenaSolo}
-              >
-                <img
-                  src="/assets/cards/red_08_dragao_vermelho.png"
-                  alt="Arena"
-                  className="aaa-portal-bg-art"
-                />
-                <div className="aaa-portal-content">
-                  <span className="aaa-kicker">DUELOS ESTRATÉGICOS</span>
-                  <h3 className="font-cinzel">Arena de Batalha</h3>
-                  <p>Comande grimórios lendários ou listas autorais em combates táticos de vanguarda e retaguarda.</p>
-                  <span className="aaa-portal-cta">Entrar em Combate →</span>
-                </div>
-              </div>
-
-              <div
-                className="aaa-portal-card"
-                onClick={() => {
-                  setActiveProblem(null);
-                  setActiveTab('problems');
-                }}
-              >
-                <img
-                  src="/assets/cards/red_157_dragao_tiamat_carmesim.png"
-                  alt="Problemas Táticos"
-                  className="aaa-portal-bg-art"
-                />
-                <div className="aaa-portal-content">
-                  <span className="aaa-kicker">100 DESAFIOS • TRILHA PROGRESSIVA</span>
-                  <h3 className="font-cinzel">♟️ Problemas (Xeque-Mate)</h3>
-                  <p>Complete os 20 desafios de cada Grau para destravar o Grau seguinte e registre seu histórico de maestria.</p>
-                  <span className="aaa-portal-cta">Resolver Problemas (+540 🪙) →</span>
-                </div>
-              </div>
-
-              <div className="aaa-portal-card" onClick={() => setActiveTab('campaign')}>
-                <img
-                  src="/assets/cards/neutral_10_valkyra_pentacromatica.png"
-                  alt="Campanha"
-                  className="aaa-portal-bg-art"
-                />
-                <div className="aaa-portal-content">
-                  <span className="aaa-kicker">CAMPANHA SOLO • 5 ATOS</span>
-                  <h3 className="font-cinzel">Queda dos Soberanos</h3>
-                  <p>Marche contra os vinte tiranos da Fratura Cromática até o julgamento nos Tronos Tripartidos.</p>
-                  <span className="aaa-portal-cta">Crônica: {defeatedBossIds.length}/20 Soberanos →</span>
-                </div>
-              </div>
-
-              <div className="aaa-portal-card" onClick={() => setActiveTab('expedition')}>
-                <img
-                  src="/assets/cards/purple_07_lich.png"
-                  alt="Expedição"
-                  className="aaa-portal-bg-art"
-                />
-                <div className="aaa-portal-content">
-                  <span className="aaa-kicker">ROGUELIKE & DRAFT</span>
-                  <h3 className="font-cinzel">Expedição do Vazio</h3>
-                  <p>Reivindique bênçãos ancestrais, molde seu baralho a cada escolha e sobreviva à travessia abissal.</p>
-                  <span className="aaa-portal-cta">Iniciar Travessia →</span>
-                </div>
-              </div>
-
-              <div className="aaa-portal-card" onClick={() => setActiveTab('tactics')}>
-                <img
-                  src="/assets/cards/gold_07_dragao_ouro.png"
-                  alt="Táticas"
-                  className="aaa-portal-bg-art"
-                />
-                <div className="aaa-portal-content">
-                  <span className="aaa-kicker">DOUTRINAS & ARQUÉTIPOS</span>
-                  <h3 className="font-cinzel">Oráculo de Guerra</h3>
-                  <p>Desvende as sinergias secretas dos Cinco Domínios e estude os confrontos entre cada linhagem.</p>
-                  <span className="aaa-portal-cta">Consultar Oráculo →</span>
-                </div>
-              </div>
-
-              <div className="aaa-portal-card" onClick={() => setActiveTab('deckbuilder')}>
-                <img
-                  src="/assets/cards/blue_06_dragao_azul.png"
-                  alt="Grimório"
-                  className="aaa-portal-bg-art"
-                />
-                <div className="aaa-portal-content">
-                  <span className="aaa-kicker">COLEÇÃO & FORJA DE DECKS</span>
-                  <h3 className="font-cinzel">Grimório Ancestral</h3>
-                  <p>Contemple o acervo de criaturas, relíquias e feitiços em 3D e forje sua própria arma de guerra.</p>
-                  <span className="aaa-portal-cta">Abrir Grimório →</span>
-                </div>
-              </div>
-
-              <div className="aaa-portal-card" onClick={() => setActiveTab('packs')}>
-                <img
-                  src="/assets/cards/gold_09_serafim_solar.png"
-                  alt="Relicário"
-                  className="aaa-portal-bg-art"
-                />
-                <div className="aaa-portal-content">
-                  <span className="aaa-kicker">TESOUROS & INVOCAÇÕES</span>
-                  <h3 className="font-cinzel">Relicário Astral</h3>
-                  <p>Rompa selos elementais para despertar novos ecos para sua coleção. Saldo: {gold} Ouro.</p>
-                  <span className="aaa-portal-cta">Romper Selos →</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Achievements / Conquistas do Soberano Strip */}
-            <div className="tg-panel" style={{ marginTop: '0.5rem' }}>
-              <div className="aaa-kicker">LEGADO DO SOBERANO • MARCOS DE GLÓRIA</div>
-              <div className="exp-achievements-grid">
-                {achievements.map((ach) => (
-                  <div
-                    key={ach.id}
-                    className={`exp-achievement-card ${ach.unlocked ? 'is-unlocked' : ''}`}
-                  >
-                    <span className="exp-ach-emblem">{ach.icon}</span>
-                    <div>
-                      <div className="font-cinzel exp-ach-title">{ach.title}</div>
-                      <div className="exp-ach-desc">{ach.desc}</div>
-                      <div className="exp-ach-prog">{ach.progress}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         )}

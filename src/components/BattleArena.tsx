@@ -247,15 +247,17 @@ function getOrganicTabletopPose(
       : 0;
 
   // Subtle organic placement when alone, or structured horizontal cascade when stacked (2..3 cards in the same slot)
-  const rawRot = ((absHash % 45) - 22) / 10; // -2.2 to +2.2
-  const jitterX = stackTotal > 1 ? 0 : ((absHash >> 4) % 9) - 4;
-  const jitterY = stackTotal > 1 ? 0 : ((absHash >> 9) % 7) - 3;
+  const isNarrowScreen = typeof window !== 'undefined' && window.innerWidth <= 768;
+  const rawRot = isNarrowScreen ? 0 : ((absHash % 45) - 22) / 10;
+  const jitterX = isNarrowScreen || stackTotal > 1 ? 0 : ((absHash >> 4) % 9) - 4;
+  const jitterY = isNarrowScreen || stackTotal > 1 ? 0 : ((absHash >> 9) % 7) - 3;
 
   const midStack = (stackTotal - 1) / 2;
   const stackRel = stackIdx - midStack;
-  const stackOffsetX = stackTotal > 1 ? Math.round(stackRel * 24) : 0;
-  const stackOffsetY = stackTotal > 1 ? Math.round(stackIdx * -5) : 0;
-  const stackRot = stackTotal > 1 ? stackRel * 3.4 : 0;
+  const stackOffsetX =
+    stackTotal > 1 ? Math.round(stackRel * (isNarrowScreen ? 8 : 16)) : 0;
+  const stackOffsetY = stackTotal > 1 ? Math.round(stackIdx * -4) : 0;
+  const stackRot = stackTotal > 1 ? stackRel * (isNarrowScreen ? 1.8 : 2.8) : 0;
 
   let territoryAdvanceY = 0;
   if (row === 'vanguard') {
@@ -280,6 +282,45 @@ function getOrganicTabletopPose(
   } as React.CSSProperties;
 }
 
+const ACTIVE_BATTLE_STORAGE_KEY = 'chromatic_pact_active_battle_v1';
+
+interface SavedBattleSnapshot {
+  mode: 'problem' | 'boss' | 'solo';
+  problemId: string | null;
+  bossId: string | null;
+  selectedPlayerDeckId: string;
+  selectedAiDeckId: string;
+  isMulliganOpen: boolean;
+  rewardClaimed: boolean;
+  gameState: GameState;
+  savedAt: number;
+}
+
+function loadSavedBattleSnapshot(
+  expectedMode: 'problem' | 'boss' | 'solo',
+  expectedProblemId?: string,
+  expectedBossId?: string
+): SavedBattleSnapshot | null {
+  try {
+    const raw = localStorage.getItem(ACTIVE_BATTLE_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<SavedBattleSnapshot>;
+    if (!parsed || !parsed.gameState || parsed.gameState.phase === 'gameover') {
+      return null;
+    }
+    if (parsed.mode !== expectedMode) return null;
+    if (expectedMode === 'problem' && parsed.problemId !== (expectedProblemId ?? null)) {
+      return null;
+    }
+    if (expectedMode === 'boss' && parsed.bossId !== (expectedBossId ?? null)) {
+      return null;
+    }
+    return parsed as SavedBattleSnapshot;
+  } catch {
+    return null;
+  }
+}
+
 export const BattleArena: React.FC<BattleArenaProps> = ({
   customDecks,
   isGuest = false,
@@ -297,6 +338,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onlineMatch,
 }) => {
   const handleExitBattle = () => {
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
     if (onlineMatch) {
       onlineMatch.onExitPvp();
     } else if (tacticalProblem && onExitProblems) {
@@ -327,14 +373,42 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     [isGuest, customDecks]
   );
 
+  const initialSavedSnapshot = useMemo(() => {
+    if (onlineMatch) return null;
+    const mode: 'problem' | 'boss' | 'solo' = tacticalProblem
+      ? 'problem'
+      : campaignBoss
+      ? 'boss'
+      : 'solo';
+    return loadSavedBattleSnapshot(mode, tacticalProblem?.id, campaignBoss?.id);
+  }, []);
+
+  const restoredBossIdRef = useRef<string | null>(
+    initialSavedSnapshot?.mode === 'boss' ? initialSavedSnapshot.bossId : null
+  );
+  const restoredProblemIdRef = useRef<string | null>(
+    initialSavedSnapshot?.mode === 'problem' ? initialSavedSnapshot.problemId : null
+  );
+
   const [selectedPlayerDeckId, setSelectedPlayerDeckId] = useState<string>(
-    initialPlayerDeckId ?? allowedPlayerDecks[0]?.id ?? 'deck_red_inferno'
+    () =>
+      initialSavedSnapshot?.selectedPlayerDeckId ??
+      initialPlayerDeckId ??
+      allowedPlayerDecks[0]?.id ??
+      'deck_red_inferno'
   );
   const [selectedAiDeckId, setSelectedAiDeckId] = useState<string>(
-    initialAiDeckId ?? PREBUILT_DECKS[1]?.id ?? 'deck_blue_tempest'
+    () =>
+      initialSavedSnapshot?.selectedAiDeckId ??
+      initialAiDeckId ??
+      PREBUILT_DECKS[1]?.id ??
+      'deck_blue_tempest'
   );
 
   const [gameState, setGameState] = useState<GameState>(() => {
+    if (initialSavedSnapshot?.gameState) {
+      return initialSavedSnapshot.gameState;
+    }
     if (tacticalProblem) {
       return buildProblemInitialGameState(tacticalProblem);
     }
@@ -394,11 +468,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
     window.innerWidth > 768;
   const [showLogSidebar, setShowLogSidebar] = useState(false);
-  const [rewardClaimed, setRewardClaimed] = useState(false);
+  const [rewardClaimed, setRewardClaimed] = useState<boolean>(
+    () => initialSavedSnapshot?.rewardClaimed ?? false
+  );
   const [gameoverStage, setGameoverStage] = useState<
     'none' | 'cinematic' | 'modal' | 'dismissed'
   >('none');
-  const [isMulliganOpen, setIsMulliganOpen] = useState<boolean>(() => !tacticalProblem);
+  const [isMulliganOpen, setIsMulliganOpen] = useState<boolean>(() =>
+    initialSavedSnapshot !== null ? Boolean(initialSavedSnapshot.isMulliganOpen) : !tacticalProblem
+  );
   const [problemHintStage, setProblemHintStage] = useState<0 | 1 | 2 | 3>(0);
   const [isProblemHudMinimized, setIsProblemHudMinimized] = useState<boolean>(false);
   const [showProblemIncompleteModal, setShowProblemIncompleteModal] = useState(false);
@@ -729,6 +807,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   useEffect(() => {
     if (campaignBoss) {
+      if (restoredBossIdRef.current === campaignBoss.id) {
+        restoredBossIdRef.current = null;
+        return;
+      }
       const pDeckIds =
         campaignPlayerDeckIds && campaignPlayerDeckIds.length >= 30
           ? campaignPlayerDeckIds
@@ -1162,8 +1244,47 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     });
   }, [gameState, onlineMatch]);
 
+  // Persist active solo / campaign / problem battle state across page reloads (F5 / mobile refresh)
+  useEffect(() => {
+    if (onlineMatch) return;
+    try {
+      if (gameState.phase === 'gameover') {
+        localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+        return;
+      }
+      const snapshot: SavedBattleSnapshot = {
+        mode: tacticalProblem ? 'problem' : campaignBoss ? 'boss' : 'solo',
+        problemId: tacticalProblem?.id ?? null,
+        bossId: campaignBoss?.id ?? null,
+        selectedPlayerDeckId,
+        selectedAiDeckId,
+        isMulliganOpen,
+        rewardClaimed,
+        gameState,
+        savedAt: Date.now(),
+      };
+      localStorage.setItem(ACTIVE_BATTLE_STORAGE_KEY, JSON.stringify(snapshot));
+    } catch {
+      // Ignore storage quota errors
+    }
+  }, [
+    onlineMatch,
+    tacticalProblem,
+    campaignBoss,
+    selectedPlayerDeckId,
+    selectedAiDeckId,
+    isMulliganOpen,
+    rewardClaimed,
+    gameState,
+  ]);
+
   const restartCurrentProblem = () => {
     if (!tacticalProblem) return;
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
     setGameState(buildProblemInitialGameState(tacticalProblem));
     setSelectedHandIndex(null);
     setSelectedAttackerId(null);
@@ -1178,6 +1299,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   useEffect(() => {
     if (!tacticalProblem) return;
+    if (restoredProblemIdRef.current === tacticalProblem.id) {
+      restoredProblemIdRef.current = null;
+      return;
+    }
     setGameState(buildProblemInitialGameState(tacticalProblem));
     setSelectedHandIndex(null);
     setSelectedAttackerId(null);
@@ -1195,6 +1320,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (tacticalProblem) {
       restartCurrentProblem();
       return;
+    }
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
     }
     const pDeck = allowedPlayerDecks.find((d) => d.id === pDeckId) ?? allowedPlayerDecks[0];
     const aDeck = PREBUILT_DECKS.find((d) => d.id === aDeckId) ?? PREBUILT_DECKS[1] ?? PREBUILT_DECKS[0];

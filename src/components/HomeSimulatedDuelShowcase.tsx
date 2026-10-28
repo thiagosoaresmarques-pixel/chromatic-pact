@@ -179,15 +179,15 @@ function getOrganicTabletopPose(
         : -1.2
       : 0;
 
-  const rawRot = ((absHash % 45) - 22) / 10;
-  const jitterX = stackTotal > 1 ? 0 : ((absHash >> 4) % 9) - 4;
-  const jitterY = stackTotal > 1 ? 0 : ((absHash >> 9) % 7) - 3;
+  const rawRot = ((absHash % 25) - 12) / 10;
+  const jitterX = 0;
+  const jitterY = 0;
 
   const midStack = (stackTotal - 1) / 2;
   const stackRel = stackIdx - midStack;
-  const stackOffsetX = stackTotal > 1 ? Math.round(stackRel * 24) : 0;
-  const stackOffsetY = stackTotal > 1 ? Math.round(stackIdx * -5) : 0;
-  const stackRot = stackTotal > 1 ? stackRel * 3.4 : 0;
+  const stackOffsetX = stackTotal > 1 ? Math.round(stackRel * 10) : 0;
+  const stackOffsetY = stackTotal > 1 ? Math.round(stackIdx * -4) : 0;
+  const stackRot = stackTotal > 1 ? stackRel * 2.2 : 0;
 
   let territoryAdvanceY = 0;
   if (row === 'vanguard') {
@@ -848,7 +848,9 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
 
   const [isP2DrawerPinned, setIsP2DrawerPinned] = useState<boolean>(false);
   const [isP1DrawerPinned, setIsP1DrawerPinned] = useState<boolean>(false);
-  const [isCommandDockMinimized, setIsCommandDockMinimized] = useState<boolean>(false);
+  const [isHandPinnedOpen, setIsHandPinnedOpen] = useState<boolean>(false);
+  const [isCommandDockMinimized, setIsCommandDockMinimized] = useState<boolean>(true);
+  const [isSimMinimized, setIsSimMinimized] = useState<boolean>(false);
   const [userHoveredCardInfo, setUserHoveredCardInfo] = useState<{
     card: CardDefinition;
     unit?: BoardUnit;
@@ -922,10 +924,11 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
 
   // Derive authentic BattleArena UI states from current step & subPhase
   const selectedHandIndex: number | null =
-    subPhase === 'dock' && step.kind === 'play_card' ? (step.handIndex ?? 0) : null;
-
-  const isHandPinnedOpen: boolean =
-    subPhase === 'hand' && step.kind === 'play_card' && !isP1DrawerPinned && !isP2DrawerPinned;
+    (subPhase === 'hand' || subPhase === 'dock') &&
+    step.kind === 'play_card' &&
+    !isHandPinnedOpen
+      ? (step.handIndex ?? 0)
+      : null;
 
   const simHoveredHandIdx: number | null =
     subPhase === 'hand' && step.kind === 'play_card' ? (step.handIndex ?? 0) : null;
@@ -966,25 +969,13 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     return null;
   }, [step, subPhase, beforeState, selectedAttackerId]);
 
-  // Auto-open Sovereign 1 drawer during 'hand' phase of Domain Expansion invocation steps
+  // Keep drawers closed & dock compact by default so the 6x4 tabletop is always 100% visible
   useEffect(() => {
-    if (
-      (step.kind === 'invoke_domain' ||
-        (step.kind === 'domain_clash' && !step.rivalInvokesDomain) ||
-        step.kind === 'domain_and_ascend') &&
-      subPhase === 'hand'
-    ) {
-      setIsP1DrawerPinned(true);
-      setIsP2DrawerPinned(false);
-    } else if (step.kind === 'domain_clash' && step.rivalInvokesDomain && subPhase === 'hand') {
-      setIsP2DrawerPinned(true);
-      setIsP1DrawerPinned(false);
-    } else {
-      setIsP1DrawerPinned(false);
-      setIsP2DrawerPinned(false);
-    }
-    setIsCommandDockMinimized(false);
-  }, [scenarioIdx, stepIdx, subPhase, step.kind, step.rivalInvokesDomain]);
+    setIsP1DrawerPinned(false);
+    setIsP2DrawerPinned(false);
+    setIsHandPinnedOpen(false);
+    setIsCommandDockMinimized(true);
+  }, [scenarioIdx, stepIdx]);
 
   // Keep showcase audio synced with global navbar mute button
   useEffect(() => {
@@ -1484,15 +1475,8 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
   const aiAvatarCard = CARDS_BY_ID[gameState.ai.avatarCardId] ?? ALL_CARDS[0];
   const playerAvatarCard = CARDS_BY_ID[gameState.player.avatarCardId] ?? ALL_CARDS[0];
 
-  // Hover card info: either user-hovered card or simulated player's hovered hand card during 'hand' phase
-  const activeHoverCardInfo = useMemo(() => {
-    if (userHoveredCardInfo) return userHoveredCardInfo;
-    if (simHoveredHandIdx !== null) {
-      const c = gameState.player.hand[simHoveredHandIdx];
-      if (c) return { card: c };
-    }
-    return null;
-  }, [userHoveredCardInfo, simHoveredHandIdx, gameState.player.hand]);
+  // Hover card info: only show zoom panel when user explicitly hovers a card
+  const activeHoverCardInfo = userHoveredCardInfo;
 
   const handleHoverCard = (card: CardDefinition | null, unit?: BoardUnit) => {
     if (!card) {
@@ -1532,6 +1516,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
   };
 
   const renderTargetPreviewBadge = (targetId: string) => {
+    if (userHoveredCardInfo?.unit?.instanceId !== targetId) return null;
     const prev = allTargetPreviews[targetId];
     if (!prev) return null;
     const isHovered = hoveredAttackTargetId === targetId;
@@ -1696,11 +1681,21 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
           >
             📖 {scenario.comboRef}
           </button>
+          <button
+            type="button"
+            className={`sim-arena-ctrl-btn ${isSimMinimized ? 'is-active' : ''}`}
+            onClick={() => setIsSimMinimized((prev) => !prev)}
+            title="Minimizar ou expandir o tabuleiro simulado"
+          >
+            {isSimMinimized ? '▴ Mostrar Mesa' : '▾ Minimizar Mesa'}
+          </button>
         </div>
       </div>
 
-      {/* Step & Micro-Phase Strip */}
-      <div className="sim-arena-director-strip">
+      {!isSimMinimized && (
+        <>
+          {/* Step & Micro-Phase Strip */}
+          <div className="sim-arena-director-strip">
         <div className="sim-arena-step-pills">
           {scenario.steps.map((st, idx) => (
             <button
@@ -2019,8 +2014,8 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             </>
           )}
 
-          {/* TACTICAL COMBAT PREVIEW HUD (Exact BattleArena.tsx Forecast HUD) */}
-          {combatPreview && (
+          {/* TACTICAL COMBAT PREVIEW HUD (Only shown when user actively hovers a unit) */}
+          {combatPreview && userHoveredCardInfo?.unit && (
             <div
               className={`tactical-combat-preview-hud ${
                 combatPreview.targetDies ? 'preview-lethal' : ''
@@ -2390,62 +2385,6 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               )}
             </div>
           </header>
-
-          {/* FLOATING DOMAIN EXPANSION & 50/50 DOMAIN CLASH ARENA BANNER */}
-          {gameState.domainExpansion && !isP1DrawerPinned && !isP2DrawerPinned && (
-            <div
-              className={`domain-expansion-arena-banner ${
-                gameState.domainExpansion.owner === 'ai' ? 'owner-ai' : 'owner-player'
-              } ${gameState.domainExpansion.clashRival ? 'is-domain-clash' : ''}`}
-              style={{ top: '38px' }}
-            >
-              <span className="de-banner-icon">
-                {gameState.domainExpansion.clashRival ? '⛩️⚔️' : gameState.domainExpansion.icon}
-              </span>
-              <div className="de-banner-info">
-                <div className="de-banner-title-row">
-                  <span className="de-banner-kicker">
-                    {gameState.domainExpansion.clashRival
-                      ? 'DISPUTA DE DOMÍNIOS 50/50'
-                      : gameState.domainExpansion.owner === 'ai'
-                      ? 'EXPANSÃO DE DOMÍNIO INIMIGA'
-                      : 'EXPANSÃO DE DOMÍNIO ATIVA'}
-                  </span>
-                  <span className="de-banner-name">
-                    {gameState.domainExpansion.clashRival
-                      ? `${gameState.domainExpansion.name} vs ${gameState.domainExpansion.clashRival.name}`
-                      : gameState.domainExpansion.name}
-                  </span>
-                  {gameState.domainExpansion.clashRival ? (
-                    <span className="de-clash-pill">⚖️ ACERTO GARANTIDO ANULADO</span>
-                  ) : (
-                    <span className="de-surehit-pill">🎯 ACERTO GARANTIDO ATIVO</span>
-                  )}
-                </div>
-                <div className="de-banner-desc">
-                  {gameState.domainExpansion.clashRival
-                    ? 'As duas barreiras colidem 50/50! Cause 8+ dano ao Soberano rival para estilhaçar a barreira inimiga!'
-                    : `${gameState.domainExpansion.potencyDesc} • ${gameState.domainExpansion.sureHitDesc}`}
-                </div>
-              </div>
-              {gameState.domainExpansion.owner === 'ai' &&
-                !gameState.domainExpansion.clashRival && (
-                  <div className="de-counter-actions">
-                    <button
-                      type="button"
-                      className="de-counter-btn simple-domain-btn"
-                      onClick={() => {
-                        setIsAutoPlaying(false);
-                        setSubPhase('impact');
-                      }}
-                    >
-                      ⛩️ Confrontar (3⚡)
-                    </button>
-                  </div>
-                )}
-              <span className="de-banner-turns">{gameState.domainExpansion.turnsRemaining}r</span>
-            </div>
-          )}
 
           {/* 2. TABULEIRO 6×4 EM TELA CHEIA (MESA DE MADEIRA + EXPANSÃO DE DOMÍNIO — Exact BattleArena.tsx) */}
           <div
@@ -3213,7 +3152,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                 className={`hud-hand-trigger-btn ${isHandPinnedOpen ? 'active' : ''}`}
                 onClick={() => {
                   setIsAutoPlaying(false);
-                  setSubPhase(subPhase === 'hand' ? 'dock' : 'hand');
+                  setIsHandPinnedOpen((prev) => !prev);
                 }}
               >
                 🃏 MÃO ({gameState.player.hand.length}){' '}
@@ -3799,7 +3738,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                       className={`hand-drawer-toggle-btn ${isHandPinnedOpen ? 'is-pinned' : ''}`}
                       onClick={() => {
                         setIsAutoPlaying(false);
-                        setSubPhase(subPhase === 'hand' ? 'dock' : 'hand');
+                        setIsHandPinnedOpen((prev) => !prev);
                       }}
                     >
                       {isHandExpanded
@@ -3866,6 +3805,8 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
           );
         })()}
       </div>
+        </>
+      )}
     </div>
   );
 };

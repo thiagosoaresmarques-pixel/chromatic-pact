@@ -71,8 +71,47 @@ type ActiveTab =
   | 'rules'
   | 'admin';
 
+const APP_NAV_STATE_STORAGE_KEY = 'chromatic_pact_app_nav_state_v1';
+const ACTIVE_BATTLE_STORAGE_KEY = 'chromatic_pact_active_battle_v1';
+
+interface SavedAppNavState {
+  activeTab: ActiveTab;
+  activeCampaignBoss: CampaignBoss | null;
+  activeProblem: TacticalProblem | null;
+  campaignPlayerDeckIds: string[] | null;
+  isExpeditionBattle: boolean;
+  quickDuelDecks: {
+    playerDeckId?: string;
+    aiDeckId?: string;
+  };
+}
+
+function loadSavedAppNavState(): SavedAppNavState | null {
+  try {
+    const raw = localStorage.getItem(APP_NAV_STATE_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<SavedAppNavState>;
+    if (!parsed || typeof parsed.activeTab !== 'string') return null;
+    return {
+      activeTab: parsed.activeTab as ActiveTab,
+      activeCampaignBoss: parsed.activeCampaignBoss ?? null,
+      activeProblem: parsed.activeProblem ?? null,
+      campaignPlayerDeckIds: Array.isArray(parsed.campaignPlayerDeckIds)
+        ? parsed.campaignPlayerDeckIds
+        : null,
+      isExpeditionBattle: Boolean(parsed.isExpeditionBattle),
+      quickDuelDecks: parsed.quickDuelDecks ?? {},
+    };
+  } catch {
+    return null;
+  }
+}
+
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('home');
+  const initialNavState = useMemo(() => loadSavedAppNavState(), []);
+  const [activeTab, setActiveTab] = useState<ActiveTab>(
+    () => initialNavState?.activeTab ?? 'home'
+  );
   const [soundMuted, setSoundMuted] = useState<boolean>(() => isMuted());
   const [musicInfo, setMusicInfo] = useState<MusicStateDescriptor>(() => getCurrentMusicState());
 
@@ -131,20 +170,52 @@ export const App: React.FC = () => {
     return merged;
   }, [isGuest, currentUser.starterDeckCardIds, customDecks, currentUser.extraUnlockedCards]);
 
-  // Active Campaign / Expedition / Tactical Problem Match State
-  const [activeCampaignBoss, setActiveCampaignBoss] = useState<CampaignBoss | null>(null);
-  const [activeProblem, setActiveProblem] = useState<TacticalProblem | null>(null);
+  // Active Campaign / Expedition / Tactical Problem Match State (Restored across page reloads)
+  const [activeCampaignBoss, setActiveCampaignBoss] = useState<CampaignBoss | null>(
+    () => initialNavState?.activeCampaignBoss ?? null
+  );
+  const [activeProblem, setActiveProblem] = useState<TacticalProblem | null>(
+    () => initialNavState?.activeProblem ?? null
+  );
   const [isOnboardingCalloutHidden, setIsOnboardingCalloutHidden] = useState<boolean>(false);
-  const [campaignPlayerDeckIds, setCampaignPlayerDeckIds] = useState<string[] | null>(null);
-  const [isExpeditionBattle, setIsExpeditionBattle] = useState<boolean>(false);
+  const [campaignPlayerDeckIds, setCampaignPlayerDeckIds] = useState<string[] | null>(
+    () => initialNavState?.campaignPlayerDeckIds ?? null
+  );
+  const [isExpeditionBattle, setIsExpeditionBattle] = useState<boolean>(
+    () => initialNavState?.isExpeditionBattle ?? false
+  );
   const [lastClearedExpeditionBossId, setLastClearedExpeditionBossId] = useState<string | null>(
     null
   );
   const [quickDuelDecks, setQuickDuelDecks] = useState<{
     playerDeckId?: string;
     aiDeckId?: string;
-  }>({});
+  }>(() => initialNavState?.quickDuelDecks ?? {});
   const [showcaseInspectCard, setShowcaseInspectCard] = useState<CardDefinition | null>(null);
+
+  // Persist navigation & active match context across page reloads (F5 / mobile refresh)
+  useEffect(() => {
+    try {
+      const stateToSave: SavedAppNavState = {
+        activeTab,
+        activeCampaignBoss,
+        activeProblem,
+        campaignPlayerDeckIds,
+        isExpeditionBattle,
+        quickDuelDecks,
+      };
+      localStorage.setItem(APP_NAV_STATE_STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch {
+      // Ignore storage errors
+    }
+  }, [
+    activeTab,
+    activeCampaignBoss,
+    activeProblem,
+    campaignPlayerDeckIds,
+    isExpeditionBattle,
+    quickDuelDecks,
+  ]);
 
   const [accountModalState, setAccountModalState] = useState<{
     open: boolean;
@@ -380,6 +451,11 @@ export const App: React.FC = () => {
   };
 
   const handleStartProblem = (problem: TacticalProblem) => {
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
     setActiveCampaignBoss(null);
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
@@ -434,6 +510,11 @@ export const App: React.FC = () => {
 
   const handleStartBossBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
     trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: false });
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(false);
@@ -444,6 +525,11 @@ export const App: React.FC = () => {
 
   const handleStartExpeditionBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
     trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: true });
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(true);

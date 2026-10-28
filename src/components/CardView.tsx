@@ -569,11 +569,24 @@ export const CardView: React.FC<CardViewProps> = ({
         </div>
 
         {/* Quick 1-Click Action Overlay when Card is Selected in Hand */}
-        {mode === 'hand' && isSelected && (
-          <div
-            className="hand-quick-actions"
-            onClick={(e) => e.stopPropagation()}
-          >
+        {mode === 'hand' &&
+          isSelected &&
+          Boolean(
+            (isPlayable &&
+              displayCard.type === 'creature' &&
+              (onQuickDeployVanguard || onQuickDeployRearguard)) ||
+              (isPlayable && displayCard.type === 'relic' && onQuickDeployRearguard) ||
+              (isPlayable &&
+                (displayCard.type === 'spell' || displayCard.type === 'reaction') &&
+                onQuickCast) ||
+              (isPlayable && displayCard.type === 'reaction' && onQuickArmTrap) ||
+              (canChannel && onQuickChannel) ||
+              onQuickBurn,
+          ) && (
+            <div
+              className="hand-quick-actions"
+              onClick={(e) => e.stopPropagation()}
+            >
             {isPlayable && displayCard.type === 'creature' && (
               <>
                 {onQuickDeployVanguard && (

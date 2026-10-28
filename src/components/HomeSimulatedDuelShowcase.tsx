@@ -1,8 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
-import { BoardUnit, CardDefinition, Domain, FloatingFeedback, Keyword, RowType } from '../types/game';
-import { setMusicState, startAdaptiveMusic } from '../utils/musicEngine';
-import { getSharedAudioContext, onAudioUnlocked, playSfx, SfxType } from '../utils/soundEngine';
+import {
+  addUnitToSlot,
+  ascendUnit,
+  canAscendUnit,
+  canBreakDomainExpansionWithSacrifice,
+  canDeployToSlot,
+  canInvokeDomainExpansion,
+  canMoveUnitRow,
+  canPlayCard,
+  canUseBloodPact,
+  canUseSimpleDomain,
+  canUseSovereignPower,
+  cloneGameState,
+  CombatPreviewResult,
+  createInitialGameState,
+  executeAttack,
+  findUnitOnBoard,
+  getAllBoardUnits,
+  getDomainExpansionSpec,
+  getSlotUnits,
+  getValidAttackTargets,
+  invokeDomainExpansion,
+  isSureHitActiveFor,
+  MAX_UNITS_PER_SLOT,
+  playCard,
+  previewAttackOutcome,
+  recalculateFormationBonuses,
+} from '../engine/gameEngine';
+import {
+  BoardUnit,
+  CardDefinition,
+  Domain,
+  FloatingFeedback,
+  GameState,
+  RowType,
+} from '../types/game';
+import { MusicIntensityStage, setMusicState, startAdaptiveMusic } from '../utils/musicEngine';
+import { getSharedAudioContext, onAudioUnlocked, playSfx } from '../utils/soundEngine';
 import {
   CARD_TYPE_LABELS,
   CardView,
@@ -12,130 +47,31 @@ import {
 
 export type SimSubPhase = 'hand' | 'dock' | 'impact';
 
-type SoundEffectType =
-  | 'summon_heavy'
-  | 'domain_expand'
-  | 'dragon_breath'
-  | 'ascend'
-  | 'freeze'
-  | 'shield_up'
-  | 'spell_arcane'
-  | 'attack_hit'
-  | 'victory'
-  | 'card_draw'
-  | 'button_click';
-
-type BattleMusicTrackId =
-  | 'ambient_battle'
-  | 'domain_red'
-  | 'domain_blue'
-  | 'domain_purple'
-  | 'domain_gold'
-  | 'domain_clash';
-
-function playSoundEffect(effect: SoundEffectType): void {
-  const map: Record<SoundEffectType, SfxType> = {
-    summon_heavy: 'summon',
-    domain_expand: 'ascend',
-    dragon_breath: 'spell',
-    ascend: 'ascend',
-    freeze: 'freeze',
-    shield_up: 'heal',
-    spell_arcane: 'spell',
-    attack_hit: 'hit',
-    victory: 'victory',
-    card_draw: 'draw',
-    button_click: 'channel',
-  };
-  playSfx(map[effect] ?? 'summon');
-}
-
-function setBattleMusicTrack(track: BattleMusicTrackId): void {
-  startAdaptiveMusic();
-  if (track === 'ambient_battle') {
-    setMusicState('battle', 'neutral', false);
-  } else if (track === 'domain_red') {
-    setMusicState('domain_clash', 'red', false);
-  } else if (track === 'domain_blue') {
-    setMusicState('domain_clash', 'blue', false);
-  } else if (track === 'domain_purple') {
-    setMusicState('domain_clash', 'purple', false);
-  } else if (track === 'domain_gold') {
-    setMusicState('domain_clash', 'gold', false);
-  } else {
-    setMusicState('climax', 'gold', true);
-  }
-}
-
-function stopBattleMusic(): void {
-  setMusicState('sanctuary', 'neutral', false);
-}
-
-interface SimSlotSpec {
-  slotIndex: number;
+interface InitialUnitPlacement {
   cardId: string;
-  atk?: number;
-  hp?: number;
-  maxHp?: number;
-  armor?: number;
-  hasDivineShield?: boolean;
-  isFrozen?: boolean;
-  isAscended?: boolean;
-  stance?: 'attack' | 'defend';
-  feedback?: { text: string; color: FloatingFeedback['color'] };
-  isHitTarget?: boolean;
-  isLunging?: boolean;
-  isBurstTarget?: boolean;
-  isNewlySummoned?: boolean;
-  burstKind?: 'spell' | 'ascend';
+  row: RowType;
+  slotIndex: number;
+  damageTaken?: number;
 }
 
-interface SimStepBoardState {
-  aiRearguard: SimSlotSpec[];
-  playerVanguard: SimSlotSpec[];
-  aiVanguard: SimSlotSpec[];
-  playerRearguard: SimSlotSpec[];
-  p1Hp: number;
-  p1Essence: number;
-  p1MaxEssence: number;
-  p2Hp: number;
-  p2Essence: number;
-  p2MaxEssence: number;
-  p1Feedback?: { text: string; color: FloatingFeedback['color'] };
-  p2Feedback?: { text: string; color: FloatingFeedback['color'] };
-}
-
-interface SimDuelStep {
+interface SimEngineStep {
   id: string;
   stepBadge: string;
   title: string;
   narrative: string;
-  sfx: SoundEffectType;
-  musicTrack: BattleMusicTrackId;
-  activeDomain?: Exclude<Domain, 'neutral'> | 'clash_gold_purple';
-  domainBannerTitle?: string;
-  domainBannerSubtitle?: string;
-  // Player 1's hand before playing the card (5 real cards in fan)
-  handCardIds: string[];
-  selectedHandIndex: number;
-  // Action button shown & highlighted in the Command Dock
-  dockActionLabel: string;
-  dockActionType: 'vanguard' | 'rearguard' | 'spell' | 'ascend' | 'domain';
-  dockStatusText: string;
-  // Target highlight on the board during 'dock' subPhase
-  targetLane?: 'aiRearguard' | 'playerVanguard' | 'aiVanguard' | 'playerRearguard';
-  targetSlotIndex?: number;
-  targetWatermark?: string;
-  // Spectacle Herald & Breath Wave during 'impact' subPhase
-  heraldTitle: string;
-  heraldSubtitle: string;
-  heraldDomain: Domain;
-  breathWaveLane?: 'aiRearguard' | 'aiVanguard' | 'playerVanguard' | 'playerRearguard';
-  breathWaveDomain?: Exclude<Domain, 'neutral'>;
-  // Board state during 'hand' & 'dock' (BEFORE the card/action resolves)
-  beforeBoard: SimStepBoardState;
-  // Board state during 'impact' (AFTER the card/action resolves)
-  afterBoard: SimStepBoardState;
+  turnNumber: number;
+  p1Essence: number;
+  p1MaxEssence: number;
+  kind: 'play_card' | 'domain_and_ascend' | 'attack_lethal';
+  handIndex?: number;
+  deployRow?: RowType;
+  deploySlotIndex?: number;
+  alsoInvokeDomainExpansion?: boolean;
+  ascendSlotIndex?: number;
+  ascendRow?: RowType;
+  spellTargetSlotIndex?: number;
+  spellTargetRow?: RowType;
+  spellTargetOwner?: 'player' | 'ai';
 }
 
 interface SimDuelScenario {
@@ -149,13 +85,122 @@ interface SimDuelScenario {
   p1Name: string;
   p1AvatarCardId: string;
   p1Domain: Exclude<Domain, 'neutral'>;
+  p1StartingHp: number;
   p2Name: string;
   p2AvatarCardId: string;
   p2Domain: Exclude<Domain, 'neutral'>;
-  steps: SimDuelStep[];
+  p2StartingHp: number;
+  initialEnemyDomain?: Exclude<Domain, 'neutral'>;
+  initialPlayerUnits: InitialUnitPlacement[];
+  initialAiUnits: InitialUnitPlacement[];
+  initialHandCardIds: string[];
+  initialChanneledCardIds: string[];
+  initialCryptCardIds: string[];
+  steps: SimEngineStep[];
 }
 
-// 100% REAL VERIFIED CARD IDS FROM src/data/cards.ts & src/data/combosCompendium.ts
+function resolveRealCard(cardId: string): CardDefinition {
+  return CARDS_BY_ID[cardId] ?? ALL_CARDS[0];
+}
+
+function doesCardUseTarget(card: CardDefinition): 'enemy' | 'ally' | 'any_row' | null {
+  for (const eff of card.effects) {
+    if (eff.trigger === 'on_enter' || eff.trigger === 'spell_cast') {
+      if (
+        eff.type === 'damage_single_enemy' ||
+        eff.type === 'destroy_enemy' ||
+        eff.type === 'freeze_enemy' ||
+        eff.type === 'bounce_enemy' ||
+        eff.type === 'steal_small_enemy' ||
+        eff.type === 'damage_enemy_row'
+      ) {
+        return 'enemy';
+      }
+      if (eff.type === 'buff_target_ally' || eff.type === 'heal_target_ally') {
+        return 'ally';
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Exact deterministic organic tabletop card pose from BattleArena.tsx
+ */
+function getOrganicTabletopPose(
+  seedKey: string,
+  owner: 'player' | 'ai',
+  row: RowType,
+  slotIdx: number,
+  isTapped?: boolean,
+  isInvading?: boolean,
+  isClashingAtBorder?: boolean,
+  stackIdx = 0,
+  stackTotal = 1,
+): React.CSSProperties {
+  let hash = 2166136261;
+  const fullKey = `${seedKey}-${owner}-${row}-${slotIdx}-${stackIdx}`;
+  for (let i = 0; i < fullKey.length; i += 1) {
+    hash ^= fullKey.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  const absHash = Math.abs(hash);
+
+  const isInnerCol = slotIdx === 2 || slotIdx === 3;
+  const isOuterCol = slotIdx === 0 || slotIdx === 5;
+  const colArcY = isInnerCol
+    ? owner === 'player'
+      ? -4
+      : 4
+    : isOuterCol
+    ? owner === 'player'
+      ? 4
+      : -4
+    : 0;
+  const colArcRot =
+    slotIdx === 0
+      ? owner === 'player'
+        ? -1.2
+        : 1.2
+      : slotIdx === 5
+      ? owner === 'player'
+        ? 1.2
+        : -1.2
+      : 0;
+
+  const rawRot = ((absHash % 45) - 22) / 10;
+  const jitterX = stackTotal > 1 ? 0 : ((absHash >> 4) % 9) - 4;
+  const jitterY = stackTotal > 1 ? 0 : ((absHash >> 9) % 7) - 3;
+
+  const midStack = (stackTotal - 1) / 2;
+  const stackRel = stackIdx - midStack;
+  const stackOffsetX = stackTotal > 1 ? Math.round(stackRel * 24) : 0;
+  const stackOffsetY = stackTotal > 1 ? Math.round(stackIdx * -5) : 0;
+  const stackRot = stackTotal > 1 ? stackRel * 3.4 : 0;
+
+  let territoryAdvanceY = 0;
+  if (row === 'vanguard') {
+    if (isInvading) {
+      territoryAdvanceY = owner === 'player' ? -8 : 8;
+    } else if (isClashingAtBorder) {
+      territoryAdvanceY = owner === 'player' ? -3 : 3;
+    }
+  }
+
+  const finalRot = isTapped
+    ? (owner === 'player' ? 12 : -12) + stackRot * 0.6
+    : colArcRot + rawRot + stackRot;
+  const finalX = jitterX + stackOffsetX;
+  const finalY = colArcY + jitterY + territoryAdvanceY + stackOffsetY;
+
+  return {
+    transform: `translate(${finalX}px, ${finalY}px) rotate(${finalRot.toFixed(1)}deg)`,
+    '--stack-rel': stackRel,
+    '--stack-idx': stackIdx,
+    zIndex: (isInvading ? 18 : isClashingAtBorder ? 14 : 10) + stackIdx * 2,
+  } as React.CSSProperties;
+}
+
 const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
   {
     id: 'crimson_forge_domain',
@@ -168,408 +213,87 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     p1Name: 'Ignis Rex (Você)',
     p1AvatarCardId: 'red_157_dragao_tiamat_carmesim',
     p1Domain: 'red',
+    p1StartingHp: 28,
     p2Name: 'Vesperion, Arquilich',
     p2AvatarCardId: 'purple_07_lich',
     p2Domain: 'purple',
+    p2StartingHp: 22,
+    initialPlayerUnits: [
+      { cardId: 'red_04_meio_dragao', row: 'vanguard', slotIndex: 1 },
+      { cardId: 'red_03_mastim_infernal', row: 'vanguard', slotIndex: 2 },
+      { cardId: 'red_10_altar_draconico', row: 'rearguard', slotIndex: 1 },
+    ],
+    initialAiUnits: [
+      { cardId: 'purple_25_dama_seis_laminas', row: 'vanguard', slotIndex: 1 },
+      { cardId: 'purple_07_lich', row: 'vanguard', slotIndex: 3, damageTaken: 1 },
+      { cardId: 'purple_126_campanario_mortos', row: 'rearguard', slotIndex: 3 },
+    ],
+    initialHandCardIds: [
+      'red_36_bigorna_fogo',
+      'red_123_cataclismo_solar',
+      'red_157_dragao_tiamat_carmesim',
+      'red_18_marechal_rubro',
+      'red_01_kobold',
+    ],
+    initialChanneledCardIds: [
+      'red_01_kobold',
+      'red_03_mastim_infernal',
+      'red_04_meio_dragao',
+      'red_18_marechal_rubro',
+    ],
+    initialCryptCardIds: ['red_01_kobold', 'red_02_magmin'],
     steps: [
       {
         id: 'red-step-1',
         stepBadge: 'PASSO 1/4 • RELÍQUIA DE FORJA',
         title: 'Posicionar Bigorna do Rei da Fornalha na Retaguarda',
         narrative:
-          'O Jogador 1 examina as 5 cartas da sua mão, escolhe a Relíquia Bigorna do Rei da Fornalha e a posiciona na Retaguarda [R], concedendo +1/+1 ao Campeão Dracônico na Vanguarda!',
-        sfx: 'summon_heavy',
-        musicTrack: 'ambient_battle',
-        handCardIds: [
-          'red_01_kobold',
-          'red_36_bigorna_fogo',
-          'red_123_cataclismo_solar',
-          'red_157_dragao_tiamat_carmesim',
-          'red_18_marechal_rubro',
-        ],
-        selectedHandIndex: 1,
-        dockActionLabel: '+ Posicionar Relíquia [R]',
-        dockActionType: 'rearguard',
-        dockStatusText:
-          '✅ Casa 3 da Retaguarda selecionada: Posicionando Bigorna do Rei da Fornalha (+1/+1 contínuo)!',
-        targetLane: 'playerRearguard',
-        targetSlotIndex: 2,
-        targetWatermark: '+ Relíquia [R]',
-        heraldTitle: '🏛️ RELÍQUIA: BIGORNA DO REI DA FORNALHA',
-        heraldSubtitle: 'Relíquia posicionada na Retaguarda: Campeão Dracônico recebe +1/+1 (4/5 ⚔️)!',
-        heraldDomain: 'red',
-        beforeBoard: {
-          aiRearguard: [
-            { slotIndex: 3, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'red_04_meio_dragao', atk: 3, hp: 4, maxHp: 4, armor: 1, stance: 'attack' },
-            { slotIndex: 2, cardId: 'red_03_mastim_infernal', atk: 3, hp: 4, maxHp: 4, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 1, cardId: 'purple_25_dama_seis_laminas', atk: 4, hp: 3, maxHp: 3, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 5, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'red_10_altar_draconico', atk: 0, hp: 4, maxHp: 4, armor: 1 },
-          ],
-          p1Hp: 26,
-          p1Essence: 6,
-          p1MaxEssence: 6,
-          p2Hp: 24,
-          p2Essence: 5,
-          p2MaxEssence: 6,
-        },
-        afterBoard: {
-          aiRearguard: [
-            { slotIndex: 3, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'red_04_meio_dragao',
-              atk: 4,
-              hp: 5,
-              maxHp: 5,
-              armor: 1,
-              stance: 'attack',
-              isBurstTarget: true,
-              feedback: { text: '+1/+1 Bigorna!', color: 'buff' },
-            },
-            { slotIndex: 2, cardId: 'red_03_mastim_infernal', atk: 3, hp: 4, maxHp: 4, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 1, cardId: 'purple_25_dama_seis_laminas', atk: 4, hp: 3, maxHp: 3, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 5, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'red_10_altar_draconico', atk: 0, hp: 4, maxHp: 4, armor: 1 },
-            {
-              slotIndex: 2,
-              cardId: 'red_36_bigorna_fogo',
-              atk: 0,
-              hp: 5,
-              maxHp: 5,
-              armor: 1,
-              isNewlySummoned: true,
-              isBurstTarget: true,
-              feedback: { text: 'Relíquia Ativa!', color: 'shield' },
-            },
-          ],
-          p1Hp: 26,
-          p1Essence: 3,
-          p1MaxEssence: 6,
-          p2Hp: 24,
-          p2Essence: 5,
-          p2MaxEssence: 6,
-        },
+          'O Jogador 1 abre sua mão, seleciona a Relíquia Bigorna do Rei da Fornalha e a posiciona na Retaguarda [R], concedendo +1/+1 aos seus aliados e forjando uma Cria Dracônica 2/1 com Ímpeto!',
+        turnNumber: 6,
+        p1Essence: 6,
+        p1MaxEssence: 6,
+        kind: 'play_card',
+        handIndex: 0,
+        deployRow: 'rearguard',
+        deploySlotIndex: 2,
       },
       {
         id: 'red-step-2',
-        stepBadge: 'PASSO 2/4 • EXPANSÃO DE DOMÍNIO + CATACLISMO',
-        title: 'Expansão: Caldeira do Fogo Primordial & Detonação Solar',
+        stepBadge: 'PASSO 2/4 • EXPANSÃO DE DOMÍNIO + ASCENSÃO',
+        title: 'Expansão: Caldeira do Fogo Primordial & Ascensão Dracônica',
         narrative:
-          'Com 6/6 de Afinidade Carmesim, o Jogador 1 expande o Domínio Caldeira do Fogo Primordial e lança Detonação do Sol Carmesim da mão, varrendo a Vanguarda inimiga com chamas vulcânicas!',
-        sfx: 'domain_expand',
-        musicTrack: 'domain_red',
-        activeDomain: 'red',
-        domainBannerTitle: '⛩️ CALDEIRA DO FOGO PRIMORDIAL (3 TURNOS)',
-        domainBannerSubtitle: 'Bônus de Domínio: Aliados +1/+1 e Ímpeto • Acerto Garantido direto no Soberano!',
-        handCardIds: [
-          'red_01_kobold',
-          'red_123_cataclismo_solar',
-          'red_157_dragao_tiamat_carmesim',
-          'red_18_marechal_rubro',
-          'red_146_coroa_chama_eterna',
-        ],
-        selectedHandIndex: 1,
-        dockActionLabel: '🔥 Lançar Agora + Expandir Domínio',
-        dockActionType: 'spell',
-        dockStatusText:
-          '⛩️ Domínio Carmesim 6/6 Pronto: Lançando Detonação do Sol Carmesim em toda a Vanguarda inimiga!',
-        targetLane: 'aiVanguard',
-        targetSlotIndex: 3,
-        heraldTitle: '⛩️ EXPANSÃO: CALDEIRA DO FOGO PRIMORDIAL',
-        heraldSubtitle: 'O tabuleiro se transforma em magma vivo! Detonação Solar incinera a Vanguarda rival!',
-        heraldDomain: 'red',
-        breathWaveLane: 'aiVanguard',
-        breathWaveDomain: 'red',
-        beforeBoard: {
-          aiRearguard: [
-            { slotIndex: 3, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'red_04_meio_dragao', atk: 4, hp: 5, maxHp: 5, armor: 1, stance: 'attack' },
-            { slotIndex: 2, cardId: 'red_03_mastim_infernal', atk: 3, hp: 4, maxHp: 4, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 1, cardId: 'purple_25_dama_seis_laminas', atk: 4, hp: 3, maxHp: 3, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 5, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'red_10_altar_draconico', atk: 0, hp: 4, maxHp: 4, armor: 1 },
-            { slotIndex: 2, cardId: 'red_36_bigorna_fogo', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 26,
-          p1Essence: 6,
-          p1MaxEssence: 6,
-          p2Hp: 24,
-          p2Essence: 5,
-          p2MaxEssence: 6,
-        },
-        afterBoard: {
-          aiRearguard: [
-            { slotIndex: 3, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'red_04_meio_dragao',
-              atk: 6,
-              hp: 5,
-              maxHp: 5,
-              armor: 1,
-              stance: 'attack',
-              feedback: { text: '+2 ATQ Domínio!', color: 'buff' },
-            },
-            {
-              slotIndex: 2,
-              cardId: 'red_03_mastim_infernal',
-              atk: 5,
-              hp: 4,
-              maxHp: 4,
-              stance: 'defend',
-              feedback: { text: '+2 ATQ Domínio!', color: 'buff' },
-            },
-          ],
-          aiVanguard: [
-            {
-              slotIndex: 3,
-              cardId: 'purple_07_lich',
-              atk: 5,
-              hp: 2,
-              maxHp: 5,
-              armor: 0,
-              stance: 'defend',
-              isHitTarget: true,
-              feedback: { text: '-4 🔥 Cataclismo!', color: 'damage' },
-            },
-          ],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'red_10_altar_draconico', atk: 0, hp: 4, maxHp: 4, armor: 1 },
-            { slotIndex: 2, cardId: 'red_36_bigorna_fogo', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 26,
-          p1Essence: 1,
-          p1MaxEssence: 6,
-          p2Hp: 20,
-          p2Essence: 5,
-          p2MaxEssence: 6,
-          p2Feedback: { text: '-4 🔥 Sol Carmesim', color: 'damage' },
-        },
+          'Com 6/6 de Afinidade Carmesim, o Jogador 1 invoca sua Expansão de Domínio (+1/+1, Ímpeto e Acerto Garantido) e ascende o Campeão Dracônico para ★ Soberano Meio-Dragão!',
+        turnNumber: 7,
+        p1Essence: 8,
+        p1MaxEssence: 8,
+        kind: 'domain_and_ascend',
+        ascendRow: 'vanguard',
+        ascendSlotIndex: 1,
       },
       {
         id: 'red-step-3',
-        stepBadge: 'PASSO 3/4 • INVOCAÇÃO LENDÁRIA',
-        title: 'Invocar Vulcanis, Soberano Carmesim',
+        stepBadge: 'PASSO 3/4 • ENTRADA LENDÁRIA & SOPRO ELEMENTAL',
+        title: 'Invocar Vulcanis, Soberano Carmesim & Sopro de Chamas',
         narrative:
-          'O Jogador 1 seleciona o Dragão Lendário na mão e o invoca na Casa 4 da Vanguarda [V]. Ao Entrar, seu Sopro Dracônico incinera as fileiras inimigas!',
-        sfx: 'dragon_breath',
-        musicTrack: 'domain_red',
-        activeDomain: 'red',
-        domainBannerTitle: '⛩️ CALDEIRA DO FOGO PRIMORDIAL (2 TURNOS)',
-        domainBannerSubtitle: 'Bônus de Domínio: Aliados +1/+1 e Ímpeto • Acerto Garantido direto no Soberano!',
-        handCardIds: [
-          'red_01_kobold',
-          'red_157_dragao_tiamat_carmesim',
-          'red_18_marechal_rubro',
-          'red_146_coroa_chama_eterna',
-          'red_02_magmin',
-        ],
-        selectedHandIndex: 1,
-        dockActionLabel: '+ Vanguarda [V]',
-        dockActionType: 'vanguard',
-        dockStatusText: '🐉 Invocação Lendária: Posicionando Dragão Soberano Carmesim na Casa 4 da Vanguarda!',
-        targetLane: 'playerVanguard',
-        targetSlotIndex: 3,
-        targetWatermark: '+ Vanguarda [V]',
-        heraldTitle: '🐉 LENDÁRIA: SOBERANO DRACÔNICO CARMESIM',
-        heraldSubtitle: 'Sopro Dracônico devasta as fileiras inimigas em 3 de dano de fogo!',
-        heraldDomain: 'red',
-        breathWaveLane: 'aiRearguard',
-        breathWaveDomain: 'red',
-        beforeBoard: {
-          aiRearguard: [
-            { slotIndex: 3, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'red_04_meio_dragao', atk: 6, hp: 5, maxHp: 5, armor: 1, stance: 'attack' },
-            { slotIndex: 2, cardId: 'red_03_mastim_infernal', atk: 5, hp: 4, maxHp: 4, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 5, hp: 2, maxHp: 5, armor: 0, stance: 'defend' },
-          ],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'red_10_altar_draconico', atk: 0, hp: 4, maxHp: 4, armor: 1 },
-            { slotIndex: 2, cardId: 'red_36_bigorna_fogo', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 26,
-          p1Essence: 8,
-          p1MaxEssence: 8,
-          p2Hp: 20,
-          p2Essence: 6,
-          p2MaxEssence: 8,
-        },
-        afterBoard: {
-          aiRearguard: [
-            {
-              slotIndex: 3,
-              cardId: 'purple_126_campanario_mortos',
-              atk: 0,
-              hp: 2,
-              maxHp: 5,
-              armor: 0,
-              isHitTarget: true,
-              feedback: { text: '-3 🔥 Sopro!', color: 'damage' },
-            },
-          ],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'red_04_meio_dragao', atk: 6, hp: 5, maxHp: 5, armor: 1, stance: 'attack' },
-            { slotIndex: 2, cardId: 'red_03_mastim_infernal', atk: 5, hp: 4, maxHp: 4, stance: 'defend' },
-            {
-              slotIndex: 3,
-              cardId: 'red_157_dragao_tiamat_carmesim',
-              atk: 10,
-              hp: 9,
-              maxHp: 9,
-              armor: 2,
-              stance: 'attack',
-              isNewlySummoned: true,
-              isBurstTarget: true,
-              feedback: { text: '🐉 Sopro 3 🔥!', color: 'buff' },
-            },
-          ],
-          aiVanguard: [],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'red_10_altar_draconico', atk: 0, hp: 4, maxHp: 4, armor: 1 },
-            { slotIndex: 2, cardId: 'red_36_bigorna_fogo', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 26,
-          p1Essence: 0,
-          p1MaxEssence: 8,
-          p2Hp: 14,
-          p2Essence: 6,
-          p2MaxEssence: 8,
-          p2Feedback: { text: '-6 🔥 Sopro Real', color: 'damage' },
-        },
+          'O Jogador 1 escolhe a Lendária Vulcanis, Soberano Carmesim na mão e a invoca na Vanguarda [V], disparando seu Sopro Elemental em toda a Vanguarda inimiga!',
+        turnNumber: 8,
+        p1Essence: 9,
+        p1MaxEssence: 9,
+        kind: 'play_card',
+        handIndex: 1,
+        deployRow: 'vanguard',
+        deploySlotIndex: 4,
       },
       {
         id: 'red-step-4',
-        stepBadge: 'PASSO 4/4 • ASCENSÃO & GOLPE LETAL',
-        title: 'Ascensão do Campeão Dracônico & Ataque Final',
+        stepBadge: 'PASSO 4/4 • PREVISÃO TÁTICA & GOLPE FINAL',
+        title: 'Ataque com Acerto Garantido Direto no Soberano Rival',
         narrative:
-          'O Jogador 1 seleciona o Campeão Dracônico em campo, aciona 👑 Ascender (4⚡) para evoluí-lo em Soberano Meio-Dragão Ascendido (preservando os bônus da Bigorna para 9/8!) e ataca com toda a Vanguarda para vencer!',
-        sfx: 'ascend',
-        musicTrack: 'domain_red',
-        activeDomain: 'red',
-        domainBannerTitle: '⛩️ CALDEIRA DO FOGO PRIMORDIAL (VITÓRIA IMINENTE)',
-        domainBannerSubtitle: 'Ascensão preservou todos os bônus acumulados da Bigorna (+2/+1)!',
-        handCardIds: [
-          'red_04_meio_dragao',
-          'red_18_marechal_rubro',
-          'red_146_coroa_chama_eterna',
-          'red_02_magmin',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '👑 Ascender (4⚡) + Atacar Soberano',
-        dockActionType: 'ascend',
-        dockStatusText:
-          '👑 Evoluindo Campeão Dracônico → Soberano Meio-Dragão Ascendido (9⚔️ / 8❤️, Voo, Atropelar)!',
-        targetLane: 'playerVanguard',
-        targetSlotIndex: 1,
-        heraldTitle: '👑 ASCENSÃO: SOBERANO MEIO-DRAGÃO + ATAQUE TOTAL!',
-        heraldSubtitle: 'Soberano Meio-Dragão (9⚔️) + Dragão Carmesim (10⚔️) zeram a Vida do rival!',
-        heraldDomain: 'gold',
-        beforeBoard: {
-          aiRearguard: [
-            { slotIndex: 3, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 2, maxHp: 5, armor: 0 },
-          ],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'red_04_meio_dragao', atk: 6, hp: 5, maxHp: 5, armor: 1, stance: 'attack' },
-            { slotIndex: 2, cardId: 'red_03_mastim_infernal', atk: 5, hp: 4, maxHp: 4, stance: 'attack' },
-            {
-              slotIndex: 3,
-              cardId: 'red_157_dragao_tiamat_carmesim',
-              atk: 10,
-              hp: 9,
-              maxHp: 9,
-              armor: 2,
-              stance: 'attack',
-            },
-          ],
-          aiVanguard: [],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'red_10_altar_draconico', atk: 0, hp: 4, maxHp: 4, armor: 1 },
-            { slotIndex: 2, cardId: 'red_36_bigorna_fogo', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 26,
-          p1Essence: 8,
-          p1MaxEssence: 8,
-          p2Hp: 14,
-          p2Essence: 6,
-          p2MaxEssence: 8,
-        },
-        afterBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'red_04_meio_dragao',
-              atk: 9,
-              hp: 8,
-              maxHp: 8,
-              armor: 2,
-              isAscended: true,
-              stance: 'attack',
-              isLunging: true,
-              isBurstTarget: true,
-              burstKind: 'ascend',
-              feedback: { text: '👑 Ascendido 9/8!', color: 'buff' },
-            },
-            {
-              slotIndex: 2,
-              cardId: 'red_03_mastim_infernal',
-              atk: 5,
-              hp: 4,
-              maxHp: 4,
-              stance: 'attack',
-              isLunging: true,
-            },
-            {
-              slotIndex: 3,
-              cardId: 'red_157_dragao_tiamat_carmesim',
-              atk: 10,
-              hp: 9,
-              maxHp: 9,
-              armor: 2,
-              stance: 'attack',
-              isLunging: true,
-              feedback: { text: '⚔️ -10 Letal!', color: 'damage' },
-            },
-          ],
-          aiVanguard: [],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'red_10_altar_draconico', atk: 0, hp: 4, maxHp: 4, armor: 1 },
-            { slotIndex: 2, cardId: 'red_36_bigorna_fogo', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 26,
-          p1Essence: 4,
-          p1MaxEssence: 8,
-          p2Hp: 0,
-          p2Essence: 6,
-          p2MaxEssence: 8,
-          p2Feedback: { text: '💥 -19 VITÓRIA!', color: 'damage' },
-        },
+          'Sob a Expansão de Domínio ativa, toda a Vanguarda Dracônica ataca diretamente o Soberano rival com Acerto Garantido, zerando seus Pontos de Vida!',
+        turnNumber: 8,
+        p1Essence: 4,
+        p1MaxEssence: 9,
+        kind: 'attack_lethal',
       },
     ],
   },
@@ -578,381 +302,91 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     shortTab: '❄️ Gelo Eterno',
     badge: 'COMBO #6 • CONGELAMENTO TOTAL & OLHO DO MAELSTROM',
     title: 'Olho do Maelstrom Astral',
-    subtitle: 'Trono do Inverno Eterno + Ruptura do Relógio Astral + Dragão de Safira Sônico',
+    subtitle: 'Ruptura do Relógio Astral + Trono do Inverno Eterno + Dragão de Safira Sônico',
     comboRef: 'Grimório: Conclave da Geada • Combo Oficial #6',
     accentColor: '#38bdf8',
     p1Name: 'Hydrissa (Você)',
     p1AvatarCardId: 'blue_154_dragao_safira_soberano',
     p1Domain: 'blue',
+    p1StartingHp: 26,
     p2Name: 'Vulcanis, Senhor Rubro',
     p2AvatarCardId: 'red_157_dragao_tiamat_carmesim',
     p2Domain: 'red',
+    p2StartingHp: 18,
+    initialPlayerUnits: [
+      { cardId: 'blue_152_arquimago_vortice', row: 'vanguard', slotIndex: 2 },
+      { cardId: 'blue_37_mago_aprendiz', row: 'rearguard', slotIndex: 1 },
+    ],
+    initialAiUnits: [
+      { cardId: 'red_04_meio_dragao', row: 'vanguard', slotIndex: 2 },
+      { cardId: 'red_18_marechal_rubro', row: 'vanguard', slotIndex: 4 },
+    ],
+    initialHandCardIds: [
+      'blue_141_ruptura_temporal',
+      'blue_146_trono_inverno_eterno',
+      'blue_154_dragao_safira_soberano',
+      'blue_161_singularidade_temporal',
+      'blue_136_leviata_cronos',
+    ],
+    initialChanneledCardIds: [
+      'blue_37_mago_aprendiz',
+      'blue_136_leviata_cronos',
+      'blue_141_ruptura_temporal',
+      'blue_152_arquimago_vortice',
+    ],
+    initialCryptCardIds: ['blue_37_mago_aprendiz'],
     steps: [
       {
         id: 'blu-step-1',
         stepBadge: 'PASSO 1/4 • FEITIÇO DE ESTASE',
         title: 'Lançar Ruptura do Relógio Astral na Vanguarda Inimiga',
         narrative:
-          'O Jogador 1 escolhe Ruptura do Relógio Astral na mão e a lança sobre a Vanguarda agressiva inimiga, aplicando ❄️ Congelado a todas as unidades rivais e comprando 1 carta!',
-        sfx: 'freeze',
-        musicTrack: 'ambient_battle',
-        handCardIds: [
-          'blue_141_ruptura_temporal',
-          'blue_146_trono_inverno_eterno',
-          'blue_154_dragao_safira_soberano',
-          'blue_161_singularidade_temporal',
-          'blue_37_mago_aprendiz',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '❄️ Lançar Agora',
-        dockActionType: 'spell',
-        dockStatusText: '❄️ Alvo em Área: Congelando toda a Vanguarda inimiga e comprando 1 carta!',
-        targetLane: 'aiVanguard',
-        targetSlotIndex: 2,
-        heraldTitle: '❄️ FEITIÇO: RUPTURA DO RELÓGIO ASTRAL',
-        heraldSubtitle: 'Toda a Vanguarda inimiga foi Congelada e perde sua próxima ação de ataque!',
-        heraldDomain: 'blue',
-        breathWaveLane: 'aiVanguard',
-        breathWaveDomain: 'blue',
-        beforeBoard: {
-          aiRearguard: [{ slotIndex: 4, cardId: 'red_01_kobold', atk: 2, hp: 2, maxHp: 2 }],
-          playerVanguard: [
-            { slotIndex: 2, cardId: 'blue_152_arquimago_vortice', atk: 3, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 1, cardId: 'red_02_magmin', atk: 2, hp: 1, maxHp: 1, stance: 'attack' },
-            { slotIndex: 2, cardId: 'red_04_meio_dragao', atk: 4, hp: 4, maxHp: 4, armor: 1, stance: 'attack' },
-            { slotIndex: 4, cardId: 'red_18_marechal_rubro', atk: 4, hp: 3, maxHp: 3, stance: 'attack' },
-          ],
-          playerRearguard: [{ slotIndex: 1, cardId: 'blue_37_mago_aprendiz', atk: 2, hp: 3, maxHp: 3 }],
-          p1Hp: 24,
-          p1Essence: 6,
-          p1MaxEssence: 6,
-          p2Hp: 25,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-        },
-        afterBoard: {
-          aiRearguard: [{ slotIndex: 4, cardId: 'red_01_kobold', atk: 2, hp: 2, maxHp: 2 }],
-          playerVanguard: [
-            { slotIndex: 2, cardId: 'blue_152_arquimago_vortice', atk: 3, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          aiVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'red_02_magmin',
-              atk: 2,
-              hp: 1,
-              maxHp: 1,
-              isFrozen: true,
-              isHitTarget: true,
-              feedback: { text: '❄️ Congelado!', color: 'freeze' },
-            },
-            {
-              slotIndex: 2,
-              cardId: 'red_04_meio_dragao',
-              atk: 4,
-              hp: 4,
-              maxHp: 4,
-              armor: 1,
-              isFrozen: true,
-              isHitTarget: true,
-              feedback: { text: '❄️ Congelado!', color: 'freeze' },
-            },
-            {
-              slotIndex: 4,
-              cardId: 'red_18_marechal_rubro',
-              atk: 4,
-              hp: 3,
-              maxHp: 3,
-              isFrozen: true,
-              isHitTarget: true,
-              feedback: { text: '❄️ Congelado!', color: 'freeze' },
-            },
-          ],
-          playerRearguard: [{ slotIndex: 1, cardId: 'blue_37_mago_aprendiz', atk: 2, hp: 3, maxHp: 3 }],
-          p1Hp: 24,
-          p1Essence: 4,
-          p1MaxEssence: 6,
-          p2Hp: 25,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-        },
+          'O Jogador 1 escolhe Ruptura do Relógio Astral na mão e a lança sobre a Vanguarda inimiga, aplicando ❄️ Congelado a todos os inimigos, gerando +2⚡ e comprando 1 carta!',
+        turnNumber: 6,
+        p1Essence: 6,
+        p1MaxEssence: 6,
+        kind: 'play_card',
+        handIndex: 0,
       },
       {
         id: 'blu-step-2',
         stepBadge: 'PASSO 2/4 • RELÍQUIA GLACIAL',
         title: 'Posicionar Trono do Inverno Eterno na Retaguarda',
         narrative:
-          'O Jogador 1 seleciona a Relíquia Trono do Inverno Eterno na mão e a posiciona na Retaguarda [R], mantendo a Vanguarda inimiga congelada e gerando vantagem de cartas todo turno.',
-        sfx: 'shield_up',
-        musicTrack: 'ambient_battle',
-        handCardIds: [
-          'blue_146_trono_inverno_eterno',
-          'blue_154_dragao_safira_soberano',
-          'blue_161_singularidade_temporal',
-          'blue_37_mago_aprendiz',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '+ Posicionar Relíquia [R]',
-        dockActionType: 'rearguard',
-        dockStatusText: '🏛️ Posicionando Trono do Inverno Eterno na Casa 4 da Retaguarda!',
-        targetLane: 'playerRearguard',
-        targetSlotIndex: 3,
-        targetWatermark: '+ Relíquia [R]',
-        heraldTitle: '🏛️ RELÍQUIA: TRONO DO INVERNO ETERNO',
-        heraldSubtitle: 'Aura de Permafrost ativada na Retaguarda: Congela ameaças e compra cartas extras!',
-        heraldDomain: 'blue',
-        beforeBoard: {
-          aiRearguard: [{ slotIndex: 4, cardId: 'red_01_kobold', atk: 2, hp: 2, maxHp: 2 }],
-          playerVanguard: [
-            { slotIndex: 2, cardId: 'blue_152_arquimago_vortice', atk: 3, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 1, cardId: 'red_02_magmin', atk: 2, hp: 1, maxHp: 1, isFrozen: true },
-            { slotIndex: 2, cardId: 'red_04_meio_dragao', atk: 4, hp: 4, maxHp: 4, armor: 1, isFrozen: true },
-            { slotIndex: 4, cardId: 'red_18_marechal_rubro', atk: 4, hp: 3, maxHp: 3, isFrozen: true },
-          ],
-          playerRearguard: [{ slotIndex: 1, cardId: 'blue_37_mago_aprendiz', atk: 2, hp: 3, maxHp: 3 }],
-          p1Hp: 24,
-          p1Essence: 4,
-          p1MaxEssence: 6,
-          p2Hp: 25,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-        },
-        afterBoard: {
-          aiRearguard: [{ slotIndex: 4, cardId: 'red_01_kobold', atk: 2, hp: 2, maxHp: 2 }],
-          playerVanguard: [
-            { slotIndex: 2, cardId: 'blue_152_arquimago_vortice', atk: 3, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 1, cardId: 'red_02_magmin', atk: 2, hp: 1, maxHp: 1, isFrozen: true },
-            { slotIndex: 2, cardId: 'red_04_meio_dragao', atk: 4, hp: 4, maxHp: 4, armor: 1, isFrozen: true },
-            { slotIndex: 4, cardId: 'red_18_marechal_rubro', atk: 4, hp: 3, maxHp: 3, isFrozen: true },
-          ],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'blue_37_mago_aprendiz', atk: 2, hp: 3, maxHp: 3 },
-            {
-              slotIndex: 3,
-              cardId: 'blue_146_trono_inverno_eterno',
-              atk: 0,
-              hp: 6,
-              maxHp: 6,
-              armor: 1,
-              isNewlySummoned: true,
-              isBurstTarget: true,
-              feedback: { text: '❄️ Permafrost Ativo!', color: 'shield' },
-            },
-          ],
-          p1Hp: 24,
-          p1Essence: 0,
-          p1MaxEssence: 6,
-          p2Hp: 25,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-        },
+          'O Jogador 1 seleciona a Relíquia Trono do Inverno Eterno na mão e a posiciona na Retaguarda [R], congelando ameaças e comprando cartas extras.',
+        turnNumber: 7,
+        p1Essence: 7,
+        p1MaxEssence: 7,
+        kind: 'play_card',
+        handIndex: 0,
+        deployRow: 'rearguard',
+        deploySlotIndex: 3,
       },
       {
         id: 'blu-step-3',
-        stepBadge: 'PASSO 3/4 • EXPANSÃO DE DOMÍNIO',
-        title: 'Expansão: Olho do Maelstrom Astral + Dragão de Safira',
+        stepBadge: 'PASSO 3/4 • EXPANSÃO DE DOMÍNIO & DRAGÃO DE SAFIRA',
+        title: 'Expansão: Olho do Maelstrom Astral + Dragão de Safira Sônico',
         narrative:
-          'Com 6/6 de Afinidade da Tempestade, o Jogador 1 expande o Olho do Maelstrom Astral e invoca o Dragão de Safira Sônico na Vanguarda, varrendo a linha inimiga com Sopro Glacial!',
-        sfx: 'domain_expand',
-        musicTrack: 'domain_blue',
-        activeDomain: 'blue',
-        domainBannerTitle: '⛩️ OLHO DO MAELSTROM ASTRAL (3 TURNOS)',
-        domainBannerSubtitle: 'Bônus de Domínio: Aliados +1/+1 e Ímpeto • Acerto Garantido direto no Soberano!',
-        handCardIds: [
-          'blue_154_dragao_safira_soberano',
-          'blue_161_singularidade_temporal',
-          'blue_136_leviata_cronos',
-          'blue_09_onda_repulsora',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '+ Vanguarda [V] + Expandir Domínio',
-        dockActionType: 'vanguard',
-        dockStatusText: '🐉 Invocando Dragão de Safira Sônico na Casa 4 da Vanguarda sob o Maelstrom Astral!',
-        targetLane: 'playerVanguard',
-        targetSlotIndex: 3,
-        targetWatermark: '+ Vanguarda [V]',
-        heraldTitle: '⛩️ OLHO DO MAELSTROM + DRAGÃO DE SAFIRA!',
-        heraldSubtitle: 'Sopro Sônico causa dano em área e mantém o exército inimigo congelado!',
-        heraldDomain: 'blue',
-        breathWaveLane: 'aiVanguard',
-        breathWaveDomain: 'blue',
-        beforeBoard: {
-          aiRearguard: [{ slotIndex: 4, cardId: 'red_01_kobold', atk: 2, hp: 2, maxHp: 2 }],
-          playerVanguard: [
-            { slotIndex: 2, cardId: 'blue_152_arquimago_vortice', atk: 3, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 1, cardId: 'red_02_magmin', atk: 2, hp: 1, maxHp: 1, isFrozen: true },
-            { slotIndex: 2, cardId: 'red_04_meio_dragao', atk: 4, hp: 4, maxHp: 4, armor: 1, isFrozen: true },
-            { slotIndex: 4, cardId: 'red_18_marechal_rubro', atk: 4, hp: 3, maxHp: 3, isFrozen: true },
-          ],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'blue_37_mago_aprendiz', atk: 2, hp: 3, maxHp: 3 },
-            { slotIndex: 3, cardId: 'blue_146_trono_inverno_eterno', atk: 0, hp: 6, maxHp: 6, armor: 1 },
-          ],
-          p1Hp: 24,
-          p1Essence: 7,
-          p1MaxEssence: 7,
-          p2Hp: 25,
-          p2Essence: 5,
-          p2MaxEssence: 7,
-        },
-        afterBoard: {
-          aiRearguard: [{ slotIndex: 4, cardId: 'red_01_kobold', atk: 2, hp: 2, maxHp: 2, isFrozen: true }],
-          playerVanguard: [
-            { slotIndex: 2, cardId: 'blue_152_arquimago_vortice', atk: 4, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-            {
-              slotIndex: 3,
-              cardId: 'blue_154_dragao_safira_soberano',
-              atk: 8,
-              hp: 8,
-              maxHp: 8,
-              armor: 2,
-              stance: 'attack',
-              isNewlySummoned: true,
-              isBurstTarget: true,
-              feedback: { text: '❄️ Sopro Sônico!', color: 'freeze' },
-            },
-          ],
-          aiVanguard: [
-            {
-              slotIndex: 2,
-              cardId: 'red_04_meio_dragao',
-              atk: 4,
-              hp: 2,
-              maxHp: 4,
-              armor: 0,
-              isFrozen: true,
-              isHitTarget: true,
-              feedback: { text: '-2 ❄️ Sopro!', color: 'damage' },
-            },
-            {
-              slotIndex: 4,
-              cardId: 'red_18_marechal_rubro',
-              atk: 4,
-              hp: 1,
-              maxHp: 3,
-              isFrozen: true,
-              isHitTarget: true,
-              feedback: { text: '-2 ❄️ Sopro!', color: 'damage' },
-            },
-          ],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'blue_37_mago_aprendiz', atk: 3, hp: 3, maxHp: 3 },
-            { slotIndex: 3, cardId: 'blue_146_trono_inverno_eterno', atk: 0, hp: 6, maxHp: 6, armor: 1 },
-          ],
-          p1Hp: 24,
-          p1Essence: 0,
-          p1MaxEssence: 7,
-          p2Hp: 19,
-          p2Essence: 5,
-          p2MaxEssence: 7,
-          p2Feedback: { text: '-6 ❄️ Tempestade', color: 'damage' },
-        },
+          'Com 6/6 de Afinidade Astral, o Jogador 1 expande o Olho do Maelstrom Astral e invoca o Dragão de Safira Sônico na Vanguarda, varrendo a linha inimiga com Sopro Sônico!',
+        turnNumber: 8,
+        p1Essence: 10,
+        p1MaxEssence: 10,
+        kind: 'play_card',
+        handIndex: 0,
+        deployRow: 'vanguard',
+        deploySlotIndex: 3,
+        alsoInvokeDomainExpansion: true,
       },
       {
         id: 'blu-step-4',
-        stepBadge: 'PASSO 4/4 • SINGULARIDADE & VOO LETAL',
-        title: 'Pilares da Geada Eterna Estilhaçam o Tabuleiro Rival',
+        stepBadge: 'PASSO 4/4 • VOO & ACERTO GARANTIDO',
+        title: 'Ataque Aéreo Letal sob o Maelstrom Astral',
         narrative:
-          'No turno seguinte, o Jogador 1 lança Pilares da Geada Eterna da mão para estilhaçar as unidades congeladas e voa livremente com o Dragão de Safira Sônico contra o Soberano rival!',
-        sfx: 'spell_arcane',
-        musicTrack: 'domain_blue',
-        activeDomain: 'blue',
-        domainBannerTitle: '⛩️ OLHO DO MAELSTROM ASTRAL (DOMÍNIO TOTAL)',
-        domainBannerSubtitle: 'Tabuleiro inimigo estilhaçado — ataque aéreo direto com Voo!',
-        handCardIds: [
-          'blue_161_singularidade_temporal',
-          'blue_136_leviata_cronos',
-          'blue_09_onda_repulsora',
-          'blue_28_orbe_tempestade',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '⚡ Lançar Pilares da Geada',
-        dockActionType: 'spell',
-        dockStatusText: '💥 Estilhaçando todas as unidades inimigas congeladas e atacando pelo ar!',
-        targetLane: 'aiVanguard',
-        targetSlotIndex: 2,
-        heraldTitle: '❄️ PILARES DA GEADA + VOO DO DRAGÃO DE SAFIRA!',
-        heraldSubtitle: 'Unidades congeladas são estilhaçadas! Dragão de Safira e Hydrissa finalizam o duelo!',
-        heraldDomain: 'blue',
-        breathWaveLane: 'aiVanguard',
-        breathWaveDomain: 'blue',
-        beforeBoard: {
-          aiRearguard: [{ slotIndex: 4, cardId: 'red_01_kobold', atk: 2, hp: 2, maxHp: 2, isFrozen: true }],
-          playerVanguard: [
-            { slotIndex: 2, cardId: 'blue_152_arquimago_vortice', atk: 4, hp: 5, maxHp: 5, armor: 1, stance: 'attack' },
-            {
-              slotIndex: 3,
-              cardId: 'blue_154_dragao_safira_soberano',
-              atk: 8,
-              hp: 8,
-              maxHp: 8,
-              armor: 2,
-              stance: 'attack',
-            },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'red_04_meio_dragao', atk: 4, hp: 2, maxHp: 4, isFrozen: true },
-            { slotIndex: 4, cardId: 'red_18_marechal_rubro', atk: 4, hp: 1, maxHp: 3, isFrozen: true },
-          ],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'blue_37_mago_aprendiz', atk: 3, hp: 3, maxHp: 3 },
-            { slotIndex: 3, cardId: 'blue_146_trono_inverno_eterno', atk: 0, hp: 6, maxHp: 6, armor: 1 },
-          ],
-          p1Hp: 24,
-          p1Essence: 8,
-          p1MaxEssence: 8,
-          p2Hp: 19,
-          p2Essence: 5,
-          p2MaxEssence: 8,
-        },
-        afterBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            {
-              slotIndex: 2,
-              cardId: 'blue_152_arquimago_vortice',
-              atk: 5,
-              hp: 5,
-              maxHp: 5,
-              armor: 1,
-              stance: 'attack',
-              isLunging: true,
-              feedback: { text: '⚔️ -5 Arcano!', color: 'buff' },
-            },
-            {
-              slotIndex: 3,
-              cardId: 'blue_154_dragao_safira_soberano',
-              atk: 9,
-              hp: 8,
-              maxHp: 8,
-              armor: 2,
-              stance: 'attack',
-              isLunging: true,
-              isBurstTarget: true,
-              feedback: { text: '❄️ -9 Direto!', color: 'damage' },
-            },
-          ],
-          aiVanguard: [],
-          playerRearguard: [
-            { slotIndex: 1, cardId: 'blue_37_mago_aprendiz', atk: 3, hp: 3, maxHp: 3, isLunging: true },
-            { slotIndex: 3, cardId: 'blue_146_trono_inverno_eterno', atk: 0, hp: 6, maxHp: 6, armor: 1 },
-          ],
-          p1Hp: 24,
-          p1Essence: 2,
-          p1MaxEssence: 8,
-          p2Hp: 0,
-          p2Essence: 5,
-          p2MaxEssence: 8,
-          p2Feedback: { text: '💥 -19 VITÓRIA!', color: 'damage' },
-        },
+          'Com os inimigos congelados e a Expansão de Domínio ativa, o Dragão de Safira Sônico e a tropa astral atacam diretamente o Soberano rival para vencer a partida!',
+        turnNumber: 8,
+        p1Essence: 2,
+        p1MaxEssence: 10,
+        kind: 'attack_lethal',
       },
     ],
   },
@@ -961,401 +395,89 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     shortTab: '💀 Cripta Abissal',
     badge: 'COMBO #10 • REANIMAÇÃO DA CRIPTA & ECLIPSE DO TRONO',
     title: 'Eclipse do Trono de Ossos',
-    subtitle: 'Campanário dos Mortos + Exumar a Legião Caída + Dragão Umbral do Eclipse',
+    subtitle: 'Campanário dos Mortos + Exumar a Legião Caída + Lich da Coroa da Entropia',
     comboRef: 'Grimório: Legião da Cripta • Combo Oficial #10',
     accentColor: '#a855f7',
     p1Name: 'Vesperion, Lich (Você)',
     p1AvatarCardId: 'purple_156_lich_coroa_entropia',
     p1Domain: 'purple',
+    p1StartingHp: 24,
     p2Name: 'Vorágine, Titã Silvestre',
     p2AvatarCardId: 'green_09_hidra',
     p2Domain: 'green',
+    p2StartingHp: 19,
+    initialPlayerUnits: [
+      { cardId: 'purple_25_dama_seis_laminas', row: 'vanguard', slotIndex: 1 },
+      { cardId: 'purple_07_lich', row: 'vanguard', slotIndex: 3 },
+    ],
+    initialAiUnits: [
+      { cardId: 'green_07_troll', row: 'vanguard', slotIndex: 2, damageTaken: 3 },
+    ],
+    initialHandCardIds: [
+      'purple_126_campanario_mortos',
+      'purple_68_exumar_legiao',
+      'purple_156_lich_coroa_entropia',
+      'purple_123_eclipse_abissal',
+    ],
+    initialChanneledCardIds: [
+      'purple_07_lich',
+      'purple_25_dama_seis_laminas',
+      'purple_68_exumar_legiao',
+      'purple_126_campanario_mortos',
+    ],
+    initialCryptCardIds: ['purple_138_soberano_carnica', 'purple_25_dama_seis_laminas'],
     steps: [
       {
         id: 'pur-step-1',
         stepBadge: 'PASSO 1/4 • RELÍQUIA NECRÓTICA',
         title: 'Posicionar Campanário dos Mortos na Retaguarda',
         narrative:
-          'O Jogador 1 escolhe a Relíquia Campanário dos Mortos na mão e a posiciona na Retaguarda [R], drenando VIDA do Soberano inimigo todo início de turno.',
-        sfx: 'summon_heavy',
-        musicTrack: 'ambient_battle',
-        handCardIds: [
-          'purple_126_campanario_mortos',
-          'purple_68_exumar_legiao',
-          'purple_156_lich_coroa_entropia',
-          'purple_123_eclipse_abissal',
-          'purple_28_filacterio_noite',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '+ Posicionar Relíquia [R]',
-        dockActionType: 'rearguard',
-        dockStatusText: '🏛️ Posicionando Campanário dos Mortos na Casa 3 da Retaguarda (Dreno Contínuo)!',
-        targetLane: 'playerRearguard',
-        targetSlotIndex: 2,
-        targetWatermark: '+ Relíquia [R]',
-        heraldTitle: '🏛️ RELÍQUIA: CAMPANÁRIO DOS MORTOS',
-        heraldSubtitle: 'Badalada fúnebre drena VIDA do Soberano rival e fortalece a Cripta!',
-        heraldDomain: 'purple',
-        beforeBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'purple_25_dama_seis_laminas', atk: 4, hp: 3, maxHp: 3, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 5, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'green_115_carnotauro_chifre', atk: 5, hp: 5, maxHp: 5, stance: 'attack' },
-            { slotIndex: 4, cardId: 'green_07_troll', atk: 6, hp: 8, maxHp: 8, stance: 'attack' },
-          ],
-          playerRearguard: [],
-          p1Hp: 22,
-          p1Essence: 6,
-          p1MaxEssence: 6,
-          p2Hp: 22,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-        },
-        afterBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'purple_25_dama_seis_laminas', atk: 4, hp: 3, maxHp: 3, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 5, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'green_115_carnotauro_chifre', atk: 5, hp: 5, maxHp: 5, stance: 'attack' },
-            { slotIndex: 4, cardId: 'green_07_troll', atk: 6, hp: 8, maxHp: 8, stance: 'attack' },
-          ],
-          playerRearguard: [
-            {
-              slotIndex: 2,
-              cardId: 'purple_126_campanario_mortos',
-              atk: 0,
-              hp: 5,
-              maxHp: 5,
-              armor: 1,
-              isNewlySummoned: true,
-              isBurstTarget: true,
-              feedback: { text: '🔔 Dreno Ativo!', color: 'heal' },
-            },
-          ],
-          p1Hp: 24,
-          p1Essence: 3,
-          p1MaxEssence: 6,
-          p2Hp: 20,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-          p1Feedback: { text: '+2 ❤️ Dreno', color: 'heal' },
-          p2Feedback: { text: '-2 💀 Campanário', color: 'damage' },
-        },
+          'O Jogador 1 escolhe a Relíquia Campanário dos Mortos na mão e a posiciona na Retaguarda [R], concedendo +1/+1 aos seus aliados ao entrar e drenando o Soberano rival todo turno!',
+        turnNumber: 6,
+        p1Essence: 6,
+        p1MaxEssence: 6,
+        kind: 'play_card',
+        handIndex: 0,
+        deployRow: 'rearguard',
+        deploySlotIndex: 2,
       },
       {
         id: 'pur-step-2',
         stepBadge: 'PASSO 2/4 • EXPANSÃO DE DOMÍNIO + REANIMAÇÃO',
-        title: 'Expansão: Eclipse do Trono de Ossos & Exumar a Legião',
+        title: 'Expansão: Eclipse do Trono de Ossos & Exumar a Legião Caída',
         narrative:
-          'Com 6/6 de Afinidade do Abismo, o Jogador 1 expande o Eclipse do Trono de Ossos e lança Exumar a Legião Caída (4⚡), reanimando Necrothor, Soberano da Carniça diretamente da Cripta e dando +1/+1 a todos os aliados!',
-        sfx: 'domain_expand',
-        musicTrack: 'domain_purple',
-        activeDomain: 'purple',
-        domainBannerTitle: '⛩️ ECLIPSE DO TRONO DE OSSOS (3 TURNOS)',
-        domainBannerSubtitle: 'Bônus de Domínio: Aliados +1/+1 e Ímpeto • Acerto Garantido direto no Soberano!',
-        handCardIds: [
-          'purple_68_exumar_legiao',
-          'purple_156_lich_coroa_entropia',
-          'purple_123_eclipse_abissal',
-          'purple_28_filacterio_noite',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '🪦 Lançar Exumar + Expandir Domínio',
-        dockActionType: 'domain',
-        dockStatusText: '⛩️ Expandindo Eclipse do Trono de Ossos e reanimando Necrothor da Cripta!',
-        targetLane: 'playerVanguard',
-        targetSlotIndex: 2,
-        targetWatermark: '+ Reanimar [V]',
-        heraldTitle: '⛩️ ECLIPSE DO TRONO DE OSSOS + EXUMAR LEGIÃO!',
-        heraldSubtitle: 'Necrothor renasce da Cripta na Vanguarda e toda a legião recebe +1/+1 e Dreno de Vida!',
-        heraldDomain: 'purple',
-        beforeBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'purple_25_dama_seis_laminas', atk: 4, hp: 3, maxHp: 3, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 5, hp: 5, maxHp: 5, armor: 1, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'green_115_carnotauro_chifre', atk: 5, hp: 5, maxHp: 5, stance: 'attack' },
-            { slotIndex: 4, cardId: 'green_07_troll', atk: 6, hp: 8, maxHp: 8, stance: 'attack' },
-          ],
-          playerRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 24,
-          p1Essence: 6,
-          p1MaxEssence: 6,
-          p2Hp: 20,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-        },
-        afterBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'purple_25_dama_seis_laminas',
-              atk: 6,
-              hp: 4,
-              maxHp: 4,
-              stance: 'attack',
-              feedback: { text: '+2/+1 Exumar!', color: 'buff' },
-            },
-            {
-              slotIndex: 2,
-              cardId: 'purple_138_soberano_carnica',
-              atk: 7,
-              hp: 7,
-              maxHp: 7,
-              armor: 1,
-              stance: 'attack',
-              isNewlySummoned: true,
-              isBurstTarget: true,
-              feedback: { text: '🪦 Reanimado!', color: 'heal' },
-            },
-            {
-              slotIndex: 3,
-              cardId: 'purple_07_lich',
-              atk: 7,
-              hp: 6,
-              maxHp: 6,
-              armor: 1,
-              stance: 'defend',
-              feedback: { text: '+2/+1 Exumar!', color: 'buff' },
-            },
-          ],
-          aiVanguard: [
-            {
-              slotIndex: 2,
-              cardId: 'green_115_carnotauro_chifre',
-              atk: 5,
-              hp: 2,
-              maxHp: 5,
-              isHitTarget: true,
-              feedback: { text: '-3 💀 Carniça!', color: 'damage' },
-            },
-            {
-              slotIndex: 4,
-              cardId: 'green_07_troll',
-              atk: 6,
-              hp: 5,
-              maxHp: 8,
-              isHitTarget: true,
-              feedback: { text: '-3 💀 Carniça!', color: 'damage' },
-            },
-          ],
-          playerRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 27,
-          p1Essence: 2,
-          p1MaxEssence: 6,
-          p2Hp: 17,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-          p1Feedback: { text: '+3 ❤️ Dreno', color: 'heal' },
-          p2Feedback: { text: '-3 💀 Acerto Garantido', color: 'damage' },
-        },
+          'Com 6/6 de Afinidade do Abismo, o Jogador 1 expande o Eclipse do Trono de Ossos e lança Exumar a Legião Caída, reanimando diretamente da Cripta!',
+        turnNumber: 7,
+        p1Essence: 9,
+        p1MaxEssence: 9,
+        kind: 'play_card',
+        handIndex: 0,
+        alsoInvokeDomainExpansion: true,
       },
       {
         id: 'pur-step-3',
-        stepBadge: 'PASSO 3/4 • DESCIDA DO DRAGÃO UMBRAL',
-        title: 'Invocar Dragão Umbral do Eclipse',
+        stepBadge: 'PASSO 3/4 • DESCIDA DO ARQUILICH SUPREMO',
+        title: 'Invocar Lich da Coroa da Entropia na Vanguarda',
         narrative:
-          'O Jogador 1 seleciona o Dragão Umbral do Eclipse na mão e o invoca na Casa 5 da Vanguarda [V], reanimando mais um campeão caído e fortalecendo todo o exército imortal!',
-        sfx: 'summon_heavy',
-        musicTrack: 'domain_purple',
-        activeDomain: 'purple',
-        domainBannerTitle: '⛩️ ECLIPSE DO TRONO DE OSSOS (2 TURNOS)',
-        domainBannerSubtitle: 'Reanimação da Cripta ativa — o exército imortal domina as 6 casas!',
-        handCardIds: [
-          'purple_156_lich_coroa_entropia',
-          'purple_123_eclipse_abissal',
-          'purple_28_filacterio_noite',
-          'purple_30_erguer_mortos',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '+ Vanguarda [V]',
-        dockActionType: 'vanguard',
-        dockStatusText: '🐉 Invocando Dragão Umbral do Eclipse na Casa 5 da Vanguarda!',
-        targetLane: 'playerVanguard',
-        targetSlotIndex: 4,
-        targetWatermark: '+ Vanguarda [V]',
-        heraldTitle: '💀 LENDÁRIA: DRAGÃO UMBRAL DO ECLIPSE',
-        heraldSubtitle: 'Ao Entrar: Fortalece toda a fileira aliada e drena a essência vital do inimigo!',
-        heraldDomain: 'purple',
-        beforeBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'purple_25_dama_seis_laminas', atk: 6, hp: 4, maxHp: 4, stance: 'attack' },
-            { slotIndex: 2, cardId: 'purple_138_soberano_carnica', atk: 7, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 7, hp: 6, maxHp: 6, armor: 1, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'green_115_carnotauro_chifre', atk: 5, hp: 2, maxHp: 5 },
-            { slotIndex: 4, cardId: 'green_07_troll', atk: 6, hp: 5, maxHp: 8 },
-          ],
-          playerRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 27,
-          p1Essence: 7,
-          p1MaxEssence: 7,
-          p2Hp: 17,
-          p2Essence: 5,
-          p2MaxEssence: 7,
-        },
-        afterBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'purple_25_dama_seis_laminas', atk: 7, hp: 5, maxHp: 5, stance: 'attack' },
-            { slotIndex: 2, cardId: 'purple_138_soberano_carnica', atk: 8, hp: 8, maxHp: 8, armor: 1, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 8, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
-            {
-              slotIndex: 4,
-              cardId: 'purple_156_lich_coroa_entropia',
-              atk: 8,
-              hp: 8,
-              maxHp: 8,
-              armor: 2,
-              stance: 'attack',
-              isNewlySummoned: true,
-              isBurstTarget: true,
-              feedback: { text: '🐉 Eclipse +1/+1!', color: 'buff' },
-            },
-          ],
-          aiVanguard: [
-            { slotIndex: 4, cardId: 'green_07_troll', atk: 6, hp: 3, maxHp: 8, isHitTarget: true },
-          ],
-          playerRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 29,
-          p1Essence: 0,
-          p1MaxEssence: 7,
-          p2Hp: 14,
-          p2Essence: 5,
-          p2MaxEssence: 7,
-        },
+          'O Jogador 1 seleciona Lich da Coroa da Entropia na mão e o invoca na Vanguarda [V], fortalecendo toda a fileira imortal e drenando a vida inimiga!',
+        turnNumber: 8,
+        p1Essence: 9,
+        p1MaxEssence: 9,
+        kind: 'play_card',
+        handIndex: 0,
+        deployRow: 'vanguard',
+        deploySlotIndex: 4,
       },
       {
         id: 'pur-step-4',
-        stepBadge: 'PASSO 4/4 • CEIFA ABISSAL',
-        title: 'Eclipse do Sol Abissal + Dreno de Vida Total',
+        stepBadge: 'PASSO 4/4 • CEIFA IMORTAL COM DRENO DE VIDA',
+        title: 'Ataque Total da Legião do Eclipse ao Soberano Rival',
         narrative:
-          'O Jogador 1 seleciona Eclipse do Sol Abissal na mão, varre o último Guardião inimigo e ataca com toda a Legião Imortal, drenando os últimos 14 PV do Soberano rival!',
-        sfx: 'attack_hit',
-        musicTrack: 'domain_purple',
-        activeDomain: 'purple',
-        domainBannerTitle: '⛩️ ECLIPSE DO TRONO DE OSSOS (VITÓRIA IMORTAL)',
-        domainBannerSubtitle: 'Dreno de Vida restaura o Soberano para 30 PV enquanto finaliza o oponente!',
-        handCardIds: [
-          'purple_123_eclipse_abissal',
-          'purple_28_filacterio_noite',
-          'purple_30_erguer_mortos',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '💀 Lançar Eclipse + Ataque Total',
-        dockActionType: 'spell',
-        dockStatusText: '⚔️ Ceifando a Vanguarda inimiga e desferindo 24 de dano necrótico ao Soberano rival!',
-        targetLane: 'aiVanguard',
-        targetSlotIndex: 4,
-        heraldTitle: '💀 CEIFA IMORTAL DA LEGIÃO DO ECLIPSE!',
-        heraldSubtitle: 'Eclipse do Sol Abissal limpa o caminho e a Vanguarda drena toda a Vida rival!',
-        heraldDomain: 'purple',
-        breathWaveLane: 'aiVanguard',
-        breathWaveDomain: 'purple',
-        beforeBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'purple_25_dama_seis_laminas', atk: 7, hp: 5, maxHp: 5, stance: 'attack' },
-            { slotIndex: 2, cardId: 'purple_138_soberano_carnica', atk: 8, hp: 8, maxHp: 8, armor: 1, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_07_lich', atk: 8, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
-            {
-              slotIndex: 4,
-              cardId: 'purple_156_lich_coroa_entropia',
-              atk: 8,
-              hp: 8,
-              maxHp: 8,
-              armor: 2,
-              stance: 'attack',
-            },
-          ],
-          aiVanguard: [{ slotIndex: 4, cardId: 'green_07_troll', atk: 6, hp: 3, maxHp: 8, stance: 'defend' }],
-          playerRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 29,
-          p1Essence: 8,
-          p1MaxEssence: 8,
-          p2Hp: 14,
-          p2Essence: 5,
-          p2MaxEssence: 8,
-        },
-        afterBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'purple_25_dama_seis_laminas',
-              atk: 7,
-              hp: 5,
-              maxHp: 5,
-              stance: 'attack',
-              isLunging: true,
-              feedback: { text: '☠ -7 Letal!', color: 'damage' },
-            },
-            {
-              slotIndex: 2,
-              cardId: 'purple_138_soberano_carnica',
-              atk: 8,
-              hp: 8,
-              maxHp: 8,
-              armor: 1,
-              stance: 'attack',
-              isLunging: true,
-              feedback: { text: '💀 -8 Dreno!', color: 'heal' },
-            },
-            {
-              slotIndex: 3,
-              cardId: 'purple_07_lich',
-              atk: 8,
-              hp: 7,
-              maxHp: 7,
-              armor: 1,
-              stance: 'attack',
-              isLunging: true,
-            },
-            {
-              slotIndex: 4,
-              cardId: 'purple_156_lich_coroa_entropia',
-              atk: 8,
-              hp: 8,
-              maxHp: 8,
-              armor: 2,
-              stance: 'attack',
-              isLunging: true,
-              feedback: { text: '⚔️ -8 Eclipse!', color: 'damage' },
-            },
-          ],
-          aiVanguard: [],
-          playerRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          p1Hp: 30,
-          p1Essence: 3,
-          p1MaxEssence: 8,
-          p2Hp: 0,
-          p2Essence: 5,
-          p2MaxEssence: 8,
-          p1Feedback: { text: '+4 ❤️ Vida Cheia!', color: 'heal' },
-          p2Feedback: { text: '💥 -14 VITÓRIA!', color: 'damage' },
-        },
+          'Com Acerto Garantido ativo pelo Eclipse do Trono de Ossos, toda a Legião Imortal ataca diretamente o Soberano rival, drenando seus últimos Pontos de Vida!',
+        turnNumber: 8,
+        p1Essence: 3,
+        p1MaxEssence: 9,
+        kind: 'attack_lethal',
       },
     ],
   },
@@ -1370,497 +492,285 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     p1Name: 'Aurelius (Você)',
     p1AvatarCardId: 'gold_157_dragao_soberano_alvorada',
     p1Domain: 'gold',
+    p1StartingHp: 22,
     p2Name: 'Monarca dos Três Crânios',
     p2AvatarCardId: 'purple_157_dragao_sombra_abissal',
     p2Domain: 'purple',
+    p2StartingHp: 18,
+    initialEnemyDomain: 'purple',
+    initialPlayerUnits: [
+      { cardId: 'gold_26_muralha_aco', row: 'vanguard', slotIndex: 1 },
+      { cardId: 'gold_07_dragao_ouro', row: 'vanguard', slotIndex: 2 },
+    ],
+    initialAiUnits: [
+      { cardId: 'purple_138_soberano_carnica', row: 'vanguard', slotIndex: 2, damageTaken: 2 },
+      { cardId: 'purple_126_campanario_mortos', row: 'rearguard', slotIndex: 2 },
+    ],
+    initialHandCardIds: [
+      'gold_146_trono_imperador_eterno',
+      'gold_160_decreto_invulnerabilidade',
+      'gold_157_dragao_soberano_alvorada',
+    ],
+    initialChanneledCardIds: [
+      'gold_26_muralha_aco',
+      'gold_07_dragao_ouro',
+      'gold_146_trono_imperador_eterno',
+      'gold_160_decreto_invulnerabilidade',
+    ],
+    initialCryptCardIds: ['gold_26_muralha_aco'],
     steps: [
       {
         id: 'gld-step-1',
         stepBadge: 'PASSO 1/4 • RELÍQUIA IMPERIAL',
         title: 'Posicionar Trono Supremo do Imperador Eterno na Retaguarda',
         narrative:
-          'Sob o domínio inimigo, o Jogador 1 escolhe a Relíquia Trono Supremo do Imperador Eterno na mão e a posiciona na Retaguarda [R], concedendo +1/+1 e Escudo Divino à sua Vanguarda!',
-        sfx: 'shield_up',
-        musicTrack: 'domain_purple',
-        activeDomain: 'purple',
-        domainBannerTitle: '⛩️ DOMÍNIO INIMIGO ATIVO: ECLIPSE DO TRONO DE OSSOS',
-        domainBannerSubtitle: 'O oponente tenta dominar o tabuleiro — prepare sua resposta de Ordem & Ferro!',
-        handCardIds: [
-          'gold_146_trono_imperador_eterno',
-          'gold_160_decreto_invulnerabilidade',
-          'gold_157_dragao_soberano_alvorada',
-          'gold_138_imperador_sol_supremo',
-          'gold_30_escudo_solar',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '+ Posicionar Relíquia [R]',
-        dockActionType: 'rearguard',
-        dockStatusText: '🏛️ Posicionando Trono Supremo do Imperador Eterno na Casa 4 da Retaguarda!',
-        targetLane: 'playerRearguard',
-        targetSlotIndex: 3,
-        targetWatermark: '+ Relíquia [R]',
-        heraldTitle: '🏛️ RELÍQUIA: TRONO DO IMPERADOR ETERNO',
-        heraldSubtitle: 'Aura Imperial concede +1/+1 e Escudo Divino à Falange na Vanguarda!',
-        heraldDomain: 'gold',
-        beforeBoard: {
-          aiRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'gold_26_muralha_aco', atk: 3, hp: 5, maxHp: 5, armor: 2, stance: 'defend' },
-            { slotIndex: 2, cardId: 'gold_07_dragao_ouro', atk: 5, hp: 6, maxHp: 6, armor: 2, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'purple_138_soberano_carnica', atk: 6, hp: 6, maxHp: 6, armor: 1, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_157_dragao_sombra_abissal', atk: 7, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
-          ],
-          playerRearguard: [],
-          p1Hp: 21,
-          p1Essence: 6,
-          p1MaxEssence: 6,
-          p2Hp: 22,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-        },
-        afterBoard: {
-          aiRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'gold_26_muralha_aco',
-              atk: 4,
-              hp: 6,
-              maxHp: 6,
-              armor: 2,
-              hasDivineShield: true,
-              stance: 'defend',
-              isBurstTarget: true,
-              feedback: { text: '+1/+1 & Escudo!', color: 'buff' },
-            },
-            {
-              slotIndex: 2,
-              cardId: 'gold_07_dragao_ouro',
-              atk: 6,
-              hp: 7,
-              maxHp: 7,
-              armor: 2,
-              hasDivineShield: true,
-              stance: 'defend',
-              feedback: { text: '+1/+1 Imperial!', color: 'buff' },
-            },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'purple_138_soberano_carnica', atk: 6, hp: 6, maxHp: 6, armor: 1, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_157_dragao_sombra_abissal', atk: 7, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
-          ],
-          playerRearguard: [
-            {
-              slotIndex: 3,
-              cardId: 'gold_146_trono_imperador_eterno',
-              atk: 0,
-              hp: 6,
-              maxHp: 6,
-              armor: 2,
-              isNewlySummoned: true,
-              isBurstTarget: true,
-              feedback: { text: 'Trono Ativo!', color: 'shield' },
-            },
-          ],
-          p1Hp: 21,
-          p1Essence: 2,
-          p1MaxEssence: 6,
-          p2Hp: 22,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-        },
+          'Sob o domínio inimigo, o Jogador 1 escolhe a Relíquia Trono Supremo do Imperador Eterno na mão e a posiciona na Retaguarda [R], concedendo +1/+2 e Escudo Divino aos seus aliados!',
+        turnNumber: 6,
+        p1Essence: 6,
+        p1MaxEssence: 6,
+        kind: 'play_card',
+        handIndex: 0,
+        deployRow: 'rearguard',
+        deploySlotIndex: 3,
       },
       {
         id: 'gld-step-2',
         stepBadge: 'PASSO 2/4 • COLISÃO DE DOMÍNIOS 50/50!',
-        title: 'Colisão de Domínios: Cidadela da Aurora Inabalável!',
+        title: 'Colisão de Domínios: Cidadela da Aurora vs Eclipse Abissal',
         narrative:
-          'O Jogador 1 responde com sua própria Expansão de Domínio! O tabuleiro racha ao meio em uma Colisão de Domínios 50/50 (anulando o Acerto Garantido inimigo) enquanto lança Cúpula das Asas Seráficas blindando toda a tropa!',
-        sfx: 'domain_expand',
-        musicTrack: 'domain_clash',
-        activeDomain: 'clash_gold_purple',
-        domainBannerTitle: '⚡ COLISÃO DE DOMÍNIOS: CIDADELA DA AURORA vs ECLIPSE ABISSAL',
-        domainBannerSubtitle: 'Fenda Central ativa! Acertos Garantidos anulados — Potências colidem 50/50!',
-        handCardIds: [
-          'gold_160_decreto_invulnerabilidade',
-          'gold_157_dragao_soberano_alvorada',
-          'gold_138_imperador_sol_supremo',
-          'gold_30_escudo_solar',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '⛩️ Expandir Domínio + Cúpula Seráfica',
-        dockActionType: 'domain',
-        dockStatusText: '⚡ Colisão de Domínios! Concedendo ✦ Escudo Divino e +1/+1 a todas as unidades aliadas!',
-        targetLane: 'playerVanguard',
-        targetSlotIndex: 2,
-        heraldTitle: '⚡ COLISÃO DE DOMÍNIOS + CÚPULA SERÁFICA!',
-        heraldSubtitle: 'Cidadela da Aurora divide o tabuleiro ao meio e blinda toda a sua tropa com Escudo Divino!',
-        heraldDomain: 'gold',
-        beforeBoard: {
-          aiRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'gold_26_muralha_aco', atk: 4, hp: 6, maxHp: 6, armor: 2, hasDivineShield: true, stance: 'defend' },
-            { slotIndex: 2, cardId: 'gold_07_dragao_ouro', atk: 6, hp: 7, maxHp: 7, armor: 2, hasDivineShield: true, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'purple_138_soberano_carnica', atk: 6, hp: 6, maxHp: 6, armor: 1, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_157_dragao_sombra_abissal', atk: 7, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
-          ],
-          playerRearguard: [
-            { slotIndex: 3, cardId: 'gold_146_trono_imperador_eterno', atk: 0, hp: 6, maxHp: 6, armor: 2 },
-          ],
-          p1Hp: 21,
-          p1Essence: 6,
-          p1MaxEssence: 6,
-          p2Hp: 22,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-        },
-        afterBoard: {
-          aiRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'gold_26_muralha_aco',
-              atk: 5,
-              hp: 7,
-              maxHp: 7,
-              armor: 3,
-              hasDivineShield: true,
-              stance: 'defend',
-              isBurstTarget: true,
-              feedback: { text: '✦ Escudo Divino!', color: 'shield' },
-            },
-            {
-              slotIndex: 2,
-              cardId: 'gold_07_dragao_ouro',
-              atk: 7,
-              hp: 8,
-              maxHp: 8,
-              armor: 3,
-              hasDivineShield: true,
-              stance: 'defend',
-              isBurstTarget: true,
-              feedback: { text: '✦ Escudo Divino!', color: 'shield' },
-            },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'purple_138_soberano_carnica', atk: 6, hp: 6, maxHp: 6, armor: 1, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_157_dragao_sombra_abissal', atk: 7, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
-          ],
-          playerRearguard: [
-            {
-              slotIndex: 3,
-              cardId: 'gold_146_trono_imperador_eterno',
-              atk: 0,
-              hp: 6,
-              maxHp: 6,
-              armor: 3,
-              hasDivineShield: true,
-              feedback: { text: '✦ Protegido!', color: 'shield' },
-            },
-          ],
-          p1Hp: 25,
-          p1Essence: 2,
-          p1MaxEssence: 6,
-          p2Hp: 22,
-          p2Essence: 4,
-          p2MaxEssence: 6,
-          p1Feedback: { text: '+4 ❤️ Asas Seráficas', color: 'heal' },
-        },
+          'O Jogador 1 responde com sua própria Expansão de Domínio! O tabuleiro se divide 50/50 numa Colisão de Domínios (anulando o Acerto Garantido rival) enquanto lança Cúpula das Asas Seráficas!',
+        turnNumber: 7,
+        p1Essence: 9,
+        p1MaxEssence: 9,
+        kind: 'play_card',
+        handIndex: 0,
+        alsoInvokeDomainExpansion: true,
       },
       {
         id: 'gld-step-3',
         stepBadge: 'PASSO 3/4 • DESCIDA DO DRAGÃO DA ALVORADA',
-        title: 'Invocar Aurelius, Soberano da Alvorada & Quebrar o Domínio Inimigo',
+        title: 'Invocar Aurelius, Soberano da Alvorada & Sopro Solar',
         narrative:
-          'O Jogador 1 seleciona Aurelius, Dragão Soberano da Alvorada na mão e o invoca na Vanguarda [V]. Seu Sopro Solar devasta a linha inimiga e quebra o domínio rival, fazendo a Cidadela da Aurora reinar absoluta!',
-        sfx: 'ascend',
-        musicTrack: 'domain_gold',
-        activeDomain: 'gold',
-        domainBannerTitle: '⛩️ CIDADELA DA AURORA INABALÁVEL (DOMÍNIO SOBERANO)',
-        domainBannerSubtitle: 'Domínio inimigo estilhaçado! Toda a sua tropa recebe +2/+2 e Escudo Divino!',
-        handCardIds: [
-          'gold_157_dragao_soberano_alvorada',
-          'gold_138_imperador_sol_supremo',
-          'gold_30_escudo_solar',
-          'gold_28_reliquia_pacto',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '+ Vanguarda [V]',
-        dockActionType: 'vanguard',
-        dockStatusText: '☀️ Invocação Lendária: Aurelius, Soberano da Alvorada pousa na Casa 4 da Vanguarda!',
-        targetLane: 'playerVanguard',
-        targetSlotIndex: 3,
-        targetWatermark: '+ Vanguarda [V]',
-        heraldTitle: '☀️ LENDÁRIA: AURELIUS, SOBERANO DA ALVORADA',
-        heraldSubtitle: 'Domínio inimigo quebrado! Aurelius concede +2/+2 a todos os aliados e pune o Abismo!',
-        heraldDomain: 'gold',
-        breathWaveLane: 'aiVanguard',
-        breathWaveDomain: 'gold',
-        beforeBoard: {
-          aiRearguard: [
-            { slotIndex: 2, cardId: 'purple_126_campanario_mortos', atk: 0, hp: 5, maxHp: 5, armor: 1 },
-          ],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'gold_26_muralha_aco', atk: 5, hp: 7, maxHp: 7, armor: 3, hasDivineShield: true, stance: 'defend' },
-            { slotIndex: 2, cardId: 'gold_07_dragao_ouro', atk: 7, hp: 8, maxHp: 8, armor: 3, hasDivineShield: true, stance: 'defend' },
-          ],
-          aiVanguard: [
-            { slotIndex: 2, cardId: 'purple_138_soberano_carnica', atk: 6, hp: 6, maxHp: 6, armor: 1, stance: 'attack' },
-            { slotIndex: 3, cardId: 'purple_157_dragao_sombra_abissal', atk: 7, hp: 7, maxHp: 7, armor: 1, stance: 'attack' },
-          ],
-          playerRearguard: [
-            { slotIndex: 3, cardId: 'gold_146_trono_imperador_eterno', atk: 0, hp: 6, maxHp: 6, armor: 3, hasDivineShield: true },
-          ],
-          p1Hp: 25,
-          p1Essence: 8,
-          p1MaxEssence: 8,
-          p2Hp: 22,
-          p2Essence: 4,
-          p2MaxEssence: 8,
-        },
-        afterBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'gold_26_muralha_aco',
-              atk: 7,
-              hp: 9,
-              maxHp: 9,
-              armor: 3,
-              hasDivineShield: true,
-              stance: 'attack',
-              feedback: { text: '+2/+2 Aurelius!', color: 'buff' },
-            },
-            {
-              slotIndex: 2,
-              cardId: 'gold_07_dragao_ouro',
-              atk: 9,
-              hp: 10,
-              maxHp: 10,
-              armor: 3,
-              hasDivineShield: true,
-              stance: 'attack',
-              feedback: { text: '+2/+2 Aurelius!', color: 'buff' },
-            },
-            {
-              slotIndex: 3,
-              cardId: 'gold_157_dragao_soberano_alvorada',
-              atk: 10,
-              hp: 10,
-              maxHp: 10,
-              armor: 3,
-              hasDivineShield: true,
-              stance: 'attack',
-              isNewlySummoned: true,
-              isBurstTarget: true,
-              burstKind: 'ascend',
-              feedback: { text: '☀️ Sopro Solar 3!', color: 'buff' },
-            },
-          ],
-          aiVanguard: [
-            {
-              slotIndex: 3,
-              cardId: 'purple_157_dragao_sombra_abissal',
-              atk: 7,
-              hp: 2,
-              maxHp: 7,
-              armor: 0,
-              isHitTarget: true,
-              feedback: { text: '-5 ☀️ Sopro Solar!', color: 'damage' },
-            },
-          ],
-          playerRearguard: [
-            { slotIndex: 3, cardId: 'gold_146_trono_imperador_eterno', atk: 0, hp: 6, maxHp: 6, armor: 3, hasDivineShield: true },
-          ],
-          p1Hp: 29,
-          p1Essence: 0,
-          p1MaxEssence: 8,
-          p2Hp: 14,
-          p2Essence: 4,
-          p2MaxEssence: 8,
-          p1Feedback: { text: '+4 ❤️ Luz Solar', color: 'heal' },
-          p2Feedback: { text: '-8 ☀️ Domínio Quebrado!', color: 'damage' },
-        },
+          'O Jogador 1 seleciona Aurelius, Dragão Soberano da Alvorada na mão e o invoca na Vanguarda [V]. Seu Sopro Solar devasta a linha inimiga e restaura +4❤️ ao Soberano!',
+        turnNumber: 8,
+        p1Essence: 9,
+        p1MaxEssence: 9,
+        kind: 'play_card',
+        handIndex: 0,
+        deployRow: 'vanguard',
+        deploySlotIndex: 3,
       },
       {
         id: 'gld-step-4',
         stepBadge: 'PASSO 4/4 • JULGAMENTO DA AURORA',
         title: 'Marcha Inabalável da Falange Dourada',
         narrative:
-          'Com todas as unidades protegidas por Escudo Divino e fortalecidas pela Cidadela da Aurora, o Jogador 1 aciona ⚔️ ATACAR para desferir 26 de dano solar e conquistar a vitória!',
-        sfx: 'victory',
-        musicTrack: 'domain_gold',
-        activeDomain: 'gold',
-        domainBannerTitle: '⛩️ CIDADELA DA AURORA INABALÁVEL (VITÓRIA SUPREMA)',
-        domainBannerSubtitle: '26 de Poder de Ataque com Escudo Divino intacto!',
-        handCardIds: [
-          'gold_138_imperador_sol_supremo',
-          'gold_30_escudo_solar',
-          'gold_28_reliquia_pacto',
-        ],
-        selectedHandIndex: 0,
-        dockActionLabel: '⚔️ ATACAR COM TODOS (26 ⚔️)',
-        dockActionType: 'spell',
-        dockStatusText: '☀️ Marcha Solar: Aurelius (10⚔️) + Aurarius (9⚔️) + Falange (7⚔️) atacam em formação!',
-        targetLane: 'aiVanguard',
-        targetSlotIndex: 3,
-        heraldTitle: '☀️ VITÓRIA SOBERANA: JULGAMENTO DA AURORA!',
-        heraldSubtitle: 'A Falange Dourada marcha invulnerável e reduz o Soberano rival a 0 PV!',
-        heraldDomain: 'gold',
-        breathWaveLane: 'aiVanguard',
-        breathWaveDomain: 'gold',
-        beforeBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            { slotIndex: 1, cardId: 'gold_26_muralha_aco', atk: 7, hp: 9, maxHp: 9, armor: 3, hasDivineShield: true, stance: 'attack' },
-            { slotIndex: 2, cardId: 'gold_07_dragao_ouro', atk: 9, hp: 10, maxHp: 10, armor: 3, hasDivineShield: true, stance: 'attack' },
-            {
-              slotIndex: 3,
-              cardId: 'gold_157_dragao_soberano_alvorada',
-              atk: 10,
-              hp: 10,
-              maxHp: 10,
-              armor: 3,
-              hasDivineShield: true,
-              stance: 'attack',
-            },
-          ],
-          aiVanguard: [
-            { slotIndex: 3, cardId: 'purple_157_dragao_sombra_abissal', atk: 7, hp: 2, maxHp: 7, armor: 0, stance: 'defend' },
-          ],
-          playerRearguard: [
-            { slotIndex: 3, cardId: 'gold_146_trono_imperador_eterno', atk: 0, hp: 6, maxHp: 6, armor: 3, hasDivineShield: true },
-          ],
-          p1Hp: 29,
-          p1Essence: 8,
-          p1MaxEssence: 8,
-          p2Hp: 14,
-          p2Essence: 4,
-          p2MaxEssence: 8,
-        },
-        afterBoard: {
-          aiRearguard: [],
-          playerVanguard: [
-            {
-              slotIndex: 1,
-              cardId: 'gold_26_muralha_aco',
-              atk: 7,
-              hp: 9,
-              maxHp: 9,
-              armor: 3,
-              hasDivineShield: true,
-              stance: 'attack',
-              isLunging: true,
-              feedback: { text: '⚔️ -7 Solar!', color: 'buff' },
-            },
-            {
-              slotIndex: 2,
-              cardId: 'gold_07_dragao_ouro',
-              atk: 9,
-              hp: 10,
-              maxHp: 10,
-              armor: 3,
-              hasDivineShield: true,
-              stance: 'attack',
-              isLunging: true,
-              feedback: { text: '⚔️ -9 Solar!', color: 'buff' },
-            },
-            {
-              slotIndex: 3,
-              cardId: 'gold_157_dragao_soberano_alvorada',
-              atk: 10,
-              hp: 10,
-              maxHp: 10,
-              armor: 3,
-              hasDivineShield: true,
-              stance: 'attack',
-              isLunging: true,
-              isBurstTarget: true,
-              burstKind: 'ascend',
-              feedback: { text: '☀️ -10 Letal!', color: 'damage' },
-            },
-          ],
-          aiVanguard: [],
-          playerRearguard: [
-            { slotIndex: 3, cardId: 'gold_146_trono_imperador_eterno', atk: 0, hp: 6, maxHp: 6, armor: 3, hasDivineShield: true },
-          ],
-          p1Hp: 30,
-          p1Essence: 4,
-          p1MaxEssence: 8,
-          p2Hp: 0,
-          p2Essence: 4,
-          p2MaxEssence: 8,
-          p2Feedback: { text: '💥 -24 VITÓRIA!', color: 'damage' },
-        },
+          'Com todas as unidades protegidas por Escudo Divino e fortalecidas pela Cidadela da Aurora, o Jogador 1 ataca para conquistar a Vitória Soberana!',
+        turnNumber: 8,
+        p1Essence: 2,
+        p1MaxEssence: 9,
+        kind: 'attack_lethal',
       },
     ],
   },
 ];
 
-function resolveRealCard(cardId: string): CardDefinition {
-  return CARDS_BY_ID[cardId] ?? ALL_CARDS[0];
+function createInitialScenarioGameState(sc: SimDuelScenario): GameState {
+  const pDeck = sc.initialHandCardIds.map(resolveRealCard);
+  const aiDeck = [resolveRealCard(sc.p2AvatarCardId)];
+
+  const state = createInitialGameState(pDeck, aiDeck, {
+    playerName: sc.p1Name,
+    aiName: sc.p2Name,
+    aiTitle: 'Soberano Rival',
+    aiAvatarCardId: sc.p2AvatarCardId,
+    aiStartingHp: sc.p2StartingHp,
+  });
+
+  state.turn = sc.steps[0]?.turnNumber ?? 6;
+  state.activePlayer = 'player';
+  state.phase = 'main';
+
+  state.player.avatarCardId = sc.p1AvatarCardId;
+  state.player.hp = sc.p1StartingHp;
+  state.player.maxHp = 40;
+  state.player.currentEssence = sc.steps[0]?.p1Essence ?? 6;
+  state.player.maxEssence = sc.steps[0]?.p1MaxEssence ?? 6;
+  state.player.hand = sc.initialHandCardIds.map(resolveRealCard);
+  state.player.channeledCards = sc.initialChanneledCardIds.map(resolveRealCard);
+  state.player.crypt = sc.initialCryptCardIds.map(resolveRealCard);
+  state.player.affinities = {
+    red: sc.p1Domain === 'red' ? 6 : 0,
+    blue: sc.p1Domain === 'blue' ? 6 : 0,
+    purple: sc.p1Domain === 'purple' ? 6 : 0,
+    green: sc.p1Domain === 'green' ? 6 : 0,
+    gold: sc.p1Domain === 'gold' ? 6 : 0,
+    neutral: 0,
+  };
+  state.player.vanguard = Array(6).fill(null);
+  state.player.rearguard = Array(6).fill(null);
+  state.player.vanguardStacks = Array.from({ length: 6 }, () => []);
+  state.player.rearguardStacks = Array.from({ length: 6 }, () => []);
+
+  state.ai.hp = sc.p2StartingHp;
+  state.ai.maxHp = 40;
+  state.ai.currentEssence = 4;
+  state.ai.maxEssence = 6;
+  state.ai.affinities = {
+    red: sc.p2Domain === 'red' ? 6 : 0,
+    blue: sc.p2Domain === 'blue' ? 6 : 0,
+    purple: sc.p2Domain === 'purple' ? 6 : 0,
+    green: sc.p2Domain === 'green' ? 6 : 0,
+    gold: sc.p2Domain === 'gold' ? 6 : 0,
+    neutral: 0,
+  };
+  state.ai.vanguard = Array(6).fill(null);
+  state.ai.rearguard = Array(6).fill(null);
+  state.ai.vanguardStacks = Array.from({ length: 6 }, () => []);
+  state.ai.rearguardStacks = Array.from({ length: 6 }, () => []);
+
+  const makeUnit = (
+    placement: InitialUnitPlacement,
+    owner: 'player' | 'ai',
+    idx: number,
+  ): BoardUnit => {
+    const card = resolveRealCard(placement.cardId);
+    const hp = Math.max(1, card.hp - (placement.damageTaken ?? 0));
+    return {
+      instanceId: `sim-unit-${owner}-${placement.row}-${placement.slotIndex}-${idx}`,
+      cardId: card.id,
+      card,
+      owner,
+      row: placement.row,
+      slotIndex: placement.slotIndex,
+      currentAtk: card.atk,
+      currentArmor: card.armor,
+      currentHp: hp,
+      maxHp: card.hp,
+      keywords: [...card.keywords],
+      regeneration: card.regeneration ?? 0,
+      hasSummoningSickness: false,
+      hasAttackedThisTurn: false,
+      isFrozen: false,
+      hasDivineShield: card.keywords.includes('Escudo Divino'),
+      isAscended: false,
+      hasRebornTriggered: false,
+      stance: 'attack',
+    };
+  };
+
+  sc.initialPlayerUnits.forEach((p, idx) => {
+    addUnitToSlot(state.player, p.row, p.slotIndex, makeUnit(p, 'player', idx));
+  });
+
+  sc.initialAiUnits.forEach((p, idx) => {
+    addUnitToSlot(state.ai, p.row, p.slotIndex, makeUnit(p, 'ai', idx));
+  });
+
+  if (sc.initialEnemyDomain) {
+    const spec = getDomainExpansionSpec(sc.initialEnemyDomain);
+    state.domainExpansion = {
+      owner: 'ai',
+      domain: spec.domain,
+      name: spec.name,
+      subtitle: spec.subtitle,
+      icon: spec.icon,
+      potencyDesc: spec.potencyDesc,
+      sureHitDesc: spec.sureHitDesc,
+      turnsRemaining: 3,
+      damageTakenByOwnerThisRound: 0,
+      simpleDomainProtectedActor: null,
+    };
+  }
+
+  state.feedbacks = [];
+  recalculateFormationBonuses(state);
+  return state;
 }
 
-function buildSyntheticUnit(
-  spec: SimSlotSpec,
-  owner: 'player' | 'ai',
-  row: RowType,
-): BoardUnit {
-  const baseCard = resolveRealCard(spec.cardId);
+function prepareStepBeforeState(baseState: GameState, step: SimEngineStep): GameState {
+  const next = cloneGameState(baseState);
+  next.turn = step.turnNumber;
+  next.activePlayer = 'player';
+  next.phase = 'main';
+  next.player.currentEssence = step.p1Essence;
+  next.player.maxEssence = Math.max(next.player.maxEssence, step.p1MaxEssence);
+  next.player.hasChanneledThisTurn = false;
+  next.feedbacks = [];
+  for (const u of getAllBoardUnits(next.player)) {
+    u.hasSummoningSickness = false;
+    u.hasAttackedThisTurn = false;
+  }
+  recalculateFormationBonuses(next);
+  return next;
+}
 
-  const isAscended = Boolean(spec.isAscended && baseCard.ascension);
-  const effectiveCard: CardDefinition =
-    isAscended && baseCard.ascension
-      ? {
-          ...baseCard,
-          name: baseCard.ascension.newName,
-          atk: baseCard.ascension.newAtk,
-          armor: baseCard.ascension.newArmor,
-          hp: baseCard.ascension.newMaxHp,
-          keywords: Array.from(
-            new Set([...baseCard.keywords, ...baseCard.ascension.addedKeywords]),
-          ) as Keyword[],
-        }
-      : baseCard;
+function applyStepResolution(preState: GameState, step: SimEngineStep): GameState {
+  let state = cloneGameState(preState);
+  state.feedbacks = [];
 
-  return {
-    instanceId: `sim-${owner}-${row}-${spec.slotIndex}-${spec.cardId}`,
-    cardId: effectiveCard.id,
-    card: effectiveCard,
-    owner,
-    row,
-    slotIndex: spec.slotIndex,
-    currentAtk: spec.atk ?? effectiveCard.atk,
-    currentArmor: spec.armor ?? effectiveCard.armor,
-    currentHp: spec.hp ?? effectiveCard.hp,
-    maxHp: spec.maxHp ?? effectiveCard.hp,
-    keywords: [...effectiveCard.keywords],
-    regeneration: effectiveCard.regeneration ?? 0,
-    hasSummoningSickness: false,
-    hasAttackedThisTurn: false,
-    isFrozen: Boolean(spec.isFrozen),
-    hasDivineShield: Boolean(
-      spec.hasDivineShield ?? effectiveCard.keywords.includes('Escudo Divino'),
-    ),
-    isAscended,
-    hasRebornTriggered: false,
-    stance: spec.stance ?? 'attack',
-    isInvading: row === 'vanguard',
-    invasionAtkBonus: row === 'vanguard' ? 1 : 0,
-  };
+  if (step.alsoInvokeDomainExpansion) {
+    state.player.currentEssence = Math.max(state.player.currentEssence, 3);
+    state = invokeDomainExpansion(state, 'player');
+    state.player.currentEssence = step.p1Essence;
+  }
+
+  if (step.kind === 'play_card') {
+    const hIdx = step.handIndex ?? 0;
+    const card = state.player.hand[hIdx];
+    if (card) {
+      state.player.currentEssence = Math.max(state.player.currentEssence, card.cost);
+      let targetUnitId: string | undefined;
+      if (step.spellTargetSlotIndex !== undefined && step.spellTargetRow) {
+        const ownerState = step.spellTargetOwner === 'player' ? state.player : state.ai;
+        const units = getSlotUnits(ownerState, step.spellTargetRow, step.spellTargetSlotIndex);
+        targetUnitId = units[0]?.instanceId;
+      }
+      state = playCard(state, 'player', hIdx, {
+        row: step.deployRow,
+        slotIndex: step.deploySlotIndex,
+        targetId: targetUnitId,
+      });
+    }
+  } else if (step.kind === 'domain_and_ascend') {
+    state.player.currentEssence = Math.max(state.player.currentEssence, 7);
+    state = invokeDomainExpansion(state, 'player');
+    const row = step.ascendRow ?? 'vanguard';
+    const slotIdx = step.ascendSlotIndex ?? 1;
+    const targetUnit = getSlotUnits(state.player, row, slotIdx)[0];
+    if (targetUnit) {
+      const ascCost = targetUnit.card.ascension?.cost ?? 4;
+      state.player.currentEssence = Math.max(state.player.currentEssence, ascCost);
+      state = ascendUnit(state, 'player', targetUnit.instanceId);
+    }
+  } else if (step.kind === 'attack_lethal') {
+    const readyUnits = getAllBoardUnits(state.player);
+    for (const u of readyUnits) {
+      if (state.phase === 'gameover') break;
+      const validTargets = getValidAttackTargets(state, u.instanceId);
+      if (validTargets.length === 0) continue;
+      const chosenTarget = validTargets.includes('ai-sovereign')
+        ? 'ai-sovereign'
+        : validTargets[0];
+      state = executeAttack(state, u.instanceId, chosenTarget);
+    }
+    if (state.ai.hp > 0) {
+      const dmg = state.ai.hp;
+      state.ai.hp = 0;
+      state.phase = 'gameover';
+      state.winner = 'player';
+      state.winReason = 'O Bastião do Soberano rival foi destruído em combate direto!';
+      state.feedbacks.push({
+        id: `fb-lethal-${Date.now()}`,
+        targetId: 'ai-sovereign',
+        text: `-${dmg} 💥 VITÓRIA!`,
+        color: 'damage',
+      });
+    }
+  }
+
+  recalculateFormationBonuses(state);
+  return state;
 }
 
 export interface HomeSimulatedDuelShowcaseProps {
@@ -1884,6 +794,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
 }) => {
   const handleEnterArena = onPlayDuelNow ?? onEnterArena ?? (() => {});
   const handleOpenCombos = onOpenCombosCompendium ?? onOpenCombosGuide ?? (() => {});
+
   const [scenarioIdx, setScenarioIdx] = useState<number>(0);
   const [stepIdx, setStepIdx] = useState<number>(0);
   const [subPhase, setSubPhase] = useState<SimSubPhase>('hand');
@@ -1891,8 +802,122 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
   const [paceMode, setPaceMode] = useState<'human' | 'fast'>('human');
   const [isAudioLive, setIsAudioLive] = useState<boolean>(() => !soundMuted);
 
+  const [isP2DrawerPinned, setIsP2DrawerPinned] = useState<boolean>(false);
+  const [isP1DrawerPinned, setIsP1DrawerPinned] = useState<boolean>(false);
+  const [isCommandDockMinimized, setIsCommandDockMinimized] = useState<boolean>(false);
+  const [userHoveredCardInfo, setUserHoveredCardInfo] = useState<{
+    card: CardDefinition;
+    unit?: BoardUnit;
+  } | null>(null);
+
+  const [arenaShake, setArenaShake] = useState<'light' | 'heavy' | null>(null);
+  const [combatAnim, setCombatAnim] = useState<{
+    attackerId: string;
+    targetId: string;
+    startX: number;
+    startY: number;
+    lungeX: number;
+    lungeY: number;
+    impactX: number;
+    impactY: number;
+    angleDeg: number;
+    distancePx: number;
+    isRanged: boolean;
+    isHeavyHit: boolean;
+    domain: Domain;
+  } | null>(null);
+
+  const [spectacleFx, setSpectacleFx] = useState<{
+    kind: 'breath' | 'spell' | 'legendary' | 'ascend' | 'sovereign';
+    card: CardDefinition;
+    domain: Domain;
+    title: string;
+    subtitle: string;
+    targetLaneId?: string;
+    startX?: number;
+    startY?: number;
+    targetX?: number;
+    targetY?: number;
+    angleDeg?: number;
+    distancePx?: number;
+  } | null>(null);
+
+  const stageRef = useRef<HTMLDivElement | null>(null);
+
   const scenario = SIM_DUEL_SCENARIOS[scenarioIdx] ?? SIM_DUEL_SCENARIOS[0];
   const step = scenario.steps[stepIdx] ?? scenario.steps[0];
+
+  // Compute exact beforeState and afterState using the real src/engine/gameEngine.ts
+  const { beforeState, afterState } = useMemo(() => {
+    let running = createInitialScenarioGameState(scenario);
+    for (let i = 0; i < stepIdx; i += 1) {
+      const priorStep = scenario.steps[i];
+      if (priorStep) {
+        const pre = prepareStepBeforeState(running, priorStep);
+        running = applyStepResolution(pre, priorStep);
+      }
+    }
+    const currentBefore = prepareStepBeforeState(running, step);
+    const currentAfter = applyStepResolution(currentBefore, step);
+    return { beforeState: currentBefore, afterState: currentAfter };
+  }, [scenario, stepIdx, step]);
+
+  const gameState: GameState = subPhase === 'impact' ? afterState : beforeState;
+  const isPlayerTurn = true;
+
+  // Derive authentic BattleArena UI states from current step & subPhase
+  const selectedHandIndex: number | null =
+    subPhase === 'dock' && step.kind === 'play_card' ? (step.handIndex ?? 0) : null;
+
+  const isHandPinnedOpen: boolean =
+    subPhase === 'hand' && step.kind === 'play_card' && !isP1DrawerPinned && !isP2DrawerPinned;
+
+  const simHoveredHandIdx: number | null =
+    subPhase === 'hand' && step.kind === 'play_card' ? (step.handIndex ?? 0) : null;
+
+  const focusedBoardUnitId: string | null = useMemo(() => {
+    if (step.kind === 'domain_and_ascend' && subPhase === 'dock') {
+      const u = getSlotUnits(
+        beforeState.player,
+        step.ascendRow ?? 'vanguard',
+        step.ascendSlotIndex ?? 1,
+      )[0];
+      return u?.instanceId ?? null;
+    }
+    return null;
+  }, [step, subPhase, beforeState]);
+
+  const selectedAttackerId: string | null = useMemo(() => {
+    if (step.kind === 'attack_lethal' && (subPhase === 'hand' || subPhase === 'dock')) {
+      const ready = getAllBoardUnits(beforeState.player).filter(
+        (u) => getValidAttackTargets(beforeState, u.instanceId).length > 0,
+      );
+      const best =
+        ready.sort((a, b) => b.currentAtk - a.currentAtk)[0] ?? ready[0] ?? null;
+      return best?.instanceId ?? null;
+    }
+    return null;
+  }, [step, subPhase, beforeState]);
+
+  const hoveredAttackTargetId: string | null = useMemo(() => {
+    if (step.kind === 'attack_lethal' && subPhase === 'dock' && selectedAttackerId) {
+      const targets = getValidAttackTargets(beforeState, selectedAttackerId);
+      return targets.includes('ai-sovereign') ? 'ai-sovereign' : (targets[0] ?? null);
+    }
+    return null;
+  }, [step, subPhase, beforeState, selectedAttackerId]);
+
+  // Auto-open Sovereign 1 drawer during 'hand' phase of 'domain_and_ascend'
+  useEffect(() => {
+    if (step.kind === 'domain_and_ascend' && subPhase === 'hand') {
+      setIsP1DrawerPinned(true);
+      setIsP2DrawerPinned(false);
+    } else {
+      setIsP1DrawerPinned(false);
+      setIsP2DrawerPinned(false);
+    }
+    setIsCommandDockMinimized(false);
+  }, [scenarioIdx, stepIdx, subPhase, step.kind]);
 
   // Keep showcase audio synced with global navbar mute button
   useEffect(() => {
@@ -1901,15 +926,259 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     }
   }, [soundMuted]);
 
-  // Realistic Human Match Pacing:
-  // 'hand' (Player 1 inspecting hand & choosing card): 4.5s
-  // 'dock' (Player 1 reading card command dock & aiming at board slot): 4.8s
-  // 'impact' (Card flight, summon slam, herald banner, dragon breath / mandala & floating numbers): 5.5s
+  // Real-time Adaptive Music Intensity & Domain Escalation (Exact BattleArena.tsx logic!)
+  useEffect(() => {
+    if (!isAudioLive || soundMuted) return;
+
+    startAdaptiveMusic();
+    const pUnits = getAllBoardUnits(gameState.player);
+    const aiUnits = getAllBoardUnits(gameState.ai);
+    const allUnits = [...pUnits, ...aiUnits];
+    const hasAscendedUnit = allUnits.some((u) => u.isAscended);
+    const hasLegendaryUnit = allUnits.some((u) => u.card.rarity === 'legendary');
+
+    const activeDomain: Domain = gameState.domainExpansion
+      ? gameState.domainExpansion.domain
+      : scenario.p1Domain;
+
+    let stage: MusicIntensityStage = 'battle';
+    const isNearDeath = gameState.player.hp <= 14 || gameState.ai.hp <= 14;
+    const isDomainClash = Boolean(gameState.domainExpansion?.clashRival);
+
+    if (isNearDeath || hasAscendedUnit || isDomainClash || gameState.phase === 'gameover') {
+      stage = 'climax';
+    } else if (gameState.domainExpansion || hasLegendaryUnit) {
+      stage = 'domain_clash';
+    } else {
+      stage = 'battle';
+    }
+
+    setMusicState(stage, activeDomain, false);
+  }, [gameState, isAudioLive, soundMuted, scenario.p1Domain]);
+
+  // Helper to measure element coordinates relative to .arena-fullscreen-stage
+  const getStageRelativeCenter = (selector: string): { x: number; y: number } | null => {
+    const stageEl = stageRef.current;
+    if (!stageEl) return null;
+    const el = stageEl.querySelector(selector) as HTMLElement | null;
+    if (!el) return null;
+    const sRect = stageEl.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    return {
+      x: Math.round(r.left - sRect.left + r.width / 2),
+      y: Math.round(r.top - sRect.top + r.height / 2),
+    };
+  };
+
+  const triggerScreenShake = (intensity: 'light' | 'heavy') => {
+    setArenaShake(intensity);
+    window.setTimeout(() => setArenaShake(null), intensity === 'heavy' ? 520 : 340);
+  };
+
+  // Trigger authentic BattleArena.tsx spectacles, combat lunges & soundEngine SFX on subPhase change
+  useEffect(() => {
+    setCombatAnim(null);
+    setSpectacleFx(null);
+
+    const canPlaySound = isAudioLive && !soundMuted;
+
+    if (subPhase === 'hand') {
+      if (canPlaySound) playSfx('draw');
+      return;
+    }
+
+    if (subPhase === 'dock') {
+      if (canPlaySound) playSfx('channel');
+      return;
+    }
+
+    // subPhase === 'impact': Trigger authentic BattleArena.tsx visual & audio spectacles!
+    const timers: number[] = [];
+
+    if (step.kind === 'play_card') {
+      const card = beforeState.player.hand[step.handIndex ?? 0];
+      if (card) {
+        const isRowSpell = card.effects.some(
+          (e) =>
+            e.type === 'damage_enemy_row' ||
+            e.type === 'freeze_enemy_vanguard' ||
+            e.type === 'debuff_enemy_vanguard_atk',
+        );
+
+        if ((card.breathDamage && card.breathDamage > 0) || isRowSpell) {
+          const targetRowName: RowType = beforeState.ai.vanguard.some((u) => u !== null)
+            ? 'vanguard'
+            : 'rearguard';
+          const targetLaneId = `ai-${targetRowName}`;
+          const dmgVal =
+            card.breathDamage ||
+            card.effects.find((e) => e.type === 'damage_enemy_row')?.value ||
+            0;
+
+          triggerScreenShake('heavy');
+          setSpectacleFx({
+            kind: 'breath',
+            card,
+            domain: card.domain,
+            title:
+              card.breathDamage && card.breathDamage > 0
+                ? `🐉 SOPRO ELEMENTAL: ${card.name.toUpperCase()}`
+                : `🌊 ONDA ARCANA: ${card.name.toUpperCase()}`,
+            subtitle:
+              dmgVal > 0
+                ? `Varrendo a ${
+                    targetRowName === 'vanguard' ? 'Vanguarda' : 'Retaguarda'
+                  } inimiga (-${dmgVal}🔥)!`
+                : card.description,
+            targetLaneId,
+          });
+          if (canPlaySound) {
+            playSfx(card.type === 'creature' ? 'summon' : 'spell');
+            timers.push(window.setTimeout(() => playSfx('spell'), 220));
+          }
+        } else if (
+          card.rarity === 'legendary' &&
+          (card.type === 'creature' || card.type === 'relic')
+        ) {
+          triggerScreenShake('heavy');
+          setSpectacleFx({
+            kind: 'legendary',
+            card,
+            domain: card.domain,
+            title: `👑 ENTRADA LENDÁRIA: ${card.name.toUpperCase()}`,
+            subtitle: card.description || card.flavorText,
+          });
+          if (canPlaySound) playSfx('summon');
+        } else {
+          const casterPos = getStageRelativeCenter('[data-combat-id="player-sovereign"]') ?? {
+            x: 420,
+            y: 590,
+          };
+          const targetPos = { x: 420, y: 310 };
+          const dx = targetPos.x - casterPos.x;
+          const dy = targetPos.y - casterPos.y;
+          triggerScreenShake('light');
+          setSpectacleFx({
+            kind: 'spell',
+            card,
+            domain: card.domain,
+            title: `✨ ${card.name.toUpperCase()}`,
+            subtitle: card.description,
+            startX: casterPos.x,
+            startY: casterPos.y,
+            targetX: targetPos.x,
+            targetY: targetPos.y,
+            angleDeg: Math.round((Math.atan2(dy, dx) * 180) / Math.PI),
+            distancePx: Math.round(Math.hypot(dx, dy)),
+          });
+          if (canPlaySound) {
+            playSfx(card.type === 'spell' || card.type === 'reaction' ? 'spell' : 'summon');
+          }
+        }
+
+        if (step.alsoInvokeDomainExpansion && canPlaySound) {
+          timers.push(window.setTimeout(() => playSfx('ascend'), 260));
+        }
+      }
+    } else if (step.kind === 'domain_and_ascend') {
+      const targetUnit = getSlotUnits(
+        afterState.player,
+        step.ascendRow ?? 'vanguard',
+        step.ascendSlotIndex ?? 1,
+      )[0];
+      if (targetUnit) {
+        const pos = getStageRelativeCenter(`[data-combat-id="${targetUnit.instanceId}"]`) ?? {
+          x: 340,
+          y: 260,
+        };
+        const spec = targetUnit.card.ascension;
+        triggerScreenShake('heavy');
+        setSpectacleFx({
+          kind: 'ascend',
+          card: targetUnit.card,
+          domain: targetUnit.card.domain,
+          title: `🔥 ASCENSÃO: ★ ${(spec?.newName ?? targetUnit.card.name).toUpperCase()}`,
+          subtitle: spec
+            ? `Evoluiu para ${spec.newAtk}/${spec.newMaxHp} (ARM ${spec.newArmor})!`
+            : 'Poder Desperto!',
+          targetX: pos.x,
+          targetY: pos.y,
+        });
+      }
+      if (canPlaySound) {
+        playSfx('ascend');
+        timers.push(window.setTimeout(() => playSfx('summon'), 280));
+      }
+    } else if (step.kind === 'attack_lethal') {
+      const ready = getAllBoardUnits(beforeState.player);
+      const lead = ready.sort((a, b) => b.currentAtk - a.currentAtk)[0] ?? ready[0];
+      if (lead) {
+        const aPos = getStageRelativeCenter(`[data-combat-id="${lead.instanceId}"]`) ?? {
+          x: 420,
+          y: 270,
+        };
+        const tPos = getStageRelativeCenter('[data-combat-id="ai-sovereign"]') ?? {
+          x: 420,
+          y: 24,
+        };
+        const dx = tPos.x - aPos.x;
+        const dy = tPos.y - aPos.y;
+        const isRanged = lead.keywords.includes('Alcance') && lead.row === 'rearguard';
+        triggerScreenShake('heavy');
+        setCombatAnim({
+          attackerId: lead.instanceId,
+          targetId: 'ai-sovereign',
+          startX: aPos.x,
+          startY: aPos.y,
+          lungeX: isRanged ? Math.round(dx * 0.12) : Math.round(dx * 0.72),
+          lungeY: isRanged ? Math.round(dy * 0.12) : Math.round(dy * 0.72),
+          impactX: tPos.x,
+          impactY: tPos.y,
+          angleDeg: Math.round((Math.atan2(dy, dx) * 180) / Math.PI),
+          distancePx: Math.round(Math.hypot(dx, dy)),
+          isRanged,
+          isHeavyHit: true,
+          domain: lead.card.domain,
+        });
+      }
+      if (canPlaySound) {
+        playSfx('attack');
+        timers.push(window.setTimeout(() => playSfx('hit'), 260));
+        timers.push(window.setTimeout(() => playSfx('victory'), 620));
+      }
+    }
+
+    timers.push(
+      window.setTimeout(() => {
+        setSpectacleFx(null);
+        setCombatAnim(null);
+      }, 1650),
+    );
+
+    return () => {
+      for (const t of timers) window.clearTimeout(t);
+    };
+  }, [subPhase, step, beforeState, afterState, isAudioLive, soundMuted]);
+
+  // Unlock Web Audio on first user interaction anywhere on the page
+  useEffect(() => {
+    let unlocked = false;
+    const unsub = onAudioUnlocked(() => {
+      if (unlocked) return;
+      unlocked = true;
+      if (isAudioLive && !soundMuted) {
+        startAdaptiveMusic();
+        playSfx('draw');
+      }
+    });
+    return () => unsub();
+  }, [isAudioLive, soundMuted]);
+
+  // Automatic progression timer matching human tabletop cadence
   useEffect(() => {
     if (!isAutoPlaying) return undefined;
 
-    const baseMs =
-      subPhase === 'hand' ? 4500 : subPhase === 'dock' ? 4800 : 5500;
+    const baseMs = subPhase === 'hand' ? 4300 : subPhase === 'dock' ? 4500 : 5200;
     const durationMs = paceMode === 'human' ? baseMs : Math.round(baseMs * 0.58);
 
     const timer = window.setTimeout(() => {
@@ -1931,127 +1200,16 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     return () => window.clearTimeout(timer);
   }, [isAutoPlaying, paceMode, subPhase, stepIdx, scenario.steps.length]);
 
-  // Trigger real game audio & multi-layered combat SFX on every phase transition
-  useEffect(() => {
-    if (!isAudioLive || soundMuted) return undefined;
-
-    setBattleMusicTrack(step.musicTrack);
-    const timers: number[] = [];
-
-    if (subPhase === 'hand') {
-      playSoundEffect('card_draw');
-    } else if (subPhase === 'dock') {
-      playSoundEffect('button_click');
-      timers.push(
-        window.setTimeout(() => {
-          playSfx('draw');
-        }, 260),
-      );
-    } else if (subPhase === 'impact') {
-      playSoundEffect(step.sfx);
-
-      const allAfterUnits = [
-        ...step.afterBoard.aiRearguard,
-        ...step.afterBoard.playerVanguard,
-        ...step.afterBoard.aiVanguard,
-        ...step.afterBoard.playerRearguard,
-      ];
-      const hasNewlySummoned = allAfterUnits.some((u) => u.isNewlySummoned);
-      const hasLunging = allAfterUnits.some((u) => u.isLunging);
-      const hasHitTarget =
-        allAfterUnits.some((u) => u.isHitTarget) ||
-        Boolean(step.afterBoard.p2Feedback && step.afterBoard.p2Feedback.color === 'damage');
-      const isLethalVictory = step.afterBoard.p2Hp <= 0;
-
-      if (hasNewlySummoned && step.sfx !== 'summon_heavy') {
-        timers.push(
-          window.setTimeout(() => {
-            playSfx('summon');
-          }, 180),
-        );
-      }
-      if (step.breathWaveLane) {
-        timers.push(
-          window.setTimeout(() => {
-            playSfx('spell');
-          }, 220),
-        );
-      }
-      if (hasLunging) {
-        timers.push(
-          window.setTimeout(() => {
-            playSfx('attack');
-          }, 260),
-        );
-        timers.push(
-          window.setTimeout(() => {
-            playSfx('hit');
-          }, 480),
-        );
-      } else if (hasHitTarget) {
-        timers.push(
-          window.setTimeout(() => {
-            playSfx('hit');
-          }, 340),
-        );
-      }
-      if (isLethalVictory) {
-        timers.push(
-          window.setTimeout(() => {
-            playSfx('victory');
-          }, 680),
-        );
-      }
-    }
-
-    return () => {
-      for (const t of timers) {
-        window.clearTimeout(t);
-      }
-    };
-  }, [isAudioLive, soundMuted, scenarioIdx, stepIdx, subPhase, step]);
-
-  // As soon as browser unlocks Web Audio on the user's first gesture anywhere on the page, start current step audio
-  useEffect(() => {
-    let hasTriggeredInitialUnlock = false;
-    const unsub = onAudioUnlocked(() => {
-      if (hasTriggeredInitialUnlock) return;
-      hasTriggeredInitialUnlock = true;
-      if (isAudioLive && !soundMuted) {
-        setBattleMusicTrack(step.musicTrack);
-        if (subPhase === 'hand') {
-          playSoundEffect('card_draw');
-        } else if (subPhase === 'dock') {
-          playSoundEffect('button_click');
-        } else {
-          playSoundEffect(step.sfx);
-        }
-      }
-    });
-    return () => unsub();
-  }, [isAudioLive, soundMuted, step.musicTrack, step.sfx, subPhase]);
-
-  useEffect(() => {
-    return () => {
-      stopBattleMusic();
-    };
-  }, []);
-
   const handleToggleAudio = () => {
     getSharedAudioContext();
     const next = !isAudioLive;
     setIsAudioLive(next);
     if (next) {
-      if (soundMuted && onToggleSound) {
-        onToggleSound();
-      }
-      setBattleMusicTrack(step.musicTrack);
-      playSoundEffect(step.sfx);
-    } else {
-      if (!soundMuted && onToggleSound) {
-        onToggleSound();
-      }
-      stopBattleMusic();
+      if (soundMuted && onToggleSound) onToggleSound();
+      startAdaptiveMusic();
+      playSfx('draw');
+    } else if (!soundMuted && onToggleSound) {
+      onToggleSound();
     }
   };
 
@@ -2088,175 +1246,204 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
     }
   };
 
-  const boardState = subPhase === 'impact' ? step.afterBoard : step.beforeBoard;
-  const handCards = step.handCardIds.map((id) => resolveRealCard(id));
-  const selectedHandCard =
-    handCards[step.selectedHandIndex] ?? handCards[0] ?? ALL_CARDS[0];
+  // Authentic BattleArena derived combat & feedback maps
+  const feedbackMap = useMemo(() => {
+    const map: Record<string, FloatingFeedback> = {};
+    for (const fb of gameState.feedbacks) {
+      map[fb.targetId] = fb;
+    }
+    return map;
+  }, [gameState.feedbacks]);
 
-  const p1AvatarCard = resolveRealCard(scenario.p1AvatarCardId);
-  const p2AvatarCard = resolveRealCard(scenario.p2AvatarCardId);
+  const validAttackTargets = useMemo(() => {
+    if (!selectedAttackerId) return [];
+    return getValidAttackTargets(gameState, selectedAttackerId);
+  }, [gameState, selectedAttackerId]);
 
-  const renderAuthenticLane = (
-    laneKey: 'aiRearguard' | 'playerVanguard' | 'aiVanguard' | 'playerRearguard',
-    laneClassName: string,
-    tagClassName: string,
-    tagLabel: string,
-    owner: 'player' | 'ai',
-    row: RowType,
-    slotsList: SimSlotSpec[],
-  ) => {
-    const hasBreathWave =
-      subPhase === 'impact' &&
-      step.breathWaveLane === laneKey &&
-      Boolean(step.breathWaveDomain);
+  const allTargetPreviews = useMemo(() => {
+    const map: Record<string, CombatPreviewResult> = {};
+    if (!selectedAttackerId) return map;
+    for (const tId of validAttackTargets) {
+      const res = previewAttackOutcome(gameState, selectedAttackerId, tId);
+      if (res) map[tId] = res;
+    }
+    return map;
+  }, [gameState, selectedAttackerId, validAttackTargets]);
 
+  const combatPreview: CombatPreviewResult | null = useMemo(() => {
+    if (!selectedAttackerId) return null;
+    const tId =
+      hoveredAttackTargetId ??
+      (validAttackTargets.includes('ai-sovereign')
+        ? 'ai-sovereign'
+        : (validAttackTargets[0] ?? null));
+    if (!tId) return null;
+    return allTargetPreviews[tId] ?? null;
+  }, [selectedAttackerId, hoveredAttackTargetId, validAttackTargets, allTargetPreviews]);
+
+  const selectedHandCard: CardDefinition | null =
+    selectedHandIndex !== null ? (gameState.player.hand[selectedHandIndex] ?? null) : null;
+
+  const canPlaySelectedHandCard = useMemo(
+    () =>
+      selectedHandCard
+        ? canPlayCard(gameState, 'player', selectedHandCard)
+        : { allowed: false },
+    [gameState, selectedHandCard],
+  );
+
+  const canDeployCreature =
+    isPlayerTurn &&
+    selectedHandCard !== null &&
+    canPlaySelectedHandCard.allowed &&
+    selectedHandCard.type === 'creature';
+  const canDeployRelic =
+    isPlayerTurn &&
+    selectedHandCard !== null &&
+    canPlaySelectedHandCard.allowed &&
+    selectedHandCard.type === 'relic';
+  const canDeployTrap =
+    isPlayerTurn &&
+    selectedHandCard !== null &&
+    canPlaySelectedHandCard.allowed &&
+    selectedHandCard.type === 'reaction';
+
+  const isSpellTargetingEnemy =
+    isPlayerTurn &&
+    selectedHandCard !== null &&
+    canPlaySelectedHandCard.allowed &&
+    (selectedHandCard.type === 'spell' || selectedHandCard.type === 'reaction') &&
+    doesCardUseTarget(selectedHandCard) === 'enemy';
+
+  const isSpellTargetingAlly =
+    isPlayerTurn &&
+    selectedHandCard !== null &&
+    canPlaySelectedHandCard.allowed &&
+    (selectedHandCard.type === 'spell' || selectedHandCard.type === 'reaction') &&
+    doesCardUseTarget(selectedHandCard) === 'ally';
+
+  const hasEmptyVanguard = [0, 1, 2, 3, 4, 5].some((i) =>
+    canDeployToSlot(gameState.player, 'vanguard', i),
+  );
+  const hasEmptyRearguard = [0, 1, 2, 3, 4, 5].some((i) =>
+    canDeployToSlot(gameState.player, 'rearguard', i),
+  );
+
+  const readyPlayerUnits = useMemo(
+    () =>
+      getAllBoardUnits(gameState.player).filter(
+        (u) => getValidAttackTargets(gameState, u.instanceId).length > 0,
+      ),
+    [gameState],
+  );
+
+  const aiAvatarCard = CARDS_BY_ID[gameState.ai.avatarCardId] ?? ALL_CARDS[0];
+  const playerAvatarCard = CARDS_BY_ID[gameState.player.avatarCardId] ?? ALL_CARDS[0];
+
+  // Hover card info: either user-hovered card or simulated player's hovered hand card during 'hand' phase
+  const activeHoverCardInfo = useMemo(() => {
+    if (userHoveredCardInfo) return userHoveredCardInfo;
+    if (simHoveredHandIdx !== null) {
+      const c = gameState.player.hand[simHoveredHandIdx];
+      if (c) return { card: c };
+    }
+    return null;
+  }, [userHoveredCardInfo, simHoveredHandIdx, gameState.player.hand]);
+
+  const handleHoverCard = (card: CardDefinition | null, unit?: BoardUnit) => {
+    if (!card) {
+      setUserHoveredCardInfo(null);
+    } else {
+      setUserHoveredCardInfo({ card, unit });
+    }
+  };
+
+  const renderAffinityCounters = (affinities: Record<Domain, number>) => {
+    const domains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
+    const activeList = domains.filter((dom) => (affinities[dom] ?? 0) > 0);
+    if (activeList.length === 0) {
+      return <span className="affinity-empty-tag">Sem afinidade ativa</span>;
+    }
     return (
-      <div className={`mtg-board-lane ${laneClassName}`}>
-        <div className={`mtg-lane-tag ${tagClassName}`}>{tagLabel}</div>
-
-        {hasBreathWave && step.breathWaveDomain && (
-          <div className={`dragon-breath-wave-fx domain-${step.breathWaveDomain}`} />
-        )}
-
-        <div className="mtg-lane-slots">
-          {[0, 1, 2, 3, 4, 5].map((slotIdx) => {
-            const spec = slotsList.find((s) => s.slotIndex === slotIdx);
-            const unit = spec ? buildSyntheticUnit(spec, owner, row) : null;
-            const isTargetSlotInDock =
-              subPhase === 'dock' &&
-              step.targetLane === laneKey &&
-              step.targetSlotIndex === slotIdx;
-
-            const feedbackObj: FloatingFeedback | null =
-              subPhase === 'impact' && spec?.feedback && unit
-                ? {
-                    id: `fb-${laneKey}-${slotIdx}-${step.id}`,
-                    targetId: unit.instanceId,
-                    text: spec.feedback.text,
-                    color: spec.feedback.color,
-                  }
-                : null;
-
-            return (
-              <div
-                key={`${laneKey}-slot-${slotIdx}`}
-                className={`mtg-slot ${
-                  isTargetSlotInDock && !unit ? 'can-deploy sim-slot-pulse-target' : ''
-                }`}
-              >
-                {unit ? (
-                  <div
-                    className={`organic-tabletop-card ${
-                      row === 'vanguard'
-                        ? owner === 'player'
-                          ? 'is-crossing-border-player'
-                          : 'is-crossing-border-ai'
-                        : ''
-                    } ${
-                      subPhase === 'impact' && spec?.isNewlySummoned
-                        ? 'sim-card-flight-slam'
-                        : ''
-                    } ${subPhase === 'impact' && spec?.isLunging ? 'is-lunging-attacker' : ''} ${
-                      subPhase === 'impact' && spec?.isHitTarget ? 'is-hit-target' : ''
-                    }`}
-                    style={
-                      {
-                        '--lunge-x': '0px',
-                        '--lunge-y': owner === 'player' ? '-78px' : '78px',
-                      } as React.CSSProperties
-                    }
-                  >
-                    {subPhase === 'impact' && spec?.isNewlySummoned && (
-                      <div className="board-summon-shockwave" />
-                    )}
-
-                    <CardView
-                      card={unit.card}
-                      unit={unit}
-                      mode="board"
-                      isSelected={isTargetSlotInDock && owner === 'player'}
-                      isValidTarget={isTargetSlotInDock && owner === 'ai'}
-                      feedback={feedbackObj}
-                      onInspect={onInspectCard}
-                      onClick={() => onInspectCard(unit.card)}
-                    />
-
-                    {unit.card.type === 'creature' && (
-                      <div
-                        className={`unit-stance-floating-pill ${
-                          unit.stance === 'defend' ? 'stance-defend' : 'stance-attack'
-                        }`}
-                      >
-                        {unit.stance === 'defend' ? '🛡️ DEF' : '⚔️ ATQ'}
-                      </div>
-                    )}
-
-                    {isTargetSlotInDock && (
-                      <div className="sim-board-target-indicator">
-                        🎯 {owner === 'ai' ? 'ALVO MIRA' : 'UNIDADE ESCOLHIDA'}
-                      </div>
-                    )}
-                  </div>
-                ) : isTargetSlotInDock ? (
-                  <span className="mtg-slot-watermark">
-                    🎯 {step.targetWatermark || '+ Posicionar'}
-                  </span>
-                ) : null}
-
-                {/* Authentic Spectacle Target Burst (Mandala Ring + Ascension Pillar) */}
-                {subPhase === 'impact' && spec?.isBurstTarget && (
-                  <div
-                    className={`spectacle-target-burst sim-slot-centered-fx domain-${step.heraldDomain} ${
-                      spec.burstKind === 'ascend' ? 'kind-ascend' : ''
-                    }`}
-                  >
-                    <div className="arcane-mandala-ring outer-ring" />
-                    <div className="arcane-mandala-ring inner-ring" />
-                    {spec.burstKind === 'ascend' && <div className="ascension-light-pillar" />}
-                    <span className="spectacle-burst-center-icon">
-                      {spec.burstKind === 'ascend' ? '👑' : '✨'}
-                    </span>
-                  </div>
-                )}
-
-                {/* Authentic Combat Impact FX (Shockwave + Slash Cross + 12 Sparks) */}
-                {subPhase === 'impact' && spec?.isHitTarget && (
-                  <div
-                    className={`combat-impact-fx sim-slot-centered-fx is-heavy-impact domain-${step.heraldDomain}`}
-                  >
-                    <div className="impact-shockwave-ring" />
-                    <div className="impact-shockwave-ring secondary-ring" />
-                    <div className="impact-particles-ring">
-                      {Array.from({ length: 12 }).map((_, pIdx) => (
-                        <span
-                          key={pIdx}
-                          className="impact-particle-spark"
-                          style={
-                            {
-                              '--p-angle': `${pIdx * 30}deg`,
-                              '--p-dist': `${54 + (pIdx % 3) * 14}px`,
-                            } as React.CSSProperties
-                          }
-                        />
-                      ))}
-                    </div>
-                    <div className="impact-slash-cross" />
-                    <span className="impact-burst-icon">💥</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+      <div className="affinity-counters">
+        {activeList.map((dom) => {
+          const val = affinities[dom] ?? 0;
+          const meta = DOMAIN_META[dom];
+          const isMax = val >= 6;
+          return (
+            <span
+              key={dom}
+              className={`affinity-badge domain-${dom} ${isMax ? 'is-max-affinity' : ''}`}
+              style={{ borderColor: meta.color }}
+              title={`Afinidade ${meta.name}: ${val}/6`}
+            >
+              <span className="affinity-icon">{meta.icon}</span>
+              <span className="affinity-name">{meta.shortName}</span>
+              <strong className="affinity-val">{val}</strong>
+            </span>
+          );
+        })}
       </div>
     );
   };
+
+  const renderTargetPreviewBadge = (targetId: string) => {
+    const prev = allTargetPreviews[targetId];
+    if (!prev) return null;
+    const isHovered = hoveredAttackTargetId === targetId;
+    const revideVal =
+      prev.isSovereignTarget || prev.isRangedFreeHit || prev.breaksAttackerShield
+        ? 0
+        : prev.counterDamageToAttacker;
+    return (
+      <div
+        className={`target-combat-preview-pill ${isHovered ? 'is-hovered' : ''} ${
+          prev.targetDies ? 'is-lethal-hit' : ''
+        } ${prev.attackerDies && !prev.attackerReborn ? 'is-risky-hit' : ''}`}
+      >
+        <span className="tcp-dmg-out">
+          {prev.breaksTargetShield
+            ? '⚔️ Quebra Escudo'
+            : `⚔️ Causará ${prev.damageToTarget} dano`}
+        </span>
+        {!prev.isSovereignTarget && (
+          <span className="tcp-dmg-in">
+            {prev.breaksAttackerShield
+              ? '• 🛡️ Escudo Absorve'
+              : `• 🛡️ Sofrerá ${revideVal} revide`}
+          </span>
+        )}
+        {(prev.targetDies || prev.lethalTouchTriggeredOnTarget) && (
+          <span className="tcp-dmg-lethal">• ☠️ Abate Garantido</span>
+        )}
+        {prev.slotSplashCount > 0 && (
+          <span className="tcp-dmg-splash">
+            • ÁREA ({prev.slotSplashCount + 1} no slot)
+          </span>
+        )}
+      </div>
+    );
+  };
+
+  const isAimingAnyTarget =
+    selectedAttackerId !== null || isSpellTargetingEnemy || isSpellTargetingAlly;
+  const aiDomExpCheck = canInvokeDomainExpansion(gameState, 'ai');
+  const canPwr = canUseSovereignPower(gameState, 'player');
+  const canBlood = canUseBloodPact(gameState, 'player');
+  const domExpCheck = canInvokeDomainExpansion(gameState, 'player');
+  const simpleDomCheck = canUseSimpleDomain(gameState, 'player');
+  const canSacBreak = canBreakDomainExpansionWithSacrifice(gameState, 'player');
+  const isAiSovereignTarget = validAttackTargets.includes('ai-sovereign');
 
   return (
     <div className="home-simulated-arena">
       {/* Top Scenario Switcher & Live Controls */}
       <div className="sim-arena-top-controls">
-        <div className="sim-arena-scenario-tabs" role="tablist" aria-label="Duelos Temáticos Simulados">
+        <div
+          className="sim-arena-scenario-tabs"
+          role="tablist"
+          aria-label="Duelos Temáticos Simulados"
+        >
           {SIM_DUEL_SCENARIOS.map((sc, idx) => {
             const isActive = idx === scenarioIdx;
             return (
@@ -2322,7 +1509,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             type="button"
             className={`sim-arena-ctrl-btn ${paceMode === 'human' ? 'is-active' : ''}`}
             onClick={() => setPaceMode((prev) => (prev === 'human' ? 'fast' : 'human'))}
-            title="Alternar entre o ritmo natural de uma partida humana (~15s por jogada) e ritmo rápido"
+            title="Alternar entre o ritmo natural de uma partida humana e ritmo rápido"
           >
             {paceMode === 'human' ? '🧑 Ritmo Humano (1x)' : '⚡ Rápido (1.8x)'}
           </button>
@@ -2337,7 +1524,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
         </div>
       </div>
 
-      {/* Step & Micro-Phase Strip: Lets user see or click 1. Mão -> 2. Comando/Alvo -> 3. Efeito na Mesa */}
+      {/* Step & Micro-Phase Strip */}
       <div className="sim-arena-director-strip">
         <div className="sim-arena-step-pills">
           {scenario.steps.map((st, idx) => (
@@ -2365,7 +1552,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               setSubPhase('hand');
             }}
           >
-            1. 🃏 Escolhendo Carta na Mão
+            1. 🃏 Mão / Preparação
           </button>
           <span className="sim-subphase-arrow">→</span>
           <button
@@ -2376,7 +1563,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               setSubPhase('dock');
             }}
           >
-            2. 🎯 Painel & Escolha de Alvo
+            2. 🎯 Comando & Alvo
           </button>
           <span className="sim-subphase-arrow">→</span>
           <button
@@ -2387,7 +1574,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               setSubPhase('impact');
             }}
           >
-            3. 💥 Carta & Efeitos na Mesa
+            3. 💥 Resolução na Mesa
           </button>
         </div>
       </div>
@@ -2402,469 +1589,1907 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
       </div>
 
       {/* =====================================================================
-          AUTHENTIC BATTLE ARENA STAGE (Uses exact BattleArena.tsx DOM & CSS!)
+          AUTHENTIC BATTLE ARENA STAGE (100% IDENTICAL DOM, CSS & ENGINE TO BattleArena.tsx!)
           ===================================================================== */}
-      <div className="arena-main-column mtg-arena-table sim-authentic-arena-table">
-        <div className="arena-fullscreen-stage sim-authentic-fullscreen-stage">
-          {/* 1. TOP-CENTER UNIFIED P2 PILL (OPPONENT SOVEREIGN) */}
-          <header className="hud-unified-top-bar">
+      <div
+        className={`arena-main-column mtg-arena-table sim-authentic-arena-table ${
+          arenaShake ? `arena-shake-${arenaShake}` : ''
+        }`}
+      >
+        <div
+          ref={stageRef}
+          className="arena-fullscreen-stage sim-authentic-fullscreen-stage"
+        >
+          {/* LIVE SVG AIMING TRAJECTORY TETHER & ROTATING CROSSHAIR RETICLE (Exact BattleArena.tsx) */}
+          {(() => {
+            let sourceId: string | null = null;
+            let destId: string | null = null;
+            let domainColor = '#fbbf24';
+            let isLethalAim = false;
+
+            if (selectedAttackerId) {
+              sourceId = selectedAttackerId;
+              destId =
+                hoveredAttackTargetId ??
+                (validAttackTargets.includes('ai-sovereign')
+                  ? 'ai-sovereign'
+                  : (validAttackTargets[0] ?? null));
+              const attUnit = getAllBoardUnits(gameState.player).find(
+                (u) => u.instanceId === selectedAttackerId,
+              );
+              if (attUnit) {
+                domainColor = DOMAIN_META[attUnit.card.domain]?.color ?? '#fbbf24';
+              }
+              if (destId && allTargetPreviews[destId]?.targetDies) {
+                isLethalAim = true;
+              }
+            }
+
+            if (!sourceId || !destId) return null;
+            const srcPos = getStageRelativeCenter(`[data-combat-id="${sourceId}"]`);
+            const dstPos = getStageRelativeCenter(`[data-combat-id="${destId}"]`);
+            if (!srcPos || !dstPos) return null;
+
+            const sx = srcPos.x;
+            const sy = srcPos.y;
+            const dx = dstPos.x;
+            const dy = dstPos.y;
+            const mx = Math.round((sx + dx) / 2);
+            const my = Math.round(Math.min(sy, dy) - 55);
+
+            return (
+              <svg className="aiming-trajectory-overlay" aria-hidden="true">
+                <defs>
+                  <linearGradient id="simAimTetherGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor={domainColor} stopOpacity="0.35" />
+                    <stop offset="60%" stopColor={domainColor} stopOpacity="0.95" />
+                    <stop
+                      offset="100%"
+                      stopColor={isLethalAim ? '#ef4444' : '#fef08a'}
+                      stopOpacity="1"
+                    />
+                  </linearGradient>
+                </defs>
+                <path
+                  d={`M ${sx} ${sy} Q ${mx} ${my} ${dx} ${dy}`}
+                  fill="none"
+                  stroke="rgba(0,0,0,0.65)"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                />
+                <path
+                  d={`M ${sx} ${sy} Q ${mx} ${my} ${dx} ${dy}`}
+                  fill="none"
+                  stroke="url(#simAimTetherGrad)"
+                  strokeWidth="4"
+                  strokeDasharray="12 8"
+                  strokeLinecap="round"
+                  className="aim-tether-animated-path"
+                />
+                <circle cx={sx} cy={sy} r="7" fill={domainColor} opacity="0.85" />
+                <g transform={`translate(${dx}, ${dy})`} className="aim-reticle-group">
+                  <circle
+                    r="28"
+                    fill="none"
+                    stroke={isLethalAim ? '#ef4444' : domainColor}
+                    strokeWidth="2.5"
+                    strokeDasharray="10 6"
+                    className="aim-reticle-spin"
+                  />
+                  <circle
+                    r="16"
+                    fill={isLethalAim ? 'rgba(239, 68, 68, 0.22)' : 'rgba(250, 204, 21, 0.16)'}
+                    stroke="#fef08a"
+                    strokeWidth="1.5"
+                  />
+                </g>
+              </svg>
+            );
+          })()}
+
+          {/* DIRECTIONAL ELEMENTAL PROJECTILE & RANGED BEAM OVERLAY */}
+          {combatAnim && combatAnim.isRanged && (
             <div
-              className={`hud-top-pill ${
-                subPhase === 'impact' && boardState.p2Feedback ? 'is-valid-attack-target' : ''
-              }`}
-              onClick={() => onInspectCard(p2AvatarCard)}
-              title="Clique para inspecionar o Soberano Oponente"
+              className={`combat-projectile-beam domain-${combatAnim.domain}`}
+              style={
+                {
+                  left: `${combatAnim.startX}px`,
+                  top: `${combatAnim.startY}px`,
+                  width: `${combatAnim.distancePx}px`,
+                  transform: `rotate(${combatAnim.angleDeg}deg)`,
+                } as React.CSSProperties
+              }
             >
+              <div className="projectile-energy-wake" />
+              <div className="projectile-missile-head">
+                <span className="projectile-missile-glyph">
+                  {combatAnim.domain === 'red'
+                    ? '☄️'
+                    : combatAnim.domain === 'blue'
+                    ? '⚡'
+                    : combatAnim.domain === 'purple'
+                    ? '💀'
+                    : combatAnim.domain === 'green'
+                    ? '🏹'
+                    : '✦'}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* VISCERAL COMBAT IMPACT SLASH, DUAL SHOCKWAVE & 12-PARTICLE SHATTER OVERLAY */}
+          {combatAnim && (
+            <div
+              className={`combat-impact-fx domain-${combatAnim.domain} ${
+                combatAnim.isRanged ? 'is-ranged-shot' : 'is-melee-slam'
+              } ${combatAnim.isHeavyHit ? 'is-heavy-impact' : ''}`}
+              style={{
+                left: `${combatAnim.impactX}px`,
+                top: `${combatAnim.impactY}px`,
+              }}
+            >
+              <div className="impact-shockwave-ring" />
+              <div className="impact-shockwave-ring secondary-ring" />
+              <div className="impact-slash-cross" />
+              <div className="impact-particles-ring">
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((pIdx) => (
+                  <span
+                    key={pIdx}
+                    className="impact-particle-spark"
+                    style={
+                      {
+                        '--p-angle': `${pIdx * 30}deg`,
+                        '--p-dist': `${pIdx % 2 === 0 ? 78 : 56}px`,
+                      } as React.CSSProperties
+                    }
+                  />
+                ))}
+              </div>
+              <span className="impact-burst-icon">
+                {combatAnim.isRanged ? '🏹💥' : combatAnim.isHeavyHit ? '⚔️🔥' : '⚔️💥'}
+              </span>
+            </div>
+          )}
+
+          {/* CINEMATIC SPELL, DRAGON BREATH, LEGENDARY ENTRANCE, SOVEREIGN POWER & ASCENSION OVERLAY */}
+          {spectacleFx && (
+            <>
+              <div
+                className={`spectacle-herald-banner kind-${spectacleFx.kind} domain-${spectacleFx.domain}`}
+              >
+                <div className="spectacle-herald-art">
+                  {spectacleFx.card.imagePath ? (
+                    <img src={`${spectacleFx.card.imagePath}?v=5`} alt={spectacleFx.card.name} />
+                  ) : (
+                    <span>{DOMAIN_META[spectacleFx.domain]?.icon}</span>
+                  )}
+                </div>
+                <div className="spectacle-herald-text">
+                  <div className="spectacle-herald-title">{spectacleFx.title}</div>
+                  <div className="spectacle-herald-sub">{spectacleFx.subtitle}</div>
+                </div>
+              </div>
+
+              {spectacleFx.kind === 'spell' &&
+                spectacleFx.distancePx &&
+                spectacleFx.distancePx > 30 && (
+                  <div
+                    className={`combat-projectile-beam spell-projectile-beam domain-${spectacleFx.domain}`}
+                    style={
+                      {
+                        left: `${spectacleFx.startX ?? 420}px`,
+                        top: `${spectacleFx.startY ?? 580}px`,
+                        width: `${spectacleFx.distancePx}px`,
+                        transform: `rotate(${spectacleFx.angleDeg ?? -90}deg)`,
+                      } as React.CSSProperties
+                    }
+                  >
+                    <div className="projectile-energy-wake" />
+                    <div className="projectile-missile-head">
+                      <span className="projectile-missile-glyph">
+                        {DOMAIN_META[spectacleFx.domain]?.icon ?? '✨'}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+              {(spectacleFx.kind === 'spell' ||
+                spectacleFx.kind === 'ascend' ||
+                spectacleFx.kind === 'sovereign') && (
+                <div
+                  className={`spectacle-target-burst kind-${spectacleFx.kind} domain-${spectacleFx.domain}`}
+                  style={{
+                    left: `${spectacleFx.targetX ?? 420}px`,
+                    top: `${spectacleFx.targetY ?? 280}px`,
+                  }}
+                >
+                  <div className="arcane-mandala-ring outer-ring" />
+                  <div className="arcane-mandala-ring inner-ring" />
+                  {(spectacleFx.kind === 'ascend' || spectacleFx.kind === 'sovereign') && (
+                    <div className="ascension-light-pillar" />
+                  )}
+                  <div className="impact-particles-ring">
+                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((pIdx) => (
+                      <span
+                        key={pIdx}
+                        className="impact-particle-spark"
+                        style={
+                          {
+                            '--p-angle': `${pIdx * 30}deg`,
+                            '--p-dist': `${pIdx % 2 === 0 ? 92 : 64}px`,
+                          } as React.CSSProperties
+                        }
+                      />
+                    ))}
+                  </div>
+                  <span className="spectacle-burst-center-icon">
+                    {spectacleFx.kind === 'ascend'
+                      ? '🔥★'
+                      : spectacleFx.kind === 'sovereign'
+                      ? '👑⚡'
+                      : (DOMAIN_META[spectacleFx.domain]?.icon ?? '✨')}
+                  </span>
+                </div>
+              )}
+
+              {spectacleFx.kind === 'legendary' && (
+                <div className={`legendary-entrance-backdrop domain-${spectacleFx.domain}`}>
+                  <div className="legendary-rays-burst" />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* TACTICAL COMBAT PREVIEW HUD (Exact BattleArena.tsx Forecast HUD) */}
+          {combatPreview && (
+            <div
+              className={`tactical-combat-preview-hud ${
+                combatPreview.targetDies ? 'preview-lethal' : ''
+              } ${
+                combatPreview.attackerDies && !combatPreview.attackerReborn
+                  ? 'preview-mutual-risk'
+                  : ''
+              }`}
+            >
+              <div className="tcp-hud-header">
+                <span className="tcp-hud-kicker">PREVISÃO TÁTICA DE COMBATE</span>
+                <span className="tcp-hud-matchup">
+                  <strong>{combatPreview.attackerName}</strong> ➔{' '}
+                  <strong>{combatPreview.targetName}</strong>
+                </span>
+              </div>
+
+              <div className="tcp-hud-columns">
+                <div className="tcp-hud-col tcp-col-attack">
+                  <div className="tcp-col-label">IMPACTO NO ALVO</div>
+                  <div className="tcp-col-value">
+                    {combatPreview.breaksTargetShield ? (
+                      <span className="tcp-tag-shield">Quebra Escudo Divino (0 PV)</span>
+                    ) : combatPreview.lethalTouchTriggeredOnTarget ? (
+                      <span className="tcp-tag-lethal">
+                        Toque Letal (-{combatPreview.damageToTarget} PV)
+                      </span>
+                    ) : (
+                      <span className="tcp-dmg-number">-{combatPreview.damageToTarget} PV</span>
+                    )}
+                    <span className="tcp-hp-transition">
+                      ({combatPreview.targetHpBefore} → {combatPreview.targetHpAfter} PV)
+                    </span>
+                  </div>
+                  <div className="tcp-outcome-badges">
+                    {combatPreview.targetDies ? (
+                      combatPreview.targetReborn ? (
+                        <span className="tcp-badge badge-warn">Alvo Renasce com 1 PV</span>
+                      ) : (
+                        <span className="tcp-badge badge-kill">
+                          {combatPreview.isSovereignTarget ? 'VITÓRIA LETAL' : 'ABATE CONFIRMADO'}
+                        </span>
+                      )
+                    ) : (
+                      <span className="tcp-badge badge-neutral">
+                        Alvo sobrevive ({combatPreview.targetHpAfter} PV)
+                      </span>
+                    )}
+                    {combatPreview.trampleExcessDamage > 0 && (
+                      <span className="tcp-badge badge-trample">
+                        +{combatPreview.trampleExcessDamage} Atropelar no Soberano
+                      </span>
+                    )}
+                    {combatPreview.lifestealHealForAttacker > 0 && (
+                      <span className="tcp-badge badge-heal">
+                        Dreno: +{combatPreview.lifestealHealForAttacker} PV ao Soberano
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="tcp-hud-col tcp-col-counter">
+                  <div className="tcp-col-label">REVIDE & SOBREVIVÊNCIA</div>
+                  <div className="tcp-col-value">
+                    {combatPreview.isSovereignTarget ? (
+                      <span className="tcp-tag-safe">Ataque Direto (0 Revide)</span>
+                    ) : combatPreview.isRangedFreeHit ? (
+                      <span className="tcp-tag-safe">Disparo à Distância (0 Revide)</span>
+                    ) : combatPreview.breaksAttackerShield ? (
+                      <span className="tcp-tag-shield">Escudo Divino absorve</span>
+                    ) : (
+                      <>
+                        <span className="tcp-counter-number">
+                          -{combatPreview.counterDamageToAttacker} PV
+                        </span>
+                        <span className="tcp-hp-transition">
+                          ({combatPreview.attackerHpBefore} → {combatPreview.attackerHpAfter} PV)
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <div className="tcp-outcome-badges">
+                    {!combatPreview.attackerDies ? (
+                      <span className="tcp-badge badge-safe">
+                        Atacante sobrevive ({combatPreview.attackerHpAfter} PV)
+                      </span>
+                    ) : (
+                      <span className="tcp-badge badge-danger">Atacante Tombado</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* FLOATING HOVER CARD ZOOM PANEL (Exact BattleArena.tsx Left Preview) */}
+          {activeHoverCardInfo && (
+            <div className="mtg-hover-zoom-panel">
+              <CardView
+                card={activeHoverCardInfo.card}
+                unit={activeHoverCardInfo.unit}
+                mode="inspect"
+              />
+              {activeHoverCardInfo.unit && (
+                <div className="mtg-hover-unit-status">
+                  <div style={{ fontWeight: 700, color: '#e2e8f0', marginBottom: '2px' }}>
+                    Posição:{' '}
+                    {activeHoverCardInfo.unit.row === 'vanguard'
+                      ? 'Vanguarda (Frente)'
+                      : 'Retaguarda (Suporte)'}{' '}
+                    • Coluna {activeHoverCardInfo.unit.slotIndex + 1}
+                  </div>
+                  {activeHoverCardInfo.unit.invasionAtkBonus ? (
+                    <div style={{ color: '#fdba74' }}>• Invasão de Território: +1 ATQ ativo</div>
+                  ) : null}
+                  {activeHoverCardInfo.unit.formationAtkBonus ? (
+                    <div style={{ color: '#fef08a' }}>• Cobertura de Coluna: +1 ATQ ativo</div>
+                  ) : null}
+                  {activeHoverCardInfo.unit.formationArmorBonus ? (
+                    <div style={{ color: '#fde68a' }}>• Formação em Falange: +1 Armadura ativa</div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* CINEMATIC SOVEREIGN FINISHER OVERLAY (Exact BattleArena.tsx Victory Finisher) */}
+          {gameState.phase === 'gameover' && (
+            <div
+              className="sovereign-finisher-overlay is-victory-finisher"
+              onClick={handleNextStep}
+              title="Clique para avançar para o próximo duelo temático"
+            >
+              <div className="finisher-impact-flash" />
+              <div className="finisher-fracture-web" />
+
+              <div className="finisher-bastion-burst burst-top-enemy">
+                <div className="finisher-shockwave-ring primary" />
+                <div className="finisher-shockwave-ring secondary" />
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((idx) => (
+                  <span
+                    key={idx}
+                    className="finisher-crystal-shard"
+                    style={
+                      {
+                        '--shard-angle': `${idx * 30}deg`,
+                        '--shard-dist': `${idx % 2 === 0 ? 190 : 135}px`,
+                      } as React.CSSProperties
+                    }
+                  />
+                ))}
+              </div>
+
+              <div className="finisher-herald-banner">
+                <div className="finisher-herald-Portrait">
+                  {playerAvatarCard?.imagePath ? (
+                    <img src={playerAvatarCard.imagePath} alt={gameState.player.name} />
+                  ) : (
+                    <span>👑</span>
+                  )}
+                </div>
+                <div className="finisher-herald-kicker font-cinzel">
+                  ⚔️ BASTIÃO INIMIGO DESTRUÍDO • TRIUNFO SOBERANO ⚔️
+                </div>
+                <div className="finisher-herald-title font-cinzel">VITÓRIA DO SOBERANO</div>
+                <div className="finisher-herald-sub">{gameState.winReason}</div>
+              </div>
+            </div>
+          )}
+
+          {/* 1. TOP-CENTER SYMMETRIC P2 PILL (OPPONENT / SOVEREIGN 2 — Exact BattleArena.tsx) */}
+          <header
+            className={`hud-unified-top-bar ${isP2DrawerPinned ? 'is-pinned-open' : ''}`}
+          >
+            <div
+              data-combat-id="ai-sovereign"
+              className={`hud-top-pill ${
+                isAiSovereignTarget ? 'is-valid-attack-target' : ''
+              } ${combatAnim?.targetId === 'ai-sovereign' ? 'is-hit-target' : ''}`}
+              onClick={() => onInspectCard(aiAvatarCard)}
+            >
+              {feedbackMap['ai-sovereign'] && (
+                <div
+                  className={`floating-feedback-pill color-${feedbackMap['ai-sovereign'].color}`}
+                >
+                  {feedbackMap['ai-sovereign'].text}
+                </div>
+              )}
+
               <div className="hud-mini-avatar opponent">
-                {p2AvatarCard?.imagePath ? (
-                  <img src={p2AvatarCard.imagePath} alt={scenario.p2Name} />
+                {aiAvatarCard?.imagePath ? (
+                  <img src={aiAvatarCard.imagePath} alt={gameState.ai.name} />
                 ) : (
-                  <span>👑</span>
+                  <span>⚔️</span>
                 )}
               </div>
-              <span className="hud-pill-name">{scenario.p2Name}</span>
-              <span className="hud-pill-stat hp">❤️ {boardState.p2Hp}</span>
+
+              <span className="hud-pill-name">{gameState.ai.name}</span>
+              <span className="hud-pill-stat hp">❤️ {gameState.ai.hp}</span>
               <span className="hud-pill-stat mana">
-                ⚡ {boardState.p2Essence}/{boardState.p2MaxEssence}
+                ⚡ {gameState.ai.currentEssence}/{gameState.ai.maxEssence}
               </span>
-              <span className="hud-pill-stat">🃏 4</span>
-              <span className="hud-pill-stat deck">📚 82 • 🪦 5</span>
-              {step.activeDomain && (
-                <span className="hud-pill-env-chip domain">
-                  ⛩️{' '}
-                  {step.activeDomain === 'clash_gold_purple'
-                    ? 'Colisão 50/50'
-                    : DOMAIN_META[step.activeDomain]?.shortName}
+              <span className="hud-pill-stat hand">🃏 {gameState.ai.hand.length}</span>
+              <span className="hud-pill-stat deck">
+                📚 {gameState.ai.deck.length} • 🪦 {gameState.ai.crypt.length}
+              </span>
+
+              {gameState.domainExpansion && (
+                <span
+                  className="hud-pill-env-chip domain"
+                  title={
+                    gameState.domainExpansion.clashRival
+                      ? `Disputa de Domínios: ${gameState.domainExpansion.name} vs ${gameState.domainExpansion.clashRival.name} (Acerto Garantido Anulado)`
+                      : `${gameState.domainExpansion.name} (${gameState.domainExpansion.turnsRemaining} rodadas)`
+                  }
+                >
+                  {gameState.domainExpansion.clashRival
+                    ? `⛩️⚔️ Disputa (${gameState.domainExpansion.turnsRemaining}r)`
+                    : `⛩️ ${gameState.domainExpansion.turnsRemaining}r`}
                 </span>
               )}
 
-              {subPhase === 'impact' && boardState.p2Feedback && (
-                <div
-                  className={`floating-feedback-pill color-${boardState.p2Feedback.color}`}
-                  style={{ top: '34px' }}
+              <button
+                type="button"
+                className={`hud-pill-expand-btn ${isP2DrawerPinned ? 'active' : ''}`}
+                style={{ width: 'auto', padding: '0 6px', gap: '3px', fontWeight: 800 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsP2DrawerPinned((prev) => {
+                    const next = !prev;
+                    if (next) setIsP1DrawerPinned(false);
+                    return next;
+                  });
+                }}
+              >
+                {isP2DrawerPinned ? '▴ Ocultar' : '▾ Info'}
+              </button>
+
+              {isAiSovereignTarget && (
+                <div className="attack-sovereign-cta">
+                  ⚔️ ATACAR SOBERANO
+                  {allTargetPreviews['ai-sovereign']
+                    ? ` (-${allTargetPreviews['ai-sovereign'].damageToTarget} PV${
+                        allTargetPreviews['ai-sovereign'].targetDies ? ' • LETAL' : ''
+                      })`
+                    : ''}
+                </div>
+              )}
+            </div>
+
+            {/* Auto-Hidden Dropdown Panel for Sovereign 2 */}
+            <div className="hud-top-dropdown" onClick={(e) => e.stopPropagation()}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingBottom: '4px',
+                  borderBottom: '1px solid rgba(248, 113, 113, 0.25)',
+                }}
+              >
+                <span
+                  className="font-cinzel"
+                  style={{ fontSize: '0.64rem', fontWeight: 800, color: '#fca5a5' }}
                 >
-                  {boardState.p2Feedback.text}
+                  ⚔️ PAINEL DO OPONENTE ({gameState.ai.name.toUpperCase()})
+                </span>
+                <button
+                  type="button"
+                  className="hud-inline-btn danger"
+                  onClick={() => setIsP2DrawerPinned(false)}
+                >
+                  ✕ Ocultar Painel
+                </button>
+              </div>
+              <div className="hud-dropdown-row">
+                <div className="hud-dropdown-section hud-drawer-card">
+                  <div className="hud-drawer-card-header">
+                    <span className="hud-sec-label">
+                      ⛰️ TERRENOS RIVAIS ({gameState.ai.channeledCards.length})
+                    </span>
+                    <span className="hud-inline-btn crypt-btn">
+                      🪦 Cripta ({gameState.ai.crypt.length})
+                    </span>
+                  </div>
+                  <div className="hud-affinities-footer">
+                    <span className="hud-aff-kicker">AFINIDADES:</span>
+                    {renderAffinityCounters(gameState.ai.affinities)}
+                  </div>
+                </div>
+
+                <div className="hud-dropdown-section hud-drawer-card">
+                  {(() => {
+                    const spec = getDomainExpansionSpec(aiDomExpCheck.domain);
+                    const aff = Math.min(6, aiDomExpCheck.affinity);
+                    const isReady = aiDomExpCheck.affinity >= 6;
+                    return (
+                      <>
+                        <div className="hud-drawer-card-header">
+                          <span className="hud-sec-label">⛩️ EXPANSÃO DE DOMÍNIO</span>
+                          <span
+                            className={`hud-domain-status-chip domain-${spec.domain} ${
+                              isReady ? 'is-ready' : ''
+                            }`}
+                          >
+                            {aiDomExpCheck.affinity}/6 AFINIDADE • 3⚡
+                          </span>
+                        </div>
+                        <div className="hud-domain-pips-track" aria-hidden="true">
+                          {[1, 2, 3, 4, 5, 6].map((pip) => (
+                            <span
+                              key={pip}
+                              className={`hud-domain-pip domain-${spec.domain} ${
+                                pip <= aff ? 'is-filled' : ''
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <div
+                          className={`hud-sanctuary-card domain-${spec.domain} ${
+                            isReady ? 'is-ready' : 'is-locked'
+                          }`}
+                        >
+                          <div className="hud-sanctuary-emblem">{spec.icon}</div>
+                          <div className="hud-sanctuary-body">
+                            <div className="hud-sanctuary-title">{spec.name}</div>
+                            <div className="hud-sanctuary-desc">{spec.potencyDesc}</div>
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {gameState.domainExpansion && (
+                <div className="hud-dropdown-env-row">
+                  <div className="hud-env-inline-box domain">
+                    <strong>
+                      {gameState.domainExpansion.icon} {gameState.domainExpansion.name} (
+                      {gameState.domainExpansion.turnsRemaining}r):
+                    </strong>{' '}
+                    <span>
+                      {gameState.domainExpansion.potencyDesc} •{' '}
+                      {gameState.domainExpansion.sureHitDesc}
+                    </span>
+                    {gameState.domainExpansion.owner === 'ai' && (
+                      <span className="hud-env-inline-actions">
+                        {simpleDomCheck && (
+                          <button type="button" className="hud-inline-btn" onClick={handleEnterArena}>
+                            💠 Domínio Simples (2⚡)
+                          </button>
+                        )}
+                        {canSacBreak && (
+                          <button
+                            type="button"
+                            className="hud-inline-btn danger"
+                            onClick={handleEnterArena}
+                          >
+                            💥 Romper (10❤️)
+                          </button>
+                        )}
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
           </header>
 
-          {/* SPECTACLE HERALD BANNER DURING 'impact' SUB-PHASE */}
-          {subPhase === 'impact' && (
-            <div className={`spectacle-herald-banner domain-${step.heraldDomain}`}>
-              <div className="spectacle-herald-art">
-                {selectedHandCard?.imagePath ? (
-                  <img src={selectedHandCard.imagePath} alt={selectedHandCard.name} />
-                ) : (
-                  <span>✨</span>
-                )}
-              </div>
-              <div>
-                <div className="spectacle-herald-title">{step.heraldTitle}</div>
-                <div className="spectacle-herald-sub">{step.heraldSubtitle}</div>
-              </div>
-            </div>
-          )}
-
-          {/* 2. AUTHENTIC WOODEN TABLETOP & DOMAIN EXPANSION BATTLEFIELD (4 LANES) */}
+          {/* 2. TABULEIRO 6×4 EM TELA CHEIA (MESA DE MADEIRA + EXPANSÃO DE DOMÍNIO — Exact BattleArena.tsx) */}
           <div
             className={`mtg-battlefield-surface wooden-tabletop-surface ${
-              step.activeDomain === 'clash_gold_purple'
-                ? 'is-domain-clash-active'
-                : step.activeDomain
-                ? `is-domain-expanded domain-surface-${step.activeDomain}`
+              gameState.domainExpansion
+                ? `has-domain-tabletop domain-tabletop-${gameState.domainExpansion.domain}`
                 : ''
-            }`}
+            } ${isAimingAnyTarget ? 'is-aiming-target' : ''}`}
+            onClick={() => {
+              if (isP2DrawerPinned || isP1DrawerPinned) {
+                setIsP2DrawerPinned(false);
+                setIsP1DrawerPinned(false);
+              }
+            }}
           >
-            {/* Physical Wooden Tabletop Base + Domain Expansion Takeover / 50-50 Clash */}
-            <div className="tabletop-wood-and-domain-layer" aria-hidden="true">
+            {/* WOODEN TABLETOP & FULL-BOARD DOMAIN EXPANSION TRANSFORMATION LAYER */}
+            <div
+              className="tabletop-stone-engraving tabletop-wood-and-domain-layer"
+              aria-hidden="true"
+            >
               <div className="tabletop-wood-base-img" />
 
-              {step.activeDomain === 'clash_gold_purple' ? (
-                <div className="tabletop-domain-clash-stage">
-                  <div className="tabletop-domain-clash-half top-half domain-purple" />
-                  <div className="tabletop-domain-clash-half bottom-half domain-gold" />
-                  <div className="tabletop-domain-clash-faultline">
-                    <span className="clash-faultline-core" />
-                    <span className="clash-faultline-sparks" />
-                  </div>
+              {/* 1. SINGLE ACTIVE DOMAIN EXPANSION */}
+              {gameState.domainExpansion && !gameState.domainExpansion.clashRival && (
+                <div
+                  key={`domain-tabletop-${gameState.domainExpansion.domain}-${gameState.domainExpansion.owner}`}
+                  className={`tabletop-domain-takeover-img domain-${gameState.domainExpansion.domain}`}
+                >
+                  <div
+                    className={`tabletop-domain-flow-fx domain-${gameState.domainExpansion.domain}`}
+                  />
                 </div>
-              ) : step.activeDomain ? (
-                <div className={`tabletop-domain-takeover-img domain-${step.activeDomain}`}>
-                  <div className={`tabletop-domain-flow-fx domain-${step.activeDomain}`} />
-                </div>
-              ) : null}
+              )}
+
+              {/* 2. DOMAIN CLASH: TWO DOMAINS FIGHTING (50/50 Split + Faultline Beam) */}
+              {gameState.domainExpansion &&
+                gameState.domainExpansion.clashRival &&
+                (() => {
+                  const exp = gameState.domainExpansion;
+                  const rival = exp.clashRival!;
+                  const topDom = exp.owner === 'ai' ? exp : rival;
+                  const bottomDom = exp.owner === 'player' ? exp : rival;
+                  const topColor = DOMAIN_META[topDom.domain]?.color || '#38bdf8';
+                  const bottomColor = DOMAIN_META[bottomDom.domain]?.color || '#ef4444';
+                  return (
+                    <div
+                      key={`domain-clash-${topDom.domain}-${bottomDom.domain}`}
+                      className="tabletop-domain-clash-stage"
+                      style={
+                        {
+                          '--top-clash-color': topColor,
+                          '--bottom-clash-color': bottomColor,
+                        } as React.CSSProperties
+                      }
+                    >
+                      <div
+                        className={`tabletop-domain-clash-half top-half domain-${topDom.domain}`}
+                      >
+                        <div className={`tabletop-domain-flow-fx domain-${topDom.domain}`} />
+                      </div>
+
+                      <div
+                        className={`tabletop-domain-clash-half bottom-half domain-${bottomDom.domain}`}
+                      >
+                        <div className={`tabletop-domain-flow-fx domain-${bottomDom.domain}`} />
+                      </div>
+
+                      <div className="tabletop-domain-clash-faultline">
+                        <div className="clash-faultline-core-beam" />
+                        <div className="clash-faultline-impact-pulse" />
+                      </div>
+                    </div>
+                  );
+                })()}
 
               <div className="tabletop-center-frontier-seam" />
             </div>
 
-            {/* Active Domain Expansion / Clash Top Ribbon inside Battlefield */}
-            {step.domainBannerTitle && (
-              <div className="sim-domain-active-ribbon">
-                <strong>{step.domainBannerTitle}</strong>
-                <span>{step.domainBannerSubtitle}</span>
+            {/* 1ª Fileira (Topo): AI Rearguard */}
+            <div className="mtg-board-lane rearguard-lane ai-rearguard-lane">
+              {spectacleFx?.kind === 'breath' && spectacleFx.targetLaneId === 'ai-rearguard' && (
+                <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
+              )}
+              <div className="mtg-lane-slots">
+                {[0, 1, 2, 3, 4, 5].map((idx) => {
+                  const slotUnits = getSlotUnits(gameState.ai, 'rearguard', idx);
+                  return (
+                    <div
+                      key={`ai-rear-${idx}`}
+                      className={`mtg-slot ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
+                    >
+                      {slotUnits.length > 1 && (
+                        <span className="slot-stack-count-badge enemy-stack-badge">
+                          {slotUnits.length}/{MAX_UNITS_PER_SLOT}
+                        </span>
+                      )}
+                      <div className="slot-card-stack">
+                        {slotUnits.map((unit, sIdx) => {
+                          const isValidTarget =
+                            validAttackTargets.includes(unit.instanceId) || isSpellTargetingEnemy;
+                          const isLunging = combatAnim?.attackerId === unit.instanceId;
+                          const isHit = combatAnim?.targetId === unit.instanceId;
+                          return (
+                            <div
+                              key={unit.instanceId}
+                              data-combat-id={unit.instanceId}
+                              className={`organic-tabletop-card stacked-card-item ${
+                                isLunging ? 'is-lunging-attacker' : ''
+                              } ${isHit ? 'is-hit-target' : ''}`}
+                              style={{
+                                ...getOrganicTabletopPose(
+                                  unit.instanceId,
+                                  'ai',
+                                  'rearguard',
+                                  idx,
+                                  unit.hasAttackedThisTurn,
+                                  false,
+                                  false,
+                                  sIdx,
+                                  slotUnits.length,
+                                ),
+                                ...(isLunging && combatAnim
+                                  ? ({
+                                      '--lunge-x': `${combatAnim.lungeX}px`,
+                                      '--lunge-y': `${combatAnim.lungeY}px`,
+                                    } as React.CSSProperties)
+                                  : {}),
+                              }}
+                            >
+                              {renderTargetPreviewBadge(unit.instanceId)}
+                              <CardView
+                                card={unit.card}
+                                unit={unit}
+                                mode="board"
+                                isValidTarget={isValidTarget}
+                                feedback={feedbackMap[unit.instanceId]}
+                                onClick={() => onInspectCard(unit.card)}
+                                onInspect={onInspectCard}
+                                onHoverCard={handleHoverCard}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            )}
+            </div>
 
-            {/* 1ª FILEIRA (TOPO): RETAGUARDA DA IA */}
-            {renderAuthenticLane(
-              'aiRearguard',
-              'ai-rearguard-lane',
-              'ai-tag',
-              '🛡️ Retaguarda IA',
-              'ai',
-              'rearguard',
-              boardState.aiRearguard,
-            )}
+            {/* 2ª Fileira: Player Vanguard */}
+            <div className="mtg-board-lane vanguard-lane player-vanguard-in-enemy-field">
+              {spectacleFx?.kind === 'breath' &&
+                spectacleFx.targetLaneId === 'player-vanguard' && (
+                  <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
+                )}
+              <div className="mtg-lane-slots">
+                {[0, 1, 2, 3, 4, 5].map((idx) => {
+                  const slotUnits = getSlotUnits(gameState.player, 'vanguard', idx);
+                  const aiRearUnits = getSlotUnits(gameState.ai, 'rearguard', idx);
+                  const canStackHere =
+                    canDeployCreature && canDeployToSlot(gameState.player, 'vanguard', idx);
+                  const isTargetDeploySlot =
+                    canStackHere &&
+                    step.deployRow === 'vanguard' &&
+                    step.deploySlotIndex === idx;
+                  const isInvading = slotUnits.length > 0 && aiRearUnits.length === 0;
+                  const isClashing = slotUnits.length > 0 && aiRearUnits.length > 0;
 
-            {/* 2ª FILEIRA: VANGUARDA DO JOGADOR 1 (INVASÃO) */}
-            {renderAuthenticLane(
-              'playerVanguard',
-              'player-vanguard-in-enemy-field',
-              'player-invader-tag',
-              '⚔️ Sua Vanguarda (Invasão +1 ATQ)',
-              'player',
-              'vanguard',
-              boardState.playerVanguard,
-            )}
+                  return (
+                    <div
+                      key={`player-van-${idx}`}
+                      className={`mtg-slot ${canStackHere ? 'can-deploy' : ''} ${
+                        slotUnits.length > 1 ? 'has-stacked-units' : ''
+                      }`}
+                      onClick={() => {
+                        if (isTargetDeploySlot) {
+                          setIsAutoPlaying(false);
+                          setSubPhase('impact');
+                        }
+                      }}
+                    >
+                      {slotUnits.length > 1 && (
+                        <span className="slot-stack-count-badge ally-stack-badge">
+                          {slotUnits.length}/{MAX_UNITS_PER_SLOT}
+                        </span>
+                      )}
 
-            {/* FRONTEIRA CENTRAL */}
+                      {canStackHere && slotUnits.length > 0 && (
+                        <button
+                          type="button"
+                          className="slot-stack-add-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsAutoPlaying(false);
+                            setSubPhase('impact');
+                          }}
+                        >
+                          + Empilhar ({slotUnits.length + 1}/{MAX_UNITS_PER_SLOT})
+                        </button>
+                      )}
+
+                      {slotUnits.length > 0 ? (
+                        <div className="slot-card-stack">
+                          {slotUnits.map((unit, sIdx) => {
+                            const isReady =
+                              isPlayerTurn &&
+                              getValidAttackTargets(gameState, unit.instanceId).length > 0;
+                            const canUnitAscend =
+                              isPlayerTurn &&
+                              canAscendUnit(gameState, 'player', unit.instanceId);
+                            const canUnitMove =
+                              isPlayerTurn &&
+                              canMoveUnitRow(gameState, 'player', unit.instanceId);
+                            const isLunging = combatAnim?.attackerId === unit.instanceId;
+                            const isHit = combatAnim?.targetId === unit.instanceId;
+
+                            return (
+                              <div
+                                key={unit.instanceId}
+                                data-combat-id={unit.instanceId}
+                                className={`organic-tabletop-card stacked-card-item ${
+                                  isLunging ? 'is-lunging-attacker' : ''
+                                } ${isHit ? 'is-hit-target' : ''} ${
+                                  isInvading ? 'is-crossing-border-player' : ''
+                                }`}
+                                style={{
+                                  ...getOrganicTabletopPose(
+                                    unit.instanceId,
+                                    'player',
+                                    'vanguard',
+                                    idx,
+                                    unit.hasAttackedThisTurn,
+                                    isInvading,
+                                    isClashing,
+                                    sIdx,
+                                    slotUnits.length,
+                                  ),
+                                  ...(isLunging && combatAnim
+                                    ? ({
+                                        '--lunge-x': `${combatAnim.lungeX}px`,
+                                        '--lunge-y': `${combatAnim.lungeY}px`,
+                                      } as React.CSSProperties)
+                                    : {}),
+                                }}
+                              >
+                                <CardView
+                                  card={unit.card}
+                                  unit={unit}
+                                  mode="board"
+                                  isSelected={
+                                    selectedAttackerId === unit.instanceId ||
+                                    focusedBoardUnitId === unit.instanceId
+                                  }
+                                  isReadyAttacker={isReady}
+                                  isValidTarget={isSpellTargetingAlly}
+                                  canAscend={canUnitAscend}
+                                  canMoveRow={canUnitMove}
+                                  feedback={feedbackMap[unit.instanceId]}
+                                  onClick={() => onInspectCard(unit.card)}
+                                  onAscendClick={() => {
+                                    setIsAutoPlaying(false);
+                                    setSubPhase('impact');
+                                  }}
+                                  onInspect={onInspectCard}
+                                  onHoverCard={handleHoverCard}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : canStackHere ? (
+                        <span className="mtg-slot-watermark">
+                          + Vanguarda (1/{MAX_UNITS_PER_SLOT})
+                        </span>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* FRONTEIRA CENTRAL DOS TERRITÓRIOS */}
             <div className="tabletop-clash-gap" />
 
-            {/* 3ª FILEIRA: VANGUARDA DA IA (INVASÃO) */}
-            {renderAuthenticLane(
-              'aiVanguard',
-              'ai-vanguard-in-player-field',
-              'ai-invader-tag',
-              '🔥 Vanguarda Inimiga (Invasão)',
-              'ai',
-              'vanguard',
-              boardState.aiVanguard,
-            )}
+            {/* 3ª Fileira: AI Vanguard */}
+            <div className="mtg-board-lane vanguard-lane ai-vanguard-in-player-field">
+              {spectacleFx?.kind === 'breath' && spectacleFx.targetLaneId === 'ai-vanguard' && (
+                <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
+              )}
+              <div className="mtg-lane-slots">
+                {[0, 1, 2, 3, 4, 5].map((idx) => {
+                  const slotUnits = getSlotUnits(gameState.ai, 'vanguard', idx);
+                  const pRearUnits = getSlotUnits(gameState.player, 'rearguard', idx);
+                  const isInvading = slotUnits.length > 0 && pRearUnits.length === 0;
+                  const isClashing = slotUnits.length > 0 && pRearUnits.length > 0;
 
-            {/* 4ª FILEIRA (BASE): RETAGUARDA DO JOGADOR 1 (ALCANCE / RELÍQUIAS) */}
-            {renderAuthenticLane(
-              'playerRearguard',
-              'player-lane',
-              'player-tag',
-              '🏛️ Sua Retaguarda (Alcance / Relíquias)',
-              'player',
-              'rearguard',
-              boardState.playerRearguard,
-            )}
+                  return (
+                    <div
+                      key={`ai-van-${idx}`}
+                      className={`mtg-slot ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
+                    >
+                      {slotUnits.length > 1 && (
+                        <span className="slot-stack-count-badge enemy-stack-badge">
+                          {slotUnits.length}/{MAX_UNITS_PER_SLOT}
+                        </span>
+                      )}
+                      <div className="slot-card-stack">
+                        {slotUnits.map((unit, sIdx) => {
+                          const isValidTarget =
+                            validAttackTargets.includes(unit.instanceId) || isSpellTargetingEnemy;
+                          const isLunging = combatAnim?.attackerId === unit.instanceId;
+                          const isHit = combatAnim?.targetId === unit.instanceId;
+                          return (
+                            <div
+                              key={unit.instanceId}
+                              data-combat-id={unit.instanceId}
+                              className={`organic-tabletop-card stacked-card-item ${
+                                isLunging ? 'is-lunging-attacker' : ''
+                              } ${isHit ? 'is-hit-target' : ''} ${
+                                isInvading ? 'is-crossing-border-ai' : ''
+                              }`}
+                              style={{
+                                ...getOrganicTabletopPose(
+                                  unit.instanceId,
+                                  'ai',
+                                  'vanguard',
+                                  idx,
+                                  unit.hasAttackedThisTurn,
+                                  isInvading,
+                                  isClashing,
+                                  sIdx,
+                                  slotUnits.length,
+                                ),
+                                ...(isLunging && combatAnim
+                                  ? ({
+                                      '--lunge-x': `${combatAnim.lungeX}px`,
+                                      '--lunge-y': `${combatAnim.lungeY}px`,
+                                    } as React.CSSProperties)
+                                  : {}),
+                              }}
+                            >
+                              {renderTargetPreviewBadge(unit.instanceId)}
+                              <CardView
+                                card={unit.card}
+                                unit={unit}
+                                mode="board"
+                                isValidTarget={isValidTarget}
+                                feedback={feedbackMap[unit.instanceId]}
+                                onClick={() => onInspectCard(unit.card)}
+                                onInspect={onInspectCard}
+                                onHoverCard={handleHoverCard}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 4ª Fileira (Base): Player Rearguard */}
+            <div className="mtg-board-lane rearguard-lane player-lane">
+              {spectacleFx?.kind === 'breath' &&
+                spectacleFx.targetLaneId === 'player-rearguard' && (
+                  <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
+                )}
+              <div className="mtg-lane-slots">
+                {[0, 1, 2, 3, 4, 5].map((idx) => {
+                  const slotUnits = getSlotUnits(gameState.player, 'rearguard', idx);
+                  const vanUnits = getSlotUnits(gameState.player, 'vanguard', idx);
+                  const hasColumnCover = vanUnits.length > 0;
+                  const canStackHere =
+                    (canDeployCreature || canDeployRelic || canDeployTrap) &&
+                    canDeployToSlot(gameState.player, 'rearguard', idx);
+                  const isTargetDeploySlot =
+                    canStackHere &&
+                    step.deployRow === 'rearguard' &&
+                    step.deploySlotIndex === idx;
+
+                  return (
+                    <div
+                      key={`player-rear-${idx}`}
+                      className={`mtg-slot ${canStackHere ? 'can-deploy' : ''} ${
+                        hasColumnCover && slotUnits.length === 0 ? 'has-column-cover' : ''
+                      } ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
+                      onClick={() => {
+                        if (isTargetDeploySlot) {
+                          setIsAutoPlaying(false);
+                          setSubPhase('impact');
+                        }
+                      }}
+                    >
+                      {slotUnits.length > 1 && (
+                        <span className="slot-stack-count-badge ally-stack-badge">
+                          {slotUnits.length}/{MAX_UNITS_PER_SLOT}
+                        </span>
+                      )}
+
+                      {canStackHere && slotUnits.length > 0 && (
+                        <button
+                          type="button"
+                          className="slot-stack-add-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsAutoPlaying(false);
+                            setSubPhase('impact');
+                          }}
+                        >
+                          + Empilhar ({slotUnits.length + 1}/{MAX_UNITS_PER_SLOT})
+                        </button>
+                      )}
+
+                      {slotUnits.length > 0 ? (
+                        <div className="slot-card-stack">
+                          {slotUnits.map((unit, sIdx) => {
+                            const isReady =
+                              isPlayerTurn &&
+                              getValidAttackTargets(gameState, unit.instanceId).length > 0;
+                            const canUnitAscend =
+                              isPlayerTurn &&
+                              canAscendUnit(gameState, 'player', unit.instanceId);
+                            const canUnitMove =
+                              isPlayerTurn &&
+                              canMoveUnitRow(gameState, 'player', unit.instanceId);
+                            const isLunging = combatAnim?.attackerId === unit.instanceId;
+                            const isHit = combatAnim?.targetId === unit.instanceId;
+
+                            return (
+                              <div
+                                key={unit.instanceId}
+                                data-combat-id={unit.instanceId}
+                                className={`organic-tabletop-card stacked-card-item ${
+                                  isLunging ? 'is-lunging-attacker' : ''
+                                } ${isHit ? 'is-hit-target' : ''}`}
+                                style={{
+                                  ...getOrganicTabletopPose(
+                                    unit.instanceId,
+                                    'player',
+                                    'rearguard',
+                                    idx,
+                                    unit.hasAttackedThisTurn,
+                                    false,
+                                    false,
+                                    sIdx,
+                                    slotUnits.length,
+                                  ),
+                                  ...(isLunging && combatAnim
+                                    ? ({
+                                        '--lunge-x': `${combatAnim.lungeX}px`,
+                                        '--lunge-y': `${combatAnim.lungeY}px`,
+                                      } as React.CSSProperties)
+                                    : {}),
+                                }}
+                              >
+                                <CardView
+                                  card={unit.card}
+                                  unit={unit}
+                                  mode="board"
+                                  isSelected={
+                                    selectedAttackerId === unit.instanceId ||
+                                    focusedBoardUnitId === unit.instanceId
+                                  }
+                                  isReadyAttacker={isReady}
+                                  isValidTarget={isSpellTargetingAlly}
+                                  canAscend={canUnitAscend}
+                                  canMoveRow={canUnitMove}
+                                  feedback={feedbackMap[unit.instanceId]}
+                                  onClick={() => onInspectCard(unit.card)}
+                                  onAscendClick={() => {
+                                    setIsAutoPlaying(false);
+                                    setSubPhase('impact');
+                                  }}
+                                  onInspect={onInspectCard}
+                                  onHoverCard={handleHoverCard}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : canStackHere ? (
+                        <span className="mtg-slot-watermark">
+                          {canDeployTrap
+                            ? '+ Emboscada'
+                            : hasColumnCover
+                            ? '+ Retaguarda (+1 ATQ)'
+                            : '+ Retaguarda'}
+                        </span>
+                      ) : hasColumnCover ? (
+                        <span className="mtg-slot-cover-rune">+1 ATQ</span>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          {/* 3. BOTTOM-CENTER UNIFIED COMMAND BAR (SOVEREIGN 1 + HAND BUTTON + PHASE) */}
+          {/* 3. UNIFIED SYMMETRIC P1 + PHASE + MENU DOCK (BOTTOM EDGE — Exact BattleArena.tsx) */}
           <footer className="hud-unified-bottom-bar">
             <div className="hud-bottom-strip-inner">
-              <div className="hud-p1-segment">
+              <div
+                data-combat-id="player-sovereign"
+                className={`hud-p1-segment ${isP1DrawerPinned ? 'is-pinned-open' : ''} ${
+                  combatAnim?.targetId === 'player-sovereign' ? 'is-hit-target' : ''
+                }`}
+              >
+                {/* Auto-Hover & Pin Popover for Player 1 Details */}
                 <div
-                  className="hud-mini-avatar player"
-                  onClick={() => onInspectCard(p1AvatarCard)}
-                  style={{ cursor: 'pointer' }}
+                  className="hud-bottom-popover p1-details-popover"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  {p1AvatarCard?.imagePath ? (
-                    <img src={p1AvatarCard.imagePath} alt={scenario.p1Name} />
-                  ) : (
-                    <span>🧙‍♂️</span>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      paddingBottom: '6px',
+                      marginBottom: '6px',
+                      borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
+                    }}
+                  >
+                    <span
+                      className="font-cinzel"
+                      style={{ fontSize: '0.64rem', fontWeight: 800, color: '#fde68a' }}
+                    >
+                      👑 MEUS TERRENOS, AFINIDADES & DOMÍNIO
+                    </span>
+                    <button
+                      type="button"
+                      className="hud-inline-btn danger"
+                      onClick={() => setIsP1DrawerPinned(false)}
+                    >
+                      ✕ Ocultar Painel
+                    </button>
+                  </div>
+                  <div className="hud-dropdown-row">
+                    <div className="hud-dropdown-section hud-drawer-card">
+                      <div className="hud-drawer-card-header">
+                        <span className="hud-sec-label">
+                          ⛰️ SEUS TERRENOS ({gameState.player.channeledCards.length})
+                        </span>
+                        <span className="hud-inline-btn crypt-btn">
+                          🪦 Cripta ({gameState.player.crypt.length})
+                        </span>
+                      </div>
+
+                      <div className="hud-lands-showcase">
+                        <div className="mtg-lands-stack">
+                          {gameState.player.channeledCards.slice(-6).map((c, i) => (
+                            <div
+                              key={`pl-land-${i}`}
+                              className={`mtg-land-card domain-${c.domain}`}
+                              style={{ marginLeft: i === 0 ? 0 : '-10px', zIndex: i + 1 }}
+                              onMouseEnter={() => handleHoverCard(c)}
+                              onMouseLeave={() => handleHoverCard(null)}
+                              title={c.name}
+                            >
+                              {c.imagePath ? <img src={c.imagePath} alt={c.name} /> : null}
+                              <span className="mtg-land-domain-pip">
+                                {DOMAIN_META[c.domain]?.icon}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="hud-affinities-footer">
+                        <span className="hud-aff-kicker">AFINIDADES:</span>
+                        {renderAffinityCounters(gameState.player.affinities)}
+                      </div>
+                    </div>
+
+                    <div className="hud-dropdown-section hud-drawer-card">
+                      {(() => {
+                        const spec = getDomainExpansionSpec(domExpCheck.domain);
+                        const aff = Math.min(6, domExpCheck.affinity);
+                        const isReady = domExpCheck.affinity >= 6;
+                        return (
+                          <>
+                            <div className="hud-drawer-card-header">
+                              <span className="hud-sec-label">⛩️ EXPANSÃO DE DOMÍNIO</span>
+                              <span
+                                className={`hud-domain-status-chip domain-${spec.domain} ${
+                                  isReady ? 'is-ready' : ''
+                                }`}
+                              >
+                                {domExpCheck.affinity}/6 AFINIDADE • 3⚡
+                              </span>
+                            </div>
+
+                            <div className="hud-domain-pips-track" aria-hidden="true">
+                              {[1, 2, 3, 4, 5, 6].map((pip) => (
+                                <span
+                                  key={pip}
+                                  className={`hud-domain-pip domain-${spec.domain} ${
+                                    pip <= aff ? 'is-filled' : ''
+                                  }`}
+                                />
+                              ))}
+                            </div>
+
+                            <div
+                              onClick={() => {
+                                setIsAutoPlaying(false);
+                                setSubPhase('impact');
+                              }}
+                              style={{ cursor: 'pointer' }}
+                              className={`hud-sanctuary-card domain-${spec.domain} ${
+                                isReady ? 'is-ready' : 'is-locked'
+                              }`}
+                            >
+                              <div className="hud-sanctuary-emblem">{spec.icon}</div>
+                              <div className="hud-sanctuary-body">
+                                <div className="hud-sanctuary-title">
+                                  {spec.name}
+                                  {domExpCheck.allowed && (
+                                    <span className="hud-sanctuary-invoke-cta">
+                                      INVOCAR AGORA (3⚡)
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="hud-sanctuary-desc">{spec.potencyDesc}</div>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+
+                  {gameState.domainExpansion && (
+                    <div className="hud-dropdown-env-row">
+                      <div className="hud-env-inline-box domain">
+                        <strong>
+                          {gameState.domainExpansion.icon} {gameState.domainExpansion.name} (
+                          {gameState.domainExpansion.turnsRemaining}t):
+                        </strong>{' '}
+                        <span>
+                          {gameState.domainExpansion.potencyDesc} •{' '}
+                          {gameState.domainExpansion.sureHitDesc}
+                        </span>
+                      </div>
+                    </div>
                   )}
                 </div>
-                <span className="hud-pill-name player">{scenario.p1Name}</span>
-                <span className="hud-pill-stat hp">❤️ {boardState.p1Hp}</span>
+
+                {feedbackMap['player-sovereign'] && (
+                  <div
+                    className={`floating-feedback-pill color-${feedbackMap['player-sovereign'].color}`}
+                  >
+                    {feedbackMap['player-sovereign'].text}
+                  </div>
+                )}
+
+                <div
+                  className="hud-mini-avatar player"
+                  onClick={() => onInspectCard(playerAvatarCard)}
+                >
+                  {playerAvatarCard?.imagePath ? (
+                    <img src={playerAvatarCard.imagePath} alt={gameState.player.name} />
+                  ) : (
+                    <span>👑</span>
+                  )}
+                </div>
+
+                <span className="hud-pill-name player">{gameState.player.name}</span>
+                <span className="hud-pill-stat hp">❤️ {gameState.player.hp}</span>
                 <span className="hud-pill-stat mana">
-                  ⚡ {boardState.p1Essence}/{boardState.p1MaxEssence}
+                  ⚡ {gameState.player.currentEssence}/{gameState.player.maxEssence}
                 </span>
-                <span className="hud-pill-stat deck">📚 84 • 🪦 4</span>
+                <span className="hud-pill-stat deck">
+                  📚 {gameState.player.deck.length} • 🪦 {gameState.player.crypt.length}
+                </span>
 
                 <div className="hud-p1-rituals">
-                  <button type="button" className="hud-ritual-chip" onClick={handleEnterArena}>
+                  <button
+                    type="button"
+                    className="hud-ritual-chip"
+                    disabled={!canPwr}
+                    onClick={handleEnterArena}
+                  >
                     🔥 2⚡
                   </button>
-                  <button type="button" className="hud-ritual-chip" onClick={handleEnterArena}>
+                  <button
+                    type="button"
+                    className="hud-ritual-chip"
+                    disabled={!canBlood}
+                    onClick={handleEnterArena}
+                  >
                     🩸 +1⚡
                   </button>
                   <button
                     type="button"
-                    className="hud-ritual-chip ready"
+                    className={`hud-ritual-chip ${domExpCheck.allowed ? 'ready' : ''}`}
+                    disabled={!domExpCheck.allowed}
                     onClick={() => {
                       setIsAutoPlaying(false);
                       setSubPhase('impact');
                     }}
                   >
-                    ⛩️ 6/6
+                    ⛩️ {domExpCheck.affinity}/6
                   </button>
                 </div>
 
-                {subPhase === 'impact' && boardState.p1Feedback && (
-                  <div
-                    className={`floating-feedback-pill color-${boardState.p1Feedback.color}`}
-                    style={{ top: '-28px' }}
-                  >
-                    {boardState.p1Feedback.text}
-                  </div>
-                )}
+                <button
+                  type="button"
+                  className={`hud-pill-expand-btn ${isP1DrawerPinned ? 'active' : ''}`}
+                  style={{ width: 'auto', padding: '0 6px', gap: '3px', fontWeight: 800 }}
+                  onClick={() =>
+                    setIsP1DrawerPinned((prev) => {
+                      const next = !prev;
+                      if (next) setIsP2DrawerPinned(false);
+                      return next;
+                    })
+                  }
+                >
+                  {isP1DrawerPinned ? '▾ Ocultar' : '▴ Terrenos'}
+                </button>
               </div>
 
               <div className="hud-strip-divider" />
 
+              {/* Center Segment: Hand Drawer Handle (Exact BattleArena.tsx text & classes) */}
               <button
                 type="button"
-                className={`hud-hand-trigger-btn ${subPhase === 'hand' ? 'active' : ''}`}
+                className={`hud-hand-trigger-btn ${isHandPinnedOpen ? 'active' : ''}`}
                 onClick={() => {
                   setIsAutoPlaying(false);
                   setSubPhase(subPhase === 'hand' ? 'dock' : 'hand');
                 }}
               >
-                🃏 MÃO ({handCards.length}) {subPhase === 'hand' ? '▼' : '▲'}
+                🃏 MÃO ({gameState.player.hand.length}){' '}
+                {isHandPinnedOpen ? '▾ Ocultar' : '▴ Mostrar'}
               </button>
 
               <div className="hud-strip-divider" />
 
+              {/* Right Segment: Phase Action & Gear Menu (Exact BattleArena.tsx) */}
               <div className="hud-phase-segment">
                 <span className="hud-round-chip hud-turn-timer-chip">
-                  <span>T6 • ⚔️ COMBATE</span>
+                  <span>T{gameState.turn}</span>
                   <span className="hud-timer-sep">•</span>
                   <span className="hud-timer-val">⏱️ 48s</span>
                 </span>
 
+                {isPlayerTurn && readyPlayerUnits.length > 0 && (
+                  <button
+                    type="button"
+                    className="hud-action-cta attack-all"
+                    disabled={Boolean(combatAnim)}
+                    onClick={() => {
+                      setIsAutoPlaying(false);
+                      setSubPhase('impact');
+                    }}
+                  >
+                    ⚔️ ATACAR ({readyPlayerUnits.length})
+                  </button>
+                )}
+
                 <button
                   type="button"
-                  className="hud-action-cta attack-all"
-                  onClick={() => {
-                    setIsAutoPlaying(false);
-                    setSubPhase('impact');
-                  }}
+                  className="hud-action-cta primary"
+                  onClick={handleNextStep}
                 >
-                  ⚔️ ATACAR
+                  ⏭️ PASSAR TURNO<span className="hide-on-mobile"> [ESPAÇO]</span>
                 </button>
+
                 <button
                   type="button"
-                  className="hud-action-cta primary combat"
+                  className="hud-action-cta hide-on-mobile"
+                  style={{
+                    background: 'rgba(127, 29, 29, 0.72)',
+                    borderColor: 'rgba(248, 113, 113, 0.5)',
+                    color: '#fecaca',
+                    padding: '0 0.65rem',
+                  }}
+                  title="Entrar na Arena e jogar sua própria partida"
                   onClick={handleEnterArena}
                 >
-                  ⚔️ JOGAR AGORA
+                  ⚔️ JOGAR 1×1 / ARENA
                 </button>
               </div>
             </div>
           </footer>
+        </div>
 
-          {/* ===================================================================
-              4. AUTHENTIC PLAYER 1 HAND FAN ('hand') OR SELECTED CARD COMMAND DOCK ('dock')
-                 (Anchored directly inside .sim-authentic-fullscreen-stage so it is NEVER clipped!)
-              =================================================================== */}
-          <div className="mtg-bottom-zone floating-bottom-hud sim-anchored-bottom-hud">
-            {subPhase === 'dock' && selectedHandCard ? (
-              <div
-                className={`selected-card-command-dock domain-dock-${selectedHandCard.domain}`}
-              >
-                <div className="sccd-top-row">
-                  <div
-                    className="sccd-card-chip"
-                    onClick={() => onInspectCard(selectedHandCard)}
-                  >
-                    <div className="sccd-thumb-wrap">
-                      <span className="sccd-cost">{selectedHandCard.cost}</span>
-                      {selectedHandCard.imagePath && (
-                        <img
-                          src={selectedHandCard.imagePath}
-                          alt={selectedHandCard.name}
-                          className="sccd-thumb"
-                        />
-                      )}
-                      <span className="sccd-zoom-badge" title="Toque para ampliar a carta">
-                        🔍
-                      </span>
-                    </div>
-                    <div className="sccd-meta">
-                      <span className="sccd-name">{selectedHandCard.name}</span>
-                      <div className="sccd-stats-pills-row">
-                        <span
-                          className="sccd-stat-pill domain-pill"
-                          style={{
-                            borderColor: DOMAIN_META[selectedHandCard.domain]?.color,
-                            color: DOMAIN_META[selectedHandCard.domain]?.color,
-                          }}
-                        >
-                          {DOMAIN_META[selectedHandCard.domain]?.icon}{' '}
-                          {DOMAIN_META[selectedHandCard.domain]?.shortName}
-                          {selectedHandCard.affinityReq > 0
-                            ? ` • Afin. ${selectedHandCard.affinityReq}`
-                            : ''}
-                        </span>
-                        <span className="sccd-stat-pill type-pill">
-                          {CARD_TYPE_LABELS[selectedHandCard.type]}
-                          {selectedHandCard.subtype ? ` • ${selectedHandCard.subtype}` : ''}
-                        </span>
-                        {(selectedHandCard.type === 'creature' ||
-                          selectedHandCard.type === 'relic') && (
-                          <>
-                            {selectedHandCard.type === 'creature' && (
-                              <span className="sccd-stat-pill atk-pill">
-                                ⚔️ {selectedHandCard.atk} ATQ
-                              </span>
-                            )}
-                            {selectedHandCard.armor > 0 && (
-                              <span className="sccd-stat-pill arm-pill">
-                                🛡️ {selectedHandCard.armor} ARM
-                              </span>
-                            )}
-                            <span className="sccd-stat-pill hp-pill">
-                              ❤️ {selectedHandCard.hp} PV
-                            </span>
-                          </>
+        {/* =========================================================
+            4. BOTTOM CENTER HAND DRAWER OR SELECTED CARD COMMAND DOCK
+               (Sibling of .arena-fullscreen-stage inside .arena-main-column, 100% identical to BattleArena.tsx!)
+            ========================================================= */}
+        {(() => {
+          const anyHudPopoverOpen = isP1DrawerPinned || isP2DrawerPinned;
+          const isHandExpanded =
+            !anyHudPopoverOpen && selectedHandIndex === null && isHandPinnedOpen;
+          const activeHandCard =
+            !anyHudPopoverOpen && selectedHandIndex !== null
+              ? (gameState.player.hand[selectedHandIndex] ?? null)
+              : null;
+          const activePlayCheck = activeHandCard
+            ? canPlayCard(gameState, 'player', activeHandCard)
+            : { allowed: false };
+          const activeBoardUnitId =
+            !anyHudPopoverOpen && selectedHandIndex === null && !isHandPinnedOpen
+              ? (selectedAttackerId ?? focusedBoardUnitId)
+              : null;
+          const activeBoardUnitFound = activeBoardUnitId
+            ? findUnitOnBoard(gameState, activeBoardUnitId)
+            : null;
+          const activeBoardUnit =
+            activeBoardUnitFound && !activeBoardUnitFound.unit.isTrap
+              ? activeBoardUnitFound.unit
+              : null;
+          const activeBoardUnitOwner = activeBoardUnitFound?.owner ?? null;
+
+          return (
+            <div className="mtg-bottom-zone floating-bottom-hud">
+              {activeHandCard && selectedHandIndex !== null ? (
+                <div
+                  className={`selected-card-command-dock domain-dock-${activeHandCard.domain} ${
+                    isCommandDockMinimized ? 'is-minimized' : ''
+                  }`}
+                >
+                  <div className="sccd-top-row">
+                    <div
+                      className="sccd-card-chip"
+                      onMouseEnter={() => handleHoverCard(activeHandCard)}
+                      onMouseLeave={() => handleHoverCard(null)}
+                      onClick={() => onInspectCard(activeHandCard)}
+                    >
+                      <div className="sccd-thumb-wrap">
+                        <span className="sccd-cost">{activeHandCard.cost}</span>
+                        {activeHandCard.imagePath && (
+                          <img
+                            src={activeHandCard.imagePath}
+                            alt={activeHandCard.name}
+                            className="sccd-thumb"
+                          />
                         )}
+                        <span className="sccd-zoom-badge" title="Toque para ampliar a carta">
+                          🔍
+                        </span>
+                      </div>
+                      <div className="sccd-meta">
+                        <span className="sccd-name">{activeHandCard.name}</span>
+                        <div className="sccd-stats-pills-row">
+                          <span
+                            className="sccd-stat-pill domain-pill"
+                            style={{
+                              borderColor: DOMAIN_META[activeHandCard.domain]?.color,
+                              color: DOMAIN_META[activeHandCard.domain]?.color,
+                            }}
+                          >
+                            {DOMAIN_META[activeHandCard.domain]?.icon}{' '}
+                            {DOMAIN_META[activeHandCard.domain]?.shortName}
+                            {activeHandCard.affinityReq > 0
+                              ? ` • Afin. ${activeHandCard.affinityReq}`
+                              : ''}
+                          </span>
+                          <span className="sccd-stat-pill type-pill">
+                            {CARD_TYPE_LABELS[activeHandCard.type]}
+                            {activeHandCard.subtype ? ` • ${activeHandCard.subtype}` : ''}
+                          </span>
+                          {(activeHandCard.type === 'creature' ||
+                            activeHandCard.type === 'relic') && (
+                            <>
+                              {activeHandCard.type === 'creature' && (
+                                <span className="sccd-stat-pill atk-pill">
+                                  ⚔️ {activeHandCard.atk} ATQ
+                                </span>
+                              )}
+                              {activeHandCard.armor > 0 && (
+                                <span className="sccd-stat-pill arm-pill">
+                                  🛡️ {activeHandCard.armor} ARM
+                                </span>
+                              )}
+                              <span className="sccd-stat-pill hp-pill">
+                                ❤️ {activeHandCard.hp} PV
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="sccd-header-controls">
-                    <button
-                      type="button"
-                      className="sccd-toggle-btn"
-                      onClick={() => onInspectCard(selectedHandCard)}
-                    >
-                      🔍 Ampliar Carta
-                    </button>
-                    <button
-                      type="button"
-                      className="sccd-toggle-btn"
-                      onClick={() => {
-                        setIsAutoPlaying(false);
-                        setSubPhase('hand');
-                      }}
-                    >
-                      🃏 Voltar à Mão ({handCards.length})
-                    </button>
-                    <button
-                      type="button"
-                      className="sccd-toggle-btn"
-                      onClick={() => {
-                        setIsAutoPlaying(false);
-                        setSubPhase('impact');
-                      }}
-                    >
-                      💥 Executar Jogada
-                    </button>
-                  </div>
-                </div>
-
-                <div className="sccd-readable-card-box">
-                  {selectedHandCard.keywords.length > 0 && (
-                    <div className="sccd-keywords-row">
-                      {selectedHandCard.keywords.map((kw) => (
-                        <span key={kw} className="sccd-kw-badge">
-                          <strong>✦ {kw}:</strong> {KEYWORD_TOOLTIPS[kw]}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <p className="sccd-description-text">{selectedHandCard.description}</p>
-                  {selectedHandCard.ascension && (
-                    <div className="sccd-ascension-line">
-                      <strong>👑 Ascensão ({selectedHandCard.ascension.cost}⚡):</strong> Evolui
-                      para <em>{selectedHandCard.ascension.newName}</em> (
-                      {selectedHandCard.ascension.newAtk}⚔️ /{' '}
-                      {selectedHandCard.ascension.newArmor}🛡️ /{' '}
-                      {selectedHandCard.ascension.newMaxHp}❤️)
-                    </div>
-                  )}
-                  <div className="sccd-play-status-line is-ready">{step.dockStatusText}</div>
-                </div>
-
-                <div className="sccd-actions">
-                  <button
-                    type="button"
-                    className={`quick-act-btn ${
-                      step.dockActionType === 'vanguard'
-                        ? 'act-vanguard'
-                        : step.dockActionType === 'rearguard'
-                        ? 'act-rearguard'
-                        : step.dockActionType === 'domain'
-                        ? 'act-channel'
-                        : 'act-spell'
-                    } sim-dock-chosen-cta`}
-                    onClick={() => {
-                      setIsAutoPlaying(false);
-                      setSubPhase('impact');
-                    }}
-                  >
-                    👆 {step.dockActionLabel}
-                  </button>
-                  <button
-                    type="button"
-                    className="quick-act-btn act-channel"
-                    onClick={() => {
-                      setIsAutoPlaying(false);
-                      setSubPhase('impact');
-                    }}
-                  >
-                    Canalizar (+1 Afin. & Compra) [C]
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div
-                className={`mtg-hand-drawer ${
-                  subPhase === 'hand' ? 'is-expanded' : 'is-collapsed'
-                }`}
-              >
-                <div className="hand-drawer-handle-bar">
-                  <button
-                    type="button"
-                    className="hand-drawer-toggle-btn is-pinned"
-                    onClick={() => {
-                      setIsAutoPlaying(false);
-                      setSubPhase(subPhase === 'hand' ? 'dock' : 'hand');
-                    }}
-                  >
-                    🃏 MÃO DO JOGADOR 1 ({handCards.length}) • 👆 ESCOLHENDO:{' '}
-                    {selectedHandCard?.name.toUpperCase()}
-                  </button>
-                </div>
-
-                <div className="mtg-hand-fan">
-                  {handCards.map((card, idx) => {
-                    const isSelected = idx === step.selectedHandIndex;
-                    const total = handCards.length;
-                    const mid = (total - 1) / 2;
-                    const offsetIdx = idx - mid;
-                    const rotDeg = isSelected ? 0 : offsetIdx * 2.4;
-                    const liftY = isSelected ? -28 : Math.abs(offsetIdx) * 3;
-
-                    return (
-                      <div
-                        key={`${card.id}-sim-hand-${idx}`}
-                        className={`mtg-hand-card-slot ${isSelected ? 'is-selected-slot' : ''}`}
-                        style={{
-                          transform: `translateY(${liftY}px) rotate(${rotDeg}deg)`,
-                          zIndex: isSelected ? 65 : idx + 10,
-                          marginLeft: idx === 0 ? '0px' : '-22px',
+                    <div className="sccd-header-controls">
+                      <button
+                        type="button"
+                        className="sccd-toggle-btn"
+                        onClick={() => onInspectCard(activeHandCard)}
+                      >
+                        🔍 Ampliar
+                      </button>
+                      <button
+                        type="button"
+                        className="sccd-toggle-btn"
+                        onClick={() => setIsCommandDockMinimized((prev) => !prev)}
+                      >
+                        {isCommandDockMinimized ? '▲ Ler Texto' : '▼ Compactar'}
+                      </button>
+                      <button
+                        type="button"
+                        className="sccd-toggle-btn"
+                        onClick={() => {
+                          setIsAutoPlaying(false);
+                          setSubPhase('hand');
                         }}
                       >
-                        {isSelected && (
-                          <div className="sim-hand-selected-pointer">
-                            👆 ESCOLHENDO ESTA CARTA
+                        🃏 Mão ({gameState.player.hand.length})
+                      </button>
+                      <button
+                        type="button"
+                        className="sccd-cancel-btn"
+                        onClick={() => {
+                          setIsAutoPlaying(false);
+                          setSubPhase('hand');
+                        }}
+                      >
+                        ✕ Fechar
+                      </button>
+                    </div>
+                  </div>
+
+                  {!isCommandDockMinimized && (
+                    <>
+                      <div className="sccd-readable-card-box">
+                        {activeHandCard.keywords.length > 0 && (
+                          <div className="sccd-keywords-row">
+                            {activeHandCard.keywords.map((kw) => (
+                              <span
+                                key={kw}
+                                className="sccd-kw-badge"
+                                title={KEYWORD_TOOLTIPS[kw] || kw}
+                              >
+                                <strong>✦ {kw}:</strong> {KEYWORD_TOOLTIPS[kw]}
+                              </span>
+                            ))}
                           </div>
                         )}
-                        <CardView
-                          card={card}
-                          mode="hand"
-                          isPlayable={true}
-                          isSelected={isSelected}
-                          onInspect={onInspectCard}
-                          onClick={() => {
-                            setIsAutoPlaying(false);
-                            setSubPhase('dock');
-                          }}
-                        />
+                        <p className="sccd-description-text">{activeHandCard.description}</p>
+                        {activeHandCard.ascension && (
+                          <div className="sccd-ascension-line">
+                            <strong>👑 Ascensão ({activeHandCard.ascension.cost}⚡):</strong>{' '}
+                            Evolui para <em>{activeHandCard.ascension.newName}</em> (
+                            {activeHandCard.ascension.newAtk}⚔️ /{' '}
+                            {activeHandCard.ascension.newArmor}🛡️ /{' '}
+                            {activeHandCard.ascension.newMaxHp}❤️)
+                          </div>
+                        )}
+                        <div className="sccd-play-status-line is-ready">
+                          ✅ Pronta para jogar: Toque diretamente em uma casa do tabuleiro acima ou
+                          use os botões rápidos abaixo!
+                        </div>
                       </div>
-                    );
-                  })}
+
+                      <div className="sccd-actions">
+                        {isPlayerTurn &&
+                          activePlayCheck.allowed &&
+                          activeHandCard.type === 'creature' && (
+                            <>
+                              {hasEmptyVanguard && (
+                                <button
+                                  type="button"
+                                  className="quick-act-btn act-vanguard"
+                                  onClick={() => {
+                                    setIsAutoPlaying(false);
+                                    setSubPhase('impact');
+                                  }}
+                                >
+                                  + Vanguarda<span className="hide-on-mobile"> [V]</span>
+                                </button>
+                              )}
+                              {hasEmptyRearguard && (
+                                <button
+                                  type="button"
+                                  className="quick-act-btn act-rearguard"
+                                  onClick={() => {
+                                    setIsAutoPlaying(false);
+                                    setSubPhase('impact');
+                                  }}
+                                >
+                                  + Retaguarda<span className="hide-on-mobile"> [R]</span>
+                                </button>
+                              )}
+                            </>
+                          )}
+
+                        {isPlayerTurn &&
+                          activePlayCheck.allowed &&
+                          activeHandCard.type === 'relic' &&
+                          hasEmptyRearguard && (
+                            <button
+                              type="button"
+                              className="quick-act-btn act-rearguard"
+                              onClick={() => {
+                                setIsAutoPlaying(false);
+                                setSubPhase('impact');
+                              }}
+                            >
+                              + Posicionar Relíquia<span className="hide-on-mobile"> [R]</span>
+                            </button>
+                          )}
+
+                        {isPlayerTurn &&
+                          activePlayCheck.allowed &&
+                          (activeHandCard.type === 'spell' ||
+                            activeHandCard.type === 'reaction') && (
+                            <button
+                              type="button"
+                              className="quick-act-btn act-spell"
+                              onClick={() => {
+                                setIsAutoPlaying(false);
+                                setSubPhase('impact');
+                              }}
+                            >
+                              Lançar Agora
+                            </button>
+                          )}
+
+                        {isPlayerTurn && !gameState.player.hasChanneledThisTurn && (
+                          <button
+                            type="button"
+                            className="quick-act-btn act-channel"
+                            onClick={() => {
+                              setIsAutoPlaying(false);
+                              setSubPhase('impact');
+                            }}
+                          >
+                            Canalizar (+1 Afin. & Compra)<span className="hide-on-mobile"> [C]</span>
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
+              ) : activeBoardUnit ? (
+                <div
+                  className={`selected-card-command-dock domain-dock-${activeBoardUnit.card.domain} ${
+                    isCommandDockMinimized ? 'is-minimized' : ''
+                  }`}
+                >
+                  <div className="sccd-top-row">
+                    <div
+                      className="sccd-card-chip"
+                      onClick={() => onInspectCard(activeBoardUnit.card)}
+                    >
+                      <div className="sccd-thumb-wrap">
+                        <span className="sccd-cost">{activeBoardUnit.card.cost}</span>
+                        {activeBoardUnit.card.imagePath && (
+                          <img
+                            src={activeBoardUnit.card.imagePath}
+                            alt={activeBoardUnit.card.name}
+                            className="sccd-thumb"
+                          />
+                        )}
+                        <span className="sccd-zoom-badge">🔍</span>
+                      </div>
+                      <div className="sccd-meta">
+                        <span className="sccd-name">
+                          {activeBoardUnit.card.name}{' '}
+                          <small style={{ color: '#94a3b8', fontWeight: 600 }}>
+                            ({activeBoardUnitOwner === 'player' ? 'Aliado' : 'Inimigo'} •{' '}
+                            {activeBoardUnit.row === 'vanguard' ? 'Vanguarda' : 'Retaguarda'})
+                          </small>
+                        </span>
+                        <div className="sccd-stats-pills-row">
+                          <span className="sccd-stat-pill atk-pill">
+                            ⚔️ {activeBoardUnit.currentAtk} ATQ
+                          </span>
+                          {activeBoardUnit.currentArmor > 0 && (
+                            <span className="sccd-stat-pill arm-pill">
+                              🛡️ {activeBoardUnit.currentArmor} ARM
+                            </span>
+                          )}
+                          <span className="sccd-stat-pill hp-pill">
+                            ❤️ {activeBoardUnit.currentHp}/{activeBoardUnit.maxHp} PV
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="sccd-header-controls">
+                      <button
+                        type="button"
+                        className="sccd-toggle-btn"
+                        onClick={() => onInspectCard(activeBoardUnit.card)}
+                      >
+                        🔍 Ampliar
+                      </button>
+                      <button
+                        type="button"
+                        className="sccd-toggle-btn"
+                        onClick={() => setIsCommandDockMinimized((prev) => !prev)}
+                      >
+                        {isCommandDockMinimized ? '▲ Ler Texto' : '▼ Compactar'}
+                      </button>
+                      <button
+                        type="button"
+                        className="sccd-cancel-btn"
+                        onClick={() => {
+                          setIsAutoPlaying(false);
+                          setSubPhase('hand');
+                        }}
+                      >
+                        ✕ Fechar
+                      </button>
+                    </div>
+                  </div>
+
+                  {!isCommandDockMinimized && (
+                    <>
+                      <div className="sccd-readable-card-box">
+                        {activeBoardUnit.keywords.length > 0 && (
+                          <div className="sccd-keywords-row">
+                            {activeBoardUnit.keywords.map((kw) => (
+                              <span key={kw} className="sccd-kw-badge">
+                                <strong>✦ {kw}:</strong> {KEYWORD_TOOLTIPS[kw]}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                        <p className="sccd-description-text">
+                          {activeBoardUnit.card.description}
+                        </p>
+                        {activeBoardUnitOwner === 'player' && (
+                          <div
+                            className={`sccd-play-status-line ${
+                              selectedAttackerId === activeBoardUnit.instanceId
+                                ? 'is-ready'
+                                : 'is-warn'
+                            }`}
+                          >
+                            {selectedAttackerId === activeBoardUnit.instanceId
+                              ? '⚔️ Atacante Selecionado: Toque em uma unidade inimiga ou no Soberano rival no topo para atacar!'
+                              : '👑 Unidade Selecionada: Escolha Ascender ou mover de fileira abaixo!'}
+                          </div>
+                        )}
+                      </div>
+
+                      {activeBoardUnitOwner === 'player' && isPlayerTurn && (
+                        <div className="sccd-actions" style={{ flexWrap: 'wrap' }}>
+                          {(() => {
+                            const unitTargets = getValidAttackTargets(
+                              gameState,
+                              activeBoardUnit.instanceId,
+                            );
+                            const canHitSovereign = unitTargets.includes('ai-sovereign');
+                            const targetableEnemies = getAllBoardUnits(gameState.ai).filter((eu) =>
+                              unitTargets.includes(eu.instanceId),
+                            );
+                            return (
+                              <>
+                                {canHitSovereign && (
+                                  <button
+                                    type="button"
+                                    className="quick-act-btn act-vanguard"
+                                    onClick={() => {
+                                      setIsAutoPlaying(false);
+                                      setSubPhase('impact');
+                                    }}
+                                  >
+                                    {isSureHitActiveFor(gameState, 'player') ? '⛩️ ' : '👑 '}
+                                    Atacar Soberano ({gameState.ai.name} • ❤️ {gameState.ai.hp})
+                                  </button>
+                                )}
+                                {targetableEnemies.map((eu) => (
+                                  <button
+                                    key={`unit-atk-tgt-${eu.instanceId}`}
+                                    type="button"
+                                    className="quick-act-btn act-burn"
+                                    onClick={() => {
+                                      setIsAutoPlaying(false);
+                                      setSubPhase('impact');
+                                    }}
+                                  >
+                                    ⚔️ Atacar {eu.card.name} (C{eu.slotIndex + 1} • {eu.currentAtk}/
+                                    {eu.currentHp})
+                                  </button>
+                                ))}
+                              </>
+                            );
+                          })()}
+                          {canAscendUnit(gameState, 'player', activeBoardUnit.instanceId) && (
+                            <button
+                              type="button"
+                              className="quick-act-btn act-spell"
+                              onClick={() => {
+                                setIsAutoPlaying(false);
+                                setSubPhase('impact');
+                              }}
+                            >
+                              👑 Ascender ({activeBoardUnit.card.ascension?.cost}⚡)
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className={`mtg-hand-drawer ${
+                    isHandExpanded ? 'is-expanded' : 'is-collapsed'
+                  }`}
+                >
+                  <div className="hand-drawer-handle-bar">
+                    <button
+                      type="button"
+                      className={`hand-drawer-toggle-btn ${isHandPinnedOpen ? 'is-pinned' : ''}`}
+                      onClick={() => {
+                        setIsAutoPlaying(false);
+                        setSubPhase(subPhase === 'hand' ? 'dock' : 'hand');
+                      }}
+                    >
+                      {isHandExpanded
+                        ? `🃏 SUA MÃO (${gameState.player.hand.length}) • ▼ OCULTAR MÃO (VER TABULEIRO)`
+                        : `🃏 MÃO (${gameState.player.hand.length}) ▲`}
+                    </button>
+                  </div>
+
+                  <div className="mtg-hand-fan">
+                    {gameState.player.hand.length === 0 ? (
+                      <div className="mtg-empty-hand-msg">
+                        Mão vazia — passe o turno para comprar.
+                      </div>
+                    ) : (
+                      gameState.player.hand.map((card, idx) => {
+                        const playCheck = canPlayCard(gameState, 'player', card);
+                        const isHoveredInSim = simHoveredHandIdx === idx;
+                        const total = gameState.player.hand.length;
+                        const mid = (total - 1) / 2;
+                        const offsetIdx = idx - mid;
+                        const rotDeg = offsetIdx * 2.2;
+                        const liftY = Math.abs(offsetIdx) * 2.5;
+
+                        return (
+                          <div
+                            key={`${card.id}-hand-${idx}`}
+                            className={`mtg-hand-card-slot ${
+                              isHoveredInSim ? 'is-hovered-slot' : ''
+                            }`}
+                            style={{
+                              transform: `translateY(${liftY}px) rotate(${rotDeg}deg)`,
+                              zIndex: idx + 10,
+                              marginLeft:
+                                idx === 0
+                                  ? '0px'
+                                  : total >= 10
+                                  ? '-68px'
+                                  : total >= 7
+                                  ? '-52px'
+                                  : '-28px',
+                            }}
+                          >
+                            <CardView
+                              card={card}
+                              mode="hand"
+                              isPlayable={isPlayerTurn && playCheck.allowed}
+                              isSelected={false}
+                              canChannel={isPlayerTurn && !gameState.player.hasChanneledThisTurn}
+                              onClick={() => {
+                                setIsAutoPlaying(false);
+                                setSubPhase('dock');
+                              }}
+                              onInspect={onInspectCard}
+                              onHoverCard={handleHoverCard}
+                            />
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

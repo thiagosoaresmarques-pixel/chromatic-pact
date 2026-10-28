@@ -3165,7 +3165,8 @@ html, body, #root {
 }
 
 .mtg-hand-card-slot:hover,
-.mtg-hand-card-slot.is-selected-slot {
+.mtg-hand-card-slot.is-selected-slot,
+.mtg-hand-card-slot.is-hovered-slot {
   top: -16px;
   transform: translateY(0) rotate(0deg) scale(1.09) !important;
   z-index: 140 !important;
@@ -9239,7 +9240,8 @@ html, body, #root {
 
 .mtg-hand-drawer.is-expanded .hand-drawer-handle-bar {
   display: flex !important;
-  margin-bottom: 4px !important;
+  margin-bottom: 18px !important;
+  z-index: 155 !important;
   pointer-events: auto !important;
 }
 
@@ -13031,166 +13033,109 @@ input:focus-visible,
 .home-simulated-arena .sim-authentic-arena-table {
   position: relative;
   width: 100%;
+  min-height: 650px;
+  height: 650px;
   border-radius: 10px;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .home-simulated-arena .sim-authentic-fullscreen-stage {
   position: relative;
-  height: 640px;
-  min-height: 640px;
-  max-height: 640px;
+  flex: 1;
+  height: 100%;
+  min-height: 646px;
+  max-height: 646px;
   width: 100%;
   overflow: hidden;
   border-radius: 10px;
 }
 
-.home-simulated-arena .sim-anchored-bottom-hud {
-  position: absolute !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  height: 0 !important;
-  margin-top: 0 !important;
-  overflow: visible !important;
-  z-index: 255 !important;
+.home-simulated-arena .mtg-bottom-zone.floating-bottom-hud {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 70px;
+  margin-top: -70px;
+  z-index: 260 !important;
   pointer-events: none !important;
 }
 
 .home-simulated-arena .spectacle-herald-banner {
   position: absolute !important;
-  top: 40px !important;
+  top: 42px !important;
   left: 50% !important;
-  z-index: 185 !important;
+  z-index: 240 !important;
   max-width: 92%;
 }
 
-.home-simulated-arena .sim-slot-centered-fx {
+.home-simulated-arena .sim-authentic-fullscreen-stage .aiming-trajectory-overlay {
   position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 195 !important;
+  pointer-events: none !important;
+}
+
+.home-simulated-arena .sim-authentic-fullscreen-stage .combat-projectile-beam {
+  position: absolute !important;
+  z-index: 230 !important;
+}
+
+.home-simulated-arena .sim-authentic-fullscreen-stage .combat-impact-fx {
+  position: absolute !important;
+  z-index: 220 !important;
+}
+
+.home-simulated-arena .sim-authentic-fullscreen-stage .spectacle-target-burst {
+  position: absolute !important;
+  z-index: 235 !important;
+}
+
+.home-simulated-arena .sim-authentic-fullscreen-stage .legendary-entrance-backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 180 !important;
+  pointer-events: none !important;
+}
+
+.home-simulated-arena .sim-authentic-fullscreen-stage .tactical-combat-preview-hud {
+  position: absolute !important;
+  top: 42px !important;
   left: 50% !important;
-  top: 50% !important;
-  z-index: 165 !important;
+  transform: translateX(-50%) !important;
+  z-index: 210 !important;
+  min-width: min(92%, 440px) !important;
+  max-width: min(95%, 590px) !important;
 }
 
-.home-simulated-arena .selected-card-command-dock {
-  width: min(96%, 920px);
-  max-width: min(96%, 920px);
-  bottom: 44px !important;
+.home-simulated-arena .sim-authentic-fullscreen-stage .mtg-hover-zoom-panel {
+  position: absolute !important;
+  top: 42px !important;
+  left: 14px !important;
+  z-index: 205 !important;
 }
 
-.home-simulated-arena .mtg-hand-drawer.is-expanded {
-  max-width: 96%;
-  bottom: 40px !important;
+.home-simulated-arena .sim-authentic-fullscreen-stage .sovereign-finisher-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 320 !important;
+  border-radius: 10px;
 }
 
-/* 3D Card Flight & Slam from Player 1's Hand onto the Board Slot */
-.sim-card-flight-slam {
-  animation: simCardFlightFromHand 0.68s cubic-bezier(0.2, 0.9, 0.3, 1.12) both !important;
-}
-
-@keyframes simCardFlightFromHand {
-  0% {
-    opacity: 0;
-    transform: perspective(700px) translateY(155px) scale(1.42) rotateX(28deg);
-    filter: drop-shadow(0 28px 36px rgba(250, 204, 21, 0.95)) brightness(1.65);
+@media (min-width: 769px) {
+  .home-simulated-arena .selected-card-command-dock {
+    width: min(96%, 940px);
+    max-width: min(96%, 940px);
+    bottom: 44px !important;
   }
-  65% {
-    opacity: 1;
-    transform: perspective(700px) translateY(-6px) scale(0.95) rotateX(0deg);
-    filter: drop-shadow(0 12px 20px rgba(250, 204, 21, 0.7)) brightness(1.15);
+
+  .home-simulated-arena .mtg-hand-drawer.is-expanded {
+    max-width: calc(100% - 80px);
+    bottom: 36px !important;
   }
-  100% {
-    opacity: 1;
-    transform: perspective(700px) translateY(0px) scale(1) rotateX(0deg);
-  }
-}
-
-.sim-domain-active-ribbon {
-  position: absolute;
-  top: 36px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 25;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 3px 12px;
-  border-radius: 999px;
-  background: rgba(10, 14, 24, 0.88);
-  border: 1px solid rgba(250, 204, 21, 0.55);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
-  font-size: 0.64rem;
-  color: #e2e8f0;
-  white-space: nowrap;
-  max-width: 94%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
-}
-
-.sim-domain-active-ribbon strong {
-  font-family: var(--font-display);
-  color: #fef08a;
-}
-
-.sim-hand-selected-pointer {
-  position: absolute;
-  top: -26px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 160;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #eab308, #d97706);
-  border: 1.5px solid #fef9c3;
-  color: #090b10;
-  font-family: var(--font-display);
-  font-size: 0.58rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.9), 0 0 14px rgba(250, 204, 21, 0.85);
-  animation: simPointerBounce 0.75s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-
-.sim-board-target-indicator {
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 95;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #0284c7, #0369a1);
-  border: 1px solid #bae6fd;
-  color: #ffffff;
-  font-family: var(--font-display);
-  font-size: 0.52rem;
-  font-weight: 900;
-  white-space: nowrap;
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.85);
-  pointer-events: none;
-}
-
-.sim-dock-chosen-cta {
-  box-shadow: 0 0 18px rgba(250, 204, 21, 0.85) !important;
-  border: 1.5px solid #fef08a !important;
-  animation: simPointerBounce 0.8s ease-in-out infinite alternate;
-}
-
-@keyframes simPointerBounce {
-  from {
-    transform: translateX(-50%) translateY(0px) scale(1);
-  }
-  to {
-    transform: translateX(-50%) translateY(-4px) scale(1.05);
-  }
-}
-
-.sim-dock-chosen-cta {
-  animation: timerUrgentPulse 0.65s infinite alternate;
 }
 
 @media (max-width: 768px) {
@@ -13200,8 +13145,10 @@ input:focus-visible,
   }
 
   .home-simulated-arena .sim-authentic-arena-table {
+    height: auto !important;
     min-height: 0 !important;
     padding: 2px 0 4px !important;
+    overflow: visible !important;
   }
 
   .home-simulated-arena .sim-authentic-fullscreen-stage {
@@ -13211,30 +13158,18 @@ input:focus-visible,
     overflow: visible !important;
   }
 
-  .home-simulated-arena .sim-anchored-bottom-hud {
+  .home-simulated-arena .mtg-bottom-zone.floating-bottom-hud {
     position: relative !important;
     bottom: auto !important;
     left: auto !important;
     right: auto !important;
     height: auto !important;
-    margin-top: 4px !important;
+    margin-top: 2px !important;
     pointer-events: auto !important;
   }
 
-  .home-simulated-arena .mtg-slot {
-    width: calc((100% - 18px) / 6) !important;
-    max-width: 60px !important;
-    height: 76px !important;
-  }
-
-  .home-simulated-arena .card-frame.mode-board.mtg-board-token {
-    width: 100% !important;
-    max-width: 58px !important;
-    height: 74px !important;
-  }
-
-  .sim-domain-active-ribbon {
-    display: none;
+  .home-simulated-arena .sim-authentic-fullscreen-stage .mtg-hover-zoom-panel {
+    display: none !important;
   }
 
   .home-simulated-arena .spectacle-herald-banner {

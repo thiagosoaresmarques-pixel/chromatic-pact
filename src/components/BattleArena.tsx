@@ -3145,39 +3145,397 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         </div>
       )}
 
-      {/* FLOATING HOVER CARD ZOOM PANEL */}
-      {hoveredCardInfo && (
-        <div className="mtg-hover-zoom-panel">
-          <CardView
-            card={hoveredCardInfo.card}
-            unit={hoveredCardInfo.unit}
-            mode="inspect"
-          />
-          {hoveredCardInfo.unit && (
-            <div className="mtg-hover-unit-status">
-              <div style={{ fontWeight: 700, color: '#e2e8f0', marginBottom: '2px' }}>
-                Posição: {hoveredCardInfo.unit.row === 'vanguard' ? 'Vanguarda (Frente)' : 'Retaguarda (Suporte)'} • Coluna {hoveredCardInfo.unit.slotIndex + 1}
-              </div>
-              {hoveredCardInfo.unit.invasionAtkBonus ? (
-                <div style={{ color: '#fdba74' }}>• Invasão de Território: +1 ATQ ativo</div>
-              ) : null}
-              {hoveredCardInfo.unit.formationAtkBonus ? (
-                <div style={{ color: '#fef08a' }}>• Cobertura de Coluna: +1 ATQ ativo</div>
-              ) : null}
-              {hoveredCardInfo.unit.formationArmorBonus ? (
-                <div style={{ color: '#fde68a' }}>• Formação em Falange: +1 Armadura ativa</div>
-              ) : null}
-              {hoveredCardInfo.card.ascension && !hoveredCardInfo.unit.isAscended && (
-                <div style={{ color: '#fbbf24', marginTop: '3px' }}>
-                  • Ascensão ({hoveredCardInfo.card.ascension.cost} Essência): Evolui para{' '}
-                  <strong>{hoveredCardInfo.card.ascension.newName}</strong> (
-                  {hoveredCardInfo.card.ascension.newAtk}/{hoveredCardInfo.card.ascension.newMaxHp})
-                </div>
-              )}
+      {/* RIGHT-SIDE MAXIMIZED CARD PREVIEW & ACTION PANEL (Never covers Vanguarda or Retaguarda on the board!) */}
+      {(() => {
+        const anyHudPopoverOpen =
+          isP1DrawerPinned || isP2DrawerPinned || activeRightDrawer !== null;
+        const activeHandCard =
+          !anyHudPopoverOpen && selectedHandIndex !== null
+            ? gameState.player.hand[selectedHandIndex] ?? null
+            : null;
+        const activePlayCheck = activeHandCard
+          ? canPlayCard(gameState, 'player', activeHandCard)
+          : { allowed: false, reason: '' };
+        const activeBoardUnitId =
+          !anyHudPopoverOpen &&
+          selectedHandIndex === null &&
+          !isHandPinnedOpen &&
+          !isHandHovered
+            ? selectedAttackerId ?? focusedBoardUnitId
+            : null;
+        const activeBoardUnitFound = activeBoardUnitId
+          ? findUnitOnBoard(gameState, activeBoardUnitId)
+          : null;
+        const activeBoardUnit =
+          activeBoardUnitFound && !activeBoardUnitFound.unit.isTrap
+            ? activeBoardUnitFound.unit
+            : null;
+        const activeBoardUnitOwner = activeBoardUnitFound?.owner ?? null;
+
+        const sideCardInfo = hoveredCardInfo
+          ? hoveredCardInfo
+          : activeHandCard
+          ? { card: activeHandCard }
+          : activeBoardUnit
+          ? { card: activeBoardUnit.card, unit: activeBoardUnit }
+          : null;
+
+        if (!sideCardInfo) return null;
+
+        const isInteractiveSelection = Boolean(
+          (activeHandCard && selectedHandIndex !== null) || activeBoardUnit
+        );
+
+        return (
+          <div
+            className={`mtg-hover-zoom-panel ${
+              isInteractiveSelection ? 'is-interactive-selection' : ''
+            }`}
+          >
+            <div className="side-zoom-card-wrap">
+              <CardView
+                card={sideCardInfo.card}
+                unit={sideCardInfo.unit}
+                mode="inspect"
+              />
             </div>
-          )}
-        </div>
-      )}
+
+            {sideCardInfo.unit && !activeHandCard && (
+              <div className="mtg-hover-unit-status">
+                <div style={{ fontWeight: 700, color: '#e2e8f0', marginBottom: '2px' }}>
+                  Posição:{' '}
+                  {sideCardInfo.unit.row === 'vanguard'
+                    ? 'Vanguarda (Frente)'
+                    : 'Retaguarda (Suporte)'}{' '}
+                  • Coluna {sideCardInfo.unit.slotIndex + 1}
+                </div>
+                {sideCardInfo.unit.invasionAtkBonus ? (
+                  <div style={{ color: '#fdba74' }}>• Invasão de Território: +1 ATQ ativo</div>
+                ) : null}
+                {sideCardInfo.unit.formationAtkBonus ? (
+                  <div style={{ color: '#fef08a' }}>• Cobertura de Coluna: +1 ATQ ativo</div>
+                ) : null}
+                {sideCardInfo.unit.formationArmorBonus ? (
+                  <div style={{ color: '#fde68a' }}>• Formação em Falange: +1 Armadura ativa</div>
+                ) : null}
+                {sideCardInfo.card.ascension && !sideCardInfo.unit.isAscended && (
+                  <div style={{ color: '#fbbf24', marginTop: '3px' }}>
+                    • Ascensão ({sideCardInfo.card.ascension.cost} Essência): Evolui para{' '}
+                    <strong>{sideCardInfo.card.ascension.newName}</strong> (
+                    {sideCardInfo.card.ascension.newAtk}/{sideCardInfo.card.ascension.newMaxHp})
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Selected Hand Card Actions + Direct Column 1..6 Selector on the Right Side */}
+            {activeHandCard && selectedHandIndex !== null && (
+              <div className="side-card-command-box">
+                <div className="side-cmd-header">
+                  <span className="side-cmd-title">
+                    {DOMAIN_META[activeHandCard.domain]?.icon} {activeHandCard.name} (
+                    {CARD_TYPE_LABELS[activeHandCard.type]})
+                  </span>
+                  <div className="side-cmd-top-btns">
+                    <button
+                      type="button"
+                      className="sccd-toggle-btn show-on-mobile-inline"
+                      onClick={() => setInspectCard(activeHandCard)}
+                    >
+                      🔍 Ler
+                    </button>
+                    <button
+                      type="button"
+                      className="sccd-toggle-btn"
+                      onClick={() => {
+                        setSelectedHandIndex(null);
+                        setIsHandPinnedOpen(true);
+                      }}
+                    >
+                      🃏 Mão
+                    </button>
+                    <button
+                      type="button"
+                      className="sccd-cancel-btn"
+                      onClick={() => clearHandSelectionAndDrawers()}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  className={`side-cmd-status ${
+                    isPlayerTurn && activePlayCheck.allowed ? 'is-ready' : 'is-warn'
+                  }`}
+                >
+                  {!isPlayerTurn
+                    ? '⏳ Aguarde seu turno.'
+                    : activePlayCheck.allowed
+                    ? activeHandCard.type === 'creature'
+                      ? '✅ Clique direto na Coluna (1 a 6) na mesa ou escolha abaixo:'
+                      : activeHandCard.type === 'relic'
+                      ? '✅ Clique direto na Retaguarda (Col 1 a 6) na mesa ou abaixo:'
+                      : '✅ Pronta para usar:'
+                    : `⚠️ ${
+                        activePlayCheck.reason || 'Essência/Afinidade insuficiente'
+                      } (${KEYWORD_TOOLTIPS[activeHandCard.keywords[0]] ? activeHandCard.keywords[0] : 'use Canalizar/Sacrificar abaixo'})`}
+                </div>
+
+                {isPlayerTurn &&
+                  activePlayCheck.allowed &&
+                  activeHandCard.type === 'creature' && (
+                    <div className="side-col-picker-group">
+                      {hasEmptyVanguard && (
+                        <div className="side-col-picker-row">
+                          <span className="side-col-row-label vanguard">⚔️ Vanguarda:</span>
+                          <div className="side-col-btns">
+                            {[0, 1, 2, 3, 4, 5].map((colIdx) => {
+                              const canCol = canDeployToSlot(
+                                gameState.player,
+                                'vanguard',
+                                colIdx
+                              );
+                              return (
+                                <button
+                                  key={`side-van-${colIdx}`}
+                                  type="button"
+                                  disabled={!canCol}
+                                  className="side-col-btn vanguard"
+                                  onClick={() => handleDeployToPlayerSlot('vanguard', colIdx)}
+                                  title={`Jogar na Vanguarda • Coluna ${colIdx + 1}`}
+                                >
+                                  C{colIdx + 1}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      {hasEmptyRearguard && (
+                        <div className="side-col-picker-row">
+                          <span className="side-col-row-label rearguard">🛡️ Retaguarda:</span>
+                          <div className="side-col-btns">
+                            {[0, 1, 2, 3, 4, 5].map((colIdx) => {
+                              const canCol = canDeployToSlot(
+                                gameState.player,
+                                'rearguard',
+                                colIdx
+                              );
+                              return (
+                                <button
+                                  key={`side-rear-${colIdx}`}
+                                  type="button"
+                                  disabled={!canCol}
+                                  className="side-col-btn rearguard"
+                                  onClick={() => handleDeployToPlayerSlot('rearguard', colIdx)}
+                                  title={`Jogar na Retaguarda • Coluna ${colIdx + 1}`}
+                                >
+                                  C{colIdx + 1}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                {isPlayerTurn &&
+                  activePlayCheck.allowed &&
+                  activeHandCard.type === 'relic' &&
+                  hasEmptyRearguard && (
+                    <div className="side-col-picker-group">
+                      <div className="side-col-picker-row">
+                        <span className="side-col-row-label rearguard">🏺 Retaguarda:</span>
+                        <div className="side-col-btns">
+                          {[0, 1, 2, 3, 4, 5].map((colIdx) => {
+                            const canCol = canDeployToSlot(
+                              gameState.player,
+                              'rearguard',
+                              colIdx
+                            );
+                            return (
+                              <button
+                                key={`side-relic-${colIdx}`}
+                                type="button"
+                                disabled={!canCol}
+                                className="side-col-btn rearguard"
+                                onClick={() => handleDeployToPlayerSlot('rearguard', colIdx)}
+                              >
+                                C{colIdx + 1}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                {isPlayerTurn &&
+                  activePlayCheck.allowed &&
+                  activeHandCard.type === 'reaction' &&
+                  hasEmptyRearguard && (
+                    <div className="side-col-picker-group">
+                      <div className="side-col-picker-row">
+                        <span className="side-col-row-label rearguard">🪤 Emboscada:</span>
+                        <div className="side-col-btns">
+                          {[0, 1, 2, 3, 4, 5].map((colIdx) => {
+                            const canCol = canDeployToSlot(
+                              gameState.player,
+                              'rearguard',
+                              colIdx
+                            );
+                            return (
+                              <button
+                                key={`side-trap-${colIdx}`}
+                                type="button"
+                                disabled={!canCol}
+                                className="side-col-btn rearguard"
+                                onClick={() => handleQuickArmTrap(selectedHandIndex, colIdx)}
+                              >
+                                C{colIdx + 1}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                <div className="side-cmd-actions">
+                  {isPlayerTurn &&
+                    activePlayCheck.allowed &&
+                    (activeHandCard.type === 'spell' ||
+                      activeHandCard.type === 'reaction') && (
+                      <button
+                        type="button"
+                        className="quick-act-btn act-spell"
+                        onClick={() => handleQuickCastSpell(selectedHandIndex)}
+                      >
+                        ✨ Lançar Agora
+                      </button>
+                    )}
+
+                  {isPlayerTurn && !gameState.player.hasChanneledThisTurn && (
+                    <button
+                      type="button"
+                      className="quick-act-btn act-channel"
+                      onClick={() => handleQuickChannelCard(selectedHandIndex)}
+                    >
+                      ⛰️ Canalizar (+1 Afin. & Compra) [C]
+                    </button>
+                  )}
+
+                  {isPlayerTurn && gameState.player.hasChanneledThisTurn && (
+                    <button
+                      type="button"
+                      className="quick-act-btn act-burn"
+                      onClick={() => handleQuickBurnCard(selectedHandIndex)}
+                    >
+                      🔥 Sacrificar (+1 Essência) [C]
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Selected Board Unit Actions on the Right Side */}
+            {activeBoardUnit && !activeHandCard && (
+              <div className="side-card-command-box">
+                <div className="side-cmd-header">
+                  <span className="side-cmd-title">
+                    {activeBoardUnit.card.name} (C{activeBoardUnit.slotIndex + 1})
+                  </span>
+                  <button
+                    type="button"
+                    className="sccd-cancel-btn"
+                    onClick={() => {
+                      setSelectedAttackerId(null);
+                      setFocusedBoardUnitId(null);
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {activeBoardUnitOwner === 'player' && isPlayerTurn && (
+                  <div className="side-cmd-actions">
+                    {(() => {
+                      const unitTargets = getValidAttackTargets(
+                        gameState,
+                        activeBoardUnit.instanceId
+                      );
+                      const canHitSovereign = unitTargets.includes('ai-sovereign');
+                      const targetableEnemies = getAllBoardUnits(gameState.ai).filter((eu) =>
+                        unitTargets.includes(eu.instanceId)
+                      );
+                      return (
+                        <>
+                          {canHitSovereign && (
+                            <button
+                              type="button"
+                              className="quick-act-btn act-vanguard"
+                              onClick={() =>
+                                handleExecuteUnitAttackOnTarget(
+                                  activeBoardUnit,
+                                  'ai-sovereign'
+                                )
+                              }
+                              onMouseEnter={() => setHoveredAttackTargetId('ai-sovereign')}
+                              onMouseLeave={() => setHoveredAttackTargetId(null)}
+                            >
+                              {isSureHitActiveFor(gameState, 'player') ? '⛩️ ' : '👑 '}
+                              Atacar Soberano (❤️ {gameState.ai.hp})
+                            </button>
+                          )}
+                          {targetableEnemies.map((eu) => (
+                            <button
+                              key={`unit-atk-tgt-${eu.instanceId}`}
+                              type="button"
+                              className="quick-act-btn act-burn"
+                              onClick={() =>
+                                handleExecuteUnitAttackOnTarget(
+                                  activeBoardUnit,
+                                  eu.instanceId
+                                )
+                              }
+                              onMouseEnter={() => setHoveredAttackTargetId(eu.instanceId)}
+                              onMouseLeave={() => setHoveredAttackTargetId(null)}
+                            >
+                              ⚔️ Atacar {eu.card.name} (C{eu.slotIndex + 1} • {eu.currentAtk}/
+                              {eu.currentHp})
+                            </button>
+                          ))}
+                        </>
+                      );
+                    })()}
+                    {canAscendUnit(gameState, 'player', activeBoardUnit.instanceId) && (
+                      <button
+                        type="button"
+                        className="quick-act-btn act-spell"
+                        onClick={() => handleAscendFriendlyUnit(activeBoardUnit)}
+                      >
+                        👑 Ascender ({activeBoardUnit.card.ascension?.cost}⚡)
+                      </button>
+                    )}
+                    {canMoveUnitRow(gameState, 'player', activeBoardUnit.instanceId) && (
+                      <button
+                        type="button"
+                        className="quick-act-btn act-rearguard"
+                        onClick={() => handleMoveFriendlyUnitRow(activeBoardUnit)}
+                      >
+                        ⇅ Mover para{' '}
+                        {activeBoardUnit.row === 'vanguard' ? 'Retaguarda' : 'Vanguarda'}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       <div
         className={`arena-main-column mtg-arena-table ${
@@ -3803,7 +4161,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               })}
                             </div>
                           ) : canStackHere ? (
-                            <span className="mtg-slot-watermark">+ Vanguarda (1/{MAX_UNITS_PER_SLOT})</span>
+                            <span className="mtg-slot-watermark">
+                              + Vanguarda • Col {idx + 1}
+                            </span>
                           ) : null}
                         </div>
                       );
@@ -4014,10 +4374,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           ) : canStackHere ? (
                             <span className="mtg-slot-watermark">
                               {canDeployTrap
-                                ? '+ Emboscada'
+                                ? `+ Emboscada • Col ${idx + 1}`
                                 : hasColumnCover
-                                ? '+ Retaguarda (+1 ATQ)'
-                                : '+ Retaguarda'}
+                                ? `+ Retaguarda • Col ${idx + 1} (+1 ATQ)`
+                                : `+ Retaguarda • Col ${idx + 1}`}
                             </span>
                           ) : hasColumnCover ? (
                             <span
@@ -4624,7 +4984,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         })()}
 
         {/* =========================================================
-            BOTTOM CENTER HAND DRAWER (Unobstructed — Left & Right HUDs live in the lateral wings!)
+            BOTTOM CENTER HAND DRAWER (Unobstructed — Selected Card & Actions live in the Right Panel!)
             ========================================================= */}
         {(() => {
           const anyHudPopoverOpen =
@@ -4633,480 +4993,34 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             !anyHudPopoverOpen &&
             selectedHandIndex === null &&
             (isHandPinnedOpen || isHandHovered);
-          const activeHandCard =
-            !anyHudPopoverOpen && selectedHandIndex !== null
-              ? gameState.player.hand[selectedHandIndex]
-              : null;
-          const activePlayCheck =
-            activeHandCard ? canPlayCard(gameState, 'player', activeHandCard) : { allowed: false };
-          const activeBoardUnitId =
-            !anyHudPopoverOpen &&
-            selectedHandIndex === null &&
-            !isHandPinnedOpen &&
-            !isHandHovered
-              ? selectedAttackerId ?? focusedBoardUnitId
-              : null;
-          const activeBoardUnitFound = activeBoardUnitId
-            ? findUnitOnBoard(gameState, activeBoardUnitId)
-            : null;
-          const activeBoardUnit =
-            activeBoardUnitFound && !activeBoardUnitFound.unit.isTrap
-              ? activeBoardUnitFound.unit
-              : null;
-          const activeBoardUnitOwner = activeBoardUnitFound?.owner ?? null;
 
           return (
             <div className="mtg-bottom-zone floating-bottom-hud">
-              {/* Center: Auto-Retracting Fanned Player Hand Drawer OR Full Readable Selected Card Command Bar */}
-              {activeHandCard && selectedHandIndex !== null ? (
-                <div
-                  className={`selected-card-command-dock domain-dock-${activeHandCard.domain} ${
-                    isCommandDockMinimized ? 'is-minimized' : ''
-                  }`}
-                >
-                  <div className="sccd-top-row">
-                    <div
-                      className="sccd-card-chip"
-                      onMouseEnter={() => handleHoverCard(activeHandCard)}
-                      onMouseLeave={() => handleHoverCard(null)}
-                      onClick={() => setInspectCard(activeHandCard)}
-                    >
-                      <div className="sccd-thumb-wrap">
-                        <span className="sccd-cost">{activeHandCard.cost}</span>
-                        {activeHandCard.imagePath && (
-                          <img
-                            src={activeHandCard.imagePath}
-                            alt={activeHandCard.name}
-                            className="sccd-thumb"
-                          />
-                        )}
-                        <span className="sccd-zoom-badge" title="Toque para ampliar a carta">
-                          🔍
-                        </span>
-                      </div>
-                      <div className="sccd-meta">
-                        <span className="sccd-name">{activeHandCard.name}</span>
-                        <div className="sccd-stats-pills-row">
-                          <span
-                            className="sccd-stat-pill domain-pill"
-                            style={{
-                              borderColor: DOMAIN_META[activeHandCard.domain]?.color,
-                              color: DOMAIN_META[activeHandCard.domain]?.color,
-                            }}
-                          >
-                            {DOMAIN_META[activeHandCard.domain]?.icon}{' '}
-                            {DOMAIN_META[activeHandCard.domain]?.shortName}
-                            {activeHandCard.affinityReq > 0
-                              ? ` • Afin. ${activeHandCard.affinityReq}`
-                              : ''}
-                          </span>
-                          <span className="sccd-stat-pill type-pill">
-                            {CARD_TYPE_LABELS[activeHandCard.type]}
-                            {activeHandCard.subtype ? ` • ${activeHandCard.subtype}` : ''}
-                          </span>
-                          {(activeHandCard.type === 'creature' ||
-                            activeHandCard.type === 'relic') && (
-                            <>
-                              {activeHandCard.type === 'creature' && (
-                                <span className="sccd-stat-pill atk-pill">
-                                  ⚔️ {activeHandCard.atk} ATQ
-                                </span>
-                              )}
-                              {activeHandCard.armor > 0 && (
-                                <span className="sccd-stat-pill arm-pill">
-                                  🛡️ {activeHandCard.armor} ARM
-                                </span>
-                              )}
-                              <span className="sccd-stat-pill hp-pill">
-                                ❤️ {activeHandCard.hp} PV
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="sccd-header-controls">
-                      <button
-                        type="button"
-                        className="sccd-toggle-btn"
-                        onClick={() => setInspectCard(activeHandCard)}
-                      >
-                        🔍 Ampliar
-                      </button>
-                      <button
-                        type="button"
-                        className="sccd-toggle-btn"
-                        onClick={() => setIsCommandDockMinimized((prev) => !prev)}
-                      >
-                        {isCommandDockMinimized ? '▲ Ler Texto' : '▼ Compactar'}
-                      </button>
-                      <button
-                        type="button"
-                        className="sccd-toggle-btn"
-                        onClick={() => {
-                          setSelectedHandIndex(null);
-                          setIsCommandDockMinimized(false);
-                          setIsHandPinnedOpen(true);
-                        }}
-                      >
-                        🃏 Mão ({gameState.player.hand.length})
-                      </button>
-                      <button
-                        type="button"
-                        className="sccd-cancel-btn"
-                        onClick={() => clearHandSelectionAndDrawers()}
-                      >
-                        ✕ Fechar
-                      </button>
-                    </div>
-                  </div>
-
-                  {!isCommandDockMinimized && (
-                    <>
-                      <div className="sccd-readable-card-box">
-                        {activeHandCard.keywords.length > 0 && (
-                          <div className="sccd-keywords-row">
-                            {activeHandCard.keywords.map((kw) => (
-                              <span
-                                key={kw}
-                                className="sccd-kw-badge"
-                                title={KEYWORD_TOOLTIPS[kw] || kw}
-                              >
-                                <strong>✦ {kw}:</strong> {KEYWORD_TOOLTIPS[kw]}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <p className="sccd-description-text">{activeHandCard.description}</p>
-                        {activeHandCard.ascension && (
-                          <div className="sccd-ascension-line">
-                            <strong>👑 Ascensão ({activeHandCard.ascension.cost}⚡):</strong>{' '}
-                            Evolui para <em>{activeHandCard.ascension.newName}</em> (
-                            {activeHandCard.ascension.newAtk}⚔️ /{' '}
-                            {activeHandCard.ascension.newArmor}🛡️ /{' '}
-                            {activeHandCard.ascension.newMaxHp}❤️
-                            {activeHandCard.ascension.addedKeywords.length > 0
-                              ? ` • +${activeHandCard.ascension.addedKeywords.join(', ')}`
-                              : ''}
-                            )
-                          </div>
-                        )}
-                        <div
-                          className={`sccd-play-status-line ${
-                            isPlayerTurn && activePlayCheck.allowed ? 'is-ready' : 'is-warn'
-                          }`}
-                        >
-                          {!isPlayerTurn
-                            ? '⏳ Turno do Oponente — aguarde seu turno para jogar esta carta.'
-                            : activePlayCheck.allowed
-                            ? '✅ Pronta para jogar: Toque diretamente em uma casa do tabuleiro acima ou use os botões rápidos abaixo!'
-                            : `⚠️ ${
-                                activePlayCheck.reason ||
-                                'Essência ou Afinidade insuficiente para invocar agora'
-                              } — você ainda pode Canalizar ou Sacrificar esta carta abaixo!`}
-                        </div>
-                      </div>
-
-                      <div className="sccd-actions">
-                        {isPlayerTurn &&
-                          activePlayCheck.allowed &&
-                          activeHandCard.type === 'creature' && (
-                            <>
-                              {hasEmptyVanguard && (
-                                <button
-                                  type="button"
-                                  className="quick-act-btn act-vanguard"
-                                  onClick={() =>
-                                    handleQuickDeployToRow(selectedHandIndex, 'vanguard')
-                                  }
-                                >
-                                  + Vanguarda<span className="hide-on-mobile"> [V]</span>
-                                </button>
-                              )}
-                              {hasEmptyRearguard && (
-                                <button
-                                  type="button"
-                                  className="quick-act-btn act-rearguard"
-                                  onClick={() =>
-                                    handleQuickDeployToRow(selectedHandIndex, 'rearguard')
-                                  }
-                                >
-                                  + Retaguarda<span className="hide-on-mobile"> [R]</span>
-                                </button>
-                              )}
-                            </>
-                          )}
-
-                        {isPlayerTurn &&
-                          activePlayCheck.allowed &&
-                          activeHandCard.type === 'relic' &&
-                          hasEmptyRearguard && (
-                            <button
-                              type="button"
-                              className="quick-act-btn act-rearguard"
-                              onClick={() =>
-                                handleQuickDeployToRow(selectedHandIndex, 'rearguard')
-                              }
-                            >
-                              + Posicionar Relíquia<span className="hide-on-mobile"> [R]</span>
-                            </button>
-                          )}
-
-                        {isPlayerTurn &&
-                          activePlayCheck.allowed &&
-                          (activeHandCard.type === 'spell' ||
-                            activeHandCard.type === 'reaction') && (
-                            <button
-                              type="button"
-                              className="quick-act-btn act-spell"
-                              onClick={() => handleQuickCastSpell(selectedHandIndex)}
-                            >
-                              Lançar Agora
-                            </button>
-                          )}
-
-                        {isPlayerTurn &&
-                          activePlayCheck.allowed &&
-                          activeHandCard.type === 'reaction' &&
-                          hasEmptyRearguard && (
-                            <button
-                              type="button"
-                              className="quick-act-btn act-rearguard"
-                              onClick={() => handleQuickArmTrap(selectedHandIndex)}
-                            >
-                              Armar Emboscada<span className="hide-on-mobile"> [R]</span>
-                            </button>
-                          )}
-
-                        {isPlayerTurn && !gameState.player.hasChanneledThisTurn && (
-                          <button
-                            type="button"
-                            className="quick-act-btn act-channel"
-                            onClick={() => handleQuickChannelCard(selectedHandIndex)}
-                          >
-                            Canalizar (+1 Afin. & Compra)<span className="hide-on-mobile"> [C]</span>
-                          </button>
-                        )}
-
-                        {isPlayerTurn && gameState.player.hasChanneledThisTurn && (
-                          <button
-                            type="button"
-                            className="quick-act-btn act-burn"
-                            onClick={() => handleQuickBurnCard(selectedHandIndex)}
-                          >
-                            Sacrificar (+1 Essência)<span className="hide-on-mobile"> [C]</span>
-                          </button>
-                        )}
-                      </div>
-                    </>
-                  )}
+              <div
+                className={`mtg-hand-drawer ${
+                  isHandExpanded ? 'is-expanded' : 'is-collapsed'
+                }`}
+                onMouseEnter={() => {
+                  if (isDesktopHoverDevice() && selectedHandIndex === null) {
+                    setIsHandHovered(true);
+                  }
+                }}
+                onMouseLeave={() => setIsHandHovered(false)}
+              >
+                <div className="hand-drawer-handle-bar">
+                  <button
+                    type="button"
+                    className={`hand-drawer-toggle-btn ${isHandPinnedOpen ? 'is-pinned' : ''}`}
+                    onClick={() => {
+                      setIsHandPinnedOpen(false);
+                      setIsHandHovered(false);
+                    }}
+                  >
+                    {isHandExpanded
+                      ? `🃏 SUA MÃO (${gameState.player.hand.length}) • ▼ OCULTAR MÃO (VER TABULEIRO)`
+                      : `🃏 MÃO (${gameState.player.hand.length}) ▲`}
+                  </button>
                 </div>
-              ) : activeBoardUnit ? (
-                <div
-                  className={`selected-card-command-dock domain-dock-${activeBoardUnit.card.domain} ${
-                    isCommandDockMinimized ? 'is-minimized' : ''
-                  }`}
-                >
-                  <div className="sccd-top-row">
-                    <div
-                      className="sccd-card-chip"
-                      onClick={() => setInspectCard(activeBoardUnit.card)}
-                    >
-                      <div className="sccd-thumb-wrap">
-                        <span className="sccd-cost">{activeBoardUnit.card.cost}</span>
-                        {activeBoardUnit.card.imagePath && (
-                          <img
-                            src={activeBoardUnit.card.imagePath}
-                            alt={activeBoardUnit.card.name}
-                            className="sccd-thumb"
-                          />
-                        )}
-                        <span className="sccd-zoom-badge">🔍</span>
-                      </div>
-                      <div className="sccd-meta">
-                        <span className="sccd-name">
-                          {activeBoardUnit.card.name}{' '}
-                          <small style={{ color: '#94a3b8', fontWeight: 600 }}>
-                            ({activeBoardUnitOwner === 'player' ? 'Aliado' : 'Inimigo'} •{' '}
-                            {activeBoardUnit.row === 'vanguard' ? 'Vanguarda' : 'Retaguarda'})
-                          </small>
-                        </span>
-                        <div className="sccd-stats-pills-row">
-                          <span className="sccd-stat-pill atk-pill">
-                            ⚔️ {activeBoardUnit.currentAtk} ATQ
-                          </span>
-                          {activeBoardUnit.currentArmor > 0 && (
-                            <span className="sccd-stat-pill arm-pill">
-                              🛡️ {activeBoardUnit.currentArmor} ARM
-                            </span>
-                          )}
-                          <span className="sccd-stat-pill hp-pill">
-                            ❤️ {activeBoardUnit.currentHp}/{activeBoardUnit.maxHp} PV
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="sccd-header-controls">
-                      <button
-                        type="button"
-                        className="sccd-toggle-btn"
-                        onClick={() => setInspectCard(activeBoardUnit.card)}
-                      >
-                        🔍 Ampliar
-                      </button>
-                      <button
-                        type="button"
-                        className="sccd-toggle-btn"
-                        onClick={() => setIsCommandDockMinimized((prev) => !prev)}
-                      >
-                        {isCommandDockMinimized ? '▲ Ler Texto' : '▼ Compactar'}
-                      </button>
-                      <button
-                        type="button"
-                        className="sccd-cancel-btn"
-                        onClick={() => {
-                          setSelectedAttackerId(null);
-                          setFocusedBoardUnitId(null);
-                        }}
-                      >
-                        ✕ Fechar
-                      </button>
-                    </div>
-                  </div>
-
-                  {!isCommandDockMinimized && (
-                    <>
-                      <div className="sccd-readable-card-box">
-                        {activeBoardUnit.keywords.length > 0 && (
-                          <div className="sccd-keywords-row">
-                            {activeBoardUnit.keywords.map((kw) => (
-                              <span key={kw} className="sccd-kw-badge">
-                                <strong>✦ {kw}:</strong> {KEYWORD_TOOLTIPS[kw]}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <p className="sccd-description-text">
-                          {activeBoardUnit.card.description}
-                        </p>
-                        {activeBoardUnitOwner === 'player' && (
-                          <div
-                            className={`sccd-play-status-line ${
-                              selectedAttackerId === activeBoardUnit.instanceId
-                                ? 'is-ready'
-                                : 'is-warn'
-                            }`}
-                          >
-                            {selectedAttackerId === activeBoardUnit.instanceId
-                              ? '⚔️ Atacante Selecionado: Toque em uma unidade inimiga ou no Soberano rival no topo para atacar!'
-                              : activeBoardUnit.hasAttackedThisTurn
-                              ? '💤 Esta unidade já agiu neste turno.'
-                              : '💤 Recém-invocada (aguarda o próximo turno para atacar, salvo Ímpeto).'}
-                          </div>
-                        )}
-                      </div>
-
-                      {activeBoardUnitOwner === 'player' && isPlayerTurn && (
-                        <div className="sccd-actions" style={{ flexWrap: 'wrap' }}>
-                          {(() => {
-                            const unitTargets = getValidAttackTargets(
-                              gameState,
-                              activeBoardUnit.instanceId
-                            );
-                            const canHitSovereign = unitTargets.includes('ai-sovereign');
-                            const targetableEnemies = getAllBoardUnits(gameState.ai).filter((eu) =>
-                              unitTargets.includes(eu.instanceId)
-                            );
-                            return (
-                              <>
-                                {canHitSovereign && (
-                                  <button
-                                    type="button"
-                                    className="quick-act-btn act-vanguard"
-                                    onClick={() =>
-                                      handleExecuteUnitAttackOnTarget(
-                                        activeBoardUnit,
-                                        'ai-sovereign'
-                                      )
-                                    }
-                                    onMouseEnter={() => setHoveredAttackTargetId('ai-sovereign')}
-                                    onMouseLeave={() => setHoveredAttackTargetId(null)}
-                                  >
-                                    {isSureHitActiveFor(gameState, 'player') ? '⛩️ ' : '👑 '}
-                                    Atacar Soberano ({gameState.ai.name} • ❤️ {gameState.ai.hp})
-                                  </button>
-                                )}
-                                {targetableEnemies.map((eu) => (
-                                  <button
-                                    key={`unit-atk-tgt-${eu.instanceId}`}
-                                    type="button"
-                                    className="quick-act-btn act-burn"
-                                    onClick={() =>
-                                      handleExecuteUnitAttackOnTarget(
-                                        activeBoardUnit,
-                                        eu.instanceId
-                                      )
-                                    }
-                                    onMouseEnter={() => setHoveredAttackTargetId(eu.instanceId)}
-                                    onMouseLeave={() => setHoveredAttackTargetId(null)}
-                                  >
-                                    ⚔️ Atacar {eu.card.name} (C{eu.slotIndex + 1} • {eu.currentAtk}/
-                                    {eu.currentHp})
-                                  </button>
-                                ))}
-                              </>
-                            );
-                          })()}
-                          {canAscendUnit(gameState, 'player', activeBoardUnit.instanceId) && (
-                            <button
-                              type="button"
-                              className="quick-act-btn act-spell"
-                              onClick={() => handleAscendFriendlyUnit(activeBoardUnit)}
-                            >
-                              👑 Ascender ({activeBoardUnit.card.ascension?.cost}⚡)
-                            </button>
-                          )}
-                          {canMoveUnitRow(gameState, 'player', activeBoardUnit.instanceId) && (
-                            <button
-                              type="button"
-                              className="quick-act-btn act-rearguard"
-                              onClick={() => handleMoveFriendlyUnitRow(activeBoardUnit)}
-                            >
-                              ⇅ Mover para{' '}
-                              {activeBoardUnit.row === 'vanguard' ? 'Retaguarda' : 'Vanguarda'}
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div
-                  className={`mtg-hand-drawer ${
-                    isHandExpanded ? 'is-expanded' : 'is-collapsed'
-                  }`}
-                  onMouseEnter={() => {
-                    if (isDesktopHoverDevice()) setIsHandHovered(true);
-                  }}
-                  onMouseLeave={() => setIsHandHovered(false)}
-                >
-                  <div className="hand-drawer-handle-bar">
-                    <button
-                      type="button"
-                      className={`hand-drawer-toggle-btn ${isHandPinnedOpen ? 'is-pinned' : ''}`}
-                      onClick={() => {
-                        setIsHandPinnedOpen(false);
-                        setIsHandHovered(false);
-                      }}
-                    >
-                      {isHandExpanded
-                        ? `🃏 SUA MÃO (${gameState.player.hand.length}) • ▼ OCULTAR MÃO (VER TABULEIRO)`
-                        : `🃏 MÃO (${gameState.player.hand.length}) ▲`}
-                    </button>
-                  </div>
 
                   <div className="mtg-hand-fan">
                     {gameState.player.hand.length === 0 ? (
@@ -5165,8 +5079,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       })
                     )}
                   </div>
-                </div>
-              )}
+              </div>
             </div>
           );
         })()}

@@ -907,11 +907,17 @@ export function recalculateFormationBonuses(state: GameState): void {
         } else if (myExpandedDomain === 'purple') {
           u.domainExpansionAtkBonus = 2;
           u.currentAtk += 2;
+          if (!u.keywords.includes('Dreno de Vida')) {
+            u.keywords.push('Dreno de Vida');
+          }
         } else if (myExpandedDomain === 'green') {
           u.domainExpansionAtkBonus = 2;
           u.domainExpansionArmorBonus = 1;
           u.currentAtk += 2;
           u.currentArmor += 1;
+          if (!u.keywords.includes('Atropelar')) {
+            u.keywords.push('Atropelar');
+          }
         } else if (myExpandedDomain === 'gold') {
           u.domainExpansionAtkBonus = 1;
           u.domainExpansionArmorBonus = 2;
@@ -4199,27 +4205,39 @@ export function endTurn(state: GameState): GameState {
   }
   newActiveState.hasUsedSimpleDomainThisTurn = false;
 
-  if (next.domainExpansion && next.domainExpansion.owner === newActiveActor) {
-    next.domainExpansion.turnsRemaining -= 1;
-    next.domainExpansion.damageTakenByOwnerThisRound = 0;
-    next.domainExpansion.simpleDomainProtectedActor = null;
-    if (next.domainExpansion.turnsRemaining <= 0) {
-      const expiredName = next.domainExpansion.name;
-      next.domainExpansion = null;
-      newActiveState.domainExhaustionTurns = 2;
-      addLog(
-        next,
-        'system',
-        'turn',
-        `⛩️ A Expansão de Domínio [${expiredName}] de ${newActiveState.name} encerrou sua duração.`
-      );
-      recalculateFormationBonuses(next);
-    } else if (!next.domainExpansion.clashRival) {
-      applyDomainExpansionPulseEffects(
-        next,
-        next.domainExpansion.owner,
-        next.domainExpansion.domain
-      );
+  if (next.domainExpansion) {
+    if (next.domainExpansion.owner === endingActor) {
+      // O turno do dono da Expansão terminou: o Domínio Simples rival cumpriu sua proteção durante esta rodada!
+      next.domainExpansion.simpleDomainProtectedActor = null;
+    } else if (next.domainExpansion.owner === newActiveActor) {
+      next.domainExpansion.turnsRemaining -= 1;
+      next.domainExpansion.damageTakenByOwnerThisRound = 0;
+      if (next.domainExpansion.turnsRemaining <= 0) {
+        const expiredName = next.domainExpansion.name;
+        next.domainExpansion = null;
+        newActiveState.domainExhaustionTurns = 2;
+        addLog(
+          next,
+          'system',
+          'turn',
+          `⛩️ A Expansão de Domínio [${expiredName}] de ${newActiveState.name} encerrou sua duração.`
+        );
+        recalculateFormationBonuses(next);
+      } else if (isSureHitActiveFor(next, next.domainExpansion.owner)) {
+        applyDomainExpansionPulseEffects(
+          next,
+          next.domainExpansion.owner,
+          next.domainExpansion.domain
+        );
+      } else if (next.domainExpansion.simpleDomainProtectedActor === opposingActor) {
+        addFeedback(next, `${opposingActor}-sovereign`, '💠 Domínio Simples bloqueou pulso!', 'shield');
+        addLog(
+          next,
+          opposingActor,
+          'effect',
+          `💠 O [Domínio Simples] de ${opposingState.name} bloqueou o pulso e o Acerto Garantido de [${next.domainExpansion.name}] nesta rodada!`
+        );
+      }
     }
   }
 
@@ -5025,14 +5043,30 @@ export function resolveCombatPhaseAndAdvanceRound(
 
   // Domain Expansion start-of-round maintenance & pulse
   if (next.domainExpansion) {
-    next.domainExpansion.simpleDomainProtectedActor = null;
+    const domOwner = next.domainExpansion.owner;
+    const domOwnerState = next[domOwner];
+    next.domainExpansion.turnsRemaining -= 1;
     next.domainExpansion.damageTakenByOwnerThisRound = 0;
-    if (!next.domainExpansion.clashRival) {
-      applyDomainExpansionPulseEffects(
+    if (next.domainExpansion.turnsRemaining <= 0) {
+      const expiredName = next.domainExpansion.name;
+      next.domainExpansion = null;
+      domOwnerState.domainExhaustionTurns = 2;
+      addLog(
         next,
-        next.domainExpansion.owner,
-        next.domainExpansion.domain
+        'system',
+        'turn',
+        `⛩️ A Expansão de Domínio [${expiredName}] de ${domOwnerState.name} encerrou sua duração.`
       );
+      recalculateFormationBonuses(next);
+    } else {
+      if (isSureHitActiveFor(next, domOwner)) {
+        applyDomainExpansionPulseEffects(
+          next,
+          domOwner,
+          next.domainExpansion.domain
+        );
+      }
+      next.domainExpansion.simpleDomainProtectedActor = null;
     }
   }
 

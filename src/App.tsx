@@ -1087,7 +1087,7 @@ export const App: React.FC = () => {
                       setActiveTab('problems');
                     }}
                   >
-                    ♟️ PROBLEMAS (15 XEQUE-MATES)
+                    ♟️ PROBLEMAS (50 XEQUE-MATES)
                   </button>
                   <button
                     type="button"
@@ -1172,10 +1172,10 @@ export const App: React.FC = () => {
                   className="aaa-portal-bg-art"
                 />
                 <div className="aaa-portal-content">
-                  <span className="aaa-kicker">15 DESAFIOS • 5 GRAUS DE DIFICULDADE</span>
+                  <span className="aaa-kicker">50 DESAFIOS • 5 GRAUS DE DIFICULDADE</span>
                   <h3 className="font-cinzel">♟️ Problemas (Xeque-Mate)</h3>
                   <p>Encontre a única sequência indefensável que derrota o Soberano rival naquele exato turno.</p>
-                  <span className="aaa-portal-cta">Resolver Problemas (+990 🪙) →</span>
+                  <span className="aaa-portal-cta">Resolver Problemas (+270 🪙) →</span>
                 </div>
               </div>
 

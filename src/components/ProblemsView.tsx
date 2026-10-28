@@ -41,11 +41,11 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
 
   const tiers: { id: 'all' | ProblemDifficultyTier; label: string; count: number; stars?: string }[] = [
     { id: 'all', label: 'Todos os Problemas', count: TACTICAL_PROBLEMS.length },
-    { id: 'iniciante', label: 'Grau I • Iniciante', count: 3, stars: '★☆☆☆☆' },
-    { id: 'intermediario', label: 'Grau II • Intermediário', count: 3, stars: '★★☆☆☆' },
-    { id: 'avancado', label: 'Grau III • Avançado', count: 3, stars: '★★★☆☆' },
-    { id: 'mestre', label: 'Grau IV • Mestre', count: 3, stars: '★★★★☆' },
-    { id: 'grao_mestre', label: 'Grau V • Grão-Mestre', count: 3, stars: '★★★★★' },
+    { id: 'iniciante', label: 'Grau I • Iniciante (2🪙)', count: 10, stars: '★☆☆☆☆' },
+    { id: 'intermediario', label: 'Grau II • Intermediário (3🪙)', count: 10, stars: '★★☆☆☆' },
+    { id: 'avancado', label: 'Grau III • Avançado (5🪙)', count: 10, stars: '★★★☆☆' },
+    { id: 'mestre', label: 'Grau IV • Mestre (7🪙)', count: 10, stars: '★★★★☆' },
+    { id: 'grao_mestre', label: 'Grau V • Grão-Mestre (10🪙)', count: 10, stars: '★★★★★' },
   ];
 
   return (
@@ -104,7 +104,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem }) =
               textShadow: '0 2px 12px rgba(0,0,0,0.7)',
             }}
           >
-            15 Problemas de Letal Garantido em 1 Único Turno
+            {TACTICAL_PROBLEMS.length} Problemas de Letal Garantido em 1 Único Turno
           </h1>
           <p
             style={{

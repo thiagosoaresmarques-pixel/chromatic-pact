@@ -134,6 +134,7 @@ export const App: React.FC = () => {
   // Active Campaign / Expedition / Tactical Problem Match State
   const [activeCampaignBoss, setActiveCampaignBoss] = useState<CampaignBoss | null>(null);
   const [activeProblem, setActiveProblem] = useState<TacticalProblem | null>(null);
+  const [isOnboardingCalloutHidden, setIsOnboardingCalloutHidden] = useState<boolean>(false);
   const [campaignPlayerDeckIds, setCampaignPlayerDeckIds] = useState<string[] | null>(null);
   const [isExpeditionBattle, setIsExpeditionBattle] = useState<boolean>(false);
   const [lastClearedExpeditionBossId, setLastClearedExpeditionBossId] = useState<string | null>(
@@ -993,29 +994,43 @@ export const App: React.FC = () => {
 
       {/* Main Content View */}
       <main style={{ flex: 1 }}>
-        {!isGuest && customDecks.length === 0 && activeTab !== 'deckbuilder' && (
-          <div style={{ maxWidth: '1380px', margin: '0.85rem auto 0', padding: '0 1.75rem' }}>
-            <div className="aaa-status-callout is-onboarding">
-              <div className="aaa-callout-copy">
-                <span className="aaa-callout-kicker">
-                  PASSO INICIAL OBRIGATÓRIO • CONTA: {currentUser.username.toUpperCase()}
-                </span>
-                <div className="aaa-callout-text">
-                  Para entrar em combate, monte e confirme primeiro o seu{' '}
-                  <strong>Grimório de Combate (100 cartas)</strong> escolhendo um dos 5 decks
-                  iniciais, editando-o ou criando do zero.
+        {!isGuest &&
+          customDecks.length === 0 &&
+          activeTab !== 'deckbuilder' &&
+          activeTab !== 'arena' &&
+          !isOnboardingCalloutHidden && (
+            <div style={{ maxWidth: '1380px', margin: '0.85rem auto 0', padding: '0 1.75rem' }}>
+              <div className="aaa-status-callout is-onboarding">
+                <div className="aaa-callout-copy">
+                  <span className="aaa-callout-kicker">
+                    PASSO INICIAL OBRIGATÓRIO • CONTA: {currentUser.username.toUpperCase()}
+                  </span>
+                  <div className="aaa-callout-text">
+                    Para entrar em combate, monte e confirme primeiro o seu{' '}
+                    <strong>Grimório de Combate (100 cartas)</strong> escolhendo um dos 5 decks
+                    iniciais, editando-o ou criando do zero.
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-primary"
+                    onClick={() => setActiveTab('deckbuilder')}
+                  >
+                    Forjar Meu Grimório (100 Cartas) →
+                  </button>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary"
+                    onClick={() => setIsOnboardingCalloutHidden(true)}
+                    title="Ocultar aviso"
+                  >
+                    ✕ Ocultar
+                  </button>
                 </div>
               </div>
-              <button
-                type="button"
-                className="aaa-btn aaa-btn-primary"
-                onClick={() => setActiveTab('deckbuilder')}
-              >
-                Forjar Meu Grimório (100 Cartas) →
-              </button>
             </div>
-          </div>
-        )}
+          )}
 
         {activeTab === 'home' && (
           <div className="aaa-page-shell">

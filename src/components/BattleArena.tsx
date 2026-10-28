@@ -396,6 +396,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   >('none');
   const [isMulliganOpen, setIsMulliganOpen] = useState<boolean>(() => !tacticalProblem);
   const [problemHintStage, setProblemHintStage] = useState<0 | 1 | 2 | 3>(0);
+  const [isProblemHudMinimized, setIsProblemHudMinimized] = useState<boolean>(false);
   const [showProblemIncompleteModal, setShowProblemIncompleteModal] = useState(false);
   const [mulliganSwapIndices, setMulliganSwapIndices] = useState<number[]>([]);
   const MULLIGAN_TIME_LIMIT_SECONDS = 30;
@@ -418,6 +419,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setIsHandPinnedOpen(false);
     setIsHandHovered(false);
     setActiveRightDrawer(null);
+    setIsProblemHudMinimized(true);
   };
 
   const clearHandSelectionAndDrawers = () => {
@@ -1180,6 +1182,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setGameoverStage('none');
     setIsMulliganOpen(false);
     setProblemHintStage(0);
+    setIsProblemHudMinimized(false);
     setShowProblemIncompleteModal(false);
     setShowSacrificeBreakModal(false);
   }, [tacticalProblem?.id]);
@@ -2255,16 +2258,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   return (
     <div className={`arena-wrapper ${showLogSidebar ? '' : 'log-collapsed'}`}>
-      {/* FLOATING TACTICAL PROBLEM HUD BAR (1-TURN LETHAL PUZZLE MODE) */}
-      {tacticalProblem && (
+      {/* COLLAPSIBLE TACTICAL PROBLEM HUD BAR (1-TURN LETHAL PUZZLE MODE — CAN BE MINIMIZED/HIDDEN) */}
+      {tacticalProblem && !isProblemHudMinimized && (
         <div
           style={{
             position: 'fixed',
-            top: 48,
+            top: 86,
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1180,
-            width: 'min(960px, 95vw)',
+            width: 'min(920px, 95vw)',
             background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(9, 13, 24, 0.98))',
             border: `1.5px solid ${PROBLEM_DIFFICULTY_META[tacticalProblem.difficulty].color}`,
             borderRadius: 12,
@@ -2372,6 +2375,23 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   📋 Lista de Problemas
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => setIsProblemHudMinimized(true)}
+                title="Minimizar/Ocultar painel do problema (reabra na barra inferior)"
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: 8,
+                  border: '1px solid rgba(248, 113, 113, 0.55)',
+                  background: 'rgba(127, 29, 29, 0.45)',
+                  color: '#fecaca',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                }}
+              >
+                ▴ Ocultar
+              </button>
             </div>
           </div>
 
@@ -2490,6 +2510,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 className="btn-fantasy"
                 onClick={() => {
                   setShowProblemIncompleteModal(false);
+                  setIsProblemHudMinimized(false);
                   const nextStage = problemHintStage < 2 ? 2 : 3;
                   recordProblemHintUsed(tacticalProblem.id, nextStage);
                   setProblemHintStage(nextStage);
@@ -3338,7 +3359,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   gameState.weather ? `has-arena-weather weather-${gameState.weather.type}` : ''
                 }`}
                 onClick={() => {
-                  if (isP2DrawerPinned || isP1DrawerPinned || isHandPinnedOpen || activeRightDrawer) {
+                  if (
+                    isP2DrawerPinned ||
+                    isP1DrawerPinned ||
+                    isHandPinnedOpen ||
+                    activeRightDrawer ||
+                    !isProblemHudMinimized
+                  ) {
                     closeAllArenaDrawers();
                   }
                 }}
@@ -4182,6 +4209,40 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="hud-phase-segment"
                       onMouseEnter={() => setIsHandHovered(false)}
                     >
+                    {tacticalProblem && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <button
+                          type="button"
+                          className={`hud-pill-expand-btn ${!isProblemHudMinimized ? 'active' : ''}`}
+                          style={{
+                            width: 'auto',
+                            padding: '0 8px',
+                            gap: 4,
+                            fontWeight: 900,
+                            borderColor: PROBLEM_DIFFICULTY_META[tacticalProblem.difficulty].color,
+                            color: '#fef08a',
+                          }}
+                          onClick={() => setIsProblemHudMinimized((prev) => !prev)}
+                          title={
+                            isProblemHudMinimized
+                              ? 'Mostrar painel do Problema Tático e Dicas'
+                              : 'Ocultar painel do Problema Tático'
+                          }
+                        >
+                          ♟️ #{String(tacticalProblem.number).padStart(2, '0')}{' '}
+                          {isProblemHudMinimized ? '▴ Mostrar' : '▾ Ocultar'}
+                        </button>
+                        <button
+                          type="button"
+                          className="hud-pill-expand-btn"
+                          style={{ width: 'auto', padding: '0 7px', fontWeight: 800, color: '#7dd3fc' }}
+                          onClick={restartCurrentProblem}
+                          title="Reiniciar Turno do Problema"
+                        >
+                          🔄
+                        </button>
+                      </div>
+                    )}
                     <span
                       className={`hud-round-chip hud-turn-timer-chip ${
                         turnTimeLeft <= 10

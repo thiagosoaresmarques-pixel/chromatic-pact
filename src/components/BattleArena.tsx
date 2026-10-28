@@ -795,6 +795,24 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       return () => clearTimeout(t);
     }
 
+    if (prev && curr && prev.clashRival && !curr.clashRival) {
+      // One domain won the 50/50 Domain Clash and shattered the rival barrier!
+      const shatteredDom =
+        curr.owner === prev.owner ? prev.clashRival : { domain: prev.domain, name: prev.name, icon: prev.icon };
+      triggerScreenShake('heavy');
+      playSfx('domain_shatter');
+      setDomainExitAnim({
+        domain: shatteredDom.domain,
+        name: shatteredDom.name,
+        icon: shatteredDom.icon,
+        mode: 'shatter',
+        reasonText: `💥 DISPUTA VENCIDA! [${shatteredDom.name.toUpperCase()}] ESTILHAÇADO!`,
+      });
+      const t = setTimeout(() => setDomainExitAnim(null), 1300);
+      prevDomainExpansionRef.current = curr;
+      return () => clearTimeout(t);
+    }
+
     if (prev && curr && !prev.clashRival && curr.clashRival) {
       // Entered Domain Clash (Two Domains fighting on the table)!
       triggerScreenShake('heavy');

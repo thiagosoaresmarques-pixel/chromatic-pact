@@ -1583,11 +1583,58 @@ function registerSovereignDamageForDomainConcentration(
   damageAmount: number
 ): void {
   if (damageAmount <= 0 || !state.domainExpansion) return;
+
+  // Case 1: Active 50/50 Domain Clash — if the clashRival owner takes 8+ damage, their rival barrier shatters!
+  if (
+    state.domainExpansion.clashRival &&
+    state.domainExpansion.clashRival.owner === damagedOwner
+  ) {
+    state.domainExpansion.damageTakenByOwnerThisRound += damageAmount;
+    if (state.domainExpansion.damageTakenByOwnerThisRound >= DOMAIN_CONCENTRATION_BREAK_DMG) {
+      const brokenRival = state.domainExpansion.clashRival;
+      state.domainExpansion.clashRival = null;
+      state.domainExpansion.damageTakenByOwnerThisRound = 0;
+      state[damagedOwner].domainExhaustionTurns = 2;
+      recalculateFormationBonuses(state);
+      addFeedback(
+        state,
+        `${damagedOwner}-sovereign`,
+        '💥 QUEBRA DE CONCENTRAÇÃO!',
+        'damage'
+      );
+      addLog(
+        state,
+        damagedOwner === 'player' ? 'ai' : 'player',
+        'effect',
+        `🗡️ QUEBRA DE CONCENTRAÇÃO! ${state[damagedOwner].name} sofreu dano pesado e sua barreira [${brokenRival.name}] colapsou na Disputa de Domínios!`
+      );
+    }
+    return;
+  }
+
   if (state.domainExpansion.owner !== damagedOwner) return;
   state.domainExpansion.damageTakenByOwnerThisRound += damageAmount;
   if (state.domainExpansion.damageTakenByOwnerThisRound >= DOMAIN_CONCENTRATION_BREAK_DMG) {
     const brokenExp = state.domainExpansion;
-    state.domainExpansion = null;
+    if (brokenExp.clashRival) {
+      // Promote clashRival to sole active Domain Expansion!
+      const rivalSpec = getDomainExpansionSpec(brokenExp.clashRival.domain);
+      state.domainExpansion = {
+        owner: brokenExp.clashRival.owner,
+        domain: rivalSpec.domain,
+        name: rivalSpec.name,
+        subtitle: rivalSpec.subtitle,
+        icon: rivalSpec.icon,
+        potencyDesc: rivalSpec.potencyDesc,
+        sureHitDesc: rivalSpec.sureHitDesc,
+        turnsRemaining: brokenExp.turnsRemaining,
+        damageTakenByOwnerThisRound: 0,
+        simpleDomainProtectedActor: null,
+        clashRival: null,
+      };
+    } else {
+      state.domainExpansion = null;
+    }
     state[damagedOwner].domainExhaustionTurns = 2;
     recalculateFormationBonuses(state);
     addFeedback(

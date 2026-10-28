@@ -12,6 +12,7 @@ import {
   canUseBloodPact,
   canUseSimpleDomain,
   canUseSovereignPower,
+  channelCard,
   cloneGameState,
   CombatPreviewResult,
   createInitialGameState,
@@ -247,8 +248,10 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     ],
     initialChanneledCardIds: [
       'red_01_kobold',
+      'red_02_magmin',
       'red_03_mastim_infernal',
       'red_04_meio_dragao',
+      'red_10_altar_draconico',
       'red_18_marechal_rubro',
     ],
     initialCryptCardIds: ['red_01_kobold', 'red_02_magmin'],
@@ -294,10 +297,10 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
       },
       {
         id: 'red-step-4',
-        stepBadge: 'PASSO 4/5 • 💥 QUEBRA DO DOMÍNIO RIVAL & SOPRO DRACÔNICO',
-        title: 'Invocar Vulcanis, Soberano Carmesim & Estilhaçar Barreira Inimiga',
+        stepBadge: 'PASSO 4/5 • 💥 QUEBRA DO DOMÍNIO RIVAL (7 vs 6 AFINIDADE) & SOPRO DRACÔNICO',
+        title: 'Canalizar 7ª Afinidade (Estilhaçar Barreira Rival) & Invocar Vulcanis',
         narrative:
-          'O Jogador 1 invoca a Lendária Vulcanis, Soberano Carmesim na Vanguarda [V]! Seu Sopro Elemental varre a Vanguarda inimiga e causa dano massivo ao Arquilich, estilhaçando o domínio rival em 8 fragmentos para que a Caldeira reine absoluta!',
+          'O Jogador 1 canaliza seu 7º Terreno Carmesim (superando a Afinidade rival 7 vs 6 e estilhaçando o domínio inimigo em 8 fragmentos!) e invoca a Lendária Vulcanis, Soberano Carmesim na Vanguarda [V], varrendo a linha inimiga com Sopro Elemental!',
         turnNumber: 8,
         p1Essence: 9,
         p1MaxEssence: 9,
@@ -355,6 +358,8 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
       'gold_07_dragao_ouro',
       'gold_146_trono_imperador_eterno',
       'gold_160_decreto_invulnerabilidade',
+      'gold_26_muralha_aco',
+      'gold_07_dragao_ouro',
     ],
     initialCryptCardIds: ['gold_26_muralha_aco'],
     steps: [
@@ -385,10 +390,10 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
       },
       {
         id: 'gld-step-3',
-        stepBadge: 'PASSO 3/4 • 💥 QUEBRA DE BARREIRA & DRAGÃO DA ALVORADA',
-        title: 'Invocar Aurelius, Soberano da Alvorada & Estilhaçar o Eclipse Rival',
+        stepBadge: 'PASSO 3/4 • 💥 QUEBRA DE BARREIRA (7 vs 6 AFINIDADE) & DRAGÃO DA ALVORADA',
+        title: 'Canalizar 7ª Afinidade (Estilhaçar o Eclipse Rival) & Invocar Aurelius',
         narrative:
-          'O Jogador 1 invoca Aurelius, Dragão Soberano da Alvorada na Vanguarda [V]. Seu Sopro Solar devasta a linha inimiga e rompe a barreira roxa em 8 fragmentos, fazendo a Cidadela da Aurora reinar em 100% da mesa!',
+          'O Jogador 1 canaliza seu 7º Terreno Dourado (superando a Afinidade rival 7 vs 6 e rompendo a barreira roxa em 8 fragmentos!) e invoca Aurelius, Dragão Soberano da Alvorada na Vanguarda [V], fortalecendo toda a falange com +2/+2!',
         turnNumber: 8,
         p1Essence: 9,
         p1MaxEssence: 9,
@@ -426,7 +431,7 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
     p2Name: 'Vulcanis, Senhor Rubro',
     p2AvatarCardId: 'red_157_dragao_tiamat_carmesim',
     p2Domain: 'red',
-    p2StartingHp: 18,
+    p2StartingHp: 16,
     initialPlayerUnits: [
       { cardId: 'blue_152_arquimago_vortice', row: 'vanguard', slotIndex: 2 },
       { cardId: 'blue_37_mago_aprendiz', row: 'rearguard', slotIndex: 1 },
@@ -446,6 +451,8 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
       'blue_136_leviata_cronos',
       'blue_141_ruptura_temporal',
       'blue_152_arquimago_vortice',
+      'blue_146_trono_inverno_eterno',
+      'blue_161_singularidade_temporal',
     ],
     initialCryptCardIds: ['blue_37_mago_aprendiz'],
     steps: [
@@ -533,6 +540,8 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
       'purple_25_dama_seis_laminas',
       'purple_68_exumar_legiao',
       'purple_126_campanario_mortos',
+      'purple_123_eclipse_abissal',
+      'purple_138_soberano_carnica',
     ],
     initialCryptCardIds: ['purple_138_soberano_carnica', 'purple_25_dama_seis_laminas'],
     steps: [
@@ -591,8 +600,8 @@ const SIM_DUEL_SCENARIOS: SimDuelScenario[] = [
 ];
 
 function createInitialScenarioGameState(sc: SimDuelScenario): GameState {
-  const pDeck = sc.initialHandCardIds.map(resolveRealCard);
-  const aiDeck = [resolveRealCard(sc.p2AvatarCardId)];
+  const pDeck = ALL_CARDS.filter((c) => c.domain === sc.p1Domain).slice(0, 24);
+  const aiDeck = ALL_CARDS.filter((c) => c.domain === sc.p2Domain).slice(0, 24);
 
   const state = createInitialGameState(pDeck, aiDeck, {
     playerName: sc.p1Name,
@@ -611,6 +620,7 @@ function createInitialScenarioGameState(sc: SimDuelScenario): GameState {
   state.player.maxHp = 40;
   state.player.currentEssence = sc.steps[0]?.p1Essence ?? 6;
   state.player.maxEssence = sc.steps[0]?.p1MaxEssence ?? 6;
+  state.player.deck = pDeck.slice(8);
   state.player.hand = sc.initialHandCardIds.map(resolveRealCard);
   state.player.channeledCards = sc.initialChanneledCardIds.map(resolveRealCard);
   state.player.crypt = sc.initialCryptCardIds.map(resolveRealCard);
@@ -750,6 +760,16 @@ function applyStepResolution(preState: GameState, step: SimEngineStep): GameStat
       }
     }
   } else if (step.kind === 'play_card') {
+    if (step.shatterRivalDomain && state.player.hand.length > 1) {
+      state.player.hasChanneledThisTurn = false;
+      state = channelCard(state, 'player', state.player.hand.length - 1);
+      state.feedbacks.push({
+        id: `fb-shatter-${Date.now()}`,
+        targetId: 'ai-sovereign',
+        text: '💥 BARREIRA ROMPIDA (7 vs 6)!',
+        color: 'damage',
+      });
+    }
     const hIdx = step.handIndex ?? 0;
     const card = state.player.hand[hIdx];
     if (card) {
@@ -764,28 +784,6 @@ function applyStepResolution(preState: GameState, step: SimEngineStep): GameStat
         row: step.deployRow,
         slotIndex: step.deploySlotIndex,
         targetId: targetUnitId,
-      });
-    }
-    if (step.shatterRivalDomain && state.domainExpansion) {
-      const pDomCheck = canInvokeDomainExpansion(state, 'player');
-      const pSpec = getDomainExpansionSpec(pDomCheck.domain);
-      state.domainExpansion = {
-        owner: 'player',
-        domain: pSpec.domain,
-        name: pSpec.name,
-        subtitle: pSpec.subtitle,
-        icon: pSpec.icon,
-        potencyDesc: pSpec.potencyDesc,
-        sureHitDesc: pSpec.sureHitDesc,
-        turnsRemaining: 2,
-        damageTakenByOwnerThisRound: 0,
-        simpleDomainProtectedActor: null,
-      };
-      state.feedbacks.push({
-        id: `fb-shatter-${Date.now()}`,
-        targetId: 'ai-sovereign',
-        text: '💥 BARREIRA ROMPIDA!',
-        color: 'damage',
       });
     }
   } else if (step.kind === 'domain_and_ascend') {
@@ -809,19 +807,6 @@ function applyStepResolution(preState: GameState, step: SimEngineStep): GameStat
         ? 'ai-sovereign'
         : validTargets[0];
       state = executeAttack(state, u.instanceId, chosenTarget);
-    }
-    if (state.ai.hp > 0) {
-      const dmg = state.ai.hp;
-      state.ai.hp = 0;
-      state.phase = 'gameover';
-      state.winner = 'player';
-      state.winReason = 'O Bastião do Soberano rival foi destruído em combate direto!';
-      state.feedbacks.push({
-        id: `fb-lethal-${Date.now()}`,
-        targetId: 'ai-sovereign',
-        text: `-${dmg} 💥 VITÓRIA!`,
-        color: 'damage',
-      });
     }
   }
 

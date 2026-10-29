@@ -892,6 +892,9 @@ export const App: React.FC = () => {
                 if (activeOnlineMatch) {
                   setActiveOnlineMatch(null);
                   setActiveTab('multiplayer');
+                } else if (activeProblem) {
+                  setActiveProblem(null);
+                  setActiveTab('problems');
                 } else if (activeCampaignBoss) {
                   const wasExp = isExpeditionBattle;
                   setActiveCampaignBoss(null);

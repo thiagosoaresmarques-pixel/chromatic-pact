@@ -2045,12 +2045,23 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     // 3. Select / deselect creature on board for attack, maneuver, ascension, or inspection
     closeAllArenaDrawers();
+    const slotUnits = getSlotUnits(gameState.player, unit.row, unit.slotIndex);
     const isTogglingOff =
       focusedBoardUnitId === unit.instanceId &&
       (selectedAttackerId === unit.instanceId || selectedAttackerId === null);
     if (isTogglingOff) {
-      setFocusedBoardUnitId(null);
-      setSelectedAttackerId(null);
+      if (slotUnits.length > 1) {
+        const curIdx = slotUnits.findIndex((u) => u.instanceId === unit.instanceId);
+        const nextUnit = slotUnits[(curIdx + 1) % slotUnits.length];
+        setFocusedBoardUnitId(nextUnit.instanceId);
+        setSelectedHandIndex(null);
+        setIsCommandDockMinimized(false);
+        const nextTargets = getValidAttackTargets(gameState, nextUnit.instanceId);
+        setSelectedAttackerId(nextTargets.length > 0 ? nextUnit.instanceId : null);
+      } else {
+        setFocusedBoardUnitId(null);
+        setSelectedAttackerId(null);
+      }
     } else {
       setFocusedBoardUnitId(unit.instanceId);
       setSelectedHandIndex(null);
@@ -2061,6 +2072,32 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       } else {
         setSelectedAttackerId(null);
       }
+    }
+  };
+
+  const handleCycleSlotStack = (
+    owner: 'player' | 'ai',
+    row: RowType,
+    slotIndex: number,
+    e?: React.MouseEvent
+  ) => {
+    e?.stopPropagation();
+    const slotUnits = getSlotUnits(gameState[owner], row, slotIndex).filter(
+      (u) => owner === 'player' || !u.isTrap
+    );
+    if (slotUnits.length === 0) return;
+    closeAllArenaDrawers();
+    const currentId = selectedAttackerId ?? focusedBoardUnitId;
+    const curIdx = slotUnits.findIndex((u) => u.instanceId === currentId);
+    const nextUnit = slotUnits[(curIdx + 1) % slotUnits.length];
+    setFocusedBoardUnitId(nextUnit.instanceId);
+    setSelectedHandIndex(null);
+    setIsCommandDockMinimized(false);
+    if (owner === 'player' && isPlayerTurn) {
+      const targets = getValidAttackTargets(gameState, nextUnit.instanceId);
+      setSelectedAttackerId(targets.length > 0 ? nextUnit.instanceId : null);
+    } else {
+      setSelectedAttackerId(null);
     }
   };
 
@@ -2084,10 +2121,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     const slotUnits = getSlotUnits(gameState.player, row, slotIndex);
     if (slotUnits.length > 0) {
       e?.stopPropagation();
-      const readyInSlot =
+      const currentlyFocusedInSlot = slotUnits.find(
+        (u) => u.instanceId === focusedBoardUnitId || u.instanceId === selectedAttackerId
+      );
+      const targetUnitInSlot =
+        currentlyFocusedInSlot ??
         slotUnits.find((u) => getValidAttackTargets(gameState, u.instanceId).length > 0) ??
         slotUnits[slotUnits.length - 1];
-      handleClickFriendlyUnit(readyInSlot, e);
+      handleClickFriendlyUnit(targetUnitInSlot, e);
     }
   };
 
@@ -2097,9 +2138,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (!isPlayerTurn) {
       if (!enemyUnit.isTrap) {
         closeAllArenaDrawers();
-        setFocusedBoardUnitId((prev) =>
-          prev === enemyUnit.instanceId ? null : enemyUnit.instanceId
-        );
+        const enemySlotUnits = getSlotUnits(
+          gameState.ai,
+          enemyUnit.row,
+          enemyUnit.slotIndex
+        ).filter((u) => !u.isTrap);
+        if (focusedBoardUnitId === enemyUnit.instanceId && enemySlotUnits.length > 1) {
+          const curIdx = enemySlotUnits.findIndex((u) => u.instanceId === enemyUnit.instanceId);
+          const nextEnemy = enemySlotUnits[(curIdx + 1) % enemySlotUnits.length];
+          setFocusedBoardUnitId(nextEnemy.instanceId);
+        } else {
+          setFocusedBoardUnitId((prev) =>
+            prev === enemyUnit.instanceId ? null : enemyUnit.instanceId
+          );
+        }
         setIsCommandDockMinimized(false);
       }
       return;
@@ -2173,9 +2225,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     if (!enemyUnit.isTrap) {
       closeAllArenaDrawers();
-      setFocusedBoardUnitId((prev) =>
-        prev === enemyUnit.instanceId ? null : enemyUnit.instanceId
-      );
+      const enemySlotUnits = getSlotUnits(
+        gameState.ai,
+        enemyUnit.row,
+        enemyUnit.slotIndex
+      ).filter((u) => !u.isTrap);
+      if (focusedBoardUnitId === enemyUnit.instanceId && enemySlotUnits.length > 1) {
+        const curIdx = enemySlotUnits.findIndex((u) => u.instanceId === enemyUnit.instanceId);
+        const nextEnemy = enemySlotUnits[(curIdx + 1) % enemySlotUnits.length];
+        setFocusedBoardUnitId(nextEnemy.instanceId);
+      } else {
+        setFocusedBoardUnitId((prev) =>
+          prev === enemyUnit.instanceId ? null : enemyUnit.instanceId
+        );
+      }
       setIsCommandDockMinimized(false);
     }
   };
@@ -4046,6 +4109,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           {slotUnits.length > 1 && (
                             <span
                               className="slot-stack-count-badge enemy-stack-badge"
+                              onClick={(e) => handleCycleSlotStack('ai', 'rearguard', idx, e)}
+                              title="Alternar carta empilhada"
                             >
                               {slotUnits.length}/{MAX_UNITS_PER_SLOT}
                             </span>
@@ -4056,13 +4121,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 validAttackTargets.includes(unit.instanceId) || isSpellTargetingEnemy;
                               const isLunging = combatAnim?.attackerId === unit.instanceId;
                               const isHit = combatAnim?.targetId === unit.instanceId;
+                              const isFocusedInStack = focusedBoardUnitId === unit.instanceId;
                               return (
                                 <div
                                   key={unit.instanceId}
                                   data-combat-id={unit.instanceId}
                                   className={`organic-tabletop-card stacked-card-item ${
                                     isLunging ? 'is-lunging-attacker' : ''
-                                  } ${isHit ? 'is-hit-target' : ''}`}
+                                  } ${isHit ? 'is-hit-target' : ''} ${
+                                    isFocusedInStack ? 'is-stack-focused' : ''
+                                  }`}
                                   style={{
                                     ...getOrganicTabletopPose(
                                       unit.instanceId,
@@ -4135,7 +4203,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           className={`mtg-slot ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
                         >
                           {slotUnits.length > 1 && (
-                            <span className="slot-stack-count-badge enemy-stack-badge">
+                            <span
+                              className="slot-stack-count-badge enemy-stack-badge"
+                              onClick={(e) => handleCycleSlotStack('ai', 'vanguard', idx, e)}
+                              title="Alternar carta empilhada"
+                            >
                               {slotUnits.length}/{MAX_UNITS_PER_SLOT}
                             </span>
                           )}
@@ -4145,6 +4217,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 validAttackTargets.includes(unit.instanceId) || isSpellTargetingEnemy;
                               const isLunging = combatAnim?.attackerId === unit.instanceId;
                               const isHit = combatAnim?.targetId === unit.instanceId;
+                              const isFocusedInStack = focusedBoardUnitId === unit.instanceId;
                               return (
                                 <div
                                   key={unit.instanceId}
@@ -4153,7 +4226,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     isLunging ? 'is-lunging-attacker' : ''
                                   } ${isHit ? 'is-hit-target' : ''} ${
                                     isInvading ? 'is-crossing-border-ai' : ''
-                                  }`}
+                                  } ${isFocusedInStack ? 'is-stack-focused' : ''}`}
                                   style={{
                                     ...getOrganicTabletopPose(
                                       unit.instanceId,
@@ -4235,7 +4308,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           onClick={(e) => handleSelectPlayerSlot('vanguard', idx, e)}
                         >
                           {slotUnits.length > 1 && (
-                            <span className="slot-stack-count-badge ally-stack-badge">
+                            <span
+                              className="slot-stack-count-badge ally-stack-badge"
+                              onClick={(e) => handleCycleSlotStack('player', 'vanguard', idx, e)}
+                              title="Alternar carta empilhada"
+                            >
                               {slotUnits.length}/{MAX_UNITS_PER_SLOT}
                             </span>
                           )}
@@ -4267,6 +4344,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                   canMoveUnitRow(gameState, 'player', unit.instanceId);
                                 const isLunging = combatAnim?.attackerId === unit.instanceId;
                                 const isHit = combatAnim?.targetId === unit.instanceId;
+                                const isFocusedInStack =
+                                  selectedAttackerId === unit.instanceId ||
+                                  focusedBoardUnitId === unit.instanceId;
 
                                 return (
                                   <div
@@ -4276,7 +4356,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                       isLunging ? 'is-lunging-attacker' : ''
                                     } ${isHit ? 'is-hit-target' : ''} ${
                                       isInvading ? 'is-crossing-border-player' : ''
-                                    }`}
+                                    } ${isFocusedInStack ? 'is-stack-focused' : ''}`}
                                     style={{
                                       ...getOrganicTabletopPose(
                                         unit.instanceId,
@@ -4357,6 +4437,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           {slotUnits.length > 1 && (
                             <span
                               className="slot-stack-count-badge ally-stack-badge"
+                              onClick={(e) => handleCycleSlotStack('player', 'rearguard', idx, e)}
+                              title="Alternar carta empilhada"
                             >
                               {slotUnits.length}/{MAX_UNITS_PER_SLOT}
                             </span>
@@ -4389,6 +4471,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                   canMoveUnitRow(gameState, 'player', unit.instanceId);
                                 const isLunging = combatAnim?.attackerId === unit.instanceId;
                                 const isHit = combatAnim?.targetId === unit.instanceId;
+                                const isFocusedInStack =
+                                  selectedAttackerId === unit.instanceId ||
+                                  focusedBoardUnitId === unit.instanceId;
 
                                 return (
                                   <div
@@ -4396,7 +4481,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     data-combat-id={unit.instanceId}
                                     className={`organic-tabletop-card stacked-card-item ${
                                       isLunging ? 'is-lunging-attacker' : ''
-                                    } ${isHit ? 'is-hit-target' : ''}`}
+                                    } ${isHit ? 'is-hit-target' : ''} ${
+                                      isFocusedInStack ? 'is-stack-focused' : ''
+                                    }`}
                                     style={{
                                       ...getOrganicTabletopPose(
                                         unit.instanceId,
@@ -4582,6 +4669,44 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           )}
                         {isPlayerTurn &&
                           playCheck.allowed &&
+                          (activeHand.type === 'spell' || activeHand.type === 'reaction') &&
+                          targetMode === 'enemy' &&
+                          getAllBoardUnits(gameState.ai)
+                            .filter((u) => !u.isTrap)
+                            .map((tu) => (
+                              <button
+                                key={tu.instanceId}
+                                type="button"
+                                className="mccb-btn act-burn"
+                                onClick={() =>
+                                  handleQuickCastSpell(selectedHandIndex, tu.instanceId)
+                                }
+                                title={`Mirar em ${tu.card.name} (Col ${tu.slotIndex + 1} • ${tu.currentAtk}/${tu.currentHp})`}
+                              >
+                                🎯 {tu.card.name.split(' ')[0]} C{tu.slotIndex + 1} ({tu.currentHp}❤️)
+                              </button>
+                            ))}
+                        {isPlayerTurn &&
+                          playCheck.allowed &&
+                          (activeHand.type === 'spell' || activeHand.type === 'reaction') &&
+                          targetMode === 'ally' &&
+                          getAllBoardUnits(gameState.player)
+                            .filter((u) => !u.isTrap)
+                            .map((tu) => (
+                              <button
+                                key={tu.instanceId}
+                                type="button"
+                                className="mccb-btn act-move"
+                                onClick={() =>
+                                  handleQuickCastSpell(selectedHandIndex, tu.instanceId)
+                                }
+                                title={`Mirar em ${tu.card.name} (Col ${tu.slotIndex + 1} • ${tu.currentAtk}/${tu.currentHp})`}
+                              >
+                                🎯 {tu.card.name.split(' ')[0]} C{tu.slotIndex + 1} ({tu.currentHp}❤️)
+                              </button>
+                            ))}
+                        {isPlayerTurn &&
+                          playCheck.allowed &&
                           activeHand.type === 'reaction' &&
                           hasEmptyRearguard && (
                             <button
@@ -4634,6 +4759,17 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 }
 
                 if (activeUnit) {
+                  const activeSlotUnits = activeUnitOwner
+                    ? getSlotUnits(
+                        gameState[activeUnitOwner],
+                        activeUnit.row,
+                        activeUnit.slotIndex
+                      ).filter((u) => activeUnitOwner === 'player' || !u.isTrap)
+                    : [];
+                  const activeStackIdx = activeSlotUnits.findIndex(
+                    (u) => u.instanceId === activeUnit.instanceId
+                  );
+
                   if (activeUnit.isTrap) {
                     return (
                       <div
@@ -4648,6 +4784,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           </span>
                         </div>
                         <div className="mccb-actions">
+                          {activeSlotUnits.length > 1 && activeUnitOwner && (
+                            <button
+                              type="button"
+                              className="mccb-btn act-move"
+                              onClick={() =>
+                                handleCycleSlotStack(
+                                  activeUnitOwner,
+                                  activeUnit.row,
+                                  activeUnit.slotIndex
+                                )
+                              }
+                              title="Alternar carta empilhada neste slot"
+                            >
+                              🥞 {activeStackIdx + 1}/{activeSlotUnits.length} ▸
+                            </button>
+                          )}
                           <button
                             type="button"
                             className="mccb-btn act-inspect"
@@ -4677,6 +4829,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       ? getValidAttackTargets(gameState, activeUnit.instanceId)
                       : [];
                   const canHitSovereign = unitTargets.includes('ai-sovereign');
+                  const validEnemyTargetUnits =
+                    unitTargets.length > 0
+                      ? getAllBoardUnits(gameState.ai).filter((eu) =>
+                          unitTargets.includes(eu.instanceId)
+                        )
+                      : [];
                   const canAscend =
                     activeUnitOwner === 'player' &&
                     isPlayerTurn &&
@@ -4715,6 +4873,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         </span>
                       </div>
                       <div className="mccb-actions">
+                        {activeSlotUnits.length > 1 && activeUnitOwner && (
+                          <button
+                            type="button"
+                            className="mccb-btn act-move"
+                            onClick={() =>
+                              handleCycleSlotStack(
+                                activeUnitOwner,
+                                activeUnit.row,
+                                activeUnit.slotIndex
+                              )
+                            }
+                            title="Alternar carta empilhada neste slot"
+                          >
+                            🥞 {activeStackIdx + 1}/{activeSlotUnits.length} ▸
+                          </button>
+                        )}
                         {canHitSovereign && (
                           <button
                             type="button"
@@ -4726,6 +4900,19 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             👑 Soberano
                           </button>
                         )}
+                        {validEnemyTargetUnits.map((eu) => (
+                          <button
+                            key={eu.instanceId}
+                            type="button"
+                            className="mccb-btn act-burn"
+                            onClick={() =>
+                              handleExecuteUnitAttackOnTarget(activeUnit, eu.instanceId)
+                            }
+                            title={`Atacar ${eu.card.name} (Col ${eu.slotIndex + 1} • ${eu.currentAtk}/${eu.currentHp})`}
+                          >
+                            ⚔️ {eu.card.name.split(' ')[0]} C{eu.slotIndex + 1} ({eu.currentHp}❤️)
+                          </button>
+                        ))}
                         {canAscend && (
                           <button
                             type="button"
@@ -5824,7 +6011,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       {gameState.phase === 'gameover' && gameoverStage === 'modal' && (
         <div className="modal-backdrop" onClick={() => setGameoverStage('dismissed')}>
           <div
-            className="modal-panel"
+            className="modal-panel gameover-modal-panel"
             style={{ maxWidth: '500px', textAlign: 'center', padding: '1.75rem 1.5rem', position: 'relative' }}
             onClick={(e) => e.stopPropagation()}
           >

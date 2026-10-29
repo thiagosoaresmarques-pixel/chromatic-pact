@@ -230,6 +230,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const [onlyUnlocked, setOnlyUnlocked] = useState<boolean>(false);
   const [synergyFilterId, setSynergyFilterId] = useState<string | 'all' | 'recommended'>('all');
   const [showSynergyPanel, setShowSynergyPanel] = useState<boolean>(false);
+  const [isMobileDeckListOpen, setIsMobileDeckListOpen] = useState<boolean>(false);
 
   // Active Deck Being Edited (starts empty 0/100 when user has no saved Grimoire yet)
   const [deckName, setDeckName] = useState<string>(() =>
@@ -1354,6 +1355,14 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 Editar ({GRIMOIRE_REPLACEMENT_GOLD_COST} 🪙)
               </button>
             )}
+            <button
+              type="button"
+              className="db-action-btn show-on-mobile-inline"
+              onClick={() => setIsMobileDeckListOpen((prev) => !prev)}
+              title="Expandir ou recolher a lista de cartas do Grimório no smartphone"
+            >
+              📋 Lista ({deckCardIds.length}) {isMobileDeckListOpen ? '▴' : '▾'}
+            </button>
           </div>
 
           {saveBanner && <div className="db-save-toast">{saveBanner}</div>}
@@ -1419,45 +1428,68 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
         )}
 
         {/* Sleek MTG Arena-Style Card Tiles List */}
-        <div className="db-deck-list">
+        <div className={`db-deck-list ${isMobileDeckListOpen ? 'is-mobile-open' : ''}`}>
           {groupedDeckList.length === 0 ? (
             <div className="db-empty-state">
               0/100 cartas
             </div>
           ) : (
-            groupedDeckList.map(({ card, count }) => (
-              <div
-                key={card.id}
-                className={`db-deck-tile domain-${card.domain}`}
-                onClick={() => setInspectCard(card)}
-              >
-                <span
-                  className="db-tile-domain-bar"
-                  style={{ background: DOMAIN_META[card.domain].color }}
-                />
-                <span className="db-tile-cost">{card.cost}</span>
-                <span
-                  className={`db-tile-name ${
-                    card.rarity === 'legendary' ? 'is-legendary' : ''
-                  }`}
-                >
-                  {card.name}
-                </span>
+            groupedDeckList.map(({ card, count }) => {
+              const maxAllowed = MAX_COPIES_BY_RARITY[card.rarity];
+              const ownedCopies = hasFreeCatalogSelection
+                ? maxAllowed
+                : unlockedCardIds[card.id] ?? 0;
+              const effectiveMax = Math.min(maxAllowed, ownedCopies);
+              const legCapReached =
+                card.rarity === 'legendary' &&
+                deckAnalysis.legendaryCount >= MAX_LEGENDARIES_PER_DECK;
+              const canAddMore =
+                count < effectiveMax && !legCapReached && deckCardIds.length < 100;
+
+              return (
                 <div
-                  className="db-tile-controls"
-                  onClick={(e) => e.stopPropagation()}
+                  key={card.id}
+                  className={`db-deck-tile domain-${card.domain}`}
+                  onClick={() => setInspectCard(card)}
                 >
-                  <span className="db-tile-count">×{count}</span>
-                  <button
-                    type="button"
-                    className="db-tile-btn"
-                    onClick={() => handleRemoveCardFromDeck(card.id)}
+                  <span
+                    className="db-tile-domain-bar"
+                    style={{ background: DOMAIN_META[card.domain].color }}
+                  />
+                  <span className="db-tile-cost">{card.cost}</span>
+                  <span
+                    className={`db-tile-name ${
+                      card.rarity === 'legendary' ? 'is-legendary' : ''
+                    }`}
                   >
-                    −
-                  </button>
+                    {card.name}
+                  </span>
+                  <div
+                    className="db-tile-controls"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      className="db-tile-btn"
+                      onClick={() => handleRemoveCardFromDeck(card.id)}
+                      title="Remover 1 cópia"
+                    >
+                      −
+                    </button>
+                    <span className="db-tile-count">×{count}</span>
+                    <button
+                      type="button"
+                      className="db-tile-btn"
+                      onClick={() => handleAddCardToDeck(card)}
+                      disabled={!canAddMore}
+                      title="Adicionar +1 cópia"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </aside>

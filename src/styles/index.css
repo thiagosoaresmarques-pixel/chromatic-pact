@@ -14242,6 +14242,14 @@ input:focus-visible,
     align-items: center;
     gap: 4px;
     flex-shrink: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mccb-actions::-webkit-scrollbar {
+    display: none;
   }
 
   .mccb-btn {
@@ -14631,6 +14639,197 @@ input:focus-visible,
     font-size: 0.62rem !important;
   }
 }
+
+/* ==========================================================================
+   PHASE 2 MOBILE DEEPENING:
+   1. Non-blocking floating indicators (pointer-events: none)
+   2. Stacked units (2x/3x) touch elevation & clickable stack badge
+   3. Compact Reaction/Herald banners, Sacrifice Break Modal & Game Over Modal
+   4. Smartphone layout for Campaign, Expedition, Multiplayer & DeckBuilder
+   ========================================================================== */
+
+.spectacle-herald-banner,
+.turn-rope-warning-banner,
+.combat-projectile-beam,
+.combat-impact-fx,
+.spectacle-target-burst,
+.legendary-entrance-backdrop,
+.aiming-trajectory-overlay,
+.floating-feedback-pill,
+.target-combat-preview-pill,
+.arena-weather-atmosphere,
+.dragon-breath-wave-fx {
+  pointer-events: none !important;
+}
+
+.organic-tabletop-card.stacked-card-item.is-stack-focused {
+  z-index: 38 !important;
+}
+
+.slot-stack-count-badge {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 42 !important;
+  user-select: none;
+}
+
+@media (max-width: 768px), (max-height: 540px) {
+  /* Stacked card focus elevation & touchable badge on smartphone */
+  .organic-tabletop-card.stacked-card-item.is-stack-focused {
+    z-index: 38 !important;
+    filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.85));
+  }
+
+  .slot-stack-count-badge {
+    min-width: 24px !important;
+    min-height: 16px !important;
+    padding: 1px 4px !important;
+    font-size: 0.52rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 999px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85) !important;
+  }
+
+  /* Reaction / Ambush / Spectacle Herald Banner: ultra-compact & never blocks taps */
+  .spectacle-herald-banner {
+    top: 38px !important;
+    padding: 3px 10px !important;
+    gap: 6px !important;
+    max-width: 92vw !important;
+    border-radius: 8px !important;
+    pointer-events: none !important;
+  }
+
+  .spectacle-herald-icon {
+    font-size: 0.95rem !important;
+  }
+
+  .spectacle-herald-title {
+    font-size: 0.66rem !important;
+  }
+
+  .spectacle-herald-sub {
+    font-size: 0.54rem !important;
+  }
+
+  /* Sacrifice Domain Break Modal: touch-friendly +/- buttons & scrollable list */
+  .sacrifice-break-modal-panel {
+    width: min(96vw, 440px) !important;
+    max-height: 88dvh !important;
+    padding: 10px 12px !important;
+    gap: 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  .sacrifice-break-modal-panel .sbm-desc {
+    font-size: 0.65rem !important;
+    line-height: 1.25 !important;
+    margin: 0 !important;
+  }
+
+  .sacrifice-break-modal-panel .sbm-allocation-list {
+    max-height: 42dvh !important;
+    overflow-y: auto !important;
+    gap: 5px !important;
+    padding-right: 2px !important;
+  }
+
+  .sacrifice-break-modal-panel .sbm-row {
+    padding: 5px 8px !important;
+  }
+
+  .sacrifice-break-modal-panel .sbm-step-btn {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 0.9rem !important;
+  }
+
+  .sacrifice-break-modal-panel .sbm-actions {
+    margin-top: 4px !important;
+    gap: 6px !important;
+  }
+
+  /* Game Over Modal: compact on mobile portrait & landscape */
+  .gameover-modal-panel {
+    width: min(95vw, 430px) !important;
+    max-height: 90dvh !important;
+    padding: 12px 14px !important;
+    overflow-y: auto !important;
+  }
+
+  /* CampaignView: compact boss roster & dossier visual so CTA button is immediately visible */
+  .aaa-boss-roster {
+    max-height: 160px !important;
+    padding: 6px !important;
+    gap: 4px !important;
+  }
+
+  .aaa-boss-slot {
+    padding: 5px 7px !important;
+  }
+
+  .aaa-boss-slot-avatar {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .aaa-dossier-visual {
+    height: 120px !important;
+    min-height: 120px !important;
+  }
+
+  .aaa-dossier-content {
+    padding: 10px 12px !important;
+    gap: 8px !important;
+  }
+
+  .aaa-dossier-title {
+    font-size: 1.1rem !important;
+  }
+
+  .aaa-dossier-quote {
+    font-size: 0.68rem !important;
+    padding: 4px 8px !important;
+  }
+
+  /* ExpeditionView: compact draft sidebar & touch-friendly bucket buttons */
+  .exp-draft-sidebar {
+    max-height: 150px !important;
+  }
+
+  .exp-bucket-choose-btn,
+  .exp-blessing-card {
+    min-height: 38px !important;
+  }
+
+  /* DeckBuilder on Smartphone: collapsible deck list & larger +/- touch buttons */
+  .db-deck-list:not(.is-mobile-open) {
+    display: none !important;
+  }
+
+  .db-deck-list.is-mobile-open {
+    display: flex !important;
+    max-height: 185px !important;
+    overflow-y: auto !important;
+  }
+
+  .db-tile-btn {
+    width: 26px !important;
+    height: 24px !important;
+    font-size: 0.85rem !important;
+  }
+
+  .db-step-btn {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
 
 
 

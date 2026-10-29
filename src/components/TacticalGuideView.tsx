@@ -911,18 +911,21 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
       )}
 
       {/* =====================================================================
-          TAB 1: MANUAL DO DECK (COMPOSIÇÃO & COMBOS)
+          TAB 1: MANUAL DO DECK (COMPOSIÇÃO, ESTRATÉGIAS, TÁTICAS & COMBOS)
           ===================================================================== */}
       {viewSection === 'deck_mastery' && (
         <div className="tg-grid-layout">
-          {/* Left Column: Breakdown & Essence Curve */}
+          {/* Left Column: Breakdown, Essence Curve & Phase Strategy */}
           <div className="tg-panel">
             <h2 className="font-cinzel tg-panel-title">{playerProfile.deck.name}</h2>
+            <p style={{ fontSize: '0.82rem', color: '#cbd5e1', margin: '0 0 0.75rem', lineHeight: 1.45 }}>
+              <strong style={{ color: '#fde68a' }}>{playerProfile.archetypeRole}:</strong> {playerProfile.deck.strategy}
+            </p>
 
             <div className="tg-asymmetry-bars">
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span><i className="dot-c" /> Criaturas</span>
+                  <span><i className="dot-c" /> Criaturas (Vanguarda: {playerProfile.vanguardCount} • Retaguarda: {playerProfile.rearguardCount})</span>
                   <strong>{playerProfile.counts.creature} ({playerProfile.pcts.creature}%)</strong>
                 </div>
                 <div className="tg-asym-track">
@@ -948,7 +951,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span><i className="dot-r" /> Reações</span>
+                  <span><i className="dot-r" /> Reações (Emboscadas)</span>
                   <strong>{playerProfile.counts.reaction} ({playerProfile.pcts.reaction}%)</strong>
                 </div>
                 <div className="tg-asym-track">
@@ -996,11 +999,61 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 })}
               </div>
             </div>
+
+            {/* Estratégia por Fase da Partida */}
+            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+              <div className="aaa-kicker">PLANO DE JOGO & ESTRATÉGIA POR FASE</div>
+              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fde68a', marginBottom: '0.2rem' }}>
+                  🌅 Abertura (Turnos 1–3)
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
+                  {playerProfile.openingPlan}
+                </p>
+              </div>
+              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#93c5fd', marginBottom: '0.2rem' }}>
+                  ⚔️ Meio de Jogo (Turnos 4–6)
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
+                  {playerProfile.midgamePlan}
+                </p>
+              </div>
+              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#f87171', marginBottom: '0.2rem' }}>
+                  👑 Fim de Jogo & Condição de Vitória (Turno 7+)
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
+                  {playerProfile.endgamePlan}
+                </p>
+              </div>
+            </div>
+
+            {/* Táticas de Canalização e Empilhamento */}
+            <div style={{ marginTop: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+              <div className="aaa-kicker">DOUTRINA TÁTICA DE CANALIZAÇÃO & FALANGE</div>
+              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#c4b5fd', marginBottom: '0.2rem' }}>
+                  🔮 Canalização de Essência [C]
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
+                  {playerProfile.channelingDoctrine}
+                </p>
+              </div>
+              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#86efac', marginBottom: '0.2rem' }}>
+                  🛡️ {playerProfile.stackingDoctrineTitle}
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
+                  {playerProfile.stackingDoctrineBody}
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Right Column: Signature Combos */}
+          {/* Right Column: Signature Combos & Synergies */}
           <div className="tg-panel">
-            <h2 className="font-cinzel tg-panel-title">Combos do Grimório</h2>
+            <h2 className="font-cinzel tg-panel-title">Combos & Sinergias do Grimório</h2>
             <div className="tg-combos-list">
               {playerProfile.signatureCombos.map((combo, idx) => (
                 <div key={idx} className="tg-combo-card">
@@ -1009,6 +1062,9 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                       {combo.title}
                     </h4>
                   </div>
+                  <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.45, margin: '0.35rem 0 0.5rem' }}>
+                    {combo.explanation}
+                  </p>
                   <div className="tg-combo-cards-row" style={{ marginTop: '0.45rem' }}>
                     {combo.cards.map((c) => (
                       <div
@@ -1034,14 +1090,14 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
       )}
 
       {/* =====================================================================
-          TAB 2: SIMULADOR DE MATCHUP 1×1
+          TAB 2: SIMULADOR DE MATCHUP 1×1 (ESTRATÉGIAS, TÁTICAS & COMBOS 1×1)
           ===================================================================== */}
       {viewSection === 'matchup_duel' && (
         <div className="tg-grid-layout">
           <div className="tg-panel">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
               <h2 className="font-cinzel tg-panel-title">
-                vs {opponentProfile.deck.name}
+                {playerProfile.deck.name} vs {opponentProfile.deck.name}
               </h2>
               <span
                 className="tg-favor-badge"
@@ -1054,19 +1110,61 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               </span>
             </div>
 
-            <div className={`tg-stack-directive mode-${activeMatchup.stackingRuleMode}`}>
+            <div className={`tg-stack-directive mode-${activeMatchup.stackingRuleMode}`} style={{ marginBottom: '0.75rem' }}>
               <div className="tg-stack-directive-title">{activeMatchup.stackingRuleBadge}</div>
-              <p>{activeMatchup.winConditionPath}</p>
+              <p style={{ margin: '0.25rem 0 0' }}>{activeMatchup.stackingRuleDetail}</p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+              <div className="aaa-kicker">ESTRATÉGIA & TÁTICA ESPECÍFICA DO CONFRONTO 1×1</div>
+              <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fde68a', marginBottom: '0.22rem' }}>
+                  🎯 Diretriz Tática Central
+                </div>
+                <p style={{ fontSize: '0.79rem', color: '#e2e8f0', margin: 0, lineHeight: 1.45 }}>
+                  {activeMatchup.generalTactics}
+                </p>
+              </div>
+
+              <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#93c5fd', marginBottom: '0.22rem' }}>
+                  🔮 Mulligan & O Que Canalizar [C] neste 1×1
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
+                  {activeMatchup.mulliganAndChannelGuide}
+                </p>
+              </div>
+
+              <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fca5a5', marginBottom: '0.22rem' }}>
+                  ⚠️ Turno Crítico de Ameaça Inimiga
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
+                  {activeMatchup.criticalThreatTurn}
+                </p>
+              </div>
+
+              <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#86efac', marginBottom: '0.22rem' }}>
+                  🏆 Rota de Vitória no 1×1
+                </div>
+                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
+                  {activeMatchup.winConditionPath}
+                </p>
+              </div>
             </div>
           </div>
 
           <div className="tg-panel">
             <h2 className="font-cinzel tg-panel-title">
-              Alvos Prioritários Inimigos
+              Alvos Prioritários & Combos no 1×1
             </h2>
 
+            <div className="aaa-kicker" style={{ marginBottom: '0.4rem' }}>
+              ALVOS INIMIGOS QUE VOCÊ DEVE NEUTRALIZAR IMEDIATAMENTE
+            </div>
             <div className="tg-targets-list">
-              {activeMatchup.priorityTargets.map(({ card }) => (
+              {activeMatchup.priorityTargets.map(({ card, reason }) => (
                 <div
                   key={card.id}
                   className="tg-target-row"
@@ -1085,6 +1183,56 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                         {DOMAIN_META[card.domain].icon} {CARD_TYPE_LABELS[card.type]}
                       </span>
                     </div>
+                    <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '0.22rem 0 0', lineHeight: 1.38 }}>
+                      {reason}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              <div className="aaa-kicker">COMBOS EM DUELO (SEU GRIMÓRIO vs OPONENTE)</div>
+              {playerProfile.signatureCombos.slice(0, 2).map((combo, idx) => (
+                <div key={`p-combo-${idx}`} className="tg-combo-card" style={{ padding: '0.6rem 0.75rem', borderColor: 'rgba(56, 189, 248, 0.35)' }}>
+                  <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#38bdf8' }}>
+                    ⚡ Seu Combo Chave #{idx + 1}: {combo.title}
+                  </div>
+                  <p style={{ fontSize: '0.76rem', color: '#cbd5e1', margin: '0.22rem 0 0.4rem', lineHeight: 1.4 }}>
+                    {combo.explanation}
+                  </p>
+                  <div className="tg-combo-cards-row">
+                    {combo.cards.map((c) => (
+                      <div key={c.id} className="tg-mini-card-pill" onClick={() => setInspectCard(c)}>
+                        {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                        <div>
+                          <div className="tg-mini-card-name">{c.name}</div>
+                          <div className="tg-mini-card-sub">{c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {opponentProfile.signatureCombos.slice(0, 2).map((combo, idx) => (
+                <div key={`o-combo-${idx}`} className="tg-combo-card" style={{ padding: '0.6rem 0.75rem', borderColor: 'rgba(248, 113, 113, 0.35)' }}>
+                  <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#f87171' }}>
+                    🛡️ Combo Inimigo p/ Sabotar #{idx + 1}: {combo.title}
+                  </div>
+                  <p style={{ fontSize: '0.76rem', color: '#cbd5e1', margin: '0.22rem 0 0.4rem', lineHeight: 1.4 }}>
+                    {combo.explanation}
+                  </p>
+                  <div className="tg-combo-cards-row">
+                    {combo.cards.map((c) => (
+                      <div key={c.id} className="tg-mini-card-pill" onClick={() => setInspectCard(c)}>
+                        {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                        <div>
+                          <div className="tg-mini-card-name">{c.name}</div>
+                          <div className="tg-mini-card-sub">{c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -1295,6 +1443,9 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
                     <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.45, margin: 0 }}>
                       {combo.mechanism}
+                    </p>
+                    <p style={{ fontSize: '0.76rem', color: '#fde68a', lineHeight: 1.42, margin: '0.3rem 0 0' }}>
+                      <strong>Recompensa Tática:</strong> {combo.payoff}
                     </p>
                   </div>
 

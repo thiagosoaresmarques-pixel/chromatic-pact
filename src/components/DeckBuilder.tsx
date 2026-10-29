@@ -208,14 +208,14 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   onSaveCustomDeck,
   onDeleteCustomDeck,
   isGuest = false,
-  username,
   onRequireAccount,
 }) => {
+  // First-time deck setup is 100% free; from the 2nd time onward, full editing/reforging costs 100 Gold
   const isFirstDeckSetup = !isGuest && customDecks.length === 0;
   const [isReplacingGrimoire, setIsReplacingGrimoire] = useState<boolean>(false);
   const hasFreeCatalogSelection = isGuest || isFirstDeckSetup || isReplacingGrimoire;
   const totalOwnedCopies = useMemo(
-    () => Object.values(unlockedCardIds).reduce((acc, v) => acc + (v > 0 ? v : 0), 0),
+    () => Object.values(unlockedCardIds).reduce((sum, n) => sum + n, 0),
     [unlockedCardIds]
   );
   const canModifySavedGrimoire =
@@ -636,9 +636,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       const ownedCopies = hasFreeCatalogSelection ? maxAllowed : unlockedCardIds[card.id] ?? 0;
       if (!hasFreeCatalogSelection && ownedCopies <= 0) {
         setSaveBanner(
-          `Carta bloqueada na sua coleção. Abra pacotes no Relicário para desbloquear novas cartas!`
+          `Carta bloqueada na coleção. Clique em "Editar (${GRIMOIRE_REPLACEMENT_GOLD_COST} 🪙)" para liberar todo o catálogo ou abra pacotes no Relicário!`
         );
-        setTimeout(() => setSaveBanner(null), 3200);
+        setTimeout(() => setSaveBanner(null), 3500);
         return;
       }
       if (currentCopies >= Math.min(maxAllowed, ownedCopies)) {
@@ -666,7 +666,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     (cardId: string) => {
       if (!canModifySavedGrimoire) {
         setSaveBanner(
-          `🔒 Grimório Consagrado (100/100)! Adquira novas cartas no Relicário para trocar cartas livremente ou pague ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro para substituir todo o Grimório.`
+          `🔒 Clique em "Editar (${GRIMOIRE_REPLACEMENT_GOLD_COST} 🪙)" para editar livremente seu Grimório com qualquer carta do catálogo ou desbloqueie novas cartas no Relicário!`
         );
         setTimeout(() => setSaveBanner(null), 3500);
         return;
@@ -1258,11 +1258,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               }}
             >
               <option value="" disabled>
-                Carregar Grimório Inicial...
+                Carregar Modelo de Grimório (27 Arquétipos)...
               </option>
-              {MONOCHROMATIC_STARTER_DECKS.map((d) => (
+              {PREBUILT_DECKS.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {d.name}
+                  {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}
                 </option>
               ))}
             </select>
@@ -1305,7 +1305,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               }
             >
               {isReplacingGrimoire
-                ? `Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST})`
+                ? `Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST} 🪙)`
                 : deckCardIds.length === 100
                 ? 'Salvar (100)'
                 : `Salvar (${deckCardIds.length}/100)`}
@@ -1319,13 +1319,23 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               Completar
             </button>
             {isReplacingGrimoire ? (
-              <button
-                type="button"
-                className="db-action-btn subtle-danger"
-                onClick={handleCancelReplaceGrimoire}
-              >
-                Cancelar
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="db-action-btn subtle-danger"
+                  onClick={() => setDeckCardIds([])}
+                  title="Esvaziar cartas para montar do zero"
+                >
+                  Limpar
+                </button>
+                <button
+                  type="button"
+                  className="db-action-btn subtle-danger"
+                  onClick={handleCancelReplaceGrimoire}
+                >
+                  Cancelar
+                </button>
+              </>
             ) : (isGuest || isFirstDeckSetup) ? (
               <button
                 type="button"
@@ -1339,9 +1349,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 type="button"
                 className="db-action-btn"
                 onClick={handleStartReplaceGrimoire}
-                title={`Substituir Grimório Base por ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro`}
+                title={`Editar ou substituir Grimório completo por ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro`}
               >
-                Trocar Base ({GRIMOIRE_REPLACEMENT_GOLD_COST})
+                Editar ({GRIMOIRE_REPLACEMENT_GOLD_COST} 🪙)
               </button>
             )}
           </div>

@@ -12,6 +12,7 @@ export interface TutorialCodexViewProps {
 
 type CodexSectionId =
   | 'walkthrough'
+  | 'deckbuilding'
   | 'board_stacking'
   | 'domains'
   | 'weather_runes'
@@ -218,34 +219,34 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   },
   {
     stepNumber: 7,
-    badge: 'GRIMÓRIO, COLEÇÃO & RELICÁRIO',
-    title: 'Grimório Inicial Livre, Relicário & Limite de 100',
-    subtitle: 'Escolha livre do seu 1º Grimório (sem cartas impostas), expansão no Relicário e troca por 500 de Ouro.',
+    badge: 'CONSTRUÇÃO & EDIÇÃO DE GRIMÓRIOS',
+    title: 'Forja de 100 Cartas, Edição por 100 Ouro & Relicário',
+    subtitle: '1º Grimório 100% livre, edição completa por 100 de Ouro a partir da 2ª vez e expansão via Relicário.',
     cardId: 'blue_06_dragao_azul',
     summary:
-      'Todo novo Soberano tem o direito de escolher livremente seu 1º Grimório de 100 cartas entre as 996 cartas do jogo (sem receber cartas Vermelhas ou Neutras impostas automaticamente). As cartas obtidas no Relicário ampliam sua coleção total, mantendo o Grimório de Combate sempre cravado em 100 cartas.',
+      'Seu 1º Grimório de 100 cartas é 100% livre entre as 996 cartas do jogo. A partir da 2ª vez, você pode trocar gratuitamente entre cartas que já possui na sua coleção (Grimório Base + pacotes do Relicário) ou pagar apenas 100 de Ouro na Forja para editar/substituir livremente todo o seu Grimório.',
     keyPoints: [
       {
-        tag: 'ESCOLHA LIVRE • 3×/2×/1×',
-        title: '1º Grimório Sem Imposição',
+        tag: 'ARQUITETURA • 100 CARTAS',
+        title: 'Proporção Ideal & Limites 3×/2×/1×',
         detail:
-          'Escolha 1 dos 5 Grimórios Monocromáticos Iniciais ou monte seu próprio deck de 100 cartas do zero respeitando os limites: até 3× Comum/Incomum, 2× Rara e 1× Lendária (máx. 10 Lendárias).',
+          'Equilibre 55–68 Criaturas (pelo menos 35 de Vanguarda), 14–22 Feitiços, 6–12 Reações e 6–12 Relíquias, respeitando até 3× Comum/Incomum, 2× Rara e 1× Lendária (máx. 10 Lendárias).',
       },
       {
-        tag: 'RELICÁRIO • RESERVA LIVRE',
-        title: 'Coleção Expandida vs. 100 em Combate',
+        tag: '100 OURO • TENTATIVA E ERRO',
+        title: 'Editar Grimório (100 🪙)',
         detail:
-          'Cartas abertas no Relicário (+10 Ouro por vitória; 160 Ouro inicial) somam-se à sua coleção total. Seu Grimório de Combate fica sempre limitado a 100 cartas: as excedentes ficam na reserva e você pode tirar (−) e inserir (+) livremente.',
+          'O 1º Grimório é gratuito. Da 2ª vez em diante, clique em "Editar (100 🪙)" na Forja de Grimórios para abrir todo o catálogo de 996 cartas ou carregar qualquer um dos 27 modelos táticos.',
       },
       {
-        tag: '500 OURO • REFORJA BASE',
-        title: 'Substituir Grimório Base',
+        tag: 'RELICÁRIO • RESERVA GRATUITA',
+        title: 'Trocas Livres na Sua Coleção',
         detail:
-          'Na Forja de Grimórios, você pode pagar 500 de Ouro a qualquer momento ("🔄 Substituir Grimório") para escolher um novo Grimório Base de 100 cartas, preservando 100% das cartas já ganhas no Relicário.',
+          'Cartas obtidas no Relicário (+10 Ouro por vitória; 160 Ouro inicial) entram na sua coleção permanente e podem ser trocadas (−/+) no seu Grimório sem custo de Ouro.',
       },
     ],
     proTip:
-      'Use os botões − e + na Forja de Grimórios para testar novas cartas abertas no Relicário dentro das suas 100 vagas de combate sem perder nenhuma carta da sua coleção.',
+      'Consulte a aba "Construção de Grimórios" aqui no Tutorial para ver o guia completo por cor, combinações de 2 a 5 cores, estratégias e táticas comuns!',
   },
   {
     stepNumber: 8,
@@ -552,6 +553,14 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
             </button>
             <button
               type="button"
+              className={`nav-tab-btn ${activeSection === 'deckbuilding' ? 'active' : ''}`}
+              onClick={() => setActiveSection('deckbuilding')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Construção de Grimórios
+            </button>
+            <button
+              type="button"
               className={`nav-tab-btn ${activeSection === 'board_stacking' ? 'active' : ''}`}
               onClick={() => setActiveSection('board_stacking')}
               style={{ padding: '5px 10px', fontSize: '0.73rem' }}
@@ -833,6 +842,284 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          SECTION 1.5: DECKBUILDING GUIDE (COLORS, COMBINATIONS, STRATEGIES & TACTICS)
+         ===================================================================== */}
+      {activeSection === 'deckbuilding' && (
+        <div className="tg-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+          <div>
+            <div className="aaa-kicker">ARQUITETURA DE 100 CARTAS • CORES, ALIANÇAS, ESTRATÉGIAS & TÁTICAS</div>
+            <h2 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.35rem', marginBottom: '0.35rem' }}>
+              Guia Mestre de Construção de Grimórios
+            </h2>
+            <p style={{ color: '#cbd5e1', fontSize: '0.88rem', lineHeight: 1.6, margin: 0 }}>
+              Todo Grimório de Combate contém exatamente <strong>100 cartas</strong> (até <strong>3× Comum/Incomum</strong>, <strong>2× Rara</strong> e <strong>1× Lendária</strong>, com teto de <strong>10 Lendárias</strong>). O seu <strong>1º Grimório é 100% gratuito</strong>; a partir da 2ª vez, você pode trocar cartas da sua coleção livremente ou pagar <strong>100 de Ouro</strong> na Forja para editar/reconstruir todo o seu Grimório com qualquer carta do catálogo.
+            </p>
+          </div>
+
+          {/* BLOCO 1: PROPORÇÕES E CURVA DE ESSÊNCIA */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(235px, 1fr))',
+              gap: '0.85rem',
+            }}
+          >
+            {[
+              {
+                badge: '55 A 68 CARTAS',
+                title: '⚔️ Criaturas (Vanguarda vs. Retaguarda)',
+                color: '#f87171',
+                desc: 'Inclua pelo menos 35–42 criaturas de Vanguarda (Guardiões e combatentes corpo a corpo) para proteger suas 6 colunas contra Invasão, e 20–26 criaturas de Retaguarda (Alcance, Voo e suporte).',
+              },
+              {
+                badge: '14 A 22 CARTAS',
+                title: '✨ Feitiços de Impacto & Remoção',
+                color: '#60a5fa',
+                desc: 'Combine remoções diretas (para eliminar Campeões e alvos atrás de Guardiões), limpezas em área (contra pilhas 3×) e cartas de compra/aceleração de Essência.',
+              },
+              {
+                badge: '6 A 12 CARTAS',
+                title: '🪤 Reações & Emboscadas Ocultas',
+                color: '#c084fc',
+                desc: 'Instaladas gratuitamente na Retaguarda ou disparadas da mão. Punem ataques inimigos, anulam golpes letais ao Soberano ou congelam o agressor antes do dano.',
+              },
+              {
+                badge: '6 A 12 CARTAS',
+                title: '🏛️ Relíquias Contínuas & Curva (3.2–4.1⚡)',
+                color: '#facc15',
+                desc: 'Relíquias geram vantagem todo turno na Retaguarda. Mantenha 30+ cartas de custo 1–3⚡ para nunca perder os turnos iniciais e canalize [C] cartas de custo 6–8⚡ nos turnos 1 a 3.',
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                style={{
+                  padding: '0.95rem 1.05rem',
+                  borderRadius: '10px',
+                  background: 'rgba(15, 23, 42, 0.85)',
+                  border: `1px solid ${item.color}44`,
+                }}
+              >
+                <div style={{ fontSize: '0.64rem', fontWeight: 800, color: item.color, letterSpacing: '0.08em' }}>
+                  {item.badge}
+                </div>
+                <div className="font-cinzel" style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc', margin: '0.28rem 0 0.4rem' }}>
+                  {item.title}
+                </div>
+                <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* BLOCO 2: DICAS POR COR INDIVIDUAL (MONOCROMÁTICOS + NEUTRO) */}
+          <div>
+            <div className="aaa-kicker" style={{ marginBottom: '0.55rem' }}>
+              IDENTIDADE TÁTICA POR COR (GRIMÓRIOS MONOCROMÁTICOS & BASE NEUTRA)
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+                gap: '0.85rem',
+              }}
+            >
+              {[
+                {
+                  dom: 'red' as Domain,
+                  role: 'Ofensiva Explosiva, Ímpeto & Sopro Dracônico',
+                  strategy:
+                    'Pressione desde o Turno 1 com unidades de Ímpeto e ocupe colunas vazias para ganhar +1 ATQ de Invasão. Finalize com Dragões de Sopro e feitiços de dano direto ao Soberano.',
+                  keyCards: 'Priorize criaturas de custo 1–3 com Ímpeto, Feitiços de Queimadura em fileira e Relíquias de Forja Vulcânica.',
+                },
+                {
+                  dom: 'blue' as Domain,
+                  role: 'Cronomancia, Congelamento, Voo & Compra de Cartas',
+                  strategy:
+                    'Congele a Vanguarda inimiga para travar colunas inteiras enquanto suas criaturas com Voo e Condutores Rúnicos acumulam vantagem de cartas e preparam a Expansão de Domínio.',
+                  keyCards: 'Priorize Magos de Congelamento, Feitiços com Gatilho de Magia (spell_cast), Tomos de Compra e Emboscadas de Stasis.',
+                },
+                {
+                  dom: 'purple' as Domain,
+                  role: 'Necromancia, Renascer, Dreno Vital & Corrupção',
+                  strategy:
+                    'Transforme a Cripta em recurso: sacrifique ou troque unidades com Renascer e Eco Necrótico, acumule 5+ cartas na Cripta para ativar Corrupção e drene a Vida do Soberano rival.',
+                  keyCards: 'Priorize Esqueletos/Lichs com Renascer, Vampiros com Dreno Vital, Remoções Letais (Toque Mortal) e Altares de Reanimação.',
+                },
+                {
+                  dom: 'green' as Domain,
+                  role: 'Rampa de Essência, Enxame, Regeneração & Colossos',
+                  strategy:
+                    'Acelere sua Essência Máxima nos turnos iniciais para invocar feras colossais com Atropelar antes que o oponente consiga montar defesas, ou multiplique fichas e fortaleça toda a matilha.',
+                  keyCards: 'Priorize Druidas de Essência (+1⚡), Feras com Atropelar/Regeneração, Licantropos de Ascensão ★ e Buffs Globais.',
+                },
+                {
+                  dom: 'gold' as Domain,
+                  role: 'Falange Impenetrável, Escudo Divino, Guardiões & Cura',
+                  strategy:
+                    'Domine a geometria das colunas: posicione Guardiões com Armadura e Escudo Divino na Vanguarda (+1 Armadura de Falange) protegendo Clérigos, Anjos e Relíquias Solares na Retaguarda.',
+                  keyCards: 'Priorize Paladinos Guardiões, Anjos Voadores com Escudo Divino, Relíquias de Cura/Buff Contínuo e Julgamentos Solares.',
+                },
+                {
+                  dom: 'neutral' as Domain,
+                  role: 'Coringa Universal (0 Afinidade) & Suporte Multicor',
+                  strategy:
+                    'Cartas de Aço & Prisma exigem 0 de Afinidade Elemental. Elas entram em qualquer Grimório para corrigir lacunas da sua cor (ex.: dar Guardiões ao Azul/Vermelho ou compra/relíquias ao Verde).',
+                  keyCards: 'Priorize Autômatos Guardiões, Relíquias de Geração de Essência (Pedra Filosofal, Graal) e Campeões Pentacromáticos.',
+                },
+              ].map((c) => (
+                <div
+                  key={c.dom}
+                  style={{
+                    padding: '0.95rem 1.05rem',
+                    borderRadius: '10px',
+                    background: 'rgba(15, 23, 42, 0.85)',
+                    border: `1px solid ${DOMAIN_META[c.dom].color}55`,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.3rem' }}>
+                    <span style={{ fontSize: '1.1rem' }}>{DOMAIN_META[c.dom].icon}</span>
+                    <span className="font-cinzel" style={{ fontSize: '0.92rem', fontWeight: 800, color: DOMAIN_META[c.dom].color }}>
+                      {DOMAIN_META[c.dom].name}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fde68a', marginBottom: '0.35rem' }}>
+                    {c.role}
+                  </div>
+                  <p style={{ fontSize: '0.79rem', color: '#cbd5e1', lineHeight: 1.48, margin: '0 0 0.4rem' }}>
+                    {c.strategy}
+                  </p>
+                  <div style={{ fontSize: '0.74rem', color: '#94a3b8', lineHeight: 1.4 }}>
+                    <strong style={{ color: '#e2e8f0' }}>Foco de Construção:</strong> {c.keyCards}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* BLOCO 3: COMBINAÇÕES DE CORES (2, 3 E 4-5 CORES) */}
+          <div>
+            <div className="aaa-kicker" style={{ marginBottom: '0.55rem' }}>
+              COMBINAÇÕES DE CORES: ALIANÇAS (2 CORES), TRÍADES (3 CORES) & CONVERGÊNCIA (4–5 CORES)
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
+                gap: '0.85rem',
+              }}
+            >
+              <div style={{ padding: '0.95rem 1.05rem', borderRadius: '10px', background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(56, 189, 248, 0.35)' }}>
+                <div style={{ fontSize: '0.66rem', fontWeight: 800, color: '#38bdf8', letterSpacing: '0.08em' }}>
+                  2 CORES • AS 10 ALIANÇAS ELEMENTAIS
+                </div>
+                <div className="font-cinzel" style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc', margin: '0.28rem 0 0.4rem' }}>
+                  Divisão Recomendada: 55–60 Primária / 25–30 Secundária / 10–15 Neutra
+                </div>
+                <p style={{ fontSize: '0.79rem', color: '#cbd5e1', lineHeight: 1.48, margin: '0 0 0.45rem' }}>
+                  Ao ganhar Afinidade na cor principal, seus outros domínios recebem <strong>65% de Afinidade cruzada automática</strong>. Use a 2ª cor para cobrir a fraqueza da 1ª:
+                </p>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+                  <li><strong>🔥+⏳ (Pyros/Aether):</strong> Feitiços em cadeia, Congelamento + Queimadura.</li>
+                  <li><strong>🔥+💀 (Pyros/Umbra):</strong> Sacrifício agressivo, Fênix e Reanimação.</li>
+                  <li><strong>⏳+☀️ (Aether/Solis):</strong> Muralha de Guardiões + Stasis e Compra.</li>
+                  <li><strong>🌿+💀 (Sylva/Umbra):</strong> Rampa de Essência + Reciclagem eterna da Cripta.</li>
+                  <li><strong>🌿+☀️ (Sylva/Solis):</strong> Enxame fortalecido com Escudo Divino e Cura.</li>
+                </ul>
+              </div>
+
+              <div style={{ padding: '0.95rem 1.05rem', borderRadius: '10px', background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(192, 132, 252, 0.35)' }}>
+                <div style={{ fontSize: '0.66rem', fontWeight: 800, color: '#c084fc', letterSpacing: '0.08em' }}>
+                  3 CORES • AS 10 TRÍADES ELEMENTAIS
+                </div>
+                <div className="font-cinzel" style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc', margin: '0.28rem 0 0.4rem' }}>
+                  Divisão Recomendada: 40 Cor Base / 25 Cor B / 20 Cor C / 15 Neutra
+                </div>
+                <p style={{ fontSize: '0.79rem', color: '#cbd5e1', lineHeight: 1.48, margin: '0 0 0.45rem' }}>
+                  Grimórios de 3 cores desbloqueiam sinergias devastadoras. O segredo tático é <strong>Canalizar [C] 1 carta das cores secundárias nos Turnos 1 a 3</strong>:
+                </p>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+                  <li><strong>Regra de Afinidade:</strong> Evite cartas de Afinidade 3+ na 3ª cor (prefira Afinidade 1–2 nas cores de apoio).</li>
+                  <li><strong>Tríade Templar (☀️+⏳+🌿):</strong> Rampa Verde + Controle Azul + Guardiões Dourados.</li>
+                  <li><strong>Tríade Cataclísmica (🔥+💀+⏳):</strong> Remoção total, compra arcana e reanimação de Dragões.</li>
+                </ul>
+              </div>
+
+              <div style={{ padding: '0.95rem 1.05rem', borderRadius: '10px', background: 'rgba(15, 23, 42, 0.85)', border: '1px solid rgba(250, 204, 21, 0.4)' }}>
+                <div style={{ fontSize: '0.66rem', fontWeight: 800, color: '#facc15', letterSpacing: '0.08em' }}>
+                  4 A 5 CORES • CONVERGÊNCIA PENTACROMÁTICA
+                </div>
+                <div className="font-cinzel" style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc', margin: '0.28rem 0 0.4rem' }}>
+                  Divisão Recomendada: 25–30 Neutras + 14–18 de Cada Domínio Elemental
+                </div>
+                <p style={{ fontSize: '0.79rem', color: '#cbd5e1', lineHeight: 1.48, margin: '0 0 0.45rem' }}>
+                  Baralhos de 4–5 cores apoiam-se em <strong>Criaturas e Relíquias Neutras (0 Afinidade)</strong> para segurar os 3 primeiros turnos enquanto a Afinidade global sobe:
+                </p>
+                <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.76rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+                  <li><strong>Os Cinco Tronos (#166):</strong> Relíquias Supremas que recompensam múltiplos domínios ativos.</li>
+                  <li><strong>Valkyra & Tiamat:</strong> Campeãs Lendárias de fim de jogo que escalam com as 5 cores.</li>
+                  <li><strong>Canalização Disciplinada:</strong> Canalize [C] todo turno a cor que ainda falta na sua mão.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* BLOCO 4: ESTRATÉGIAS E TÁTICAS COMUNS EM PARTIDA */}
+          <div>
+            <div className="aaa-kicker" style={{ marginBottom: '0.55rem' }}>
+              ESTRATÉGIAS DE ARQUÉTIPO & TÁTICAS COMUNS DE COMBATE
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                gap: '0.85rem',
+              }}
+            >
+              {[
+                {
+                  tag: 'ARQUÉTIPO 1 • AGGRO / INVASÃO',
+                  title: '⚡ Pressão de Colunas Vazias',
+                  desc: 'Espalhe criaturas rápidas (custo 1–3) em colunas onde a Vanguarda inimiga está vazia para ativar +1 ATQ de Invasão. Ignore trocas demoradas contra tanques e force o rival a gastar Essência apagando incêndios enquanto você finaliza com dano direto.',
+                },
+                {
+                  tag: 'ARQUÉTIPO 2 • MIDRANGE / FALANGE',
+                  title: '🛡️ Domínio de Coluna & Trocas 2-por-1',
+                  desc: 'Construa colunas completas: 1 Guardião robusto na Vanguarda + 1 Atirador (Alcance/Voo) na Retaguarda (+1 ATQ de Suporte). Use a Movimentação gratuita para recuar unidades feridas para a Retaguarda e colocar um Guardião novo na frente.',
+                },
+                {
+                  tag: 'ARQUÉTIPO 3 • CONTROL / STASIS',
+                  title: '⏳ Congelamento, Emboscadas & Limpeza',
+                  desc: 'Não tenha pressa: instale Reações (Emboscadas) na Retaguarda e congele as colunas mais fortes do inimigo. Quando o oponente empilhar 2× ou 3× unidades na mesma coluna ou fileira, puna com Feitiços de Área ou Sopro Dracônico.',
+                },
+                {
+                  tag: 'ARQUÉTIPO 4 • MOTOR / COMBO 6/6',
+                  title: '👑 Relíquias, Ascensão ★ & Expansão',
+                  desc: 'Acumule Relíquias contínuas na Retaguarda e acelere sua Afinidade até 6/6 canalizando [C] todo turno. No turno decisivo, ative a Expansão de Domínio (+1/+1, Ímpeto e Acerto Garantido) ou evolua seus Campeões com Ascensão ★ para vencer em um único ataque.',
+                },
+              ].map((st, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: '0.95rem 1.05rem',
+                    borderRadius: '10px',
+                    background: 'rgba(15, 23, 42, 0.85)',
+                    border: '1px solid rgba(212, 175, 55, 0.28)',
+                  }}
+                >
+                  <div style={{ fontSize: '0.63rem', fontWeight: 800, color: '#d4af37', letterSpacing: '0.08em' }}>
+                    {st.tag}
+                  </div>
+                  <div className="font-cinzel" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', margin: '0.28rem 0 0.4rem' }}>
+                    {st.title}
+                  </div>
+                  <p style={{ fontSize: '0.79rem', color: '#cbd5e1', lineHeight: 1.5, margin: 0 }}>{st.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
 
 export const VICTORY_GOLD_REWARD = 10;
 export const STARTER_GOLD = 160;
-export const GRIMOIRE_REPLACEMENT_GOLD_COST = 500;
+export const GRIMOIRE_REPLACEMENT_GOLD_COST = 100;
 
 export const MONOCHROMATIC_STARTER_DECKS: PrebuiltDeck[] = PREBUILT_DECKS.filter(
   (d) => d.domains.length === 1

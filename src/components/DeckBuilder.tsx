@@ -1349,94 +1349,70 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           {saveBanner && <div className="db-save-toast">{saveBanner}</div>}
         </div>
 
-        {/* Minimalist Composition Bar & Mana Curve */}
-        <div className="db-sidebar-metrics">
-          {/* Thin Segmented Type Proportion Bar */}
-          <div className="db-proportion-bar">
-            <div
-              className="db-seg seg-creature"
-              style={{ width: `${creaturePct}%` }}
-            />
-            <div
-              className="db-seg seg-spell"
-              style={{ width: `${spellPct}%` }}
-            />
-            <div
-              className="db-seg seg-reaction"
-              style={{ width: `${reactionPct}%` }}
-            />
-            <div
-              className="db-seg seg-relic"
-              style={{ width: `${relicPct}%` }}
-            />
-          </div>
+        {/* Minimalist Composition Bar & Mana Curve (Only when Análise is open) */}
+        {showSynergyPanel && (
+          <div className="db-sidebar-metrics">
+            <div className="db-proportion-bar">
+              <div
+                className="db-seg seg-creature"
+                style={{ width: `${creaturePct}%` }}
+              />
+              <div
+                className="db-seg seg-spell"
+                style={{ width: `${spellPct}%` }}
+              />
+              <div
+                className="db-seg seg-reaction"
+                style={{ width: `${reactionPct}%` }}
+              />
+              <div
+                className="db-seg seg-relic"
+                style={{ width: `${relicPct}%` }}
+              />
+            </div>
 
-          <div className="db-metrics-legend">
-            <span>
-              <i className="dot-c" /> {deckAnalysis.typeCounts.creature} Criat.
-            </span>
-            <span>
-              <i className="dot-s" /> {deckAnalysis.typeCounts.spell} Feit.
-            </span>
-            <span>
-              <i className="dot-r" /> {deckAnalysis.typeCounts.reaction} Reaç.
-            </span>
-            <span>
-              <i className="dot-l" /> {deckAnalysis.typeCounts.relic} Relíq.
-            </span>
-            <span className="db-avg-cost">{deckAnalysis.avgCost}⚡</span>
-          </div>
+            <div className="db-metrics-legend">
+              <span>
+                <i className="dot-c" /> {deckAnalysis.typeCounts.creature} Criat.
+              </span>
+              <span>
+                <i className="dot-s" /> {deckAnalysis.typeCounts.spell} Feit.
+              </span>
+              <span>
+                <i className="dot-r" /> {deckAnalysis.typeCounts.reaction} Reaç.
+              </span>
+              <span>
+                <i className="dot-l" /> {deckAnalysis.typeCounts.relic} Relíq.
+              </span>
+              <span className="db-avg-cost">{deckAnalysis.avgCost}⚡</span>
+            </div>
 
-          {/* Sleek Mana Curve */}
-          <div className="db-mini-curve">
-            {[1, 2, 3, 4, 5, 6, 7].map((bucket) => {
-              const count = deckStats.curve[bucket] ?? 0;
-              const heightPct = Math.round((count / deckStats.maxCurveBucket) * 100);
-              return (
-                <div key={bucket} className="db-curve-col">
-                  <span className="db-curve-val">{count > 0 ? count : ''}</span>
-                  <div className="db-curve-track">
-                    <div
-                      className="db-curve-fill"
-                      style={{ height: `${count > 0 ? Math.max(12, heightPct) : 0}%` }}
-                    />
+            <div className="db-mini-curve">
+              {[1, 2, 3, 4, 5, 6, 7].map((bucket) => {
+                const count = deckStats.curve[bucket] ?? 0;
+                const heightPct = Math.round((count / deckStats.maxCurveBucket) * 100);
+                return (
+                  <div key={bucket} className="db-curve-col">
+                    <span className="db-curve-val">{count > 0 ? count : ''}</span>
+                    <div className="db-curve-track">
+                      <div
+                        className="db-curve-fill"
+                        style={{ height: `${count > 0 ? Math.max(12, heightPct) : 0}%` }}
+                      />
+                    </div>
+                    <span className="db-curve-lbl">{bucket === 7 ? '7+' : bucket}</span>
                   </div>
-                  <span className="db-curve-lbl">{bucket === 7 ? '7+' : bucket}</span>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Sleek MTG Arena-Style Card Tiles List */}
         <div className="db-deck-list">
           {groupedDeckList.length === 0 ? (
-            <div className="db-empty-state" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', padding: '0.6rem' }}>
-              {(isGuest || isFirstDeckSetup || isReplacingGrimoire) &&
-                MONOCHROMATIC_STARTER_DECKS.map((sd) => {
-                  const dom = sd.domains[0] ?? 'red';
-                  return (
-                    <button
-                      key={sd.id}
-                      type="button"
-                      className="db-action-btn"
-                      style={{ textAlign: 'left', justifyContent: 'flex-start', padding: '0.45rem 0.65rem' }}
-                      onClick={() => handleLoadPrebuilt(sd.id)}
-                    >
-                      <span
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          background: DOMAIN_META[dom].color,
-                          display: 'inline-block',
-                          marginRight: 6,
-                        }}
-                      />
-                      {sd.name}
-                    </button>
-                  );
-                })}
+            <div className="db-empty-state">
+              0/100 cartas
             </div>
           ) : (
             groupedDeckList.map(({ card, count }) => (

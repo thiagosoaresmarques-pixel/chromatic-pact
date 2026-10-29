@@ -229,17 +229,13 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
                   <img src={coverCard.imagePath} alt={pack.name} className="aaa-pack-art" />
                 )}
                 <div className="aaa-pack-vignette" />
-                <span className="aaa-pack-kicker">{pack.kicker}</span>
               </div>
 
-              <div className="aaa-pack-body">
-                <h3 className="font-cinzel aaa-pack-title">{pack.name}</h3>
-                <p className="aaa-pack-desc">{pack.subtitle}</p>
+              <div className="aaa-pack-body" style={{ padding: '0.65rem 0.75rem', gap: '0.35rem' }}>
+                <h3 className="font-cinzel aaa-pack-title" style={{ fontSize: '0.84rem' }}>{pack.name}</h3>
                 <div className="aaa-pack-footer">
                   <span className="aaa-pack-price">{pack.cost} OURO</span>
-                  <span className="aaa-pack-select-indicator">
-                    {isSelected ? 'SELECIONADO' : 'SELECIONAR'}
-                  </span>
+                  {isSelected && <span className="aaa-pack-select-indicator">✓</span>}
                 </div>
               </div>
             </div>
@@ -256,8 +252,8 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
           onClick={handleBuyAndOpenPack}
         >
           {isGuest
-            ? `ENTRAR / CRIAR CONTA PARA ABRIR PACOTES (${selectedPack.cost} OURO)`
-            : `ABRIR ${selectedPack.name.toUpperCase()} — ${selectedPack.cost} OURO`}
+            ? `Entrar para Abrir (${selectedPack.cost} Ouro)`
+            : `Abrir ${selectedPack.name} (${selectedPack.cost} Ouro)`}
         </button>
 
         {currentPackCards.length > 0 && revealedIndices.length < currentPackCards.length && (
@@ -266,7 +262,7 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
             className="aaa-btn aaa-btn-secondary aaa-btn-lg"
             onClick={handleRevealAll}
           >
-            REVELAR TODAS ({currentPackCards.length})
+            Revelar Todas
           </button>
         )}
       </div>
@@ -274,13 +270,6 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
       {/* Pack Reveal Stage */}
       {currentPackCards.length > 0 && (
         <div className="aaa-pack-reveal-stage">
-          <div className="aaa-stage-header">
-            <span className="font-cinzel">CARTAS OBTIDAS</span>
-            <span className="aaa-stage-hint">
-              Clique nas cartas seladas para revelar ou clique com o botão direito para inspecionar
-            </span>
-          </div>
-
           <div className="aaa-pack-cards-row">
             {currentPackCards.map((card, idx) => {
               const isRevealed = revealedIndices.includes(idx);

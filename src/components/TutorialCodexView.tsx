@@ -584,12 +584,13 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
          ===================================================================== */}
       {activeSection === 'walkthrough' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-          {/* Step Progress Bar */}
+          {/* Step Progress Bar (Compact Numbered Pills) */}
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-              gap: '0.5rem',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.4rem',
+              alignItems: 'center',
             }}
           >
             {WALKTHROUGH_STEPS.map((st, idx) => {
@@ -600,41 +601,19 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                   type="button"
                   onClick={() => setActiveStepIndex(idx)}
                   style={{
-                    textAlign: 'left',
-                    padding: '0.65rem 0.85rem',
-                    borderRadius: '10px',
+                    padding: '0.38rem 0.72rem',
+                    borderRadius: '6px',
                     cursor: 'pointer',
-                    background: isCurrent
-                      ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(15, 23, 42, 0.95))'
-                      : 'rgba(15, 23, 42, 0.72)',
+                    background: isCurrent ? '#172030' : '#0b0f17',
                     border: isCurrent
-                      ? '1px solid rgba(250, 204, 21, 0.7)'
+                      ? '1px solid rgba(212, 175, 55, 0.65)'
                       : '1px solid rgba(148, 163, 184, 0.16)',
-                    transition: 'all 0.16s ease',
+                    color: isCurrent ? '#e6c875' : '#94a3b8',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
                   }}
                 >
-                  <div
-                    style={{
-                      fontSize: '0.62rem',
-                      fontWeight: 800,
-                      letterSpacing: '0.1em',
-                      color: isCurrent ? '#fde047' : '#64748b',
-                      marginBottom: '0.2rem',
-                    }}
-                  >
-                    LIÇÃO 0{st.stepNumber}
-                  </div>
-                  <div
-                    className="font-cinzel"
-                    style={{
-                      fontSize: '0.8rem',
-                      fontWeight: 700,
-                      color: isCurrent ? '#ffffff' : '#cbd5e1',
-                      lineHeight: 1.25,
-                    }}
-                  >
-                    {st.title}
-                  </div>
+                  {st.stepNumber}. {st.title.split('&')[0].trim()}
                 </button>
               );
             })}
@@ -759,23 +738,6 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               </div>
 
               <div>
-                {/* Clean Editorial Pro Tip Banner */}
-                <div
-                  style={{
-                    padding: '0.75rem 1rem',
-                    borderRadius: '8px',
-                    background: 'rgba(30, 41, 59, 0.65)',
-                    borderLeft: '3px solid #d4af37',
-                    color: '#e2e8f0',
-                    fontSize: '0.83rem',
-                    marginBottom: '1rem',
-                    lineHeight: 1.5,
-                  }}
-                >
-                  <strong style={{ color: '#fde047', marginRight: '0.35rem' }}>Nota Tática:</strong>
-                  {currentStep.proTip}
-                </div>
-
                 {/* Lesson Navigation Footer */}
                 <div
                   style={{
@@ -1211,12 +1173,9 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                       </span>
                     </div>
 
-                    <p style={{ fontSize: '0.81rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '0.4rem' }}>
+                    <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.45, margin: 0 }}>
                       {kw.description}
                     </p>
-                    <div style={{ fontSize: '0.75rem', color: '#fde68a', lineHeight: 1.45 }}>
-                      <em>{kw.tacticalTip}</em>
-                    </div>
                   </div>
 
                   {exCard && (

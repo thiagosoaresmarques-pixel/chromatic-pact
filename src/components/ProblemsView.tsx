@@ -8,7 +8,6 @@ import {
   PROBLEM_TIERS_ORDER,
   ProblemDifficultyTier,
   ProblemHistoryEntry,
-  recordProblemHintUsed,
   TACTICAL_PROBLEMS,
   TacticalProblem,
 } from '../data/problems';
@@ -17,7 +16,6 @@ import {
   DAILY_PROBLEM_BONUS_GOLD,
   DailyStateData,
   getDailyState,
-  recordDailyProblemAttemptResult,
 } from '../utils/dailyQuestsEngine';
 import { CardDefinition } from '../types/game';
 import { DOMAIN_META } from './CardView';
@@ -34,12 +32,11 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
   const [selectedTier, setSelectedTier] = useState<'all' | ProblemDifficultyTier>('iniciante');
   const [historyFilter, setHistoryFilter] = useState<HistoryFilterType>('all');
   const [solvedIds] = useState<string[]>(() => getSolvedProblemIds());
-  const [historyMap, setHistoryMap] = useState<Record<string, ProblemHistoryEntry>>(() =>
+  const [historyMap] = useState<Record<string, ProblemHistoryEntry>>(() =>
     getProblemHistoryMap()
   );
   const [dailyState, setDailyState] = useState<DailyStateData>(() => getDailyState());
   const [isDailyPanelMinimized, setIsDailyPanelMinimized] = useState<boolean>(true);
-  const [expandedHintId, setExpandedHintId] = useState<string | null>(null);
 
   const solvedSet = useMemo(() => new Set(solvedIds), [solvedIds]);
 
@@ -330,248 +327,108 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
         </div>
       )}
 
-      {/* Sober Spoiler-Free Problems Grid */}
+      {/* Clean Clickable Problems Grid (No redundant buttons or micro-text) */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(252px, 1fr))',
-          gap: 10,
+          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+          gap: 8,
         }}
       >
         {filteredProblems.map((prob) => {
           const isSolved = solvedSet.has(prob.id);
-          const isDaily = prob.id === dailyState.dailyProblemId;
-          const entry = historyMap[prob.id];
           const isTierUnlocked = isProblemTierUnlocked(prob.difficulty, solvedIds);
-          const diffMeta = PROBLEM_DIFFICULTY_META[prob.difficulty];
           const domMeta = DOMAIN_META[prob.primaryDomain];
           const avatarCard = CARDS_BY_ID[prob.p1AvatarCardId];
-          const isHintOpen = expandedHintId === prob.id;
-          const tierIdx = PROBLEM_TIERS_ORDER.indexOf(prob.difficulty);
-          const prevTierLabel =
-            tierIdx > 0
-              ? PROBLEM_DIFFICULTY_META[PROBLEM_TIERS_ORDER[tierIdx - 1]].label.split('•')[0].trim()
-              : '';
 
           return (
             <div
               key={prob.id}
+              onClick={() => {
+                if (isTierUnlocked) onSelectProblem(prob);
+              }}
               style={{
                 background: '#0b0f17',
                 border: !isTierUnlocked
-                  ? '1px dashed rgba(148, 163, 184, 0.16)'
+                  ? '1px dashed rgba(148, 163, 184, 0.14)'
                   : isSolved
-                    ? '1px solid rgba(212, 175, 55, 0.38)'
+                    ? '1px solid rgba(212, 175, 55, 0.42)'
                     : '1px solid rgba(148, 163, 184, 0.18)',
                 borderRadius: 8,
                 padding: '10px 12px',
                 display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                gap: 8,
-                opacity: isTierUnlocked ? 1 : 0.62,
+                alignItems: 'center',
+                gap: 10,
+                opacity: isTierUnlocked ? 1 : 0.55,
+                cursor: isTierUnlocked ? 'pointer' : 'not-allowed',
+                transition: 'border-color 0.15s ease, background 0.15s ease',
               }}
             >
-              <div>
+              {avatarCard?.imagePath && (
+                <img
+                  src={avatarCard.imagePath}
+                  alt={prob.title}
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 6,
+                    objectFit: 'cover',
+                    border: '1px solid rgba(212, 175, 55, 0.28)',
+                    flexShrink: 0,
+                    filter: isTierUnlocked ? 'none' : 'grayscale(0.8)',
+                  }}
+                />
+              )}
+
+              <div style={{ minWidth: 0, flex: 1 }}>
                 <div
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: 6,
-                    marginBottom: 6,
+                    marginBottom: 2,
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span
-                      style={{
-                        padding: '2px 6px',
-                        borderRadius: 4,
-                        background: '#131926',
-                        border: '1px solid rgba(148, 163, 184, 0.2)',
-                        color: '#cbd5e1',
-                        fontSize: '0.65rem',
-                        fontWeight: 800,
-                      }}
-                    >
-                      #{String(prob.number).padStart(2, '0')} • {diffMeta.starsText}
-                    </span>
-                    <span
-                      title={`Domínio ${domMeta.name}`}
-                      style={{ fontSize: '0.74rem', color: '#94a3b8' }}
-                    >
-                      {domMeta.shortName}
-                    </span>
-                    {isDaily && (
-                      <span
-                        style={{
-                          padding: '1px 5px',
-                          borderRadius: 4,
-                          background: 'rgba(212, 175, 55, 0.14)',
-                          border: '1px solid rgba(212, 175, 55, 0.35)',
-                          color: '#e6c875',
-                          fontSize: '0.6rem',
-                          fontWeight: 800,
-                        }}
-                      >
-                        DO DIA
-                      </span>
-                    )}
-                  </div>
+                  <span
+                    style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      color: '#94a3b8',
+                    }}
+                  >
+                    #{String(prob.number).padStart(2, '0')} • {domMeta.shortName}
+                  </span>
 
                   {!isTierUnlocked ? (
-                    <span style={{ fontSize: '0.66rem', color: '#64748b', fontWeight: 700 }}>
-                      🔒 +{prob.goldReward} Ouro
+                    <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700 }}>
+                      🔒
                     </span>
                   ) : isSolved ? (
-                    <span
-                      style={{
-                        fontSize: '0.66rem',
-                        color: '#e6c875',
-                        fontWeight: 800,
-                      }}
-                    >
-                      {entry?.solvedOnFirstTry ? '✓ 1ª Tentativa' : '✓ Resolvido'}
-                    </span>
-                  ) : (entry?.failures ?? 0) > 0 ? (
-                    <span style={{ fontSize: '0.66rem', color: '#94a3b8', fontWeight: 700 }}>
-                      {entry?.failures} tentativa(s) • +{prob.goldReward} Ouro
+                    <span style={{ fontSize: '0.7rem', color: '#e6c875', fontWeight: 800 }}>
+                      ✓
                     </span>
                   ) : (
-                    <span style={{ fontSize: '0.66rem', color: '#e6c875', fontWeight: 700 }}>
+                    <span style={{ fontSize: '0.68rem', color: '#e6c875', fontWeight: 700 }}>
                       +{prob.goldReward} Ouro
                     </span>
                   )}
                 </div>
 
-                {/* Row 2: Avatar + Clean Title + Compact 1-Line Matchup Stats */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                  {avatarCard?.imagePath && (
-                    <img
-                      src={avatarCard.imagePath}
-                      alt={prob.title}
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 6,
-                        objectFit: 'cover',
-                        border: '1px solid rgba(212, 175, 55, 0.32)',
-                        flexShrink: 0,
-                        filter: isTierUnlocked ? 'none' : 'grayscale(0.75)',
-                      }}
-                    />
-                  )}
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div
-                      style={{
-                        fontSize: '0.84rem',
-                        fontFamily: 'Cinzel, serif',
-                        fontWeight: 800,
-                        color: '#f1f5f9',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                      title={prob.title}
-                    >
-                      {prob.title}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: '0.7rem',
-                        color: '#94a3b8',
-                        marginTop: 2,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: 4,
-                      }}
-                    >
-                      <span>
-                        T{prob.turnNumber} • {prob.p1Essence}/{prob.p1MaxEssence} Ess. • {prob.p1HandCardIds.length} Cartas
-                      </span>
-                      <strong style={{ color: '#cbd5e1' }}>Alvo: {prob.p2Hp} PV</strong>
-                    </div>
-                  </div>
+                <div
+                  style={{
+                    fontSize: '0.84rem',
+                    fontFamily: 'Cinzel, serif',
+                    fontWeight: 800,
+                    color: '#f1f5f9',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                  title={prob.title}
+                >
+                  {prob.title}
                 </div>
-
-                {isHintOpen && isTierUnlocked && (
-                  <div
-                    style={{
-                      marginTop: 7,
-                      padding: '6px 9px',
-                      borderRadius: 6,
-                      background: '#111622',
-                      border: '1px solid rgba(212, 175, 55, 0.3)',
-                      fontSize: '0.72rem',
-                      color: '#e2e8f0',
-                      lineHeight: 1.4,
-                    }}
-                  >
-                    <strong style={{ color: '#e6c875' }}>Dica:</strong> {prob.hint1}
-                  </div>
-                )}
-              </div>
-
-              {/* Row 3: Sober Action Buttons */}
-              <div style={{ display: 'flex', gap: 6 }}>
-                {isTierUnlocked ? (
-                  <>
-                    <button
-                      type="button"
-                      className={isSolved ? 'aaa-btn aaa-btn-secondary' : 'aaa-btn aaa-btn-primary'}
-                      onClick={() => onSelectProblem(prob)}
-                      style={{
-                        flex: 1,
-                        padding: '6px 10px',
-                        fontSize: '0.73rem',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {isSolved
-                        ? `Rejogar #${prob.number}`
-                        : `Resolver #${prob.number}`}
-                    </button>
-                    <button
-                      type="button"
-                      className="aaa-btn aaa-btn-secondary"
-                      onClick={() => {
-                        if (!isHintOpen) {
-                          const updated = recordProblemHintUsed(prob.id, 1);
-                          setHistoryMap((prev) => ({ ...prev, [prob.id]: updated }));
-                          const dRes = recordDailyProblemAttemptResult(prob.id, 'hint_used');
-                          setDailyState({ ...dRes.state });
-                        }
-                        setExpandedHintId(isHintOpen ? null : prob.id);
-                      }}
-                      title="Consultar Dica Conceitual"
-                      style={{
-                        padding: '6px 9px',
-                        fontSize: '0.72rem',
-                      }}
-                    >
-                      {isHintOpen ? '✕' : 'Dica'}
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    disabled
-                    style={{
-                      flex: 1,
-                      padding: '6px 8px',
-                      borderRadius: 6,
-                      border: '1px solid rgba(148, 163, 184, 0.14)',
-                      background: '#0e131d',
-                      color: '#64748b',
-                      fontWeight: 700,
-                      fontSize: '0.68rem',
-                      cursor: 'not-allowed',
-                    }}
-                  >
-                    🔒 Complete 20/20 do {prevTierLabel}
-                  </button>
-                )}
               </div>
             </div>
           );

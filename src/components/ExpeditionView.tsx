@@ -4,7 +4,7 @@ import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import { playSfx } from '../utils/soundEngine';
 import { VICTORY_GOLD_REWARD } from '../utils/multiplayerEngine';
-import { CardView, CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
+import { CardView, CardInspectModal, DOMAIN_META } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 
 export interface SovereignBlessing {
@@ -557,14 +557,11 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
               >
                 <div className="exp-blessing-top">
                   <span className="exp-blessing-icon">{b.icon}</span>
-                  <span className="aaa-kicker">
-                    {b.kicker}
-                  </span>
                 </div>
                 <h3 className="font-cinzel exp-blessing-title">{b.name}</h3>
                 <p className="exp-blessing-desc">{b.description}</p>
                 <button type="button" className="aaa-btn aaa-btn-primary" style={{ marginTop: 'auto' }}>
-                  Escolher {b.name} →
+                  Escolher
                 </button>
               </div>
             ))}
@@ -573,15 +570,15 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
       )}
 
       {/* =====================================================================
-          STEP 2: 16-ROUND TACTICAL BUCKET DRAFT (1 OF 3 PACKS OF 5 CARDS = 80 CARDS)
+          STEP 2: 20-ROUND TACTICAL BUCKET DRAFT
           ===================================================================== */}
       {runState.phase === 'draft' && (
         <div className="exp-draft-workspace">
           <div className="exp-draft-main">
             <div className="exp-draft-header-bar">
               <div>
-                <h2 className="font-cinzel" style={{ fontSize: '1.1rem', color: '#f8fafc', margin: 0 }}>
-                  Draft {runState.draftRound}/20 — Escolha 1 Pacote (+5 Cartas)
+                <h2 className="font-cinzel" style={{ fontSize: '1.05rem', color: '#f8fafc', margin: 0 }}>
+                  Draft {runState.draftRound}/20
                 </h2>
               </div>
               <button
@@ -589,7 +586,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 className="btn-fantasy"
                 onClick={handleAutoFinishDraft}
               >
-                ⚡ Completar Draft
+                ⚡ Completar
               </button>
             </div>
 
@@ -597,15 +594,9 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
               {draftBuckets.map((bucket) => (
                 <div key={bucket.id} className="exp-bucket-card">
                   <div className="exp-bucket-header">
-                    <div>
-                      <span className="aaa-kicker">
-                        {DOMAIN_META[bucket.domain].icon} {DOMAIN_META[bucket.domain].name}
-                      </span>
-                      <h3 className="font-cinzel" style={{ fontSize: '1.05rem', color: '#f1f5f9' }}>
-                        {bucket.title}
-                      </h3>
-                      <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{bucket.subtitle}</p>
-                    </div>
+                    <h3 className="font-cinzel" style={{ fontSize: '0.96rem', color: '#f1f5f9', margin: 0 }}>
+                      {DOMAIN_META[bucket.domain].icon} {bucket.title}
+                    </h3>
                   </div>
 
                   <div className="exp-bucket-cards-list">
@@ -615,14 +606,10 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                         className="exp-bucket-card-row"
                         onClick={() => setInspectCard(c)}
                       >
-                        <span className="exp-bcr-cost">{c.cost}⚡</span>
+                        <span className="exp-bcr-cost">{c.cost}</span>
                         {c.imagePath && <img src={c.imagePath} alt={c.name} className="exp-bcr-thumb" />}
                         <div className="exp-bcr-info">
                           <div className="exp-bcr-name">{c.name}</div>
-                          <div className="exp-bcr-meta">
-                            {CARD_TYPE_LABELS[c.type]}
-                            {c.type === 'creature' ? ` • ${c.atk}/${c.hp} (ARM ${c.armor})` : ''}
-                          </div>
                         </div>
                       </div>
                     ))}
@@ -631,48 +618,21 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-primary"
-                    style={{ width: '100%', marginTop: '0.75rem' }}
+                    style={{ width: '100%', marginTop: '0.6rem' }}
                     onClick={() => handlePickBucket(bucket)}
                   >
-                    + Adicionar Pacote (+5 Cartas)
+                    + Escolher Pacote
                   </button>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Live Draft Asymmetry & Curve Sidebar */}
+          {/* Live Draft Sidebar */}
           <aside className="exp-draft-sidebar">
-            <div className="aaa-kicker">SEU DECK EM CONSTRUÇÃO</div>
-            <h3 className="font-cinzel" style={{ color: '#fde68a', marginBottom: '0.5rem' }}>
-              {runState.deckCardIds.length} / 100 Cartas Escolhidas
+            <h3 className="font-cinzel" style={{ color: '#e6c875', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+              Deck ({runState.deckCardIds.length}/100)
             </h3>
-
-            <div className="db-metrics-legend" style={{ marginBottom: '0.75rem' }}>
-              <span><i className="dot-c" /> {deckStats.counts.creature} Criat.</span>
-              <span><i className="dot-s" /> {deckStats.counts.spell} Feit.</span>
-              <span><i className="dot-r" /> {deckStats.counts.reaction} Reaç.</span>
-              <span><i className="dot-l" /> {deckStats.counts.relic} Relíq.</span>
-            </div>
-
-            <div className="db-mini-curve" style={{ marginBottom: '0.9rem' }}>
-              {[1, 2, 3, 4, 5, 6, 7].map((bucket) => {
-                const cnt = deckStats.curve[bucket] ?? 0;
-                const hPct = Math.round((cnt / deckStats.maxCurve) * 100);
-                return (
-                  <div key={bucket} className="db-curve-col">
-                    <span className="db-curve-val">{cnt > 0 ? cnt : ''}</span>
-                    <div className="db-curve-track">
-                      <div
-                        className="db-curve-fill"
-                        style={{ height: `${cnt > 0 ? Math.max(14, hPct) : 0}%` }}
-                      />
-                    </div>
-                    <span className="db-curve-lbl">{bucket === 7 ? '7+' : bucket}</span>
-                  </div>
-                );
-              })}
-            </div>
 
             <div className="exp-drafted-scroll">
               {deckStats.cards.map((c, idx) => (
@@ -695,16 +655,14 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
       )}
 
       {/* =====================================================================
-          STEP 3: 7-BATTLE GAUNTLET TRAIL & BETWEEN-BATTLE LOOT UPGRADES
+          STEP 3: 7-BATTLE GAUNTLET TRAIL
           ===================================================================== */}
       {(runState.phase === 'trail' || runState.phase === 'completed') && (
         <div className="exp-trail-workspace">
-          {/* Loot Upgrade Sanctuary Modal/Banner between battles */}
           {runState.lootPending && lootChoices.length > 0 && (
             <div className="exp-loot-sanctuary">
-              <div className="aaa-kicker">ESPÓLIOS DE VITÓRIA • REFORÇO DE GRIMÓRIO</div>
-              <h3 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.3rem' }}>
-                Escolha 1 Carta Rara ou Lendária para Aprimorar seu Deck da Expedição
+              <h3 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.1rem' }}>
+                Escolha 1 Recompensa para seu Deck
               </h3>
               <div className="exp-loot-cards-row">
                 {lootChoices.map((card, i) => (
@@ -715,20 +673,12 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                       onClick={() => handlePickLootUpgrade(card)}
                       onInspect={setInspectCard}
                     />
-                    <button
-                      type="button"
-                      className="btn-fantasy btn-fantasy-primary"
-                      onClick={() => handlePickLootUpgrade(card)}
-                    >
-                      + Integrar ao Deck
-                    </button>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* 7-Stage Vertical/Horizontal Progress Map */}
           <div className="aaa-campaign-workspace">
             <aside className="aaa-boss-roster">
               {EXPEDITION_STAGES.map((stageBoss) => {
@@ -756,11 +706,10 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                     </div>
                     <div className="aaa-boss-row-info">
                       <div className="aaa-boss-row-top">
-                        <span className="aaa-boss-stage-num">ETAPA {stageBoss.stage} / 7</span>
-                        {isCleared && <span className="aaa-boss-cleared-tag">VENCIDO</span>}
+                        <span className="aaa-boss-stage-num">ETAPA {stageBoss.stage}/7</span>
+                        {isCleared && <span className="aaa-boss-cleared-tag">✓</span>}
                       </div>
                       <div className="font-cinzel aaa-boss-row-name">{stageBoss.name}</div>
-                      <div className="aaa-boss-row-sub">{stageBoss.title}</div>
                     </div>
                     <div className="aaa-boss-row-stats">
                       <span>{stageBoss.startingHp} PV</span>
@@ -771,21 +720,12 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
               })}
             </aside>
 
-            {/* Right Dossier for Selected Expedition Stage */}
             <section className="aaa-boss-dossier">
-              <div className="aaa-dossier-content" style={{ padding: '2rem' }}>
+              <div className="aaa-dossier-content" style={{ padding: '1.5rem' }}>
                 <div className="aaa-dossier-meta-row">
                   <span className="aaa-dossier-stage-pill">
-                    PROVAÇÃO {currentBoss.stage} DE 7 • EXPEDIÇÃO DO VAZIO
+                    ETAPA {currentBoss.stage}/7
                   </span>
-                  {activeBlessing && (
-                    <span
-                      className="aaa-domain-tag"
-                      style={{ borderColor: activeBlessing.accent, color: activeBlessing.accent }}
-                    >
-                      {activeBlessing.icon} Bênção: {activeBlessing.name}
-                    </span>
-                  )}
                 </div>
 
                 <h2 className="font-cinzel aaa-dossier-title">{currentBoss.name}</h2>
@@ -793,38 +733,29 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
 
                 <div className="aaa-dossier-metrics">
                   <div className="aaa-metric-box">
-                    <span className="aaa-metric-lbl">VIDA DO CHEFE</span>
+                    <span className="aaa-metric-lbl">VIDA</span>
                     <span className="aaa-metric-val">{currentBoss.startingHp} PV</span>
                   </div>
                   <div className="aaa-metric-box">
                     <span className="aaa-metric-lbl">RECOMPENSA</span>
                     <span className="aaa-metric-val gold-text">+{VICTORY_GOLD_REWARD} OURO</span>
                   </div>
-                  <div className="aaa-metric-box">
-                    <span className="aaa-metric-lbl">SEU DECK DRAFTADO</span>
-                    <span className="aaa-metric-val">
-                      {deckStats.counts.creature}C / {deckStats.counts.spell}M /{' '}
-                      {deckStats.counts.reaction}R / {deckStats.counts.relic}Rel
-                    </span>
-                  </div>
                 </div>
 
                 <div className="aaa-dossier-passive-panel">
                   <div className="aaa-passive-kicker">
-                    LEI DA FENDA • {currentBoss.passiveName.toUpperCase()}
+                    PASSIVA • {currentBoss.passiveName.toUpperCase()}
                   </div>
                   <p className="aaa-passive-desc">{currentBoss.passiveDescription}</p>
                 </div>
 
-                <blockquote className="aaa-dossier-lore">“{currentBoss.loreIntro}”</blockquote>
-
-                <div className="aaa-dossier-actions" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div className="aaa-dossier-actions" style={{ flexWrap: 'wrap', gap: '0.65rem' }}>
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-primary aaa-btn-lg"
                     onClick={() => onStartExpeditionBattle(currentBoss, runState.deckCardIds)}
                   >
-                    INICIAR BATALHA DA ETAPA {currentBoss.stage}/7
+                    ⚔️ Iniciar Etapa {currentBoss.stage}/7
                   </button>
 
                   <button
@@ -832,7 +763,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                     className="aaa-btn aaa-btn-secondary"
                     onClick={handleSaveExpeditionDeckToGrimoire}
                   >
-                    Salvar este Deck no Grimório
+                    Salvar Deck
                   </button>
                 </div>
               </div>

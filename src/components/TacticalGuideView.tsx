@@ -724,158 +724,116 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
         )}
       </div>
 
-      {/* DUAL DECK SELECTOR BAR (100% SYMMETRICAL LEFT & RIGHT) */}
+      {/* COMPACT DUAL DECK SELECTOR BAR */}
       {viewSection !== 'combos_compendium' && (
         <div className="tg-selector-banner">
-          {/* Player Deck Selector */}
-        <div className="tg-selector-card player-side">
-          <div className="tg-selector-thumb">
-            {coverCardPlayer?.imagePath && (
-              <img src={coverCardPlayer.imagePath} alt={playerProfile.deck.name} />
-            )}
-          </div>
-          <div className="tg-selector-body">
-            <div className="tg-selector-kicker-row">
-              <span className="tg-selector-kicker">SEU GRIMÓRIO EM ANÁLISE</span>
-              <span
-                className="tg-winrate-mini-pill"
-                style={{
-                  color: activeMatchup.favorabilityColor,
-                  borderColor: activeMatchup.favorabilityColor,
-                }}
-              >
-                Favorabilidade: {activeMatchup.favorabilityScore}%
-              </span>
+          <div className="tg-selector-card player-side">
+            <div className="tg-selector-thumb">
+              {coverCardPlayer?.imagePath && (
+                <img src={coverCardPlayer.imagePath} alt={playerProfile.deck.name} />
+              )}
             </div>
-            <select
-              className="aaa-select tg-deck-select"
-              value={selectedPlayerDeckId}
-              onChange={(e) => setSelectedPlayerDeckId(e.target.value)}
-            >
-              <optgroup label="Grimórios Oficiais">
-                {PREBUILT_DECKS.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name} — {d.subtitle}
-                  </option>
-                ))}
-              </optgroup>
-              {customDecks.length > 0 && (
-                <optgroup label="Grimórios Autorais">
-                  {customDecks.map((cd) => (
-                    <option key={cd.id} value={cd.id}>
-                      ★ {cd.name}
+            <div className="tg-selector-body">
+              <select
+                className="aaa-select tg-deck-select"
+                value={selectedPlayerDeckId}
+                onChange={(e) => setSelectedPlayerDeckId(e.target.value)}
+              >
+                <optgroup label="Grimórios Oficiais">
+                  {PREBUILT_DECKS.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
                     </option>
                   ))}
                 </optgroup>
-              )}
-            </select>
-            <div className="tg-selector-meta">
-              <span className="tg-role-pill" title={playerProfile.archetypeRole}>
-                {playerProfile.archetypeRole}
-              </span>
-              <span className="tg-cost-pill">Custo Médio {playerProfile.avgCost}</span>
+                {customDecks.length > 0 && (
+                  <optgroup label="Grimórios Autorais">
+                    {customDecks.map((cd) => (
+                      <option key={cd.id} value={cd.id}>
+                        ★ {cd.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </select>
             </div>
           </div>
-        </div>
 
-        {/* Center VS & Duel Controls */}
-        <div className="tg-vs-center">
-          <button
-            type="button"
-            className="btn-fantasy"
-            onClick={() => {
-              const temp = selectedPlayerDeckId;
-              setSelectedPlayerDeckId(selectedOpponentDeckId);
-              setSelectedOpponentDeckId(temp);
-            }}
-            title="Inverter Grimórios em Análise"
-          >
-            ⇄ Inverter ({activeMatchup.favorabilityScore}/{100 - activeMatchup.favorabilityScore})
-          </button>
-          {onLaunchDuel && (
+          <div className="tg-vs-center">
             <button
               type="button"
-              className="btn-fantasy btn-fantasy-primary"
-              onClick={() => onLaunchDuel(selectedPlayerDeckId, selectedOpponentDeckId)}
+              className="btn-fantasy"
+              onClick={() => {
+                const temp = selectedPlayerDeckId;
+                setSelectedPlayerDeckId(selectedOpponentDeckId);
+                setSelectedOpponentDeckId(temp);
+              }}
+              title="Inverter Grimórios"
             >
-              Testar na Arena
+              ⇄ {activeMatchup.favorabilityScore}% vs {100 - activeMatchup.favorabilityScore}%
             </button>
-          )}
-        </div>
-
-        {/* Opponent Deck Selector (Mirrored Symmetrical Structure) */}
-        <div className="tg-selector-card enemy-side">
-          <div className="tg-selector-thumb">
-            {coverCardOpponent?.imagePath && (
-              <img src={coverCardOpponent.imagePath} alt={opponentProfile.deck.name} />
+            {onLaunchDuel && (
+              <button
+                type="button"
+                className="btn-fantasy btn-fantasy-primary"
+                onClick={() => onLaunchDuel(selectedPlayerDeckId, selectedOpponentDeckId)}
+              >
+                Testar na Arena
+              </button>
             )}
           </div>
-          <div className="tg-selector-body">
-            <div className="tg-selector-kicker-row">
-              <span className="tg-selector-kicker">GRIMÓRIO / CHEFE OPONENTE</span>
-              <span
-                className="tg-winrate-mini-pill"
-                style={{
-                  color: activeMatchup.favorabilityColor,
-                  borderColor: activeMatchup.favorabilityColor,
+
+          <div className="tg-selector-card enemy-side">
+            <div className="tg-selector-thumb">
+              {coverCardOpponent?.imagePath && (
+                <img src={coverCardOpponent.imagePath} alt={opponentProfile.deck.name} />
+              )}
+            </div>
+            <div className="tg-selector-body">
+              <select
+                className="aaa-select tg-deck-select"
+                value={selectedOpponentDeckId}
+                onChange={(e) => {
+                  setSelectedOpponentDeckId(e.target.value);
+                  if (viewSection === 'matrix_all') setViewSection('matchup_duel');
                 }}
               >
-                Favorabilidade: {100 - activeMatchup.favorabilityScore}%
-              </span>
-            </div>
-            <select
-              className="aaa-select tg-deck-select"
-              value={selectedOpponentDeckId}
-              onChange={(e) => {
-                setSelectedOpponentDeckId(e.target.value);
-                if (viewSection === 'matrix_all') setViewSection('matchup_duel');
-              }}
-            >
-              <optgroup label="Grimórios Oficiais">
-                {PREBUILT_DECKS.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name} — {d.subtitle}
-                  </option>
-                ))}
-              </optgroup>
-              {customDecks.length > 0 && (
-                <optgroup label="Grimórios Autorais">
-                  {customDecks.map((cd) => (
-                    <option key={cd.id} value={cd.id}>
-                      ★ {cd.name}
+                <optgroup label="Grimórios Oficiais">
+                  {PREBUILT_DECKS.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
                     </option>
                   ))}
                 </optgroup>
-              )}
-            </select>
-            <div className="tg-selector-meta">
-              <span className="tg-role-pill" title={opponentProfile.archetypeRole}>
-                {opponentProfile.archetypeRole}
-              </span>
-              <span className="tg-cost-pill">Custo Médio {opponentProfile.avgCost}</span>
+                {customDecks.length > 0 && (
+                  <optgroup label="Grimórios Autorais">
+                    {customDecks.map((cd) => (
+                      <option key={cd.id} value={cd.id}>
+                        ★ {cd.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </select>
             </div>
           </div>
         </div>
-      </div>
       )}
 
       {/* =====================================================================
-          TAB 1: MANUAL COMPLETO DO SEU DECK (ASSIMETRIA, PLANO, CANALIZAÇÃO, COMBOS)
+          TAB 1: MANUAL DO DECK (COMPOSIÇÃO & COMBOS)
           ===================================================================== */}
       {viewSection === 'deck_mastery' && (
         <div className="tg-grid-layout">
-          {/* Left Column: Asymmetric Breakdown & Essence Curve */}
+          {/* Left Column: Breakdown & Essence Curve */}
           <div className="tg-panel">
-            <div className="aaa-kicker">RADAR DE ASSIMETRIA ESTRUTURAL (100 CARTAS)</div>
             <h2 className="font-cinzel tg-panel-title">{playerProfile.deck.name}</h2>
-            <p className="tg-panel-subtitle">{playerProfile.deck.strategy}</p>
 
-            {/* Asymmetric Type Breakdown Bars */}
             <div className="tg-asymmetry-bars">
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span><i className="dot-c" /> Criaturas ({playerProfile.vanguardCount} Vang. / {playerProfile.rearguardCount - playerProfile.counts.relic - playerProfile.counts.reaction} Ret.)</span>
-                  <strong>{playerProfile.counts.creature} cartas ({playerProfile.pcts.creature}%)</strong>
+                  <span><i className="dot-c" /> Criaturas</span>
+                  <strong>{playerProfile.counts.creature} ({playerProfile.pcts.creature}%)</strong>
                 </div>
                 <div className="tg-asym-track">
                   <div
@@ -887,8 +845,8 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span><i className="dot-s" /> Feitiços (Magias de Ação & Área)</span>
-                  <strong>{playerProfile.counts.spell} cartas ({playerProfile.pcts.spell}%)</strong>
+                  <span><i className="dot-s" /> Feitiços</span>
+                  <strong>{playerProfile.counts.spell} ({playerProfile.pcts.spell}%)</strong>
                 </div>
                 <div className="tg-asym-track">
                   <div
@@ -900,8 +858,8 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span><i className="dot-r" /> Reações (Emboscadas de Retaguarda)</span>
-                  <strong>{playerProfile.counts.reaction} cartas ({playerProfile.pcts.reaction}%)</strong>
+                  <span><i className="dot-r" /> Reações</span>
+                  <strong>{playerProfile.counts.reaction} ({playerProfile.pcts.reaction}%)</strong>
                 </div>
                 <div className="tg-asym-track">
                   <div
@@ -913,8 +871,8 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
               <div className="tg-asym-row">
                 <div className="tg-asym-label">
-                  <span><i className="dot-l" /> Relíquias (Motores Contínuos)</span>
-                  <strong>{playerProfile.counts.relic} cartas ({playerProfile.pcts.relic}%)</strong>
+                  <span><i className="dot-l" /> Relíquias</span>
+                  <strong>{playerProfile.counts.relic} ({playerProfile.pcts.relic}%)</strong>
                 </div>
                 <div className="tg-asym-track">
                   <div
@@ -925,12 +883,11 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               </div>
             </div>
 
-            {/* Essence Curve */}
-            <div style={{ marginTop: '1.1rem' }}>
-              <div className="aaa-kicker" style={{ marginBottom: '0.45rem' }}>
-                CURVA DE ESSÊNCIA (CUSTO MÉDIO: {playerProfile.avgCost}⚡)
+            <div style={{ marginTop: '0.85rem' }}>
+              <div className="aaa-kicker" style={{ marginBottom: '0.4rem' }}>
+                CURVA DE ESSÊNCIA (MÉDIA: {playerProfile.avgCost}⚡)
               </div>
-              <div className="db-mini-curve" style={{ height: '78px' }}>
+              <div className="db-mini-curve" style={{ height: '72px' }}>
                 {[1, 2, 3, 4, 5, 6, 7].map((bucket) => {
                   const cnt = playerProfile.curve[bucket] ?? 0;
                   const hPct = Math.round((cnt / playerProfile.maxCurve) * 100);
@@ -949,101 +906,52 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 })}
               </div>
             </div>
-
-            {/* Doctrine of Slot Stacking (1x vs 3x) */}
-            <div className="tg-doctrine-box" style={{ marginTop: '1.1rem' }}>
-              <div className="aaa-kicker">DOUTRINA DE POSICIONAMENTO & EMPILHAMENTO 3x</div>
-              <h4 className="font-cinzel" style={{ color: '#fde68a', margin: '0.25rem 0' }}>
-                {playerProfile.stackingDoctrineTitle}
-              </h4>
-              <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.55 }}>
-                {playerProfile.stackingDoctrineBody}
-              </p>
-            </div>
-
-            {/* Channeling Guide */}
-            <div className="tg-doctrine-box channel-box" style={{ marginTop: '0.85rem' }}>
-              <div className="aaa-kicker">GUIA DE CANALIZAÇÃO (O QUE SACRIFICAR POR ESSÊNCIA)</div>
-              <p style={{ fontSize: '0.82rem', color: '#e9d5ff', lineHeight: 1.55, marginTop: '0.25rem' }}>
-                {playerProfile.channelingDoctrine}
-              </p>
-            </div>
           </div>
 
-          {/* Right Column: Turn-by-Turn Gameplan & Signature Combos */}
+          {/* Right Column: Signature Combos */}
           <div className="tg-panel">
-            <div className="aaa-kicker">PLANO GERAL DE JOGO (TURNOS 1 A 7+)</div>
-            <h2 className="font-cinzel tg-panel-title">Roteiro Tático de Vitória</h2>
-
-            <div className="tg-phases-list">
-              <div className="tg-phase-card phase-early">
-                <div className="tg-phase-badge">ABERTURA • TURNOS 1 A 3 (CANALIZAR [C] & CONTROLE DE VANGUARDA)</div>
-                <p>{playerProfile.openingPlan}</p>
-              </div>
-
-              <div className="tg-phase-card phase-mid">
-                <div className="tg-phase-badge">MEIO DE JOGO • TURNOS 4 A 6 (AFINIDADE & RITUAIS DO SOBERANO)</div>
-                <p>{playerProfile.midgamePlan}</p>
-              </div>
-
-              <div className="tg-phase-card phase-late">
-                <div className="tg-phase-badge">FINALIZAÇÃO • TURNOS 6+ (EXPANSÃO DE DOMÍNIO ⛩️ 6/6 & EXECUÇÃO)</div>
-                <p>{playerProfile.endgamePlan}</p>
-              </div>
-            </div>
-
-            {/* Signature Combos with Interactive Card Previews */}
-            <div style={{ marginTop: '1.25rem' }}>
-              <div className="aaa-kicker" style={{ marginBottom: '0.6rem' }}>
-                COMBOS ASSINATURA DESTE GRIMÓRIO (CLIQUE NAS CARTAS PARA INSPECIONAR)
-              </div>
-              <div className="tg-combos-list">
-                {playerProfile.signatureCombos.map((combo, idx) => (
-                  <div key={idx} className="tg-combo-card">
-                    <div className="tg-combo-header">
-                      <h4 className="font-cinzel" style={{ color: '#fde68a', fontSize: '0.9rem' }}>
-                        {combo.title}
-                      </h4>
-                    </div>
-                    <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '0.65rem' }}>
-                      {combo.explanation}
-                    </p>
-                    <div className="tg-combo-cards-row">
-                      {combo.cards.map((c) => (
-                        <div
-                          key={c.id}
-                          className="tg-mini-card-pill"
-                          onClick={() => setInspectCard(c)}
-                        >
-                          {c.imagePath && <img src={c.imagePath} alt={c.name} />}
-                          <div>
-                            <div className="tg-mini-card-name">{c.name}</div>
-                            <div className="tg-mini-card-sub">
-                              {c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}
-                            </div>
+            <h2 className="font-cinzel tg-panel-title">Combos do Grimório</h2>
+            <div className="tg-combos-list">
+              {playerProfile.signatureCombos.map((combo, idx) => (
+                <div key={idx} className="tg-combo-card">
+                  <div className="tg-combo-header">
+                    <h4 className="font-cinzel" style={{ color: '#e6c875', fontSize: '0.88rem', margin: 0 }}>
+                      {combo.title}
+                    </h4>
+                  </div>
+                  <div className="tg-combo-cards-row" style={{ marginTop: '0.45rem' }}>
+                    {combo.cards.map((c) => (
+                      <div
+                        key={c.id}
+                        className="tg-mini-card-pill"
+                        onClick={() => setInspectCard(c)}
+                      >
+                        {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                        <div>
+                          <div className="tg-mini-card-name">{c.name}</div>
+                          <div className="tg-mini-card-sub">
+                            {c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       )}
 
       {/* =====================================================================
-          TAB 2: SIMULADOR DE MATCHUP ESPECÍFICO (SEU DECK VS DECK INIMIGO)
+          TAB 2: SIMULADOR DE MATCHUP 1×1
           ===================================================================== */}
       {viewSection === 'matchup_duel' && (
         <div className="tg-grid-layout">
-          {/* Left Column: Tactical Blueprint to Beat This Opponent */}
           <div className="tg-panel">
-            <div className="aaa-kicker">{activeMatchup.asymmetryHeadline}</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
               <h2 className="font-cinzel tg-panel-title">
-                Como Vencer: {opponentProfile.deck.name}
+                vs {opponentProfile.deck.name}
               </h2>
               <span
                 className="tg-favor-badge"
@@ -1056,57 +964,19 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               </span>
             </div>
 
-            {/* Stacking Rule Directive Banner */}
             <div className={`tg-stack-directive mode-${activeMatchup.stackingRuleMode}`}>
               <div className="tg-stack-directive-title">{activeMatchup.stackingRuleBadge}</div>
-              <p>{activeMatchup.stackingRuleDetail}</p>
-            </div>
-
-            {/* General Tactics vs Enemy Composition */}
-            <div className="tg-section-block">
-              <h4 className="font-cinzel tg-sec-heading">
-                I. Tática Geral & Como Explorar a Assimetria Inimiga
-              </h4>
-              <p>{activeMatchup.generalTactics}</p>
-            </div>
-
-            {/* Mulligan & Channeling Priority */}
-            <div className="tg-section-block">
-              <h4 className="font-cinzel tg-sec-heading">
-                II. Mão Inicial (Mulligan) & Prioridade de Canalização
-              </h4>
-              <p>{activeMatchup.mulliganAndChannelGuide}</p>
-            </div>
-
-            {/* Critical Threat Turn & Enemy Traps */}
-            <div className="tg-section-block warn-block">
-              <h4 className="font-cinzel tg-sec-heading">
-                III. Turno de Perigo & O Que Antecipar (Emboscadas / Área)
-              </h4>
-              <p>{activeMatchup.criticalThreatTurn}</p>
-            </div>
-
-            {/* Win Condition Path */}
-            <div className="tg-section-block win-block">
-              <h4 className="font-cinzel tg-sec-heading">
-                IV. Caminho para a Vitória no Duelo
-              </h4>
               <p>{activeMatchup.winConditionPath}</p>
             </div>
           </div>
 
-          {/* Right Column: Priority Enemy Targets & Interactive Card Previews */}
           <div className="tg-panel">
-            <div className="aaa-kicker">DOSSIÊ DE AMEAÇAS DO OPONENTE</div>
             <h2 className="font-cinzel tg-panel-title">
-              Alvos Prioritários de {opponentProfile.deck.name}
+              Alvos Prioritários Inimigos
             </h2>
-            <p className="tg-panel-subtitle">
-              Guarde seus feitiços de remoção, congelamento ou golpes de Alcance para neutralizar imediatamente estas cartas-chave do adversário:
-            </p>
 
             <div className="tg-targets-list">
-              {activeMatchup.priorityTargets.map(({ card, reason }) => (
+              {activeMatchup.priorityTargets.map(({ card }) => (
                 <div
                   key={card.id}
                   className="tg-target-row"
@@ -1118,40 +988,16 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                   </div>
                   <div className="tg-target-info">
                     <div className="tg-target-name-line">
-                      <strong className="font-cinzel" style={{ color: '#fde68a' }}>
+                      <strong className="font-cinzel" style={{ color: '#e6c875' }}>
                         {card.name}
                       </strong>
                       <span className="tg-target-type">
                         {DOMAIN_META[card.domain].icon} {CARD_TYPE_LABELS[card.type]}
-                        {card.type === 'creature' ? ` • ${card.atk}/${card.hp} (ARM ${card.armor})` : ''}
                       </span>
                     </div>
-                    <div className="tg-target-reason">{reason}</div>
-                    <div className="tg-target-desc">{card.description}</div>
                   </div>
                 </div>
               ))}
-            </div>
-
-            {/* Comparison of Structural Asymmetry */}
-            <div className="tg-doctrine-box" style={{ marginTop: '1.1rem' }}>
-              <div className="aaa-kicker">COMPARATIVO DIRETO DE COMPOSIÇÃO (100 CARTAS)</div>
-              <div className="tg-compare-grid">
-                <div>
-                  <strong style={{ color: '#fef08a' }}>Seu Deck ({playerProfile.deck.name})</strong>
-                  <div>• {playerProfile.counts.creature} Criaturas ({playerProfile.pcts.creature}%)</div>
-                  <div>• {playerProfile.counts.spell} Feitiços ({playerProfile.pcts.spell}%)</div>
-                  <div>• {playerProfile.counts.reaction} Reações ({playerProfile.pcts.reaction}%)</div>
-                  <div>• {playerProfile.counts.relic} Relíquias ({playerProfile.pcts.relic}%)</div>
-                </div>
-                <div>
-                  <strong style={{ color: '#fca5a5' }}>Inimigo ({opponentProfile.deck.name})</strong>
-                  <div>• {opponentProfile.counts.creature} Criaturas ({opponentProfile.pcts.creature}%)</div>
-                  <div>• {opponentProfile.counts.spell} Feitiços ({opponentProfile.pcts.spell}%)</div>
-                  <div>• {opponentProfile.counts.reaction} Reações ({opponentProfile.pcts.reaction}%)</div>
-                  <div>• {opponentProfile.counts.relic} Relíquias ({opponentProfile.pcts.relic}%)</div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1417,17 +1263,6 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                             {DOMAIN_META[dom].icon} {DOMAIN_META[dom].shortName}
                           </span>
                         ))}
-                        <span
-                          style={{
-                            fontSize: '0.66rem',
-                            color: '#94a3b8',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.06em',
-                            fontWeight: 700,
-                          }}
-                        >
-                          {combo.tierLabel}
-                        </span>
                       </div>
 
                       {inDeckCount > 0 && (
@@ -1442,43 +1277,18 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                             border: '1px solid rgba(212, 175, 55, 0.35)',
                           }}
                         >
-                          {inDeckCount}/{comboCards.length} no seu Grimório
+                          {inDeckCount}/{comboCards.length} no Grimório
                         </span>
                       )}
                     </div>
 
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'baseline',
-                        gap: '0.5rem',
-                        marginBottom: '0.35rem',
-                      }}
-                    >
-                      <h4 className="font-cinzel" style={{ color: '#f8fafc', fontSize: '0.96rem', margin: 0 }}>
-                        {combo.title}
-                      </h4>
-                      <span style={{ fontSize: '0.7rem', color: '#fde68a', fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        {combo.archetypeTag}
-                      </span>
-                    </div>
+                    <h4 className="font-cinzel" style={{ color: '#f8fafc', fontSize: '0.92rem', margin: '0 0 0.25rem' }}>
+                      {combo.title}
+                    </h4>
 
-                    <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.5, margin: '0 0 0.45rem' }}>
+                    <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.45, margin: 0 }}>
                       {combo.mechanism}
                     </p>
-                    <div
-                      style={{
-                        fontSize: '0.76rem',
-                        color: '#fef08a',
-                        background: 'rgba(212, 175, 55, 0.07)',
-                        borderLeft: '2px solid rgba(212, 175, 55, 0.65)',
-                        padding: '0.35rem 0.6rem',
-                        borderRadius: '0 6px 6px 0',
-                      }}
-                    >
-                      <strong>Resultado:</strong> {combo.payoff}
-                    </div>
                   </div>
 
                   <div className="tg-combo-cards-row" style={{ paddingTop: '0.25rem' }}>

@@ -1,5 +1,29 @@
 import { CardDefinition, CardEffect, Keyword } from '../types/game';
 
+const KEYWORD_COMBAT_CLAUSES: Record<Keyword, string> = {
+  Guardião:
+    'obriga as criaturas terrestres inimigas na mesma coluna a atacarem esta unidade antes de qualquer outro alvo',
+  Voo: 'voa sobre defensores terrestres na Vanguarda (só pode ser bloqueada por unidades com Voo ou Alcance)',
+  Alcance:
+    'pode atacar qualquer alvo válido a partir da Retaguarda sem sofrer dano de contra-ataque',
+  Ímpeto:
+    'pode atacar criaturas inimigas imediatamente no mesmo turno em que entra em campo',
+  Atropelar:
+    'ao destruir uma criatura defensora em combate, causa o dano excedente diretamente ao Soberano inimigo',
+  'Toque Letal':
+    'destrói imediatamente qualquer criatura que sofrer pelo menos 1 de dano de Vida causado por esta unidade',
+  'Escudo Divino':
+    'anula completamente a primeira instância de dano que sofreria em campo',
+  'Dreno de Vida':
+    'restaura 2 de Vida diretamente no seu Soberano sempre que esta unidade causa dano em combate',
+  Renascer:
+    'na primeira vez em que for destruída, retorna imediatamente ao campo com 1 de Vida',
+  'Pele Incandescente':
+    'causa 1 de dano de fogo de volta a qualquer criatura inimiga que a ataque corpo-a-corpo',
+  'Fúria Crescente':
+    'ganha +2 de Ataque permanentemente sempre que sobrevive após sofrer dano',
+};
+
 function formatStatBonus(atkGain: number, hpGain: number): string {
   if (atkGain > 0 && hpGain > 0) {
     return `+${atkGain} de Ataque e +${hpGain} de Vida`;
@@ -67,7 +91,9 @@ export function formatEffectActionClause(
   switch (effect.type) {
     case 'damage_enemy_row': {
       if (!detailed) {
-        return `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou na Retaguarda, se a Vanguarda estiver vazia)`;
+        return canChoose
+          ? `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou na fileira da criatura inimiga que você escolher)`
+          : `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou na Retaguarda, se a Vanguarda estiver vazia)`;
       }
       if (canChoose) {
         return `causa ${v} de dano a todas as criaturas inimigas de uma fileira — atinge a Vanguarda inimiga por padrão (ou a Retaguarda, se a Vanguarda estiver vazia), mas você também pode clicar em uma criatura inimiga específica ao jogar a carta para atingir toda a fileira dela (não causa dano ao Soberano)`;
@@ -80,7 +106,7 @@ export function formatEffectActionClause(
         if (canChoose) {
           return `causa ${v} de dano a 1 criatura inimiga à sua escolha (se não escolher, atinge a de maior Ataque; se não houver criaturas inimigas, atinge o Soberano inimigo)`;
         }
-        return `causa ${v} de dano à criatura inimiga de maior Ataque (ou ao Soberano inimigo, se não houver criaturas inimigas em campo)`;
+        return `causa ${v} de dano automaticamente à criatura inimiga de maior Ataque (ou ao Soberano inimigo, se não houver criaturas inimigas em campo)`;
       }
       if (canChoose) {
         return `causa ${v} de dano a 1 criatura inimiga que você escolher em campo (se você não selecionar um alvo ao jogar a carta, ela atinge automaticamente a criatura inimiga de maior Ataque; caso não exista nenhuma criatura inimiga em campo, o dano é causado diretamente ao Soberano inimigo)`;
@@ -100,7 +126,7 @@ export function formatEffectActionClause(
 
     case 'damage_enemy_sovereign': {
       if (!detailed) {
-        return `causa ${v} de dano diretamente ao Soberano inimigo`;
+        return `causa ${v} de dano diretamente ao Soberano inimigo (ignora as criaturas em campo)`;
       }
       return `causa ${v} de dano diretamente ao Soberano inimigo, ignorando quaisquer criaturas no campo de batalha`;
     }
@@ -111,7 +137,7 @@ export function formatEffectActionClause(
 
     case 'heal_all_allies': {
       if (!detailed) {
-        return `restaura ${v} de Vida em todas as suas criaturas aliadas em campo e no seu Soberano`;
+        return `restaura ${v} de Vida em todas as suas criaturas aliadas em campo e também no seu Soberano`;
       }
       return `restaura ${v} de Vida em todas as suas criaturas aliadas presentes em campo e também no seu Soberano`;
     }
@@ -121,7 +147,7 @@ export function formatEffectActionClause(
         if (canChoose) {
           return `restaura ${v} de Vida em 1 criatura aliada ferida à sua escolha (se não escolher, cura a mais ferida; se nenhuma estiver ferida, cura o seu Soberano)`;
         }
-        return `restaura ${v} de Vida na sua criatura aliada mais ferida (ou no seu Soberano, se nenhuma criatura aliada estiver ferida)`;
+        return `restaura ${v} de Vida automaticamente na sua criatura aliada mais ferida (ou no seu Soberano, se nenhuma criatura aliada estiver ferida)`;
       }
       if (canChoose) {
         return `restaura ${v} de Vida em 1 criatura aliada ferida que você escolher em campo (se você não selecionar um alvo, cura automaticamente a criatura aliada mais ferida; caso nenhuma criatura aliada esteja ferida, restaura essa Vida diretamente no seu Soberano)`;
@@ -131,7 +157,7 @@ export function formatEffectActionClause(
 
     case 'draw_cards': {
       if (!detailed) {
-        return `compra ${v} ${v === 1 ? 'carta' : 'cartas'} do seu Grimório`;
+        return `você compra ${v} ${v === 1 ? 'carta' : 'cartas'} do seu Grimório`;
       }
       return `você compra ${v} ${v === 1 ? 'carta' : 'cartas'} do seu Grimório para a sua mão`;
     }
@@ -232,7 +258,7 @@ export function formatEffectActionClause(
         if (canChoose) {
           return `concede permanentemente ${statBonus} a 1 criatura aliada à sua escolha (se não escolher, fortalece a mais forte)`;
         }
-        return `concede permanentemente ${statBonus} à sua criatura aliada mais forte${preferVanguard ? ' na Vanguarda' : ''}`;
+        return `concede permanentemente ${statBonus} automaticamente à sua criatura aliada mais forte${preferVanguard ? ' na Vanguarda' : ''}`;
       }
       if (canChoose) {
         return `concede permanentemente ${statBonus} a 1 criatura aliada que você escolher em campo (se você não selecionar um alvo, fortalece automaticamente a sua criatura aliada mais forte disponível${preferVanguard ? ', priorizando a Vanguarda' : ''})`;
@@ -324,9 +350,26 @@ export function formatEffectActionClause(
   }
 }
 
-function capitalizeFirst(text: string): string {
-  if (!text) return '';
-  return text.charAt(0).toUpperCase() + text.slice(1);
+function buildKeywordsCombatSentence(keywords: Keyword[], armor: number): string {
+  const parts: string[] = [];
+  if (armor > 0) {
+    parts.push(`reduz em ${armor} todo dano sofrido em combate`);
+  }
+  for (const kw of keywords) {
+    const clause = KEYWORD_COMBAT_CLAUSES[kw];
+    if (clause) {
+      parts.push(clause);
+    }
+  }
+  if (parts.length === 0) {
+    return 'Unidade de combate direto que ataca inimigos na mesma coluna.';
+  }
+  if (parts.length === 1) {
+    return `Em combate, ${parts[0]}.`;
+  }
+  const joined =
+    parts.slice(0, -1).join(', ') + ' e também ' + parts[parts.length - 1];
+  return `Em combate, ${joined}.`;
 }
 
 /**
@@ -338,8 +381,9 @@ export function formatCardFaceDescription(
   activeKeywords: Keyword[] = card.keywords
 ): string {
   const sentences: string[] = [];
+  const hasBreath = Boolean(card.breathDamage && card.breathDamage > 0);
 
-  if (card.breathDamage && card.breathDamage > 0) {
+  if (hasBreath) {
     sentences.push(
       `Ao entrar em campo, seu Sopro Elemental causa ${card.breathDamage} de dano a todas as criaturas inimigas na Vanguarda (ou na Retaguarda, se a Vanguarda estiver vazia).`
     );
@@ -352,7 +396,6 @@ export function formatCardFaceDescription(
   }
 
   if (card.effects && card.effects.length > 0) {
-    // Group effects by trigger in order of appearance
     const grouped = new Map<CardEffect['trigger'], string[]>();
     for (const eff of card.effects) {
       const clause = formatEffectActionClause(card, eff, false);
@@ -363,7 +406,10 @@ export function formatCardFaceDescription(
     }
 
     for (const [trigger, clauses] of grouped.entries()) {
-      const prefix = getTriggerPrefix(card, trigger, false);
+      const prefix =
+        hasBreath && (trigger === 'on_enter' || trigger === 'spell_cast')
+          ? 'Além disso, ao entrar, '
+          : getTriggerPrefix(card, trigger, false);
       if (clauses.length === 1) {
         sentences.push(`${prefix}${clauses[0]}.`);
       } else {
@@ -386,27 +432,8 @@ export function formatCardFaceDescription(
     return sentences.join(' ');
   }
 
-  // Fallback for vanilla / keyword-only creatures: strip redundant keyword prefixes and return a natural combat sentence
-  let fallback = card.description || '';
-  activeKeywords.forEach((kw) => {
-    const regex = new RegExp(`^${kw}\\s*(,|\\.|•)\\s*`, 'i');
-    fallback = fallback.replace(regex, '');
-  });
-  activeKeywords.forEach((kw) => {
-    const regex = new RegExp(`^${kw}\\s*(,|\\.|•)\\s*`, 'i');
-    fallback = fallback.replace(regex, '');
-  });
-  fallback = fallback.replace(/^Armadura\s+\d+\.\s*/i, '').trim();
-
-  if (fallback) {
-    return capitalizeFirst(fallback);
-  }
-
-  if (activeKeywords.length > 0) {
-    return `Unidade de combate equipada com ${activeKeywords.join(', ')}.`;
-  }
-
-  return card.description || 'Unidade de combate tático.';
+  // When the card has no triggered effects/breath/regen, build a complete natural combat sentence from its keywords and armor
+  return buildKeywordsCombatSentence(activeKeywords, card.armor);
 }
 
 /**
@@ -439,7 +466,8 @@ export function formatCardDetailedRules(card: CardDefinition): string[] {
     );
   }
   if (passiveParts.length > 0) {
-    paragraphs.push(capitalizeFirst(passiveParts.join('; ')) + '.');
+    const text = passiveParts.join('; ');
+    paragraphs.push(text.charAt(0).toUpperCase() + text.slice(1) + '.');
   }
 
   // 2. Elemental Breath (if present)
@@ -472,9 +500,12 @@ export function formatCardDetailedRules(card: CardDefinition): string[] {
     }
   }
 
-  // 4. Fallback if the card has no effects, breath, or passive parts
-  if (paragraphs.length === 0) {
-    paragraphs.push(formatCardFaceDescription(card, card.keywords));
+  // 4. If the card has no triggered effects or breath, include the complete combat sentence from its keywords
+  if (
+    (!card.effects || card.effects.length === 0) &&
+    (!card.breathDamage || card.breathDamage <= 0)
+  ) {
+    paragraphs.push(buildKeywordsCombatSentence(card.keywords, 0));
   }
 
   return paragraphs;

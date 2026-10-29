@@ -15184,6 +15184,40 @@ input:focus-visible,
   }
 }
 
+/* Home Simulated Duel Showcase: Pure Gameplay Visuals (Zero Tutorial Clutter or Slot Text Overflow) */
+.home-simulated-arena .sccd-play-status-line {
+  display: none !important;
+}
+
+.sim-arena-scenario-tabs {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sim-arena-scenario-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 768px), (max-height: 540px) {
+  .mtg-slot-watermark,
+  .mtg-slot-cover-rune {
+    max-width: 100% !important;
+    font-size: 0.44rem !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.01em !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    text-align: center !important;
+    padding: 0 2px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .home-simulated-arena .selected-card-command-dock {
+    display: none !important;
+  }
+}
+
 
 
 

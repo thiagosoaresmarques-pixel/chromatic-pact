@@ -1637,17 +1637,6 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
 
       {!isSimMinimized && (
         <>
-          {/* Concise Sober Narrative Strip */}
-          <div className="sim-arena-narrative-bar">
-            <div className="sim-narrative-main">
-              <span className="sim-narrative-badge">
-                PASSO {stepIdx + 1}/{scenario.steps.length}
-              </span>
-              <strong className="sim-narrative-title">{step.title}:</strong>{' '}
-              <span className="sim-narrative-text">{step.narrative}</span>
-            </div>
-          </div>
-
       {/* =====================================================================
           AUTHENTIC BATTLE ARENA STAGE (100% IDENTICAL DOM, CSS & ENGINE TO BattleArena.tsx!)
           ===================================================================== */}
@@ -2661,7 +2650,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                         </div>
                       ) : canStackHere ? (
                         <span className="mtg-slot-watermark">
-                          + Vanguarda (1/{MAX_UNITS_PER_SLOT})
+                          +<span className="hide-on-mobile"> Vanguarda (1/{MAX_UNITS_PER_SLOT})</span>
                         </span>
                       ) : null}
                     </div>
@@ -2791,11 +2780,14 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                         </div>
                       ) : canStackHere ? (
                         <span className="mtg-slot-watermark">
-                          {canDeployTrap
-                            ? '+ Emboscada'
-                            : hasColumnCover
-                            ? '+ Retaguarda (+1 ATQ)'
-                            : '+ Retaguarda'}
+                          +
+                          <span className="hide-on-mobile">
+                            {canDeployTrap
+                              ? ' Emboscada'
+                              : hasColumnCover
+                              ? ' Retaguarda (+1 ATQ)'
+                              : ' Retaguarda'}
+                          </span>
                         </span>
                       ) : hasColumnCover ? (
                         <span className="mtg-slot-cover-rune">+1 ATQ</span>

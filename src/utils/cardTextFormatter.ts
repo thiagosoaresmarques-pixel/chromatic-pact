@@ -92,13 +92,13 @@ export function formatEffectActionClause(
     case 'damage_enemy_row': {
       if (!detailed) {
         return canChoose
-          ? `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou na fileira da criatura inimiga que você escolher)`
-          : `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou na Retaguarda, se a Vanguarda estiver vazia)`;
+          ? `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou a todas na Retaguarda, se você clicar em uma criatura de lá ou se a Vanguarda estiver vazia)`
+          : `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou a todas na Retaguarda, se a Vanguarda estiver vazia)`;
       }
       if (canChoose) {
-        return `causa ${v} de dano a todas as criaturas inimigas de uma fileira — atinge a Vanguarda inimiga por padrão (ou a Retaguarda, se a Vanguarda estiver vazia), mas você também pode clicar em uma criatura inimiga específica ao jogar a carta para atingir toda a fileira dela (não causa dano ao Soberano)`;
+        return `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou a todas na Retaguarda, caso a Vanguarda esteja vazia; ao jogar da mão, você também pode clicar em uma criatura inimiga da Vanguarda ou da Retaguarda para atingir todas as criaturas daquela mesma linha, sem causar dano ao Soberano)`;
       }
-      return `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou na Retaguarda, caso a Vanguarda esteja vazia; não causa dano ao Soberano)`;
+      return `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou a todas na Retaguarda, caso a Vanguarda esteja vazia; não causa dano ao Soberano)`;
     }
 
     case 'damage_single_enemy': {
@@ -473,7 +473,7 @@ export function formatCardDetailedRules(card: CardDefinition): string[] {
   // 2. Elemental Breath (if present)
   if (card.breathDamage && card.breathDamage > 0) {
     paragraphs.push(
-      `Sopro Elemental (${card.breathDamage} de dano): Ao entrar em campo, varre automaticamente a Vanguarda inimiga (ou a Retaguarda inimiga, caso a Vanguarda esteja vazia), causando ${card.breathDamage} de dano a todas as criaturas inimigas daquela fileira.`
+      `Sopro Elemental (${card.breathDamage} de dano): Ao entrar em campo, atinge automaticamente todas as criaturas inimigas na Vanguarda (ou todas na Retaguarda inimiga, caso a Vanguarda esteja vazia), causando ${card.breathDamage} de dano a cada uma delas.`
     );
   }
 

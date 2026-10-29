@@ -2807,11 +2807,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             <div className="mulligan-header">
               <div className="mulligan-herald-crest">❖ PREPARAÇÃO DE BATALHA • ESCALA GUERRA TOTAL ❖</div>
               <div className="mulligan-title">ESCOLHA SUA MÃO INICIAL</div>
-              <div className="mulligan-subtitle">
+              <div className="mulligan-subtitle hide-on-mobile">
                 Turno 1: <span className="mulligan-stat-pill">⚡ 3 Essência</span>{' '}
                 <span className="mulligan-stat-pill">❤️ 40 Vida</span>{' '}
                 <span className="mulligan-stat-pill">🃏 7 Cartas</span> — Clique nas cartas que deseja{' '}
                 <strong>substituir no Grimório</strong> antes do combate começar.
+              </div>
+              <div className="mulligan-subtitle show-on-mobile-inline">
+                Toque nas cartas que deseja trocar • <span className="mulligan-stat-pill">⚡ 3</span>{' '}
+                <span className="mulligan-stat-pill">❤️ 40</span>
               </div>
             </div>
 
@@ -2863,21 +2867,33 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             <div className="mulligan-actions-row">
               <button
                 type="button"
-                className="mulligan-exit-btn"
+                className="mulligan-exit-btn hide-on-mobile"
                 onClick={handleExitBattle}
               >
                 ← Sair
               </button>
+              <span
+                className={`mulligan-stat-pill mulligan-mobile-timer show-on-mobile-inline ${
+                  mulliganTimeLeft <= 10 ? 'is-timer-urgent' : ''
+                }`}
+              >
+                ⏳ {Math.max(0, mulliganTimeLeft)}s
+              </span>
               <button
                 type="button"
                 className="mulligan-confirm-btn"
                 onClick={handleConfirmMulligan}
               >
                 <span className="mulligan-btn-gem">⚔️</span>
-                <span>
+                <span className="hide-on-mobile">
                   {mulliganSwapIndices.length === 0
                     ? 'Confirmar Mão Inicial & Iniciar Batalha'
                     : `Trocar ${mulliganSwapIndices.length} Carta(s) & Iniciar Batalha`}
+                </span>
+                <span className="show-on-mobile-inline">
+                  {mulliganSwapIndices.length === 0
+                    ? 'Confirmar Mão & Iniciar'
+                    : `Trocar (${mulliganSwapIndices.length}) & Iniciar`}
                 </span>
               </button>
             </div>

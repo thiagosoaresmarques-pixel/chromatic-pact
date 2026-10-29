@@ -13831,6 +13831,260 @@ input:focus-visible,
   color: #f1f5f9 !important;
 }
 
+/* ============================================================================
+   ALL OTHER SECTIONS UNIFIED TO SOBER ARENA STANDARD
+   Covers: Grimório (DeckBuilder), Campanha, Expedição, Oráculo, Relicário,
+   Conclave 1x1, Problemas Táticos, Mitologia & Tutorial
+   ============================================================================ */
+
+/* 1. Page Shells, Headers, Panels & Callouts across all views */
+.aaa-page-header {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16) !important;
+  padding-bottom: 0.75rem !important;
+}
+
+.aaa-kicker {
+  color: #c9a646 !important;
+  letter-spacing: 0.1em !important;
+  text-shadow: none !important;
+}
+
+.aaa-page-title {
+  color: #f1f5f9 !important;
+  text-shadow: none !important;
+}
+
+.aaa-stat-block {
+  background: #0b0f17 !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.aaa-status-callout,
+.aaa-status-callout.is-guest,
+.aaa-status-callout.is-onboarding {
+  background: #0b0f17 !important;
+  border: 1px solid rgba(212, 175, 55, 0.28) !important;
+  border-left: 3px solid #c9a646 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.tg-panel,
+.aaa-boss-dossier,
+.aaa-boss-roster,
+.exp-blessing-card,
+.exp-bucket-card,
+.exp-draft-sidebar,
+.exp-loot-sanctuary,
+.aaa-pack-card,
+.aaa-pack-reveal-stage,
+.aaa-collection-strip,
+.tg-selector-banner,
+.tg-combo-card,
+.tg-phase-card,
+.tg-doctrine-box,
+.tg-section-block,
+.tg-target-row {
+  background: #0b0f17 !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.tg-panel::before,
+.aaa-boss-dossier::before,
+.exp-blessing-card::before,
+.aaa-pack-card::before {
+  display: none !important;
+}
+
+/* 2. Buttons & Pill Tabs across all views (Bronze/Gold Primary + Matte Stone Secondary) */
+.aaa-btn-primary,
+.btn-fantasy-primary,
+.db-action-btn.primary {
+  background: linear-gradient(180deg, #b48a28 0%, #7c5813 100%) !important;
+  border: 1px solid #d4af37 !important;
+  color: #fffbeb !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.55) !important;
+  text-shadow: none !important;
+}
+
+.aaa-btn-primary:hover,
+.btn-fantasy-primary:hover,
+.db-action-btn.primary:hover {
+  background: linear-gradient(180deg, #c69a32 0%, #8e6618 100%) !important;
+  border-color: #f3e3b0 !important;
+}
+
+.aaa-btn-secondary,
+.aaa-btn-ghost,
+.db-action-btn:not(.primary) {
+  background: #111622 !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+.aaa-btn-secondary:hover,
+.aaa-btn-ghost:hover,
+.db-action-btn:not(.primary):hover {
+  background: #181f2e !important;
+  border-color: rgba(212, 175, 55, 0.45) !important;
+  color: #f8fafc !important;
+}
+
+.aaa-pill-tab {
+  background: #0f141f !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  color: #94a3b8 !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.aaa-pill-tab.is-active {
+  background: #181f2e !important;
+  border-color: rgba(212, 175, 55, 0.55) !important;
+  color: #f3e3b0 !important;
+  box-shadow: none !important;
+}
+
+/* 3. Campaign & Expedition Boss Roster & Cards */
+.aaa-boss-row {
+  background: #0e131d !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.aaa-boss-row:hover {
+  background: #141b29 !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+}
+
+.aaa-boss-row.is-selected {
+  background: #171f30 !important;
+  border-color: rgba(212, 175, 55, 0.58) !important;
+  box-shadow: none !important;
+}
+
+.aaa-boss-row-accent {
+  background-color: rgba(212, 175, 55, 0.55) !important;
+}
+
+.aaa-boss-cleared-tag {
+  background: rgba(212, 175, 55, 0.14) !important;
+  border: 1px solid rgba(212, 175, 55, 0.38) !important;
+  color: #e6c875 !important;
+}
+
+.aaa-domain-tag,
+.aaa-dossier-stage-pill,
+.tg-role-pill,
+.tg-cost-pill,
+.tg-winrate-mini-pill,
+.tg-favor-badge {
+  background: #111622 !important;
+  border: 1px solid rgba(148, 163, 184, 0.24) !important;
+  color: #cbd5e1 !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+.aaa-metric-box,
+.aaa-dossier-passive-panel {
+  background: #0e131d !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  border-radius: 6px !important;
+}
+
+/* 4. Relicário (PackOpener) Sober Cards */
+.aaa-pack-card {
+  background: #0b0f17 !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+}
+
+.aaa-pack-card.is-selected {
+  border-color: #d4af37 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75) !important;
+}
+
+.aaa-pack-kicker,
+.aaa-pack-select-indicator {
+  background: rgba(15, 20, 32, 0.9) !important;
+  border: 1px solid rgba(212, 175, 55, 0.35) !important;
+  color: #e6c875 !important;
+}
+
+/* 5. Grimório / Forja de Decks (DeckBuilder) Sober Toolbar & Sidebar */
+.db-modern-toolbar,
+.db-modern-sidebar,
+.db-analytics-drawer {
+  background: #090c12 !important;
+  border-color: rgba(148, 163, 184, 0.16) !important;
+  box-shadow: none !important;
+}
+
+.db-orb-btn,
+.db-cost-pill,
+.db-modern-select,
+.db-modern-search,
+.db-analytics-toggle-btn,
+.db-synergy-chip,
+.db-synergy-mini-btn,
+.db-saved-deck-chip {
+  background: #111622 !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+.db-orb-btn.is-active,
+.db-cost-pill.is-active,
+.db-modern-select.is-highlighted,
+.db-analytics-toggle-btn.is-open,
+.db-synergy-chip.is-active,
+.db-synergy-mini-btn.is-active {
+  background: #181f2e !important;
+  border-color: rgba(212, 175, 55, 0.55) !important;
+  color: #f3e3b0 !important;
+  box-shadow: none !important;
+}
+
+.db-deck-tile {
+  background: #0e131d !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+.db-tile-domain-bar {
+  background: rgba(212, 175, 55, 0.55) !important;
+}
+
+/* 6. Oráculo de Guerra (TacticalGuideView) Sober Sections & Bars */
+.tg-selector-card,
+.tg-mini-card-pill,
+.tg-stack-directive {
+  background: #0e131d !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.tg-phase-badge,
+.tg-stack-directive-title {
+  color: #e6c875 !important;
+}
+
+.tg-asym-fill,
+.db-curve-fill,
+.aaa-progress-fill,
+.db-deck-progress-fill {
+  background: linear-gradient(90deg, #9a7420, #d4af37) !important;
+  box-shadow: none !important;
+}
+
+
 @media (max-width: 768px) {
   .aaa-home-lobby-bar {
     flex-direction: column;

@@ -958,8 +958,6 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                     type="button"
                     className="db-action-btn"
                     style={{
-                      borderColor: `${DOMAIN_META[dom].color}88`,
-                      color: '#f8fafc',
                       padding: '0.35rem 0.7rem',
                       fontSize: '0.74rem',
                       flex: 'none',
@@ -984,68 +982,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               </button>
             </div>
           </div>
-        ) : (
-          <div
-            className="aaa-status-callout"
-            style={{
-              marginBottom: '0.85rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '0.75rem',
-            }}
-          >
-            <div style={{ flex: 1, minWidth: '260px' }}>
-              <div className="aaa-callout-kicker">
-                {totalOwnedCopies > 100
-                  ? `COLEÇÃO DO SOBERANO: ${totalOwnedCopies} CARTAS (${Math.max(
-                      0,
-                      totalOwnedCopies - deckCardIds.length
-                    )} NA RESERVA)`
-                  : 'GRIMÓRIO CONSAGRADO (100/100 CARTAS)'}{' '}
-                {username ? `• ${username.toUpperCase()}` : ''}
-              </div>
-              <div className="aaa-callout-title">
-                {totalOwnedCopies > 100
-                  ? 'Troca Livre entre Coleção e Grimório de Combate (Limite de 100 Cartas)'
-                  : 'Expanda sua Coleção no Relicário ou Substitua seu Grimório Base'}
-              </div>
-              <div className="aaa-callout-text">
-                {totalOwnedCopies > 100 ? (
-                  <>
-                    As cartas obtidas no <strong>Relicário</strong> somam-se à sua coleção ({totalOwnedCopies} cartas).
-                    Seu <strong>Grimório de Combate</strong> permanece limitado a <strong>100 cartas</strong>: você pode
-                    tirar (<strong>−</strong>) e inserir (<strong>+</strong>) livremente qualquer carta da sua coleção!
-                  </>
-                ) : (
-                  <>
-                    Seu Grimório inicial de 100 cartas está ativo. Abra pacotes no{' '}
-                    <strong>Relicário</strong> (+10 Ouro por vitória) para ganhar novas cartas e
-                    trocá-las livremente mantendo o limite de 100 cartas em combate, ou substitua
-                    todo o seu Grimório Base por <strong>{GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro</strong>.
-                  </>
-                )}
-              </div>
-            </div>
-            <button
-              type="button"
-              className="aaa-btn aaa-btn-secondary"
-              onClick={handleStartReplaceGrimoire}
-              title={`Pague ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro para escolher um novo Grimório Base de 100 cartas (mantendo todas as suas cartas do Relicário)`}
-              style={{
-                borderColor:
-                  gold >= GRIMOIRE_REPLACEMENT_GOLD_COST
-                    ? 'rgba(250, 204, 21, 0.75)'
-                    : 'rgba(148, 163, 184, 0.35)',
-                color: gold >= GRIMOIRE_REPLACEMENT_GOLD_COST ? '#fde047' : '#cbd5e1',
-                flexShrink: 0,
-              }}
-            >
-              🔄 Substituir Grimório ({GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)
-            </button>
-          </div>
-        )}
+        ) : null}
 
         {/* SINGLE ULTRA-CLEAN STICKY TOOLBAR */}
         <div className="db-modern-toolbar">
@@ -1535,13 +1472,22 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             >
               Completar
             </button>
-            {(isGuest || isFirstDeckSetup || isReplacingGrimoire) && (
+            {(isGuest || isFirstDeckSetup || isReplacingGrimoire) ? (
               <button
                 type="button"
                 className="db-action-btn subtle-danger"
                 onClick={() => setDeckCardIds([])}
               >
                 Limpar
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="db-action-btn"
+                onClick={handleStartReplaceGrimoire}
+                title={`Substituir Grimório Base por ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro`}
+              >
+                Trocar Base ({GRIMOIRE_REPLACEMENT_GOLD_COST})
               </button>
             )}
           </div>

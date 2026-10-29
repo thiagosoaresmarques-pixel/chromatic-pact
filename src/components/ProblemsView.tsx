@@ -39,7 +39,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
     getProblemHistoryMap()
   );
   const [dailyState, setDailyState] = useState<DailyStateData>(() => getDailyState());
-  const [isDailyPanelMinimized, setIsDailyPanelMinimized] = useState<boolean>(false);
+  const [isDailyPanelMinimized, setIsDailyPanelMinimized] = useState<boolean>(true);
   const [expandedHintId, setExpandedHintId] = useState<string | null>(null);
 
   const solvedSet = useMemo(() => new Set(solvedIds), [solvedIds]);
@@ -145,150 +145,55 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
   );
 
   return (
-    <div
-      style={{
-        maxWidth: 1380,
-        margin: '0 auto',
-        padding: '14px 16px 48px',
-        color: '#f8fafc',
-      }}
-    >
-      {/* Compact Header Strip */}
-      <div
-        style={{
-          background:
-            'radial-gradient(circle at 15% 20%, rgba(234, 179, 8, 0.14), rgba(15, 23, 42, 0.95) 70%)',
-          border: '1px solid rgba(250, 204, 21, 0.32)',
-          borderRadius: 12,
-          padding: '12px 16px',
-          marginBottom: 10,
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 12,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span
-                style={{
-                  fontSize: '1.1rem',
-                  fontFamily: 'Cinzel, serif',
-                  fontWeight: 900,
-                  color: '#fef08a',
-                }}
-              >
-                ♟️ 100 Problemas Táticos (Xeque-Mate em 1T)
-              </span>
-              <span
-                style={{
-                  fontSize: '0.7rem',
-                  padding: '2px 8px',
-                  borderRadius: 999,
-                  background: 'rgba(250, 204, 21, 0.14)',
-                  border: '1px solid rgba(250, 204, 21, 0.4)',
-                  color: '#fde047',
-                  fontWeight: 800,
-                }}
-              >
-                Trilha Progressiva (20/20 por Grau)
-              </span>
-            </div>
-            <div style={{ fontSize: '0.76rem', color: '#94a3b8', marginTop: 2 }}>
-              Sem spoilers no enunciado: analise a mesa e encontre o letal em 1 turno (use 💡 Dica apenas se precisar).
-            </div>
+    <div className="aaa-page-shell">
+      {/* Sober Arena-Grade Header Bar */}
+      <header className="aaa-page-header" style={{ flexWrap: 'wrap', gap: '0.85rem' }}>
+        <div>
+          <div className="aaa-kicker">TRILHA PROGRESSIVA • 20 DESAFIOS POR GRAU</div>
+          <h1 className="aaa-page-title font-cinzel">100 Problemas Táticos (Xeque-Mate em 1T)</h1>
+        </div>
+
+        <div className="aaa-header-actions" style={{ flexWrap: 'wrap', gap: '0.6rem' }}>
+          <div className="aaa-stat-block">
+            <span className="aaa-stat-label">RESOLVIDOS</span>
+            <span className="aaa-stat-val gold-text">
+              {solvedIds.length}/{TACTICAL_PROBLEMS.length}
+            </span>
+          </div>
+          <div className="aaa-stat-block">
+            <span className="aaa-stat-label">DE 1ª S/ DICA</span>
+            <span className="aaa-stat-val">{historyStats.totalFirstTry}</span>
+          </div>
+          <div className="aaa-stat-block">
+            <span className="aaa-stat-label">PRECISÃO</span>
+            <span className="aaa-stat-val">{historyStats.accuracyPct}%</span>
+          </div>
+          <div className="aaa-stat-block">
+            <span className="aaa-stat-label">RECOMPENSAS</span>
+            <span className="aaa-stat-val gold-text">
+              {earnedGold}/{totalGoldAvailable} OURO
+            </span>
           </div>
 
           {nextTrailProblem && (
             <button
               type="button"
+              className="aaa-btn aaa-btn-primary"
               onClick={() => onSelectProblem(nextTrailProblem)}
-              style={{
-                padding: '7px 13px',
-                borderRadius: 8,
-                border: '1px solid rgba(250, 204, 21, 0.85)',
-                background: 'linear-gradient(135deg, #facc15, #ca8a04)',
-                color: '#0f172a',
-                fontWeight: 900,
-                fontSize: '0.78rem',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-              }}
             >
-              ▶️ Continuar: #{String(nextTrailProblem.number).padStart(2, '0')} {nextTrailProblem.title}
+              ⚔️ Continuar: #{String(nextTrailProblem.number).padStart(2, '0')} {nextTrailProblem.title}
             </button>
           )}
         </div>
+      </header>
 
-        {/* Inline Compact KPIs */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <div
-            style={{
-              background: 'rgba(15, 23, 42, 0.9)',
-              border: '1px solid rgba(74, 222, 128, 0.35)',
-              borderRadius: 8,
-              padding: '5px 10px',
-              fontSize: '0.75rem',
-            }}
-          >
-            <span style={{ color: '#94a3b8' }}>Resolvidos: </span>
-            <strong style={{ color: '#4ade80' }}>
-              {solvedIds.length}/{TACTICAL_PROBLEMS.length}
-            </strong>
-          </div>
-          <div
-            style={{
-              background: 'rgba(15, 23, 42, 0.9)',
-              border: '1px solid rgba(56, 189, 248, 0.35)',
-              borderRadius: 8,
-              padding: '5px 10px',
-              fontSize: '0.75rem',
-            }}
-          >
-            <span style={{ color: '#94a3b8' }}>De 1ª s/ Dica: </span>
-            <strong style={{ color: '#38bdf8' }}>🏆 {historyStats.totalFirstTry}</strong>
-          </div>
-          <div
-            style={{
-              background: 'rgba(15, 23, 42, 0.9)',
-              border: '1px solid rgba(248, 113, 113, 0.35)',
-              borderRadius: 8,
-              padding: '5px 10px',
-              fontSize: '0.75rem',
-            }}
-          >
-            <span style={{ color: '#94a3b8' }}>Erros: </span>
-            <strong style={{ color: '#f87171' }}>
-              ❌ {historyStats.totalFailures} ({historyStats.accuracyPct}%)
-            </strong>
-          </div>
-          <div
-            style={{
-              background: 'rgba(15, 23, 42, 0.9)',
-              border: '1px solid rgba(250, 204, 21, 0.38)',
-              borderRadius: 8,
-              padding: '5px 10px',
-              fontSize: '0.75rem',
-            }}
-          >
-            <span style={{ color: '#94a3b8' }}>Ouro: </span>
-            <strong style={{ color: '#facc15' }}>
-              🪙 {earnedGold}/{totalGoldAvailable}
-            </strong>
-          </div>
-        </div>
-      </div>
-
-      {/* Collapsible Daily Problem & 3 Daily Quests Strip */}
+      {/* Collapsible Sober Daily Problem & Contracts Strip */}
       <div
         style={{
-          background: 'rgba(15, 23, 42, 0.88)',
-          border: '1px solid rgba(56, 189, 248, 0.32)',
-          borderRadius: 11,
-          padding: isDailyPanelMinimized ? '7px 14px' : '10px 14px',
-          marginBottom: 12,
+          background: '#0b0f17',
+          border: '1px solid rgba(148, 163, 184, 0.18)',
+          borderRadius: 8,
+          padding: isDailyPanelMinimized ? '7px 12px' : '10px 12px',
         }}
       >
         <div
@@ -301,44 +206,36 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 900, color: '#7dd3fc' }}>
-              🎯 PROBLEMA DO DIA & CONTRATOS DIÁRIOS ({completedQuestsCount}/3 concluídos)
+            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e6c875', letterSpacing: '0.04em' }}>
+              CONTRATOS DIÁRIOS & PROBLEMA DO DIA ({completedQuestsCount}/3)
             </span>
             {unclaimedCompletedCount > 0 && (
               <span
                 style={{
                   padding: '1px 8px',
-                  borderRadius: 999,
-                  background: 'rgba(34, 197, 94, 0.22)',
-                  border: '1px solid rgba(74, 222, 128, 0.6)',
-                  color: '#4ade80',
+                  borderRadius: 4,
+                  background: 'rgba(212, 175, 55, 0.16)',
+                  border: '1px solid rgba(212, 175, 55, 0.45)',
+                  color: '#f3e3b0',
                   fontSize: '0.68rem',
-                  fontWeight: 900,
+                  fontWeight: 800,
                 }}
               >
-                🎁 {unclaimedCompletedCount} Recompensa(s) para Resgatar!
+                {unclaimedCompletedCount} Recompensa(s) Disponível(is)
               </span>
             )}
-            <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-              ⏱️ Renova em {getTimeUntilNextDailyReset()}
+            <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
+              Renova em {getTimeUntilNextDailyReset()}
             </span>
           </div>
 
           <button
             type="button"
+            className="btn-fantasy"
             onClick={() => setIsDailyPanelMinimized((prev) => !prev)}
-            style={{
-              padding: '4px 10px',
-              borderRadius: 7,
-              border: '1px solid rgba(148, 163, 184, 0.3)',
-              background: 'rgba(30, 41, 59, 0.8)',
-              color: '#cbd5e1',
-              fontSize: '0.72rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-            }}
+            style={{ padding: '3px 10px', fontSize: '0.7rem' }}
           >
-            {isDailyPanelMinimized ? '▾ Mostrar Diárias' : '▴ Ocultar'}
+            {isDailyPanelMinimized ? '▾ Mostrar Contratos Diários' : '▴ Ocultar'}
           </button>
         </div>
 
@@ -348,17 +245,15 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(235px, 1fr))',
               gap: 8,
-              marginTop: 9,
+              marginTop: 10,
             }}
           >
-            {/* Card 0: Problema Tático do Dia */}
             {dailyProblem && (
               <div
                 style={{
-                  background:
-                    'linear-gradient(135deg, rgba(234, 179, 8, 0.14), rgba(15, 23, 42, 0.95))',
-                  border: '1px solid rgba(250, 204, 21, 0.48)',
-                  borderRadius: 9,
+                  background: '#101520',
+                  border: '1px solid rgba(212, 175, 55, 0.32)',
+                  borderRadius: 6,
                   padding: '8px 10px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -374,68 +269,43 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                     gap: 6,
                   }}
                 >
-                  <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#fde047' }}>
-                    🎯 PROBLEMA DO DIA (#{String(dailyProblem.number).padStart(2, '0')})
+                  <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#e6c875' }}>
+                    PROBLEMA DO DIA (#{String(dailyProblem.number).padStart(2, '0')})
                   </span>
-                  <span
-                    style={{
-                      fontSize: '0.66rem',
-                      fontWeight: 900,
-                      color: dailyState.dailyProblemBonusClaimed
-                        ? '#4ade80'
-                        : dailyState.dailyProblemFailedToday || dailyState.dailyProblemHintUsedToday
-                          ? '#94a3b8'
-                          : '#fde047',
-                    }}
-                  >
+                  <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#94a3b8' }}>
                     {dailyState.dailyProblemBonusClaimed
-                      ? '🏆 +3🪙 GANHO'
-                      : dailyState.dailyProblemFailedToday || dailyState.dailyProblemHintUsedToday
-                        ? 'Sem bônus de 1ª hoje'
-                        : `🪙 +${DAILY_PROBLEM_BONUS_GOLD} Bônus (1ª s/ Dica)`}
+                      ? '+3 Ouro Ganho'
+                      : `+${DAILY_PROBLEM_BONUS_GOLD} Ouro Bônus`}
                   </span>
                 </div>
-                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#f8fafc' }}>
-                  {dailyProblem.title}{' '}
-                  <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 600 }}>
-                    ({PROBLEM_DIFFICULTY_META[dailyProblem.difficulty].starsText})
-                  </span>
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f1f5f9' }}>
+                  {dailyProblem.title}
                 </div>
                 <button
                   type="button"
+                  className="aaa-btn aaa-btn-secondary"
                   onClick={() => onSelectProblem(dailyProblem)}
-                  style={{
-                    padding: '5px 9px',
-                    borderRadius: 6,
-                    border: '1px solid rgba(250, 204, 21, 0.7)',
-                    background: 'rgba(250, 204, 21, 0.2)',
-                    color: '#fef08a',
-                    fontWeight: 900,
-                    fontSize: '0.72rem',
-                    cursor: 'pointer',
-                  }}
+                  style={{ padding: '4px 9px', fontSize: '0.72rem' }}
                 >
                   {dailyState.dailyProblemSolvedToday
-                    ? `✅ Rejogar Problema do Dia (#${dailyProblem.number})`
-                    : `▶️ Jogar Problema do Dia (#${dailyProblem.number})`}
+                    ? `Rejogar Problema (#${dailyProblem.number})`
+                    : `Jogar Problema (#${dailyProblem.number})`}
                 </button>
               </div>
             )}
 
-            {/* 3 Contratos Diários */}
             {dailyState.quests.map((q) => {
               const isDone = q.progress >= q.target;
               return (
                 <div
                   key={q.id}
                   style={{
-                    background: 'rgba(2, 6, 23, 0.75)',
-                    border: q.claimed
-                      ? '1px solid rgba(74, 222, 128, 0.35)'
-                      : isDone
-                        ? '1.5px solid rgba(250, 204, 21, 0.75)'
-                        : '1px solid rgba(148, 163, 184, 0.22)',
-                    borderRadius: 9,
+                    background: '#0e131d',
+                    border:
+                      isDone && !q.claimed
+                        ? '1px solid rgba(212, 175, 55, 0.5)'
+                        : '1px solid rgba(148, 163, 184, 0.16)',
+                    borderRadius: 6,
                     padding: '8px 10px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -451,17 +321,11 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                       gap: 6,
                     }}
                   >
-                    <span style={{ fontSize: '0.74rem', fontWeight: 900, color: '#e2e8f0' }}>
-                      {q.icon} {q.title}
+                    <span style={{ fontSize: '0.73rem', fontWeight: 800, color: '#e2e8f0' }}>
+                      {q.title}
                     </span>
-                    <span
-                      style={{
-                        fontSize: '0.68rem',
-                        fontWeight: 900,
-                        color: q.claimed ? '#4ade80' : '#facc15',
-                      }}
-                    >
-                      {q.claimed ? '✅ Resgatado' : `🪙 +${q.goldReward}`}
+                    <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#e6c875' }}>
+                      {q.claimed ? 'Concluído' : `+${q.goldReward} Ouro`}
                     </span>
                   </div>
                   <div style={{ fontSize: '0.7rem', color: '#94a3b8', lineHeight: 1.3 }}>
@@ -475,31 +339,17 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                       gap: 8,
                     }}
                   >
-                    <span
-                      style={{
-                        fontSize: '0.7rem',
-                        fontWeight: 800,
-                        color: isDone ? '#4ade80' : '#cbd5e1',
-                      }}
-                    >
+                    <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8' }}>
                       Progresso: {q.progress}/{q.target}
                     </span>
                     {isDone && !q.claimed && (
                       <button
                         type="button"
+                        className="aaa-btn aaa-btn-primary"
                         onClick={() => handleClaimQuest(q.id)}
-                        style={{
-                          padding: '3px 9px',
-                          borderRadius: 6,
-                          border: '1px solid rgba(250, 204, 21, 0.85)',
-                          background: 'linear-gradient(135deg, #facc15, #ca8a04)',
-                          color: '#0f172a',
-                          fontWeight: 900,
-                          fontSize: '0.7rem',
-                          cursor: 'pointer',
-                        }}
+                        style={{ padding: '3px 9px', fontSize: '0.68rem' }}
                       >
-                        🪙 Resgatar +{q.goldReward}
+                        Resgatar +{q.goldReward}
                       </button>
                     )}
                   </div>
@@ -510,7 +360,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
         )}
       </div>
 
-      {/* Compact 5-Grau Progressive Strip + Status Filters */}
+      {/* Sober 5-Grau Progressive Strip + Status Filters */}
       <div
         style={{
           display: 'flex',
@@ -518,29 +368,14 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
           justifyContent: 'space-between',
           gap: 10,
           flexWrap: 'wrap',
-          marginBottom: 12,
         }}
       >
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
           <button
             type="button"
+            className={`nav-tab-btn ${selectedTier === 'all' ? 'active' : ''}`}
             onClick={() => setSelectedTier('all')}
-            style={{
-              padding: '6px 11px',
-              borderRadius: 8,
-              border:
-                selectedTier === 'all'
-                  ? '1.5px solid #facc15'
-                  : '1px solid rgba(148, 163, 184, 0.25)',
-              background:
-                selectedTier === 'all'
-                  ? 'rgba(250, 204, 21, 0.16)'
-                  : 'rgba(15, 23, 42, 0.8)',
-              color: selectedTier === 'all' ? '#fef08a' : '#cbd5e1',
-              fontWeight: 800,
-              fontSize: '0.74rem',
-              cursor: 'pointer',
-            }}
+            style={{ padding: '5px 10px', fontSize: '0.72rem' }}
           >
             Todos (100)
           </button>
@@ -551,41 +386,21 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
               <button
                 key={tp.tier}
                 type="button"
+                className={`nav-tab-btn ${isSelected ? 'active' : ''}`}
                 onClick={() => setSelectedTier(tp.tier)}
                 style={{
-                  padding: '6px 11px',
-                  borderRadius: 8,
-                  border: isSelected
-                    ? `1.5px solid ${tp.meta.color}`
-                    : tp.unlocked
-                      ? `1px solid ${tp.meta.border}`
-                      : '1px dashed rgba(148, 163, 184, 0.25)',
-                  background: isSelected
-                    ? tp.meta.bg
-                    : tp.unlocked
-                      ? 'rgba(15, 23, 42, 0.85)'
-                      : 'rgba(15, 23, 42, 0.5)',
-                  color: isSelected ? tp.meta.color : tp.unlocked ? '#e2e8f0' : '#94a3b8',
-                  fontWeight: 800,
-                  fontSize: '0.74rem',
-                  cursor: 'pointer',
+                  padding: '5px 10px',
+                  fontSize: '0.72rem',
+                  opacity: tp.unlocked ? 1 : 0.6,
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 6,
                 }}
               >
-                <span>{tp.isCompleted ? '✅' : tp.unlocked ? '🔓' : '🔒'}</span>
-                <span>{tp.meta.label}</span>
-                <span
-                  style={{
-                    padding: '1px 6px',
-                    borderRadius: 999,
-                    background: 'rgba(0,0,0,0.4)',
-                    fontSize: '0.68rem',
-                    color: tp.isCompleted ? '#4ade80' : tp.meta.color,
-                  }}
-                >
-                  {tp.solvedCount}/{tp.total}
+                <span>{tp.isCompleted ? '✓' : tp.unlocked ? '•' : '🔒'}</span>
+                <span>{tp.meta.label.split('•')[0].trim()}</span>
+                <span style={{ fontSize: '0.66rem', color: '#94a3b8' }}>
+                  ({tp.solvedCount}/{tp.total})
                 </span>
               </button>
             );
@@ -593,14 +408,14 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
         </div>
 
         {/* History Filter Pills */}
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           {(
             [
-              { id: 'all', label: '📋 Todos' },
-              { id: 'pending', label: `⏳ Pendentes (${TACTICAL_PROBLEMS.length - solvedIds.length})` },
-              { id: 'failed', label: `❌ Com Erros (${historyStats.problemsWithErrors})` },
-              { id: 'solved', label: `✅ Resolvidos (${solvedIds.length})` },
-              { id: 'first_try', label: `🏆 De 1ª (${historyStats.totalFirstTry})` },
+              { id: 'all', label: 'Todos' },
+              { id: 'pending', label: `Pendentes (${TACTICAL_PROBLEMS.length - solvedIds.length})` },
+              { id: 'failed', label: `Com Erros (${historyStats.problemsWithErrors})` },
+              { id: 'solved', label: `Resolvidos (${solvedIds.length})` },
+              { id: 'first_try', label: `De 1ª (${historyStats.totalFirstTry})` },
             ] as { id: HistoryFilterType; label: string }[]
           ).map((hf) => {
             const active = historyFilter === hf.id;
@@ -608,19 +423,8 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
               <button
                 key={hf.id}
                 type="button"
+                className={`aaa-pill-tab ${active ? 'is-active' : ''}`}
                 onClick={() => setHistoryFilter(hf.id)}
-                style={{
-                  padding: '5px 10px',
-                  borderRadius: 999,
-                  border: active
-                    ? '1px solid rgba(56, 189, 248, 0.75)'
-                    : '1px solid rgba(148, 163, 184, 0.25)',
-                  background: active ? 'rgba(56, 189, 248, 0.18)' : 'rgba(15, 23, 42, 0.75)',
-                  color: active ? '#7dd3fc' : '#94a3b8',
-                  fontWeight: 800,
-                  fontSize: '0.72rem',
-                  cursor: 'pointer',
-                }}
               >
                 {hf.label}
               </button>
@@ -635,9 +439,9 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
           style={{
             padding: '24px',
             textAlign: 'center',
-            borderRadius: 12,
-            background: 'rgba(15, 23, 42, 0.75)',
-            border: '1px solid rgba(148, 163, 184, 0.25)',
+            borderRadius: 8,
+            background: '#0b0f17',
+            border: '1px solid rgba(148, 163, 184, 0.18)',
             color: '#94a3b8',
             fontSize: '0.84rem',
           }}
@@ -646,7 +450,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
         </div>
       )}
 
-      {/* Compact Spoiler-Free Problems Grid (Fits 4-5 per row on Desktop) */}
+      {/* Sober Spoiler-Free Problems Grid */}
       <div
         style={{
           display: 'grid',
@@ -673,28 +477,22 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
             <div
               key={prob.id}
               style={{
-                background:
-                  'linear-gradient(165deg, rgba(15, 23, 42, 0.94), rgba(9, 13, 24, 0.98))',
+                background: '#0b0f17',
                 border: !isTierUnlocked
-                  ? '1px dashed rgba(148, 163, 184, 0.24)'
-                  : isDaily
-                    ? '1.5px solid rgba(250, 204, 21, 0.85)'
-                    : isSolved
-                      ? '1.5px solid rgba(74, 222, 128, 0.5)'
-                      : (entry?.failures ?? 0) > 0
-                        ? '1.5px solid rgba(248, 113, 113, 0.48)'
-                        : `1px solid ${diffMeta.border}`,
-                borderRadius: 11,
+                  ? '1px dashed rgba(148, 163, 184, 0.16)'
+                  : isSolved
+                    ? '1px solid rgba(212, 175, 55, 0.38)'
+                    : '1px solid rgba(148, 163, 184, 0.18)',
+                borderRadius: 8,
                 padding: '10px 12px',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
                 gap: 8,
-                opacity: isTierUnlocked ? 1 : 0.72,
+                opacity: isTierUnlocked ? 1 : 0.62,
               }}
             >
               <div>
-                {/* Row 1: Compact Code + Stars + Domain + Status Badge */}
                 <div
                   style={{
                     display: 'flex',
@@ -704,97 +502,69 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                     marginBottom: 6,
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span
                       style={{
                         padding: '2px 6px',
-                        borderRadius: 5,
-                        background: diffMeta.bg,
-                        border: `1px solid ${diffMeta.border}`,
-                        color: diffMeta.color,
-                        fontSize: '0.66rem',
-                        fontWeight: 900,
+                        borderRadius: 4,
+                        background: '#131926',
+                        border: '1px solid rgba(148, 163, 184, 0.2)',
+                        color: '#cbd5e1',
+                        fontSize: '0.65rem',
+                        fontWeight: 800,
                       }}
                     >
                       #{String(prob.number).padStart(2, '0')} • {diffMeta.starsText}
                     </span>
                     <span
                       title={`Domínio ${domMeta.name}`}
-                      style={{ fontSize: '0.78rem' }}
+                      style={{ fontSize: '0.74rem', color: '#94a3b8' }}
                     >
-                      {domMeta.icon}
+                      {domMeta.shortName}
                     </span>
                     {isDaily && (
                       <span
                         style={{
                           padding: '1px 5px',
                           borderRadius: 4,
-                          background: 'rgba(250, 204, 21, 0.2)',
-                          color: '#fde047',
-                          fontSize: '0.62rem',
-                          fontWeight: 900,
+                          background: 'rgba(212, 175, 55, 0.14)',
+                          border: '1px solid rgba(212, 175, 55, 0.35)',
+                          color: '#e6c875',
+                          fontSize: '0.6rem',
+                          fontWeight: 800,
                         }}
                       >
-                        🎯 DO DIA
+                        DO DIA
                       </span>
                     )}
                   </div>
 
                   {!isTierUnlocked ? (
-                    <span
-                      style={{
-                        fontSize: '0.66rem',
-                        color: '#94a3b8',
-                        fontWeight: 800,
-                      }}
-                    >
-                      🔒 +{prob.goldReward}🪙
+                    <span style={{ fontSize: '0.66rem', color: '#64748b', fontWeight: 700 }}>
+                      🔒 +{prob.goldReward} Ouro
                     </span>
                   ) : isSolved ? (
                     <span
                       style={{
-                        padding: '1px 7px',
-                        borderRadius: 999,
-                        background: entry?.solvedOnFirstTry
-                          ? 'rgba(56, 189, 248, 0.18)'
-                          : 'rgba(34, 197, 94, 0.18)',
-                        color: entry?.solvedOnFirstTry ? '#38bdf8' : '#4ade80',
                         fontSize: '0.66rem',
-                        fontWeight: 900,
+                        color: '#e6c875',
+                        fontWeight: 800,
                       }}
                     >
-                      {entry?.solvedOnFirstTry ? '🏆 1ª s/ Dica' : '✅ Resolvido'}
+                      {entry?.solvedOnFirstTry ? '✓ 1ª Tentativa' : '✓ Resolvido'}
                     </span>
                   ) : (entry?.failures ?? 0) > 0 ? (
-                    <span
-                      style={{
-                        padding: '1px 7px',
-                        borderRadius: 999,
-                        background: 'rgba(239, 68, 68, 0.18)',
-                        color: '#fca5a5',
-                        fontSize: '0.66rem',
-                        fontWeight: 900,
-                      }}
-                    >
-                      ❌ {entry?.failures} erro(s) • +{prob.goldReward}🪙
+                    <span style={{ fontSize: '0.66rem', color: '#94a3b8', fontWeight: 700 }}>
+                      {entry?.failures} tentativa(s) • +{prob.goldReward} Ouro
                     </span>
                   ) : (
-                    <span
-                      style={{
-                        padding: '1px 7px',
-                        borderRadius: 999,
-                        background: 'rgba(250, 204, 21, 0.14)',
-                        color: '#fde047',
-                        fontSize: '0.68rem',
-                        fontWeight: 900,
-                      }}
-                    >
-                      🪙 +{prob.goldReward}
+                    <span style={{ fontSize: '0.66rem', color: '#e6c875', fontWeight: 700 }}>
+                      +{prob.goldReward} Ouro
                     </span>
                   )}
                 </div>
 
-                {/* Row 2: Avatar + Clean Title + Compact 1-Line Matchup Stats (ZERO SPOILERS) */}
+                {/* Row 2: Avatar + Clean Title + Compact 1-Line Matchup Stats */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                   {avatarCard?.imagePath && (
                     <img
@@ -803,21 +573,21 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                       style={{
                         width: 36,
                         height: 36,
-                        borderRadius: 8,
+                        borderRadius: 6,
                         objectFit: 'cover',
-                        border: `1px solid ${diffMeta.color}`,
+                        border: '1px solid rgba(212, 175, 55, 0.32)',
                         flexShrink: 0,
-                        filter: isTierUnlocked ? 'none' : 'grayscale(0.7)',
+                        filter: isTierUnlocked ? 'none' : 'grayscale(0.75)',
                       }}
                     />
                   )}
                   <div style={{ minWidth: 0, flex: 1 }}>
                     <div
                       style={{
-                        fontSize: '0.86rem',
+                        fontSize: '0.84rem',
                         fontFamily: 'Cinzel, serif',
-                        fontWeight: 900,
-                        color: '#f8fafc',
+                        fontWeight: 800,
+                        color: '#f1f5f9',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -828,7 +598,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                     </div>
                     <div
                       style={{
-                        fontSize: '0.71rem',
+                        fontSize: '0.7rem',
                         color: '#94a3b8',
                         marginTop: 2,
                         display: 'flex',
@@ -838,60 +608,53 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                       }}
                     >
                       <span>
-                        T{prob.turnNumber} • ⚡{prob.p1Essence}/{prob.p1MaxEssence} • 🃏{prob.p1HandCardIds.length}
+                        T{prob.turnNumber} • {prob.p1Essence}/{prob.p1MaxEssence} Ess. • {prob.p1HandCardIds.length} Cartas
                       </span>
-                      <strong style={{ color: '#f87171' }}>🎯 {prob.p2Hp} ❤️</strong>
+                      <strong style={{ color: '#cbd5e1' }}>Alvo: {prob.p2Hp} PV</strong>
                     </div>
                   </div>
                 </div>
 
-                {/* Optional Hint Preview (Only shown when player clicks 💡 Dica) */}
                 {isHintOpen && isTierUnlocked && (
                   <div
                     style={{
                       marginTop: 7,
-                      padding: '7px 9px',
-                      borderRadius: 8,
-                      background: 'rgba(250, 204, 21, 0.1)',
-                      border: '1px solid rgba(250, 204, 21, 0.35)',
+                      padding: '6px 9px',
+                      borderRadius: 6,
+                      background: '#111622',
+                      border: '1px solid rgba(212, 175, 55, 0.3)',
                       fontSize: '0.72rem',
-                      color: '#fef08a',
+                      color: '#e2e8f0',
                       lineHeight: 1.4,
                     }}
                   >
-                    <strong>💡 Dica:</strong> {prob.hint1}
+                    <strong style={{ color: '#e6c875' }}>Dica:</strong> {prob.hint1}
                   </div>
                 )}
               </div>
 
-              {/* Row 3: Compact Action Buttons */}
+              {/* Row 3: Sober Action Buttons */}
               <div style={{ display: 'flex', gap: 6 }}>
                 {isTierUnlocked ? (
                   <>
                     <button
                       type="button"
+                      className={isSolved ? 'aaa-btn aaa-btn-secondary' : 'aaa-btn aaa-btn-primary'}
                       onClick={() => onSelectProblem(prob)}
                       style={{
                         flex: 1,
                         padding: '6px 10px',
-                        borderRadius: 7,
-                        border: '1px solid rgba(250, 204, 21, 0.55)',
-                        background:
-                          'linear-gradient(135deg, rgba(234, 179, 8, 0.92), rgba(202, 138, 4, 0.95))',
-                        color: '#0f172a',
-                        fontWeight: 900,
-                        fontSize: '0.75rem',
-                        cursor: 'pointer',
+                        fontSize: '0.73rem',
+                        justifyContent: 'center',
                       }}
                     >
                       {isSolved
-                        ? `♟️ Rejogar #${prob.number}`
-                        : (entry?.failures ?? 0) > 0
-                          ? `🔄 Tentar #${prob.number}`
-                          : `♟️ Resolver #${prob.number}`}
+                        ? `Rejogar #${prob.number}`
+                        : `Resolver #${prob.number}`}
                     </button>
                     <button
                       type="button"
+                      className="aaa-btn aaa-btn-secondary"
                       onClick={() => {
                         if (!isHintOpen) {
                           const updated = recordProblemHintUsed(prob.id, 1);
@@ -904,18 +667,10 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                       title="Consultar Dica Conceitual"
                       style={{
                         padding: '6px 9px',
-                        borderRadius: 7,
-                        border: '1px solid rgba(148, 163, 184, 0.3)',
-                        background: isHintOpen
-                          ? 'rgba(250, 204, 21, 0.22)'
-                          : 'rgba(30, 41, 59, 0.85)',
-                        color: '#fde047',
-                        fontWeight: 800,
-                        fontSize: '0.73rem',
-                        cursor: 'pointer',
+                        fontSize: '0.72rem',
                       }}
                     >
-                      {isHintOpen ? '✕' : '💡 Dica'}
+                      {isHintOpen ? '✕' : 'Dica'}
                     </button>
                   </>
                 ) : (
@@ -925,12 +680,12 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                     style={{
                       flex: 1,
                       padding: '6px 8px',
-                      borderRadius: 7,
-                      border: '1px solid rgba(148, 163, 184, 0.22)',
-                      background: 'rgba(30, 41, 59, 0.55)',
-                      color: '#94a3b8',
-                      fontWeight: 800,
-                      fontSize: '0.7rem',
+                      borderRadius: 6,
+                      border: '1px solid rgba(148, 163, 184, 0.14)',
+                      background: '#0e131d',
+                      color: '#64748b',
+                      fontWeight: 700,
+                      fontSize: '0.68rem',
                       cursor: 'not-allowed',
                     }}
                   >

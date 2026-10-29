@@ -1435,13 +1435,13 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '0.22rem',
-                              fontSize: '0.68rem',
+                              fontSize: '0.66rem',
                               fontWeight: 700,
-                              padding: '0.14rem 0.48rem',
-                              borderRadius: '999px',
-                              background: DOMAIN_META[dom].badgeBg,
-                              color: DOMAIN_META[dom].color,
-                              border: `1px solid ${DOMAIN_META[dom].color}55`,
+                              padding: '0.14rem 0.45rem',
+                              borderRadius: '4px',
+                              background: '#131926',
+                              color: '#cbd5e1',
+                              border: '1px solid rgba(148, 163, 184, 0.22)',
                             }}
                           >
                             {DOMAIN_META[dom].icon} {DOMAIN_META[dom].shortName}
@@ -1463,20 +1463,13 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                       {inDeckCount > 0 && (
                         <span
                           style={{
-                            fontSize: '0.68rem',
+                            fontSize: '0.66rem',
                             fontWeight: 700,
-                            padding: '0.14rem 0.5rem',
-                            borderRadius: '999px',
-                            background:
-                              inDeckCount === comboCards.length
-                                ? 'rgba(74, 222, 128, 0.14)'
-                                : 'rgba(212, 175, 55, 0.12)',
-                            color: inDeckCount === comboCards.length ? '#4ade80' : '#fde68a',
-                            border: `1px solid ${
-                              inDeckCount === comboCards.length
-                                ? 'rgba(74, 222, 128, 0.4)'
-                                : 'rgba(212, 175, 55, 0.35)'
-                            }`,
+                            padding: '0.14rem 0.48rem',
+                            borderRadius: '4px',
+                            background: 'rgba(212, 175, 55, 0.12)',
+                            color: '#e6c875',
+                            border: '1px solid rgba(212, 175, 55, 0.35)',
                           }}
                         >
                           {inDeckCount}/{comboCards.length} no seu Grimório

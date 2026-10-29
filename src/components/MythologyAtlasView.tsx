@@ -272,15 +272,15 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
           id={`poem-parallel-card-${parallelCanto.id}`}
           className="poem-parallel-unified-card"
           style={{
-            borderColor: `${parallelCanto.accentColor}55`,
-            backgroundImage: `linear-gradient(180deg, rgba(10, 14, 26, 0.92) 0%, rgba(7, 10, 19, 0.98) 100%), url('${parallelCanto.bannerImage}')`,
+            borderColor: 'rgba(212, 175, 55, 0.25)',
+            backgroundImage: `linear-gradient(180deg, rgba(10, 14, 24, 0.94) 0%, rgba(7, 10, 18, 0.98) 100%), url('${parallelCanto.bannerImage}')`,
           }}
         >
           <header className="poem-parallel-unified-header">
             <div className="poem-canto-meta-top">
               <span
                 className="poem-canto-kicker"
-                style={{ color: parallelCanto.accentColor }}
+                style={{ color: '#e6c875' }}
               >
                 {parallelCanto.cantoNumber} • {parallelCanto.periodLabel}
               </span>

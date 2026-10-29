@@ -1481,33 +1481,9 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
       <div className="aaa-page-header">
         <div>
           <div className="aaa-kicker">
-            SERVIDORES DOS CINCO DOMÍNIOS • SINCRONIZAÇÃO EM TEMPO REAL
+            CONCLAVE ONLINE • PAREAMENTO 1×1 EM TEMPO REAL
           </div>
           <h1 className="aaa-page-title font-cinzel">Conclave Multiplayer 1×1</h1>
-        </div>
-
-        <div className="aaa-header-actions">
-          <button
-            type="button"
-            className="aaa-btn aaa-btn-secondary"
-            onClick={() => onOpenAccountModal('profile')}
-          >
-            Meu Perfil
-          </button>
-          <button
-            type="button"
-            className="aaa-btn aaa-btn-secondary"
-            onClick={() => onOpenAccountModal('login')}
-          >
-            Trocar Usuário
-          </button>
-          <button
-            type="button"
-            className="aaa-btn aaa-btn-primary"
-            onClick={() => onOpenAccountModal('create')}
-          >
-            Criar Nova Conta
-          </button>
         </div>
       </div>
 
@@ -1573,9 +1549,9 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               alignItems: 'center',
               flexWrap: 'wrap',
               gap: '0.85rem',
-              padding: '0.9rem 1rem',
-              background: 'rgba(15, 23, 42, 0.82)',
-              border: '1px solid rgba(212, 175, 55, 0.45)',
+              padding: '0.85rem 1rem',
+              background: '#0b0f17',
+              border: '1px solid rgba(148, 163, 184, 0.18)',
               borderRadius: '8px',
             }}
           >
@@ -1583,10 +1559,10 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               onClick={() => onOpenAccountModal('profile')}
               title="Clique para trocar seu Avatar"
               style={{
-                width: '68px',
-                height: '68px',
-                borderRadius: '50%',
-                border: '2px solid #fde047',
+                width: '60px',
+                height: '60px',
+                borderRadius: '8px',
+                border: '1px solid rgba(212, 175, 55, 0.42)',
                 background: '#070a12',
                 overflow: 'hidden',
                 flexShrink: 0,
@@ -1600,22 +1576,22 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                 <img
                   src={`${avatarCard.imagePath}?v=12`}
                   alt={currentUser.username}
-                  style={{ width: '92%', height: '92%', objectFit: 'contain' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               )}
             </div>
 
             <div style={{ flex: '1 1 165px', minWidth: 0 }}>
               <div
-                className="font-cinzel gold-gradient-text"
-                style={{ fontSize: '1.2rem', fontWeight: 900 }}
+                className="font-cinzel"
+                style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f1f5f9' }}
               >
                 {currentUser.username}
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#fde047', marginBottom: '0.4rem' }}>
+              <div style={{ fontSize: '0.75rem', color: '#e6c875', marginBottom: '0.35rem' }}>
                 {currentHonorific}
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
                 <span className="tg-role-pill" style={{ flex: 'none' }}>
                   {currentUser.eloRating} Reputação
                 </span>

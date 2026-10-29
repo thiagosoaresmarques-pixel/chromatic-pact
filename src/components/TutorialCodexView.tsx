@@ -890,15 +890,15 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 key={idx}
                 style={{
                   padding: '1rem',
-                  borderRadius: '10px',
-                  background: 'rgba(15, 23, 42, 0.84)',
-                  border: '1px solid rgba(148, 163, 184, 0.2)',
+                  borderRadius: '8px',
+                  background: '#0b0f17',
+                  border: '1px solid rgba(148, 163, 184, 0.18)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.35rem',
                 }}
               >
-                <div style={{ fontSize: '0.64rem', fontWeight: 800, letterSpacing: '0.08em', color: item.color }}>
+                <div style={{ fontSize: '0.64rem', fontWeight: 800, letterSpacing: '0.08em', color: '#e6c875' }}>
                   {item.tag}
                 </div>
                 <h3 className="font-cinzel" style={{ color: '#f8fafc', fontSize: '0.95rem', margin: 0 }}>
@@ -975,7 +975,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 key={d.domain}
                 className="tg-panel"
                 style={{
-                  border: `1px solid ${meta.color}55`,
+                  border: '1px solid rgba(148, 163, 184, 0.18)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -985,7 +985,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                     <div>
-                      <div style={{ fontSize: '0.65rem', color: meta.color, fontWeight: 800, letterSpacing: '0.08em' }}>
+                      <div style={{ fontSize: '0.65rem', color: '#e6c875', fontWeight: 800, letterSpacing: '0.08em' }}>
                         DOMÍNIO ELEMENTAL
                       </div>
                       <h3 className="font-cinzel" style={{ fontSize: '1.12rem', color: '#ffffff', margin: 0 }}>
@@ -999,9 +999,9 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                         style={{
                           width: '50px',
                           height: '50px',
-                          borderRadius: '8px',
+                          borderRadius: '6px',
                           objectFit: 'cover',
-                          border: `1px solid ${meta.color}`,
+                          border: '1px solid rgba(212, 175, 55, 0.35)',
                           cursor: 'pointer',
                         }}
                         onClick={() => card && onInspectCard?.(card)}
@@ -1019,14 +1019,14 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                     style={{
                       fontSize: '0.78rem',
                       padding: '0.6rem 0.75rem',
-                      borderRadius: '8px',
-                      background: 'rgba(15, 23, 42, 0.82)',
+                      borderRadius: '6px',
+                      background: '#0b0f17',
                       border: '1px solid rgba(148, 163, 184, 0.16)',
                       color: '#e2e8f0',
                       lineHeight: 1.45,
                     }}
                   >
-                    <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#fde047', marginBottom: '0.15rem' }}>
+                    <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#e6c875', marginBottom: '0.15rem' }}>
                       PODER DO SOBERANO
                     </div>
                     {d.sovereignPower}
@@ -1036,14 +1036,14 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                     style={{
                       fontSize: '0.78rem',
                       padding: '0.6rem 0.75rem',
-                      borderRadius: '8px',
-                      background: 'rgba(30, 41, 59, 0.75)',
-                      border: `1px solid ${meta.color}44`,
+                      borderRadius: '6px',
+                      background: '#101520',
+                      border: '1px solid rgba(212, 175, 55, 0.25)',
                       color: '#f8fafc',
                       lineHeight: 1.45,
                     }}
                   >
-                    <div style={{ fontSize: '0.62rem', fontWeight: 800, color: meta.color, marginBottom: '0.15rem' }}>
+                    <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#e6c875', marginBottom: '0.15rem' }}>
                       EXPANSÃO DE DOMÍNIO (6/6 AFINIDADE • 3 ESSÊNCIA)
                     </div>
                     {d.domainExpansion}
@@ -1107,15 +1107,15 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 key={idx}
                 style={{
                   padding: '1rem',
-                  borderRadius: '10px',
-                  background: 'rgba(15, 23, 42, 0.85)',
-                  border: `1px solid ${r.color}55`,
+                  borderRadius: '8px',
+                  background: '#0b0f17',
+                  border: '1px solid rgba(148, 163, 184, 0.18)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.35rem',
                 }}
               >
-                <div style={{ fontSize: '0.64rem', fontWeight: 800, letterSpacing: '0.08em', color: r.color }}>
+                <div style={{ fontSize: '0.64rem', fontWeight: 800, letterSpacing: '0.08em', color: '#e6c875' }}>
                   {r.tag}
                 </div>
                 <div className="font-cinzel" style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>
@@ -1166,7 +1166,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                   key={kw.name}
                   className="tg-panel"
                   style={{
-                    border: `1px solid ${kw.color}44`,
+                    border: '1px solid rgba(148, 163, 184, 0.18)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
@@ -1200,10 +1200,10 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                         style={{
                           fontSize: '0.64rem',
                           padding: '2px 8px',
-                          borderRadius: '999px',
-                          background: 'rgba(15, 23, 42, 0.9)',
-                          border: `1px solid ${kw.color}55`,
-                          color: kw.color,
+                          borderRadius: '4px',
+                          background: '#111622',
+                          border: '1px solid rgba(148, 163, 184, 0.22)',
+                          color: '#cbd5e1',
                           fontWeight: 700,
                         }}
                       >

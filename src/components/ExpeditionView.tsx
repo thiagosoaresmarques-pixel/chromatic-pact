@@ -511,7 +511,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
           {activeBlessing && (
             <div className="aaa-stat-block">
               <span className="aaa-stat-label">BÊNÇÃO ATIVA</span>
-              <span className="aaa-stat-val" style={{ color: activeBlessing.accent }}>
+              <span className="aaa-stat-val gold-text">
                 {activeBlessing.name}
               </span>
             </div>
@@ -578,12 +578,11 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
               <div
                 key={b.id}
                 className="exp-blessing-card"
-                style={{ '--bless-accent': b.accent } as React.CSSProperties}
                 onClick={() => handleSelectBlessing(b)}
               >
                 <div className="exp-blessing-top">
                   <span className="exp-blessing-icon">{b.icon}</span>
-                  <span className="aaa-kicker" style={{ color: b.accent }}>
+                  <span className="aaa-kicker">
                     {b.kicker}
                   </span>
                 </div>
@@ -630,10 +629,10 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 <div key={bucket.id} className="exp-bucket-card">
                   <div className="exp-bucket-header">
                     <div>
-                      <span className="aaa-kicker" style={{ color: DOMAIN_META[bucket.domain].color }}>
+                      <span className="aaa-kicker">
                         {DOMAIN_META[bucket.domain].icon} {DOMAIN_META[bucket.domain].name}
                       </span>
-                      <h3 className="font-cinzel" style={{ fontSize: '1.1rem', color: '#fef08a' }}>
+                      <h3 className="font-cinzel" style={{ fontSize: '1.05rem', color: '#f1f5f9' }}>
                         {bucket.title}
                       </h3>
                       <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{bucket.subtitle}</p>

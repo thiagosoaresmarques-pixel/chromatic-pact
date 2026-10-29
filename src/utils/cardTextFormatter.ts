@@ -38,9 +38,24 @@ function formatStatBonus(
   return '+1/+1 de Ataque e Vida';
 }
 
-function getTriggerPrefix(
+function isImmediatePlayTrigger(
   card: CardDefinition,
   trigger: CardEffect['trigger']
+): boolean {
+  if (trigger === 'on_enter') return true;
+  if (
+    trigger === 'spell_cast' &&
+    (card.type === 'spell' || card.type === 'reaction')
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function getTriggerPrefix(
+  card: CardDefinition,
+  trigger: CardEffect['trigger'],
+  detailed = false
 ): string {
   if (card.type === 'spell') {
     if (trigger === 'on_enter' || trigger === 'spell_cast') {
@@ -54,8 +69,11 @@ function getTriggerPrefix(
   }
   switch (trigger) {
     case 'on_enter':
-    case 'spell_cast':
       return 'Ao entrar, ';
+    case 'spell_cast':
+      return detailed
+        ? 'Sempre que você lança um feitiço, '
+        : 'Ao lançar um feitiço, ';
     case 'on_death':
       return card.type === 'relic' ? 'Ao ser destruída, ' : 'Ao morrer, ';
     case 'on_attack':
@@ -76,8 +94,7 @@ export function formatEffectActionClause(
 ): string {
   const v = effect.value;
   const canChoose =
-    (effect.trigger === 'on_enter' || effect.trigger === 'spell_cast') &&
-    card.type !== 'reaction';
+    isImmediatePlayTrigger(card, effect.trigger) && card.type !== 'reaction';
 
   switch (effect.type) {
     case 'damage_enemy_row': {
@@ -308,8 +325,19 @@ function joinTriggerClauses(
   detailed: boolean,
   includeBreathDmg = 0
 ): string {
-  // Clone effects list and fold breathDamage directly into damage_enemy_row on on_enter
-  const effects: CardEffect[] = rawEffects.map((e) => ({ ...e }));
+  // Clone and deduplicate identical effect types on the same trigger by summing values
+  const effects: CardEffect[] = [];
+  for (const eff of rawEffects) {
+    const existing = effects.find(
+      (e) => e.type === eff.type && e.secondaryValue === eff.secondaryValue
+    );
+    if (existing) {
+      existing.value += eff.value;
+    } else {
+      effects.push({ ...eff });
+    }
+  }
+
   if (includeBreathDmg > 0) {
     const existingRowDmg = effects.find((e) => e.type === 'damage_enemy_row');
     if (existingRowDmg) {
@@ -401,8 +429,7 @@ function joinTriggerClauses(
       consumedIndices.add(freezeSingleIdx);
       const dmgEff = effects[singleDmgIdx];
       const canChoose =
-        (dmgEff.trigger === 'on_enter' || dmgEff.trigger === 'spell_cast') &&
-        card.type !== 'reaction';
+        isImmediatePlayTrigger(card, dmgEff.trigger) && card.type !== 'reaction';
       clauses.push(
         canChoose
           ? `causa ${dmgEff.value} de dano a 1 criatura inimiga à sua escolha e a congela por 1 rodada`
@@ -425,7 +452,29 @@ function joinTriggerClauses(
 
   if (clauses.length === 0) return '';
   if (clauses.length === 1) return clauses[0];
-  return clauses.slice(0, -1).join(', ') + ' e ' + clauses[clauses.length - 1];
+
+  // Avoid repeating leading verb ("causa ", "concede ", "restaura ") in consecutive clauses
+  const cleanedClauses: string[] = [clauses[0]];
+  let prevVerb = clauses[0].split(' ')[0];
+  for (let i = 1; i < clauses.length; i++) {
+    const curr = clauses[i];
+    const currVerb = curr.split(' ')[0];
+    if (
+      (currVerb === 'causa' || currVerb === 'concede' || currVerb === 'restaura') &&
+      currVerb === prevVerb
+    ) {
+      cleanedClauses.push(curr.slice(currVerb.length + 1));
+    } else {
+      cleanedClauses.push(curr);
+      prevVerb = currVerb;
+    }
+  }
+
+  return (
+    cleanedClauses.slice(0, -1).join(', ') +
+    ' e ' +
+    cleanedClauses[cleanedClauses.length - 1]
+  );
 }
 
 /**
@@ -438,17 +487,18 @@ export function formatCardFaceDescription(
 ): string {
   const sentences: string[] = [];
   const hasBreath = Boolean(card.breathDamage && card.breathDamage > 0);
-  const onEnterEffects = (card.effects || []).filter(
-    (e) => e.trigger === 'on_enter' || e.trigger === 'spell_cast'
+  const onEnterEffects = (card.effects || []).filter((e) =>
+    isImmediatePlayTrigger(card, e.trigger)
   );
   const otherEffects = (card.effects || []).filter(
-    (e) => e.trigger !== 'on_enter' && e.trigger !== 'spell_cast'
+    (e) => !isImmediatePlayTrigger(card, e.trigger)
   );
 
   if (hasBreath || onEnterEffects.length > 0) {
     const prefix = getTriggerPrefix(
       card,
-      onEnterEffects[0]?.trigger ?? 'on_enter'
+      onEnterEffects[0]?.trigger ?? 'on_enter',
+      false
     );
     const body = joinTriggerClauses(
       card,
@@ -476,7 +526,7 @@ export function formatCardFaceDescription(
     }
 
     for (const [trigger, effList] of grouped.entries()) {
-      const prefix = getTriggerPrefix(card, trigger);
+      const prefix = getTriggerPrefix(card, trigger, false);
       const body = joinTriggerClauses(card, effList, false, 0);
       if (body) {
         sentences.push(`${prefix}${body}.`);
@@ -531,17 +581,18 @@ export function formatCardDetailedRules(card: CardDefinition): string[] {
   }
 
   const hasBreath = Boolean(card.breathDamage && card.breathDamage > 0);
-  const onEnterEffects = (card.effects || []).filter(
-    (e) => e.trigger === 'on_enter' || e.trigger === 'spell_cast'
+  const onEnterEffects = (card.effects || []).filter((e) =>
+    isImmediatePlayTrigger(card, e.trigger)
   );
   const otherEffects = (card.effects || []).filter(
-    (e) => e.trigger !== 'on_enter' && e.trigger !== 'spell_cast'
+    (e) => !isImmediatePlayTrigger(card, e.trigger)
   );
 
   if (hasBreath || onEnterEffects.length > 0) {
     const prefix = getTriggerPrefix(
       card,
-      onEnterEffects[0]?.trigger ?? 'on_enter'
+      onEnterEffects[0]?.trigger ?? 'on_enter',
+      true
     );
     const body = joinTriggerClauses(
       card,
@@ -563,7 +614,7 @@ export function formatCardDetailedRules(card: CardDefinition): string[] {
     }
 
     for (const [trigger, effList] of grouped.entries()) {
-      const prefix = getTriggerPrefix(card, trigger);
+      const prefix = getTriggerPrefix(card, trigger, true);
       const body = joinTriggerClauses(card, effList, true, 0);
       if (body) {
         paragraphs.push(`${prefix}${body}.`);

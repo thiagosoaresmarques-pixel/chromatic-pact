@@ -297,58 +297,129 @@ function buildKeywordsCombatSentence(keywords: Keyword[]): string {
   return `Em combate, ${joined}.`;
 }
 
+/**
+ * Normalizes a list of effects sharing a single trigger (plus optional breathDamage on on_enter),
+ * merging duplicate effect types so the target is ALWAYS stated immediately after the verb
+ * and never repeated awkwardly.
+ */
 function joinTriggerClauses(
   card: CardDefinition,
-  effects: CardEffect[],
+  rawEffects: CardEffect[],
   detailed: boolean,
   includeBreathDmg = 0
 ): string {
-  // Compact special case: damage_enemy_row + freeze_enemy_vanguard on the same trigger
-  if (
-    !detailed &&
-    includeBreathDmg === 0 &&
-    effects.length === 2 &&
-    effects.some((e) => e.type === 'damage_enemy_row') &&
-    effects.some((e) => e.type === 'freeze_enemy_vanguard')
-  ) {
-    const dmgEff = effects.find((e) => e.type === 'damage_enemy_row')!;
-    return `causa ${dmgEff.value} de dano a todas as criaturas na Vanguarda inimiga e as congela por 1 rodada`;
-  }
-
-  // Compact special case: damage_single_enemy + freeze_enemy on the same trigger
-  if (
-    !detailed &&
-    includeBreathDmg === 0 &&
-    effects.length === 2 &&
-    effects.some((e) => e.type === 'damage_single_enemy') &&
-    effects.some((e) => e.type === 'freeze_enemy')
-  ) {
-    const dmgEff = effects.find((e) => e.type === 'damage_single_enemy')!;
-    const canChoose =
-      (dmgEff.trigger === 'on_enter' || dmgEff.trigger === 'spell_cast') &&
-      card.type !== 'reaction';
-    return canChoose
-      ? `causa ${dmgEff.value} de dano e congela por 1 rodada 1 criatura inimiga à sua escolha`
-      : `causa ${dmgEff.value} de dano e congela por 1 rodada a criatura inimiga de maior Ataque`;
-  }
-
-  // Special case: breathDamage + damage_enemy_row on on_enter
-  if (
-    includeBreathDmg > 0 &&
-    effects.length === 1 &&
-    effects[0].type === 'damage_enemy_row'
-  ) {
-    return `seu Sopro causa ${includeBreathDmg} de dano e seu efeito causa mais ${effects[0].value} de dano a todas as criaturas na Vanguarda inimiga`;
-  }
-
-  const clauses: string[] = [];
+  // Clone effects list and fold breathDamage directly into damage_enemy_row on on_enter
+  const effects: CardEffect[] = rawEffects.map((e) => ({ ...e }));
   if (includeBreathDmg > 0) {
-    clauses.push(
-      `seu Sopro causa ${includeBreathDmg} de dano a todas as criaturas na Vanguarda inimiga`
-    );
+    const existingRowDmg = effects.find((e) => e.type === 'damage_enemy_row');
+    if (existingRowDmg) {
+      existingRowDmg.value += includeBreathDmg;
+    } else {
+      effects.unshift({
+        trigger: 'on_enter',
+        type: 'damage_enemy_row',
+        value: includeBreathDmg,
+      });
+    }
   }
-  for (const eff of effects) {
-    const c = formatEffectActionClause(card, eff, detailed);
+
+  // Merge heal_all_allies + heal_sovereign when both appear on the same trigger
+  const healAllIdx = effects.findIndex((e) => e.type === 'heal_all_allies');
+  const healSovIdx = effects.findIndex((e) => e.type === 'heal_sovereign');
+  let mergedHealClause: string | null = null;
+  if (healAllIdx !== -1 && healSovIdx !== -1) {
+    const allVal = effects[healAllIdx].value;
+    const sovVal = allVal + effects[healSovIdx].value;
+    mergedHealClause = `restaura ${allVal} de Vida de todas as suas criaturas aliadas e ${sovVal} de Vida do seu Soberano`;
+  }
+
+  // Merge shield_all_allies (when all allies) + buff_all_allies on the same trigger
+  const shieldAllIdx = effects.findIndex(
+    (e) =>
+      e.type === 'shield_all_allies' &&
+      !(
+        /a um aliado|a ele/i.test(
+          `${e.description || ''} ${card.description || ''}`
+        ) && e.value <= 1
+      )
+  );
+  const buffAllIdx = effects.findIndex(
+    (e) => e.type === 'buff_all_allies' && !/na Vanguarda/i.test(e.description || '')
+  );
+  const canMergeBuffAndShieldAll = shieldAllIdx !== -1 && buffAllIdx !== -1;
+
+  // Merge damage_enemy_row + freeze_enemy_vanguard when both appear on the same trigger
+  const rowDmgIdx = effects.findIndex((e) => e.type === 'damage_enemy_row');
+  const freezeVanIdx = effects.findIndex((e) => e.type === 'freeze_enemy_vanguard');
+  const canMergeRowDmgAndFreeze =
+    rowDmgIdx !== -1 &&
+    freezeVanIdx !== -1 &&
+    !/todos os inimigos|até\s+\d+/i.test(
+      `${effects[freezeVanIdx].description || ''} ${card.description || ''}`
+    );
+
+  // Merge damage_single_enemy + freeze_enemy when both appear on the same trigger
+  const singleDmgIdx = effects.findIndex((e) => e.type === 'damage_single_enemy');
+  const freezeSingleIdx = effects.findIndex((e) => e.type === 'freeze_enemy');
+  const canMergeSingleDmgAndFreeze = singleDmgIdx !== -1 && freezeSingleIdx !== -1;
+
+  const consumedIndices = new Set<number>();
+  const clauses: string[] = [];
+
+  for (let i = 0; i < effects.length; i++) {
+    if (consumedIndices.has(i)) continue;
+
+    if (canMergeBuffAndShieldAll && (i === shieldAllIdx || i === buffAllIdx)) {
+      consumedIndices.add(shieldAllIdx);
+      consumedIndices.add(buffAllIdx);
+      const buffEff = effects[buffAllIdx];
+      const shieldEff = effects[shieldAllIdx];
+      const atkGain = buffEff.value;
+      const hpGain =
+        buffEff.secondaryValue !== undefined ? buffEff.secondaryValue : buffEff.value;
+      const statBonus = formatStatBonus(atkGain, hpGain, detailed);
+      const bonusArmor = shieldEff.secondaryValue ?? 0;
+      const armorClause = bonusArmor > 0 ? ` e +${bonusArmor} de Armadura` : '';
+      clauses.push(
+        `concede ${statBonus} e Escudo Divino${armorClause} a todas as suas criaturas aliadas`
+      );
+      continue;
+    }
+
+    if (canMergeRowDmgAndFreeze && (i === rowDmgIdx || i === freezeVanIdx)) {
+      consumedIndices.add(rowDmgIdx);
+      consumedIndices.add(freezeVanIdx);
+      const dmgVal = effects[rowDmgIdx].value;
+      clauses.push(
+        `causa ${dmgVal} de dano a todas as criaturas na Vanguarda inimiga e as congela por 1 rodada`
+      );
+      continue;
+    }
+
+    if (canMergeSingleDmgAndFreeze && (i === singleDmgIdx || i === freezeSingleIdx)) {
+      consumedIndices.add(singleDmgIdx);
+      consumedIndices.add(freezeSingleIdx);
+      const dmgEff = effects[singleDmgIdx];
+      const canChoose =
+        (dmgEff.trigger === 'on_enter' || dmgEff.trigger === 'spell_cast') &&
+        card.type !== 'reaction';
+      clauses.push(
+        canChoose
+          ? `causa ${dmgEff.value} de dano a 1 criatura inimiga à sua escolha e a congela por 1 rodada`
+          : `causa ${dmgEff.value} de dano à criatura inimiga de maior Ataque e a congela por 1 rodada`
+      );
+      continue;
+    }
+
+    if (mergedHealClause && (i === healAllIdx || i === healSovIdx)) {
+      consumedIndices.add(healAllIdx);
+      consumedIndices.add(healSovIdx);
+      clauses.push(mergedHealClause);
+      continue;
+    }
+
+    consumedIndices.add(i);
+    const c = formatEffectActionClause(card, effects[i], detailed);
     if (c) clauses.push(c);
   }
 

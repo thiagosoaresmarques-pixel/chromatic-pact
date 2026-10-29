@@ -508,65 +508,76 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
 
   const innerContent = (
     <div className={isModal ? 'tg-modal-inner' : 'aaa-page-shell'}>
-      {/* HEADER CLEAN */}
-      <header className="aaa-page-header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div className="aaa-kicker">CÓDICE DE REGRAS & SISTEMAS DO JOGO</div>
-          <h1 className="aaa-page-title font-cinzel" style={{ margin: 0 }}>
-            Tutorial & Enciclopédia
-          </h1>
-        </div>
-
-        <div className="aaa-header-actions" style={{ flexWrap: 'wrap', gap: '0.45rem' }}>
+      {/* Compact Tab Bar */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.5rem',
+          flexWrap: 'wrap',
+          padding: '8px 12px',
+          background: '#0b0f17',
+          border: '1px solid rgba(148, 163, 184, 0.18)',
+          borderRadius: 8,
+        }}
+      >
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
           <button
             type="button"
-            className={`btn-fantasy ${activeSection === 'walkthrough' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${activeSection === 'walkthrough' ? 'active' : ''}`}
             onClick={() => setActiveSection('walkthrough')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
             Passo a Passo ({WALKTHROUGH_STEPS.length})
           </button>
           <button
             type="button"
-            className={`btn-fantasy ${activeSection === 'board_stacking' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${activeSection === 'board_stacking' ? 'active' : ''}`}
             onClick={() => setActiveSection('board_stacking')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
             Mesa 6×4 & Formações
           </button>
           <button
             type="button"
-            className={`btn-fantasy ${activeSection === 'domains' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${activeSection === 'domains' ? 'active' : ''}`}
             onClick={() => setActiveSection('domains')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
             Os 5 Domínios
           </button>
           <button
             type="button"
-            className={`btn-fantasy ${activeSection === 'weather_runes' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${activeSection === 'weather_runes' ? 'active' : ''}`}
             onClick={() => setActiveSection('weather_runes')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
             Expansão de Domínio
           </button>
           <button
             type="button"
-            className={`btn-fantasy ${activeSection === 'keywords' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${activeSection === 'keywords' ? 'active' : ''}`}
             onClick={() => setActiveSection('keywords')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
             Palavras-Chave ({KEYWORD_ENCYCLOPEDIA.length})
           </button>
           <button
             type="button"
-            className={`btn-fantasy ${activeSection === 'controls' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${activeSection === 'controls' ? 'active' : ''}`}
             onClick={() => setActiveSection('controls')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
-            Interface & Atalhos
+            Atalhos
           </button>
-          {isModal && onClose && (
-            <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
-              Fechar
-            </button>
-          )}
         </div>
-      </header>
+        {isModal && onClose && (
+          <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
+            Fechar
+          </button>
+        )}
+      </div>
 
       {/* =====================================================================
           SECTION 1: INTERACTIVE STEP-BY-STEP WALKTHROUGH
@@ -677,24 +688,13 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 </h2>
                 <p
                   style={{
-                    color: '#fde68a',
-                    fontSize: '0.92rem',
+                    color: '#e6c875',
+                    fontSize: '0.9rem',
                     fontWeight: 600,
-                    marginBottom: '0.6rem',
+                    marginBottom: '0.85rem',
                   }}
                 >
                   {currentStep.subtitle}
-                </p>
-                <p
-                  className="aaa-codex-p"
-                  style={{
-                    marginBottom: '1.1rem',
-                    color: '#cbd5e1',
-                    fontSize: '0.88rem',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {currentStep.summary}
                 </p>
 
                 {/* Balanced 3-Column Key Points Grid */}

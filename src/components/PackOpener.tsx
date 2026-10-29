@@ -126,9 +126,7 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
   unlockedCardIds,
   onOpenPack,
   isGuest = false,
-  hasCustomDeck = false,
   onRequireAccount,
-  onRequireDeckSetup,
 }) => {
   const [selectedPackId, setSelectedPackId] = useState<string>('pack_all');
   const [currentPackCards, setCurrentPackCards] = useState<CardDefinition[]>([]);
@@ -198,63 +196,12 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
 
   return (
     <div className="aaa-page-shell">
-      {/* Compact Header Bar */}
-      <header className="aaa-page-header">
-        <div>
-          <div className="aaa-kicker">RELICÁRIO • +10 OURO POR VITÓRIA EM COMBATE</div>
-          <h1 className="aaa-page-title font-cinzel">Pacotes de Expansão</h1>
-        </div>
-
-        <div className="aaa-header-actions">
-          <div className="aaa-stat-block">
-            <span className="aaa-stat-label">COLEÇÃO DESBLOQUEADA</span>
-            <span className="aaa-stat-val">
-              {collectionStats.totalCopies} CARTAS ({collectionStats.uniqueUnlocked}/{collectionStats.totalCards} ÚNICAS)
-            </span>
-          </div>
-
-          <div className="aaa-stat-block">
-            <span className="aaa-stat-label">SALDO</span>
-            <span className="aaa-stat-val gold-text">{gold} OURO</span>
-          </div>
-        </div>
-      </header>
-
-      {isGuest ? (
-        <div className="aaa-status-callout is-guest">
-          <div className="aaa-callout-copy">
-            <span className="aaa-callout-kicker">MODO VISITANTE • NAVEGAÇÃO LIVRE</span>
-            <span className="aaa-callout-title">Relicário de Expansão</span>
-            <p className="aaa-callout-text">
-              Você pode inspecionar todos os pacotes do Relicário. Para acumular <strong>+10 Ouro por vitória</strong> e abrir pacotes para expandir sua coleção além das cartas iniciais, entre ou crie sua conta.
-            </p>
-          </div>
-          {onRequireAccount && (
-            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireAccount}>
-              Entrar / Criar Conta
-            </button>
-          )}
-        </div>
-      ) : !hasCustomDeck && collectionStats.totalCopies === 0 ? (
-        <div className="aaa-status-callout is-onboarding">
-          <div className="aaa-callout-copy">
-            <span className="aaa-callout-kicker">ETAPA INICIAL • 0 CARTAS NA COLEÇÃO</span>
-            <span className="aaa-callout-title">Escolha ou Monte seu 1º Grimório de 100 Cartas</span>
-            <p className="aaa-callout-text">
-              Sua conta começa com <strong>0 cartas</strong> e <strong>0 Ouro</strong>. Vá ao <strong>Grimório</strong> para escolher um dos 5 decks iniciais, editá-lo ou montar seu deck do zero: ao salvar, essas <strong>100 cartas</strong> passam a integrar sua coleção!
-            </p>
-          </div>
-          {onRequireDeckSetup && (
-            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireDeckSetup}>
-              Escolher / Montar Meu Grimório (100 Cartas) →
-            </button>
-          )}
-        </div>
-      ) : null}
-
       {/* Minimalist Collection Progress Strip */}
       <div className="aaa-collection-strip">
         <div className="aaa-rarity-counts">
+          <span>
+            COLEÇÃO <strong>{collectionStats.uniqueUnlocked}/{collectionStats.totalCards}</strong>
+          </span>
           <span>COMUNS <strong>{collectionStats.byRarity.common}</strong></span>
           <span>INCOMUNS <strong>{collectionStats.byRarity.uncommon}</strong></span>
           <span>RARAS <strong>{collectionStats.byRarity.rare}</strong></span>

@@ -223,11 +223,6 @@ export function buildDeckTacticalProfile(deck: PrebuiltDeck): DeckTacticalProfil
     }
   }
 
-  const primaryDomainsText = deck.domains
-    .filter((d): d is Exclude<Domain, 'neutral'> => d !== 'neutral')
-    .map((d) => `${DOMAIN_META[d].icon} ${DOMAIN_META[d].name}`)
-    .join(' + ');
-
   const domainExpansionText = deck.domains
     .filter((d): d is Exclude<Domain, 'neutral'> => d !== 'neutral')
     .map((d) => DOMAIN_EXPANSION_NAMES[d])
@@ -247,66 +242,34 @@ export function buildDeckTacticalProfile(deck: PrebuiltDeck): DeckTacticalProfil
       .join(', ') || 'titãs lendários';
 
   const openingPlan = curatedProfile
-    ? `${curatedProfile.phasePlan.earlyGame} (Cada jogador joga no seu turno iniciando com 40❤️, 3⚡ de Essência que sobe +1⚡ por turno e 7 cartas; mantenha no Mulligan: ${openingNames}, canalize 1 carta [C] por turno para +1 Afinidade e compra de 1 carta substituta, e ocupe a Vanguarda [V] para garantir +1⚔️ ATQ de Invasão de Coluna).`
-    : `Mantenha no Mulligan cartas de curva baixa como ${openingNames}. Nos Turnos 1 a 3 (iniciando com 40❤️ e 3⚡ de Essência que cresce +1⚡ a cada turno), canalize 1 carta pesada por turno ([C]) para ganhar +1 de Afinidade em ${primaryDomainsText || 'seu Domínio'} e comprar 1 carta substituta. Posicione na Vanguarda [V] de colunas livres para ativar Invasão de Coluna (+1⚔️ ATQ) e Cobertura (+1⚔️ ATQ)!`;
+    ? curatedProfile.phasePlan.earlyGame
+    : `Mantenha no Mulligan cartas de custo 1–3 (${openingNames}) e canalize 1 carta pesada por turno ([C]) para subir Afinidade.`;
 
   const midgamePlan = curatedProfile
-    ? `${curatedProfile.phasePlan.midGame} Acumule Afinidade Elemental para destravar suas cartas fortes e carregar o ritual de Expansão de Domínio (⛩️ X/6), usando Poder do Soberano (🔥 2⚡) e ataques imediatos (⚔️ ATACAR) para controlar a mesa 6×4.`
-    : `Nos Turnos 4 a 6, continue acumulando Afinidade Elemental para destravar suas cartas de alto impacto e carregar o contador "⛩️ X/6" na barra inferior, posicionando motores de valor na Retaguarda [R] (${midNames}). ${
-        counts.relic >= 5
-          ? `Com ${counts.relic} Relíquias no baralho, proteja suas colunas de Retaguarda com Guardiões na Vanguarda [V] para acumular vantagem contínua a cada turno.`
-          : counts.spell >= 11
-          ? `Use seus ${counts.spell} Feitiços e ${counts.reaction} Reações para punir slots onde o oponente empilhar 2 ou 3 unidades.`
-          : `Pressione no seu turno com suas ${counts.creature} criaturas forçando trocas favoráveis e preparando Ascensões (★).`
-      }`;
+    ? curatedProfile.phasePlan.midGame
+    : `Posicione motores na Retaguarda (${midNames}) e acumule Afinidade para habilitar sua Expansão de Domínio (6/6).`;
 
   const endgamePlan = curatedProfile
-    ? `${curatedProfile.phasePlan.lateGame} Ao atingir 6/6 de Afinidade e 3⚡, invoque sua Expansão de Domínio (${domainExpansionText || 'Potencial 120% e Acerto Garantido por 3 rodadas'})${
-        ascensionCards.length > 0
-          ? ` e ative a Ascensão de ${ascensionCards
-              .slice(0, 2)
-              .map((c) => `${c.name} ➔ ★ ${c.ascension?.newName}`)
-              .join(' ou ')}.`
-          : '.'
-      }`
-    : `Nos Turnos 6+, atinja 6/6 de Afinidade e pague 3⚡ para invocar sua Expansão de Domínio (${domainExpansionText || 'transformando toda a mesa de madeira por 3 rodadas com Potencial 120% e Acerto Garantido'}), descendo ${finisherNames}${
-        ascensionCards.length > 0
-          ? ` e ativando a Ascensão de ${ascensionCards
-              .slice(0, 2)
-              .map((c) => `${c.name} ➔ ★ ${c.ascension?.newName}`)
-              .join(' ou ')}`
-          : ''
-      }. Concentre seus atacantes prontos (ou use "⚔️ ATACAR" na barra inferior) para desferir golpes diretos letais ao Soberano rival!`;
+    ? curatedProfile.phasePlan.lateGame
+    : `Ative sua Expansão de Domínio (${domainExpansionText || '6/6 Afinidade, 3⚡'}) e finalize com ${finisherNames}.`;
 
   const fodderList =
     channelFodderCards.map((c) => `${c.name} (${c.cost}⚡)`).join(', ') ||
     'cópias duplicadas de custo 5+';
   const channelingDoctrine = curatedProfile
-    ? `${curatedProfile.channelingStrategy} (Candidatas ideais para Canalizar [C]: ${fodderList}; lembre-se que você também pode Sacrificar/Queimar cartas extras por +1⚡ temporário e +1 Afinidade para fechar 6/6 da Expansão de Domínio!).`
-    : `Priorize canalizar ([C], 1x por turno para +1 Afinidade e +1 compra): ${fodderList}. Evite canalizar suas cartas Lendárias (${
-        keyThreats[0]?.name ?? 'seu Campeão'
-      }) ou seus Guardiões de turno 1–2. A Afinidade acumulada serve para destravar cartas com requisito de afinidade e para atingir 6/6 ("⛩️ 6/6", custo 3⚡), ativando a Expansão de Domínio!`;
+    ? curatedProfile.channelingStrategy
+    : `Priorize canalizar ([C]): ${fodderList}. Preserve suas Lendárias (${keyThreats[0]?.name ?? 'Campeão'}) e custos baixos.`;
 
   const prefersStacking = guardianCards.length >= 4 || relicCards.length >= 5 || counts.creature >= 26;
   const stackingDoctrineTitle = prefersStacking
-    ? 'Formação Recomendada: Falange Empilhada 2x–3x em Colunas Blindadas'
-    : 'Formação Recomendada: Linha Espalhada 1x–2x com Artilharia de Retaguarda';
+    ? 'Falange Empilhada (2×–3× em Colunas Protegidas)'
+    : 'Linha Espalhada (1×–2× com Suporte de Retaguarda)';
 
   const stackingDoctrineBody = curatedProfile
-    ? `${curatedProfile.positioningAndStackingGuide} — ${curatedProfile.playstyleOverview}`
+    ? curatedProfile.positioningAndStackingGuide
     : prefersStacking
-    ? `Este grimório brilha ao empilhar até 3 cartas na mesma coluna: coloque 1 unidade blindada (${
-        guardianCards
-          .slice(0, 2)
-          .map((c) => c.name)
-          .join(' ou ') || 'Guardião'
-      }) liderando o slot da Vanguarda e empilhe 2 atacantes ou Relíquias atrás/junto dela. Isso garante o bônus de Cobertura de Coluna (+1 ATQ na Retaguarda) e concentra até 3 ataques na mesma brecha para derrubar o Soberano inimigo. Cuidado apenas contra dragões com Sopro ou magias de fileira!`
-    : `Como este grimório opera com ${counts.spell} Feitiços e ${counts.reaction} Reações, espalhe suas unidades em 1 carta por coluna na Vanguarda para anular o valor de Sopro Elemental e Atropelar do oponente. Reserve o empilhamento 2x–3x para a sua Retaguarda, combinando Relíquias (${
-        relicCards
-          .slice(0, 2)
-          .map((c) => c.name)
-          .join(', ') || 'artefatos'
-      }) e unidades com Alcance/Voo fora do alcance terrestre.`;
+    ? `Posicione Guardiões na Vanguarda e concentre atacantes/Relíquias na mesma coluna para ganhar Cobertura (+1 ATQ).`
+    : `Espalhe unidades na Vanguarda para evitar dano em área e proteja Relíquias/Alcance na Retaguarda.`;
 
   // Build 3 concrete Signature Combos from actual cards in the deck
   const signatureCombos: {
@@ -706,53 +669,60 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
   const content = (
     <div className={isModal ? 'tg-modal-inner' : 'aaa-page-shell'}>
-      {/* HEADER */}
-      <header className="aaa-page-header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div className="aaa-kicker">
-            ORÁCULO DE GUERRA • ANÁLISE DE GRIMÓRIOS & CONFRONTOS
-          </div>
-          <h1 className="aaa-page-title font-cinzel">
-            Oráculo Estratégico & Matchups
-          </h1>
-        </div>
-
-        <div className="aaa-header-actions" style={{ flexWrap: 'wrap', gap: '0.6rem' }}>
+      {/* Compact Tab Bar */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.5rem',
+          flexWrap: 'wrap',
+          padding: '8px 12px',
+          background: '#0b0f17',
+          border: '1px solid rgba(148, 163, 184, 0.18)',
+          borderRadius: 8,
+        }}
+      >
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
           <button
             type="button"
-            className={`btn-fantasy ${viewSection === 'deck_mastery' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${viewSection === 'deck_mastery' ? 'active' : ''}`}
             onClick={() => setViewSection('deck_mastery')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
             Manual do Grimório
           </button>
           <button
             type="button"
-            className={`btn-fantasy ${viewSection === 'matchup_duel' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${viewSection === 'matchup_duel' ? 'active' : ''}`}
             onClick={() => setViewSection('matchup_duel')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
             Simulador 1×1
           </button>
           <button
             type="button"
-            className={`btn-fantasy ${viewSection === 'matrix_all' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${viewSection === 'matrix_all' ? 'active' : ''}`}
             onClick={() => setViewSection('matrix_all')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
-            Matriz de Confrontos ({allDecks.length - 1})
+            Matriz ({allDecks.length - 1})
           </button>
           <button
             type="button"
-            className={`btn-fantasy ${viewSection === 'combos_compendium' ? 'btn-fantasy-primary' : ''}`}
+            className={`nav-tab-btn ${viewSection === 'combos_compendium' ? 'active' : ''}`}
             onClick={() => setViewSection('combos_compendium')}
+            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
           >
-            Compêndio de Combos ({TACTICAL_COMBOS_COMPENDIUM.length})
+            Combos ({TACTICAL_COMBOS_COMPENDIUM.length})
           </button>
-          {isModal && onClose && (
-            <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
-              Fechar
-            </button>
-          )}
         </div>
-      </header>
+        {isModal && onClose && (
+          <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
+            Fechar
+          </button>
+        )}
+      </div>
 
       {/* DUAL DECK SELECTOR BAR (100% SYMMETRICAL LEFT & RIGHT) */}
       {viewSection !== 'combos_compendium' && (

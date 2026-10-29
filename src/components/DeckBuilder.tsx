@@ -869,121 +869,6 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     <div className="db-modern-shell">
       {/* LEFT CATALOG AREA */}
       <div className="db-catalog-area">
-        {/* GUEST OR MANDATORY FIRST DECK ONBOARDING BANNER */}
-        {isGuest ? (
-          <div className="aaa-status-callout is-guest" style={{ marginBottom: '0.75rem' }}>
-            <div className="aaa-callout-copy">
-              <span className="aaa-callout-kicker">MODO VISITANTE • EXPLORAÇÃO DO ACERVO</span>
-              <div className="aaa-callout-text">
-                Você pode explorar e inspecionar todas as {ALL_CARDS.length} cartas. Para montar e salvar seu{' '}
-                <strong>Grimório de Combate (100 cartas)</strong> e liberar os demais modos, entre
-                ou crie sua conta.
-              </div>
-            </div>
-            {onRequireAccount && (
-              <button
-                type="button"
-                className="aaa-btn aaa-btn-primary"
-                onClick={onRequireAccount}
-              >
-                Entrar / Criar Conta
-              </button>
-            )}
-          </div>
-        ) : customDecks.length === 0 || isReplacingGrimoire ? (
-          <div
-            className="aaa-status-callout is-onboarding"
-            style={{
-              marginBottom: '0.85rem',
-              flexDirection: 'column',
-              alignItems: 'stretch',
-              gap: '0.6rem',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-              }}
-            >
-              <div>
-                <div className="aaa-callout-kicker">
-                  {isReplacingGrimoire
-                    ? `SUBSTITUIÇÃO DE GRIMÓRIO BASE (${GRIMOIRE_REPLACEMENT_GOLD_COST} OURO)`
-                    : 'PASSO INICIAL OBRIGATÓRIO DO SOBERANO'}{' '}
-                  {username ? `• ${username.toUpperCase()}` : ''}
-                </div>
-                <div className="aaa-callout-title">
-                  {isReplacingGrimoire
-                    ? 'Escolha seu Novo Grimório de Combate (100 Cartas)'
-                    : 'Monte e Salve seu Grimório de Combate (100 Cartas)'}
-                </div>
-              </div>
-              <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
-                {isReplacingGrimoire && (
-                  <button
-                    type="button"
-                    className="aaa-btn aaa-btn-secondary"
-                    onClick={handleCancelReplaceGrimoire}
-                  >
-                    Cancelar
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className="aaa-btn aaa-btn-primary"
-                  onClick={handleSaveCurrentDeck}
-                >
-                  {isReplacingGrimoire
-                    ? `Confirmar Substituição (-${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro) (${deckCardIds.length}/100)`
-                    : `Confirmar & Salvar Grimório (${deckCardIds.length}/100)`}
-                </button>
-              </div>
-            </div>
-            <div className="aaa-callout-text">
-              Escolha um dos <strong>5 Grimórios Monocromáticos Iniciais</strong> abaixo para usar
-              como está, edite-o livremente ou clique em{' '}
-              <strong>Criar do Zero</strong> (máximo de 100 cartas, respeitando até 3× Comum/Incomum,
-              2× Rara e 1× Lendária, máx. 10 Lendas):
-            </div>
-            <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
-              {MONOCHROMATIC_STARTER_DECKS.map((sd) => {
-                const dom = sd.domains[0] ?? 'red';
-                return (
-                  <button
-                    key={sd.id}
-                    type="button"
-                    className="db-action-btn"
-                    style={{
-                      padding: '0.35rem 0.7rem',
-                      fontSize: '0.74rem',
-                      flex: 'none',
-                    }}
-                    onClick={() => handleLoadPrebuilt(sd.id)}
-                  >
-                    {DOMAIN_META[dom].shortName}: {sd.name}
-                  </button>
-                );
-              })}
-              <button
-                type="button"
-                className="db-action-btn subtle-danger"
-                style={{ padding: '0.35rem 0.7rem', fontSize: '0.74rem', flex: 'none' }}
-                onClick={() => {
-                  setDeckName(username ? `Grimório de ${username}` : 'Meu Grimório');
-                  setDeckCardIds([]);
-                  setOnlyUnlocked(false);
-                }}
-              >
-                Criar do Zero (0/100)
-              </button>
-            </div>
-          </div>
-        ) : null}
-
         {/* SINGLE ULTRA-CLEAN STICKY TOOLBAR */}
         <div className="db-modern-toolbar">
           {/* Domain Orbs */}
@@ -1017,7 +902,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               className="db-modern-search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar carta, palavra-chave ou habilidade..."
+              placeholder="Buscar carta..."
             />
             {searchQuery && (
               <button
@@ -1029,27 +914,6 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               </button>
             )}
           </div>
-
-          {/* Compact Selects: Synergy / Type / Rarity */}
-          <select
-            className={`db-modern-select ${synergyFilterId !== 'all' ? 'is-highlighted' : ''}`}
-            value={synergyFilterId}
-            onChange={(e) => setSynergyFilterId(e.target.value)}
-          >
-            <option value="all">Sinergia: Todas ({ALL_CARDS.length})</option>
-            <option value="recommended">
-              ✨ Sugeridas p/ Este Deck ({deckAnalysis.recommendedCardIds.size})
-            </option>
-            {SYNERGY_PACKAGES.map((pkg) => {
-              const cnt =
-                deckAnalysis.rankedPackages.find((p) => p.id === pkg.id)?.count ?? 0;
-              return (
-                <option key={pkg.id} value={pkg.id}>
-                  {pkg.label} ({cnt} no deck)
-                </option>
-              );
-            })}
-          </select>
 
           <select
             className="db-modern-select"
@@ -1100,24 +964,17 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
           {/* Sleek Analytics Drawer Toggle + Count */}
           <div className="db-toolbar-right">
-            <span className="db-results-count">{filteredCards.length} cartas</span>
+            <span className="db-results-count">{filteredCards.length}</span>
             {hasActiveFilters && (
               <button
                 type="button"
                 className="db-analytics-toggle-btn"
                 onClick={handleResetFilters}
-                title="Limpar todos os filtros ativos"
+                title="Limpar filtros"
               >
-                <span>Limpar Filtros</span>
+                <span>Limpar</span>
               </button>
             )}
-            <button
-              type="button"
-              className="db-analytics-toggle-btn"
-              onClick={() => setShowTacticalGuideModal(true)}
-            >
-              <span>Guia Tático</span>
-            </button>
             <button
               type="button"
               className={`db-analytics-toggle-btn ${showSynergyPanel ? 'is-open' : ''}`}
@@ -1128,7 +985,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                   deckAnalysis.warnings.length > 0 ? 'dot-warn' : 'dot-ok'
                 }`}
               />
-              <span>Análise do Deck</span>
+              <span>Análise</span>
             </button>
           </div>
         </div>
@@ -1390,14 +1247,6 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 style={{ width: `${Math.min(100, deckCardIds.length)}%` }}
               />
             </div>
-            <div className="db-deck-progress-meta">
-              <span>{deckAnalysis.uniqueCount} cartas distintas</span>
-              <strong className={deckCardIds.length === 100 ? 'is-complete' : ''}>
-                {deckCardIds.length === 100
-                  ? '✓ 100/100 Pronto p/ Combate'
-                  : `Faltam ${Math.max(0, 100 - deckCardIds.length)} carta(s)`}
-              </strong>
-            </div>
           </div>
 
           {(isGuest || isFirstDeckSetup || isReplacingGrimoire) && (
@@ -1409,11 +1258,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               }}
             >
               <option value="" disabled>
-                Carregar um dos 5 Grimórios Iniciais...
+                Carregar Grimório Inicial...
               </option>
               {MONOCHROMATIC_STARTER_DECKS.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {d.name} — {d.subtitle}
+                  {d.name}
                 </option>
               ))}
             </select>
@@ -1455,14 +1304,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                   : 'Complete 100 cartas para salvar seu Grimório de Combate'
               }
             >
-              {deckCardIds.length === 100 ? 'Salvar (100)' : `Salvar (${deckCardIds.length}/100)`}
-            </button>
-            <button
-              type="button"
-              className="db-action-btn"
-              onClick={() => setShowTacticalGuideModal(true)}
-            >
-              Guia
+              {isReplacingGrimoire
+                ? `Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST})`
+                : deckCardIds.length === 100
+                ? 'Salvar (100)'
+                : `Salvar (${deckCardIds.length}/100)`}
             </button>
             <button
               type="button"
@@ -1472,7 +1318,15 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             >
               Completar
             </button>
-            {(isGuest || isFirstDeckSetup || isReplacingGrimoire) ? (
+            {isReplacingGrimoire ? (
+              <button
+                type="button"
+                className="db-action-btn subtle-danger"
+                onClick={handleCancelReplaceGrimoire}
+              >
+                Cancelar
+              </button>
+            ) : (isGuest || isFirstDeckSetup) ? (
               <button
                 type="button"
                 className="db-action-btn subtle-danger"
@@ -1497,11 +1351,6 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
         {/* Minimalist Composition Bar & Mana Curve */}
         <div className="db-sidebar-metrics">
-          <div className="db-metrics-header">
-            <span className="db-archetype-tag">{deckAnalysis.archetypeTitle}</span>
-            <span className="db-avg-cost">Média {deckAnalysis.avgCost}⚡</span>
-          </div>
-
           {/* Thin Segmented Type Proportion Bar */}
           <div className="db-proportion-bar">
             <div
@@ -1535,6 +1384,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             <span>
               <i className="dot-l" /> {deckAnalysis.typeCounts.relic} Relíq.
             </span>
+            <span className="db-avg-cost">{deckAnalysis.avgCost}⚡</span>
           </div>
 
           {/* Sleek Mana Curve */}
@@ -1561,8 +1411,32 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
         {/* Sleek MTG Arena-Style Card Tiles List */}
         <div className="db-deck-list">
           {groupedDeckList.length === 0 ? (
-            <div className="db-empty-state">
-              Selecione cartas no catálogo ao lado para construir seu Grimório de 100 cartas.
+            <div className="db-empty-state" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', padding: '0.6rem' }}>
+              {(isGuest || isFirstDeckSetup || isReplacingGrimoire) &&
+                MONOCHROMATIC_STARTER_DECKS.map((sd) => {
+                  const dom = sd.domains[0] ?? 'red';
+                  return (
+                    <button
+                      key={sd.id}
+                      type="button"
+                      className="db-action-btn"
+                      style={{ textAlign: 'left', justifyContent: 'flex-start', padding: '0.45rem 0.65rem' }}
+                      onClick={() => handleLoadPrebuilt(sd.id)}
+                    >
+                      <span
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          background: DOMAIN_META[dom].color,
+                          display: 'inline-block',
+                          marginRight: 6,
+                        }}
+                      />
+                      {sd.name}
+                    </button>
+                  );
+                })}
             </div>
           ) : (
             groupedDeckList.map(({ card, count }) => (

@@ -1477,50 +1477,6 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
 
   return (
     <div className="aaa-page-shell">
-      {/* Header: Sovereign Account & Online Status */}
-      <div className="aaa-page-header">
-        <div>
-          <div className="aaa-kicker">
-            CONCLAVE ONLINE • PAREAMENTO 1×1 EM TEMPO REAL
-          </div>
-          <h1 className="aaa-page-title font-cinzel">Conclave Multiplayer 1×1</h1>
-        </div>
-      </div>
-
-      {isUnregisteredProfile(currentUser) ? (
-        <div className="aaa-status-callout is-guest">
-          <div className="aaa-callout-copy">
-            <span className="aaa-callout-kicker">MODO VISITANTE • NAVEGAÇÃO LIVRE</span>
-            <span className="aaa-callout-title">Conclave Multiplayer 1×1</span>
-            <p className="aaa-callout-text">
-              Você pode visualizar as salas abertas no lobby. Para disputar duelos 1×1 ranqueados e ganhar <strong>+10 Ouro por vitória</strong>, entre ou crie sua Conta de Soberano.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="aaa-btn aaa-btn-primary"
-            onClick={() => onOpenAccountModal('create')}
-          >
-            Entrar / Criar Conta
-          </button>
-        </div>
-      ) : needsDeckSetup ? (
-        <div className="aaa-status-callout is-onboarding">
-          <div className="aaa-callout-copy">
-            <span className="aaa-callout-kicker">ETAPA OBRIGATÓRIA • JORNADA DO SOBERANO</span>
-            <span className="aaa-callout-title">Grimório de Combate Necessário</span>
-            <p className="aaa-callout-text">
-              Antes de abrir ou aceitar salas 1×1, monte e salve seu Grimório de 100 cartas na seção <strong>Grimório</strong>.
-            </p>
-          </div>
-          {onRequireDeckSetup && (
-            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireDeckSetup}>
-              Montar Meu Grimório (100 Cartas) →
-            </button>
-          )}
-        </div>
-      ) : null}
-
       {statusBanner && (
         <div
           className="aaa-toast-banner"
@@ -1542,7 +1498,6 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
       <div className="tg-grid-layout">
         {/* Left Panel: Sovereign Account */}
         <div className="tg-panel">
-          <div className="aaa-kicker">PERFIL DO SOBERANO CONECTADO</div>
           <div
             style={{
               display: 'flex',
@@ -1559,8 +1514,8 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
               onClick={() => onOpenAccountModal('profile')}
               title="Clique para trocar seu Avatar"
               style={{
-                width: '60px',
-                height: '60px',
+                width: '56px',
+                height: '56px',
                 borderRadius: '8px',
                 border: '1px solid rgba(212, 175, 55, 0.42)',
                 background: '#070a12',
@@ -1584,11 +1539,11 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             <div style={{ flex: '1 1 165px', minWidth: 0 }}>
               <div
                 className="font-cinzel"
-                style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f1f5f9' }}
+                style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f1f5f9' }}
               >
                 {currentUser.username}
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#e6c875', marginBottom: '0.35rem' }}>
+              <div style={{ fontSize: '0.73rem', color: '#e6c875', marginBottom: '0.3rem' }}>
                 {currentHonorific}
               </div>
               <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
@@ -1607,44 +1562,42 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                 className="aaa-btn aaa-btn-primary"
                 onClick={() => onOpenAccountModal('profile')}
               >
-                Editar Perfil
+                Perfil
               </button>
               <button
                 type="button"
                 className="aaa-btn aaa-btn-secondary"
                 onClick={() => onOpenAccountModal('login')}
               >
-                Trocar / Criar
+                Trocar Conta
               </button>
             </div>
           </div>
 
-          <div className="aaa-kicker" style={{ marginTop: '0.5rem' }}>
-            ALTERNAR PERFIL SALVO NESTE DISPOSITIVO
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {accountsRoster.map((acc) => {
-              const isCurrent = acc.id === currentUser.id;
-              return (
-                <button
-                  key={acc.id}
-                  type="button"
-                  className={`aaa-btn ${isCurrent ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
-                  onClick={() => handleSwitchAccount(acc)}
-                >
-                  {isCurrent ? '✓ ' : ''}
-                  {acc.username} ({acc.eloRating})
-                </button>
-              );
-            })}
-          </div>
+          {accountsRoster.length > 1 && (
+            <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', marginTop: '0.35rem' }}>
+              {accountsRoster.map((acc) => {
+                const isCurrent = acc.id === currentUser.id;
+                return (
+                  <button
+                    key={acc.id}
+                    type="button"
+                    className={`aaa-btn ${isCurrent ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
+                    onClick={() => handleSwitchAccount(acc)}
+                  >
+                    {isCurrent ? '✓ ' : ''}
+                    {acc.username} ({acc.eloRating})
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Right Panel: Deck Selection, Quick Queue & Room Creation */}
         <div className="tg-panel">
-          <div className="aaa-kicker">PAREAMENTO & SALAS DE DUELO</div>
-          <div className="aaa-deck-selector-box" style={{ padding: '0.55rem 0.85rem' }}>
-            <span className="aaa-stat-label">GRIMÓRIO ATIVO (100 CARTAS)</span>
+          <div className="aaa-deck-selector-box" style={{ padding: '0.5rem 0.75rem' }}>
+            <span className="aaa-stat-label">GRIMÓRIO ATIVO</span>
             <select
               className="aaa-select"
               value={selectedDeckId}
@@ -1654,32 +1607,32 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
                 setActiveTabUserProfile(nextProfile);
                 onUserChange(nextProfile);
               }}
-              style={{ fontSize: '0.88rem', padding: '4px 0' }}
+              style={{ fontSize: '0.86rem', padding: '4px 0' }}
             >
               {allAvailableDecks.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {d.name} — {d.subtitle}
+                  {d.name}
                 </option>
               ))}
             </select>
           </div>
 
           {/* Primary 1v1 Matchmaking & Room Creation CTAs */}
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '0.35rem' }}>
+          <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
             <button
               type="button"
               className="aaa-btn aaa-btn-primary aaa-btn-lg"
               style={{ flex: 1 }}
               onClick={handleQuickMatchmaking}
             >
-              BUSCAR PARTIDA 1×1 (FILA RÁPIDA)
+              ⚔️ Buscar Partida 1×1
             </button>
             <button
               type="button"
               className="aaa-btn aaa-btn-secondary aaa-btn-lg"
               onClick={() => handleCreateRoom(false)}
             >
-              CRIAR SALA PRIVADA
+              Criar Sala Privada
             </button>
           </div>
 
@@ -1689,22 +1642,19 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             style={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '0.6rem',
-              marginTop: '0.35rem',
-              paddingTop: '0.65rem',
-              borderTop: '1px solid rgba(255,255,255,0.08)',
+              gap: '0.5rem',
             }}
           >
             <input
               type="text"
               className="myth-search-compact"
-              placeholder="Digite o código da sala (ex: PACT-4829)..."
+              placeholder="Código da sala (ex: PACT-4829)..."
               value={joinCodeInput}
               onChange={(e) => setJoinCodeInput(e.target.value.toUpperCase())}
               style={{ textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.06em' }}
             />
             <button type="submit" className="aaa-btn aaa-btn-primary">
-              ENTRAR POR CÓDIGO
+              Entrar
             </button>
           </form>
 
@@ -1712,44 +1662,39 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
           {hostedRoomCode && (
             <div
               style={{
-                marginTop: '0.45rem',
-                padding: '0.95rem 1.1rem',
+                padding: '0.75rem 0.95rem',
                 borderRadius: '8px',
-                background:
-                  'linear-gradient(135deg, rgba(212, 175, 55, 0.16), rgba(15, 23, 42, 0.92))',
-                border: '1.5px solid #fde047',
+                background: '#0b0f17',
+                border: '1px solid rgba(212, 175, 55, 0.42)',
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '0.55rem',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '0.5rem',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span
-                  className="font-cinzel"
-                  style={{ color: '#fef08a', fontWeight: 900, fontSize: '0.92rem' }}
-                >
-                  ⏳ AGUARDANDO OPONENTE NA SALA:{' '}
-                  <strong style={{ color: '#fff' }}>{hostedRoomCode}</strong>
-                </span>
-                <button
-                  type="button"
-                  className="aaa-btn aaa-btn-ghost"
-                  style={{ padding: '3px 9px', fontSize: '0.66rem' }}
-                  onClick={handleCancelHostedRoom}
-                >
-                  Cancelar Sala
-                </button>
-              </div>
-              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <span className="font-cinzel" style={{ color: '#e6c875', fontWeight: 800, fontSize: '0.84rem' }}>
+                Sala Aberta: <strong style={{ color: '#fff' }}>{hostedRoomCode}</strong>
+              </span>
+              <div style={{ display: 'flex', gap: '0.45rem' }}>
                 <button
                   type="button"
                   className="aaa-btn aaa-btn-primary"
+                  style={{ padding: '4px 10px', fontSize: '0.72rem' }}
                   onClick={() => {
                     navigator.clipboard?.writeText(hostedRoomCode);
                     setStatusBanner(`Código ${hostedRoomCode} copiado!`);
                   }}
                 >
-                  Copiar Código ({hostedRoomCode})
+                  Copiar
+                </button>
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-ghost"
+                  style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+                  onClick={handleCancelHostedRoom}
+                >
+                  Cancelar
                 </button>
               </div>
             </div>
@@ -1761,7 +1706,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
       <div className="tg-panel">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="aaa-kicker">
-            SALAS 1x1 ABERTAS AO VIVO ({waitingRooms.length} AGUARDANDO DESAFIANTE)
+            SALAS ABERTAS ({waitingRooms.length})
           </div>
           <button
             type="button"
@@ -1769,23 +1714,22 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             style={{ padding: '4px 10px', fontSize: '0.68rem' }}
             onClick={() => setRooms(getActiveRoomsList())}
           >
-            🔄 Atualizar Lobby
+            Atualizar
           </button>
         </div>
 
         {waitingRooms.length === 0 ? (
           <div
             style={{
-              padding: '1.75rem',
+              padding: '1.1rem',
               textAlign: 'center',
               color: '#94a3b8',
-              border: '1px dashed rgba(255,255,255,0.12)',
+              border: '1px dashed rgba(255,255,255,0.1)',
               borderRadius: '6px',
-              fontSize: '0.84rem',
+              fontSize: '0.8rem',
             }}
           >
-            Nenhuma sala aguardando no momento. Clique em <strong>"Buscar Partida 1x1"</strong> ou{' '}
-            <strong>"Criar Sala com Código"</strong> acima para abrir um duelo!
+            Nenhuma sala aberta no momento.
           </div>
         ) : (
           <div className="exp-achievements-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>

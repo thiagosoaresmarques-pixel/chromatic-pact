@@ -17,7 +17,6 @@ import {
   DAILY_PROBLEM_BONUS_GOLD,
   DailyStateData,
   getDailyState,
-  getTimeUntilNextDailyReset,
   recordDailyProblemAttemptResult,
 } from '../utils/dailyQuestsEngine';
 import { CardDefinition } from '../types/game';
@@ -95,28 +94,6 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
     return TACTICAL_PROBLEMS[0] ?? null;
   }, [solvedIds, solvedSet]);
 
-  const historyStats = useMemo(() => {
-    const entries = Object.values(historyMap);
-    const totalAttempts = entries.reduce((acc, e) => acc + e.attempts, 0);
-    const totalFailures = entries.reduce((acc, e) => acc + e.failures, 0);
-    const totalFirstTry = entries.filter((e) => e.solved && e.solvedOnFirstTry).length;
-    const problemsWithErrors = TACTICAL_PROBLEMS.filter(
-      (p) => (historyMap[p.id]?.failures ?? 0) > 0
-    ).length;
-    const accuracyPct =
-      totalAttempts > 0
-        ? Math.round(((totalAttempts - totalFailures) / totalAttempts) * 100)
-        : 100;
-
-    return {
-      totalAttempts,
-      totalFailures,
-      totalFirstTry,
-      problemsWithErrors,
-      accuracyPct,
-    };
-  }, [historyMap]);
-
   const filteredProblems = useMemo(() => {
     return TACTICAL_PROBLEMS.filter((p) => {
       if (selectedTier !== 'all' && p.difficulty !== selectedTier) return false;
@@ -130,254 +107,30 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
     });
   }, [selectedTier, historyFilter, historyMap, solvedSet]);
 
-  const totalGoldAvailable = useMemo(
-    () => TACTICAL_PROBLEMS.reduce((acc, p) => acc + p.goldReward, 0),
-    []
-  );
-
-  const earnedGold = useMemo(
-    () =>
-      TACTICAL_PROBLEMS.filter((p) => solvedSet.has(p.id)).reduce(
-        (acc, p) => acc + p.goldReward,
-        0
-      ),
-    [solvedSet]
-  );
-
   return (
     <div className="aaa-page-shell">
-      {/* Sober Arena-Grade Header Bar */}
-      <header className="aaa-page-header" style={{ flexWrap: 'wrap', gap: '0.85rem' }}>
-        <div>
-          <div className="aaa-kicker">TRILHA PROGRESSIVA • 20 DESAFIOS POR GRAU</div>
-          <h1 className="aaa-page-title font-cinzel">100 Problemas Táticos (Xeque-Mate em 1T)</h1>
-        </div>
-
-        <div className="aaa-header-actions" style={{ flexWrap: 'wrap', gap: '0.6rem' }}>
-          <div className="aaa-stat-block">
-            <span className="aaa-stat-label">RESOLVIDOS</span>
-            <span className="aaa-stat-val gold-text">
-              {solvedIds.length}/{TACTICAL_PROBLEMS.length}
-            </span>
-          </div>
-          <div className="aaa-stat-block">
-            <span className="aaa-stat-label">DE 1ª S/ DICA</span>
-            <span className="aaa-stat-val">{historyStats.totalFirstTry}</span>
-          </div>
-          <div className="aaa-stat-block">
-            <span className="aaa-stat-label">PRECISÃO</span>
-            <span className="aaa-stat-val">{historyStats.accuracyPct}%</span>
-          </div>
-          <div className="aaa-stat-block">
-            <span className="aaa-stat-label">RECOMPENSAS</span>
-            <span className="aaa-stat-val gold-text">
-              {earnedGold}/{totalGoldAvailable} OURO
-            </span>
-          </div>
-
-          {nextTrailProblem && (
-            <button
-              type="button"
-              className="aaa-btn aaa-btn-primary"
-              onClick={() => onSelectProblem(nextTrailProblem)}
-            >
-              ⚔️ Continuar: #{String(nextTrailProblem.number).padStart(2, '0')} {nextTrailProblem.title}
-            </button>
-          )}
-        </div>
-      </header>
-
-      {/* Collapsible Sober Daily Problem & Contracts Strip */}
-      <div
-        style={{
-          background: '#0b0f17',
-          border: '1px solid rgba(148, 163, 184, 0.18)',
-          borderRadius: 8,
-          padding: isDailyPanelMinimized ? '7px 12px' : '10px 12px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 10,
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e6c875', letterSpacing: '0.04em' }}>
-              CONTRATOS DIÁRIOS & PROBLEMA DO DIA ({completedQuestsCount}/3)
-            </span>
-            {unclaimedCompletedCount > 0 && (
-              <span
-                style={{
-                  padding: '1px 8px',
-                  borderRadius: 4,
-                  background: 'rgba(212, 175, 55, 0.16)',
-                  border: '1px solid rgba(212, 175, 55, 0.45)',
-                  color: '#f3e3b0',
-                  fontSize: '0.68rem',
-                  fontWeight: 800,
-                }}
-              >
-                {unclaimedCompletedCount} Recompensa(s) Disponível(is)
-              </span>
-            )}
-            <span style={{ fontSize: '0.7rem', color: '#64748b' }}>
-              Renova em {getTimeUntilNextDailyReset()}
-            </span>
-          </div>
-
-          <button
-            type="button"
-            className="btn-fantasy"
-            onClick={() => setIsDailyPanelMinimized((prev) => !prev)}
-            style={{ padding: '3px 10px', fontSize: '0.7rem' }}
-          >
-            {isDailyPanelMinimized ? '▾ Mostrar Contratos Diários' : '▴ Ocultar'}
-          </button>
-        </div>
-
-        {!isDailyPanelMinimized && (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(235px, 1fr))',
-              gap: 8,
-              marginTop: 10,
-            }}
-          >
-            {dailyProblem && (
-              <div
-                style={{
-                  background: '#101520',
-                  border: '1px solid rgba(212, 175, 55, 0.32)',
-                  borderRadius: 6,
-                  padding: '8px 10px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  gap: 6,
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 6,
-                  }}
-                >
-                  <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#e6c875' }}>
-                    PROBLEMA DO DIA (#{String(dailyProblem.number).padStart(2, '0')})
-                  </span>
-                  <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#94a3b8' }}>
-                    {dailyState.dailyProblemBonusClaimed
-                      ? '+3 Ouro Ganho'
-                      : `+${DAILY_PROBLEM_BONUS_GOLD} Ouro Bônus`}
-                  </span>
-                </div>
-                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f1f5f9' }}>
-                  {dailyProblem.title}
-                </div>
-                <button
-                  type="button"
-                  className="aaa-btn aaa-btn-secondary"
-                  onClick={() => onSelectProblem(dailyProblem)}
-                  style={{ padding: '4px 9px', fontSize: '0.72rem' }}
-                >
-                  {dailyState.dailyProblemSolvedToday
-                    ? `Rejogar Problema (#${dailyProblem.number})`
-                    : `Jogar Problema (#${dailyProblem.number})`}
-                </button>
-              </div>
-            )}
-
-            {dailyState.quests.map((q) => {
-              const isDone = q.progress >= q.target;
-              return (
-                <div
-                  key={q.id}
-                  style={{
-                    background: '#0e131d',
-                    border:
-                      isDone && !q.claimed
-                        ? '1px solid rgba(212, 175, 55, 0.5)'
-                        : '1px solid rgba(148, 163, 184, 0.16)',
-                    borderRadius: 6,
-                    padding: '8px 10px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    gap: 5,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: 6,
-                    }}
-                  >
-                    <span style={{ fontSize: '0.73rem', fontWeight: 800, color: '#e2e8f0' }}>
-                      {q.title}
-                    </span>
-                    <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#e6c875' }}>
-                      {q.claimed ? 'Concluído' : `+${q.goldReward} Ouro`}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: '#94a3b8', lineHeight: 1.3 }}>
-                    {q.description}
-                  </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: 8,
-                    }}
-                  >
-                    <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#94a3b8' }}>
-                      Progresso: {q.progress}/{q.target}
-                    </span>
-                    {isDone && !q.claimed && (
-                      <button
-                        type="button"
-                        className="aaa-btn aaa-btn-primary"
-                        onClick={() => handleClaimQuest(q.id)}
-                        style={{ padding: '3px 9px', fontSize: '0.68rem' }}
-                      >
-                        Resgatar +{q.goldReward}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Sober 5-Grau Progressive Strip + Status Filters */}
+      {/* Single Compact Toolbar: 5-Grau Tabs + Filter Pills + Daily Toggle + Continue */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 10,
+          gap: 8,
           flexWrap: 'wrap',
+          padding: '8px 12px',
+          background: '#0b0f17',
+          border: '1px solid rgba(148, 163, 184, 0.18)',
+          borderRadius: 8,
         }}
       >
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           <button
             type="button"
             className={`nav-tab-btn ${selectedTier === 'all' ? 'active' : ''}`}
             onClick={() => setSelectedTier('all')}
-            style={{ padding: '5px 10px', fontSize: '0.72rem' }}
+            style={{ padding: '4px 9px', fontSize: '0.72rem' }}
           >
-            Todos (100)
+            Todos ({solvedIds.length}/{TACTICAL_PROBLEMS.length})
           </button>
 
           {tierProgress.map((tp) => {
@@ -389,17 +142,17 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                 className={`nav-tab-btn ${isSelected ? 'active' : ''}`}
                 onClick={() => setSelectedTier(tp.tier)}
                 style={{
-                  padding: '5px 10px',
+                  padding: '4px 9px',
                   fontSize: '0.72rem',
                   opacity: tp.unlocked ? 1 : 0.6,
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 5,
                 }}
               >
                 <span>{tp.isCompleted ? '✓' : tp.unlocked ? '•' : '🔒'}</span>
                 <span>{tp.meta.label.split('•')[0].trim()}</span>
-                <span style={{ fontSize: '0.66rem', color: '#94a3b8' }}>
+                <span style={{ fontSize: '0.65rem', color: '#94a3b8' }}>
                   ({tp.solvedCount}/{tp.total})
                 </span>
               </button>
@@ -407,15 +160,12 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
           })}
         </div>
 
-        {/* History Filter Pills */}
-        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
           {(
             [
               { id: 'all', label: 'Todos' },
-              { id: 'pending', label: `Pendentes (${TACTICAL_PROBLEMS.length - solvedIds.length})` },
-              { id: 'failed', label: `Com Erros (${historyStats.problemsWithErrors})` },
+              { id: 'pending', label: `Pendentes` },
               { id: 'solved', label: `Resolvidos (${solvedIds.length})` },
-              { id: 'first_try', label: `De 1ª (${historyStats.totalFirstTry})` },
             ] as { id: HistoryFilterType; label: string }[]
           ).map((hf) => {
             const active = historyFilter === hf.id;
@@ -430,8 +180,138 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
               </button>
             );
           })}
+
+          <button
+            type="button"
+            className={`aaa-pill-tab ${!isDailyPanelMinimized ? 'is-active' : ''}`}
+            onClick={() => setIsDailyPanelMinimized((prev) => !prev)}
+          >
+            Diárias ({completedQuestsCount}/3)
+            {unclaimedCompletedCount > 0 ? ` • +${unclaimedCompletedCount}` : ''}
+          </button>
+
+          {nextTrailProblem && (
+            <button
+              type="button"
+              className="aaa-btn aaa-btn-primary"
+              style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+              onClick={() => onSelectProblem(nextTrailProblem)}
+            >
+              ⚔️ Continuar #{String(nextTrailProblem.number).padStart(2, '0')}
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Collapsible Daily Quests Drawer (only when toggled open) */}
+      {!isDailyPanelMinimized && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(235px, 1fr))',
+            gap: 8,
+            padding: '10px 12px',
+            background: '#0b0f17',
+            border: '1px solid rgba(148, 163, 184, 0.18)',
+            borderRadius: 8,
+          }}
+        >
+          {dailyProblem && (
+            <div
+              style={{
+                background: '#101520',
+                border: '1px solid rgba(212, 175, 55, 0.32)',
+                borderRadius: 6,
+                padding: '8px 10px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: 6,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 6,
+                }}
+              >
+                <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#e6c875' }}>
+                  PROBLEMA DO DIA (#{String(dailyProblem.number).padStart(2, '0')})
+                </span>
+                <span style={{ fontSize: '0.66rem', fontWeight: 700, color: '#94a3b8' }}>
+                  {dailyState.dailyProblemBonusClaimed
+                    ? '+3 Ouro Ganho'
+                    : `+${DAILY_PROBLEM_BONUS_GOLD} Ouro`}
+                </span>
+              </div>
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#f1f5f9' }}>
+                {dailyProblem.title}
+              </div>
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-secondary"
+                onClick={() => onSelectProblem(dailyProblem)}
+                style={{ padding: '4px 9px', fontSize: '0.72rem' }}
+              >
+                Jogar #{dailyProblem.number}
+              </button>
+            </div>
+          )}
+
+          {dailyState.quests.map((q) => {
+            const isDone = q.progress >= q.target;
+            return (
+              <div
+                key={q.id}
+                style={{
+                  background: '#0e131d',
+                  border:
+                    isDone && !q.claimed
+                      ? '1px solid rgba(212, 175, 55, 0.5)'
+                      : '1px solid rgba(148, 163, 184, 0.16)',
+                  borderRadius: 6,
+                  padding: '8px 10px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: 5,
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 6,
+                  }}
+                >
+                  <span style={{ fontSize: '0.73rem', fontWeight: 800, color: '#e2e8f0' }}>
+                    {q.title} ({q.progress}/{q.target})
+                  </span>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#e6c875' }}>
+                    {q.claimed ? 'Concluído' : `+${q.goldReward} Ouro`}
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.7rem', color: '#94a3b8', lineHeight: 1.3 }}>
+                  {q.description}
+                </div>
+                {isDone && !q.claimed && (
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-primary"
+                    onClick={() => handleClaimQuest(q.id)}
+                    style={{ padding: '3px 9px', fontSize: '0.68rem', alignSelf: 'flex-end' }}
+                  >
+                    Resgatar +{q.goldReward}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Empty Filter State */}
       {filteredProblems.length === 0 && (

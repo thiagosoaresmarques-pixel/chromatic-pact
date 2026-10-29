@@ -204,104 +204,62 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
   return (
     <div className="aaa-page-shell">
-      {/* Compact Header & Deck Picker */}
-      <header className="aaa-page-header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div className="aaa-kicker">
-            CAMPANHA HISTÓRICA • 5 ATOS
-          </div>
-          <h1 className="aaa-page-title font-cinzel">Queda dos Soberanos</h1>
+      {/* Single Compact Toolbar: Act Tabs + Progress + Deck Picker */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.65rem',
+          flexWrap: 'wrap',
+          padding: '8px 12px',
+          background: '#0b0f17',
+          border: '1px solid rgba(148, 163, 184, 0.18)',
+          borderRadius: 8,
+        }}
+      >
+        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+          {(
+            [
+              { id: 'all', label: `Todos (${defeatedBossIds.length}/${fullBossRoster.length})` },
+              { id: 1, label: 'Ato I (1–4)' },
+              { id: 2, label: 'Ato II (5–8)' },
+              { id: 3, label: 'Ato III (9–12)' },
+              { id: 4, label: 'Ato IV (13–14)' },
+              { id: 5, label: 'Ato V (15–20)' },
+            ] as const
+          ).map((tab) => (
+            <button
+              key={String(tab.id)}
+              type="button"
+              className={`nav-tab-btn ${actFilter === tab.id ? 'active' : ''}`}
+              onClick={() => setActFilter(tab.id)}
+              style={{ padding: '0.32rem 0.75rem', fontSize: '0.72rem' }}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        <div className="aaa-header-actions" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div className="aaa-stat-block">
-            <span className="aaa-stat-label">PROGRESSO</span>
-            <span className="aaa-stat-val gold-text">
-              {defeatedBossIds.length}/{fullBossRoster.length} ({pct}%)
-            </span>
-          </div>
-
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           {!isGuest && customDecks.length > 0 && (
-            <div className="aaa-deck-picker-inline">
-              <span className="aaa-stat-label">SEU GRIMÓRIO (100 CARTAS)</span>
-              <select
-                value={selectedDeckId}
-                onChange={(e) => setSelectedDeckId(e.target.value)}
-                className="aaa-select"
-              >
-                {customDecks.map((cd) => (
-                  <option key={cd.id} value={cd.id}>
-                    ★ {cd.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedDeckId}
+              onChange={(e) => setSelectedDeckId(e.target.value)}
+              className="aaa-select"
+              style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+            >
+              {customDecks.map((cd) => (
+                <option key={cd.id} value={cd.id}>
+                  ★ {cd.name}
+                </option>
+              ))}
+            </select>
           )}
-
-          <button
-            type="button"
-            className="btn-fantasy btn-fantasy-primary"
-            onClick={() => setShowTacticalGuideModal(true)}
-          >
-            Guia de Confronto
-          </button>
+          <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e6c875' }}>
+            {pct}% Concluído
+          </span>
         </div>
-      </header>
-
-      {isGuest ? (
-        <div className="aaa-status-callout is-guest">
-          <div className="aaa-callout-copy">
-            <span className="aaa-callout-kicker">MODO VISITANTE • NAVEGAÇÃO LIVRE</span>
-            <span className="aaa-callout-title">Inspeção da Campanha Histórica</span>
-            <p className="aaa-callout-text">
-              Você pode inspecionar os 20 Soberanos e os 5 Atos da Campanha. Para desafiar os chefes com seu próprio Grimório de 100 cartas e ganhar <strong>+{VICTORY_GOLD_REWARD} Ouro por vitória</strong>, entre ou crie sua conta.
-            </p>
-          </div>
-          {onRequireAccount && (
-            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireAccount}>
-              Entrar / Criar Conta
-            </button>
-          )}
-        </div>
-      ) : customDecks.length === 0 ? (
-        <div className="aaa-status-callout is-onboarding">
-          <div className="aaa-callout-copy">
-            <span className="aaa-callout-kicker">ETAPA OBRIGATÓRIA • JORNADA DO SOBERANO</span>
-            <span className="aaa-callout-title">Grimório de Combate Necessário</span>
-            <p className="aaa-callout-text">
-              Antes de iniciar sua Campanha, monte e salve seu Grimório de 100 cartas na seção <strong>Grimório</strong>.
-            </p>
-          </div>
-          {onRequireDeckSetup && (
-            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireDeckSetup}>
-              Montar Meu Grimório (100 Cartas) →
-            </button>
-          )}
-        </div>
-      ) : null}
-
-      {/* Act Filter Tabs (Ato I .. Ato V — Os Tronos Tripartidos) */}
-      <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-        {(
-          [
-            { id: 'all', label: 'Todos os Estágios' },
-            { id: 1, label: 'Ato I: Fronteiras (1–4)' },
-            { id: 2, label: 'Ato II: Dualistas (5–8)' },
-            { id: 3, label: 'Ato III: Ancestrais (9–12)' },
-            { id: 4, label: 'Ato IV: Tempo (13–14)' },
-            { id: 5, label: 'Ato V: Tronos Tripartidos (15–20)' },
-          ] as const
-        ).map((tab) => (
-          <button
-            key={String(tab.id)}
-            type="button"
-            className={`nav-tab-btn ${actFilter === tab.id ? 'active' : ''}`}
-            onClick={() => setActFilter(tab.id)}
-            style={{ padding: '0.36rem 0.85rem', fontSize: '0.73rem' }}
-          >
-            {tab.label}
-          </button>
-        ))}
       </div>
 
       {/* Master-Detail Split Layout */}
@@ -333,12 +291,11 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 <div className="aaa-boss-row-info">
                   <div className="aaa-boss-row-top">
                     <span className="aaa-boss-stage-num">
-                      {actInfo.actLabel} • ESTÁGIO {boss.stage}
+                      {actInfo.actLabel} • #{boss.stage}
                     </span>
-                    {isDefeated && <span className="aaa-boss-cleared-tag">CONCLUÍDO</span>}
+                    {isDefeated && <span className="aaa-boss-cleared-tag">✓</span>}
                   </div>
                   <div className="font-cinzel aaa-boss-row-name">{boss.name}</div>
-                  <div className="aaa-boss-row-sub">{boss.title}</div>
                 </div>
                 <div className="aaa-boss-row-stats">
                   <span>{boss.startingHp} PV</span>
@@ -374,8 +331,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             <div className="aaa-dossier-content">
               <div className="aaa-dossier-meta-row">
                 <span className="aaa-dossier-stage-pill">
-                  {activeActInfo.actLabel} ({activeActInfo.actTitle}) • ESTÁGIO {activeBoss.stage} DE{' '}
-                  {fullBossRoster.length}
+                  {activeActInfo.actLabel} • ESTÁGIO {activeBoss.stage}/{fullBossRoster.length}
                 </span>
                 <div className="aaa-dossier-domains">
                   {activeBoss.domains.map((dom) => (
@@ -388,7 +344,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                         className="aaa-domain-dot"
                         style={{ backgroundColor: DOMAIN_META[dom].color }}
                       />
-                      {DOMAIN_META[dom].name}
+                      {DOMAIN_META[dom].shortName}
                     </span>
                   ))}
                 </div>
@@ -399,29 +355,27 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
               <div className="aaa-dossier-metrics">
                 <div className="aaa-metric-box">
-                  <span className="aaa-metric-lbl">VIDA INICIAL DO SOBERANO</span>
+                  <span className="aaa-metric-lbl">VIDA</span>
                   <span className="aaa-metric-val">{activeBoss.startingHp} PV</span>
                 </div>
                 <div className="aaa-metric-box">
-                  <span className="aaa-metric-lbl">RECOMPENSA DE VITÓRIA</span>
+                  <span className="aaa-metric-lbl">RECOMPENSA</span>
                   <span className="aaa-metric-val gold-text">+{VICTORY_GOLD_REWARD} OURO</span>
                 </div>
                 <div className="aaa-metric-box">
                   <span className="aaa-metric-lbl">STATUS</span>
                   <span className="aaa-metric-val">
-                    {defeatedBossIds.includes(activeBoss.id) ? 'DERROTADO' : 'EM ABERTO'}
+                    {defeatedBossIds.includes(activeBoss.id) ? '✓ CONCLUÍDO' : 'PENDENTE'}
                   </span>
                 </div>
               </div>
 
               <div className="aaa-dossier-passive-panel">
                 <div className="aaa-passive-kicker">
-                  AURA SOBERANA • {activeBoss.passiveName.toUpperCase()}
+                  PASSIVA • {activeBoss.passiveName.toUpperCase()}
                 </div>
                 <p className="aaa-passive-desc">{activeBoss.passiveDescription}</p>
               </div>
-
-              <blockquote className="aaa-dossier-lore">“{activeBoss.loreIntro}”</blockquote>
 
               <div className="aaa-dossier-actions" style={{ flexWrap: 'wrap', gap: '0.65rem' }}>
                 <button
@@ -429,18 +383,14 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   className="aaa-btn aaa-btn-primary aaa-btn-lg"
                   onClick={() => handleClickStartBoss(activeBoss)}
                 >
-                  {isGuest
-                    ? 'ENTRAR / CRIAR CONTA PARA COMBATER'
-                    : customDecks.length === 0
-                    ? 'MONTAR GRIMÓRIO (100 CARTAS) PARA COMBATER'
-                    : 'INICIAR CONFRONTO'}
+                  ⚔️ Desafiar Soberano
                 </button>
                 <button
                   type="button"
                   className="aaa-btn aaa-btn-secondary"
                   onClick={() => setShowTacticalGuideModal(true)}
                 >
-                  Análise de Confronto
+                  Matchup
                 </button>
                 {activeBossCard && (
                   <button
@@ -448,7 +398,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                     className="aaa-btn aaa-btn-ghost"
                     onClick={() => setInspectCard(activeBossCard)}
                   >
-                    Inspecionar Carta-Chefe
+                    Carta-Chefe
                   </button>
                 )}
               </div>

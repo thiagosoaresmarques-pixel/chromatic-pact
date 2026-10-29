@@ -385,21 +385,6 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
   return (
     <div className="myth-atlas-shell">
       {/* =====================================================================
-          CABEÇALHO LITERÁRIO DO PERGAMINHO
-      ===================================================================== */}
-      <header className="myth-hero-banner">
-        <div className="myth-hero-content">
-          <h1 className="font-cinzel gold-gradient-text myth-main-title">
-            A CANÇÃO DA FRATURA CROMÁTICA
-          </h1>
-          <p className="myth-hero-subtitle">
-            O Grande Poema Épico de Vaeloria — do silêncio cristalino do Coroa-Prisma à guerra do
-            Sétimo Selo.
-          </p>
-        </div>
-      </header>
-
-      {/* =====================================================================
           BARRA DE FILTROS EM LINHA ÚNICA (100% DEDICADA AO POEMA ÉPICO)
       ===================================================================== */}
       <nav className="poem-sticky-Controls">

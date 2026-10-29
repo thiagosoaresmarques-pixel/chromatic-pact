@@ -498,63 +498,48 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
 
   return (
     <div className="aaa-page-shell">
-      {/* HEADER */}
-      <header className="aaa-page-header" style={{ flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <div className="aaa-kicker">
-            MODO ROGUELITE • DRAFT & TRAVESSIA ABISSAL
-          </div>
-          <h1 className="aaa-page-title font-cinzel">Expedição do Vazio</h1>
-        </div>
-
-        <div className="aaa-header-actions" style={{ flexWrap: 'wrap', gap: '0.6rem' }}>
+      {/* Compact Status Bar */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.65rem',
+          flexWrap: 'wrap',
+          padding: '8px 12px',
+          background: '#0b0f17',
+          border: '1px solid rgba(148, 163, 184, 0.18)',
+          borderRadius: 8,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+          <span className="font-cinzel" style={{ fontSize: '0.9rem', fontWeight: 800, color: '#e6c875' }}>
+            Expedição do Vazio
+          </span>
           {activeBlessing && (
-            <div className="aaa-stat-block">
-              <span className="aaa-stat-label">BÊNÇÃO ATIVA</span>
-              <span className="aaa-stat-val gold-text">
-                {activeBlessing.name}
-              </span>
-            </div>
+            <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
+              Bênção: <strong style={{ color: '#e6c875' }}>{activeBlessing.name}</strong>
+            </span>
           )}
-
-          <div className="aaa-stat-block">
-            <span className="aaa-stat-label">DECK DA EXPEDIÇÃO</span>
-            <span className="aaa-stat-val gold-text">{runState.deckCardIds.length}/100 CARTAS</span>
-          </div>
-
-          <div className="aaa-stat-block">
-            <span className="aaa-stat-label">ETAPA ATUAL</span>
-            <span className="aaa-stat-val">{runState.clearedStages.length}/7 VITÓRIAS</span>
-          </div>
-
-          {runState.phase !== 'blessing' && (
-            <button
-              type="button"
-              className="btn-fantasy btn-fantasy-danger"
-              onClick={handleRestartExpedition}
-            >
-              Nova Expedição
-            </button>
-          )}
+          <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
+            Deck: <strong>{runState.deckCardIds.length}/100</strong>
+          </span>
+          <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
+            Etapa: <strong>{runState.clearedStages.length}/7</strong>
+          </span>
         </div>
-      </header>
 
-      {isGuest && (
-        <div className="aaa-status-callout is-guest">
-          <div className="aaa-callout-copy">
-            <span className="aaa-callout-kicker">MODO VISITANTE • NAVEGAÇÃO LIVRE</span>
-            <span className="aaa-callout-title">Expedição do Vazio (Roguelite)</span>
-            <p className="aaa-callout-text">
-              Você pode conhecer as Bênçãos e etapas da Expedição do Vazio. Para iniciar uma travessia roguelite e ganhar <strong>+{VICTORY_GOLD_REWARD} Ouro por vitória</strong>, entre ou crie sua Conta de Soberano.
-            </p>
-          </div>
-          {onRequireAccount && (
-            <button type="button" className="aaa-btn aaa-btn-primary" onClick={onRequireAccount}>
-              Entrar / Criar Conta
-            </button>
-          )}
-        </div>
-      )}
+        {runState.phase !== 'blessing' && (
+          <button
+            type="button"
+            className="btn-fantasy btn-fantasy-danger"
+            style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+            onClick={handleRestartExpedition}
+          >
+            Nova Expedição
+          </button>
+        )}
+      </div>
 
       {toastMsg && <div className="aaa-toast-banner">{toastMsg}</div>}
 
@@ -563,16 +548,6 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
           ===================================================================== */}
       {runState.phase === 'blessing' && (
         <div className="exp-step-container">
-          <div className="exp-step-banner">
-            <span className="aaa-kicker">PASSO 1 DE 3 • PACTO INICIAL DO SOBERANO</span>
-            <h2 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.6rem' }}>
-              Escolha sua Bênção Passiva da Expedição
-            </h2>
-            <p style={{ color: '#cbd5e1', fontSize: '0.88rem', maxWidth: '760px' }}>
-              Sua Bênção molda os pacotes oferecidos durante as 20 rodadas do Draft Tático (100 cartas) e concede uma vantagem estratégica para enfrentar os 7 Guardiões da Fenda.
-            </p>
-          </div>
-
           <div className="exp-blessings-grid">
             {SOVEREIGN_BLESSINGS.map((b) => (
               <div
@@ -588,9 +563,6 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 </div>
                 <h3 className="font-cinzel exp-blessing-title">{b.name}</h3>
                 <p className="exp-blessing-desc">{b.description}</p>
-                <div className="exp-blessing-tip">
-                  <strong>Doutrina Recomendada:</strong> {b.tacticalTip}
-                </div>
                 <button type="button" className="aaa-btn aaa-btn-primary" style={{ marginTop: 'auto' }}>
                   Escolher {b.name} →
                 </button>
@@ -608,11 +580,8 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
           <div className="exp-draft-main">
             <div className="exp-draft-header-bar">
               <div>
-                <span className="aaa-kicker">
-                  PASSO 2 DE 3 • RODADA DE DRAFT {runState.draftRound} DE 20
-                </span>
-                <h2 className="font-cinzel" style={{ fontSize: '1.35rem', color: '#f8fafc' }}>
-                  Escolha 1 dos 3 Pacotes Temáticos (+5 Cartas ao Grimório)
+                <h2 className="font-cinzel" style={{ fontSize: '1.1rem', color: '#f8fafc', margin: 0 }}>
+                  Draft {runState.draftRound}/20 — Escolha 1 Pacote (+5 Cartas)
                 </h2>
               </div>
               <button
@@ -620,7 +589,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 className="btn-fantasy"
                 onClick={handleAutoFinishDraft}
               >
-                ⚡ Completar Draft Automaticamente
+                ⚡ Completar Draft
               </button>
             </div>
 

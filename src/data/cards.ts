@@ -15604,7 +15604,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "description": "Ímpeto, Atropelar. Investe imediatamente atropelando a linha de frente.",
     "flavorText": "Nenhuma parede do labirinto fica de pé quando ele decide abrir um atalho.",
     "imagePath": "/assets/cards/red_78_minotauro_forja.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), hulking volcanic minotaur with glowing red-hot iron horns and a molten greataxe mid-charge."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), hulking volcanic minotaur warrior in blackened spiked plate armor with glowing red-hot iron horns and two muscular arms gripping a single massive molten forge warhammer."
   },
   {
     "id": "red_79_draco_meteoro",

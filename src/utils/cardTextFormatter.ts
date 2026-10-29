@@ -107,6 +107,11 @@ export function formatEffectActionClause(
     }
 
     case 'damage_single_enemy': {
+      if (card.type === 'reaction') {
+        return detailed
+          ? `causa ${v} de dano à criatura atacante, ou à inimiga de maior Ataque se lançada diretamente`
+          : `causa ${v} de dano à criatura atacante`;
+      }
       if (!detailed) {
         return canChoose
           ? `causa ${v} de dano a 1 criatura inimiga à sua escolha`
@@ -118,7 +123,10 @@ export function formatEffectActionClause(
     }
 
     case 'damage_all_units': {
-      return `causa ${v} de dano a todas as demais criaturas em campo`;
+      const isBoardUnit = card.type === 'creature' || card.type === 'relic';
+      return isBoardUnit
+        ? `causa ${v} de dano a todas as outras criaturas em campo`
+        : `causa ${v} de dano a todas as criaturas em campo`;
     }
 
     case 'damage_enemy_sovereign': {
@@ -151,6 +159,16 @@ export function formatEffectActionClause(
     }
 
     case 'freeze_enemy': {
+      if (card.type === 'reaction') {
+        return detailed
+          ? 'congela a criatura atacante por 1 rodada, ou a inimiga de maior Ataque se lançada diretamente'
+          : 'congela a criatura atacante por 1 rodada';
+      }
+      if (effect.trigger === 'on_attack') {
+        return detailed
+          ? 'congela a criatura inimiga atacada por 1 rodada, ou a de maior Ataque se atacar o Soberano'
+          : 'congela a criatura atacada por 1 rodada';
+      }
       const preferVanguard = /Vanguarda/i.test(
         `${effect.description || ''} ${card.description || ''}`
       );
@@ -180,6 +198,11 @@ export function formatEffectActionClause(
     }
 
     case 'bounce_enemy': {
+      if (card.type === 'reaction') {
+        return detailed
+          ? 'devolve a criatura atacante para a mão do oponente, ou a inimiga de maior custo se lançada diretamente'
+          : 'devolve a criatura atacante para a mão do oponente';
+      }
       if (!detailed) {
         return canChoose
           ? 'devolve 1 criatura inimiga à sua escolha para a mão do oponente'
@@ -191,6 +214,11 @@ export function formatEffectActionClause(
     }
 
     case 'destroy_enemy': {
+      if (card.type === 'reaction') {
+        return detailed
+          ? 'destrói imediatamente a criatura atacante, ignorando Escudo Divino e Armadura'
+          : 'destrói a criatura atacante, ignorando Escudo Divino e Armadura';
+      }
       if (!detailed) {
         return canChoose
           ? 'destrói 1 criatura inimiga à sua escolha, ignorando Escudo Divino e Armadura'
@@ -206,7 +234,7 @@ export function formatEffectActionClause(
         return `reanima da sua Cripta a criatura aliada mais forte de custo até ${v}`;
       }
       if (v <= 1) {
-        return 'reanima da sua Cripta a sua criatura aliada mais forte';
+        return 'reanima da sua Cripta a criatura aliada mais forte';
       }
       return `reanima da sua Cripta as ${v} criaturas aliadas mais fortes`;
     }
@@ -242,10 +270,13 @@ export function formatEffectActionClause(
 
     case 'grant_bonus_essence': {
       const perm = effect.secondaryValue ?? 0;
+      const isTurnBoundary =
+        effect.trigger === 'turn_start' || effect.trigger === 'turn_end';
+      const turnSuffix = isTurnBoundary ? '' : ' neste turno';
       if (perm > 0) {
-        return `concede +${v} de Essência neste turno e +${perm} de Essência máxima`;
+        return `concede +${v} de Essência${turnSuffix} e +${perm} de Essência máxima`;
       }
-      return `concede +${v} de Essência extra neste turno`;
+      return `concede +${v} de Essência extra${turnSuffix}`;
     }
 
     case 'summon_token': {
@@ -351,48 +382,76 @@ function joinTriggerClauses(
     }
   }
 
-  // Merge heal_all_allies + heal_sovereign when both appear on the same trigger
-  const healAllIdx = effects.findIndex((e) => e.type === 'heal_all_allies');
-  const healSovIdx = effects.findIndex((e) => e.type === 'heal_sovereign');
-  let mergedHealClause: string | null = null;
-  if (healAllIdx !== -1 && healSovIdx !== -1) {
-    const allVal = effects[healAllIdx].value;
-    const sovVal = allVal + effects[healSovIdx].value;
-    mergedHealClause = `restaura ${allVal} de Vida de todas as suas criaturas aliadas e ${sovVal} de Vida do seu Soberano`;
-  }
+  const isSingleShield = (e: CardEffect) =>
+    e.type === 'shield_all_allies' &&
+    /a um aliado|a ele/i.test(`${e.description || ''} ${card.description || ''}`) &&
+    e.value <= 1;
 
   // Merge shield_all_allies (when all allies) + buff_all_allies on the same trigger
   const shieldAllIdx = effects.findIndex(
-    (e) =>
-      e.type === 'shield_all_allies' &&
-      !(
-        /a um aliado|a ele/i.test(
-          `${e.description || ''} ${card.description || ''}`
-        ) && e.value <= 1
-      )
+    (e) => e.type === 'shield_all_allies' && !isSingleShield(e)
   );
-  const buffAllIdx = effects.findIndex(
-    (e) => e.type === 'buff_all_allies' && !/na Vanguarda/i.test(e.description || '')
-  );
-  const canMergeBuffAndShieldAll = shieldAllIdx !== -1 && buffAllIdx !== -1;
+  const buffAllIdx = effects.findIndex((e) => e.type === 'buff_all_allies');
+  const buffAllOnlyVanguard =
+    buffAllIdx !== -1 && /na Vanguarda/i.test(effects[buffAllIdx].description || '');
+  const canMergeBuffAndShieldAll =
+    shieldAllIdx !== -1 && buffAllIdx !== -1 && !buffAllOnlyVanguard;
+  const canLinkShieldAllAndBuffVanguard =
+    shieldAllIdx !== -1 && buffAllIdx !== -1 && buffAllOnlyVanguard;
+
+  // Merge buff_target_ally + single-target shield_all_allies on the same trigger
+  const buffTargetIdx = effects.findIndex((e) => e.type === 'buff_target_ally');
+  const shieldSingleIdx = effects.findIndex((e) => isSingleShield(e));
+  const canMergeBuffAndShieldSingle = buffTargetIdx !== -1 && shieldSingleIdx !== -1;
+
+  // Check if all-allies target is already mentioned by buff_all_allies or shield_all_allies
+  const hasOtherAllAlliesClause = shieldAllIdx !== -1 || buffAllIdx !== -1;
+
+  // Merge heal_all_allies + heal_sovereign when both appear on the same trigger
+  const healAllIdx = effects.findIndex((e) => e.type === 'heal_all_allies');
+  const healSovIdx = effects.findIndex((e) => e.type === 'heal_sovereign');
+  const dmgSovIdx = effects.findIndex((e) => e.type === 'damage_enemy_sovereign');
+  const canMergeSovDrain =
+    dmgSovIdx !== -1 && healSovIdx !== -1 && healAllIdx === -1;
+
+  // Ensure buff_all_allies / shield_all_allies appear before heal_all_allies so "delas" refers back cleanly
+  if (
+    healAllIdx !== -1 &&
+    hasOtherAllAlliesClause &&
+    ((shieldAllIdx !== -1 && healAllIdx < shieldAllIdx) ||
+      (buffAllIdx !== -1 && healAllIdx < buffAllIdx))
+  ) {
+    // We will emit heal_all_allies after the buff/shield clause
+  }
 
   // Merge damage_enemy_row + freeze_enemy_vanguard when both appear on the same trigger
   const rowDmgIdx = effects.findIndex((e) => e.type === 'damage_enemy_row');
   const freezeVanIdx = effects.findIndex((e) => e.type === 'freeze_enemy_vanguard');
-  const canMergeRowDmgAndFreeze =
-    rowDmgIdx !== -1 &&
-    freezeVanIdx !== -1 &&
-    !/todos os inimigos|até\s+\d+/i.test(
-      `${effects[freezeVanIdx].description || ''} ${card.description || ''}`
-    );
+  const canMergeRowDmgAndFreeze = rowDmgIdx !== -1 && freezeVanIdx !== -1;
 
   // Merge damage_single_enemy + freeze_enemy when both appear on the same trigger
   const singleDmgIdx = effects.findIndex((e) => e.type === 'damage_single_enemy');
   const freezeSingleIdx = effects.findIndex((e) => e.type === 'freeze_enemy');
+  const bounceSingleIdx = effects.findIndex((e) => e.type === 'bounce_enemy');
   const canMergeSingleDmgAndFreeze = singleDmgIdx !== -1 && freezeSingleIdx !== -1;
+  const canMergeBounceAndFreeze =
+    !canMergeSingleDmgAndFreeze && bounceSingleIdx !== -1 && freezeSingleIdx !== -1;
 
   const consumedIndices = new Set<number>();
   const clauses: string[] = [];
+  let deferredHealClause: string | null = null;
+
+  const buildHealAllClause = (usePronoun: boolean): string => {
+    const allVal = effects[healAllIdx].value;
+    const sovVal = healSovIdx !== -1 ? allVal + effects[healSovIdx].value : allVal;
+    const alliesTarget = usePronoun ? 'delas' : 'de todas as suas criaturas aliadas';
+    if (sovVal !== allVal) {
+      return `restaura ${allVal} de Vida ${alliesTarget} e ${sovVal} de Vida do seu Soberano`;
+    }
+    return `restaura ${allVal} de Vida ${alliesTarget} e do seu Soberano`;
+  };
+
+  let allAlliesMentionedSoFar = false;
 
   for (let i = 0; i < effects.length; i++) {
     if (consumedIndices.has(i)) continue;
@@ -411,6 +470,46 @@ function joinTriggerClauses(
       clauses.push(
         `concede ${statBonus} e Escudo Divino${armorClause} a todas as suas criaturas aliadas`
       );
+      allAlliesMentionedSoFar = true;
+      continue;
+    }
+
+    if (canLinkShieldAllAndBuffVanguard && (i === shieldAllIdx || i === buffAllIdx)) {
+      consumedIndices.add(shieldAllIdx);
+      consumedIndices.add(buffAllIdx);
+      const buffEff = effects[buffAllIdx];
+      const shieldEff = effects[shieldAllIdx];
+      const atkGain = buffEff.value;
+      const hpGain =
+        buffEff.secondaryValue !== undefined ? buffEff.secondaryValue : buffEff.value;
+      const statBonus = formatStatBonus(atkGain, hpGain, detailed);
+      const bonusArmor = shieldEff.secondaryValue ?? 0;
+      const armorClause = bonusArmor > 0 ? ` e +${bonusArmor} de Armadura` : '';
+      clauses.push(
+        `concede Escudo Divino${armorClause} a todas as suas criaturas aliadas e ${statBonus} às que estão na Vanguarda`
+      );
+      allAlliesMentionedSoFar = true;
+      continue;
+    }
+
+    if (canMergeBuffAndShieldSingle && (i === buffTargetIdx || i === shieldSingleIdx)) {
+      consumedIndices.add(buffTargetIdx);
+      consumedIndices.add(shieldSingleIdx);
+      const buffEff = effects[buffTargetIdx];
+      const shieldEff = effects[shieldSingleIdx];
+      const atkGain = buffEff.value;
+      const hpGain =
+        buffEff.secondaryValue !== undefined ? buffEff.secondaryValue : buffEff.value;
+      const statBonus = formatStatBonus(atkGain, hpGain, detailed);
+      const bonusArmor = shieldEff.secondaryValue ?? 0;
+      const armorClause = bonusArmor > 0 ? ` e +${bonusArmor} de Armadura` : '';
+      const canChoose =
+        isImmediatePlayTrigger(card, buffEff.trigger) && card.type !== 'reaction';
+      clauses.push(
+        canChoose
+          ? `concede ${statBonus} e Escudo Divino${armorClause} a 1 criatura aliada à sua escolha`
+          : `concede ${statBonus} e Escudo Divino${armorClause} à sua criatura aliada mais forte`
+      );
       continue;
     }
 
@@ -418,9 +517,25 @@ function joinTriggerClauses(
       consumedIndices.add(rowDmgIdx);
       consumedIndices.add(freezeVanIdx);
       const dmgVal = effects[rowDmgIdx].value;
-      clauses.push(
-        `causa ${dmgVal} de dano a todas as criaturas na Vanguarda inimiga e as congela por 1 rodada`
-      );
+      const freezeEff = effects[freezeVanIdx];
+      const combinedDesc = `${freezeEff.description || ''} ${card.description || ''}`;
+      const freezeAllBoard = /todos os inimigos/i.test(combinedDesc);
+      const limitMatch = combinedDesc.match(/até\s+(\d+)/i);
+      const maxTargets = limitMatch ? parseInt(limitMatch[1], 10) : null;
+
+      if (freezeAllBoard) {
+        clauses.push(
+          `causa ${dmgVal} de dano na Vanguarda inimiga e congela todas as criaturas inimigas em campo por 1 rodada`
+        );
+      } else if (maxTargets && maxTargets > 0) {
+        clauses.push(
+          `causa ${dmgVal} de dano a todas as criaturas na Vanguarda inimiga e congela até ${maxTargets} delas por 1 rodada`
+        );
+      } else {
+        clauses.push(
+          `causa ${dmgVal} de dano a todas as criaturas na Vanguarda inimiga e as congela por 1 rodada`
+        );
+      }
       continue;
     }
 
@@ -428,36 +543,126 @@ function joinTriggerClauses(
       consumedIndices.add(singleDmgIdx);
       consumedIndices.add(freezeSingleIdx);
       const dmgEff = effects[singleDmgIdx];
-      const canChoose =
-        isImmediatePlayTrigger(card, dmgEff.trigger) && card.type !== 'reaction';
+      if (card.type === 'reaction') {
+        clauses.push(
+          `causa ${dmgEff.value} de dano à criatura atacante e a congela por 1 rodada`
+        );
+      } else {
+        const canChoose = isImmediatePlayTrigger(card, dmgEff.trigger);
+        clauses.push(
+          canChoose
+            ? `causa ${dmgEff.value} de dano a 1 criatura inimiga à sua escolha e a congela por 1 rodada`
+            : `causa ${dmgEff.value} de dano à criatura inimiga de maior Ataque e a congela por 1 rodada`
+        );
+      }
+      continue;
+    }
+
+    if (canMergeBounceAndFreeze && (i === bounceSingleIdx || i === freezeSingleIdx)) {
+      consumedIndices.add(bounceSingleIdx);
+      consumedIndices.add(freezeSingleIdx);
+      const bounceEff = effects[bounceSingleIdx];
+      if (card.type === 'reaction') {
+        clauses.push(
+          'devolve a criatura atacante para a mão do oponente e congela outra criatura inimiga por 1 rodada'
+        );
+      } else {
+        const canChoose = isImmediatePlayTrigger(card, bounceEff.trigger);
+        clauses.push(
+          canChoose
+            ? 'devolve 1 criatura inimiga à sua escolha para a mão do oponente e congela outra por 1 rodada'
+            : 'devolve a criatura inimiga de maior custo para a mão do oponente e congela a de maior Ataque por 1 rodada'
+        );
+      }
+      continue;
+    }
+
+    if (canMergeSovDrain && (i === dmgSovIdx || i === healSovIdx)) {
+      consumedIndices.add(dmgSovIdx);
+      consumedIndices.add(healSovIdx);
+      const dmgVal = effects[dmgSovIdx].value;
+      const healVal = effects[healSovIdx].value;
       clauses.push(
-        canChoose
-          ? `causa ${dmgEff.value} de dano a 1 criatura inimiga à sua escolha e a congela por 1 rodada`
-          : `causa ${dmgEff.value} de dano à criatura inimiga de maior Ataque e a congela por 1 rodada`
+        `causa ${dmgVal} de dano direto ao Soberano inimigo e restaura ${healVal} de Vida do seu`
       );
       continue;
     }
 
-    if (mergedHealClause && (i === healAllIdx || i === healSovIdx)) {
+    if (healAllIdx !== -1 && (i === healAllIdx || i === healSovIdx)) {
       consumedIndices.add(healAllIdx);
-      consumedIndices.add(healSovIdx);
-      clauses.push(mergedHealClause);
+      if (healSovIdx !== -1) consumedIndices.add(healSovIdx);
+      if (hasOtherAllAlliesClause && !allAlliesMentionedSoFar) {
+        deferredHealClause = buildHealAllClause(true);
+      } else {
+        clauses.push(buildHealAllClause(allAlliesMentionedSoFar));
+        allAlliesMentionedSoFar = true;
+      }
       continue;
     }
 
     consumedIndices.add(i);
+    if (i === shieldAllIdx || i === buffAllIdx) {
+      allAlliesMentionedSoFar = true;
+    }
     const c = formatEffectActionClause(card, effects[i], detailed);
     if (c) clauses.push(c);
+    if (deferredHealClause && allAlliesMentionedSoFar) {
+      clauses.push(deferredHealClause);
+      deferredHealClause = null;
+    }
+  }
+
+  if (deferredHealClause) {
+    clauses.push(deferredHealClause);
   }
 
   if (clauses.length === 0) return '';
   if (clauses.length === 1) return clauses[0];
 
+  // If a compound clause containing internal " e " is part of a multi-clause sentence,
+  // split its internal " e " into two clauses so the final sentence uses "A, B e C" cleanly.
+  const expandedClauses: string[] = [];
+  for (let i = 0; i < clauses.length; i++) {
+    const c = clauses[i];
+    const isLast = i === clauses.length - 1;
+    if (!isLast && c.includes(' e as congela por 1 rodada')) {
+      const [part1, part2] = c.split(' e as congela por 1 rodada');
+      expandedClauses.push(part1, `as congela por 1 rodada${part2}`);
+    } else if (!isLast && c.includes(' e congela ')) {
+      const [part1, part2] = c.split(' e congela ');
+      expandedClauses.push(part1, `congela ${part2}`);
+    } else if (
+      clauses.length >= 2 &&
+      c.startsWith('causa ') &&
+      c.includes(' de dano direto ao Soberano inimigo e restaura ')
+    ) {
+      const [part1, part2] = c.split(' e restaura ');
+      expandedClauses.push(part1, `restaura ${part2}`);
+    } else {
+      expandedClauses.push(c);
+    }
+  }
+
+  // If a clause with "de todas as suas criaturas aliadas e do seu Soberano" is not last, move short utility clauses (like "compra X carta") before it
+  if (expandedClauses.length >= 2) {
+    const compoundHealIdx = expandedClauses.findIndex(
+      (c, idx) =>
+        idx < expandedClauses.length - 1 &&
+        c.startsWith('restaura ') &&
+        c.includes(' e ') &&
+        c.endsWith('do seu Soberano')
+    );
+    if (compoundHealIdx !== -1) {
+      const [healClause] = expandedClauses.splice(compoundHealIdx, 1);
+      expandedClauses.push(healClause);
+    }
+  }
+
   // Avoid repeating leading verb ("causa ", "concede ", "restaura ") in consecutive clauses
-  const cleanedClauses: string[] = [clauses[0]];
-  let prevVerb = clauses[0].split(' ')[0];
-  for (let i = 1; i < clauses.length; i++) {
-    const curr = clauses[i];
+  const cleanedClauses: string[] = [expandedClauses[0]];
+  let prevVerb = expandedClauses[0].split(' ')[0];
+  for (let i = 1; i < expandedClauses.length; i++) {
+    const curr = expandedClauses[i];
     const currVerb = curr.split(' ')[0];
     if (
       (currVerb === 'causa' || currVerb === 'concede' || currVerb === 'restaura') &&

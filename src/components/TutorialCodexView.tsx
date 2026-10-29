@@ -506,91 +506,107 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
     (k) => keywordFilter === 'all' || k.category === keywordFilter
   );
 
+  const STEP_SHORT_LABELS: Record<number, string> = {
+    1: '1. Soberanos',
+    2: '2. Essência',
+    3: '3. Mesa 6×4',
+    4: '4. Cartas',
+    5: '5. Combate',
+    6: '6. Expansão',
+    7: '7. Grimório',
+    8: '8. Conclave',
+    9: '9. Combos',
+  };
+
   const innerContent = (
     <div className={isModal ? 'tg-modal-inner' : 'aaa-page-shell'}>
-      {/* Compact Tab Bar */}
+      {/* Unified Navigation Header (Main Tabs + Contextual Sub-Tabs Aligned on Same Left Edge) */}
       <div
         style={{
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.5rem',
-          flexWrap: 'wrap',
+          flexDirection: 'column',
+          gap: '8px',
           padding: '8px 12px',
           background: '#0b0f17',
           border: '1px solid rgba(148, 163, 184, 0.18)',
           borderRadius: 8,
         }}
       >
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeSection === 'walkthrough' ? 'active' : ''}`}
-            onClick={() => setActiveSection('walkthrough')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Passo a Passo ({WALKTHROUGH_STEPS.length})
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeSection === 'board_stacking' ? 'active' : ''}`}
-            onClick={() => setActiveSection('board_stacking')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Mesa 6×4 & Formações
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeSection === 'domains' ? 'active' : ''}`}
-            onClick={() => setActiveSection('domains')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Os 5 Domínios
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeSection === 'weather_runes' ? 'active' : ''}`}
-            onClick={() => setActiveSection('weather_runes')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Expansão de Domínio
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeSection === 'keywords' ? 'active' : ''}`}
-            onClick={() => setActiveSection('keywords')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Palavras-Chave ({KEYWORD_ENCYCLOPEDIA.length})
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeSection === 'controls' ? 'active' : ''}`}
-            onClick={() => setActiveSection('controls')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Atalhos
-          </button>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.5rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeSection === 'walkthrough' ? 'active' : ''}`}
+              onClick={() => setActiveSection('walkthrough')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Passo a Passo ({WALKTHROUGH_STEPS.length})
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeSection === 'board_stacking' ? 'active' : ''}`}
+              onClick={() => setActiveSection('board_stacking')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Mesa 6×4 & Formações
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeSection === 'domains' ? 'active' : ''}`}
+              onClick={() => setActiveSection('domains')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Os 5 Domínios
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeSection === 'weather_runes' ? 'active' : ''}`}
+              onClick={() => setActiveSection('weather_runes')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Expansão de Domínio
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeSection === 'keywords' ? 'active' : ''}`}
+              onClick={() => setActiveSection('keywords')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Palavras-Chave ({KEYWORD_ENCYCLOPEDIA.length})
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeSection === 'controls' ? 'active' : ''}`}
+              onClick={() => setActiveSection('controls')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Atalhos
+            </button>
+          </div>
+          {isModal && onClose && (
+            <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
+              Fechar
+            </button>
+          )}
         </div>
-        {isModal && onClose && (
-          <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
-            Fechar
-          </button>
-        )}
-      </div>
 
-      {/* =====================================================================
-          SECTION 1: INTERACTIVE STEP-BY-STEP WALKTHROUGH
-         ===================================================================== */}
-      {activeSection === 'walkthrough' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
-          {/* Step Progress Bar (Compact Numbered Pills) */}
+        {activeSection === 'walkthrough' && (
           <div
             style={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '0.4rem',
+              gap: '0.35rem',
               alignItems: 'center',
+              paddingTop: '8px',
+              borderTop: '1px solid rgba(148, 163, 184, 0.14)',
             }}
           >
             {WALKTHROUGH_STEPS.map((st, idx) => {
@@ -599,26 +615,48 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 <button
                   key={st.stepNumber}
                   type="button"
+                  className={`nav-tab-btn ${isCurrent ? 'active' : ''}`}
                   onClick={() => setActiveStepIndex(idx)}
-                  style={{
-                    padding: '0.38rem 0.72rem',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    background: isCurrent ? '#172030' : '#0b0f17',
-                    border: isCurrent
-                      ? '1px solid rgba(212, 175, 55, 0.65)'
-                      : '1px solid rgba(148, 163, 184, 0.16)',
-                    color: isCurrent ? '#e6c875' : '#94a3b8',
-                    fontSize: '0.74rem',
-                    fontWeight: 700,
-                  }}
+                  style={{ padding: '4px 9px', fontSize: '0.71rem' }}
                 >
-                  {st.stepNumber}. {st.title.split('&')[0].trim()}
+                  {STEP_SHORT_LABELS[st.stepNumber] ?? `${st.stepNumber}. ${st.title}`}
                 </button>
               );
             })}
           </div>
+        )}
 
+        {activeSection === 'keywords' && (
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.35rem',
+              alignItems: 'center',
+              paddingTop: '8px',
+              borderTop: '1px solid rgba(148, 163, 184, 0.14)',
+            }}
+          >
+            {(['all', 'Ofensiva', 'Defensiva', 'Mobilidade', 'Especial'] as const).map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                className={`nav-tab-btn ${keywordFilter === cat ? 'active' : ''}`}
+                style={{ padding: '4px 9px', fontSize: '0.71rem' }}
+                onClick={() => setKeywordFilter(cat)}
+              >
+                {cat === 'all' ? `Todas (${KEYWORD_ENCYCLOPEDIA.length})` : cat}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* =====================================================================
+          SECTION 1: INTERACTIVE STEP-BY-STEP WALKTHROUGH
+         ===================================================================== */}
+      {activeSection === 'walkthrough' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
           {/* Active Lesson Showcase Card */}
           <div className="aaa-codex-row" style={{ alignItems: 'stretch', gap: '1.5rem' }}>
             <div
@@ -1096,31 +1134,13 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
           SECTION 5: KEYWORDS ENCYCLOPEDIA
          ===================================================================== */}
       {activeSection === 'keywords' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.74rem', color: '#94a3b8', fontWeight: 700, marginRight: '0.35rem' }}>
-              CATEGORIA:
-            </span>
-            {(['all', 'Ofensiva', 'Defensiva', 'Mobilidade', 'Especial'] as const).map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                className={`btn-fantasy ${keywordFilter === cat ? 'btn-fantasy-primary' : ''}`}
-                style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }}
-                onClick={() => setKeywordFilter(cat)}
-              >
-                {cat === 'all' ? `Todas (${KEYWORD_ENCYCLOPEDIA.length})` : cat}
-              </button>
-            ))}
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '0.85rem',
-            }}
-          >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '0.85rem',
+          }}
+        >
             {filteredKeywords.map((kw) => {
               const exCard = CARDS_BY_ID[kw.exampleCardId];
               return (
@@ -1210,7 +1230,6 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 </div>
               );
             })}
-          </div>
         </div>
       )}
 

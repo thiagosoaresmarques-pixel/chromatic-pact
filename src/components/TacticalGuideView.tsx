@@ -669,58 +669,148 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
   const content = (
     <div className={isModal ? 'tg-modal-inner' : 'aaa-page-shell'}>
-      {/* Compact Tab Bar */}
+      {/* Compact Tab Bar + Contextual Combos Filter Row */}
       <div
         style={{
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.5rem',
-          flexWrap: 'wrap',
+          flexDirection: 'column',
+          gap: '8px',
           padding: '8px 12px',
           background: '#0b0f17',
           border: '1px solid rgba(148, 163, 184, 0.18)',
           borderRadius: 8,
         }}
       >
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
-          <button
-            type="button"
-            className={`nav-tab-btn ${viewSection === 'deck_mastery' ? 'active' : ''}`}
-            onClick={() => setViewSection('deck_mastery')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Manual do Grimório
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${viewSection === 'matchup_duel' ? 'active' : ''}`}
-            onClick={() => setViewSection('matchup_duel')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Simulador 1×1
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${viewSection === 'matrix_all' ? 'active' : ''}`}
-            onClick={() => setViewSection('matrix_all')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Matriz ({allDecks.length - 1})
-          </button>
-          <button
-            type="button"
-            className={`nav-tab-btn ${viewSection === 'combos_compendium' ? 'active' : ''}`}
-            onClick={() => setViewSection('combos_compendium')}
-            style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-          >
-            Combos ({TACTICAL_COMBOS_COMPENDIUM.length})
-          </button>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.5rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+            <button
+              type="button"
+              className={`nav-tab-btn ${viewSection === 'deck_mastery' ? 'active' : ''}`}
+              onClick={() => setViewSection('deck_mastery')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Manual do Grimório
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${viewSection === 'matchup_duel' ? 'active' : ''}`}
+              onClick={() => setViewSection('matchup_duel')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Simulador 1×1
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${viewSection === 'matrix_all' ? 'active' : ''}`}
+              onClick={() => setViewSection('matrix_all')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Matriz ({allDecks.length - 1})
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${viewSection === 'combos_compendium' ? 'active' : ''}`}
+              onClick={() => setViewSection('combos_compendium')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Combos ({TACTICAL_COMBOS_COMPENDIUM.length})
+            </button>
+          </div>
+          {isModal && onClose && (
+            <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
+              Fechar
+            </button>
+          )}
         </div>
-        {isModal && onClose && (
-          <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
-            Fechar
-          </button>
+
+        {viewSection === 'combos_compendium' && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+              paddingTop: '8px',
+              borderTop: '1px solid rgba(148, 163, 184, 0.14)',
+            }}
+          >
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+              {(
+                [
+                  { id: 'all', label: `Todos (${TACTICAL_COMBOS_COMPENDIUM.length})` },
+                  { id: 'mono', label: `1 Cor (${comboTierCounts.mono})` },
+                  { id: 'dual', label: `2 Cores (${comboTierCounts.dual})` },
+                  { id: 'tri', label: `3 Cores (${comboTierCounts.tri})` },
+                  { id: 'poly', label: `4–5 Cores (${comboTierCounts.poly})` },
+                ] as const
+              ).map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`nav-tab-btn ${comboTierFilter === tab.id ? 'active' : ''}`}
+                  style={{ padding: '4px 9px', fontSize: '0.71rem' }}
+                  onClick={() => setComboTierFilter(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+              <input
+                type="text"
+                value={comboSearchQuery}
+                onChange={(e) => setComboSearchQuery(e.target.value)}
+                placeholder="Buscar combo ou carta..."
+                style={{
+                  padding: '0.3rem 0.65rem',
+                  borderRadius: '6px',
+                  background: '#111622',
+                  border: '1px solid rgba(148, 163, 184, 0.22)',
+                  color: '#f8fafc',
+                  fontSize: '0.73rem',
+                  minWidth: '175px',
+                }}
+              />
+              <button
+                type="button"
+                className={`aaa-pill-tab ${onlyInDeckCombos ? 'is-active' : ''}`}
+                onClick={() => setOnlyInDeckCombos((prev) => !prev)}
+                title="Exibir apenas combos que possuem cartas presentes no Grimório selecionado"
+              >
+                ★ No Grimório
+              </button>
+              <div className="db-domain-orbs">
+                <button
+                  type="button"
+                  className={`db-orb-btn orb-all ${domainFilter === 'all' ? 'is-active' : ''}`}
+                  onClick={() => setDomainFilter('all')}
+                >
+                  Todos
+                </button>
+                {(['red', 'blue', 'purple', 'green', 'gold', 'neutral'] as Domain[]).map((dom) => (
+                  <button
+                    key={dom}
+                    type="button"
+                    className={`db-orb-btn domain-${dom} ${domainFilter === dom ? 'is-active' : ''}`}
+                    onClick={() => setDomainFilter((prev) => (prev === dom ? 'all' : dom))}
+                  >
+                    <span className="db-orb-dot" style={{ background: DOMAIN_META[dom].color }} />
+                    <span>{DOMAIN_META[dom].shortName}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -1110,90 +1200,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
           TAB 4: COMPÊNDIO DE COMBOS & REACÕES EM CADEIA (1, 2, 3 E 4–5 CORES)
           ===================================================================== */}
       {viewSection === 'combos_compendium' && (
-        <div className="tg-panel">
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '0.85rem',
-              paddingBottom: '0.9rem',
-              marginBottom: '1rem',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-            }}
-          >
-            {/* Segmented Tier Selector (1 Color -> 2 Colors -> 3 Colors -> 4-5 Colors) */}
-            <div className="aaa-pill-tabs">
-              {(
-                [
-                  { id: 'all', label: `Todos (${TACTICAL_COMBOS_COMPENDIUM.length})` },
-                  { id: 'mono', label: `1 Cor • Monocromáticos (${comboTierCounts.mono})` },
-                  { id: 'dual', label: `2 Cores • Alianças (${comboTierCounts.dual})` },
-                  { id: 'tri', label: `3 Cores • Tríades (${comboTierCounts.tri})` },
-                  { id: 'poly', label: `4–5 Cores • Pentacromáticos (${comboTierCounts.poly})` },
-                ] as const
-              ).map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  className={`aaa-pill-tab ${comboTierFilter === tab.id ? 'is-active' : ''}`}
-                  onClick={() => setComboTierFilter(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Domain Filter Orbs & Search */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-              <input
-                type="text"
-                value={comboSearchQuery}
-                onChange={(e) => setComboSearchQuery(e.target.value)}
-                placeholder="Buscar combo, carta ou efeito..."
-                style={{
-                  padding: '0.38rem 0.7rem',
-                  borderRadius: '8px',
-                  background: 'rgba(15, 23, 42, 0.85)',
-                  border: '1px solid rgba(212, 175, 55, 0.3)',
-                  color: '#f8fafc',
-                  fontSize: '0.76rem',
-                  minWidth: '210px',
-                }}
-              />
-              <button
-                type="button"
-                className={`aaa-pill-tab ${onlyInDeckCombos ? 'is-active' : ''}`}
-                onClick={() => setOnlyInDeckCombos((prev) => !prev)}
-                title="Exibir apenas combos que possuem cartas presentes no Grimório selecionado"
-              >
-                ★ No Meu Grimório
-              </button>
-              <div className="db-domain-orbs">
-                <button
-                  type="button"
-                  className={`db-orb-btn orb-all ${domainFilter === 'all' ? 'is-active' : ''}`}
-                  onClick={() => setDomainFilter('all')}
-                >
-                  Todos
-                </button>
-                {(['red', 'blue', 'purple', 'green', 'gold', 'neutral'] as Domain[]).map((dom) => (
-                  <button
-                    key={dom}
-                    type="button"
-                    className={`db-orb-btn domain-${dom} ${domainFilter === dom ? 'is-active' : ''}`}
-                    onClick={() => setDomainFilter((prev) => (prev === dom ? 'all' : dom))}
-                  >
-                    <span className="db-orb-dot" style={{ background: DOMAIN_META[dom].color }} />
-                    <span>{DOMAIN_META[dom].shortName}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="tg-grid-layout" style={{ alignItems: 'stretch' }}>
+        <div className="tg-grid-layout" style={{ alignItems: 'stretch' }}>
             {TACTICAL_COMBOS_COMPENDIUM.filter((combo) => {
               if (comboTierFilter !== 'all' && combo.tier !== comboTierFilter) return false;
               if (domainFilter !== 'all' && !combo.domains.includes(domainFilter)) return false;
@@ -1323,7 +1330,6 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 </div>
               );
             })}
-          </div>
         </div>
       )}
 

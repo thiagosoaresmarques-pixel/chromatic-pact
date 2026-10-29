@@ -64,7 +64,14 @@ import {
   subscribeMultiplayerBus,
   VICTORY_GOLD_REWARD,
 } from '../utils/multiplayerEngine';
-import { CardView, CardInspectModal, CARD_TYPE_LABELS, DOMAIN_META, KEYWORD_TOOLTIPS } from './CardView';
+import {
+  CardView,
+  CardInspectModal,
+  CARD_TYPE_LABELS,
+  DOMAIN_META,
+  formatCardFaceDescription,
+  KEYWORD_TOOLTIPS,
+} from './CardView';
 import { TacticalGuideView } from './TacticalGuideView';
 import { TutorialCodexView } from './TutorialCodexView';
 import {
@@ -634,7 +641,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             ? `Varrendo a ${
                 targetRowName === 'vanguard' ? 'Vanguarda' : 'Retaguarda'
               } inimiga (-${dmgVal}🔥)!`
-            : card.description,
+            : formatCardFaceDescription(card),
         targetLaneId,
       });
       setTimeout(() => setSpectacleFx(null), 920);
@@ -649,7 +656,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         card,
         domain: card.domain,
         title: `👑 ENTRADA LENDÁRIA: ${card.name.toUpperCase()}`,
-        subtitle: card.description || card.flavorText,
+        subtitle: formatCardFaceDescription(card) || card.flavorText,
       });
       setTimeout(() => setSpectacleFx(null), 1050);
       return;
@@ -663,7 +670,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         card,
         domain: card.domain,
         title: `✨ ${card.name.toUpperCase()}`,
-        subtitle: card.description,
+        subtitle: formatCardFaceDescription(card),
         startX,
         startY,
         targetX,

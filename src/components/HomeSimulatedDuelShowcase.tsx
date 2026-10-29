@@ -47,6 +47,7 @@ import {
   subscribeMusicState,
 } from '../utils/musicEngine';
 import { getSharedAudioContext, onAudioUnlocked, playSfx } from '../utils/soundEngine';
+import { formatCardFaceDescription } from '../utils/cardTextFormatter';
 import {
   CARD_TYPE_LABELS,
   CardView,
@@ -1148,7 +1149,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                 ? `Varrendo a ${
                     targetRowName === 'vanguard' ? 'Vanguarda' : 'Retaguarda'
                   } inimiga (-${dmgVal}🔥)!`
-                : card.description,
+                : formatCardFaceDescription(card),
             targetLaneId,
           });
           if (canPlaySound) {
@@ -1165,7 +1166,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             card,
             domain: card.domain,
             title: `👑 ENTRADA LENDÁRIA: ${card.name.toUpperCase()}`,
-            subtitle: card.description || card.flavorText,
+            subtitle: formatCardFaceDescription(card) || card.flavorText,
           });
           if (canPlaySound) playSfx('summon');
         } else {
@@ -1182,7 +1183,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             card,
             domain: card.domain,
             title: `✨ ${card.name.toUpperCase()}`,
-            subtitle: card.description,
+            subtitle: formatCardFaceDescription(card),
             startX: casterPos.x,
             startY: casterPos.y,
             targetX: targetPos.x,
@@ -3351,7 +3352,9 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                             ))}
                           </div>
                         )}
-                        <p className="sccd-description-text">{activeHandCard.description}</p>
+                        <p className="sccd-description-text">
+                          {formatCardFaceDescription(activeHandCard)}
+                        </p>
                         {activeHandCard.ascension && (
                           <div className="sccd-ascension-line">
                             <strong>👑 Ascensão ({activeHandCard.ascension.cost}⚡):</strong>{' '}
@@ -3534,7 +3537,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                           </div>
                         )}
                         <p className="sccd-description-text">
-                          {activeBoardUnit.card.description}
+                          {formatCardFaceDescription(activeBoardUnit.card)}
                         </p>
                         {activeBoardUnitOwner === 'player' && (
                           <div

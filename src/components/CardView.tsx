@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CARDS_BY_ID } from '../data/cards';
 import {
+  formatCardDetailedRules,
+  formatCardFaceDescription,
+} from '../utils/cardTextFormatter';
+import {
   BoardUnit,
   CardDefinition,
   Domain,
@@ -9,6 +13,8 @@ import {
   Keyword,
   Rarity,
 } from '../types/game';
+
+export { formatCardDetailedRules, formatCardFaceDescription };
 
 export const DOMAIN_META: Record<
   Domain,
@@ -238,21 +244,10 @@ export const CardView: React.FC<CardViewProps> = ({
     }
   };
 
-  // Clean redundant keyword prefix from description so cards don't repeat keywords twice
+  // Generate clear, natural Portuguese sentence description from the card's actual engine parameters
   const cleanDescription = React.useMemo(() => {
-    let desc = displayCard.description || '';
-    activeKeywords.forEach((kw) => {
-      const regex = new RegExp(`^${kw}\\s*(,|\\.|•)\\s*`, 'i');
-      desc = desc.replace(regex, '');
-    });
-    activeKeywords.forEach((kw) => {
-      const regex = new RegExp(`^${kw}\\s*(,|\\.|•)\\s*`, 'i');
-      desc = desc.replace(regex, '');
-    });
-    desc = desc.replace(/^Armadura\s+\d+\.\s*/i, '');
-    desc = desc.replace(/Relíquia\s+Contínua\s*(\([^)]*\))?\.\s*/gi, '');
-    return desc.trim() || displayCard.description;
-  }, [displayCard.description, activeKeywords]);
+    return formatCardFaceDescription(displayCard, activeKeywords);
+  }, [displayCard, activeKeywords]);
 
   // =========================================================================
   // TRUE VERTICAL CARD PROPORTIONS ON BOARD (mode === 'board')
@@ -848,9 +843,21 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card: rawCar
               >
                 Efeitos & Habilidades de Combate
               </div>
-              <p style={{ fontSize: '0.92rem', lineHeight: 1.5, color: '#f1f5f9' }}>
-                {card.description}
-              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {formatCardDetailedRules(card).map((sentence, idx) => (
+                  <p
+                    key={idx}
+                    style={{
+                      fontSize: '0.9rem',
+                      lineHeight: 1.5,
+                      color: '#f1f5f9',
+                      margin: 0,
+                    }}
+                  >
+                    {sentence}
+                  </p>
+                ))}
+              </div>
 
               {card.keywords.length > 0 && (
                 <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>

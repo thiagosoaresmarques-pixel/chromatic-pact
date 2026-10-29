@@ -474,6 +474,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     typeof window !== 'undefined' &&
     window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
     window.innerWidth > 768;
+
+  const isMobileViewport = () =>
+    typeof window !== 'undefined' &&
+    (window.innerWidth <= 768 || window.innerHeight <= 540);
+
   const [showLogSidebar, setShowLogSidebar] = useState(false);
   const [rewardClaimed, setRewardClaimed] = useState<boolean>(
     () => initialSavedSnapshot?.rewardClaimed ?? false
@@ -485,7 +490,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     initialSavedSnapshot !== null ? Boolean(initialSavedSnapshot.isMulliganOpen) : !tacticalProblem
   );
   const [problemHintStage, setProblemHintStage] = useState<0 | 1 | 2 | 3>(0);
-  const [isProblemHudMinimized, setIsProblemHudMinimized] = useState<boolean>(false);
+  const [isProblemHudMinimized, setIsProblemHudMinimized] = useState<boolean>(() =>
+    isMobileViewport()
+  );
   const [showProblemIncompleteModal, setShowProblemIncompleteModal] = useState(false);
   const [mulliganSwapIndices, setMulliganSwapIndices] = useState<number[]>([]);
   const MULLIGAN_TIME_LIMIT_SECONDS = 30;
@@ -1299,6 +1306,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setRewardClaimed(false);
     setGameoverStage('none');
     setIsMulliganOpen(false);
+    setIsProblemHudMinimized(isMobileViewport());
     setShowProblemIncompleteModal(false);
     setShowSacrificeBreakModal(false);
     playSfx('draw');
@@ -1318,7 +1326,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setGameoverStage('none');
     setIsMulliganOpen(false);
     setProblemHintStage(0);
-    setIsProblemHudMinimized(false);
+    setIsProblemHudMinimized(isMobileViewport());
     setShowProblemIncompleteModal(false);
     setShowSacrificeBreakModal(false);
   }, [tacticalProblem?.id]);
@@ -2035,37 +2043,56 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       }
     }
 
-    // 3. Select / deselect ready creature to attack immediately, and focus unit for reading!
+    // 3. Select / deselect creature on board for attack, maneuver, ascension, or inspection
     closeAllArenaDrawers();
-    setFocusedBoardUnitId((prev) => (prev === unit.instanceId ? null : unit.instanceId));
-    setIsCommandDockMinimized(false);
-    if (selectedAttackerId === unit.instanceId) {
+    const isTogglingOff =
+      focusedBoardUnitId === unit.instanceId &&
+      (selectedAttackerId === unit.instanceId || selectedAttackerId === null);
+    if (isTogglingOff) {
+      setFocusedBoardUnitId(null);
       setSelectedAttackerId(null);
     } else {
+      setFocusedBoardUnitId(unit.instanceId);
+      setSelectedHandIndex(null);
+      setIsCommandDockMinimized(false);
       const targets = getValidAttackTargets(gameState, unit.instanceId);
       if (targets.length > 0) {
         setSelectedAttackerId(unit.instanceId);
-        setSelectedHandIndex(null);
+      } else {
+        setSelectedAttackerId(null);
       }
     }
   };
 
-  const handleSelectPlayerSlot = (row: RowType, slotIndex: number) => {
+  const handleSelectPlayerSlot = (row: RowType, slotIndex: number, e?: React.MouseEvent) => {
     if (!isPlayerTurn || combatAnim) return;
     if (selectedHandIndex !== null && selectedHandCard && canPlaySelectedHandCard.allowed) {
-      handleDeployToPlayerSlot(row, slotIndex);
-      return;
+      if (
+        selectedHandCard.type === 'creature' ||
+        (selectedHandCard.type === 'relic' && row === 'rearguard') ||
+        (selectedHandCard.type === 'reaction' && row === 'rearguard')
+      ) {
+        e?.stopPropagation();
+        handleDeployToPlayerSlot(row, slotIndex);
+        return;
+      }
+    }
+    if (isHandPinnedOpen || isHandHovered) {
+      setIsHandPinnedOpen(false);
+      setIsHandHovered(false);
     }
     const slotUnits = getSlotUnits(gameState.player, row, slotIndex);
     if (slotUnits.length > 0) {
+      e?.stopPropagation();
       const readyInSlot =
         slotUnits.find((u) => getValidAttackTargets(gameState, u.instanceId).length > 0) ??
         slotUnits[slotUnits.length - 1];
-      handleClickFriendlyUnit(readyInSlot);
+      handleClickFriendlyUnit(readyInSlot, e);
     }
   };
 
-  const handleClickEnemyUnit = (enemyUnit: BoardUnit) => {
+  const handleClickEnemyUnit = (enemyUnit: BoardUnit, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     if (combatAnim) return;
     if (!isPlayerTurn) {
       if (!enemyUnit.isTrap) {
@@ -2215,6 +2242,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
     setSelectedHandIndex(null);
     setSelectedAttackerId(null);
+    setFocusedBoardUnitId(null);
+    setIsHandPinnedOpen(false);
+    setIsHandHovered(false);
     const next = endTurn(gameState);
     playSfx('draw');
     setGameState(next);
@@ -2353,24 +2383,40 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         } ${prev.attackerDies && !prev.attackerReborn ? 'is-risky-hit' : ''}`}
       >
         <span className="tcp-dmg-out">
-          {prev.breaksTargetShield
-            ? '⚔️ Quebra Escudo'
-            : `⚔️ Causará ${prev.damageToTarget} dano`}
+          {prev.breaksTargetShield ? (
+            <>
+              ⚔️<span className="hide-on-mobile"> Quebra</span> Escudo
+            </>
+          ) : (
+            <>
+              ⚔️<span className="hide-on-mobile"> Causará </span>-{prev.damageToTarget}
+              <span className="hide-on-mobile"> dano</span>
+            </>
+          )}
         </span>
         {!prev.isSovereignTarget && (
           <span className="tcp-dmg-in">
-            {prev.breaksAttackerShield
-              ? '• 🛡️ Escudo Absorve'
-              : `• 🛡️ Sofrerá ${revideVal} revide`}
+            {prev.breaksAttackerShield ? (
+              <>
+                <span className="hide-on-mobile">• </span>🛡️0
+                <span className="hide-on-mobile"> Escudo</span>
+              </>
+            ) : (
+              <>
+                <span className="hide-on-mobile">• </span>🛡️-{revideVal}
+                <span className="hide-on-mobile"> revide</span>
+              </>
+            )}
           </span>
         )}
         {(prev.targetDies || prev.lethalTouchTriggeredOnTarget) && (
-          <span className="tcp-dmg-lethal">• ☠️ Abate Garantido</span>
+          <span className="tcp-dmg-lethal">
+            <span className="hide-on-mobile">• </span>☠️
+            <span className="hide-on-mobile"> Abate Garantido</span>
+          </span>
         )}
         {prev.slotSplashCount > 0 && (
-          <span
-            className="tcp-dmg-splash"
-          >
+          <span className="tcp-dmg-splash hide-on-mobile">
             • ÁREA ({prev.slotSplashCount + 1} no slot)
           </span>
         )}
@@ -3857,10 +3903,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     isP2DrawerPinned ||
                     isP1DrawerPinned ||
                     isHandPinnedOpen ||
+                    isHandHovered ||
                     activeRightDrawer ||
                     !isProblemHudMinimized
                   ) {
                     closeAllArenaDrawers();
+                  }
+                  if (
+                    selectedHandIndex !== null ||
+                    selectedAttackerId !== null ||
+                    focusedBoardUnitId !== null
+                  ) {
+                    setSelectedHandIndex(null);
+                    setSelectedAttackerId(null);
+                    setFocusedBoardUnitId(null);
                   }
                 }}
               >
@@ -4047,7 +4103,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     mode="board"
                                     isValidTarget={isValidTarget}
                                     feedback={feedbackMap[unit.instanceId]}
-                                    onClick={() => handleClickEnemyUnit(unit)}
+                                    onClick={(e) => handleClickEnemyUnit(unit, e)}
                                     onInspect={setInspectCard}
                                     onHoverCard={handleHoverCard}
                                   />
@@ -4138,7 +4194,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     mode="board"
                                     isValidTarget={isValidTarget}
                                     feedback={feedbackMap[unit.instanceId]}
-                                    onClick={() => handleClickEnemyUnit(unit)}
+                                    onClick={(e) => handleClickEnemyUnit(unit, e)}
                                     onInspect={setInspectCard}
                                     onHoverCard={handleHoverCard}
                                   />
@@ -4176,7 +4232,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           className={`mtg-slot ${canStackHere ? 'can-deploy' : ''} ${
                             slotUnits.length > 1 ? 'has-stacked-units' : ''
                           }`}
-                          onClick={() => handleSelectPlayerSlot('vanguard', idx)}
+                          onClick={(e) => handleSelectPlayerSlot('vanguard', idx, e)}
                         >
                           {slotUnits.length > 1 && (
                             <span className="slot-stack-count-badge ally-stack-badge">
@@ -4193,7 +4249,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 handleDeployToPlayerSlot('vanguard', idx);
                               }}
                             >
-                              + Empilhar ({slotUnits.length + 1}/{MAX_UNITS_PER_SLOT})
+                              +<span className="hide-on-mobile"> Empilhar</span> ({slotUnits.length + 1}/{MAX_UNITS_PER_SLOT})
                             </button>
                           )}
 
@@ -4245,7 +4301,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                       card={unit.card}
                                       unit={unit}
                                       mode="board"
-                                      isSelected={selectedAttackerId === unit.instanceId}
+                                      isSelected={
+                                        selectedAttackerId === unit.instanceId ||
+                                        focusedBoardUnitId === unit.instanceId
+                                      }
                                       isReadyAttacker={isReady}
                                       isValidTarget={isSpellTargetingAlly}
                                       canAscend={canUnitAscend}
@@ -4263,7 +4322,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             </div>
                           ) : canStackHere ? (
                             <span className="mtg-slot-watermark">
-                              + Vanguarda • Col {idx + 1}
+                              +<span className="hide-on-mobile"> Vanguarda • Col {idx + 1}</span>
                             </span>
                           ) : null}
                         </div>
@@ -4293,7 +4352,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           className={`mtg-slot ${canStackHere ? 'can-deploy' : ''} ${
                             hasColumnCover && slotUnits.length === 0 ? 'has-column-cover' : ''
                           } ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
-                          onClick={() => handleSelectPlayerSlot('rearguard', idx)}
+                          onClick={(e) => handleSelectPlayerSlot('rearguard', idx, e)}
                         >
                           {slotUnits.length > 1 && (
                             <span
@@ -4312,7 +4371,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 handleDeployToPlayerSlot('rearguard', idx);
                               }}
                             >
-                              + Empilhar ({slotUnits.length + 1}/{MAX_UNITS_PER_SLOT})
+                              +<span className="hide-on-mobile"> Empilhar</span> ({slotUnits.length + 1}/{MAX_UNITS_PER_SLOT})
                             </button>
                           )}
 
@@ -4362,7 +4421,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                       card={unit.card}
                                       unit={unit}
                                       mode="board"
-                                      isSelected={selectedAttackerId === unit.instanceId}
+                                      isSelected={
+                                        selectedAttackerId === unit.instanceId ||
+                                        focusedBoardUnitId === unit.instanceId
+                                      }
                                       isReadyAttacker={isReady}
                                       isValidTarget={isSpellTargetingAlly}
                                       canAscend={canUnitAscend}
@@ -4380,17 +4442,19 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             </div>
                           ) : canStackHere ? (
                             <span className="mtg-slot-watermark">
-                              {canDeployTrap
-                                ? `+ Emboscada • Col ${idx + 1}`
-                                : hasColumnCover
-                                ? `+ Retaguarda • Col ${idx + 1} (+1 ATQ)`
-                                : `+ Retaguarda • Col ${idx + 1}`}
+                              +
+                              <span className="hide-on-mobile">
+                                {canDeployTrap
+                                  ? ` Emboscada • Col ${idx + 1}`
+                                  : hasColumnCover
+                                  ? ` Retaguarda • Col ${idx + 1} (+1 ATQ)`
+                                  : ` Retaguarda • Col ${idx + 1}`}
+                              </span>
                             </span>
                           ) : hasColumnCover ? (
-                            <span
-                              className="mtg-slot-cover-rune"
-                            >
-                              +1 ATQ
+                            <span className="mtg-slot-cover-rune">
+                              +1<span className="hide-on-mobile"> ATQ</span>
+                              <span className="show-on-mobile-inline">⚔️</span>
                             </span>
                           ) : null}
                         </div>
@@ -4399,6 +4463,313 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </div>
                 </div>
               </div>
+
+              {/* =====================================================
+                  2B. COMPACT CONTEXTUAL COMMAND BAR (SMARTPHONE / TOUCH)
+                  Docked cleanly above the bottom bar — NEVER covers the 6x4 board!
+                  ===================================================== */}
+              {(() => {
+                const anyPopover =
+                  isP1DrawerPinned || isP2DrawerPinned || activeRightDrawer !== null;
+                if (anyPopover) return null;
+
+                const activeHand =
+                  selectedHandIndex !== null
+                    ? gameState.player.hand[selectedHandIndex] ?? null
+                    : null;
+                const activeBoardId =
+                  selectedHandIndex === null ? selectedAttackerId ?? focusedBoardUnitId : null;
+                const activeBoardFound = activeBoardId
+                  ? findUnitOnBoard(gameState, activeBoardId)
+                  : null;
+                const activeUnit =
+                  activeBoardFound &&
+                  (!activeBoardFound.unit.isTrap || activeBoardFound.owner === 'player')
+                    ? activeBoardFound.unit
+                    : null;
+                const activeUnitOwner = activeBoardFound?.owner ?? null;
+
+                if (activeHand && selectedHandIndex !== null) {
+                  const playCheck = canPlayCard(gameState, 'player', activeHand);
+                  const targetMode = doesCardUseTarget(activeHand);
+                  const compactBlockedReason = !playCheck.allowed
+                    ? gameState.player.currentEssence < activeHand.cost
+                      ? `⚡ ${gameState.player.currentEssence}/${activeHand.cost}`
+                      : playCheck.reason?.includes('Afinidade')
+                      ? `🔮 Afin. < ${activeHand.affinityReq}`
+                      : '⚠️ Cheio'
+                    : '';
+                  const hintText = !isPlayerTurn
+                    ? '⏳ Aguarde'
+                    : !playCheck.allowed
+                    ? compactBlockedReason
+                    : activeHand.type === 'creature'
+                    ? '⚡ Toque no slot'
+                    : activeHand.type === 'relic'
+                    ? '🏺 Retaguarda'
+                    : activeHand.type === 'reaction'
+                    ? '🪤 Armar/Lançar'
+                    : targetMode !== null
+                    ? '🎯 Toque no alvo'
+                    : '✨ Pronto';
+
+                  return (
+                    <div
+                      className="mobile-context-command-bar"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="mccb-info">
+                        <span className="mccb-cost">{activeHand.cost}⚡</span>
+                        <span className="mccb-name">{activeHand.name}</span>
+                        <span
+                          className={`mccb-hint ${
+                            isPlayerTurn && playCheck.allowed ? 'is-ready' : 'is-warn'
+                          }`}
+                        >
+                          {hintText}
+                        </span>
+                      </div>
+                      <div className="mccb-actions">
+                        {isPlayerTurn &&
+                          playCheck.allowed &&
+                          activeHand.type === 'creature' &&
+                          hasEmptyVanguard && (
+                            <button
+                              type="button"
+                              className="mccb-btn act-cast"
+                              onClick={() => handleQuickDeployToRow(selectedHandIndex, 'vanguard')}
+                              title="Invocar automaticamente na Vanguarda"
+                            >
+                              ⚔️ Vang.
+                            </button>
+                          )}
+                        {isPlayerTurn &&
+                          playCheck.allowed &&
+                          activeHand.type === 'creature' &&
+                          hasEmptyRearguard && (
+                            <button
+                              type="button"
+                              className="mccb-btn act-move"
+                              onClick={() => handleQuickDeployToRow(selectedHandIndex, 'rearguard')}
+                              title="Invocar automaticamente na Retaguarda"
+                            >
+                              🛡️ Retag.
+                            </button>
+                          )}
+                        {isPlayerTurn &&
+                          playCheck.allowed &&
+                          activeHand.type === 'relic' &&
+                          hasEmptyRearguard && (
+                            <button
+                              type="button"
+                              className="mccb-btn act-cast"
+                              onClick={() => handleQuickDeployToRow(selectedHandIndex, 'rearguard')}
+                              title="Forjar Relíquia na Retaguarda"
+                            >
+                              🏺 Retag.
+                            </button>
+                          )}
+                        {isPlayerTurn &&
+                          playCheck.allowed &&
+                          (activeHand.type === 'spell' || activeHand.type === 'reaction') && (
+                            <button
+                              type="button"
+                              className="mccb-btn act-cast"
+                              onClick={() => handleQuickCastSpell(selectedHandIndex)}
+                            >
+                              ✨ Lançar
+                            </button>
+                          )}
+                        {isPlayerTurn &&
+                          playCheck.allowed &&
+                          activeHand.type === 'reaction' &&
+                          hasEmptyRearguard && (
+                            <button
+                              type="button"
+                              className="mccb-btn act-trap"
+                              onClick={() => handleQuickArmTrap(selectedHandIndex)}
+                            >
+                              🪤 Armar
+                            </button>
+                          )}
+                        {isPlayerTurn && !gameState.player.hasChanneledThisTurn && (
+                          <button
+                            type="button"
+                            className="mccb-btn act-channel"
+                            onClick={() => handleQuickChannelCard(selectedHandIndex)}
+                            title="Canalizar (+1 Afinidade, +1 Essência e Compra)"
+                          >
+                            🔮 +1⚡
+                          </button>
+                        )}
+                        {isPlayerTurn && gameState.player.hasChanneledThisTurn && (
+                          <button
+                            type="button"
+                            className="mccb-btn act-burn"
+                            onClick={() => handleQuickBurnCard(selectedHandIndex)}
+                            title="Sacrificar carta por +1 Essência"
+                          >
+                            🔥 +1⚡
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="mccb-btn act-inspect"
+                          onClick={() => setInspectCard(activeHand)}
+                          title="Ver detalhes da carta"
+                        >
+                          🔍
+                        </button>
+                        <button
+                          type="button"
+                          className="mccb-btn act-cancel"
+                          onClick={() => clearHandSelectionAndDrawers()}
+                          title="Cancelar seleção"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                if (activeUnit) {
+                  if (activeUnit.isTrap) {
+                    return (
+                      <div
+                        className="mobile-context-command-bar"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="mccb-info">
+                          <span className="mccb-cost">🪤</span>
+                          <span className="mccb-name">{activeUnit.card.name}</span>
+                          <span className="mccb-hint is-ready">
+                            Armada • C{activeUnit.slotIndex + 1}
+                          </span>
+                        </div>
+                        <div className="mccb-actions">
+                          <button
+                            type="button"
+                            className="mccb-btn act-inspect"
+                            onClick={() => setInspectCard(activeUnit.card)}
+                            title="Ver detalhes da Emboscada"
+                          >
+                            🔍
+                          </button>
+                          <button
+                            type="button"
+                            className="mccb-btn act-cancel"
+                            onClick={() => {
+                              setSelectedAttackerId(null);
+                              setFocusedBoardUnitId(null);
+                            }}
+                            title="Cancelar seleção"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  const unitTargets =
+                    activeUnitOwner === 'player' && isPlayerTurn
+                      ? getValidAttackTargets(gameState, activeUnit.instanceId)
+                      : [];
+                  const canHitSovereign = unitTargets.includes('ai-sovereign');
+                  const canAscend =
+                    activeUnitOwner === 'player' &&
+                    isPlayerTurn &&
+                    canAscendUnit(gameState, 'player', activeUnit.instanceId);
+                  const canMove =
+                    activeUnitOwner === 'player' &&
+                    isPlayerTurn &&
+                    canMoveUnitRow(gameState, 'player', activeUnit.instanceId);
+                  const unitHint =
+                    activeUnitOwner !== 'player'
+                      ? `Rival • C${activeUnit.slotIndex + 1}`
+                      : unitTargets.length > 0
+                      ? '🎯 Toque no alvo'
+                      : activeUnit.hasSummoningSickness
+                      ? '💤 Aguarda 1t'
+                      : activeUnit.hasAttackedThisTurn
+                      ? '⤵ Já atacou'
+                      : `C${activeUnit.slotIndex + 1}`;
+
+                  return (
+                    <div
+                      className="mobile-context-command-bar"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="mccb-info">
+                        <span className="mccb-name">{activeUnit.card.name}</span>
+                        <span className="mccb-stats">
+                          ⚔️{activeUnit.currentAtk}/❤️{activeUnit.currentHp}
+                        </span>
+                        <span
+                          className={`mccb-hint ${
+                            unitTargets.length > 0 ? 'is-ready' : ''
+                          }`}
+                        >
+                          {unitHint}
+                        </span>
+                      </div>
+                      <div className="mccb-actions">
+                        {canHitSovereign && (
+                          <button
+                            type="button"
+                            className="mccb-btn act-sovereign"
+                            onClick={() =>
+                              handleExecuteUnitAttackOnTarget(activeUnit, 'ai-sovereign')
+                            }
+                          >
+                            👑 Soberano
+                          </button>
+                        )}
+                        {canAscend && (
+                          <button
+                            type="button"
+                            className="mccb-btn act-ascend"
+                            onClick={() => handleAscendFriendlyUnit(activeUnit)}
+                          >
+                            ★ {activeUnit.card.ascension?.cost}⚡
+                          </button>
+                        )}
+                        {canMove && (
+                          <button
+                            type="button"
+                            className="mccb-btn act-move"
+                            onClick={() => handleMoveFriendlyUnitRow(activeUnit)}
+                          >
+                            ⇄ {activeUnit.row === 'vanguard' ? 'Recuar' : 'Avançar'}
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="mccb-btn act-inspect"
+                          onClick={() => setInspectCard(activeUnit.card)}
+                          title="Ver detalhes da carta"
+                        >
+                          🔍
+                        </button>
+                        <button
+                          type="button"
+                          className="mccb-btn act-cancel"
+                          onClick={() => {
+                            setSelectedAttackerId(null);
+                            setFocusedBoardUnitId(null);
+                          }}
+                          title="Cancelar seleção"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return null;
+              })()}
 
               {/* =====================================================
                   3. UNIFIED SYMMETRIC P1 + PHASE + MENU DOCK (BOTTOM EDGE)
@@ -4571,6 +4942,26 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 {gameState.domainExpansion.sureHitDesc}
                               </span>
                             </div>
+                            {gameState.domainExpansion.owner === 'ai' && isPlayerTurn && (
+                              <div className="hud-env-inline-actions">
+                                <button
+                                  type="button"
+                                  className="hud-inline-btn"
+                                  disabled={!simpleDomCheck}
+                                  onClick={handleActivateSimpleDomain}
+                                >
+                                  💠 Domínio Simples (2⚡)
+                                </button>
+                                <button
+                                  type="button"
+                                  className="hud-inline-btn danger"
+                                  disabled={!canSacBreak}
+                                  onClick={handleOpenSacrificeBreakModal}
+                                >
+                                  💥 Romper (10❤️)
+                                </button>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -4606,6 +4997,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           className="hud-ritual-chip"
                           disabled={!canPwr}
                           onClick={handleSovereignPower}
+                          title="Poder do Soberano (2⚡)"
                         >
                           🔥 2⚡
                         </button>
@@ -4614,6 +5006,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           className="hud-ritual-chip"
                           disabled={!canBlood}
                           onClick={handleBloodPact}
+                          title="Pacto de Sangue (-2❤️ por +1⚡)"
                         >
                           🩸 +1⚡
                         </button>
@@ -4622,9 +5015,32 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           className={`hud-ritual-chip ${domExpCheck.allowed ? 'ready' : ''}`}
                           disabled={!domExpCheck.allowed}
                           onClick={handleInvokeDomainExpansion}
+                          title="Expansão de Domínio (6 Afinidade + 3⚡)"
                         >
                           ⛩️ {domExpCheck.affinity}/6
                         </button>
+                        {gameState.domainExpansion?.owner === 'ai' && isPlayerTurn && (
+                          <>
+                            <button
+                              type="button"
+                              className="hud-ritual-chip"
+                              disabled={!simpleDomCheck}
+                              onClick={handleActivateSimpleDomain}
+                              title="Domínio Simples: Anula Acerto Garantido inimigo por 2 turnos (2⚡)"
+                            >
+                              💠 2⚡
+                            </button>
+                            <button
+                              type="button"
+                              className="hud-ritual-chip"
+                              disabled={!canSacBreak}
+                              onClick={handleOpenSacrificeBreakModal}
+                              title="Romper Domínio Inimigo (-10❤️)"
+                            >
+                              💥 10❤️
+                            </button>
+                          </>
+                        )}
                       </div>
 
                       <button
@@ -4695,7 +5111,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       }}
                     >
                       🃏 MÃO ({gameState.player.hand.length}){' '}
-                      {isHandPinnedOpen || isHandHovered ? '▾ Ocultar' : '▴ Mostrar'}
+                      {isHandPinnedOpen || isHandHovered ? (
+                        <>
+                          ▾<span className="hide-on-mobile"> Ocultar</span>
+                        </>
+                      ) : (
+                        <>
+                          ▴<span className="hide-on-mobile"> Mostrar</span>
+                        </>
+                      )}
                     </button>
 
                     <div className="hud-strip-divider" />
@@ -4726,7 +5150,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           }
                         >
                           ♟️ #{String(tacticalProblem.number).padStart(2, '0')}{' '}
-                          {isProblemHudMinimized ? '▴ Mostrar' : '▾ Ocultar'}
+                          {isProblemHudMinimized ? '▴' : '▾'}
+                          <span className="hide-on-mobile">
+                            {isProblemHudMinimized ? ' Mostrar' : ' Ocultar'}
+                          </span>
                         </button>
                         <button
                           type="button"
@@ -4766,7 +5193,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         disabled={Boolean(combatAnim)}
                         onClick={handleAutoAttackAll}
                       >
-                        ⚔️ ATACAR ({readyPlayerUnits.length})
+                        ⚔️ <span className="hide-on-mobile">ATACAR </span>({readyPlayerUnits.length})
                       </button>
                     )}
 
@@ -4780,7 +5207,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         'AGUARDE...'
                       ) : (
                         <>
-                          ⏭️ PASSAR TURNO<span className="hide-on-mobile"> [ESPAÇO]</span>
+                          ⏭️ PASSAR<span className="hide-on-mobile"> TURNO [ESPAÇO]</span>
                         </>
                       )}
                     </button>
@@ -5666,9 +6093,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           }`}
         >
           <span>
-            {isPlayerTurn
-              ? `🔥 Tempo do seu turno acabando: ${Math.max(0, turnTimeLeft)}s — conclua suas ações ou passe o turno!`
-              : `⏳ Tempo do turno de ${gameState.ai.name}: ${Math.max(0, turnTimeLeft)}s`}
+            {isPlayerTurn ? (
+              <>
+                🔥 {Math.max(0, turnTimeLeft)}s restantes
+                <span className="hide-on-mobile"> — conclua suas ações ou passe o turno!</span>
+              </>
+            ) : (
+              `⏳ ${gameState.ai.name}: ${Math.max(0, turnTimeLeft)}s`
+            )}
           </span>
         </div>
       )}

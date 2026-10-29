@@ -504,7 +504,7 @@ export const CardView: React.FC<CardViewProps> = ({
               aria-label="Inspecionar detalhes da carta"
               title="Inspecionar detalhes da carta"
             >
-              i
+              🔍
             </button>
           )}
         </div>

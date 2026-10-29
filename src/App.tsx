@@ -1107,71 +1107,8 @@ export const App: React.FC = () => {
 
         {activeTab === 'home' && (
           <div className="aaa-page-shell aaa-home-lobby-shell">
-            {/* Sober Dark Fantasy Lobby Header + Live Arena Table */}
+            {/* Authentic BattleArena Combat Table Showcase */}
             <div className="aaa-home-showcase-hero">
-              <div className="aaa-home-lobby-bar">
-                <div className="aaa-home-lobby-brand">
-                  <h1 className="font-cinzel gold-gradient-text aaa-home-hero-heading">
-                    CHROMATIC PACT
-                  </h1>
-                  <span className="aaa-home-hero-tagline">
-                    Combate Tático em Formação 6×4 • Vanguarda, Retaguarda &amp; Expansão de Domínio
-                  </span>
-                </div>
-
-                <div className="aaa-home-cta-group">
-                  <button
-                    type="button"
-                    className="aaa-btn aaa-btn-primary aaa-hero-cta-main"
-                    onClick={handleOpenArenaSolo}
-                  >
-                    ⚔️{' '}
-                    {!isGuest && customDecks.length === 0
-                      ? 'FORJAR GRIMÓRIO (100 CARTAS)'
-                      : 'JOGAR NA ARENA'}
-                  </button>
-                  <button
-                    type="button"
-                    className="aaa-btn aaa-btn-secondary aaa-hero-cta-alt"
-                    onClick={() => {
-                      setActiveProblem(null);
-                      setActiveTab('problems');
-                    }}
-                  >
-                    ♟️ Problemas (100)
-                  </button>
-                  <button
-                    type="button"
-                    className="aaa-btn aaa-btn-secondary aaa-hero-cta-alt"
-                    onClick={() => setActiveTab('campaign')}
-                  >
-                    🏰 Campanha ({defeatedBossIds.length}/20)
-                  </button>
-                  <button
-                    type="button"
-                    className="aaa-btn aaa-btn-secondary aaa-hero-cta-alt"
-                    onClick={() => setActiveTab('deckbuilder')}
-                  >
-                    📖 Grimório
-                  </button>
-                  {isUnregisteredProfile(currentUser) && (
-                    <button
-                      type="button"
-                      className="aaa-btn aaa-btn-secondary aaa-hero-cta-alt"
-                      onClick={() =>
-                        setAccountModalState({
-                          open: true,
-                          tab: 'create',
-                        })
-                      }
-                    >
-                      👤 Criar Conta / Entrar
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Authentic BattleArena Combat Table Showcase */}
               <HomeSimulatedDuelShowcase
                 onInspectCard={setShowcaseInspectCard}
                 onPlayDuelNow={handleOpenArenaSolo}

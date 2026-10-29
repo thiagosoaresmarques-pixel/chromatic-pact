@@ -867,7 +867,7 @@ export const App: React.FC = () => {
         <div className="nav-right-controls">
           <button
             type="button"
-            className={`btn-fantasy ${activeTab === 'admin' ? 'active' : ''}`}
+            className={`btn-fantasy nav-admin-btn ${activeTab === 'admin' ? 'active' : ''}`}
             onClick={handleOpenAdminTab}
             title="Painel de Administração"
           >
@@ -877,11 +877,11 @@ export const App: React.FC = () => {
           {activeTab === 'arena' && (
             <button
               type="button"
-              className="btn-fantasy show-on-mobile-inline"
+              className="btn-fantasy nav-arena-exit-btn show-on-mobile-inline"
               style={{
-                padding: '0 0.55rem',
+                padding: '0 0.5rem',
                 height: '30px',
-                fontSize: '0.66rem',
+                fontSize: '0.64rem',
                 fontWeight: 800,
                 borderColor: 'rgba(248, 113, 113, 0.7)',
                 color: '#fecaca',
@@ -922,12 +922,12 @@ export const App: React.FC = () => {
           >
             <span className={`nav-account-dot ${isGuest ? 'is-guest' : ''}`} />
             {isUnregisteredProfile(currentUser) ? (
-              <span style={{ fontWeight: 800 }}>
+              <span className="nav-account-label" style={{ fontWeight: 800 }}>
                 ENTRAR<span className="hide-on-mobile"> / CRIAR CONTA</span>
               </span>
             ) : (
               <>
-                <span style={{ fontWeight: 800 }}>
+                <span className="nav-account-label" style={{ fontWeight: 800 }}>
                   {isAdmin ? '👑 ' : ''}
                   {currentUser.username}
                 </span>
@@ -942,14 +942,18 @@ export const App: React.FC = () => {
           </div>
 
           <div
-            className="gold-pill"
+            className="gold-pill nav-gold-pill"
             onClick={() => setActiveTab('packs')}
             style={{ cursor: 'pointer' }}
-            title="Saldo de Ouro (+10 Ouro por vitória) — Clique para abrir o Relicário"
+            title={`Saldo: ${gold.toLocaleString('pt-BR')} Ouro (+10 Ouro por vitória) — Clique para abrir o Relicário`}
           >
             <span className="gold-gem-dot" />
-            <span>
-              {gold}
+            <span className="nav-gold-amount">
+              {gold >= 1000000
+                ? `${(gold / 1000000).toFixed(1).replace('.0', '')}M`
+                : gold >= 100000
+                ? `${Math.floor(gold / 1000)}k`
+                : gold.toLocaleString('pt-BR')}
               <span className="hide-on-mobile"> OURO</span>
             </span>
           </div>
@@ -974,7 +978,9 @@ export const App: React.FC = () => {
               <span>🔔</span>
               <span className="hide-on-mobile">AVISOS</span>
               {unreadNotifCount > 0 && (
-                <span className="nav-notif-badge">{unreadNotifCount}</span>
+                <span className="nav-notif-badge">
+                  {unreadNotifCount > 99 ? '99+' : unreadNotifCount}
+                </span>
               )}
             </button>
 

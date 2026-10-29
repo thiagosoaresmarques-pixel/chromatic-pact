@@ -565,8 +565,8 @@ html, body, #root {
 }
 
 .mode-inspect .card-art-stage {
-  height: 62%;
-  min-height: 205px;
+  height: 58%;
+  min-height: 192px;
 }
 
 .card-art-stage.aura-red {
@@ -708,7 +708,7 @@ html, body, #root {
 }
 
 .mode-inspect .card-text-box {
-  padding: 8px 12px;
+  padding: 5px 10px;
   overflow-y: auto;
 }
 
@@ -759,9 +759,11 @@ html, body, #root {
 }
 
 .mode-inspect .card-ability-desc {
-  font-size: 0.78rem;
-  line-height: 1.38;
+  font-size: 0.68rem;
+  line-height: 1.24;
+  display: block;
   -webkit-line-clamp: unset;
+  overflow: visible;
 }
 
 /* Architectural Bottom Combat Stat Bar (NO bright red/green capsule pills!) */

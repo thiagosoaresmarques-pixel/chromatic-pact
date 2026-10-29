@@ -2,31 +2,32 @@ import { CardDefinition, CardEffect, Keyword } from '../types/game';
 
 const KEYWORD_COMBAT_CLAUSES: Record<Keyword, string> = {
   Guardião:
-    'obriga as criaturas terrestres inimigas na mesma coluna a atacarem esta unidade antes de qualquer outro alvo',
-  Voo: 'voa sobre defensores terrestres na Vanguarda (só pode ser bloqueada por unidades com Voo ou Alcance)',
-  Alcance:
-    'pode atacar qualquer alvo válido a partir da Retaguarda sem sofrer dano de contra-ataque',
-  Ímpeto:
-    'pode atacar criaturas inimigas imediatamente no mesmo turno em que entra em campo',
+    'obriga inimigos terrestres na mesma Coluna a atacarem esta unidade primeiro',
+  Voo: 'voa sobre defensores terrestres na Vanguarda',
+  Alcance: 'ataca à distância da Retaguarda sem sofrer contra-ataque',
+  Ímpeto: 'pode atacar criaturas inimigas no mesmo turno em que entra',
   Atropelar:
-    'ao destruir uma criatura defensora em combate, causa o dano excedente diretamente ao Soberano inimigo',
+    'causa o dano excedente ao Soberano inimigo ao destruir um defensor',
   'Toque Letal':
-    'destrói imediatamente qualquer criatura que sofrer pelo menos 1 de dano de Vida causado por esta unidade',
-  'Escudo Divino':
-    'anula completamente a primeira instância de dano que sofreria em campo',
+    'destrói qualquer criatura que sofrer dano de Vida desta unidade',
+  'Escudo Divino': 'anula o primeiro dano que sofreria',
   'Dreno de Vida':
-    'restaura 2 de Vida diretamente no seu Soberano sempre que esta unidade causa dano em combate',
-  Renascer:
-    'na primeira vez em que for destruída, retorna imediatamente ao campo com 1 de Vida',
+    'restaura 2 de Vida do seu Soberano sempre que causa dano',
+  Renascer: 'retorna uma vez ao campo com 1 de Vida ao morrer',
   'Pele Incandescente':
-    'causa 1 de dano de fogo de volta a qualquer criatura inimiga que a ataque corpo-a-corpo',
-  'Fúria Crescente':
-    'ganha +2 de Ataque permanentemente sempre que sobrevive após sofrer dano',
+    'causa 1 de dano de fogo a quem a ataca corpo-a-corpo',
+  'Fúria Crescente': 'ganha +2 de Ataque sempre que sobrevive a dano',
 };
 
-function formatStatBonus(atkGain: number, hpGain: number): string {
+function formatStatBonus(
+  atkGain: number,
+  hpGain: number,
+  detailed: boolean
+): string {
   if (atkGain > 0 && hpGain > 0) {
-    return `+${atkGain} de Ataque e +${hpGain} de Vida`;
+    return detailed
+      ? `+${atkGain} de Ataque e +${hpGain} de Vida`
+      : `+${atkGain}/+${hpGain} de Ataque e Vida`;
   }
   if (atkGain > 0) {
     return `+${atkGain} de Ataque`;
@@ -34,42 +35,35 @@ function formatStatBonus(atkGain: number, hpGain: number): string {
   if (hpGain > 0) {
     return `+${hpGain} de Vida`;
   }
-  return '+1 de Ataque e +1 de Vida';
+  return '+1/+1 de Ataque e Vida';
 }
 
 function getTriggerPrefix(
   card: CardDefinition,
-  trigger: CardEffect['trigger'],
-  detailed: boolean
+  trigger: CardEffect['trigger']
 ): string {
   if (card.type === 'spell') {
     if (trigger === 'on_enter' || trigger === 'spell_cast') {
-      return detailed ? 'Ao lançar este feitiço, ' : 'Ao lançar, ';
+      return 'Ao lançar, ';
     }
   }
   if (card.type === 'reaction') {
     if (trigger === 'on_enter' || trigger === 'spell_cast') {
-      return detailed
-        ? 'Ao ser acionada (lançada da mão ou ativada como Emboscada na Retaguarda), '
-        : 'Quando acionada, ';
+      return 'Quando acionada, ';
     }
   }
   switch (trigger) {
     case 'on_enter':
     case 'spell_cast':
-      return 'Ao entrar em campo, ';
+      return 'Ao entrar, ';
     case 'on_death':
       return card.type === 'relic' ? 'Ao ser destruída, ' : 'Ao morrer, ';
     case 'on_attack':
-      return 'Sempre que ataca, ';
+      return 'Ao atacar, ';
     case 'turn_start':
-      return detailed
-        ? 'No início de cada um dos seus turnos, '
-        : 'No início do seu turno, ';
+      return 'No início do seu turno, ';
     case 'turn_end':
-      return detailed
-        ? 'No final de cada um dos seus turnos, '
-        : 'No final do seu turno, ';
+      return 'No fim do seu turno, ';
     default:
       return 'Ao ativar, ';
   }
@@ -84,82 +78,59 @@ export function formatEffectActionClause(
   const canChoose =
     (effect.trigger === 'on_enter' || effect.trigger === 'spell_cast') &&
     card.type !== 'reaction';
-  const isReactionPlay =
-    (effect.trigger === 'on_enter' || effect.trigger === 'spell_cast') &&
-    card.type === 'reaction';
 
   switch (effect.type) {
     case 'damage_enemy_row': {
       if (!detailed) {
-        return canChoose
-          ? `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou a todas na Retaguarda, se você clicar em uma criatura de lá ou se a Vanguarda estiver vazia)`
-          : `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou a todas na Retaguarda, se a Vanguarda estiver vazia)`;
+        return `causa ${v} de dano a todas as criaturas na Vanguarda inimiga`;
       }
-      if (canChoose) {
-        return `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou a todas na Retaguarda, caso a Vanguarda esteja vazia; ao jogar da mão, você também pode clicar em uma criatura inimiga da Vanguarda ou da Retaguarda para atingir todas as criaturas daquela mesma linha, sem causar dano ao Soberano)`;
-      }
-      return `causa ${v} de dano a todas as criaturas inimigas na Vanguarda (ou a todas na Retaguarda, caso a Vanguarda esteja vazia; não causa dano ao Soberano)`;
+      return canChoose
+        ? `causa ${v} de dano a todas as criaturas inimigas na Vanguarda, ou na Retaguarda se você clicar em uma criatura de lá ou se a Vanguarda estiver vazia`
+        : `causa ${v} de dano a todas as criaturas inimigas na Vanguarda, ou na Retaguarda se a Vanguarda estiver vazia`;
     }
 
     case 'damage_single_enemy': {
       if (!detailed) {
-        if (canChoose) {
-          return `causa ${v} de dano a 1 criatura inimiga à sua escolha (se não escolher, atinge a de maior Ataque; se não houver criaturas inimigas, atinge o Soberano inimigo)`;
-        }
-        return `causa ${v} de dano automaticamente à criatura inimiga de maior Ataque (ou ao Soberano inimigo, se não houver criaturas inimigas em campo)`;
+        return canChoose
+          ? `causa ${v} de dano a 1 criatura inimiga à sua escolha`
+          : `causa ${v} de dano à criatura inimiga de maior Ataque`;
       }
-      if (canChoose) {
-        return `causa ${v} de dano a 1 criatura inimiga que você escolher em campo (se você não selecionar um alvo ao jogar a carta, ela atinge automaticamente a criatura inimiga de maior Ataque; caso não exista nenhuma criatura inimiga em campo, o dano é causado diretamente ao Soberano inimigo)`;
-      }
-      if (isReactionPlay) {
-        return `causa ${v} de dano a 1 criatura inimiga (se lançada da mão, você pode escolher o alvo; se ativada como Emboscada ou sem alvo selecionado, atinge automaticamente a criatura inimiga de maior Ataque, ou o Soberano inimigo caso não haja criaturas inimigas em campo)`;
-      }
-      return `causa ${v} de dano automaticamente à criatura inimiga de maior Ataque em campo (ou diretamente ao Soberano inimigo, caso não haja criaturas inimigas em campo)`;
+      return canChoose
+        ? `causa ${v} de dano a 1 criatura inimiga à sua escolha, atingindo a de maior Ataque se você não escolher ou o Soberano inimigo se o campo estiver vazio`
+        : `causa ${v} de dano automaticamente à criatura inimiga de maior Ataque, ou diretamente ao Soberano inimigo se o campo estiver vazio`;
     }
 
     case 'damage_all_units': {
-      if (!detailed) {
-        return `causa ${v} de dano a todas as demais criaturas em campo, tanto aliadas quanto inimigas (não atinge os Soberanos)`;
-      }
-      return `causa ${v} de dano a todas as demais criaturas presentes no campo de batalha, atingindo tanto unidades aliadas quanto inimigas (não causa dano aos Soberanos)`;
+      return `causa ${v} de dano a todas as demais criaturas em campo`;
     }
 
     case 'damage_enemy_sovereign': {
-      if (!detailed) {
-        return `causa ${v} de dano diretamente ao Soberano inimigo (ignora as criaturas em campo)`;
-      }
-      return `causa ${v} de dano diretamente ao Soberano inimigo, ignorando quaisquer criaturas no campo de batalha`;
+      return `causa ${v} de dano direto ao Soberano inimigo`;
     }
 
     case 'heal_sovereign': {
-      return `restaura ${v} de Vida diretamente no seu Soberano`;
+      return `restaura ${v} de Vida do seu Soberano`;
     }
 
     case 'heal_all_allies': {
-      if (!detailed) {
-        return `restaura ${v} de Vida em todas as suas criaturas aliadas em campo e também no seu Soberano`;
-      }
-      return `restaura ${v} de Vida em todas as suas criaturas aliadas presentes em campo e também no seu Soberano`;
+      return `restaura ${v} de Vida de todas as suas criaturas aliadas e do seu Soberano`;
     }
 
     case 'heal_target_ally': {
       if (!detailed) {
-        if (canChoose) {
-          return `restaura ${v} de Vida em 1 criatura aliada ferida à sua escolha (se não escolher, cura a mais ferida; se nenhuma estiver ferida, cura o seu Soberano)`;
-        }
-        return `restaura ${v} de Vida automaticamente na sua criatura aliada mais ferida (ou no seu Soberano, se nenhuma criatura aliada estiver ferida)`;
+        return canChoose
+          ? `restaura ${v} de Vida de 1 criatura aliada à sua escolha`
+          : `restaura ${v} de Vida da criatura aliada mais ferida`;
       }
-      if (canChoose) {
-        return `restaura ${v} de Vida em 1 criatura aliada ferida que você escolher em campo (se você não selecionar um alvo, cura automaticamente a criatura aliada mais ferida; caso nenhuma criatura aliada esteja ferida, restaura essa Vida diretamente no seu Soberano)`;
-      }
-      return `restaura ${v} de Vida automaticamente na sua criatura aliada mais ferida em campo (ou diretamente no seu Soberano, caso nenhuma criatura aliada esteja ferida)`;
+      return canChoose
+        ? `restaura ${v} de Vida de 1 criatura aliada ferida à sua escolha, curando a mais ferida se você não escolher ou o seu Soberano se nenhuma estiver ferida`
+        : `restaura ${v} de Vida automaticamente da sua criatura aliada mais ferida, ou do seu Soberano se nenhuma estiver ferida`;
     }
 
     case 'draw_cards': {
-      if (!detailed) {
-        return `você compra ${v} ${v === 1 ? 'carta' : 'cartas'} do seu Grimório`;
-      }
-      return `você compra ${v} ${v === 1 ? 'carta' : 'cartas'} do seu Grimório para a sua mão`;
+      return detailed
+        ? `compra ${v} ${v === 1 ? 'carta' : 'cartas'} do seu Grimório`
+        : `compra ${v} ${v === 1 ? 'carta' : 'cartas'}`;
     }
 
     case 'freeze_enemy': {
@@ -167,18 +138,13 @@ export function formatEffectActionClause(
         `${effect.description || ''} ${card.description || ''}`
       );
       if (!detailed) {
-        if (canChoose) {
-          return `congela 1 criatura inimiga à sua escolha por 1 rodada (se não escolher, congela a de maior Ataque${preferVanguard ? ' na Vanguarda' : ''})`;
-        }
-        return `congela automaticamente a criatura inimiga de maior Ataque${preferVanguard ? ' na Vanguarda' : ''} por 1 rodada`;
+        return canChoose
+          ? `congela 1 criatura inimiga à sua escolha por 1 rodada`
+          : `congela a criatura inimiga de maior Ataque${preferVanguard ? ' na Vanguarda' : ''} por 1 rodada`;
       }
-      if (canChoose) {
-        return `congela 1 criatura inimiga que você escolher em campo por 1 rodada, impedindo-a de atacar no próximo turno (se você não selecionar um alvo, congela automaticamente a criatura inimiga não congelada de maior Ataque${preferVanguard ? ', priorizando a Vanguarda' : ''})`;
-      }
-      if (isReactionPlay) {
-        return `congela 1 criatura inimiga por 1 rodada, impedindo-a de atacar no próximo turno (se lançada da mão, você pode escolher o alvo; se ativada como Emboscada, congela automaticamente a criatura inimiga de maior Ataque)`;
-      }
-      return `congela automaticamente a criatura inimiga não congelada de maior Ataque${preferVanguard ? ' (priorizando a Vanguarda)' : ''} por 1 rodada, impedindo-a de atacar no próximo turno`;
+      return canChoose
+        ? `congela 1 criatura inimiga à sua escolha por 1 rodada, ou a de maior Ataque${preferVanguard ? ' na Vanguarda' : ''} se você não escolher`
+        : `congela automaticamente a criatura inimiga de maior Ataque${preferVanguard ? ' na Vanguarda' : ''} por 1 rodada`;
     }
 
     case 'freeze_enemy_vanguard': {
@@ -188,112 +154,81 @@ export function formatEffectActionClause(
       const maxTargets = limitMatch ? parseInt(limitMatch[1], 10) : null;
 
       if (freezeAllBoard) {
-        return detailed
-          ? 'congela todas as criaturas inimigas em campo (tanto na Vanguarda quanto na Retaguarda) por 1 rodada, impedindo-as de atacar no próximo turno'
-          : 'congela todas as criaturas inimigas em campo (Vanguarda e Retaguarda) por 1 rodada';
+        return 'congela todas as criaturas inimigas em campo por 1 rodada';
       }
       if (maxTargets && maxTargets > 0) {
-        return detailed
-          ? `congela automaticamente até ${maxTargets} criaturas inimigas na Vanguarda (ou na Retaguarda, caso a Vanguarda esteja vazia) por 1 rodada, impedindo-as de atacar no próximo turno`
-          : `congela até ${maxTargets} criaturas inimigas na Vanguarda (ou na Retaguarda, se a Vanguarda estiver vazia) por 1 rodada`;
+        return `congela até ${maxTargets} criaturas na Vanguarda inimiga por 1 rodada`;
       }
-      return detailed
-        ? 'congela todas as criaturas inimigas na Vanguarda por 1 rodada (ou na Retaguarda, caso a Vanguarda esteja vazia), impedindo-as de atacar no próximo turno'
-        : 'congela todas as criaturas inimigas na Vanguarda por 1 rodada';
+      return 'congela todas as criaturas na Vanguarda inimiga por 1 rodada';
     }
 
     case 'bounce_enemy': {
       if (!detailed) {
-        if (canChoose) {
-          return 'devolve 1 criatura inimiga à sua escolha do campo para a mão do oponente (se não escolher, devolve a de maior custo e Ataque)';
-        }
-        return 'devolve automaticamente a criatura inimiga de maior custo e Ataque para a mão do oponente';
+        return canChoose
+          ? 'devolve 1 criatura inimiga à sua escolha para a mão do oponente'
+          : 'devolve a criatura inimiga de maior custo para a mão do oponente';
       }
-      if (canChoose) {
-        return 'devolve 1 criatura inimiga que você escolher do campo para a mão do oponente (se você não selecionar um alvo, devolve automaticamente a criatura inimiga de maior custo e Ataque; se a mão do oponente estiver cheia com 10 cartas, a criatura é destruída)';
-      }
-      return 'devolve automaticamente a criatura inimiga de maior custo e Ataque do campo para a mão do oponente (se a mão do oponente estiver cheia com 10 cartas, a criatura é destruída)';
+      return canChoose
+        ? 'devolve 1 criatura inimiga à sua escolha do campo para a mão do oponente, ou a de maior custo e Ataque se você não escolher'
+        : 'devolve automaticamente a criatura inimiga de maior custo e Ataque para a mão do oponente';
     }
 
     case 'destroy_enemy': {
       if (!detailed) {
-        if (canChoose) {
-          return 'destrói imediatamente 1 criatura inimiga à sua escolha, ignorando Escudo Divino e Armadura (se não escolher, destrói a mais forte)';
-        }
-        return 'destrói imediatamente a criatura inimiga mais forte em campo, ignorando Escudo Divino e Armadura';
+        return canChoose
+          ? 'destrói 1 criatura inimiga à sua escolha, ignorando Escudo Divino e Armadura'
+          : 'destrói a criatura inimiga mais forte, ignorando Escudo Divino e Armadura';
       }
-      if (canChoose) {
-        return 'destrói imediatamente 1 criatura inimiga que você escolher em campo, ignorando Escudo Divino e Armadura (se você não selecionar um alvo, destrói automaticamente a criatura inimiga com a maior soma de Ataque e Vida)';
-      }
-      if (isReactionPlay) {
-        return 'destrói imediatamente 1 criatura inimiga, ignorando Escudo Divino e Armadura (se lançada da mão, você pode escolher o alvo; se ativada como Emboscada, destrói automaticamente a criatura inimiga mais forte)';
-      }
-      return 'destrói imediatamente a criatura inimiga mais forte em campo (maior soma de Ataque e Vida), ignorando Escudo Divino e Armadura';
+      return canChoose
+        ? 'destrói imediatamente 1 criatura inimiga à sua escolha, ignorando Escudo Divino e Armadura, ou a mais forte se você não escolher'
+        : 'destrói imediatamente a criatura inimiga mais forte em campo, ignorando Escudo Divino e Armadura';
     }
 
     case 'revive_from_crypt': {
       if (v >= 5) {
-        return detailed
-          ? `reanima automaticamente da sua Cripta (cemitério) a criatura aliada mais forte com custo de Essência de até ${v}, colocando-a diretamente em campo`
-          : `reanima da sua Cripta para o campo a criatura aliada mais forte de custo até ${v}`;
+        return `reanima da sua Cripta a criatura aliada mais forte de custo até ${v}`;
       }
       if (v <= 1) {
-        return detailed
-          ? 'reanima automaticamente da sua Cripta (cemitério) a criatura aliada mais forte que já foi destruída, colocando-a diretamente em campo'
-          : 'reanima da sua Cripta para o campo a sua criatura aliada mais forte já destruída';
+        return 'reanima da sua Cripta a sua criatura aliada mais forte';
       }
-      return detailed
-        ? `reanima automaticamente da sua Cripta (cemitério) as ${v} criaturas aliadas mais fortes que já foram destruídas, colocando-as diretamente em campo`
-        : `reanima da sua Cripta para o campo as ${v} criaturas aliadas mais fortes já destruídas`;
+      return `reanima da sua Cripta as ${v} criaturas aliadas mais fortes`;
     }
 
     case 'buff_target_ally': {
       const atkGain = v;
       const hpGain = effect.secondaryValue !== undefined ? effect.secondaryValue : v;
-      const statBonus = formatStatBonus(atkGain, hpGain);
+      const statBonus = formatStatBonus(atkGain, hpGain, detailed);
       const preferVanguard = /Vanguarda/i.test(
         `${effect.description || ''} ${card.description || ''}`
       );
       if (!detailed) {
-        if (canChoose) {
-          return `concede permanentemente ${statBonus} a 1 criatura aliada à sua escolha (se não escolher, fortalece a mais forte)`;
-        }
-        return `concede permanentemente ${statBonus} automaticamente à sua criatura aliada mais forte${preferVanguard ? ' na Vanguarda' : ''}`;
+        return canChoose
+          ? `concede ${statBonus} a 1 criatura aliada à sua escolha`
+          : `concede ${statBonus} à sua criatura aliada mais forte${preferVanguard ? ' na Vanguarda' : ''}`;
       }
-      if (canChoose) {
-        return `concede permanentemente ${statBonus} a 1 criatura aliada que você escolher em campo (se você não selecionar um alvo, fortalece automaticamente a sua criatura aliada mais forte disponível${preferVanguard ? ', priorizando a Vanguarda' : ''})`;
-      }
-      return `concede permanentemente ${statBonus} automaticamente à sua criatura aliada mais forte em campo${preferVanguard ? ' (priorizando a Vanguarda)' : ''}`;
+      return canChoose
+        ? `concede permanentemente ${statBonus} a 1 criatura aliada à sua escolha, ou à mais forte${preferVanguard ? ' na Vanguarda' : ''} se você não escolher`
+        : `concede permanentemente ${statBonus} automaticamente à sua criatura aliada mais forte${preferVanguard ? ' na Vanguarda' : ''}`;
     }
 
     case 'buff_all_allies': {
       const atkGain = v;
       const hpGain = effect.secondaryValue !== undefined ? effect.secondaryValue : v;
-      const statBonus = formatStatBonus(atkGain, hpGain);
+      const statBonus = formatStatBonus(atkGain, hpGain, detailed);
       const onlyVanguard = /na Vanguarda/i.test(effect.description || '');
-      if (!detailed) {
-        return `concede permanentemente ${statBonus} a todas as suas criaturas aliadas ${onlyVanguard ? 'na Vanguarda' : 'em campo'}`;
-      }
-      return `concede permanentemente ${statBonus} a todas as suas criaturas aliadas presentes ${onlyVanguard ? 'na Vanguarda' : 'no campo de batalha (Vanguarda e Retaguarda)'}`;
+      return `concede ${statBonus} a todas as suas criaturas aliadas${onlyVanguard ? ' na Vanguarda' : ''}`;
     }
 
     case 'debuff_enemy_vanguard_atk': {
-      if (!detailed) {
-        return `reduz permanentemente em -${v} o Ataque de todas as criaturas inimigas em campo`;
-      }
-      return `reduz permanentemente em -${v} o Ataque de todas as criaturas inimigas presentes em campo (até o mínimo de 0 de Ataque)`;
+      return `reduz em -${v} o Ataque de todas as criaturas inimigas em campo`;
     }
 
     case 'grant_bonus_essence': {
       const perm = effect.secondaryValue ?? 0;
       if (perm > 0) {
-        return detailed
-          ? `concede +${v} de Essência extra neste turno e aumenta permanentemente a sua Essência máxima em +${perm}`
-          : `concede +${v} de Essência neste turno e +${perm} de Essência máxima permanente`;
+        return `concede +${v} de Essência neste turno e +${perm} de Essência máxima`;
       }
-      return detailed
-        ? `concede +${v} de Essência temporária extra para o seu Soberano utilizar ainda neste turno`
-        : `concede +${v} de Essência extra para você usar neste turno`;
+      return `concede +${v} de Essência extra neste turno`;
     }
 
     case 'summon_token': {
@@ -302,10 +237,7 @@ export function formatEffectActionClause(
       const tokenCount = hasExplicitHp ? 1 : v <= 2 ? Math.max(1, v) : 1;
       const atk = v;
       const hp = hasExplicitHp ? effect.secondaryValue! : v;
-      if (!detailed) {
-        return `invoca ${tokenCount} ${tokenCount === 1 ? 'criatura aliada' : 'criaturas aliadas'} (${atk} de Ataque / ${hp} de Vida) na sua Vanguarda`;
-      }
-      return `invoca automaticamente ${tokenCount} ${tokenCount === 1 ? 'criatura aliada' : 'criaturas aliadas'} com ${atk} de Ataque e ${hp} de Vida na sua Vanguarda (ou na Retaguarda, caso a Vanguarda esteja cheia)`;
+      return `invoca ${tokenCount} ${tokenCount === 1 ? 'criatura aliada' : 'criaturas aliadas'} ${atk}/${hp} na sua Vanguarda`;
     }
 
     case 'shield_all_allies': {
@@ -319,42 +251,36 @@ export function formatEffectActionClause(
       if (isSingleTarget) {
         if (!detailed) {
           return canChoose
-            ? `concede Escudo Divino${armorClause} a 1 criatura aliada à sua escolha (se não escolher, protege a mais forte sem escudo)`
-            : `concede Escudo Divino${armorClause} automaticamente à sua criatura aliada mais forte sem escudo`;
+            ? `concede Escudo Divino${armorClause} a 1 criatura aliada à sua escolha`
+            : `concede Escudo Divino${armorClause} à sua criatura aliada mais forte`;
         }
         return canChoose
-          ? `concede Escudo Divino${armorClause} a 1 criatura aliada que você escolher em campo, anulando o próximo dano que ela sofreria (se não selecionar um alvo, protege automaticamente a sua criatura aliada mais forte que ainda não possua Escudo Divino)`
-          : `concede Escudo Divino${armorClause} automaticamente à sua criatura aliada mais forte que ainda não possua Escudo Divino, anulando o próximo dano que ela sofreria`;
+          ? `concede Escudo Divino${armorClause} a 1 criatura aliada à sua escolha, ou à mais forte sem escudo se você não escolher`
+          : `concede Escudo Divino${armorClause} automaticamente à sua criatura aliada mais forte sem escudo`;
       }
 
-      if (!detailed) {
-        return `concede Escudo Divino${armorClause} a todas as suas criaturas aliadas em campo`;
-      }
-      return `concede Escudo Divino${armorClause} a todas as suas criaturas aliadas presentes em campo, fazendo com que cada uma anule completamente a primeira instância de dano que sofreria`;
+      return `concede Escudo Divino${armorClause} a todas as suas criaturas aliadas`;
     }
 
     case 'steal_small_enemy': {
       const maxAtk = v > 0 ? v : 3;
       if (!detailed) {
         return canChoose
-          ? `toma o controle permanente de 1 criatura inimiga com Ataque atual de até ${maxAtk} à sua escolha (se não escolher, captura a mais forte elegível)`
-          : `toma o controle permanente da criatura inimiga mais forte com Ataque atual de até ${maxAtk}`;
+          ? `toma o controle de 1 criatura inimiga à sua escolha com Ataque até ${maxAtk}`
+          : `toma o controle da criatura inimiga mais forte com Ataque até ${maxAtk}`;
       }
       return canChoose
-        ? `toma o controle permanente de 1 criatura inimiga com Ataque atual de até ${maxAtk} que você escolher em campo, trazendo-a para o seu lado do tabuleiro (se não selecionar um alvo, captura automaticamente a criatura inimiga mais forte dentro desse limite de Ataque)`
-        : `toma o controle permanente da criatura inimiga mais forte com Ataque atual de até ${maxAtk}, trazendo-a para o seu lado do tabuleiro`;
+        ? `toma o controle permanente de 1 criatura inimiga à sua escolha com Ataque atual até ${maxAtk}, ou da mais forte elegível se você não escolher`
+        : `toma o controle permanente da criatura inimiga mais forte com Ataque atual até ${maxAtk}`;
     }
 
     default:
-      return effect.description || '';
+      return (effect.description || '').replace(/[()]/g, '');
   }
 }
 
-function buildKeywordsCombatSentence(keywords: Keyword[], armor: number): string {
+function buildKeywordsCombatSentence(keywords: Keyword[]): string {
   const parts: string[] = [];
-  if (armor > 0) {
-    parts.push(`reduz em ${armor} todo dano sofrido em combate`);
-  }
   for (const kw of keywords) {
     const clause = KEYWORD_COMBAT_CLAUSES[kw];
     if (clause) {
@@ -362,19 +288,78 @@ function buildKeywordsCombatSentence(keywords: Keyword[], armor: number): string
     }
   }
   if (parts.length === 0) {
-    return 'Unidade de combate direto que ataca inimigos na mesma coluna.';
+    return 'Unidade de combate que ataca inimigos na mesma Coluna.';
   }
   if (parts.length === 1) {
     return `Em combate, ${parts[0]}.`;
   }
-  const joined =
-    parts.slice(0, -1).join(', ') + ' e também ' + parts[parts.length - 1];
+  const joined = parts.slice(0, -1).join(', ') + ' e ' + parts[parts.length - 1];
   return `Em combate, ${joined}.`;
 }
 
+function joinTriggerClauses(
+  card: CardDefinition,
+  effects: CardEffect[],
+  detailed: boolean,
+  includeBreathDmg = 0
+): string {
+  // Compact special case: damage_enemy_row + freeze_enemy_vanguard on the same trigger
+  if (
+    !detailed &&
+    includeBreathDmg === 0 &&
+    effects.length === 2 &&
+    effects.some((e) => e.type === 'damage_enemy_row') &&
+    effects.some((e) => e.type === 'freeze_enemy_vanguard')
+  ) {
+    const dmgEff = effects.find((e) => e.type === 'damage_enemy_row')!;
+    return `causa ${dmgEff.value} de dano a todas as criaturas na Vanguarda inimiga e as congela por 1 rodada`;
+  }
+
+  // Compact special case: damage_single_enemy + freeze_enemy on the same trigger
+  if (
+    !detailed &&
+    includeBreathDmg === 0 &&
+    effects.length === 2 &&
+    effects.some((e) => e.type === 'damage_single_enemy') &&
+    effects.some((e) => e.type === 'freeze_enemy')
+  ) {
+    const dmgEff = effects.find((e) => e.type === 'damage_single_enemy')!;
+    const canChoose =
+      (dmgEff.trigger === 'on_enter' || dmgEff.trigger === 'spell_cast') &&
+      card.type !== 'reaction';
+    return canChoose
+      ? `causa ${dmgEff.value} de dano e congela por 1 rodada 1 criatura inimiga à sua escolha`
+      : `causa ${dmgEff.value} de dano e congela por 1 rodada a criatura inimiga de maior Ataque`;
+  }
+
+  // Special case: breathDamage + damage_enemy_row on on_enter
+  if (
+    includeBreathDmg > 0 &&
+    effects.length === 1 &&
+    effects[0].type === 'damage_enemy_row'
+  ) {
+    return `seu Sopro causa ${includeBreathDmg} de dano e seu efeito causa mais ${effects[0].value} de dano a todas as criaturas na Vanguarda inimiga`;
+  }
+
+  const clauses: string[] = [];
+  if (includeBreathDmg > 0) {
+    clauses.push(
+      `seu Sopro causa ${includeBreathDmg} de dano a todas as criaturas na Vanguarda inimiga`
+    );
+  }
+  for (const eff of effects) {
+    const c = formatEffectActionClause(card, eff, detailed);
+    if (c) clauses.push(c);
+  }
+
+  if (clauses.length === 0) return '';
+  if (clauses.length === 1) return clauses[0];
+  return clauses.slice(0, -1).join(', ') + ' e ' + clauses[clauses.length - 1];
+}
+
 /**
- * Generates a concise, natural Portuguese sentence description for the card face (.card-ability-desc)
- * directly from the underlying card parameters without mutating CardDefinition.
+ * Generates a synthetic, parenthesis-free Portuguese sentence description that fits cleanly
+ * inside the card's text box (.card-ability-desc) without mutating CardDefinition.
  */
 export function formatCardFaceDescription(
   card: CardDefinition,
@@ -382,11 +367,27 @@ export function formatCardFaceDescription(
 ): string {
   const sentences: string[] = [];
   const hasBreath = Boolean(card.breathDamage && card.breathDamage > 0);
+  const onEnterEffects = (card.effects || []).filter(
+    (e) => e.trigger === 'on_enter' || e.trigger === 'spell_cast'
+  );
+  const otherEffects = (card.effects || []).filter(
+    (e) => e.trigger !== 'on_enter' && e.trigger !== 'spell_cast'
+  );
 
-  if (hasBreath) {
-    sentences.push(
-      `Ao entrar em campo, seu Sopro Elemental causa ${card.breathDamage} de dano a todas as criaturas inimigas na Vanguarda (ou na Retaguarda, se a Vanguarda estiver vazia).`
+  if (hasBreath || onEnterEffects.length > 0) {
+    const prefix = getTriggerPrefix(
+      card,
+      onEnterEffects[0]?.trigger ?? 'on_enter'
     );
+    const body = joinTriggerClauses(
+      card,
+      onEnterEffects,
+      false,
+      hasBreath ? card.breathDamage! : 0
+    );
+    if (body) {
+      sentences.push(`${prefix}${body}.`);
+    }
   }
 
   if (card.regeneration && card.regeneration > 0) {
@@ -395,36 +396,26 @@ export function formatCardFaceDescription(
     );
   }
 
-  if (card.effects && card.effects.length > 0) {
-    const grouped = new Map<CardEffect['trigger'], string[]>();
-    for (const eff of card.effects) {
-      const clause = formatEffectActionClause(card, eff, false);
-      if (!clause) continue;
+  if (otherEffects.length > 0) {
+    const grouped = new Map<CardEffect['trigger'], CardEffect[]>();
+    for (const eff of otherEffects) {
       const list = grouped.get(eff.trigger) ?? [];
-      list.push(clause);
+      list.push(eff);
       grouped.set(eff.trigger, list);
     }
 
-    for (const [trigger, clauses] of grouped.entries()) {
-      const prefix =
-        hasBreath && (trigger === 'on_enter' || trigger === 'spell_cast')
-          ? 'Além disso, ao entrar, '
-          : getTriggerPrefix(card, trigger, false);
-      if (clauses.length === 1) {
-        sentences.push(`${prefix}${clauses[0]}.`);
-      } else {
-        const joined =
-          clauses.slice(0, -1).join(', ') +
-          ' e também ' +
-          clauses[clauses.length - 1];
-        sentences.push(`${prefix}${joined}.`);
+    for (const [trigger, effList] of grouped.entries()) {
+      const prefix = getTriggerPrefix(card, trigger);
+      const body = joinTriggerClauses(card, effList, false, 0);
+      if (body) {
+        sentences.push(`${prefix}${body}.`);
       }
     }
   }
 
   if (card.ascension) {
     sentences.push(
-      `Ascensão (${card.ascension.cost} Essência): evolui em campo para ${card.ascension.newName} (${card.ascension.newAtk} ATQ / ${card.ascension.newArmor} ARM / ${card.ascension.newMaxHp} VIDA).`
+      `Ascensão ${card.ascension.cost}: evolui para ${card.ascension.newName} ${card.ascension.newAtk}/${card.ascension.newMaxHp}.`
     );
   }
 
@@ -432,37 +423,35 @@ export function formatCardFaceDescription(
     return sentences.join(' ');
   }
 
-  // When the card has no triggered effects/breath/regen, build a complete natural combat sentence from its keywords and armor
-  return buildKeywordsCombatSentence(activeKeywords, card.armor);
+  return buildKeywordsCombatSentence(activeKeywords);
 }
 
 /**
- * Generates full, explicit, natural-language sentences in Portuguese for the Inspect view and Modal
- * ("EFEITOS & HABILIDADES DE COMBATE"), explaining every passive trait, trigger, target type, and target selection rule.
+ * Generates synthetic, parenthesis-free Portuguese sentences for the Inspect Modal
+ * ("EFEITOS & HABILIDADES DE COMBATE").
  */
 export function formatCardDetailedRules(card: CardDefinition): string[] {
   const paragraphs: string[] = [];
 
-  // 1. Passive combat traits summary (Armor, Regeneration, Relic durability, Corruption)
   const passiveParts: string[] = [];
   if (card.type === 'relic') {
     passiveParts.push(
-      `Relíquia Contínua posicionada na Retaguarda com ${card.hp} de Durabilidade (Vida)`
+      `Relíquia Contínua na Retaguarda com ${card.hp} de Durabilidade`
     );
   }
   if (card.armor > 0) {
     passiveParts.push(
-      `possui ${card.armor} de Armadura (reduz em ${card.armor} o dano sofrido a cada golpe em combate)`
+      `possui ${card.armor} de Armadura, reduzindo em ${card.armor} o dano sofrido em combate`
     );
   }
   if (card.regeneration && card.regeneration > 0) {
     passiveParts.push(
-      `regenera automaticamente ${card.regeneration} de Vida no início de cada um dos seus turnos`
+      `regenera ${card.regeneration} de Vida no início de cada um dos seus turnos`
     );
   }
   if (card.corruptionCost && card.corruptionCost > 0) {
     passiveParts.push(
-      `ao ser jogada, adiciona +${card.corruptionCost} de Corrupção ao seu Soberano`
+      `adiciona +${card.corruptionCost} de Corrupção ao seu Soberano ao ser jogada`
     );
   }
   if (passiveParts.length > 0) {
@@ -470,42 +459,49 @@ export function formatCardDetailedRules(card: CardDefinition): string[] {
     paragraphs.push(text.charAt(0).toUpperCase() + text.slice(1) + '.');
   }
 
-  // 2. Elemental Breath (if present)
-  if (card.breathDamage && card.breathDamage > 0) {
-    paragraphs.push(
-      `Sopro Elemental (${card.breathDamage} de dano): Ao entrar em campo, atinge automaticamente todas as criaturas inimigas na Vanguarda (ou todas na Retaguarda inimiga, caso a Vanguarda esteja vazia), causando ${card.breathDamage} de dano a cada uma delas.`
+  const hasBreath = Boolean(card.breathDamage && card.breathDamage > 0);
+  const onEnterEffects = (card.effects || []).filter(
+    (e) => e.trigger === 'on_enter' || e.trigger === 'spell_cast'
+  );
+  const otherEffects = (card.effects || []).filter(
+    (e) => e.trigger !== 'on_enter' && e.trigger !== 'spell_cast'
+  );
+
+  if (hasBreath || onEnterEffects.length > 0) {
+    const prefix = getTriggerPrefix(
+      card,
+      onEnterEffects[0]?.trigger ?? 'on_enter'
     );
+    const body = joinTriggerClauses(
+      card,
+      onEnterEffects,
+      true,
+      hasBreath ? card.breathDamage! : 0
+    );
+    if (body) {
+      paragraphs.push(`${prefix}${body}.`);
+    }
   }
 
-  // 3. Triggered effects
-  if (card.effects && card.effects.length > 0) {
-    const grouped = new Map<CardEffect['trigger'], string[]>();
-    for (const eff of card.effects) {
-      const clause = formatEffectActionClause(card, eff, true);
-      if (!clause) continue;
+  if (otherEffects.length > 0) {
+    const grouped = new Map<CardEffect['trigger'], CardEffect[]>();
+    for (const eff of otherEffects) {
       const list = grouped.get(eff.trigger) ?? [];
-      list.push(clause);
+      list.push(eff);
       grouped.set(eff.trigger, list);
     }
 
-    for (const [trigger, clauses] of grouped.entries()) {
-      const prefix = getTriggerPrefix(card, trigger, true);
-      clauses.forEach((clause, idx) => {
-        if (idx === 0) {
-          paragraphs.push(`${prefix}${clause}.`);
-        } else {
-          paragraphs.push(`Além disso, no mesmo momento, ${clause}.`);
-        }
-      });
+    for (const [trigger, effList] of grouped.entries()) {
+      const prefix = getTriggerPrefix(card, trigger);
+      const body = joinTriggerClauses(card, effList, true, 0);
+      if (body) {
+        paragraphs.push(`${prefix}${body}.`);
+      }
     }
   }
 
-  // 4. If the card has no triggered effects or breath, include the complete combat sentence from its keywords
-  if (
-    (!card.effects || card.effects.length === 0) &&
-    (!card.breathDamage || card.breathDamage <= 0)
-  ) {
-    paragraphs.push(buildKeywordsCombatSentence(card.keywords, 0));
+  if (!hasBreath && (!card.effects || card.effects.length === 0)) {
+    paragraphs.push(buildKeywordsCombatSentence(card.keywords));
   }
 
   return paragraphs;

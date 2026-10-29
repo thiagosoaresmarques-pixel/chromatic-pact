@@ -2457,8 +2457,89 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               </div>
             </div>
 
-            {/* 2ª Fileira: Player Vanguard */}
-            <div className="mtg-board-lane vanguard-lane player-vanguard-in-enemy-field">
+            {/* 2ª Fileira: AI Vanguard (Logo à frente da Retaguarda do Adversário) */}
+            <div className="mtg-board-lane vanguard-lane ai-vanguard-lane">
+              {spectacleFx?.kind === 'breath' && spectacleFx.targetLaneId === 'ai-vanguard' && (
+                <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
+              )}
+              <div className="mtg-lane-slots">
+                {[0, 1, 2, 3, 4, 5].map((idx) => {
+                  const slotUnits = getSlotUnits(gameState.ai, 'vanguard', idx);
+                  const pVanUnits = getSlotUnits(gameState.player, 'vanguard', idx);
+                  const isInvading = slotUnits.length > 0 && pVanUnits.length === 0;
+                  const isClashing = slotUnits.length > 0 && pVanUnits.length > 0;
+
+                  return (
+                    <div
+                      key={`ai-van-${idx}`}
+                      className={`mtg-slot ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
+                    >
+                      {slotUnits.length > 1 && (
+                        <span className="slot-stack-count-badge enemy-stack-badge">
+                          {slotUnits.length}/{MAX_UNITS_PER_SLOT}
+                        </span>
+                      )}
+                      <div className="slot-card-stack">
+                        {slotUnits.map((unit, sIdx) => {
+                          const isValidTarget =
+                            validAttackTargets.includes(unit.instanceId) || isSpellTargetingEnemy;
+                          const isLunging = combatAnim?.attackerId === unit.instanceId;
+                          const isHit = combatAnim?.targetId === unit.instanceId;
+                          return (
+                            <div
+                              key={unit.instanceId}
+                              data-combat-id={unit.instanceId}
+                              className={`organic-tabletop-card stacked-card-item ${
+                                isLunging ? 'is-lunging-attacker' : ''
+                              } ${isHit ? 'is-hit-target' : ''} ${
+                                isInvading ? 'is-crossing-border-ai' : ''
+                              }`}
+                              style={{
+                                ...getOrganicTabletopPose(
+                                  unit.instanceId,
+                                  'ai',
+                                  'vanguard',
+                                  idx,
+                                  unit.hasAttackedThisTurn,
+                                  isInvading,
+                                  isClashing,
+                                  sIdx,
+                                  slotUnits.length,
+                                ),
+                                ...(isLunging && combatAnim
+                                  ? ({
+                                      '--lunge-x': `${combatAnim.lungeX}px`,
+                                      '--lunge-y': `${combatAnim.lungeY}px`,
+                                    } as React.CSSProperties)
+                                  : {}),
+                              }}
+                            >
+                              {renderTargetPreviewBadge(unit.instanceId)}
+                              <CardView
+                                card={unit.card}
+                                unit={unit}
+                                mode="board"
+                                isValidTarget={isValidTarget}
+                                feedback={feedbackMap[unit.instanceId]}
+                                onClick={() => onInspectCard(unit.card)}
+                                onInspect={onInspectCard}
+                                onHoverCard={handleHoverCard}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* FRONTEIRA CENTRAL DOS TERRITÓRIOS */}
+            <div className="tabletop-clash-gap" />
+
+            {/* 3ª Fileira: Player Vanguard (Logo à frente da nossa Retaguarda) */}
+            <div className="mtg-board-lane vanguard-lane player-vanguard-lane">
               {spectacleFx?.kind === 'breath' &&
                 spectacleFx.targetLaneId === 'player-vanguard' && (
                   <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
@@ -2466,15 +2547,15 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
               <div className="mtg-lane-slots">
                 {[0, 1, 2, 3, 4, 5].map((idx) => {
                   const slotUnits = getSlotUnits(gameState.player, 'vanguard', idx);
-                  const aiRearUnits = getSlotUnits(gameState.ai, 'rearguard', idx);
+                  const aiVanUnits = getSlotUnits(gameState.ai, 'vanguard', idx);
                   const canStackHere =
                     canDeployCreature && canDeployToSlot(gameState.player, 'vanguard', idx);
                   const isTargetDeploySlot =
                     canStackHere &&
                     step.deployRow === 'vanguard' &&
                     step.deploySlotIndex === idx;
-                  const isInvading = slotUnits.length > 0 && aiRearUnits.length === 0;
-                  const isClashing = slotUnits.length > 0 && aiRearUnits.length > 0;
+                  const isInvading = slotUnits.length > 0 && aiVanUnits.length === 0;
+                  const isClashing = slotUnits.length > 0 && aiVanUnits.length > 0;
 
                   return (
                     <div
@@ -2583,87 +2664,6 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                           + Vanguarda (1/{MAX_UNITS_PER_SLOT})
                         </span>
                       ) : null}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* FRONTEIRA CENTRAL DOS TERRITÓRIOS */}
-            <div className="tabletop-clash-gap" />
-
-            {/* 3ª Fileira: AI Vanguard */}
-            <div className="mtg-board-lane vanguard-lane ai-vanguard-in-player-field">
-              {spectacleFx?.kind === 'breath' && spectacleFx.targetLaneId === 'ai-vanguard' && (
-                <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
-              )}
-              <div className="mtg-lane-slots">
-                {[0, 1, 2, 3, 4, 5].map((idx) => {
-                  const slotUnits = getSlotUnits(gameState.ai, 'vanguard', idx);
-                  const pRearUnits = getSlotUnits(gameState.player, 'rearguard', idx);
-                  const isInvading = slotUnits.length > 0 && pRearUnits.length === 0;
-                  const isClashing = slotUnits.length > 0 && pRearUnits.length > 0;
-
-                  return (
-                    <div
-                      key={`ai-van-${idx}`}
-                      className={`mtg-slot ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
-                    >
-                      {slotUnits.length > 1 && (
-                        <span className="slot-stack-count-badge enemy-stack-badge">
-                          {slotUnits.length}/{MAX_UNITS_PER_SLOT}
-                        </span>
-                      )}
-                      <div className="slot-card-stack">
-                        {slotUnits.map((unit, sIdx) => {
-                          const isValidTarget =
-                            validAttackTargets.includes(unit.instanceId) || isSpellTargetingEnemy;
-                          const isLunging = combatAnim?.attackerId === unit.instanceId;
-                          const isHit = combatAnim?.targetId === unit.instanceId;
-                          return (
-                            <div
-                              key={unit.instanceId}
-                              data-combat-id={unit.instanceId}
-                              className={`organic-tabletop-card stacked-card-item ${
-                                isLunging ? 'is-lunging-attacker' : ''
-                              } ${isHit ? 'is-hit-target' : ''} ${
-                                isInvading ? 'is-crossing-border-ai' : ''
-                              }`}
-                              style={{
-                                ...getOrganicTabletopPose(
-                                  unit.instanceId,
-                                  'ai',
-                                  'vanguard',
-                                  idx,
-                                  unit.hasAttackedThisTurn,
-                                  isInvading,
-                                  isClashing,
-                                  sIdx,
-                                  slotUnits.length,
-                                ),
-                                ...(isLunging && combatAnim
-                                  ? ({
-                                      '--lunge-x': `${combatAnim.lungeX}px`,
-                                      '--lunge-y': `${combatAnim.lungeY}px`,
-                                    } as React.CSSProperties)
-                                  : {}),
-                              }}
-                            >
-                              {renderTargetPreviewBadge(unit.instanceId)}
-                              <CardView
-                                card={unit.card}
-                                unit={unit}
-                                mode="board"
-                                isValidTarget={isValidTarget}
-                                feedback={feedbackMap[unit.instanceId]}
-                                onClick={() => onInspectCard(unit.card)}
-                                onInspect={onInspectCard}
-                                onHoverCard={handleHoverCard}
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
                     </div>
                   );
                 })}

@@ -3837,7 +3837,39 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           const isAiSovereignTarget = validAttackTargets.includes('ai-sovereign');
 
           return (
-            <div className="arena-fullscreen-stage">
+            <div
+              className={`arena-fullscreen-stage ${
+                gameState.conquestModifiers?.biomeRealm
+                  ? `biome-realm-${gameState.conquestModifiers.biomeRealm}`
+                  : ''
+              }`}
+            >
+              {/* GPU-Friendly Atmospheric Weather & Regional Particle Layer (pointer-events: none) */}
+              {(gameState.weather || gameState.conquestModifiers?.biomeRealm) && (
+                <div
+                  className={`arena-weather-fx-layer ${
+                    gameState.weather
+                      ? `is-${gameState.weather.type}`
+                      : `is-realm-${gameState.conquestModifiers?.biomeRealm}`
+                  }`}
+                  aria-hidden="true"
+                >
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((pIdx) => (
+                    <span
+                      key={pIdx}
+                      className="arena-weather-mote"
+                      style={
+                        {
+                          '--mote-left': `${6 + pIdx * 9.4}%`,
+                          '--mote-delay': `${(pIdx * 0.7) % 4.5}s`,
+                          '--mote-dur': `${5.2 + (pIdx % 4) * 1.1}s`,
+                        } as React.CSSProperties
+                      }
+                    />
+                  ))}
+                </div>
+              )}
+
               {/* =====================================================
                   1. TOP-CENTER SYMMETRIC P2 PILL (OPPONENT / SOVEREIGN 2)
                   One sleek flush pill at the top center; expands P2 details on hover/click.
@@ -3890,9 +3922,19 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     📚 {gameState.ai.deck.length} • 🪦 {gameState.ai.crypt.length}
                   </span>
 
+                  {gameState.conquestModifiers?.landmarkLabel && (
+                    <span
+                      className="hud-pill-env-chip geo-loc hide-on-mobile"
+                      title={gameState.conquestModifiers.bannerSummary}
+                    >
+                      📍 {gameState.conquestModifiers.landmarkLabel}
+                    </span>
+                  )}
+
                   {gameState.weather && (
                     <span
                       className="hud-pill-env-chip"
+                      title={`${gameState.weather.name}: ${gameState.weather.shortDesc}`}
                     >
                       {gameState.weather.icon} {gameState.weather.turnsRemaining}t
                     </span>

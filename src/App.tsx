@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { Suspense, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { CampaignBoss, CardDefinition, ConquestBattleModifiers } from './types/game';
 import { ALL_CARDS, CARDS_BY_ID } from './data/cards';
 import { getSharedAudioContext, isMuted, toggleMute } from './utils/soundEngine';
@@ -9,31 +9,60 @@ import {
   startAdaptiveMusic,
   subscribeMusicState,
 } from './utils/musicEngine';
-import { BattleArena, CustomSavedDeck } from './components/BattleArena';
-import { DeckBuilder } from './components/DeckBuilder';
-import { CampaignView } from './components/CampaignView';
-import { PackOpener } from './components/PackOpener';
-import { TacticalGuideView } from './components/TacticalGuideView';
-import { ExpeditionView } from './components/ExpeditionView';
-import { ConquestBattleOutcome, ConquestView } from './components/ConquestView';
-import { ConquestFactionId } from './data/vaeloriaConquestData';
-import { TutorialCodexView } from './components/TutorialCodexView';
-import { MythologyAtlasView } from './components/MythologyAtlasView';
+import type { CustomSavedDeck } from './components/BattleArena';
+import type { ConquestBattleOutcome } from './components/ConquestView';
+import type { ConquestFactionId } from './data/vaeloriaConquestData';
+import type { AccountModalTab } from './components/MultiplayerView';
+import type { TacticalProblem } from './data/problems';
 import {
   NAVIGATE_TO_POEM_EVENT,
   NavigateToPoemDetail,
 } from './data/epicPoemData';
-import {
-  AccountModalTab,
-  MultiplayerView,
-  SovereignAccountModal,
-} from './components/MultiplayerView';
-import { WelcomeVisitorBanner } from './components/WelcomeVisitorBanner';
-import { AdminDashboardView } from './components/AdminDashboardView';
-import { CardView, CardInspectModal } from './components/CardView';
+import { buildGeographicBattleModifiers } from './data/vaeloriaMultimapData';
+import { consumePendingOverworldBuff } from './data/vaeloriaOverworldEvents';
+import { CardInspectModal } from './components/CardView';
 import { HomeSimulatedDuelShowcase } from './components/HomeSimulatedDuelShowcase';
-import { ProblemsView } from './components/ProblemsView';
-import { TacticalProblem } from './data/problems';
+
+// Lazy-loaded heavy modules for instant initial load & modular chunking (Onda 5)
+const BattleArena = React.lazy(() =>
+  import('./components/BattleArena').then((m) => ({ default: m.BattleArena }))
+);
+const DeckBuilder = React.lazy(() =>
+  import('./components/DeckBuilder').then((m) => ({ default: m.DeckBuilder }))
+);
+const CampaignView = React.lazy(() =>
+  import('./components/CampaignView').then((m) => ({ default: m.CampaignView }))
+);
+const PackOpener = React.lazy(() =>
+  import('./components/PackOpener').then((m) => ({ default: m.PackOpener }))
+);
+const TacticalGuideView = React.lazy(() =>
+  import('./components/TacticalGuideView').then((m) => ({ default: m.TacticalGuideView }))
+);
+const ExpeditionView = React.lazy(() =>
+  import('./components/ExpeditionView').then((m) => ({ default: m.ExpeditionView }))
+);
+const ConquestView = React.lazy(() =>
+  import('./components/ConquestView').then((m) => ({ default: m.ConquestView }))
+);
+const TutorialCodexView = React.lazy(() =>
+  import('./components/TutorialCodexView').then((m) => ({ default: m.TutorialCodexView }))
+);
+const MythologyAtlasView = React.lazy(() =>
+  import('./components/MythologyAtlasView').then((m) => ({ default: m.MythologyAtlasView }))
+);
+const MultiplayerView = React.lazy(() =>
+  import('./components/MultiplayerView').then((m) => ({ default: m.MultiplayerView }))
+);
+const SovereignAccountModal = React.lazy(() =>
+  import('./components/MultiplayerView').then((m) => ({ default: m.SovereignAccountModal }))
+);
+const AdminDashboardView = React.lazy(() =>
+  import('./components/AdminDashboardView').then((m) => ({ default: m.AdminDashboardView }))
+);
+const ProblemsView = React.lazy(() =>
+  import('./components/ProblemsView').then((m) => ({ default: m.ProblemsView }))
+);
 import {
   adminSaveCloudProfile,
   ensureStarterDeckForUser,
@@ -96,6 +125,7 @@ interface SavedAppNavState {
   isExpeditionBattle: boolean;
   expeditionBlessingId?: string | null;
   activeConquestContext?: ActiveConquestContext | null;
+  activeGeoModifiers?: ConquestBattleModifiers | null;
   quickDuelDecks: {
     playerDeckId?: string;
     aiDeckId?: string;
@@ -118,6 +148,7 @@ function loadSavedAppNavState(): SavedAppNavState | null {
       isExpeditionBattle: Boolean(parsed.isExpeditionBattle),
       expeditionBlessingId: parsed.expeditionBlessingId ?? null,
       activeConquestContext: parsed.activeConquestContext ?? null,
+      activeGeoModifiers: parsed.activeGeoModifiers ?? null,
       quickDuelDecks: parsed.quickDuelDecks ?? {},
     };
   } catch {
@@ -211,6 +242,9 @@ export const App: React.FC = () => {
   const [activeConquestContext, setActiveConquestContext] = useState<ActiveConquestContext | null>(
     () => initialNavState?.activeConquestContext ?? null
   );
+  const [activeGeoModifiers, setActiveGeoModifiers] = useState<ConquestBattleModifiers | null>(
+    () => initialNavState?.activeGeoModifiers ?? null
+  );
   const [lastConquestOutcome, setLastConquestOutcome] = useState<ConquestBattleOutcome | null>(
     null
   );
@@ -245,6 +279,7 @@ export const App: React.FC = () => {
         isExpeditionBattle,
         expeditionBlessingId,
         activeConquestContext,
+        activeGeoModifiers,
         quickDuelDecks,
       };
       localStorage.setItem(APP_NAV_STATE_STORAGE_KEY, JSON.stringify(stateToSave));
@@ -259,6 +294,7 @@ export const App: React.FC = () => {
     isExpeditionBattle,
     expeditionBlessingId,
     activeConquestContext,
+    activeGeoModifiers,
     quickDuelDecks,
   ]);
 
@@ -489,6 +525,7 @@ export const App: React.FC = () => {
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
     setActiveConquestContext(null);
+    setActiveGeoModifiers(null);
     if (!isGuest && customDecks.length === 0) {
       setActiveTab('deckbuilder');
       return;
@@ -506,6 +543,7 @@ export const App: React.FC = () => {
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
     setActiveConquestContext(null);
+    setActiveGeoModifiers(null);
     setActiveProblem(problem);
     setActiveTab('arena');
   };
@@ -567,11 +605,19 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    const owBuff = consumePendingOverworldBuff('campaign');
+    const geoMods = buildGeographicBattleModifiers({
+      mode: 'campaign',
+      bossId: boss.id,
+      stage: boss.stage,
+      overworldBuff: owBuff,
+    });
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(false);
     setExpeditionBlessingId(null);
     setActiveConquestContext(null);
+    setActiveGeoModifiers(geoMods);
     setActiveCampaignBoss(boss);
     setCampaignPlayerDeckIds(playerDeckIds);
     setActiveTab('arena');
@@ -588,11 +634,19 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    const owBuff = consumePendingOverworldBuff('expedition');
+    const geoMods = buildGeographicBattleModifiers({
+      mode: 'expedition',
+      bossId: boss.id,
+      stage: boss.stage,
+      overworldBuff: owBuff,
+    });
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(true);
     setExpeditionBlessingId(blessingId ?? null);
     setActiveConquestContext(null);
+    setActiveGeoModifiers(geoMods);
     setActiveCampaignBoss(boss);
     setCampaignPlayerDeckIds(playerDeckIds);
     setActiveTab('arena');
@@ -616,6 +670,7 @@ export const App: React.FC = () => {
     setActiveProblem(null);
     setIsExpeditionBattle(false);
     setExpeditionBlessingId(null);
+    setActiveGeoModifiers(null);
     setActiveConquestContext({
       provinceId: params.provinceId,
       isDefensive: params.isDefensive,
@@ -1289,6 +1344,14 @@ export const App: React.FC = () => {
           </div>
         )}
 
+        <Suspense
+          fallback={
+            <div className="sovereign-lazy-loader">
+              <span className="sll-glyph">☸</span>
+              <span>Abrindo Salão Real...</span>
+            </div>
+          }
+        >
         {activeTab === 'multiplayer' && (
           <MultiplayerView
             customDecks={customDecks}
@@ -1302,6 +1365,7 @@ export const App: React.FC = () => {
             onStartOnlineMatch={(room, role) => {
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
+              setActiveGeoModifiers(null);
               setActiveOnlineMatch({ room, role });
               setActiveTab('arena');
             }}
@@ -1323,7 +1387,7 @@ export const App: React.FC = () => {
             campaignBoss={activeCampaignBoss}
             campaignPlayerDeckIds={campaignPlayerDeckIds}
             expeditionBlessingId={isExpeditionBattle ? expeditionBlessingId : null}
-            conquestModifiers={activeConquestContext?.modifiers ?? null}
+            conquestModifiers={activeConquestContext?.modifiers ?? activeGeoModifiers}
             tacticalProblem={activeProblem}
             onSelectProblem={(nextProb) => setActiveProblem(nextProb)}
             onExitProblems={() => {
@@ -1340,6 +1404,7 @@ export const App: React.FC = () => {
               setActiveOnlineMatch(null);
               setIsExpeditionBattle(false);
               setActiveConquestContext(null);
+              setActiveGeoModifiers(null);
               setActiveTab('home');
             }}
             onExitCampaign={() => {
@@ -1348,6 +1413,7 @@ export const App: React.FC = () => {
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
               setActiveConquestContext(null);
+              setActiveGeoModifiers(null);
               setActiveTab(wasConquest ? 'conquest' : wasExp ? 'expedition' : 'campaign');
             }}
             onRewardGold={handleRewardGold}
@@ -1395,6 +1461,7 @@ export const App: React.FC = () => {
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartBossBattle={handleStartBossBattle}
+            onRewardGold={handleRewardGold}
           />
         )}
 
@@ -1521,6 +1588,7 @@ export const App: React.FC = () => {
             onOpenAdminPanel={() => setActiveTab('admin')}
           />
         )}
+        </Suspense>
 
         {/* Live Floating Toast Notification */}
         {liveToastNotif && (

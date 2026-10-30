@@ -86,4 +86,38 @@ export default defineConfig({
     port: 5173,
     open: false,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          const norm = id.replace(/\\/g, '/');
+          if (norm.includes('node_modules')) {
+            return 'vendor-react';
+          }
+          if (norm.includes('/src/data/cards') || norm.includes('/src/data/decks')) {
+            return 'data-cards-decks';
+          }
+          if (norm.includes('/src/engine/')) {
+            return 'engine-core';
+          }
+          if (
+            norm.includes('/src/data/epicPoem') ||
+            norm.includes('/src/data/lore') ||
+            norm.includes('/src/components/MythologyAtlasView')
+          ) {
+            return 'mythology-codex';
+          }
+          if (
+            norm.includes('vaeloriaMapData') ||
+            norm.includes('vaeloriaMultimapData') ||
+            norm.includes('vaeloriaConquestData') ||
+            norm.includes('vaeloriaOverworldEvents')
+          ) {
+            return 'maps-vaeloria';
+          }
+          return undefined;
+        },
+      },
+    },
+  },
 });

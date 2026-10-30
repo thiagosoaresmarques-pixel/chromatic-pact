@@ -1,6 +1,53 @@
-import { CampaignBoss, ConquestBattleModifiers, Domain } from '../types/game';
+import {
+  ArenaWeatherType,
+  CampaignBoss,
+  ConquestBattleModifiers,
+  Domain,
+  OverworldFieldBuff,
+} from '../types/game';
 
 export type ConquestFactionId = 'vortex' | 'pyros' | 'eclipse' | 'matrix' | 'solaria' | 'veridia';
+
+export type ProvinceBuildingType = 'forge' | 'market' | 'astral_tower';
+
+export interface ProvinceBuildingDef {
+  id: ProvinceBuildingType;
+  name: string;
+  icon: string;
+  costSupplies: number;
+  shortBonus: string;
+  description: string;
+}
+
+export const PROVINCE_BUILDINGS: Record<ProvinceBuildingType, ProvinceBuildingDef> = {
+  forge: {
+    id: 'forge',
+    name: 'Forja de Guerra',
+    icon: '🔨',
+    costSupplies: 50,
+    shortBonus: '+1⚔️ Artilharia (a cada 2)',
+    description:
+      'A cada 2 Forjas ativas nas suas províncias, o comandante inimigo sofre +1 de dano de abertura em todos os Cercos.',
+  },
+  market: {
+    id: 'market',
+    name: 'Mercado Imperial',
+    icon: '⚖️',
+    costSupplies: 45,
+    shortBonus: '+18⚙️/est. (+25⚙️ Porto/Axial)',
+    description:
+      'Gera +18⚙️ Suprimentos extras por estação (+25⚙️ se erguido num Porto ou na Fronteira Cinzenta).',
+  },
+  astral_tower: {
+    id: 'astral_tower',
+    name: 'Torre Astral',
+    icon: '🔭',
+    costSupplies: 55,
+    shortBonus: '+3❤️ Cerco Vizinho & +1🛡️ Defesa',
+    description:
+      'Amplia a visão da fronteira, concede +3❤️ PV em cercos vizinhos e +1🛡️ Armadura na Vanguarda em defesas locais.',
+  },
+};
 
 export type ProvinceTerrainKind =
   | 'citadel'
@@ -1538,11 +1585,24 @@ export function buildConquestBattleModifiers(params: {
   targetProvince: ConquestProvinceDef;
   ownedProvinceIds: string[];
   fortifications: Record<string, number>;
+  buildings?: Record<string, ProvinceBuildingType>;
   isDefensiveSiege: boolean;
   activeCrisis: ConquestCrisisDef;
+  biomeRealm?: ConquestFactionId;
+  initialWeather?: ArenaWeatherType;
+  overworldBuff?: OverworldFieldBuff | null;
 }): ConquestBattleModifiers {
-  const { targetProvince, ownedProvinceIds, fortifications, isDefensiveSiege, activeCrisis } =
-    params;
+  const {
+    targetProvince,
+    ownedProvinceIds,
+    fortifications,
+    buildings = {},
+    isDefensiveSiege,
+    activeCrisis,
+    biomeRealm,
+    initialWeather,
+    overworldBuff,
+  } = params;
 
   let playerBonusHp = 0;
   let playerBonusEssence = 0;
@@ -1602,7 +1662,39 @@ export function buildConquestBattleModifiers(params: {
     }
   }
 
-  // 3. Continental Crisis Modifiers
+  // 3. Provincial Buildings (Forjas & Torres Astrais)
+  const ownedSet = new Set(ownedProvinceIds);
+  let ownedForgeCount = 0;
+  for (const pid of ownedProvinceIds) {
+    if (buildings[pid] === 'forge') ownedForgeCount += 1;
+  }
+  const forgeBonusDmg = Math.floor(ownedForgeCount / 2);
+  if (forgeBonusDmg > 0) {
+    enemyOpeningDamage += forgeBonusDmg;
+    perks.push(`🔨 Forjas (+${forgeBonusDmg}⚔️ abertura)`);
+  }
+
+  if (isDefensiveSiege && buildings[targetProvince.id] === 'astral_tower') {
+    playerBonusHp += 3;
+    vanguardArmorBonus += 1;
+    perks.push('🔭 Torre Astral (+3❤️ & +1🛡️)');
+  } else if (
+    !isDefensiveSiege &&
+    targetProvince.neighbors.some((nid) => ownedSet.has(nid) && buildings[nid] === 'astral_tower')
+  ) {
+    playerBonusHp += 3;
+    perks.push('🔭 Torre Astral Vizinha (+3❤️)');
+  }
+
+  // 4. Overworld Exploration Buff (from 36 Regional Landmarks)
+  if (overworldBuff) {
+    playerBonusHp += overworldBuff.bonusHp;
+    playerBonusEssence += overworldBuff.bonusOpeningEssence;
+    vanguardArmorBonus += overworldBuff.vanguardArmorBonus;
+    perks.push(`✦ ${overworldBuff.sourceLandmarkName} (${overworldBuff.summaryLabel})`);
+  }
+
+  // 5. Continental Crisis Modifiers
   if (activeCrisis.effectType === 'dragon_skyways') {
     dragonSkyBonus = true;
     perks.push('🐉 Revoada (+1⚔️ Voo/Armadas)');
@@ -1634,6 +1726,10 @@ export function buildConquestBattleModifiers(params: {
         : isDefensiveSiege
         ? 'Defesa de Fronteira em andamento!'
         : 'Assalto Continental em andamento!',
+    biomeRealm: biomeRealm ?? targetProvince.initialOwner,
+    landmarkLabel: `${targetProvince.regionLabel} • ${targetProvince.name}`,
+    initialWeather,
+    overworldBuff: overworldBuff ?? null,
   };
 }
 

@@ -13,6 +13,7 @@ export interface CampaignViewProps {
   defeatedBossIds: string[];
   customDecks: CustomSavedDeck[];
   onStartBossBattle: (boss: CampaignBoss, playerDeckCardIds: string[]) => void;
+  onRewardGold?: (amount: number, reason?: string) => void;
   isGuest?: boolean;
   onRequireAccount?: () => void;
   onRequireDeckSetup?: () => void;
@@ -140,6 +141,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   defeatedBossIds,
   customDecks,
   onStartBossBattle,
+  onRewardGold,
   isGuest = false,
   onRequireAccount,
   onRequireDeckSetup,
@@ -343,6 +345,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             onToggleDossier={() => setIsDossierCollapsed((v) => !v)}
             onSelectBoss={(boss) => setSelectedBossId(boss.id)}
             onChallengeBoss={handleClickStartBoss}
+            onRewardGold={onRewardGold}
           />
         ) : (
           <aside className="aaa-boss-roster">

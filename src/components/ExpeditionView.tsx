@@ -8,6 +8,7 @@ import { CardView, CardInspectModal, DOMAIN_META } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { VaeloriaWorldMap } from './VaeloriaWorldMap';
 import { resolveStageMapNode } from '../data/vaeloriaMapData';
+import { clearExpeditionVisitedLandmarks } from '../data/vaeloriaOverworldEvents';
 
 export interface SovereignBlessing {
   id:
@@ -404,7 +405,7 @@ export interface ExpeditionViewProps {
 export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
   onStartExpeditionBattle,
   onSaveCustomDeck,
-  onRewardGold: _onRewardGold,
+  onRewardGold,
   lastClearedExpeditionBossId,
   isGuest = false,
   onRequireAccount,
@@ -510,6 +511,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
       return;
     }
     playSfx('ascend');
+    clearExpeditionVisitedLandmarks();
     setDraftBuckets(generateThreeDraftBuckets(1, blessing.id));
     setRunState({
       phase: 'draft',
@@ -593,6 +595,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
   };
 
   const handleRestartExpedition = () => {
+    clearExpeditionVisitedLandmarks();
     setRunState({
       phase: 'blessing',
       blessingId: null,
@@ -924,6 +927,27 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 onChallengeBoss={(boss) =>
                   onStartExpeditionBattle(boss, runState.deckCardIds, runState.blessingId)
                 }
+                onRewardGold={(amt) => onRewardGold(amt)}
+                onGrantExpeditionCard={(recruited) => {
+                  setRunState((prev) => {
+                    const nextDeck = [...prev.deckCardIds];
+                    const commonIdx = nextDeck.findIndex(
+                      (id) => CARDS_BY_ID[id]?.rarity === 'common'
+                    );
+                    if (commonIdx !== -1) {
+                      nextDeck[commonIdx] = recruited.id;
+                    } else if (nextDeck.length < 100) {
+                      nextDeck.push(recruited.id);
+                    } else if (nextDeck.length > 0) {
+                      nextDeck[0] = recruited.id;
+                    }
+                    return { ...prev, deckCardIds: nextDeck };
+                  });
+                  setToastMsg(
+                    `🃏 Marco Regional: [${recruited.name}] juntou-se ao seu Grimório da Expedição!`
+                  );
+                  setTimeout(() => setToastMsg(null), 3200);
+                }}
               />
             ) : (
               <aside className="aaa-boss-roster">

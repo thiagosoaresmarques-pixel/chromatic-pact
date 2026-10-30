@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { CampaignBoss, CardDefinition, ConquestBattleModifiers } from '../types/game';
+import {
+  CampaignBoss,
+  CardDefinition,
+  ConquestBattleModifiers,
+  OverworldFieldBuff,
+} from '../types/game';
 import { CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import { playSfx } from '../utils/soundEngine';
@@ -14,13 +19,24 @@ import {
   CONQUEST_PROVINCES_BY_ID,
   ConquestFactionId,
   ConquestProvinceDef,
+  PROVINCE_BUILDINGS,
+  ProvinceBuildingType,
   buildConquestBattleModifiers,
   buildConquestBossForProvince,
 } from '../data/vaeloriaConquestData';
+import {
+  PROVINCE_REGIONAL_COORDS,
+  REALM_WEATHER_PRESETS,
+  RegionalLocalLandmark,
+} from '../data/vaeloriaMultimapData';
+import { consumePendingOverworldBuff } from '../data/vaeloriaOverworldEvents';
 
 const CONQUEST_STORAGE_KEY = 'chromatic_pact_conquest_v1';
 const BASTION_BUILD_COST = 65;
-const TRUCE_DIPLOMACY_COST = 90;
+const TRUCE_DIPLOMACY_COST = 75;
+const TRADE_PACT_COST = 35;
+const COALITION_COST = 65;
+const SABOTAGE_COST = 55;
 
 export interface ConquestBattleOutcome {
   outcomeId: string;
@@ -39,7 +55,11 @@ export interface ConquestRunState {
   hasSiegedThisSeason: boolean;
   provinceOwners: Record<string, ConquestFactionId>;
   fortifications: Record<string, number>;
+  buildings: Record<string, ProvinceBuildingType>;
   truces: Record<string, number>;
+  tradePacts: Record<string, boolean>;
+  coalitionByFaction: Record<string, ConquestFactionId>;
+  landmarkCooldowns: Record<string, number>;
   warLog: string[];
   pendingDefenseAlarm: ActiveInvasionVector | null;
   processedOutcomeIds: string[];
@@ -69,9 +89,13 @@ function createFreshConquestState(
     hasSiegedThisSeason: false,
     provinceOwners: owners,
     fortifications: forts,
+    buildings: {},
     truces: {},
+    tradePacts: {},
+    coalitionByFaction: {},
+    landmarkCooldowns: {},
     warLog: [
-      `Estação 1: ${f.icon} ${f.name} ergue seus estandartes em Vaeloria. Unifique a Torre dos Cinco Selos e as Capitais Rurais!`,
+      `Estação 1: ${f.icon} ${f.name} ergue seus estandartes em Vaeloria. Unifique a Torre dos Cinco Selos e as Capitais Reais!`,
     ],
     pendingDefenseAlarm: null,
     processedOutcomeIds: [],
@@ -110,9 +134,16 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
     try {
       const raw = localStorage.getItem(CONQUEST_STORAGE_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as ConquestRunState;
+        const parsed = JSON.parse(raw) as Partial<ConquestRunState>;
         if (parsed && parsed.provinceOwners && parsed.playerFactionId) {
-          return parsed;
+          return {
+            ...createFreshConquestState(parsed.playerFactionId, parsed.selectedDeckId ?? ''),
+            ...parsed,
+            buildings: parsed.buildings ?? {},
+            tradePacts: parsed.tradePacts ?? {},
+            coalitionByFaction: parsed.coalitionByFaction ?? {},
+            landmarkCooldowns: parsed.landmarkCooldowns ?? {},
+          };
         }
       }
     } catch {
@@ -127,6 +158,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [bannerToast, setBannerToast] = useState<string | null>(null);
   const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(false);
+  const [showDiplomacyModal, setShowDiplomacyModal] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -290,6 +322,9 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       const p = CONQUEST_PROVINCES_BY_ID[pid];
       if (!p) continue;
       sum += p.supplyIncome;
+      if (runState.buildings[pid] === 'market') {
+        sum += p.terrainKind === 'port' || p.initialOwner === 'matrix' ? 25 : 18;
+      }
       if (activeCrisis.effectType === 'open_seas' && p.terrainKind === 'port') {
         sum += 15;
       }
@@ -297,8 +332,22 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
         sum += 20;
       }
     }
+    for (const fid of CONQUEST_FACTION_ORDER) {
+      if (fid === runState.playerFactionId) continue;
+      if (runState.tradePacts[fid]) {
+        const stillAlive = CONQUEST_PROVINCES.some((p) => runState.provinceOwners[p.id] === fid);
+        if (stillAlive) sum += 15;
+      }
+    }
     return sum;
-  }, [ownedProvinceIds, activeCrisis]);
+  }, [
+    ownedProvinceIds,
+    runState.buildings,
+    runState.tradePacts,
+    runState.provinceOwners,
+    runState.playerFactionId,
+    activeCrisis,
+  ]);
 
   const resolveSelectedDeckCards = (): { cardIds: string[]; avatarId?: string } => {
     const custom =
@@ -364,14 +413,30 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
     }
 
     const defenderFactionId = runState.provinceOwners[prov.id];
+    if (runState.tradePacts[defenderFactionId]) {
+      setRunState((prev) => ({
+        ...prev,
+        tradePacts: { ...prev.tradePacts, [defenderFactionId]: false },
+        warLog: [
+          `⚠️ Rota Comercial com ${CONQUEST_FACTIONS[defenderFactionId].shortName} rompida pela nossa declaração de Cerco!`,
+          ...prev.warLog,
+        ].slice(0, 28),
+      }));
+    }
     const fortLvl = runState.fortifications[prov.id] ?? 0;
     const boss = buildConquestBossForProvince(prov, defenderFactionId, fortLvl, runState.season);
+    const regRealm = PROVINCE_REGIONAL_COORDS[prov.id]?.realm ?? prov.initialOwner;
+    const owBuff = consumePendingOverworldBuff('conquest');
     const modifiers = buildConquestBattleModifiers({
       targetProvince: prov,
       ownedProvinceIds,
       fortifications: runState.fortifications,
+      buildings: runState.buildings,
       isDefensiveSiege: false,
       activeCrisis,
+      biomeRealm: regRealm,
+      initialWeather: REALM_WEATHER_PRESETS[regRealm].type,
+      overworldBuff: owBuff,
     });
 
     playSfx('summon');
@@ -400,12 +465,18 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
     boss.name = `Força Invasora de ${CONQUEST_FACTIONS[alarm.attackerFactionId].shortName}`;
     boss.title = `Cerco contra ${prov.name}`;
 
+    const regRealm = PROVINCE_REGIONAL_COORDS[prov.id]?.realm ?? prov.initialOwner;
+    const owBuff = consumePendingOverworldBuff('conquest');
     const modifiers = buildConquestBattleModifiers({
       targetProvince: prov,
       ownedProvinceIds,
       fortifications: runState.fortifications,
+      buildings: runState.buildings,
       isDefensiveSiege: true,
       activeCrisis,
+      biomeRealm: regRealm,
+      initialWeather: REALM_WEATHER_PRESETS[regRealm].type,
+      overworldBuff: owBuff,
     });
 
     playSfx('summon');
@@ -493,6 +564,182 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
     showToast(`🛡️ Bastião Nv.${currentFort + 1} construído em ${prov.name}!`);
   };
 
+  const handleConstructBuilding = (
+    prov: ConquestProvinceDef,
+    bType: ProvinceBuildingType
+  ) => {
+    const def = PROVINCE_BUILDINGS[bType];
+    if (runState.buildings[prov.id] === bType) {
+      showToast(`${def.icon} ${def.name} já está ativa em ${prov.name}.`);
+      return;
+    }
+    if (runState.supplies < def.costSupplies) {
+      showToast(`⚙️ Suprimentos insuficientes (${def.costSupplies}⚙️ necessários).`);
+      return;
+    }
+    playSfx('diplomacy_seal');
+    setRunState((prev) => ({
+      ...prev,
+      supplies: prev.supplies - def.costSupplies,
+      buildings: {
+        ...prev.buildings,
+        [prov.id]: bType,
+      },
+      warLog: [
+        `${def.icon} Estação ${prev.season}: [${def.name}] construída em [${prov.name}] (-${def.costSupplies}⚙️).`,
+        ...prev.warLog,
+      ].slice(0, 28),
+    }));
+    showToast(`${def.icon} ${def.name} erguida em ${prov.name}!`);
+  };
+
+  const handleSignTradePact = (targetFactionId: ConquestFactionId) => {
+    if (targetFactionId === runState.playerFactionId) return;
+    if (runState.tradePacts[targetFactionId]) {
+      showToast('⚖️ Já existe uma Rota Comercial ativa com este Trono.');
+      return;
+    }
+    if (runState.supplies < TRADE_PACT_COST) {
+      showToast(`⚙️ Suprimentos insuficientes (${TRADE_PACT_COST}⚙️ necessários).`);
+      return;
+    }
+    playSfx('diplomacy_seal');
+    const f = CONQUEST_FACTIONS[targetFactionId];
+    setRunState((prev) => ({
+      ...prev,
+      supplies: prev.supplies - TRADE_PACT_COST,
+      tradePacts: {
+        ...prev.tradePacts,
+        [targetFactionId]: true,
+      },
+      warLog: [
+        `⚖️ Estação ${prev.season}: Rota Comercial firmada com ${f.icon} ${f.shortName} (+15⚙️/Estação enquanto em paz).`,
+        ...prev.warLog,
+      ].slice(0, 28),
+    }));
+    showToast(`⚖️ Rota Comercial ativa com ${f.shortName} (+15⚙️/est.)!`);
+  };
+
+  const leadingRivalFactionId = useMemo<ConquestFactionId>(() => {
+    let bestId: ConquestFactionId =
+      CONQUEST_FACTION_ORDER.find((f) => f !== runState.playerFactionId) ?? 'vortex';
+    let bestCount = -1;
+    for (const fid of CONQUEST_FACTION_ORDER) {
+      if (fid === runState.playerFactionId) continue;
+      const cnt = CONQUEST_PROVINCES.filter((p) => runState.provinceOwners[p.id] === fid).length;
+      if (cnt > bestCount) {
+        bestCount = cnt;
+        bestId = fid;
+      }
+    }
+    return bestId;
+  }, [runState.provinceOwners, runState.playerFactionId]);
+
+  const handleFormCoalition = (allyFactionId: ConquestFactionId) => {
+    const rivalId =
+      allyFactionId === leadingRivalFactionId
+        ? CONQUEST_FACTION_ORDER.find(
+            (f) =>
+              f !== runState.playerFactionId &&
+              f !== allyFactionId &&
+              CONQUEST_PROVINCES.some((p) => runState.provinceOwners[p.id] === f)
+          ) ?? leadingRivalFactionId
+        : leadingRivalFactionId;
+
+    if (allyFactionId === rivalId) {
+      showToast('⚔️ Não há outro império rival disponível para alvo de coalizão.');
+      return;
+    }
+    if (runState.coalitionByFaction[allyFactionId]) {
+      showToast('⚔️ Este Trono já possui uma ordem de Coalizão ativa para a próxima estação.');
+      return;
+    }
+    if (runState.supplies < COALITION_COST) {
+      showToast(`⚙️ Suprimentos insuficientes (${COALITION_COST}⚙️ necessários).`);
+      return;
+    }
+    playSfx('diplomacy_seal');
+    const allyF = CONQUEST_FACTIONS[allyFactionId];
+    const rivalF = CONQUEST_FACTIONS[rivalId];
+    setRunState((prev) => ({
+      ...prev,
+      supplies: prev.supplies - COALITION_COST,
+      coalitionByFaction: {
+        ...prev.coalitionByFaction,
+        [allyFactionId]: rivalId,
+      },
+      truces: {
+        ...prev.truces,
+        [allyFactionId]: Math.max(1, prev.truces[allyFactionId] ?? 0),
+      },
+      warLog: [
+        `🎺 Estação ${prev.season}: Coalizão Militar selada! ${allyF.icon} ${allyF.shortName} marchará contra ${rivalF.icon} ${rivalF.shortName} na próxima estação.`,
+        ...prev.warLog,
+      ].slice(0, 28),
+    }));
+    showToast(`🎺 ${allyF.shortName} atacará ${rivalF.shortName} na próxima estação!`);
+  };
+
+  const handleSabotageFactionBastion = (targetFactionId: ConquestFactionId) => {
+    const ownedSet = new Set(ownedProvinceIds);
+    const candidates = CONQUEST_PROVINCES.filter(
+      (p) =>
+        runState.provinceOwners[p.id] === targetFactionId &&
+        (runState.fortifications[p.id] ?? 0) > 0 &&
+        p.neighbors.some((nid) => ownedSet.has(nid))
+    );
+    const targetProv =
+      candidates.find((c) => c.id === selectedProvinceId) ?? candidates[0] ?? null;
+
+    if (!targetProv) {
+      showToast('🗡️ Nenhuma província fronteiriça deste Trono possui Bastião ativo para sabotar.');
+      return;
+    }
+    if (runState.supplies < SABOTAGE_COST) {
+      showToast(`⚙️ Suprimentos insuficientes (${SABOTAGE_COST}⚙️ necessários).`);
+      return;
+    }
+    playSfx('portal_cross');
+    const curFort = runState.fortifications[targetProv.id] ?? 1;
+    setRunState((prev) => ({
+      ...prev,
+      supplies: prev.supplies - SABOTAGE_COST,
+      fortifications: {
+        ...prev.fortifications,
+        [targetProv.id]: Math.max(0, curFort - 1),
+      },
+      warLog: [
+        `🗡️ Estação ${prev.season}: Agentes sabotaram as muralhas de [${targetProv.name}] (Bastião Nv.${curFort} → Nv.${Math.max(
+          0,
+          curFort - 1
+        )}).`,
+        ...prev.warLog,
+      ].slice(0, 28),
+    }));
+    showToast(`🗡️ Bastião de ${targetProv.name} reduzido em -1 nível!`);
+  };
+
+  const handleExploreConquestLandmark = (
+    landmark: RegionalLocalLandmark,
+    suppliesDelta: number,
+    fieldBuff: OverworldFieldBuff | null
+  ) => {
+    setRunState((prev) => ({
+      ...prev,
+      supplies: prev.supplies + suppliesDelta,
+      landmarkCooldowns: {
+        ...prev.landmarkCooldowns,
+        [landmark.id]: prev.season,
+      },
+      warLog: [
+        `🧭 Estação ${prev.season}: Marco [${landmark.name}] explorado (${
+          suppliesDelta > 0 ? `+${suppliesDelta}⚙️` : ''
+        }${fieldBuff ? ` ${fieldBuff.summaryLabel}` : ''}).`,
+        ...prev.warLog,
+      ].slice(0, 28),
+    }));
+  };
+
   const handleSignTruce = (targetFactionId: ConquestFactionId) => {
     if (targetFactionId === runState.playerFactionId) return;
     if ((runState.truces[targetFactionId] ?? 0) > 0) {
@@ -533,18 +780,31 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       const nextForts = { ...prev.fortifications };
       const nextLog = [...prev.warLog];
 
-      // 1. Collect Seasonal Supply Income
+      // 1. Collect Seasonal Supply Income (Provinces + Markets + Trade Pacts)
       let income = 0;
       for (const p of CONQUEST_PROVINCES) {
         if (nextOwners[p.id] === prev.playerFactionId) {
           income += p.supplyIncome;
+          if (prev.buildings[p.id] === 'market') {
+            income += p.terrainKind === 'port' || p.initialOwner === 'matrix' ? 25 : 18;
+          }
           if (activeCrisis.effectType === 'open_seas' && p.terrainKind === 'port') income += 15;
           if (activeCrisis.effectType === 'axial_judgment' && p.initialOwner === 'matrix') income += 20;
+        }
+      }
+      const nextTradePacts = { ...prev.tradePacts };
+      for (const fid of CONQUEST_FACTION_ORDER) {
+        if (fid === prev.playerFactionId) continue;
+        if (nextTradePacts[fid]) {
+          const alive = CONQUEST_PROVINCES.some((p) => nextOwners[p.id] === fid);
+          if (alive) income += 15;
+          else nextTradePacts[fid] = false;
         }
       }
 
       // 2. Tick down Truces (after AI checks current season truces)
       const activeTrucesNow = { ...prev.truces };
+      const nextCoalitions = { ...prev.coalitionByFaction };
 
       // 3. Simulate the 5 Rival AI Factions moving across Vaeloria
       let triggeredPlayerAlarm: ActiveInvasionVector | null = null;
@@ -571,15 +831,27 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
         }
 
         if (borderMoves.length === 0) continue;
-        // 55% chance each AI faction launches a border offensive this season
-        if (Math.random() > 0.55) continue;
 
-        const chosen = borderMoves[Math.floor(Math.random() * borderMoves.length)];
+        const coalitionTarget = nextCoalitions[aiFid];
+        const coalitionMoves = coalitionTarget
+          ? borderMoves.filter((m) => nextOwners[m.to.id] === coalitionTarget)
+          : [];
+        if (coalitionTarget) {
+          delete nextCoalitions[aiFid];
+        }
+
+        // 55% chance each AI faction launches a border offensive (100% if fulfilling a Coalition order!)
+        if (coalitionMoves.length === 0 && Math.random() > 0.55) continue;
+
+        const pool = coalitionMoves.length > 0 ? coalitionMoves : borderMoves;
+        const chosen = pool[Math.floor(Math.random() * pool.length)];
         const dstOwner = nextOwners[chosen.to.id];
 
         if (dstOwner === prev.playerFactionId) {
-          // Trigger at most 1 live defensive siege per season so gameplay stays crisp & fair
-          if (!triggeredPlayerAlarm && Math.random() < 0.62) {
+          // Trade pact reduces chance of sneak attack, otherwise breaks on invasion
+          const hasTrade = Boolean(nextTradePacts[aiFid]);
+          if (!triggeredPlayerAlarm && Math.random() < (hasTrade ? 0.28 : 0.62)) {
+            nextTradePacts[aiFid] = false;
             triggeredPlayerAlarm = {
               fromProvinceId: chosen.from.id,
               toProvinceId: chosen.to.id,
@@ -591,16 +863,22 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
             );
           }
         } else {
-          // AI vs AI war resolution
+          // AI vs AI war resolution (boosted if backed by Player Coalition!)
           const defFort = nextForts[chosen.to.id] ?? 0;
-          const winProb = chosen.to.isCapital ? 0.25 : Math.max(0.28, 0.56 - defFort * 0.16);
+          const coalitionBoost = coalitionMoves.length > 0 ? 0.22 : 0;
+          const winProb = Math.min(
+            0.85,
+            (chosen.to.isCapital ? 0.25 : Math.max(0.28, 0.56 - defFort * 0.16)) + coalitionBoost
+          );
           if (Math.random() < winProb) {
             const atkF = CONQUEST_FACTIONS[aiFid];
             const defF = CONQUEST_FACTIONS[dstOwner];
             nextOwners[chosen.to.id] = aiFid;
             nextForts[chosen.to.id] = 0;
             nextLog.unshift(
-              `⚔️ Guerra Continental: ${atkF.icon} ${atkF.shortName} conquistou [${chosen.to.name}] de ${defF.icon} ${defF.shortName}.`
+              `⚔️ Guerra Continental: ${atkF.icon} ${atkF.shortName} conquistou [${chosen.to.name}] de ${defF.icon} ${defF.shortName}${
+                coalitionMoves.length > 0 ? ' (Coalizão!)' : ''
+              }.`
             );
           }
         }
@@ -612,7 +890,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       }
 
       nextLog.unshift(
-        `⏳ Estação ${nextSeason} iniciada (+${income}⚙️ Suprimentos recolhidos das suas províncias).`
+        `⏳ Estação ${nextSeason} iniciada (+${income}⚙️ Suprimentos recolhidos de províncias, mercados e rotas).`
       );
 
       return {
@@ -623,6 +901,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
         provinceOwners: nextOwners,
         fortifications: nextForts,
         truces: nextTruces,
+        tradePacts: nextTradePacts,
+        coalitionByFaction: nextCoalitions,
         pendingDefenseAlarm: triggeredPlayerAlarm,
         warLog: nextLog.slice(0, 28),
       };
@@ -799,6 +1079,18 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
 
               <button
                 type="button"
+                className="aaa-btn aaa-btn-secondary"
+                style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                onClick={() => {
+                  playSfx('channel');
+                  setShowDiplomacyModal(true);
+                }}
+              >
+                🏛️ Conselho dos 6 Tronos
+              </button>
+
+              <button
+                type="button"
                 className="aaa-btn aaa-btn-primary"
                 style={{ padding: '6px 14px', fontSize: '0.76rem' }}
                 onClick={handleEndSeason}
@@ -862,7 +1154,10 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
               playerFactionId={runState.playerFactionId}
               provinceOwners={runState.provinceOwners}
               fortifications={runState.fortifications}
+              buildings={runState.buildings}
               truces={runState.truces}
+              season={runState.season}
+              landmarkCooldowns={runState.landmarkCooldowns}
               selectedProvinceId={selectedProvince.id}
               attackableProvinceIds={attackableProvinceIds}
               activeInvasion={runState.pendingDefenseAlarm}
@@ -872,6 +1167,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
               onToggleDossier={() => setIsDossierCollapsed((v) => !v)}
               onSelectProvince={(prov) => setSelectedProvinceId(prov.id)}
               onLaunchSiege={handleLaunchOffensiveSiege}
+              onExploreLandmarkReward={handleExploreConquestLandmark}
             />
 
             {/* Right Sidebar: Selected Province Tactical Dossier + Empire War Log */}
@@ -942,6 +1238,44 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   <p className="aaa-passive-desc">{selectedProvince.strategicBonusDesc}</p>
                 </div>
 
+                {isSelectedPlayerOwned && (
+                  <div className="conquest-buildings-panel">
+                    <div className="conquest-buildings-header">
+                      <span>🏗️ INFRAESTRUTURA PROVINCIAL</span>
+                      {runState.buildings[selectedProvince.id] && (
+                        <strong>
+                          {PROVINCE_BUILDINGS[runState.buildings[selectedProvince.id]].icon}{' '}
+                          {PROVINCE_BUILDINGS[runState.buildings[selectedProvince.id]].name}
+                        </strong>
+                      )}
+                    </div>
+                    <div className="conquest-buildings-grid">
+                      {(['forge', 'market', 'astral_tower'] as const).map((bKey) => {
+                        const bDef = PROVINCE_BUILDINGS[bKey];
+                        const isBuilt = runState.buildings[selectedProvince.id] === bKey;
+                        return (
+                          <button
+                            key={bKey}
+                            type="button"
+                            className={`conquest-bldg-btn ${isBuilt ? 'is-built' : ''}`}
+                            disabled={isBuilt}
+                            onClick={() => handleConstructBuilding(selectedProvince, bKey)}
+                            title={bDef.description}
+                          >
+                            <span className="cb-top">
+                              <span>
+                                {bDef.icon} {bDef.name}
+                              </span>
+                              <strong>{isBuilt ? '✓ Ativa' : `${bDef.costSupplies}⚙️`}</strong>
+                            </span>
+                            <small>{bDef.shortBonus}</small>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Context-Sensitive Strategic Orders */}
                 <div className="aaa-dossier-actions" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
                   {!isSelectedPlayerOwned ? (
@@ -1009,6 +1343,135 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
             </section>
           </div>
         </>
+      )}
+
+      {showDiplomacyModal && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setShowDiplomacyModal(false)}
+        >
+          <div
+            className="modal-panel conquest-diplomacy-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="cdm-header">
+              <div>
+                <span className="vwm-territory-kicker">
+                  DIPLOMACIA, COMÉRCIO & ESPIONAGEM CONTINENTAL
+                </span>
+                <h3 className="font-cinzel gold-gradient-text" style={{ margin: '2px 0 0', fontSize: '1.2rem' }}>
+                  🏛️ Conselho dos Seis Tronos • Suprimentos: {runState.supplies}⚙️
+                </h3>
+              </div>
+              <button
+                type="button"
+                className="ow-event-close-btn"
+                onClick={() => setShowDiplomacyModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="cdm-factions-list">
+              {CONQUEST_FACTION_ORDER.filter((fid) => fid !== runState.playerFactionId).map(
+                (fid) => {
+                  const f = CONQUEST_FACTIONS[fid];
+                  const provCount = CONQUEST_PROVINCES.filter(
+                    (p) => runState.provinceOwners[p.id] === fid
+                  ).length;
+                  const truceRem = runState.truces[fid] ?? 0;
+                  const hasTrade = Boolean(runState.tradePacts[fid]);
+                  const coalitionTarget = runState.coalitionByFaction[fid];
+                  const ownedSet = new Set(ownedProvinceIds);
+                  const canSabotage = CONQUEST_PROVINCES.some(
+                    (p) =>
+                      runState.provinceOwners[p.id] === fid &&
+                      (runState.fortifications[p.id] ?? 0) > 0 &&
+                      p.neighbors.some((nid) => ownedSet.has(nid))
+                  );
+
+                  return (
+                    <div
+                      key={fid}
+                      className="cdm-faction-row"
+                      style={{ borderColor: `${f.color}55` }}
+                    >
+                      <div className="cdm-faction-info">
+                        <div className="cdm-faction-title-line">
+                          <span style={{ fontSize: '1.15rem' }}>{f.icon}</span>
+                          <strong className="font-cinzel" style={{ color: f.color }}>
+                            {f.name}
+                          </strong>
+                          <span className="cdm-prov-pill">{provCount} prov.</span>
+                          {fid === leadingRivalFactionId && provCount > 0 && (
+                            <span className="cdm-rival-pill">👑 Maior Rival</span>
+                          )}
+                        </div>
+                        <div className="cdm-faction-sub">
+                          {f.rulerName}
+                          {truceRem > 0 ? ` • 🕊️ Trégua (${truceRem} est.)` : ''}
+                          {hasTrade ? ' • ⚖️ Rota Ativa (+15⚙️/est.)' : ''}
+                          {coalitionTarget
+                            ? ` • 🎺 Coalizão vs ${CONQUEST_FACTIONS[coalitionTarget].shortName}`
+                            : ''}
+                        </div>
+                      </div>
+
+                      {provCount === 0 ? (
+                        <span className="cdm-eliminated-tag">Trono Subjugado</span>
+                      ) : (
+                        <div className="cdm-faction-actions">
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-secondary"
+                            disabled={hasTrade || runState.supplies < TRADE_PACT_COST}
+                            onClick={() => handleSignTradePact(fid)}
+                            title="Gera +15⚙️ Suprimentos por estação enquanto ambos os reinos permanecerem em paz"
+                          >
+                            {hasTrade ? '⚖️ Comércio Ativo' : `⚖️ Rota (${TRADE_PACT_COST}⚙️)`}
+                          </button>
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-secondary"
+                            disabled={truceRem > 0 || runState.supplies < TRUCE_DIPLOMACY_COST}
+                            onClick={() => handleSignTruce(fid)}
+                            title="Pacto de Não-Agressão por 2 Estações"
+                          >
+                            {truceRem > 0
+                              ? `🕊️ Trégua (${truceRem})`
+                              : `🕊️ Trégua (${TRUCE_DIPLOMACY_COST}⚙️)`}
+                          </button>
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-secondary"
+                            disabled={
+                              Boolean(coalitionTarget) || runState.supplies < COALITION_COST
+                            }
+                            onClick={() => handleFormCoalition(fid)}
+                            title="Direciona os exércitos deste Trono contra o maior rival continental na próxima estação"
+                          >
+                            {coalitionTarget
+                              ? '🎺 Em Marcha'
+                              : `🎺 Coalizão (${COALITION_COST}⚙️)`}
+                          </button>
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-ghost"
+                            disabled={!canSabotage || runState.supplies < SABOTAGE_COST}
+                            onClick={() => handleSabotageFactionBastion(fid)}
+                            title="Reduz em -1 o nível de Bastião de uma província fronteiriça fortificada deste Trono"
+                          >
+                            🗡️ Sabotar ({SABOTAGE_COST}⚙️)
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
       {inspectCard && (

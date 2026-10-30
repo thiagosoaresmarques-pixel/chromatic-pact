@@ -1,4 +1,9 @@
-import { Domain } from '../types/game';
+import {
+  ArenaWeatherType,
+  ConquestBattleModifiers,
+  Domain,
+  OverworldFieldBuff,
+} from '../types/game';
 import { ConquestFactionId } from './vaeloriaConquestData';
 import { resolveStageMapNode } from './vaeloriaMapData';
 
@@ -27,6 +32,7 @@ export interface RegionalBorderPortal {
 }
 
 export interface RegionalLocalLandmark {
+  id: string;
   name: string;
   kind: 'town' | 'ruin' | 'fort' | 'port' | 'shrine' | 'pass';
   x: number;
@@ -111,12 +117,12 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
       },
     ],
     localLandmarks: [
-      { name: 'Aldeia da Seiva Antiga', kind: 'town', x: 42, y: 40 },
-      { name: 'Pontes Pênseis de Cipó-Ferro', kind: 'pass', x: 63, y: 47 },
-      { name: 'Ruínas Esmeralda Submersas', kind: 'ruin', x: 58, y: 67 },
-      { name: 'Totens da Grande Caçada', kind: 'shrine', x: 35, y: 64 },
-      { name: 'Forte das Raízes Norte', kind: 'fort', x: 42, y: 17 },
-      { name: 'Ancoradouro Austral', kind: 'port', x: 38, y: 85 },
+      { id: 'lm_veridia_1', name: 'Aldeia da Seiva Antiga', kind: 'town', x: 42, y: 40 },
+      { id: 'lm_veridia_2', name: 'Pontes Pênseis de Cipó-Ferro', kind: 'pass', x: 63, y: 47 },
+      { id: 'lm_veridia_3', name: 'Ruínas Esmeralda Submersas', kind: 'ruin', x: 58, y: 67 },
+      { id: 'lm_veridia_4', name: 'Totens da Grande Caçada', kind: 'shrine', x: 35, y: 64 },
+      { id: 'lm_veridia_5', name: 'Forte das Raízes Norte', kind: 'fort', x: 42, y: 17 },
+      { id: 'lm_veridia_6', name: 'Ancoradouro Austral', kind: 'port', x: 38, y: 85 },
     ],
   },
 
@@ -180,12 +186,12 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
       },
     ],
     localLandmarks: [
-      { name: 'Necrópole dos Sinos Mudos', kind: 'ruin', x: 38, y: 36 },
-      { name: 'Vila da Vigília Umbral', kind: 'town', x: 58, y: 58 },
-      { name: 'Ponte das Gárgulas', kind: 'pass', x: 64, y: 38 },
-      { name: 'Farol da Lua Sangrenta', kind: 'port', x: 14, y: 63 },
-      { name: 'Santuário dos Pactuários', kind: 'shrine', x: 46, y: 68 },
-      { name: 'Bastilha de Sangue-Ferro', kind: 'fort', x: 64, y: 20 },
+      { id: 'lm_eclipse_1', name: 'Necrópole dos Sinos Mudos', kind: 'ruin', x: 38, y: 36 },
+      { id: 'lm_eclipse_2', name: 'Vila da Vigília Umbral', kind: 'town', x: 58, y: 58 },
+      { id: 'lm_eclipse_3', name: 'Ponte das Gárgulas', kind: 'pass', x: 64, y: 38 },
+      { id: 'lm_eclipse_4', name: 'Farol da Lua Sangrenta', kind: 'port', x: 14, y: 63 },
+      { id: 'lm_eclipse_5', name: 'Santuário dos Pactuários', kind: 'shrine', x: 46, y: 68 },
+      { id: 'lm_eclipse_6', name: 'Bastilha de Sangue-Ferro', kind: 'fort', x: 64, y: 20 },
     ],
   },
 
@@ -249,12 +255,12 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
       },
     ],
     localLandmarks: [
-      { name: 'Coliseu Externo dos Selos', kind: 'fort', x: 50, y: 68 },
-      { name: 'Encruzilhada das Cinco Linhas de Ley', kind: 'shrine', x: 50, y: 32 },
-      { name: 'Entreposto das Caravanas Neutras', kind: 'town', x: 36, y: 50 },
-      { name: 'Praça dos Embaixadores', kind: 'town', x: 64, y: 50 },
-      { name: 'Ruínas da Primeira Refração', kind: 'ruin', x: 18, y: 38 },
-      { name: 'Atalaia Oriental de Granito', kind: 'fort', x: 82, y: 38 },
+      { id: 'lm_matrix_1', name: 'Coliseu Externo dos Selos', kind: 'fort', x: 50, y: 68 },
+      { id: 'lm_matrix_2', name: 'Encruzilhada das Cinco Linhas de Ley', kind: 'shrine', x: 50, y: 32 },
+      { id: 'lm_matrix_3', name: 'Entreposto das Caravanas Neutras', kind: 'town', x: 36, y: 50 },
+      { id: 'lm_matrix_4', name: 'Praça dos Embaixadores', kind: 'town', x: 64, y: 50 },
+      { id: 'lm_matrix_5', name: 'Ruínas da Primeira Refração', kind: 'ruin', x: 18, y: 38 },
+      { id: 'lm_matrix_6', name: 'Atalaia Oriental de Granito', kind: 'fort', x: 82, y: 38 },
     ],
   },
 
@@ -318,12 +324,12 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
       },
     ],
     localLandmarks: [
-      { name: 'Aqueduto Imperial de Alabastro', kind: 'pass', x: 36, y: 60 },
-      { name: 'Cidade-Terraço da Aurora', kind: 'town', x: 62, y: 55 },
-      { name: 'Porto Real do Sol Nascente', kind: 'port', x: 71, y: 76 },
-      { name: 'Mosteiro das Lentes Sagradas', kind: 'shrine', x: 68, y: 31 },
-      { name: 'Cidadela da Guarda Dourada', kind: 'fort', x: 35, y: 37 },
-      { name: 'Colunata dos Reis Antigos', kind: 'ruin', x: 50, y: 78 },
+      { id: 'lm_solaria_1', name: 'Aqueduto Imperial de Alabastro', kind: 'pass', x: 36, y: 60 },
+      { id: 'lm_solaria_2', name: 'Cidade-Terraço da Aurora', kind: 'town', x: 62, y: 55 },
+      { id: 'lm_solaria_3', name: 'Porto Real do Sol Nascente', kind: 'port', x: 71, y: 76 },
+      { id: 'lm_solaria_4', name: 'Mosteiro das Lentes Sagradas', kind: 'shrine', x: 68, y: 31 },
+      { id: 'lm_solaria_5', name: 'Cidadela da Guarda Dourada', kind: 'fort', x: 35, y: 37 },
+      { id: 'lm_solaria_6', name: 'Colunata dos Reis Antigos', kind: 'ruin', x: 50, y: 78 },
     ],
   },
 
@@ -387,12 +393,12 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
       },
     ],
     localLandmarks: [
-      { name: 'Ponte de Ferro sobre o Rio de Lava', kind: 'pass', x: 37, y: 48 },
-      { name: 'Fundição das Legiões Rubras', kind: 'town', x: 54, y: 68 },
-      { name: 'Docas Suspensas de Dirigíveis', kind: 'port', x: 64, y: 31 },
-      { name: 'Altar da Chama Primordial', kind: 'shrine', x: 34, y: 68 },
-      { name: 'Bastião de Obsidiana Ardente', kind: 'fort', x: 63, y: 54 },
-      { name: 'Ossada do Dragão Ancestral', kind: 'ruin', x: 16, y: 35 },
+      { id: 'lm_pyros_1', name: 'Ponte de Ferro sobre o Rio de Lava', kind: 'pass', x: 37, y: 48 },
+      { id: 'lm_pyros_2', name: 'Fundição das Legiões Rubras', kind: 'town', x: 54, y: 68 },
+      { id: 'lm_pyros_3', name: 'Docas Suspensas de Dirigíveis', kind: 'port', x: 64, y: 31 },
+      { id: 'lm_pyros_4', name: 'Altar da Chama Primordial', kind: 'shrine', x: 34, y: 68 },
+      { id: 'lm_pyros_5', name: 'Bastião de Obsidiana Ardente', kind: 'fort', x: 63, y: 54 },
+      { id: 'lm_pyros_6', name: 'Ossada do Dragão Ancestral', kind: 'ruin', x: 16, y: 35 },
     ],
   },
 
@@ -445,12 +451,12 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
       },
     ],
     localLandmarks: [
-      { name: 'Ponte de Gelo Eterno', kind: 'pass', x: 64, y: 36 },
-      { name: 'Cais dos Quebra-Gelos Reais', kind: 'port', x: 45, y: 56 },
-      { name: 'Vila Boreal dos Relojoeiros', kind: 'town', x: 56, y: 52 },
-      { name: 'Santuário da Aurora Astral', kind: 'shrine', x: 38, y: 37 },
-      { name: 'Forte da Geada Negra', kind: 'fort', x: 40, y: 69 },
-      { name: 'Naufrágio da Primeira Armada', kind: 'ruin', x: 16, y: 49 },
+      { id: 'lm_vortex_1', name: 'Ponte de Gelo Eterno', kind: 'pass', x: 64, y: 36 },
+      { id: 'lm_vortex_2', name: 'Cais dos Quebra-Gelos Reais', kind: 'port', x: 45, y: 56 },
+      { id: 'lm_vortex_3', name: 'Vila Boreal dos Relojoeiros', kind: 'town', x: 56, y: 52 },
+      { id: 'lm_vortex_4', name: 'Santuário da Aurora Astral', kind: 'shrine', x: 38, y: 37 },
+      { id: 'lm_vortex_5', name: 'Forte da Geada Negra', kind: 'fort', x: 40, y: 69 },
+      { id: 'lm_vortex_6', name: 'Naufrágio da Primeira Armada', kind: 'ruin', x: 16, y: 49 },
     ],
   },
 };
@@ -589,4 +595,106 @@ export function resolveStageRegionalPlacement(
   if (worldNode.territoryDomain === 'purple') return { realm: 'eclipse', rx: 50, ry: 48 };
   if (worldNode.territoryDomain === 'red') return { realm: 'pyros', rx: 50, ry: 48 };
   return { realm: 'matrix', rx: 50, ry: 50 };
+}
+
+/**
+ * Climas Geográficos Regionais de Vaeloria (aplicados nas 2 rodadas iniciais das batalhas de mapa)
+ */
+export const REALM_WEATHER_PRESETS: Record<
+  VaeloriaRealmId,
+  {
+    type: ArenaWeatherType;
+    domain: Domain;
+    name: string;
+    icon: string;
+    shortDesc: string;
+  }
+> = {
+  pyros: {
+    type: 'ash_storm',
+    domain: 'red',
+    name: 'Tempestade de Cinzas de Pyros',
+    icon: '🌋',
+    shortDesc: 'Caldeiras do Norte: unidades em campo ganham +1⚔️ ATQ; cinzas aquecem o campo.',
+  },
+  vortex: {
+    type: 'astral_blizzard',
+    domain: 'blue',
+    name: 'Nevasca Horológica de Vórtex',
+    icon: '❄️',
+    shortDesc: 'Polos Setentrionais: vento polar reduz -1⚔️ do maior inimigo e acelera o fluxo rúnico.',
+  },
+  eclipse: {
+    type: 'umbral_eclipse',
+    domain: 'purple',
+    name: 'Penumbra do Vale do Eclipse',
+    icon: '🌑',
+    shortDesc: 'Oeste Profundo: névoa abissal drena vitalidade na abertura das rodadas.',
+  },
+  veridia: {
+    type: 'sylvan_monsoon',
+    domain: 'green',
+    name: 'Brisa Vital da Árvore-Mãe',
+    icon: '🌿',
+    shortDesc: 'Sul Selvagem: pólen primevo regenera +1❤️ nas criaturas em campo.',
+  },
+  solaria: {
+    type: 'solar_zenith',
+    domain: 'gold',
+    name: 'Fulgor do Zênite de Solária',
+    icon: '☀️',
+    shortDesc: 'Leste Alto: raios solares concedem +1🛡️ Armadura na Vanguarda e +1❤️ ao Soberano.',
+  },
+  matrix: {
+    type: 'astral_convergence',
+    domain: 'neutral',
+    name: 'Ressonância das Cinco Linhas de Ley',
+    icon: '☸',
+    shortDesc: 'Centro Axial: convergência planar concede +1⚡ Essência extra na abertura.',
+  },
+};
+
+/**
+ * Constrói os modificadores geográficos e climáticos de arena para batalhas da Campanha ou Expedição
+ */
+export function buildGeographicBattleModifiers(params: {
+  mode: 'campaign' | 'expedition';
+  bossId: string;
+  stage: number;
+  overworldBuff?: OverworldFieldBuff | null;
+}): ConquestBattleModifiers {
+  const { mode, bossId, stage, overworldBuff } = params;
+  const worldNode = resolveStageMapNode(mode, bossId, stage);
+  const regPlacement = resolveStageRegionalPlacement(mode, bossId, stage);
+  const realmDef = VAELORIA_REGIONAL_MAPS[regPlacement.realm];
+  const weatherPreset = REALM_WEATHER_PRESETS[regPlacement.realm];
+
+  const buffHp = overworldBuff?.bonusHp ?? 0;
+  const buffEss = overworldBuff?.bonusOpeningEssence ?? 0;
+  const buffArm = overworldBuff?.vanguardArmorBonus ?? 0;
+
+  const summaryParts = [`${weatherPreset.icon} ${weatherPreset.name} (2r)`];
+  if (overworldBuff) {
+    summaryParts.push(`✦ ${overworldBuff.sourceLandmarkName}: ${overworldBuff.summaryLabel}`);
+  }
+
+  return {
+    provinceId: `geo_${regPlacement.realm}_${bossId}`,
+    provinceName: worldNode.landmarkName,
+    provinceDomain: realmDef.domain,
+    isDefensiveSiege: false,
+    isCapitalSiege: stage === 26 || (mode === 'expedition' && stage === 9),
+    playerBonusHp: buffHp,
+    playerBonusEssence: buffEss,
+    enemyOpeningDamage: 0,
+    vanguardArmorBonus: buffArm,
+    relicDiscount: false,
+    dragonSkyBonus: false,
+    legendaryWheelBonus: false,
+    bannerSummary: summaryParts.join(' • '),
+    biomeRealm: regPlacement.realm,
+    landmarkLabel: `${realmDef.shortName} • ${worldNode.landmarkName}`,
+    initialWeather: weatherPreset.type,
+    overworldBuff: overworldBuff ?? null,
+  };
 }

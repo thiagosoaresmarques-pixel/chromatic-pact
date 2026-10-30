@@ -3,6 +3,7 @@ import {
   ArenaColumnRune,
   ArenaRuneType,
   ArenaWeatherState,
+  ArenaWeatherType,
   BoardUnit,
   CardDefinition,
   CardEffect,
@@ -686,6 +687,17 @@ export function createInitialGameState(
   );
 
   if (cq) {
+    if (cq.initialWeather) {
+      const domainByWeather: Record<ArenaWeatherType, Domain> = {
+        ash_storm: 'red',
+        astral_blizzard: 'blue',
+        umbral_eclipse: 'purple',
+        sylvan_monsoon: 'green',
+        solar_zenith: 'gold',
+        astral_convergence: 'neutral',
+      };
+      state.weather = buildWeatherForDomain(domainByWeather[cq.initialWeather], 'system', 2);
+    }
     if (cq.enemyOpeningDamage > 0) {
       state.ai.hp = Math.max(1, state.ai.hp - cq.enemyOpeningDamage);
       addFeedback(state, 'ai-sovereign', `-${cq.enemyOpeningDamage}⚔️ Artilharia Imperial`, 'damage');
@@ -694,7 +706,7 @@ export function createInitialGameState(
       state,
       'system',
       'effect',
-      `🗺️ CERCO EM [${cq.provinceName.toUpperCase()}]: ${cq.bannerSummary}`
+      `🗺️ CAMPO DE BATALHA [${(cq.landmarkLabel ?? cq.provinceName).toUpperCase()}]: ${cq.bannerSummary}`
     );
   }
 

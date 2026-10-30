@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { CampaignBoss } from '../types/game';
+import { CampaignBoss, CardDefinition, OverworldFieldBuff } from '../types/game';
 import { CARDS_BY_ID } from '../data/cards';
 import { DOMAIN_META } from './CardView';
-import { playSfx } from '../utils/soundEngine';
+import { playRealmEntryMotif, playSfx } from '../utils/soundEngine';
+import { setMusicState } from '../utils/musicEngine';
 import {
   VAELORIA_WORLD_MAP_IMAGE,
   VAELORIA_MAP_TERRITORIES,
@@ -17,9 +18,24 @@ import {
   VaeloriaMapScope,
   VaeloriaRealmId,
   RegionalBorderPortal,
+  RegionalLocalLandmark,
   mapTerritoryIdToRealmId,
   resolveStageRegionalPlacement,
 } from '../data/vaeloriaMultimapData';
+import {
+  getFogOfWarEnabled,
+  getLandmarkEventDef,
+  getPendingOverworldBuff,
+  getVisitedCampaignLandmarks,
+  getVisitedExpeditionLandmarks,
+  getVisitedRealms,
+  markCampaignLandmarkVisited,
+  markExpeditionLandmarkVisited,
+  markRealmVisited,
+  setFogOfWarEnabled,
+  setPendingOverworldBuff,
+} from '../data/vaeloriaOverworldEvents';
+import { OverworldEventModal } from './OverworldEventModal';
 
 export interface VaeloriaWorldMapProps {
   mode: 'campaign' | 'expedition';
@@ -33,6 +49,8 @@ export interface VaeloriaWorldMapProps {
   onToggleDossier?: () => void;
   onSelectBoss: (boss: CampaignBoss) => void;
   onChallengeBoss: (boss: CampaignBoss) => void;
+  onRewardGold?: (amount: number, reason?: string) => void;
+  onGrantExpeditionCard?: (card: CardDefinition) => void;
 }
 
 interface PositionedBossEntry {
@@ -73,6 +91,8 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   onToggleDossier,
   onSelectBoss,
   onChallengeBoss,
+  onRewardGold,
+  onGrantExpeditionCard,
 }) => {
   const completeRoster = allBosses && allBosses.length > 0 ? allBosses : bosses;
 
@@ -84,6 +104,27 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   const [followPawn, setFollowPawn] = useState<boolean>(() => !isMobileViewport());
   const [showMinimap, setShowMinimap] = useState<boolean>(() => !isMobileViewport());
   const [portalBanner, setPortalBanner] = useState<string | null>(null);
+  const [fogEnabled, setFogEnabled] = useState<boolean>(() => getFogOfWarEnabled());
+  const [visitedRealms, setVisitedRealms] = useState<Set<VaeloriaRealmId>>(() =>
+    getVisitedRealms()
+  );
+  const [visitedLandmarks, setVisitedLandmarks] = useState<Set<string>>(() =>
+    mode === 'campaign' ? getVisitedCampaignLandmarks() : getVisitedExpeditionLandmarks()
+  );
+  const [pendingBuff, setPendingBuff] = useState<OverworldFieldBuff | null>(() =>
+    getPendingOverworldBuff(mode)
+  );
+  const [activeLandmarkModal, setActiveLandmarkModal] = useState<{
+    realm: VaeloriaRealmId;
+    landmark: RegionalLocalLandmark;
+  } | null>(null);
+
+  useEffect(() => {
+    setVisitedLandmarks(
+      mode === 'campaign' ? getVisitedCampaignLandmarks() : getVisitedExpeditionLandmarks()
+    );
+    setPendingBuff(getPendingOverworldBuff(mode));
+  }, [mode, clearedBossIds.length]);
 
   const enrichedAllBosses = useMemo(() => {
     return completeRoster.map((boss) => {
@@ -282,15 +323,21 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   const handleSwitchMapScope = useCallback(
     (
       nextScope: VaeloriaMapScope,
-      arrivalOverride?: { x: number; y: number; banner?: string }
+      arrivalOverride?: { x: number; y: number; banner?: string; viaPortal?: boolean }
     ) => {
       if (nextScope === mapScopeRef.current && !arrivalOverride) return;
       portalCooldownUntilRef.current = performance.now() + 1100;
       setMarchTarget(null);
       setMarchOrigin(null);
-      playSfx('channel');
+      if (arrivalOverride?.viaPortal) {
+        playSfx('portal_cross');
+      } else {
+        playSfx('channel');
+      }
+      playRealmEntryMotif(nextScope);
 
       if (nextScope === 'world') {
+        setMusicState('tactical', 'purple');
         // Place Sovereign on the continent at selected boss (if in previous realm) or previous realm's worldCenter
         const prevScope = mapScopeRef.current;
         let wx = selectedEntryGlobal?.worldNode.x ?? 50;
@@ -314,6 +361,9 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
       }
 
       const regDef = VAELORIA_REGIONAL_MAPS[nextScope];
+      setMusicState('sanctuary', regDef.domain);
+      setVisitedRealms(markRealmVisited(nextScope));
+
       const realmBosses = enrichedAllBosses.filter((b) => b.realm === nextScope);
       const activeInRealm = realmBosses.find((b) => b.boss.id === selectedBossId);
       const preferredEntry =
@@ -360,6 +410,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         x: portal.arrivalX,
         y: portal.arrivalY,
         banner: `🧭 Fronteira atravessada: ${targetDef.icon} ${targetDef.name}`,
+        viaPortal: true,
       });
     },
     [handleSwitchMapScope]
@@ -559,6 +610,20 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     return best;
   }, [positionedBosses, pawnPos.x, pawnPos.y]);
 
+  const dockedLandmark = useMemo(() => {
+    if (!activeRegionalDef) return null;
+    let best: RegionalLocalLandmark | null = null;
+    let bestDist = 4.6;
+    for (const lm of activeRegionalDef.localLandmarks) {
+      const d = Math.hypot(pawnPos.x - lm.x, pawnPos.y - lm.y);
+      if (d < bestDist) {
+        bestDist = d;
+        best = lm;
+      }
+    }
+    return best;
+  }, [activeRegionalDef, pawnPos.x, pawnPos.y]);
+
   const sovereignCard = sovereignAvatarCardId ? CARDS_BY_ID[sovereignAvatarCardId] : undefined;
 
   const nextUnclearBossId = useMemo(() => {
@@ -658,7 +723,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     const targetEl = e.target as HTMLElement | null;
     if (
       targetEl?.closest(
-        '.vwm-boss-node, .vwm-pawn-challenge-pill, .vwm-dpad, .vwm-portal-gate, .vwm-realm-dive-chip, .vwm-minimap-radar, .vwm-minimap-toggle-pill'
+        '.vwm-boss-node, .vwm-landmark-node, .vwm-pawn-challenge-pill, .vwm-dpad, .vwm-portal-gate, .vwm-realm-dive-chip, .vwm-minimap-radar, .vwm-minimap-toggle-pill'
       )
     ) {
       return;
@@ -834,6 +899,15 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         </div>
 
         <div className="vwm-controls-group">
+          {pendingBuff && (
+            <span
+              className="vwm-buff-ready-chip"
+              title={`Bônus pronto para a próxima batalha (${pendingBuff.sourceLandmarkName})`}
+            >
+              ✦ {pendingBuff.summaryLabel}
+            </span>
+          )}
+
           {mapScope === 'world' ? (
             <button
               type="button"
@@ -878,6 +952,19 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             title="Mostrar ou ocultar nomes geográficos, vilas e marcos"
           >
             🏷️ Marcos
+          </button>
+
+          <button
+            type="button"
+            className={`vwm-tool-btn ${fogEnabled ? 'is-active' : ''}`}
+            onClick={() => {
+              const next = !fogEnabled;
+              setFogEnabled(next);
+              setFogOfWarEnabled(next);
+            }}
+            title="Ativar ou dissipar a Névoa de Exploração suave sobre fronteiras não visitadas"
+          >
+            🌫️ Névoa
           </button>
 
           <button
@@ -980,7 +1067,69 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 <feDropShadow dx="0" dy="2" stdDeviation="3.5" floodColor="#020617" floodOpacity="0.96" />
                 <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#020617" floodOpacity="0.88" />
               </filter>
+              <filter id="vwmFogSoftBlur" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="44" />
+              </filter>
+              {fogEnabled && (
+                <mask id="vwmExplorationFogMask">
+                  <rect x="0" y="0" width="1600" height="900" fill="white" />
+                  <g filter="url(#vwmFogSoftBlur)">
+                    {/* Sovereign Vision Halo */}
+                    <circle cx={pawnPos.x * 16} cy={pawnPos.y * 9} r="240" fill="black" />
+                    {/* Cleared Boss Citadels */}
+                    {positionedBosses
+                      .filter((b) => clearedBossIds.includes(b.boss.id))
+                      .map((b) => (
+                        <circle
+                          key={`fog-boss-${b.boss.id}`}
+                          cx={b.x * 16}
+                          cy={b.y * 9}
+                          r="210"
+                          fill="black"
+                        />
+                      ))}
+                    {/* Visited Realms on World Map OR Explored Landmarks on Regional Map */}
+                    {mapScope === 'world'
+                      ? Array.from(visitedRealms).map((rid) => {
+                          const r = VAELORIA_REGIONAL_MAPS[rid];
+                          return (
+                            <circle
+                              key={`fog-realm-${rid}`}
+                              cx={r.worldCenter.x * 16}
+                              cy={r.worldCenter.y * 9}
+                              r="260"
+                              fill="black"
+                            />
+                          );
+                        })
+                      : activeRegionalDef?.localLandmarks
+                          .filter((lm) => visitedLandmarks.has(lm.id))
+                          .map((lm) => (
+                            <circle
+                              key={`fog-lm-${lm.id}`}
+                              cx={lm.x * 16}
+                              cy={lm.y * 9}
+                              r="175"
+                              fill="black"
+                            />
+                          ))}
+                  </g>
+                </mask>
+              )}
             </defs>
+
+            {/* Soft Cartographic Exploration Fog (toggleable, never hides labels or blocks clicks) */}
+            {fogEnabled && (
+              <rect
+                x="0"
+                y="0"
+                width="1600"
+                height="900"
+                fill="rgba(4, 10, 24, 0.42)"
+                mask="url(#vwmExplorationFogMask)"
+                pointerEvents="none"
+              />
+            )}
 
             {/* Regional Roads from Central Citadel to Neighboring Citadels & Border Portals */}
             {activeRegionalDef ? (
@@ -1085,72 +1234,37 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               </g>
             )}
 
-            {/* Geography & Local Settlements Overlay */}
-            {showGeographyLabels && (
+            {/* Geography & Local Settlements Overlay (World Map Labels — Regional Landmarks are interactive DOM pins below!) */}
+            {showGeographyLabels && !activeRegionalDef && (
               <g filter="url(#vwmTextShadow)">
-                {activeRegionalDef ? (
-                  <>
-                    {/* Regional Towns, Harbors, Bridges, Forts, Ruins & Shrines */}
-                    {activeRegionalDef.localLandmarks.map((lm, idx) => (
-                      <g
-                        key={`rlm-${idx}`}
-                        transform={`translate(${lm.x * 16}, ${lm.y * 9})`}
-                      >
-                        <circle
-                          cx="0"
-                          cy="0"
-                          r="11"
-                          fill="rgba(7, 11, 20, 0.88)"
-                          stroke={`${activeRegionalDef.accentColor}aa`}
-                          strokeWidth="1.6"
-                        />
-                        <text x="0" y="4.5" textAnchor="middle" fontSize="12">
-                          {LOCAL_LANDMARK_ICON[lm.kind] ?? '✦'}
-                        </text>
-                        <text
-                          x="0"
-                          y="23"
-                          textAnchor="middle"
-                          className="vwm-sublandmark-label"
-                          style={{ fontSize: '13.5px', fill: '#f1f5f9' }}
-                        >
-                          {lm.name}
-                        </text>
-                      </g>
-                    ))}
-                  </>
-                ) : (
-                  <>
-                    {VAELORIA_SUB_LANDMARKS.map((lm) => (
-                      <text
-                        key={lm.id}
-                        x={lm.x * 16}
-                        y={lm.y * 9}
-                        textAnchor="middle"
-                        className="vwm-sublandmark-label"
-                      >
-                        ✦ {lm.name}
-                      </text>
-                    ))}
+                {VAELORIA_SUB_LANDMARKS.map((lm) => (
+                  <text
+                    key={lm.id}
+                    x={lm.x * 16}
+                    y={lm.y * 9}
+                    textAnchor="middle"
+                    className="vwm-sublandmark-label"
+                  >
+                    ✦ {lm.name}
+                  </text>
+                ))}
 
-                    {VAELORIA_MAP_TERRITORIES.map((reg) => (
-                      <g key={reg.id} transform={`translate(${reg.labelX * 16}, ${reg.labelY * 9})`}>
-                        <text
-                          x="0"
-                          y="-11"
-                          textAnchor="middle"
-                          className="vwm-region-cardinal"
-                          fill={reg.color}
-                        >
-                          {reg.cardinalLabel}
-                        </text>
-                        <text x="0" y="9" textAnchor="middle" className="vwm-region-title">
-                          {reg.name}
-                        </text>
-                      </g>
-                    ))}
-                  </>
-                )}
+                {VAELORIA_MAP_TERRITORIES.map((reg) => (
+                  <g key={reg.id} transform={`translate(${reg.labelX * 16}, ${reg.labelY * 9})`}>
+                    <text
+                      x="0"
+                      y="-11"
+                      textAnchor="middle"
+                      className="vwm-region-cardinal"
+                      fill={reg.color}
+                    >
+                      {reg.cardinalLabel}
+                    </text>
+                    <text x="0" y="9" textAnchor="middle" className="vwm-region-title">
+                      {reg.name}
+                    </text>
+                  </g>
+                ))}
               </g>
             )}
 
@@ -1204,6 +1318,42 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 >
                   <span>🔍</span>
                   <strong>Mapa de {rdef.shortName}</strong>
+                </button>
+              );
+            })}
+
+          {/* Inside Regional Map: Interactive Living Landmarks (6 per Realm = 36 Overworld Events!) */}
+          {activeRegionalDef &&
+            activeRegionalDef.localLandmarks.map((lm) => {
+              const isExplored = visitedLandmarks.has(lm.id);
+              return (
+                <button
+                  key={lm.id}
+                  type="button"
+                  className={`vwm-landmark-node ${isExplored ? 'is-explored' : 'is-ready'}`}
+                  style={
+                    {
+                      left: `${lm.x}%`,
+                      top: `${lm.y}%`,
+                      '--lm-accent': activeRegionalDef.accentColor,
+                    } as React.CSSProperties
+                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startMarchTo(lm.x, lm.y);
+                    playSfx('channel');
+                    setActiveLandmarkModal({
+                      realm: activeRegionalDef.id,
+                      landmark: lm,
+                    });
+                  }}
+                  title={`${lm.name} — ${
+                    isExplored ? 'Marco já explorado' : 'Clique para explorar este Marco Vivo!'
+                  }`}
+                >
+                  <span className="vwm-lm-icon">{LOCAL_LANDMARK_ICON[lm.kind] ?? '✦'}</span>
+                  <span className="vwm-lm-status-dot">{isExplored ? '✓' : '✦'}</span>
+                  {showGeographyLabels && <span className="vwm-lm-label">{lm.name}</span>}
                 </button>
               );
             })}
@@ -1315,7 +1465,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               top: `${pawnPos.y}%`,
             }}
           >
-            {dockedBossEntry && (
+            {dockedBossEntry ? (
               <button
                 type="button"
                 className="vwm-pawn-challenge-pill"
@@ -1326,7 +1476,22 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               >
                 ⚔️ Desafiar #{dockedBossEntry.boss.stage}
               </button>
-            )}
+            ) : dockedLandmark && activeRegionalDef && !visitedLandmarks.has(dockedLandmark.id) ? (
+              <button
+                type="button"
+                className="vwm-pawn-challenge-pill is-explore-pill"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playSfx('channel');
+                  setActiveLandmarkModal({
+                    realm: activeRegionalDef.id,
+                    landmark: dockedLandmark,
+                  });
+                }}
+              >
+                🧭 Explorar {dockedLandmark.name}
+              </button>
+            ) : null}
 
             <div className="vwm-pawn-aura" />
             <div className="vwm-pawn-token" title={`${sovereignLabel} — Em marcha por Vaeloria`}>
@@ -1486,16 +1651,58 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
           {mapScope === 'world' ? (
             <>
               🧭 <strong>Multimapa (7 Mapas)</strong>: Clique em qualquer <strong>Reino acima</strong> ou em{' '}
-              <strong>🔍 Mapa do Reino</strong> para abrir o mapa regional detalhado • <strong>WASD</strong> / Clique para marchar
+              <strong>🔍 Mapa do Reino</strong> para abrir o mapa regional com <strong>Marcos Vivos Exploráveis</strong> •{' '}
+              <strong>WASD</strong> / Clique para marchar
             </>
           ) : (
             <>
-              🧭 Marche até os <strong>Portais de Fronteira</strong> nas bordas (ou clique neles) para cruzar entre Reinos vizinhos •{' '}
+              🧭 Clique nos <strong>✦ Marcos Regionais</strong> para eventos, espólios e bênçãos • Marche até os{' '}
+              <strong>Portais de Fronteira</strong> nas bordas para cruzar entre Reinos •{' '}
               <strong>🌍 Continente</strong> retorna à visão global
             </>
           )}
         </span>
       </div>
+
+      {activeLandmarkModal && (
+        <OverworldEventModal
+          eventDef={getLandmarkEventDef(
+            activeLandmarkModal.realm,
+            activeLandmarkModal.landmark
+          )}
+          mode={mode}
+          alreadyExplored={visitedLandmarks.has(activeLandmarkModal.landmark.id)}
+          onSelectChoice={(_choice, preview) => {
+            if (mode === 'campaign') {
+              setVisitedLandmarks(
+                markCampaignLandmarkVisited(activeLandmarkModal.landmark.id)
+              );
+            } else {
+              setVisitedLandmarks(
+                markExpeditionLandmarkVisited(activeLandmarkModal.landmark.id)
+              );
+            }
+            if (preview.goldDelta > 0) {
+              onRewardGold?.(
+                preview.goldDelta,
+                `Descoberta em ${activeLandmarkModal.landmark.name}`
+              );
+            }
+            if (preview.recruitedCard) {
+              onGrantExpeditionCard?.(preview.recruitedCard);
+            }
+            if (preview.fieldBuff) {
+              setPendingOverworldBuff(mode, preview.fieldBuff);
+              setPendingBuff(preview.fieldBuff);
+            }
+            showPortalNotification(
+              `✦ ${activeLandmarkModal.landmark.name}: ${preview.rewardBadge}`
+            );
+            setActiveLandmarkModal(null);
+          }}
+          onClose={() => setActiveLandmarkModal(null)}
+        />
+      )}
     </div>
   );
 };

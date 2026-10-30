@@ -223,6 +223,16 @@ export interface ArenaColumnRune {
   color: Domain;
 }
 
+export interface OverworldFieldBuff {
+  id: string;
+  sourceLandmarkName: string;
+  realm: 'veridia' | 'eclipse' | 'matrix' | 'solaria' | 'pyros' | 'vortex';
+  bonusHp: number;
+  bonusOpeningEssence: number;
+  vanguardArmorBonus: number;
+  summaryLabel: string;
+}
+
 export interface ConquestBattleModifiers {
   provinceId: string;
   provinceName: string;
@@ -237,6 +247,14 @@ export interface ConquestBattleModifiers {
   dragonSkyBonus: boolean;
   legendaryWheelBonus: boolean;
   bannerSummary: string;
+  /** Reino geográfico onde a batalha está ocorrendo (Campanha, Expedição ou Conquista) */
+  biomeRealm?: 'veridia' | 'eclipse' | 'matrix' | 'solaria' | 'pyros' | 'vortex';
+  /** Marco geográfico local exibido na arena */
+  landmarkLabel?: string;
+  /** Clima regional inicial aplicado ao campo de batalha */
+  initialWeather?: ArenaWeatherType;
+  /** Bônus temporário obtido ao explorar um Marco Vivo no mapa antes da batalha */
+  overworldBuff?: OverworldFieldBuff | null;
 }
 
 export interface GameState {

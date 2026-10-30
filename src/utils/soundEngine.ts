@@ -15,7 +15,10 @@ export type SfxType =
   | 'dragon_armada'
   | 'victory'
   | 'defeat'
-  | 'pack_open';
+  | 'pack_open'
+  | 'portal_cross'
+  | 'landmark_discover'
+  | 'diplomacy_seal';
 
 let muted = false;
 let audioCtx: AudioContext | null = null;
@@ -370,9 +373,101 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType): void {
         });
         break;
       }
+
+      case 'portal_cross': {
+        playNoiseBurst(ctx, 0.22, 1450, 0.08, 0);
+        playTone(ctx, 293.66, 440.0, 0.26, 'triangle', 0.11, 0);
+        playTone(ctx, 440.0, 659.25, 0.3, 'sine', 0.1, 0.08);
+        break;
+      }
+
+      case 'landmark_discover': {
+        const chime = [329.63, 440.0, 554.37, 659.25];
+        chime.forEach((f, idx) => {
+          playTone(ctx, f, f * 1.02, 0.26, 'triangle', 0.1, idx * 0.055);
+        });
+        break;
+      }
+
+      case 'diplomacy_seal': {
+        playNoiseBurst(ctx, 0.12, 650, 0.11, 0);
+        playTone(ctx, 196.0, 293.66, 0.28, 'triangle', 0.12, 0.02);
+        playTone(ctx, 392.0, 587.33, 0.34, 'sine', 0.11, 0.09);
+        break;
+      }
     }
   } catch {
     // Ignore Web Audio errors in headless environments
+  }
+}
+
+/**
+ * Assinatura Sonora Ambiental Regional (Web Audio API):
+ * Dispara um motivo acústico distinto para cada um dos 6 Reinos de Vaeloria
+ * ao entrar em seu Mapa Regional ou cruzar um Portal de Fronteira.
+ */
+export function playRealmEntryMotif(
+  realm: 'veridia' | 'eclipse' | 'matrix' | 'solaria' | 'pyros' | 'vortex' | 'world'
+): void {
+  if (muted) return;
+  const ctx = getAudioContext();
+  if (!ctx || ctx.state !== 'running') return;
+
+  try {
+    switch (realm) {
+      case 'veridia': {
+        // Warm sylvan flute harmonic + gentle canopy breeze
+        playNoiseBurst(ctx, 0.32, 920, 0.05, 0);
+        playTone(ctx, 293.66, 293.66, 0.38, 'sine', 0.09, 0.02); // D4
+        playTone(ctx, 440.0, 440.0, 0.42, 'triangle', 0.08, 0.1); // A4
+        playTone(ctx, 587.33, 659.25, 0.4, 'sine', 0.07, 0.18); // D5->E5
+        break;
+      }
+      case 'pyros': {
+        // Deep volcanic anvil strike + ember crackle
+        playNoiseBurst(ctx, 0.28, 380, 0.12, 0);
+        playTone(ctx, 98.0, 65.41, 0.48, 'sawtooth', 0.11, 0); // G2->C2
+        playTone(ctx, 587.33, 580.0, 0.36, 'triangle', 0.08, 0.04); // Metallic anvil ring
+        break;
+      }
+      case 'vortex': {
+        // Crystalline polar bell + horological double tick
+        playTone(ctx, 1318.51, 1318.51, 0.08, 'triangle', 0.07, 0);
+        playTone(ctx, 1046.5, 1046.5, 0.08, 'triangle', 0.07, 0.12);
+        playTone(ctx, 659.25, 987.77, 0.46, 'sine', 0.09, 0.18);
+        playNoiseBurst(ctx, 0.25, 3100, 0.04, 0.05);
+        break;
+      }
+      case 'solaria': {
+        // Golden imperial fifth fanfare
+        playTone(ctx, 329.63, 329.63, 0.36, 'triangle', 0.09, 0); // E4
+        playTone(ctx, 493.88, 493.88, 0.4, 'triangle', 0.09, 0.08); // B4
+        playTone(ctx, 659.25, 659.25, 0.48, 'sine', 0.08, 0.16); // E5
+        break;
+      }
+      case 'eclipse': {
+        // Gothic obsidian cathedral toll in D minor
+        playTone(ctx, 146.83, 144.5, 0.62, 'sine', 0.12, 0); // D3
+        playTone(ctx, 349.23, 346.0, 0.48, 'triangle', 0.08, 0.08); // F4
+        playTone(ctx, 440.0, 415.3, 0.45, 'sine', 0.07, 0.16); // A4->Ab4
+        break;
+      }
+      case 'matrix': {
+        // Five-seal prismatic convergence chord
+        const seals = [261.63, 329.63, 392.0, 493.88, 587.33];
+        seals.forEach((f, idx) => {
+          playTone(ctx, f, f, 0.34, 'sine', 0.065, idx * 0.045);
+        });
+        break;
+      }
+      case 'world': {
+        playTone(ctx, 220.0, 329.63, 0.26, 'triangle', 0.08, 0);
+        playTone(ctx, 440.0, 440.0, 0.3, 'sine', 0.07, 0.08);
+        break;
+      }
+    }
+  } catch {
+    // Ignore Web Audio errors
   }
 }
 

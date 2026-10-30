@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { OverworldFieldBuff } from '../types/game';
 import { CARDS_BY_ID } from '../data/cards';
-import { playSfx } from '../utils/soundEngine';
+import { playRealmEntryMotif, playSfx } from '../utils/soundEngine';
+import { setMusicState } from '../utils/musicEngine';
 import {
   VAELORIA_WORLD_MAP_IMAGE,
   VAELORIA_MAP_TERRITORIES,
@@ -14,18 +16,31 @@ import {
   CONQUEST_PROVINCES_BY_ID,
   ConquestFactionId,
   ConquestProvinceDef,
+  PROVINCE_BUILDINGS,
+  ProvinceBuildingType,
   getConquestMapGeometries,
   getRegionalConquestGeometries,
 } from '../data/vaeloriaConquestData';
 import {
   PROVINCE_REGIONAL_COORDS,
   RegionalBorderPortal,
+  RegionalLocalLandmark,
   VAELORIA_REALM_ORDER,
   VAELORIA_REGIONAL_MAPS,
   VaeloriaMapScope,
   VaeloriaRealmId,
   mapTerritoryIdToRealmId,
 } from '../data/vaeloriaMultimapData';
+import {
+  getFogOfWarEnabled,
+  getLandmarkEventDef,
+  getPendingOverworldBuff,
+  isConquestLandmarkReady,
+  markRealmVisited,
+  setFogOfWarEnabled,
+  setPendingOverworldBuff,
+} from '../data/vaeloriaOverworldEvents';
+import { OverworldEventModal } from './OverworldEventModal';
 
 export interface ActiveInvasionVector {
   fromProvinceId: string;
@@ -37,7 +52,10 @@ export interface ConquestMegamapProps {
   playerFactionId: ConquestFactionId;
   provinceOwners: Record<string, ConquestFactionId>;
   fortifications: Record<string, number>;
+  buildings?: Record<string, ProvinceBuildingType>;
   truces: Record<string, number>;
+  season?: number;
+  landmarkCooldowns?: Record<string, number>;
   selectedProvinceId: string;
   attackableProvinceIds: Set<string>;
   activeInvasion?: ActiveInvasionVector | null;
@@ -47,6 +65,11 @@ export interface ConquestMegamapProps {
   onToggleDossier?: () => void;
   onSelectProvince: (province: ConquestProvinceDef) => void;
   onLaunchSiege: (province: ConquestProvinceDef) => void;
+  onExploreLandmarkReward?: (
+    landmark: RegionalLocalLandmark,
+    suppliesDelta: number,
+    fieldBuff: OverworldFieldBuff | null
+  ) => void;
 }
 
 interface PositionedProvinceEntry {
@@ -78,11 +101,23 @@ const TERRAIN_KIND_ICON: Record<string, string> = {
   skyway: '🐉',
 };
 
+const LOCAL_LANDMARK_ICON: Record<string, string> = {
+  town: '🏘️',
+  ruin: '🏛️',
+  fort: '🛡️',
+  port: '⚓',
+  shrine: '⛩️',
+  pass: '🌉',
+};
+
 export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   playerFactionId,
   provinceOwners,
   fortifications,
+  buildings = {},
   truces,
+  season = 1,
+  landmarkCooldowns = {},
   selectedProvinceId,
   attackableProvinceIds,
   activeInvasion,
@@ -92,6 +127,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   onToggleDossier,
   onSelectProvince,
   onLaunchSiege,
+  onExploreLandmarkReward,
 }) => {
   const isMobileViewport = () =>
     typeof window !== 'undefined' && window.innerWidth <= 768;
@@ -103,6 +139,18 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   const [followPawn, setFollowPawn] = useState<boolean>(() => !isMobileViewport());
   const [showMinimap, setShowMinimap] = useState<boolean>(() => !isMobileViewport());
   const [portalBanner, setPortalBanner] = useState<string | null>(null);
+  const [fogEnabled, setFogEnabled] = useState<boolean>(() => getFogOfWarEnabled());
+  const [pendingBuff, setPendingBuff] = useState<OverworldFieldBuff | null>(() =>
+    getPendingOverworldBuff('conquest')
+  );
+  const [activeLandmarkModal, setActiveLandmarkModal] = useState<{
+    realm: VaeloriaRealmId;
+    landmark: RegionalLocalLandmark;
+  } | null>(null);
+
+  useEffect(() => {
+    setPendingBuff(getPendingOverworldBuff('conquest'));
+  }, [season, hasActedThisSeason]);
 
   const selectedProvince =
     CONQUEST_PROVINCES_BY_ID[selectedProvinceId] ?? CONQUEST_PROVINCES[0];
@@ -301,14 +349,20 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   const handleSwitchMapScope = useCallback(
     (
       nextScope: VaeloriaMapScope,
-      arrivalOverride?: { x: number; y: number; banner?: string }
+      arrivalOverride?: { x: number; y: number; banner?: string; viaPortal?: boolean }
     ) => {
       if (nextScope === mapScopeRef.current && !arrivalOverride) return;
       portalCooldownUntilRef.current = performance.now() + 1100;
       setMarchTarget(null);
-      playSfx('channel');
+      if (arrivalOverride?.viaPortal) {
+        playSfx('portal_cross');
+      } else {
+        playSfx('channel');
+      }
+      playRealmEntryMotif(nextScope);
 
       if (nextScope === 'world') {
+        setMusicState('tactical', 'purple');
         const selProv = CONQUEST_PROVINCES_BY_ID[selectedProvinceId] ?? CONQUEST_PROVINCES[0];
         mapScopeRef.current = 'world';
         setMapScope('world');
@@ -324,6 +378,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
       }
 
       const regDef = VAELORIA_REGIONAL_MAPS[nextScope];
+      setMusicState('sanctuary', regDef.domain);
+      markRealmVisited(nextScope);
+
       const realmProvs = enrichedAllProvinces.filter((p) => p.realm === nextScope);
       const activeInRealm = realmProvs.find((p) => p.prov.id === selectedProvinceId);
       const preferred =
@@ -360,6 +417,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         x: portal.arrivalX,
         y: portal.arrivalY,
         banner: `🧭 Exército cruzou a fronteira: ${targetDef.icon} ${targetDef.name}`,
+        viaPortal: true,
       });
     },
     [handleSwitchMapScope]
@@ -583,6 +641,19 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   const playerFaction = CONQUEST_FACTIONS[playerFactionId];
   const sovereignCard = sovereignAvatarCardId ? CARDS_BY_ID[sovereignAvatarCardId] : undefined;
   const activeRegionalDef = mapScope !== 'world' ? VAELORIA_REGIONAL_MAPS[mapScope] : null;
+  const dockedLandmark = useMemo(() => {
+    if (!activeRegionalDef) return null;
+    let best: RegionalLocalLandmark | null = null;
+    let bestD = 4.6;
+    for (const lm of activeRegionalDef.localLandmarks) {
+      const d = Math.hypot(pawnPos.x - lm.x, pawnPos.y - lm.y);
+      if (d < bestD) {
+        bestD = d;
+        best = lm;
+      }
+    }
+    return best;
+  }, [activeRegionalDef, pawnPos.x, pawnPos.y]);
   const inferredRealmOnWorld: VaeloriaRealmId =
     mapScope !== 'world'
       ? mapScope
@@ -661,7 +732,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     const targetEl = e.target as HTMLElement | null;
     if (
       targetEl?.closest(
-        '.cqm-prov-pin, .vwm-pawn-challenge-pill, .vwm-dpad, .cqm-poly-hit, .vwm-portal-gate, .vwm-realm-dive-chip, .vwm-minimap-radar, .vwm-minimap-toggle-pill'
+        '.cqm-prov-pin, .vwm-landmark-node, .vwm-pawn-challenge-pill, .vwm-dpad, .cqm-poly-hit, .vwm-portal-gate, .vwm-realm-dive-chip, .vwm-minimap-radar, .vwm-minimap-toggle-pill'
       )
     ) {
       return;
@@ -806,6 +877,15 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         </div>
 
         <div className="vwm-controls-group">
+          {pendingBuff && (
+            <span
+              className="vwm-buff-ready-chip"
+              title={`Bônus de Marco pronto para o próximo Cerco (${pendingBuff.sourceLandmarkName})`}
+            >
+              ✦ {pendingBuff.summaryLabel}
+            </span>
+          )}
+
           {mapScope === 'world' ? (
             <button
               type="button"
@@ -841,6 +921,19 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             title="Câmera exploratória que acompanha o Exército"
           >
             🎥 Seguir
+          </button>
+
+          <button
+            type="button"
+            className={`vwm-tool-btn ${fogEnabled ? 'is-active' : ''}`}
+            onClick={() => {
+              const next = !fogEnabled;
+              setFogEnabled(next);
+              setFogOfWarEnabled(next);
+            }}
+            title="Ativar ou dissipar a Névoa de Guerra suave sobre impérios distantes"
+          >
+            🌫️ Névoa
           </button>
 
           <button
@@ -967,6 +1060,47 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               >
                 <polygon points="0,0 10,5 0,10" fill="#ef4444" />
               </marker>
+              <filter id="cqmFogSoftBlur" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="82" />
+              </filter>
+              {fogEnabled && (
+                <mask id="cqmExplorationFogMask">
+                  <rect
+                    x="0"
+                    y="0"
+                    width={CONQUEST_MAP_WIDTH}
+                    height={CONQUEST_MAP_HEIGHT}
+                    fill="white"
+                  />
+                  <g filter="url(#cqmFogSoftBlur)">
+                    <circle
+                      cx={(pawnPos.x / 100) * CONQUEST_MAP_WIDTH}
+                      cy={(pawnPos.y / 100) * CONQUEST_MAP_HEIGHT}
+                      r="460"
+                      fill="black"
+                    />
+                    {positionedProvinces
+                      .filter(
+                        (p) =>
+                          (provinceOwners[p.prov.id] ?? p.prov.initialOwner) === playerFactionId ||
+                          attackableProvinceIds.has(p.prov.id)
+                      )
+                      .map((p) => (
+                        <circle
+                          key={`cqm-fog-${p.prov.id}`}
+                          cx={(p.x / 100) * CONQUEST_MAP_WIDTH}
+                          cy={(p.y / 100) * CONQUEST_MAP_HEIGHT}
+                          r={
+                            (provinceOwners[p.prov.id] ?? p.prov.initialOwner) === playerFactionId
+                              ? 480
+                              : 330
+                          }
+                          fill="black"
+                        />
+                      ))}
+                  </g>
+                </mask>
+              )}
             </defs>
 
             {/* LOD 3 Cartographic Graticule */}
@@ -1312,7 +1446,58 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 })()}
               </g>
             )}
+
+            {/* 8. Soft Cartographic Fog of War over distant non-adjacent empires */}
+            {fogEnabled && (
+              <rect
+                x="0"
+                y="0"
+                width={CONQUEST_MAP_WIDTH}
+                height={CONQUEST_MAP_HEIGHT}
+                fill="rgba(4, 10, 24, 0.42)"
+                mask="url(#cqmExplorationFogMask)"
+                pointerEvents="none"
+              />
+            )}
           </svg>
+
+          {/* Inside Regional Map: Interactive Living Landmarks (3-Season Cooldown in Conquest!) */}
+          {activeRegionalDef &&
+            activeRegionalDef.localLandmarks.map((lm) => {
+              const isReady = isConquestLandmarkReady(landmarkCooldowns, lm.id, season);
+              return (
+                <button
+                  key={lm.id}
+                  type="button"
+                  className={`vwm-landmark-node ${isReady ? 'is-ready' : 'is-explored'}`}
+                  style={
+                    {
+                      left: `${lm.x}%`,
+                      top: `${lm.y}%`,
+                      '--lm-accent': activeRegionalDef.accentColor,
+                    } as React.CSSProperties
+                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startMarchTo(lm.x, lm.y);
+                    playSfx('channel');
+                    setActiveLandmarkModal({
+                      realm: activeRegionalDef.id,
+                      landmark: lm,
+                    });
+                  }}
+                  title={`${lm.name} — ${
+                    isReady
+                      ? 'Clique para explorar Suprimentos ou Bônus de Cerco!'
+                      : 'Marco em recarga sazonal'
+                  }`}
+                >
+                  <span className="vwm-lm-icon">{LOCAL_LANDMARK_ICON[lm.kind] ?? '✦'}</span>
+                  <span className="vwm-lm-status-dot">{isReady ? '✦' : '✓'}</span>
+                  <span className="vwm-lm-label">{lm.name}</span>
+                </button>
+              );
+            })}
 
           {/* Inside Regional Map: Walkable & Clickable Border Gate Portals */}
           {activeRegionalDef &&
@@ -1403,6 +1588,14 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 </span>
 
                 {fortLvl > 0 && <span className="cqm-pin-fort-badge">🛡️{fortLvl}</span>}
+                {buildings[prov.id] && (
+                  <span
+                    className="cqm-pin-bldg-badge"
+                    title={PROVINCE_BUILDINGS[buildings[prov.id]].name}
+                  >
+                    {PROVINCE_BUILDINGS[buildings[prov.id]].icon}
+                  </span>
+                )}
                 {hasTruce && ownerId !== playerFactionId && (
                   <span className="cqm-pin-truce-badge" title="Trégua Diplomática Ativa">
                     🕊️
@@ -1439,7 +1632,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               })`,
             }}
           >
-            {canChallengeDocked && dockedProvince && (
+            {canChallengeDocked && dockedProvince ? (
               <button
                 type="button"
                 className="vwm-pawn-challenge-pill"
@@ -1450,7 +1643,24 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               >
                 ⚔️ Cercar {dockedProvince.isCapital ? 'Capital' : 'Província'}
               </button>
-            )}
+            ) : dockedLandmark &&
+              activeRegionalDef &&
+              isConquestLandmarkReady(landmarkCooldowns, dockedLandmark.id, season) ? (
+              <button
+                type="button"
+                className="vwm-pawn-challenge-pill is-explore-pill"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playSfx('channel');
+                  setActiveLandmarkModal({
+                    realm: activeRegionalDef.id,
+                    landmark: dockedLandmark,
+                  });
+                }}
+              >
+                🧭 Explorar {dockedLandmark.name}
+              </button>
+            ) : null}
 
             <div className="vwm-pawn-aura" />
             <div
@@ -1601,15 +1811,56 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         <span>
           {mapScope === 'world' ? (
             <>
-              🧭 <strong>Multimapa (7 Mapas)</strong>: Selecione qualquer <strong>Reino acima</strong> para o mapa regional tático • Roda do mouse para <strong>Zoom LOD (1x–3.8x)</strong> • Clique numa província rival vizinha para <strong>Cercar</strong>
+              🧭 <strong>Multimapa (7 Mapas)</strong>: Selecione qualquer <strong>Reino acima</strong> para o mapa regional com{' '}
+              <strong>✦ Marcos Vivos</strong> • Roda do mouse para <strong>Zoom LOD (1x–3.8x)</strong> • Clique numa província rival vizinha para <strong>Cercar</strong>
             </>
           ) : (
             <>
-              🧭 Marche até os <strong>Portais de Fronteira</strong> para invadir Reinos vizinhos • Clique numa província conectada para <strong>Cercar</strong> • <strong>🌍 Continente</strong> retorna às 30 províncias
+              🧭 Clique nos <strong>✦ Marcos Regionais</strong> (+Suprimentos⚙️ ou Bônus de Cerco) • Marche até os{' '}
+              <strong>Portais de Fronteira</strong> para invadir Reinos vizinhos • <strong>🌍 Continente</strong> retorna às 30 províncias
             </>
           )}
         </span>
       </div>
+
+      {activeLandmarkModal && (
+        <OverworldEventModal
+          eventDef={getLandmarkEventDef(
+            activeLandmarkModal.realm,
+            activeLandmarkModal.landmark
+          )}
+          mode="conquest"
+          alreadyExplored={
+            !isConquestLandmarkReady(
+              landmarkCooldowns,
+              activeLandmarkModal.landmark.id,
+              season
+            )
+          }
+          cooldownSeasonsLeft={Math.max(
+            0,
+            3 -
+              (season -
+                (landmarkCooldowns[activeLandmarkModal.landmark.id] ?? season - 3))
+          )}
+          onSelectChoice={(_choice, preview) => {
+            if (preview.fieldBuff) {
+              setPendingOverworldBuff('conquest', preview.fieldBuff);
+              setPendingBuff(preview.fieldBuff);
+            }
+            onExploreLandmarkReward?.(
+              activeLandmarkModal.landmark,
+              preview.suppliesDelta,
+              preview.fieldBuff
+            );
+            setPortalBanner(
+              `✦ ${activeLandmarkModal.landmark.name}: ${preview.rewardBadge}`
+            );
+            setActiveLandmarkModal(null);
+          }}
+          onClose={() => setActiveLandmarkModal(null)}
+        />
+      )}
     </div>
   );
 };

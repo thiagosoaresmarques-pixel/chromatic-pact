@@ -159,6 +159,108 @@ export const EPIC_POEM_CREATURE_NODES_BY_CARD_ID: Record<string, EpicPoemNode> =
   return map;
 })();
 
+export interface CardPoemAppearance {
+  cantoId: string;
+  cantoRoman: string;
+  chapterId: string;
+  chapterCode: string;
+  chapterTitle: string;
+  chapterShortTitle: string;
+  periodLabel: string;
+  node: EpicPoemNode;
+  isIllustrated: boolean;
+}
+
+/**
+ * Índice reverso completo Carta -> Aparições nos 78 Capítulos da Crônica Principal,
+ * priorizando nós ilustrados em destaque e deduplicando por capítulo para navegação direta.
+ */
+export const EPIC_POEM_APPEARANCES_BY_CARD_ID: Record<string, CardPoemAppearance[]> = (() => {
+  const byCard: Record<string, CardPoemAppearance[]> = {};
+
+  for (const chapter of PARALLEL_EPIC_POEM_CANTOS) {
+    const parentId = chapter.parentCantoId || 'canto_1_vigilia';
+    const cantoRoman = ROMAN_BY_CANTO_ID[parentId] || 'I';
+    const seenInChapter = new Map<string, CardPoemAppearance>();
+
+    for (const node of chapter.nodes) {
+      if (!node.cardId) continue;
+      const candidate: CardPoemAppearance = {
+        cantoId: parentId,
+        cantoRoman,
+        chapterId: chapter.id,
+        chapterCode: chapter.parallelCode || `${cantoRoman}-A`,
+        chapterTitle: chapter.title,
+        chapterShortTitle: chapter.shortTitle || chapter.title,
+        periodLabel: chapter.periodLabel,
+        node,
+        isIllustrated: !node.hideCardArt,
+      };
+      const prev = seenInChapter.get(node.cardId);
+      if (
+        !prev ||
+        (candidate.isIllustrated && !prev.isIllustrated) ||
+        (candidate.node.kind === 'creature' && prev.node.kind !== 'creature')
+      ) {
+        seenInChapter.set(node.cardId, candidate);
+      }
+    }
+
+    for (const [cardId, app] of seenInChapter.entries()) {
+      if (!byCard[cardId]) byCard[cardId] = [];
+      byCard[cardId].push(app);
+    }
+  }
+
+  // Fallback para nós que existam apenas nos marcos sintéticos dos 7 Cantos principais
+  for (const mainCanto of EPIC_POEM_CANTOS) {
+    const cantoRoman = ROMAN_BY_CANTO_ID[mainCanto.id] || 'I';
+    const childChapters = PARALLEL_CANTOS_BY_PARENT_ID[mainCanto.id] || [];
+    for (const node of mainCanto.nodes) {
+      if (!node.cardId || byCard[node.cardId]?.length) continue;
+      const anchoredChapter =
+        childChapters.find((ch) => ch.anchorNodeId === node.id) || childChapters[0];
+      if (!anchoredChapter) continue;
+      byCard[node.cardId] = [
+        {
+          cantoId: mainCanto.id,
+          cantoRoman,
+          chapterId: anchoredChapter.id,
+          chapterCode: anchoredChapter.parallelCode || `${cantoRoman}-A`,
+          chapterTitle: anchoredChapter.title,
+          chapterShortTitle: anchoredChapter.shortTitle || anchoredChapter.title,
+          periodLabel: anchoredChapter.periodLabel,
+          node: anchoredChapter.nodes[0] || node,
+          isIllustrated: true,
+        },
+      ];
+    }
+  }
+
+  for (const list of Object.values(byCard)) {
+    list.sort((a, b) => {
+      if (a.isIllustrated !== b.isIllustrated) return a.isIllustrated ? -1 : 1;
+      return 0;
+    });
+  }
+
+  return byCard;
+})();
+
+export interface NavigateToPoemDetail {
+  cardId: string;
+  cantoId: string;
+  chapterId: string;
+  nodeId: string;
+}
+
+export const NAVIGATE_TO_POEM_EVENT = 'chromatic-pact:navigate-poem';
+
+export function dispatchNavigateToPoem(detail: NavigateToPoemDetail): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent<NavigateToPoemDetail>(NAVIGATE_TO_POEM_EVENT, { detail }));
+}
+
 const LEGENDARY_CREATURE_CARD_IDS = new Set(
   ALL_CARDS.filter((c) => c.type === 'creature' && c.rarity === 'legendary').map((c) => c.id)
 );

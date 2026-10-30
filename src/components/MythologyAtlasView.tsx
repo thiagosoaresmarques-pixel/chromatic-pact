@@ -4,12 +4,38 @@ import { CARDS_BY_ID } from '../data/cards';
 import { EpicPoemCanto, EpicPoemNode } from '../data/epicPoemTypes';
 import {
   EPIC_POEM_CANTOS,
+  EPIC_POEM_STATS,
+  NavigateToPoemDetail,
   PARALLEL_EPIC_POEM_CANTOS,
   PARALLEL_CANTOS_BY_PARENT_ID,
 } from '../data/epicPoemData';
 
 interface MythologyAtlasViewProps {
   onInspectCard: (card: CardDefinition) => void;
+  jumpTarget?: NavigateToPoemDetail | null;
+  onConsumeJumpTarget?: () => void;
+}
+
+interface PoemReadingProgress {
+  readChapterIds: string[];
+  bookmarkChapterId: string | null;
+}
+
+const POEM_PROGRESS_STORAGE_KEY = 'chromatic_pact_poem_progress_v1';
+
+function loadPoemProgress(): PoemReadingProgress {
+  try {
+    const raw = localStorage.getItem(POEM_PROGRESS_STORAGE_KEY);
+    if (!raw) return { readChapterIds: [], bookmarkChapterId: null };
+    const parsed = JSON.parse(raw) as Partial<PoemReadingProgress>;
+    return {
+      readChapterIds: Array.isArray(parsed.readChapterIds) ? parsed.readChapterIds : [],
+      bookmarkChapterId:
+        typeof parsed.bookmarkChapterId === 'string' ? parsed.bookmarkChapterId : null,
+    };
+  } catch {
+    return { readChapterIds: [], bookmarkChapterId: null };
+  }
 }
 
 const DOMAIN_LABELS: Record<Domain | 'all', { label: string; color: string }> = {
@@ -21,6 +47,145 @@ const DOMAIN_LABELS: Record<Domain | 'all', { label: string; color: string }> = 
   gold: { label: 'Solária (Alvorada)', color: '#eab308' },
   neutral: { label: 'Fronteira Cinzenta', color: '#94a3b8' },
 };
+
+interface VaeloriaCompassRegion {
+  domain: Domain;
+  direction: string;
+  shortDir: string;
+  name: string;
+  epithet: string;
+  icon: string;
+  color: string;
+  citadel: string;
+  champions: string;
+  summary: string;
+  keyChapterIds: string[];
+  gridArea: 'polar' | 'north' | 'west' | 'center' | 'east' | 'south';
+}
+
+const VAELORIA_COMPASS_REGIONS: VaeloriaCompassRegion[] = [
+  {
+    domain: 'blue',
+    direction: 'Polos & Arquipélagos Setentrionais',
+    shortDir: 'POLOS',
+    name: 'Vórtex',
+    epithet: 'Pináculos de Gelo & Planetário Astral',
+    icon: '❄️',
+    color: '#38bdf8',
+    citadel: 'Pináculo Polar & Estreito de Safira',
+    champions: 'Chronos • Vorthurion • Thalassia • Aldric • Thaddeus',
+    summary:
+      'Nos círculos polares e estreitos congelados de Vaeloria erguem-se os observatórios horológicos e as fossas abissais onde o tempo e as marés são medidos.',
+    keyChapterIds: [
+      'canto_1e_relogio_chronos',
+      'canto_2g_agulhas_vidro_vorthurion',
+      'canto_3b_conspiracao_planetario',
+      'canto_7h_abertura_ceu_safira',
+    ],
+    gridArea: 'polar',
+  },
+  {
+    domain: 'red',
+    direction: 'Norte Vulcânico (Cordilheira Boreal)',
+    shortDir: 'NORTE',
+    name: 'Pyros',
+    epithet: 'Caldeiras de Magma & Bigorna Primordial',
+    icon: '🔥',
+    color: '#ef4444',
+    citadel: 'Caldeira Ancestral & Bigorna Partida',
+    champions: 'Vulcanis • Igniskar • Kaelen • Zik • Dinastia Varkas',
+    summary:
+      'Ao norte fumegante ardem as crateras basálticas e forjas titânicas onde nasceu a primeira brasa contra o Coroa-Prisma e de onde marcharam as legiões férreas.',
+    keyChapterIds: [
+      'canto_1g_primeira_brasa_vulcanis',
+      'canto_2d_grilhoes_vulcanor',
+      'canto_3a_forja_cisma',
+      'canto_4k_armadas_draconicas_ceu_sem_sol',
+    ],
+    gridArea: 'north',
+  },
+  {
+    domain: 'purple',
+    direction: 'Oeste Profundo (Fendas Umbrais)',
+    shortDir: 'OESTE',
+    name: 'Vale do Eclipse',
+    epithet: 'Catedral de Obsidiana & Criptas Reais',
+    icon: '💀',
+    color: '#a855f7',
+    citadel: 'Catedral de Obsidiana & Ossário Real',
+    champions: 'Nocturnus • Vesperion • Carmilla • Vladislaus • Malakor',
+    summary:
+      'Nas gargantas sem sol do oeste estendem-se as charnecas cinzentas, catedrais góticas de sangue e criptas necromânticas onde ecoam juramentos eternos.',
+    keyChapterIds: [
+      'canto_1c_sussurro_nocturnus',
+      'canto_2f_medula_ossaurion',
+      'canto_3f_ascensao_vesperion',
+      'canto_7c_batalha_trono_ossos',
+    ],
+    gridArea: 'west',
+  },
+  {
+    domain: 'neutral',
+    direction: 'Centro Axial (Umbigo do Continente)',
+    shortDir: 'CENTRO',
+    name: 'Fronteira Cinzenta',
+    epithet: 'Torre Cinzenta → Torre dos Cinco Selos',
+    icon: '☸',
+    color: '#e2e8f0',
+    citadel: 'Monte Axial & Arena do Pacto Cromático',
+    champions: 'Valkyra • Comandante Garrick • Valerius • Generais da Roda',
+    summary:
+      'Onde tombaram as cascas sem cor do astro partido ergueu-se primeiro a Torre Cinzenta e, em 689 D.F., a Torre dos Cinco Selos — sede neutra da Arena.',
+    keyChapterIds: [
+      'canto_1a_conjura',
+      'canto_2aa_arautos_prisma',
+      'canto_5a_conclaves_ocultos',
+      'canto_5k_generais_roda_quebra_dominios',
+      'canto_7b_ultimo_conselho_arena',
+    ],
+    gridArea: 'center',
+  },
+  {
+    domain: 'gold',
+    direction: 'Leste Alto (Planaltos Orientais)',
+    shortDir: 'LESTE',
+    name: 'Solária',
+    epithet: 'Bastião de Mármore & Sete Espelhos Solares',
+    icon: '☀️',
+    color: '#eab308',
+    citadel: 'Zênite Dourado & Cidadela da Alvorada',
+    champions: 'Titã da Alvorada • Zephaniel • Justinian • Heliodor • Hyperion',
+    summary:
+      'Nos planaltos orientais banhados pela primeira aurora reluzem as muralhas brancas, os códigos sagrados e as falanges aladas da Ordem Solar.',
+    keyChapterIds: [
+      'canto_1h_promessa_alvorada',
+      'canto_3j_trono_celestial_estase',
+      'canto_6h_escudo_bicolor_aurelion',
+      'canto_7d_assalto_tres_cranios',
+    ],
+    gridArea: 'east',
+  },
+  {
+    domain: 'green',
+    direction: 'Sul Selvagem (Matas Austrais)',
+    shortDir: 'SUL',
+    name: 'Veridia',
+    epithet: 'Santuário da Raiz-Ferro & Selva Primeva',
+    icon: '🌿',
+    color: '#10b981',
+    citadel: 'Galhada Viva & Coração da Árvore-Mãe',
+    champions: 'Sylvanor • Kongor • Lyra • Smaragda • Sylvanhorn',
+    summary:
+      'Ao sul colossal entrelaçam-se copas milenares, raízes encouraçadas e clareiras sagradas onde feras titânicas e espíritos ancestrais guardam a seiva do mundo.',
+    keyChapterIds: [
+      'canto_1d_semente_sylvanor',
+      'canto_2h_santuario_galhada_viva',
+      'canto_4g_pacto_vale_presas',
+      'canto_7f_reis_selvagens_fenris',
+    ],
+    gridArea: 'south',
+  },
+];
 
 const CANTO_RULER_ITEMS: Array<{
   id: string;
@@ -37,13 +202,55 @@ const CANTO_RULER_ITEMS: Array<{
   { id: 'canto_7_presente', roman: 'VII', shortEra: 'Sétimo Selo', yearMark: '1.121 D.F.' },
 ];
 
-export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspectCard }) => {
+export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
+  onInspectCard,
+  jumpTarget,
+  onConsumeJumpTarget,
+}) => {
   const [selectedCantoId, setSelectedCantoId] = useState<string>('all');
   const [selectedDomain, setSelectedDomain] = useState<Domain | 'all'>('all');
   const [nodeFilterKind, setNodeFilterKind] = useState<'all' | 'creatures_only'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeScrollCantoId, setActiveScrollCantoId] = useState<string>('canto_1_vigilia');
+  const [isCompassOpen, setIsCompassOpen] = useState<boolean>(false);
+  const [selectedCompassDomain, setSelectedCompassDomain] = useState<Domain>('neutral');
+  const [highlightedNodeId, setHighlightedNodeId] = useState<string | null>(null);
+  const [readingProgress, setReadingProgress] = useState<PoemReadingProgress>(() =>
+    loadPoemProgress()
+  );
+
   const programmaticScrollLockUntil = useRef<number>(0);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(POEM_PROGRESS_STORAGE_KEY, JSON.stringify(readingProgress));
+    } catch {
+      // Ignore storage quota errors
+    }
+  }, [readingProgress]);
+
+  const markChapterRead = useCallback((chapterId: string, alsoBookmark = false) => {
+    if (!chapterId) return;
+    setReadingProgress((prev) => {
+      const alreadyRead = prev.readChapterIds.includes(chapterId);
+      const nextRead = alreadyRead ? prev.readChapterIds : [...prev.readChapterIds, chapterId];
+      const nextBookmark = alsoBookmark ? chapterId : prev.bookmarkChapterId;
+      if (alreadyRead && nextBookmark === prev.bookmarkChapterId) return prev;
+      return {
+        readChapterIds: nextRead,
+        bookmarkChapterId: nextBookmark,
+      };
+    });
+  }, []);
+
+  const toggleChapterBookmark = useCallback((chapterId: string) => {
+    setReadingProgress((prev) => ({
+      readChapterIds: prev.readChapterIds.includes(chapterId)
+        ? prev.readChapterIds
+        : [...prev.readChapterIds, chapterId],
+      bookmarkChapterId: prev.bookmarkChapterId === chapterId ? null : chapterId,
+    }));
+  }, []);
 
   const scrollToSectionById = useCallback((domId: string, fallbackDomId?: string) => {
     programmaticScrollLockUntil.current = Date.now() + 950;
@@ -54,7 +261,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
         (fallbackDomId ? document.getElementById(fallbackDomId) : null);
       if (!el) return;
 
-      const navOffset = 98;
+      const navOffset = 108;
       const rect = el.getBoundingClientRect();
       const absoluteTop = rect.top + window.scrollY - navOffset;
       const distance = Math.abs(window.scrollY - absoluteTop);
@@ -83,6 +290,48 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
       setTimeout(() => attemptScroll(true), 180);
     });
   }, []);
+
+  // Consume incoming Card -> Poem deep-link jump requests
+  useEffect(() => {
+    if (!jumpTarget) return;
+    setSelectedCantoId('all');
+    setSelectedDomain('all');
+    setNodeFilterKind('all');
+    setSearchQuery('');
+
+    if (jumpTarget.chapterId) {
+      setActiveScrollCantoId(jumpTarget.chapterId);
+      markChapterRead(jumpTarget.chapterId, true);
+    } else if (jumpTarget.cantoId) {
+      setActiveScrollCantoId(jumpTarget.cantoId);
+    }
+
+    if (jumpTarget.nodeId) {
+      setHighlightedNodeId(jumpTarget.nodeId);
+    }
+
+    const scrollTimer = setTimeout(() => {
+      const primaryDomId = jumpTarget.nodeId
+        ? `poem-node-${jumpTarget.nodeId}`
+        : jumpTarget.chapterId
+        ? `poem-parallel-card-${jumpTarget.chapterId}`
+        : `poem-canto-${jumpTarget.cantoId}`;
+      const fallbackDomId = jumpTarget.chapterId
+        ? `poem-parallel-card-${jumpTarget.chapterId}`
+        : `poem-canto-${jumpTarget.cantoId}`;
+      scrollToSectionById(primaryDomId, fallbackDomId);
+      onConsumeJumpTarget?.();
+    }, 90);
+
+    const clearHighlightTimer = setTimeout(() => {
+      setHighlightedNodeId((prev) => (prev === jumpTarget.nodeId ? null : prev));
+    }, 4800);
+
+    return () => {
+      clearTimeout(scrollTimer);
+      clearTimeout(clearHighlightTimer);
+    };
+  }, [jumpTarget, markChapterRead, onConsumeJumpTarget, scrollToSectionById]);
 
   const filterNodes = (nodes: EpicPoemNode[], q: string): EpicPoemNode[] => {
     return nodes.filter((node) => {
@@ -147,7 +396,12 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
       .filter((canto) => canto.parallelCantos.length > 0);
   }, [selectedCantoId, selectedDomain, nodeFilterKind, searchQuery]);
 
-  // Track which Canto or Chapter is currently visible in the viewport for the Lateral Chronological Ruler
+  const parallelChapterIdsSet = useMemo(
+    () => new Set(PARALLEL_EPIC_POEM_CANTOS.map((p) => p.id)),
+    []
+  );
+
+  // Track which Canto or Chapter is currently visible in the viewport for the Lateral Chronological Ruler & Reading Progress
   useEffect(() => {
     const mainIds = CANTO_RULER_ITEMS.map((item) => `poem-canto-${item.id}`);
     const parallelIds = PARALLEL_EPIC_POEM_CANTOS.map((p) => `poem-canto-${p.id}`);
@@ -166,6 +420,9 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
         if (visible.length > 0) {
           const id = visible[0].target.id.replace('poem-canto-', '');
           setActiveScrollCantoId(id);
+          if (parallelChapterIdsSet.has(id)) {
+            markChapterRead(id, false);
+          }
         }
       },
       {
@@ -176,7 +433,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
 
     sections.forEach((sec) => observer.observe(sec));
     return () => observer.disconnect();
-  }, [filteredCantos]);
+  }, [filteredCantos, markChapterRead, parallelChapterIdsSet]);
 
   const handleSelectCantoDropdown = (val: string) => {
     setSelectedCantoId(val);
@@ -186,6 +443,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
       if (nodeFilterKind !== 'all') setNodeFilterKind('all');
       if (searchQuery.trim() !== '') setSearchQuery('');
       setActiveScrollCantoId(parallelMatch.id);
+      markChapterRead(parallelMatch.id, false);
       setTimeout(() => {
         scrollToSectionById(
           `poem-parallel-card-${parallelMatch.id}`,
@@ -243,6 +501,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
       setSearchQuery('');
     }
     setActiveScrollCantoId(parallelCanto.id);
+    markChapterRead(parallelCanto.id, false);
     setTimeout(() => {
       scrollToSectionById(
         `poem-parallel-card-${parallelCanto.id}`,
@@ -250,6 +509,28 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
       );
     }, 55);
   };
+
+  const bookmarkedChapter = useMemo(
+    () =>
+      readingProgress.bookmarkChapterId
+        ? PARALLEL_EPIC_POEM_CANTOS.find((p) => p.id === readingProgress.bookmarkChapterId) ?? null
+        : null,
+    [readingProgress.bookmarkChapterId]
+  );
+
+  const readChaptersCount = useMemo(
+    () => readingProgress.readChapterIds.filter((id) => parallelChapterIdsSet.has(id)).length,
+    [readingProgress.readChapterIds, parallelChapterIdsSet]
+  );
+
+  const readPct = Math.min(
+    100,
+    Math.round((readChaptersCount / Math.max(1, EPIC_POEM_STATS.totalChapters)) * 100)
+  );
+
+  const activeCompassRegion =
+    VAELORIA_COMPASS_REGIONS.find((r) => r.domain === selectedCompassDomain) ||
+    VAELORIA_COMPASS_REGIONS[3];
 
   /**
    * Renderiza cada Capítulo da Crônica Principal de Vaeloria dentro de um card contínuo de livro iluminado
@@ -261,6 +542,8 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
     nodesList: EpicPoemNode[]
   ) => {
     let illustratedCounter = 0;
+    const isBookmarked = readingProgress.bookmarkChapterId === parallelCanto.id;
+    const isChapterRead = readingProgress.readChapterIds.includes(parallelCanto.id);
 
     return (
       <section
@@ -270,20 +553,39 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
       >
         <div
           id={`poem-parallel-card-${parallelCanto.id}`}
-          className="poem-parallel-unified-card"
+          className={`poem-parallel-unified-card ${isBookmarked ? 'is-bookmarked-chapter' : ''}`}
           style={{
-            borderColor: 'rgba(212, 175, 55, 0.25)',
+            borderColor: isBookmarked
+              ? 'rgba(250, 204, 21, 0.65)'
+              : 'rgba(212, 175, 55, 0.25)',
             backgroundImage: `linear-gradient(180deg, rgba(10, 14, 24, 0.94) 0%, rgba(7, 10, 18, 0.98) 100%), url('${parallelCanto.bannerImage}')`,
           }}
         >
           <header className="poem-parallel-unified-header">
-            <div className="poem-canto-meta-top">
-              <span
-                className="poem-canto-kicker"
-                style={{ color: '#e6c875' }}
-              >
+            <div className="poem-canto-meta-top poem-chapter-header-row">
+              <span className="poem-canto-kicker" style={{ color: '#e6c875' }}>
                 {parallelCanto.cantoNumber} • {parallelCanto.periodLabel}
               </span>
+
+              <div className="poem-chapter-reading-tools">
+                {isChapterRead && (
+                  <span className="poem-chapter-read-pill" title="Capítulo visitado na leitura">
+                    ✓ Lido
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className={`poem-bookmark-toggle-btn ${isBookmarked ? 'active' : ''}`}
+                  onClick={() => toggleChapterBookmark(parallelCanto.id)}
+                  title={
+                    isBookmarked
+                      ? 'Remover marcador de leitura deste capítulo'
+                      : 'Salvar marcador de leitura neste capítulo'
+                  }
+                >
+                  {isBookmarked ? '🔖 Marcado' : '🔖 Marcar'}
+                </button>
+              </div>
             </div>
 
             <h2 className="font-cinzel gold-gradient-text poem-canto-title">
@@ -299,12 +601,16 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
                 DOMAIN_LABELS[node.domain]?.color || parallelCanto.accentColor || '#f59e0b';
               const showArt = Boolean(card && !node.hideCardArt);
               const isRightMedallion = showArt ? illustratedCounter++ % 2 === 1 : false;
+              const isHighlighted = highlightedNodeId === node.id;
 
               if (!showArt) {
                 return (
                   <div
                     key={node.id}
-                    className="poem-parallel-stream-segment is-narrative-bridge"
+                    id={`poem-node-${node.id}`}
+                    className={`poem-parallel-stream-segment is-narrative-bridge ${
+                      isHighlighted ? 'is-highlighted-poem-node' : ''
+                    }`}
                   >
                     <div className="poem-book-stanzas-centered">
                       {node.stanzas.map((stanza, sIdx) => (
@@ -329,9 +635,10 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
               return (
                 <div
                   key={node.id}
+                  id={`poem-node-${node.id}`}
                   className={`poem-parallel-stream-segment ${
                     isRightMedallion ? 'is-medallion-right' : 'is-medallion-left'
-                  }`}
+                  } ${isHighlighted ? 'is-highlighted-poem-node' : ''}`}
                 >
                   <div className="poem-folio-body">
                     {card && (
@@ -385,7 +692,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
   return (
     <div className="myth-atlas-shell">
       {/* =====================================================================
-          BARRA DE FILTROS EM LINHA ÚNICA (100% DEDICADA AO POEMA ÉPICO)
+          BARRA DE FILTROS + PROGRESSO DE LEITURA + BÚSSOLA DE VAELORIA
       ===================================================================== */}
       <nav className="poem-sticky-Controls">
         <div className="poem-controls-single-bar">
@@ -397,7 +704,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
               aria-label="Selecionar Canto"
             >
               <option value="all">
-                Todos os 7 Cantos ({PARALLEL_EPIC_POEM_CANTOS.length} Capítulos da Crônica Principal)
+                Todos os 7 Cantos ({PARALLEL_EPIC_POEM_CANTOS.length} Capítulos)
               </option>
               {CANTO_RULER_ITEMS.map((item) => {
                 const parallels = PARALLEL_CANTOS_BY_PARENT_ID[item.id] || [];
@@ -435,8 +742,8 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
               onChange={(e) => setNodeFilterKind(e.target.value as 'all' | 'creatures_only')}
               aria-label="Filtrar Episódios"
             >
-              <option value="all">Poema Completo (História + Criaturas)</option>
-              <option value="creatures_only">Apenas Criaturas e Lendas</option>
+              <option value="all">Poema Completo</option>
+              <option value="creatures_only">Apenas Criaturas</option>
             </select>
 
             <input
@@ -446,12 +753,174 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+
+            <button
+              type="button"
+              className={`myth-compass-toggle-btn ${isCompassOpen ? 'active' : ''}`}
+              onClick={() => setIsCompassOpen((prev) => !prev)}
+              title="Abrir Rosa dos Ventos e Mapa Canônico de Vaeloria"
+            >
+              🧭 Rosa dos Ventos
+            </button>
+
+            <div
+              className="myth-reading-progress-chip"
+              title={`${readChaptersCount} de ${EPIC_POEM_STATS.totalChapters} capítulos visitados (${readPct}%)`}
+            >
+              <span>
+                📚 {readChaptersCount}/{EPIC_POEM_STATS.totalChapters}
+              </span>
+              <div className="myth-reading-progress-bar">
+                <div
+                  className="myth-reading-progress-fill"
+                  style={{ width: `${readPct}%` }}
+                />
+              </div>
+            </div>
+
+            {bookmarkedChapter && (
+              <button
+                type="button"
+                className="myth-resume-bookmark-btn"
+                onClick={() => handleJumpToParallelCanto(bookmarkedChapter)}
+                title={`Retomar leitura no Capítulo ${bookmarkedChapter.parallelCode}: ${bookmarkedChapter.title}`}
+              >
+                🔖 Cap. {bookmarkedChapter.parallelCode}
+              </button>
+            )}
           </div>
         </div>
       </nav>
 
       {/* =====================================================================
-          RÉGUA CRONOLÓGICA LATERAL FIXA (I a VII + Capítulos I-A a VII-I)
+          ROSA DOS VENTOS INTERATIVA & GEOGRAFIA CANÔNICA DE VAELORIA
+      ===================================================================== */}
+      {isCompassOpen && (
+        <section className="vaeloria-compass-panel" aria-label="Rosa dos Ventos de Vaeloria">
+          <div className="vaeloria-compass-inner">
+            <div className="vaeloria-compass-header">
+              <div>
+                <span className="vaeloria-compass-kicker">
+                  CARTOGRAFIA OFICIAL PÓS-FRATURA (1 D.F. — 1.240 D.F.)
+                </span>
+                <h3 className="font-cinzel gold-gradient-text vaeloria-compass-title">
+                  Rosa dos Ventos & Os Seis Territórios de Vaeloria
+                </h3>
+              </div>
+              <button
+                type="button"
+                className="myth-compass-close-btn"
+                onClick={() => setIsCompassOpen(false)}
+              >
+                ✕ Recolher Mapa
+              </button>
+            </div>
+
+            <div className="vaeloria-compass-layout">
+              {/* Grade Cardeal Interativa */}
+              <div className="vaeloria-compass-grid">
+                {VAELORIA_COMPASS_REGIONS.map((region) => {
+                  const isActive = region.domain === selectedCompassDomain;
+                  return (
+                    <button
+                      key={region.domain}
+                      type="button"
+                      className={`vaeloria-compass-node area-${region.gridArea} ${
+                        isActive ? 'is-selected' : ''
+                      }`}
+                      style={
+                        {
+                          '--region-color': region.color,
+                        } as React.CSSProperties
+                      }
+                      onClick={() => setSelectedCompassDomain(region.domain)}
+                    >
+                      <span className="compass-node-dir">{region.shortDir}</span>
+                      <span className="compass-node-icon">{region.icon}</span>
+                      <span className="compass-node-name">{region.name}</span>
+                      <span className="compass-node-sub">{region.epithet}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Detalhes do Território Selecionado + Atalhos de Capítulos */}
+              <div
+                className="vaeloria-compass-detail"
+                style={
+                  {
+                    '--region-color': activeCompassRegion.color,
+                  } as React.CSSProperties
+                }
+              >
+                <div className="compass-detail-top">
+                  <span className="compass-detail-dir">
+                    {activeCompassRegion.icon} {activeCompassRegion.direction}
+                  </span>
+                  <h4 className="font-cinzel compass-detail-name">
+                    {activeCompassRegion.name} — {activeCompassRegion.epithet}
+                  </h4>
+                  <div className="compass-detail-citadel">
+                    <strong>Bastião Canônico:</strong> {activeCompassRegion.citadel}
+                  </div>
+                  <div className="compass-detail-citadel">
+                    <strong>Vultos Históricos:</strong> {activeCompassRegion.champions}
+                  </div>
+                </div>
+
+                <p className="compass-detail-summary">{activeCompassRegion.summary}</p>
+
+                <div className="compass-detail-chapters">
+                  <span className="compass-detail-chapters-label">
+                    Capítulos Fundamentais desta Região:
+                  </span>
+                  <div className="compass-detail-pills">
+                    {activeCompassRegion.keyChapterIds.map((chId) => {
+                      const ch = PARALLEL_EPIC_POEM_CANTOS.find((p) => p.id === chId);
+                      if (!ch) return null;
+                      return (
+                        <button
+                          key={ch.id}
+                          type="button"
+                          className="compass-chapter-pill"
+                          onClick={() => {
+                            setIsCompassOpen(false);
+                            handleJumpToParallelCanto(ch);
+                          }}
+                          title={`${ch.title} (${ch.periodLabel})`}
+                        >
+                          Cap. {ch.parallelCode} • {ch.shortTitle}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="compass-detail-actions">
+                  <button
+                    type="button"
+                    className="btn-fantasy compass-filter-domain-btn"
+                    onClick={() => {
+                      setSelectedDomain(
+                        selectedDomain === activeCompassRegion.domain
+                          ? 'all'
+                          : activeCompassRegion.domain
+                      );
+                    }}
+                  >
+                    {selectedDomain === activeCompassRegion.domain
+                      ? 'Mostrar Todos os Domínios'
+                      : `Filtrar Estrofes de ${activeCompassRegion.name}`}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* =====================================================================
+          RÉGUA CRONOLÓGICA LATERAL FIXA (I a VII + Capítulos I-A a VII-K)
       ===================================================================== */}
       <aside className="poem-lateral-ruler" aria-label="Linha do Tempo dos Sete Cantos">
         {CANTO_RULER_ITEMS.map((item) => {
@@ -479,15 +948,21 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({ onInspec
                 const isParallelCurrent =
                   selectedCantoId === parallel.id ||
                   (selectedCantoId === 'all' && activeScrollCantoId === parallel.id);
+                const isBookmarked = readingProgress.bookmarkChapterId === parallel.id;
+                const isRead = readingProgress.readChapterIds.includes(parallel.id);
                 return (
                   <button
                     key={parallel.id}
                     type="button"
-                    className={`poem-ruler-substep is-expanded ${isParallelCurrent ? 'active' : ''}`}
+                    className={`poem-ruler-substep is-expanded ${
+                      isParallelCurrent ? 'active' : ''
+                    } ${isBookmarked ? 'is-bookmarked' : ''} ${isRead ? 'is-read' : ''}`}
                     onClick={() => handleJumpToParallelCanto(parallel)}
                     title={`Ir para Capítulo ${parallel.parallelCode}: ${parallel.title}`}
                   >
-                    <span className="poem-ruler-substep-arrow">↳</span>
+                    <span className="poem-ruler-substep-arrow">
+                      {isBookmarked ? '🔖' : isRead ? '✓' : '↳'}
+                    </span>
                     <span className="poem-ruler-substep-text">
                       {parallel.parallelCode} • {parallel.shortTitle}
                     </span>

@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CARDS_BY_ID } from '../data/cards';
 import {
+  EPIC_POEM_APPEARANCES_BY_CARD_ID,
+  PARALLEL_CANTOS_BY_PARENT_ID,
+  dispatchNavigateToPoem,
+} from '../data/epicPoemData';
+import { getCardChronicleAndSong } from '../data/mythologyLore';
+import {
   formatCardDetailedRules,
   formatCardFaceDescription,
 } from '../utils/cardTextFormatter';
@@ -738,6 +744,36 @@ export interface CardInspectModalProps {
 export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card: rawCard, onClose }) => {
   const card = CARDS_BY_ID[rawCard.id] ?? rawCard;
   const domainInfo = DOMAIN_META[card.domain] || DOMAIN_META.neutral;
+  const poemAppearances = EPIC_POEM_APPEARANCES_BY_CARD_ID[card.id] ?? [];
+  const primaryPoem = poemAppearances[0] ?? null;
+  const fallbackChronicle = React.useMemo(
+    () => (primaryPoem ? null : getCardChronicleAndSong(card)),
+    [card, primaryPoem]
+  );
+
+  const resolveEraCantoId = (eraTitle: string): string => {
+    if (eraTitle.startsWith('Era Zero')) return 'canto_1_vigilia';
+    if (eraTitle.startsWith('Iª Era')) return 'canto_2_fratura';
+    if (eraTitle.startsWith('IIª Era')) return 'canto_3_cidadelas';
+    if (eraTitle.startsWith('IIIª Era')) return 'canto_4_guerra';
+    if (eraTitle.startsWith('IVª Era')) return 'canto_5_pacto';
+    if (eraTitle.startsWith('Vª Era')) return 'canto_6_tratados';
+    return 'canto_7_presente';
+  };
+
+  const handleJumpToPoem = (
+    cantoId: string,
+    chapterId: string,
+    nodeId: string
+  ) => {
+    onClose();
+    dispatchNavigateToPoem({
+      cardId: card.id,
+      cantoId,
+      chapterId,
+      nodeId,
+    });
+  };
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -905,6 +941,92 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card: rawCar
             >
               “{card.flavorText}”
             </div>
+
+            {/* Direct Bridge Card <-> Epic Poem of Vaeloria */}
+            {primaryPoem ? (
+              <div className="inspect-poem-bridge-card">
+                <div className="inspect-poem-bridge-header">
+                  <span className="inspect-poem-kicker">
+                    📜 Cap. {primaryPoem.chapterCode} • {primaryPoem.node.yearLabel}
+                  </span>
+                  <span className="inspect-poem-loc">
+                    {primaryPoem.node.locationLabel}
+                  </span>
+                </div>
+                {primaryPoem.node.stanzas[0] && (
+                  <div className="inspect-poem-stanza-preview">
+                    {primaryPoem.node.stanzas[0].map((line, lIdx) => (
+                      <div key={lIdx}>{line}</div>
+                    ))}
+                  </div>
+                )}
+                <div className="inspect-poem-actions">
+                  <button
+                    type="button"
+                    className="btn-fantasy inspect-poem-jump-btn"
+                    onClick={() =>
+                      handleJumpToPoem(
+                        primaryPoem.cantoId,
+                        primaryPoem.chapterId,
+                        primaryPoem.node.id
+                      )
+                    }
+                  >
+                    📖 Ler no Grande Poema (Cap. {primaryPoem.chapterCode}) →
+                  </button>
+                  {poemAppearances.length > 1 && (
+                    <div className="inspect-poem-extra-chapters">
+                      <span>Também em:</span>
+                      {poemAppearances.slice(1, 5).map((alt) => (
+                        <button
+                          key={`${alt.chapterId}-${alt.node.id}`}
+                          type="button"
+                          className="inspect-poem-alt-pill"
+                          onClick={() =>
+                            handleJumpToPoem(alt.cantoId, alt.chapterId, alt.node.id)
+                          }
+                          title={`${alt.chapterTitle} (${alt.periodLabel})`}
+                        >
+                          Cap. {alt.chapterCode}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : fallbackChronicle ? (
+              <div className="inspect-poem-bridge-card is-era-fallback">
+                <div className="inspect-poem-bridge-header">
+                  <span className="inspect-poem-kicker">
+                    📜 {fallbackChronicle.eraTitle}
+                  </span>
+                  <span className="inspect-poem-loc">
+                    {fallbackChronicle.yearLabel} • {fallbackChronicle.locationLabel}
+                  </span>
+                </div>
+                <div className="inspect-poem-actions">
+                  <button
+                    type="button"
+                    className="btn-fantasy inspect-poem-jump-btn"
+                    onClick={() => {
+                      const targetCantoId = resolveEraCantoId(fallbackChronicle.eraTitle);
+                      const chapters = PARALLEL_CANTOS_BY_PARENT_ID[targetCantoId] || [];
+                      const domainMatch =
+                        chapters.find((ch) =>
+                          ch.nodes.some((n) => n.domain === card.domain)
+                        ) || chapters[0];
+                      handleJumpToPoem(
+                        targetCantoId,
+                        domainMatch?.id || '',
+                        domainMatch?.nodes[0]?.id || ''
+                      );
+                    }}
+                  >
+                    📖 Explorar Era no Grande Poema →
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

@@ -11,6 +11,8 @@ export type SfxType =
   | 'domain_expand'
   | 'domain_clash'
   | 'domain_shatter'
+  | 'wheel_domain_shatter'
+  | 'dragon_armada'
   | 'victory'
   | 'defeat'
   | 'pack_open';
@@ -273,6 +275,42 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType): void {
         playNoiseBurst(ctx, 0.24, 3200, 0.22, 0.04);
         playNoiseBurst(ctx, 0.28, 1850, 0.18, 0.12);
         playTone(ctx, 880, 220, 0.32, 'triangle', 0.15, 0.06);
+        break;
+      }
+
+      case 'wheel_domain_shatter': {
+        // 1. Sacred Eight-Spoke Wheel Mechanical Ratchet & Astral Lock (0.0s - 0.34s)
+        const wheelClicks = [880.0, 1046.5, 1318.51, 1760.0];
+        wheelClicks.forEach((freq, idx) => {
+          const t = idx * 0.075;
+          playNoiseBurst(ctx, 0.045, 2900 + idx * 350, 0.14, t);
+          playTone(ctx, freq, freq * 1.04, 0.11, 'triangle', 0.15, t);
+        });
+
+        // 2. Cataclysmic Reality Barrier Implosion & Polygonal Crystal Shatter (0.31s - 1.15s)
+        playNoiseBurst(ctx, 0.44, 280, 0.32, 0.31);
+        playTone(ctx, 174.61, 30.87, 0.62, 'sine', 0.34, 0.31);
+        playTone(ctx, 293.66, 73.42, 0.48, 'sawtooth', 0.18, 0.33);
+        playNoiseBurst(ctx, 0.28, 3600, 0.24, 0.34);
+        playNoiseBurst(ctx, 0.32, 2150, 0.2, 0.42);
+        // Resonant Celestial Judgement Bell Sustain
+        playTone(ctx, 587.33, 587.33, 0.72, 'triangle', 0.16, 0.36);
+        playTone(ctx, 1174.66, 587.33, 0.45, 'sine', 0.13, 0.36);
+        break;
+      }
+
+      case 'dragon_armada': {
+        // 1. Sky-Darkening Squadron Wingbeat Gusts (0.0s - 0.65s)
+        playNoiseBurst(ctx, 0.26, 260, 0.24, 0);
+        playNoiseBurst(ctx, 0.26, 340, 0.22, 0.16);
+        playNoiseBurst(ctx, 0.28, 440, 0.2, 0.32);
+
+        // 2. Draconic Brass Warhorn & Multi-Dragon Roar Swell (0.06s - 1.05s)
+        playTone(ctx, 98.0, 65.41, 0.68, 'sawtooth', 0.22, 0.04);
+        playTone(ctx, 146.83, 130.81, 0.72, 'sawtooth', 0.16, 0.12);
+        playTone(ctx, 220.0, 293.66, 0.65, 'triangle', 0.17, 0.18);
+        playTone(ctx, 440.0, 587.33, 0.55, 'triangle', 0.13, 0.26);
+        playNoiseBurst(ctx, 0.34, 1850, 0.16, 0.24);
         break;
       }
 

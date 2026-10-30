@@ -538,7 +538,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     domain: Exclude<Domain, 'neutral'>;
     name: string;
     icon: string;
-    mode: 'expire' | 'shatter';
+    mode: 'expire' | 'shatter' | 'wheel_shatter';
     reasonText: string;
   } | null>(null);
   const prevDomainExpansionRef = useRef<GameState['domainExpansion']>(gameState.domainExpansion);
@@ -559,7 +559,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   } | null>(null);
 
   const [spectacleFx, setSpectacleFx] = useState<{
-    kind: 'breath' | 'spell' | 'legendary' | 'ascend' | 'sovereign';
+    kind:
+      | 'breath'
+      | 'spell'
+      | 'legendary'
+      | 'ascend'
+      | 'sovereign'
+      | 'armada'
+      | 'wheel_general';
     card: CardDefinition;
     domain: Domain;
     title: string;
@@ -615,6 +622,54 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         angleDeg = Math.round((Math.atan2(dy, dx) * 180) / Math.PI);
         distancePx = Math.round(Math.hypot(dx, dy));
       }
+    }
+
+    // 0A. Dragon Armada Sky-Full-of-Dragons Flyover (#172)
+    if (card.id.includes('_172_armada_draconica_')) {
+      const targetRowName: RowType = enemyState.vanguard.some((u) => u !== null)
+        ? 'vanguard'
+        : 'rearguard';
+      const targetLaneId = `${enemyActor}-${targetRowName}`;
+      triggerScreenShake('heavy');
+      playSfx('dragon_armada');
+      setSpectacleFx({
+        kind: 'armada',
+        card,
+        domain: card.domain,
+        title: `🐉🔥 ARMADA DRACÔNICA: ${card.name.toUpperCase()}`,
+        subtitle:
+          formatCardFaceDescription(card) ||
+          'Esquadrões colossais escurecem o firmamento da Arena!',
+        targetLaneId,
+      });
+      setTimeout(() => setSpectacleFx(null), 1280);
+      return;
+    }
+
+    // 0B. Sacred Wheel General Entrance (#173 — Anti-Domain Expansion Sovereign General)
+    if (card.effects.some((e) => e.type === 'break_domain_expansion')) {
+      const willBreakEnemyDomain = Boolean(
+        prePlayState.domainExpansion &&
+          (prePlayState.domainExpansion.owner === enemyActor ||
+            prePlayState.domainExpansion.clashRival?.owner === enemyActor)
+      );
+      triggerScreenShake('heavy');
+      if (!willBreakEnemyDomain) {
+        playSfx('ascend');
+      }
+      setSpectacleFx({
+        kind: 'wheel_general',
+        card,
+        domain: card.domain,
+        title: willBreakEnemyDomain
+          ? `☸ QUEBRA DE DOMÍNIO: ${card.name.toUpperCase()}`
+          : `☸ GENERAL DA RODA CELESTE: ${card.name.toUpperCase()}`,
+        subtitle: willBreakEnemyDomain
+          ? 'A Roda de Oito Raios gira e estilhaça a Expansão de Domínio rival (Exaustão: 2 rodadas)!'
+          : formatCardFaceDescription(card) || card.flavorText,
+      });
+      setTimeout(() => setSpectacleFx(null), 1320);
+      return;
     }
 
     // 1. Dragon Breath / Row Wave (breathDamage > 0 or row-wide spell)
@@ -854,25 +909,43 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
   }, [campaignBoss, campaignPlayerDeckIds]);
 
-  // Detect Domain Expansion lifecycle transitions: Entry (AI), Clash, Natural Expiration, and Shatter/Destruction
+  // Detect Domain Expansion lifecycle transitions: Entry (AI), Clash, Natural Expiration, Sacred Wheel Shatter, and Destruction
   useEffect(() => {
     const prev = prevDomainExpansionRef.current;
     const curr = gameState.domainExpansion;
+    const recentLogsText = [
+      ...gameState.combatLog.slice(0, 6),
+      ...gameState.combatLog.slice(-6),
+    ]
+      .map((l) => l.message)
+      .join(' ');
+    const wasWheelShattered = recentLogsText.includes('QUEBRA DE EXPANSÃO DE DOMÍNIO');
+    const wheelBreakerMatch = recentLogsText.match(/QUEBRA DE EXPANSÃO DE DOMÍNIO!\s*\[([^\]]+)\]/);
+    const wheelBreakerLabel = wheelBreakerMatch?.[1] ? `${wheelBreakerMatch[1].toUpperCase()}: ` : '';
 
     if (prev && !curr) {
-      const recentLogsText = [
-        ...gameState.combatLog.slice(0, 6),
-        ...gameState.combatLog.slice(-6),
-      ]
-        .map((l) => l.message)
-        .join(' ');
       const wasShattered =
+        wasWheelShattered ||
         recentLogsText.includes('QUEBRA DE BARREIRA') ||
         recentLogsText.includes('QUEBRA DE CONCENTRAÇÃO') ||
+        recentLogsText.includes('estilhaçou') ||
         recentLogsText.includes('estilhaçar') ||
         recentLogsText.includes('colapsou');
 
-      if (wasShattered) {
+      if (wasWheelShattered) {
+        triggerScreenShake('heavy');
+        playSfx('wheel_domain_shatter');
+        setDomainExitAnim({
+          domain: prev.domain,
+          name: prev.name,
+          icon: prev.icon,
+          mode: 'wheel_shatter',
+          reasonText: `☸ RODA DE OITO RAIOS! ${wheelBreakerLabel}[${prev.name.toUpperCase()}] ESTILHAÇADO • EXAUSTÃO (2 RODADAS)!`,
+        });
+        const t = setTimeout(() => setDomainExitAnim(null), 1680);
+        prevDomainExpansionRef.current = curr;
+        return () => clearTimeout(t);
+      } else if (wasShattered) {
         triggerScreenShake('heavy');
         playSfx('domain_shatter');
         const reason = recentLogsText.includes('QUEBRA DE CONCENTRAÇÃO')
@@ -904,35 +977,39 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
 
     if (prev && curr && prev.owner !== curr.owner && !curr.clashRival) {
-      // Overwhelming Affinity shattered the previous Domain Expansion and replaced it!
+      // Sacred Wheel General or Overwhelming Affinity shattered the previous Domain Expansion and replaced/promoted the rival!
       triggerScreenShake('heavy');
-      playSfx('domain_shatter');
+      playSfx(wasWheelShattered ? 'wheel_domain_shatter' : 'domain_shatter');
       setDomainExitAnim({
         domain: prev.domain,
         name: prev.name,
         icon: prev.icon,
-        mode: 'shatter',
-        reasonText: `💥 [${curr.name.toUpperCase()}] ESTILHAÇOU [${prev.name.toUpperCase()}]!`,
+        mode: wasWheelShattered ? 'wheel_shatter' : 'shatter',
+        reasonText: wasWheelShattered
+          ? `☸ RODA DE OITO RAIOS! ${wheelBreakerLabel}[${prev.name.toUpperCase()}] ESTILHAÇADO • [${curr.name.toUpperCase()}] REINA!`
+          : `💥 [${curr.name.toUpperCase()}] ESTILHAÇOU [${prev.name.toUpperCase()}]!`,
       });
-      const t = setTimeout(() => setDomainExitAnim(null), 1300);
+      const t = setTimeout(() => setDomainExitAnim(null), wasWheelShattered ? 1680 : 1300);
       prevDomainExpansionRef.current = curr;
       return () => clearTimeout(t);
     }
 
     if (prev && curr && prev.clashRival && !curr.clashRival) {
-      // One domain won the 50/50 Domain Clash and shattered the rival barrier!
+      // One domain won the 50/50 Domain Clash or a Wheel General shattered the rival barrier!
       const shatteredDom =
         curr.owner === prev.owner ? prev.clashRival : { domain: prev.domain, name: prev.name, icon: prev.icon };
       triggerScreenShake('heavy');
-      playSfx('domain_shatter');
+      playSfx(wasWheelShattered ? 'wheel_domain_shatter' : 'domain_shatter');
       setDomainExitAnim({
         domain: shatteredDom.domain,
         name: shatteredDom.name,
         icon: shatteredDom.icon,
-        mode: 'shatter',
-        reasonText: `💥 DISPUTA VENCIDA! [${shatteredDom.name.toUpperCase()}] ESTILHAÇADO!`,
+        mode: wasWheelShattered ? 'wheel_shatter' : 'shatter',
+        reasonText: wasWheelShattered
+          ? `☸ RODA DE OITO RAIOS! ${wheelBreakerLabel}[${shatteredDom.name.toUpperCase()}] ESTILHAÇADO NA DISPUTA!`
+          : `💥 DISPUTA VENCIDA! [${shatteredDom.name.toUpperCase()}] ESTILHAÇADO!`,
       });
-      const t = setTimeout(() => setDomainExitAnim(null), 1300);
+      const t = setTimeout(() => setDomainExitAnim(null), wasWheelShattered ? 1680 : 1300);
       prevDomainExpansionRef.current = curr;
       return () => clearTimeout(t);
     }
@@ -3148,6 +3225,60 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               <div className="legendary-rays-burst" />
             </div>
           )}
+
+          {/* Dragon Armada Sky-Full-of-Dragons Flyover (#172) */}
+          {spectacleFx.kind === 'armada' && (
+            <div
+              className={`dragon-armada-sky-sweep domain-${spectacleFx.domain}`}
+              aria-hidden="true"
+            >
+              <div className="armada-storm-veil" />
+              {[0, 1, 2, 3, 4, 5, 6].map((dIdx) => (
+                <div
+                  key={dIdx}
+                  className={`armada-dragon-silhouette dragon-wing-${dIdx}`}
+                  style={
+                    {
+                      '--d-top': `${12 + ((dIdx * 13) % 68)}%`,
+                      '--d-delay': `${dIdx * 0.08}s`,
+                      '--d-scale': `${dIdx === 3 ? 1.38 : 0.78 + (dIdx % 3) * 0.18}`,
+                    } as React.CSSProperties
+                  }
+                >
+                  <svg viewBox="0 0 120 80" className="armada-dragon-svg">
+                    <path
+                      d="M8,42 C26,18 46,6 68,18 L54,34 L88,36 L114,40 L88,44 L54,46 L68,62 C46,74 26,62 8,42 Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Sacred Eight-Spoke Wheel General Entrance Halo (#173) */}
+          {spectacleFx.kind === 'wheel_general' && (
+            <div
+              className={`wheel-general-entrance-backdrop domain-${spectacleFx.domain}`}
+              aria-hidden="true"
+            >
+              <div className="legendary-rays-burst" />
+              <div className="wheel-general-halo-wrap">
+                <svg viewBox="0 0 200 200" className="sacred-eight-spoke-wheel-svg">
+                  <circle cx="100" cy="100" r="82" fill="none" stroke="currentColor" strokeWidth="6" />
+                  <circle cx="100" cy="100" r="66" fill="none" stroke="currentColor" strokeWidth="2.5" strokeDasharray="8 6" />
+                  <circle cx="100" cy="100" r="22" fill="none" stroke="currentColor" strokeWidth="5" />
+                  <circle cx="100" cy="100" r="8" fill="currentColor" />
+                  {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+                    <g key={deg} transform={`rotate(${deg} 100 100)`}>
+                      <line x1="100" y1="22" x2="100" y2="78" stroke="currentColor" strokeWidth="4.5" />
+                      <polygon points="100,4 94,18 106,18" fill="currentColor" />
+                    </g>
+                  ))}
+                </svg>
+              </div>
+            </div>
+          )}
         </>
       )}
 
@@ -4064,25 +4195,49 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     </div>
                   )}
 
-                  {/* 4. DESTRUCTION / SHATTER ANIMATION (8 Polygonal Barrier Shards + Fracture Flash) */}
-                  {domainExitAnim && domainExitAnim.mode === 'shatter' && (
-                    <div
-                      key={`domain-shatter-${domainExitAnim.domain}`}
-                      className={`tabletop-domain-shatter-layer domain-${domainExitAnim.domain}`}
-                    >
-                      <div className="domain-shatter-impact-flash" />
-                      <div className="domain-shatter-fracture-web" />
-                      {[0, 1, 2, 3, 4, 5, 6, 7].map((shardIdx) => (
+                  {/* 4. DESTRUCTION / SACRED WHEEL SHATTER ANIMATION (8 Polygonal Barrier Shards + Celestial Wheel Mandala) */}
+                  {domainExitAnim &&
+                    (domainExitAnim.mode === 'shatter' || domainExitAnim.mode === 'wheel_shatter') && (
+                      <div
+                        key={`domain-shatter-${domainExitAnim.mode}-${domainExitAnim.domain}`}
+                        className={`tabletop-domain-shatter-layer domain-${domainExitAnim.domain} ${
+                          domainExitAnim.mode === 'wheel_shatter' ? 'is-wheel-shatter' : ''
+                        }`}
+                      >
+                        <div className="domain-shatter-impact-flash" />
+                        <div className="domain-shatter-fracture-web" />
+                        {domainExitAnim.mode === 'wheel_shatter' && (
+                          <div className="wheel-shatter-celestial-mandala" aria-hidden="true">
+                            <div className="wheel-shatter-shockwave-ring" />
+                            <svg viewBox="0 0 200 200" className="sacred-eight-spoke-wheel-svg is-shattering">
+                              <circle cx="100" cy="100" r="82" fill="none" stroke="currentColor" strokeWidth="6.5" />
+                              <circle cx="100" cy="100" r="64" fill="none" stroke="currentColor" strokeWidth="2.5" strokeDasharray="10 6" />
+                              <circle cx="100" cy="100" r="24" fill="none" stroke="currentColor" strokeWidth="5.5" />
+                              <circle cx="100" cy="100" r="9" fill="currentColor" />
+                              {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+                                <g key={deg} transform={`rotate(${deg} 100 100)`}>
+                                  <line x1="100" y1="20" x2="100" y2="76" stroke="currentColor" strokeWidth="5" />
+                                  <polygon points="100,2 93,18 107,18" fill="currentColor" />
+                                </g>
+                              ))}
+                            </svg>
+                          </div>
+                        )}
+                        {[0, 1, 2, 3, 4, 5, 6, 7].map((shardIdx) => (
+                          <div
+                            key={shardIdx}
+                            className={`domain-shatter-shard shard-${shardIdx} domain-${domainExitAnim.domain}`}
+                          />
+                        ))}
                         <div
-                          key={shardIdx}
-                          className={`domain-shatter-shard shard-${shardIdx} domain-${domainExitAnim.domain}`}
-                        />
-                      ))}
-                      <div className="domain-exit-status-banner shatter-banner">
-                        {domainExitAnim.reasonText}
+                          className={`domain-exit-status-banner shatter-banner ${
+                            domainExitAnim.mode === 'wheel_shatter' ? 'wheel-shatter-banner' : ''
+                          }`}
+                        >
+                          {domainExitAnim.reasonText}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   <div className="tabletop-center-frontier-seam" />
                 </div>
@@ -4111,9 +4266,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
                 {/* 1ª Fileira (Topo): AI Rearguard */}
                 <div className="cpa-board-lane rearguard-lane ai-rearguard-lane">
-                  {spectacleFx?.kind === 'breath' && spectacleFx.targetLaneId === 'ai-rearguard' && (
-                    <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
-                  )}
+                  {(spectacleFx?.kind === 'breath' || spectacleFx?.kind === 'armada') &&
+                    spectacleFx.targetLaneId === 'ai-rearguard' && (
+                      <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
+                    )}
                   <div className="cpa-lane-slots">
                     {[0, 1, 2, 3, 4, 5].map((idx) => {
                       const slotUnits = getSlotUnits(gameState.ai, 'rearguard', idx);
@@ -4203,9 +4359,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
                 {/* 2ª Fileira: AI Vanguard (Logo à frente da Retaguarda do Adversário) */}
                 <div className="cpa-board-lane vanguard-lane ai-vanguard-lane">
-                  {spectacleFx?.kind === 'breath' && spectacleFx.targetLaneId === 'ai-vanguard' && (
-                    <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
-                  )}
+                  {(spectacleFx?.kind === 'breath' || spectacleFx?.kind === 'armada') &&
+                    spectacleFx.targetLaneId === 'ai-vanguard' && (
+                      <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
+                    )}
                   <div className="cpa-lane-slots">
                     {[0, 1, 2, 3, 4, 5].map((idx) => {
                       const slotUnits = getSlotUnits(gameState.ai, 'vanguard', idx);
@@ -4302,7 +4459,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
                 {/* 3ª Fileira: Player Vanguard (Logo à frente da nossa Retaguarda) */}
                 <div className="cpa-board-lane vanguard-lane player-vanguard-lane">
-                  {spectacleFx?.kind === 'breath' &&
+                  {(spectacleFx?.kind === 'breath' || spectacleFx?.kind === 'armada') &&
                     spectacleFx.targetLaneId === 'player-vanguard' && (
                       <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
                     )}
@@ -4429,7 +4586,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
                 {/* 4ª Fileira (Base): Player Rearguard */}
                 <div className="cpa-board-lane rearguard-lane player-lane">
-                  {spectacleFx?.kind === 'breath' &&
+                  {(spectacleFx?.kind === 'breath' || spectacleFx?.kind === 'armada') &&
                     spectacleFx.targetLaneId === 'player-rearguard' && (
                       <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
                     )}

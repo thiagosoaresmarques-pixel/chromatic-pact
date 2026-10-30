@@ -18,6 +18,10 @@ import { ExpeditionView } from './components/ExpeditionView';
 import { TutorialCodexView } from './components/TutorialCodexView';
 import { MythologyAtlasView } from './components/MythologyAtlasView';
 import {
+  NAVIGATE_TO_POEM_EVENT,
+  NavigateToPoemDetail,
+} from './data/epicPoemData';
+import {
   AccountModalTab,
   MultiplayerView,
   SovereignAccountModal,
@@ -192,6 +196,20 @@ export const App: React.FC = () => {
     aiDeckId?: string;
   }>(() => initialNavState?.quickDuelDecks ?? {});
   const [showcaseInspectCard, setShowcaseInspectCard] = useState<CardDefinition | null>(null);
+  const [poemJumpTarget, setPoemJumpTarget] = useState<NavigateToPoemDetail | null>(null);
+
+  // Global Card -> Epic Poem bridge listener (works from any CardInspectModal across the app)
+  useEffect(() => {
+    const handlePoemNavigate = (ev: Event) => {
+      const customEv = ev as CustomEvent<NavigateToPoemDetail>;
+      if (!customEv.detail) return;
+      setShowcaseInspectCard(null);
+      setPoemJumpTarget({ ...customEv.detail });
+      setActiveTab('mythology');
+    };
+    window.addEventListener(NAVIGATE_TO_POEM_EVENT, handlePoemNavigate);
+    return () => window.removeEventListener(NAVIGATE_TO_POEM_EVENT, handlePoemNavigate);
+  }, []);
 
   // Persist navigation & active match context across page reloads (F5 / mobile refresh)
   useEffect(() => {
@@ -1285,7 +1303,11 @@ export const App: React.FC = () => {
         )}
 
         {activeTab === 'mythology' && (
-          <MythologyAtlasView onInspectCard={setShowcaseInspectCard} />
+          <MythologyAtlasView
+            onInspectCard={setShowcaseInspectCard}
+            jumpTarget={poemJumpTarget}
+            onConsumeJumpTarget={() => setPoemJumpTarget(null)}
+          />
         )}
 
         {activeTab === 'rules' && (

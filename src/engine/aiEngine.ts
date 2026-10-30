@@ -297,7 +297,18 @@ function evaluateCardPlayValue(
       }
     }
 
-    const baseScore = 40 + card.cost * 10 + card.atk * 4 + card.hp * 3;
+    const hasPlayerDomainActive = Boolean(
+      state.domainExpansion &&
+        (state.domainExpansion.owner === 'player' ||
+          state.domainExpansion.clashRival?.owner === 'player')
+    );
+    const domainBreakerBonus =
+      hasPlayerDomainActive &&
+      card.effects.some((e) => e.type === 'break_domain_expansion')
+        ? 95
+        : 0;
+    const baseScore =
+      40 + card.cost * 10 + card.atk * 4 + card.hp * 3 + domainBreakerBonus;
     return {
       shouldPlay: true,
       score: baseScore,
@@ -407,6 +418,17 @@ function evaluateCardPlayValue(
         if (hasCryptCreature && hasBoardSpace) {
           usefulEffectFound = true;
           spellScore += 45;
+        }
+        break;
+      }
+      case 'break_domain_expansion': {
+        if (
+          state.domainExpansion &&
+          (state.domainExpansion.owner === 'player' ||
+            state.domainExpansion.clashRival?.owner === 'player')
+        ) {
+          usefulEffectFound = true;
+          spellScore += 95;
         }
         break;
       }

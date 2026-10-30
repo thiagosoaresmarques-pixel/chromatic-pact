@@ -322,6 +322,13 @@ export function formatEffectActionClause(
         : `toma o controle permanente da criatura inimiga mais forte com Ataque atual até ${maxAtk}`;
     }
 
+    case 'break_domain_expansion': {
+      if (!detailed) {
+        return 'quebra Expansões de Domínio inimigas';
+      }
+      return 'quebra imediatamente qualquer Expansão de Domínio inimiga ativa, inclusive ao atacar, e impõe 2 rodadas de exaustão de barreira ao oponente';
+    }
+
     default:
       return (effect.description || '').replace(/[()]/g, '');
   }

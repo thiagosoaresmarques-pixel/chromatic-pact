@@ -1577,6 +1577,78 @@ export function breakDomainExpansionWithSacrifice(
   return next;
 }
 
+export function shatterEnemyDomainExpansionByUnit(
+  state: GameState,
+  actor: 'player' | 'ai',
+  sourceName: string,
+  sourceInstanceId?: string
+): boolean {
+  if (!state.domainExpansion) return false;
+  const enemyActor: 'player' | 'ai' = actor === 'player' ? 'ai' : 'player';
+
+  // Case 1: Actor's own Domain Expansion is being contested by an enemy 50/50 Clash Rival
+  if (
+    state.domainExpansion.owner === actor &&
+    state.domainExpansion.clashRival &&
+    state.domainExpansion.clashRival.owner === enemyActor
+  ) {
+    const brokenRival = state.domainExpansion.clashRival;
+    state.domainExpansion.clashRival = null;
+    state.domainExpansion.damageTakenByOwnerThisRound = 0;
+    state[enemyActor].domainExhaustionTurns = 2;
+    recalculateFormationBonuses(state);
+    if (sourceInstanceId) {
+      addFeedback(state, sourceInstanceId, '☸ Quebrou Domínio!', 'shield');
+    }
+    addFeedback(state, `${enemyActor}-sovereign`, '💥 DOMÍNIO QUEBRADO!', 'damage');
+    addLog(
+      state,
+      actor,
+      'effect',
+      `💥 QUEBRA DE EXPANSÃO DE DOMÍNIO! [${sourceName}] estilhaçou a barreira rival [${brokenRival.name}] na Disputa de Domínios!`
+    );
+    return true;
+  }
+
+  // Case 2: Enemy owns the primary active Domain Expansion
+  if (state.domainExpansion.owner === enemyActor) {
+    const brokenExp = state.domainExpansion;
+    if (brokenExp.clashRival && brokenExp.clashRival.owner === actor) {
+      const rivalSpec = getDomainExpansionSpec(brokenExp.clashRival.domain);
+      state.domainExpansion = {
+        owner: actor,
+        domain: rivalSpec.domain,
+        name: rivalSpec.name,
+        subtitle: rivalSpec.subtitle,
+        icon: rivalSpec.icon,
+        potencyDesc: rivalSpec.potencyDesc,
+        sureHitDesc: rivalSpec.sureHitDesc,
+        turnsRemaining: brokenExp.turnsRemaining,
+        damageTakenByOwnerThisRound: 0,
+        simpleDomainProtectedActor: null,
+        clashRival: null,
+      };
+    } else {
+      state.domainExpansion = null;
+    }
+    state[enemyActor].domainExhaustionTurns = 2;
+    recalculateFormationBonuses(state);
+    if (sourceInstanceId) {
+      addFeedback(state, sourceInstanceId, '☸ Quebrou Domínio!', 'shield');
+    }
+    addFeedback(state, `${enemyActor}-sovereign`, '💥 DOMÍNIO QUEBRADO!', 'damage');
+    addLog(
+      state,
+      actor,
+      'effect',
+      `💥 QUEBRA DE EXPANSÃO DE DOMÍNIO! [${sourceName}] estilhaçou imediatamente a Expansão de Domínio [${brokenExp.name}]!`
+    );
+    return true;
+  }
+
+  return false;
+}
+
 function registerSovereignDamageForDomainConcentration(
   state: GameState,
   damagedOwner: 'player' | 'ai',
@@ -2918,6 +2990,16 @@ function executeCardEffect(
       }
       break;
     }
+
+    case 'break_domain_expansion': {
+      shatterEnemyDomainExpansionByUnit(
+        state,
+        actor,
+        sourceCard.name,
+        options?.sourceInstanceId
+      );
+      break;
+    }
   }
 }
 
@@ -3799,6 +3881,24 @@ export function executeAttack(
   attacker.plannedTargetId = null;
 
   // Trigger on_attack effects before combat resolution
+  const attackerDisplayName =
+    attacker.isAscended && attacker.card.ascension
+      ? attacker.card.ascension.newName
+      : attacker.card.name;
+
+  if (
+    attacker.card.effects.some(
+      (e) => e.type === 'break_domain_expansion' && e.trigger !== 'on_attack'
+    )
+  ) {
+    shatterEnemyDomainExpansionByUnit(
+      next,
+      attackerOwner,
+      attackerDisplayName,
+      attacker.instanceId
+    );
+  }
+
   for (const eff of attacker.card.effects) {
     if (eff.trigger === 'on_attack') {
       executeCardEffect(next, attackerOwner, attacker.card, eff, {
@@ -3807,11 +3907,6 @@ export function executeAttack(
       });
     }
   }
-
-  const attackerDisplayName =
-    attacker.isAscended && attacker.card.ascension
-      ? attacker.card.ascension.newName
-      : attacker.card.name;
 
   // === EMBOSCADA / ARMADILHA DE REAÇÃO ===
   let triggeredTrap =

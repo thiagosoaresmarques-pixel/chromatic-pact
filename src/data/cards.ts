@@ -1,7 +1,7 @@
 import { CardDefinition } from '../types/game';
 
 /**
- * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.032 CARTAS)
+ * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.038 CARTAS)
  * 100% Original Dark Fantasy IP — Sem Nomes, Anatomias ou Frases Protegidos por Direito Autoral.
  */
 export const ALL_CARDS: CardDefinition[] = [
@@ -34237,6 +34237,304 @@ export const ALL_CARDS: CardDefinition[] = [
     "flavorText": "Descem em cunha dourada desde o zênite, julgando tiranos sob um firmamento de escudos solares.",
     "imagePath": "/assets/cards/gold_172_armada_draconica_sol.png",
     "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, organic blazing solar-gold dawn-cloud sky vignette packed with dozens of lion-maned six-winged celestial seraph-dragons flying in V-wedge formation breathing golden dawnfire on pure white background."
+  },
+  {
+    "id": "neutral_173_general_roda_matriz",
+    "name": "Vaelkor, General da Roda Prismática",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Arconte • General • Lendário",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 2,
+    "hp": 7,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Escudo Divino",
+      "Guardião",
+      "Fúria Crescente"
+    ],
+    "ascension": {
+      "cost": 4,
+      "newName": "Vaelkor, Roda da Perfeição",
+      "newAtk": 8,
+      "newArmor": 3,
+      "newMaxHp": 10,
+      "addedKeywords": [
+        "Voo",
+        "Atropelar"
+      ]
+    },
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Ao entrar, quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 2,
+        "description": "Ao entrar, concede Escudo Divino a todas as suas criaturas aliadas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Ao entrar, concede +2 de Essência extra neste turno."
+      }
+    ],
+    "description": "Ao entrar, quebra Expansões de Domínio inimigas, concede Escudo Divino a todas as suas criaturas aliadas e +2 de Essência extra neste turno. No início do seu turno, regenera 1 de Vida. Ascensão 4: evolui para Vaelkor, Roda da Perfeição 8/10.",
+    "flavorText": "Quando o oitavo prisma gira às suas costas, nenhuma cúpula soberana resiste à lei nua do éter.",
+    "imagePath": "/assets/cards/neutral_173_general_roda_matriz.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, over-the-shoulder obsidian-mercury astral titan general standing on floating crystal shard, prismatic forearm-blade, four geometric rainbow-prism wings, and giant eight-spoked crystal astrolabe wheel with octahedron prism orbs behind shoulders on pure white background."
+  },
+  {
+    "id": "purple_173_general_roda_abismo",
+    "name": "Nyxaroth, General da Roda Fúnebre",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Arconte • General • Lendário",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Escudo Divino",
+      "Toque Letal",
+      "Renascer",
+      "Dreno de Vida"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Ao entrar, quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 2,
+        "description": "Ao entrar, concede Escudo Divino a todas as suas criaturas aliadas."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "destroy_enemy",
+        "value": 1,
+        "description": "Ao atacar, destrói a criatura inimiga mais forte, ignorando Escudo Divino e Armadura."
+      }
+    ],
+    "description": "Ao entrar, quebra Expansões de Domínio inimigas e concede Escudo Divino a todas as suas criaturas aliadas. No início do seu turno, regenera 1 de Vida. Ao atacar, destrói a criatura inimiga mais forte, ignorando Escudo Divino e Armadura.",
+    "flavorText": "Cada crânio aceso em sua roda guarda a sentença de um santuário que julgou ser eterno.",
+    "imagePath": "/assets/cards/purple_173_general_roda_abismo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, levitating four-armed ossuary lich general with glowing purple soul-fire ribcage, twin curved executioner blades and arcane lightning ward hands, four tattered shadow wings, and giant eight-spoked wrought-iron wheel with violet skull-lanterns on pure white background."
+  },
+  {
+    "id": "red_173_general_roda_chama",
+    "name": "Pyrrakon, General da Roda Vulcânica",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Arconte • General • Lendário",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 1,
+    "hp": 6,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Escudo Divino",
+      "Ímpeto",
+      "Atropelar",
+      "Pele Incandescente",
+      "Fúria Crescente"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Ao entrar, quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 2,
+        "description": "Ao entrar, concede Escudo Divino a todas as suas criaturas aliadas."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao atacar, causa 2 de dano a todas as criaturas na Vanguarda inimiga."
+      }
+    ],
+    "description": "Ao entrar, quebra Expansões de Domínio inimigas e concede Escudo Divino a todas as suas criaturas aliadas. No início do seu turno, regenera 1 de Vida. Ao atacar, causa 2 de dano a todas as criaturas na Vanguarda inimiga.",
+    "flavorText": "Os oito cadinhos de sua roda fervem com o fogo que derrete tronos, muralhas e domínios inteiros.",
+    "imagePath": "/assets/cards/red_173_general_roda_chama.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, lunging horned furnace-helmed basalt-and-magma war juggernaut wielding twin chained volcanic cleavers, four jagged ember-dragon wings, and giant eight-spoked forged-iron wheel with blazing magma braziers on pure white background."
+  },
+  {
+    "id": "blue_173_general_roda_gelo",
+    "name": "Cryonax, General da Roda Astral",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Arconte • General • Lendário",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 4,
+    "armor": 2,
+    "hp": 7,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Escudo Divino",
+      "Guardião",
+      "Voo"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Ao entrar, quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 2,
+        "description": "Ao entrar, concede Escudo Divino a todas as suas criaturas aliadas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Ao entrar, congela todas as criaturas na Vanguarda inimiga por 1 rodada."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao atacar, compra 1 carta."
+      }
+    ],
+    "description": "Ao entrar, quebra Expansões de Domínio inimigas, concede Escudo Divino a todas as suas criaturas aliadas e congela todas as criaturas na Vanguarda inimiga por 1 rodada. No início do seu turno, regenera 1 de Vida. Ao atacar, compra 1 carta.",
+    "flavorText": "Um único estalo de seu astrolábio glacial decifra o feitiço rival e estilhaça sua barreira como vidro.",
+    "imagePath": "/assets/cards/blue_173_general_roda_gelo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, mid-air sapphire-ice sentinel duelist with mirrored icicle-crowned helm wielding frost-crystal naginata, four lightning-crackling frost wings, and giant eight-spoked frost-astrolabe wheel with cyan storm spheres on pure white background."
+  },
+  {
+    "id": "green_173_general_roda_selva",
+    "name": "Sylvarok, General da Roda Primeva",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Arconte • General • Lendário",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 1,
+    "hp": 8,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Escudo Divino",
+      "Atropelar",
+      "Fúria Crescente"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Ao entrar, quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 2,
+        "description": "Ao entrar, concede Escudo Divino a todas as suas criaturas aliadas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Ao entrar, concede +1/+2 de Ataque e Vida a todas as suas criaturas aliadas."
+      }
+    ],
+    "description": "Ao entrar, quebra Expansões de Domínio inimigas e concede +1/+2 de Ataque e Vida e Escudo Divino a todas as suas criaturas aliadas. No início do seu turno, regenera 2 de Vida.",
+    "flavorText": "Suas raízes arrombam qualquer santuário artificial; a selva primeira desconhece fronteiras impostas.",
+    "imagePath": "/assets/cards/green_173_general_roda_selva.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, towering ironwood-and-jade guardian general with stag-antler wooden helm planting gnarled emerald war-glaive into coiling briar roots, four emerald leaf-wings, and giant eight-spoked wooden wheel with bioluminescent green orbs on pure white background."
+  },
+  {
+    "id": "gold_173_general_roda_sol",
+    "name": "Heliokar, General da Roda Celeste",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Arconte • General • Lendário",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 2,
+    "hp": 7,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Escudo Divino",
+      "Guardião",
+      "Voo"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Ao entrar, quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede Escudo Divino e +1 de Armadura a todas as suas criaturas aliadas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 3,
+        "description": "Ao entrar, restaura 3 de Vida de todas as suas criaturas aliadas e do seu Soberano."
+      }
+    ],
+    "description": "Ao entrar, quebra Expansões de Domínio inimigas, concede Escudo Divino e +1 de Armadura a todas as suas criaturas aliadas e restaura 3 de Vida delas e do seu Soberano. No início do seu turno, regenera 2 de Vida.",
+    "flavorText": "Sob o giro dos oito sóis de bronze, todo falso firmamento se desfaz em poeira luminosa.",
+    "imagePath": "/assets/cards/gold_173_general_roda_sol.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, ascending alabaster-and-gold celestial archon general with sunburst seraph helm, raised sovereign ward hand and planted golden greatsword, four golden feathered wings, and giant eight-spoked bronze-gold wheel with blazing sun-spheres on pure white background."
   }
 ];
 

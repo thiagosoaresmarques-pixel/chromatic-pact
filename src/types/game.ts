@@ -39,7 +39,8 @@ export type TriggerEffectType =
   | 'grant_bonus_essence'
   | 'summon_token'
   | 'shield_all_allies'
-  | 'steal_small_enemy';
+  | 'steal_small_enemy'
+  | 'break_domain_expansion';
 
 export interface CardEffect {
   trigger: 'on_enter' | 'on_death' | 'on_attack' | 'turn_start' | 'turn_end' | 'spell_cast';

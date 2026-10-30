@@ -1,7 +1,7 @@
 import { CardDefinition } from '../types/game';
 
 /**
- * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.014 CARTAS)
+ * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.020 CARTAS)
  * 100% Original Dark Fantasy IP — Sem Nomes, Anatomias ou Frases Protegidos por Direito Autoral.
  */
 export const ALL_CARDS: CardDefinition[] = [
@@ -33554,6 +33554,194 @@ export const ALL_CARDS: CardDefinition[] = [
     "flavorText": "Quando o decreto dourado se desfaz em asas, toda ferida justa encontra alívio.",
     "imagePath": "/assets/cards/gold_169_pressagio_revoada_sol.png",
     "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, monolithic ceremonial obsidian-and-gold robed omen entity with blazing solar diamond core, sweeping sacred ink and liquid gold ribbons breaking into a flock of golden sun hawks on pure white background."
+  },
+  {
+    "id": "neutral_170_flagelo_cornudo_matriz",
+    "name": "Flagelo Cornudo Primordial",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Bruto • Cornudo • Prisma",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [],
+    "ascension": {
+      "cost": 4,
+      "newName": "Colosso Cornudo do Prisma",
+      "newAtk": 5,
+      "newMaxHp": 6,
+      "newKeywords": [
+        "Guardião",
+        "Escudo Divino"
+      ],
+      "bonusDescription": "Ganha +2/+2 e Escudo Divino."
+    },
+    "description": "Ascensão 4: evolui para Colosso Cornudo do Prisma 5/6.",
+    "flavorText": "Nem os grilhões da Primeira Era contiveram a força bruta adormecida no cristal.",
+    "imagePath": "/assets/cards/neutral_170_flagelo_cornudo_matriz.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, hulking crouched horned skull-beast juggernaut with platinum-ivory skull, colossal metallic ibex horns with rainbow prism glints, gunmetal musculature, and broken iron wrist chains on pure white background."
+  },
+  {
+    "id": "purple_170_flagelo_cornudo_abismo",
+    "name": "Flagelo Cornudo do Abismo",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Bruto • Cornudo • Prisma",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 4,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Toque Letal",
+      "Renascer"
+    ],
+    "effects": [
+      {
+        "trigger": "on_death",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Ao morrer, causa 2 de dano direto ao Soberano inimigo."
+      }
+    ],
+    "description": "Ao morrer, causa 2 de dano direto ao Soberano inimigo.",
+    "flavorText": "Suas correntes partidas ainda arrastam o eco faminto das masmorras do Vazio.",
+    "imagePath": "/assets/cards/purple_170_flagelo_cornudo_abismo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, hulking crouched horned skull-beast juggernaut with necrotic bone skull, violet glowing eyes, colossal void-cracked horns, abyssal purple musculature, and broken shadow chains on pure white background."
+  },
+  {
+    "id": "red_170_flagelo_cornudo_chama",
+    "name": "Flagelo Cornudo da Fornalha",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Bruto • Cornudo • Prisma",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 4,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto",
+      "Atropelar"
+    ],
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Ao atacar, causa 1 de dano direto ao Soberano inimigo."
+      }
+    ],
+    "description": "Ao atacar, causa 1 de dano direto ao Soberano inimigo.",
+    "flavorText": "Quando os cascos tocam a pedra, o ferro dos grilhões derrete antes da vontade dele.",
+    "imagePath": "/assets/cards/red_170_flagelo_cornudo_chama.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, hulking crouched horned skull-beast juggernaut with scorched skull, fiery eyes, colossal molten-ridged horns, magma-veined volcanic musculature, and incandescent chains on pure white background."
+  },
+  {
+    "id": "blue_170_flagelo_cornudo_gelo",
+    "name": "Flagelo Cornudo da Geada",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Bruto • Cornudo • Prisma",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião"
+    ],
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao atacar, congela a criatura atacada por 1 rodada."
+      }
+    ],
+    "description": "Ao atacar, congela a criatura atacada por 1 rodada.",
+    "flavorText": "O inverno eterno forjou chifres de safira capazes de parar um aríete em pleno impacto.",
+    "imagePath": "/assets/cards/blue_170_flagelo_cornudo_gelo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, hulking crouched horned skull-beast juggernaut with frost-bleached skull, cyan glowing eyes, colossal sapphire glacier-ice horns, slate-blue musculature, and frost-encrusted chains on pure white background."
+  },
+  {
+    "id": "green_170_flagelo_cornudo_selva",
+    "name": "Flagelo Cornudo da Mata",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Bruto • Cornudo • Prisma",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 3,
+    "armor": 0,
+    "hp": 5,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Atropelar",
+      "Fúria Crescente"
+    ],
+    "effects": [],
+    "description": "No início do seu turno, regenera 1 de Vida.",
+    "flavorText": "Cada golpe contra seu couro de madeira-ferro desperta uma fúria mais antiga que os muros.",
+    "imagePath": "/assets/cards/green_170_flagelo_cornudo_selva.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, hulking crouched horned skull-beast juggernaut with mossy bone skull, emerald glowing eyes, colossal gnarled ironwood horns, dark bark-and-moss musculature, and briar-vine shackles on pure white background."
+  },
+  {
+    "id": "gold_170_flagelo_cornudo_sol",
+    "name": "Flagelo Cornudo da Alvorada",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Bruto • Cornudo • Prisma",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Escudo Divino"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao entrar, restaura 2 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Ao entrar, restaura 2 de Vida do seu Soberano.",
+    "flavorText": "Redimido pelo juramento solar, transformou os próprios grilhões em baluarte dos justos.",
+    "imagePath": "/assets/cards/gold_170_flagelo_cornudo_sol.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, hulking crouched horned skull-beast juggernaut with sacred ivory skull, golden glowing eyes, colossal burnished solar-gold horns, bronze-alabaster musculature, and golden wrist chains on pure white background."
   }
 ];
 

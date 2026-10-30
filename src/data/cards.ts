@@ -1,7 +1,7 @@
 import { CardDefinition } from '../types/game';
 
 /**
- * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.008 CARTAS)
+ * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.014 CARTAS)
  * 100% Original Dark Fantasy IP — Sem Nomes, Anatomias ou Frases Protegidos por Direito Autoral.
  */
 export const ALL_CARDS: CardDefinition[] = [
@@ -33349,6 +33349,211 @@ export const ALL_CARDS: CardDefinition[] = [
     "flavorText": "Mesmo envolto na noite eterna, suas mãos guiam a alvorada até os feridos.",
     "imagePath": "/assets/cards/gold_168_tecelao_feixe_sol.png",
     "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, pitch-black shadow humanoid dusted with golden stardust, radiant gold sun-sparks in curly hair, narrow golden slit eyes, foreground dark hand bending a diagonal beam of pure golden sunlight on pure white background."
+  },
+  {
+    "id": "neutral_169_pressagio_revoada_matriz",
+    "name": "Presságio da Revoada Primordial",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Espectro • Revoada • Prisma",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Voo",
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda."
+      }
+    ],
+    "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda.",
+    "flavorText": "De seu manto desfazem-se asas de mercúrio que ocupam a linha de frente antes do primeiro golpe.",
+    "imagePath": "/assets/cards/neutral_169_pressagio_revoada_matriz.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, monolithic silver-and-obsidian robed omen wraith with radiant diamond mask core, sweeping calligraphic liquid-silver ribbons breaking into a flock of silver prism ravens on pure white background."
+  },
+  {
+    "id": "purple_169_pressagio_revoada_abismo",
+    "name": "Presságio da Revoada Umbral",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Espectro • Revoada • Prisma",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Renascer"
+    ],
+    "effects": [
+      {
+        "trigger": "on_death",
+        "type": "revive_from_crypt",
+        "value": 5,
+        "description": "Ao morrer, reanima da sua Cripta a criatura aliada mais forte de custo até 5."
+      }
+    ],
+    "description": "Ao morrer, reanima da sua Cripta a criatura aliada mais forte de custo até 5.",
+    "flavorText": "Cada corvo que se desprende de sua mortalha carrega de volta um nome arrancado da Cripta.",
+    "imagePath": "/assets/cards/purple_169_pressagio_revoada_abismo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, monolithic abyssal robed omen wraith with glowing violet diamond skull core, sweeping umbral shadow ribbons breaking into a flock of spectral purple ravens on pure white background."
+  },
+  {
+    "id": "red_169_pressagio_revoada_chama",
+    "name": "Presságio da Revoada Cinzenta",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Espectro • Revoada • Prisma",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 5,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Ímpeto"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Ao entrar, causa 1 de dano a todas as criaturas na Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Ao atacar, causa 2 de dano direto ao Soberano inimigo."
+      }
+    ],
+    "description": "Ao entrar, causa 1 de dano a todas as criaturas na Vanguarda inimiga. Ao atacar, causa 2 de dano direto ao Soberano inimigo.",
+    "flavorText": "Não são cinzas que sobem da fornalha, mas asas famintas por estandartes.",
+    "imagePath": "/assets/cards/red_169_pressagio_revoada_chama.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, monolithic charred-ash robed omen wraith with molten ember face core, sweeping black-smoke and crimson fire ribbons breaking into a flock of blazing fire-ravens on pure white background."
+  },
+  {
+    "id": "blue_169_pressagio_revoada_gelo",
+    "name": "Presságio da Revoada Glacial",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Espectro • Revoada • Prisma",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Voo",
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "bounce_enemy",
+        "value": 1,
+        "description": "Ao entrar, devolve 1 criatura inimiga à sua escolha para a mão do oponente."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao entrar, compra 1 carta."
+      }
+    ],
+    "description": "Ao entrar, devolve 1 criatura inimiga à sua escolha para a mão do oponente e compra 1 carta.",
+    "flavorText": "O redemoinho de geada apaga os passos do invasor como tinta lavada pelo mar astral.",
+    "imagePath": "/assets/cards/blue_169_pressagio_revoada_gelo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, monolithic midnight-robed omen wraith with glowing cyan ice core, sweeping sapphire and frost-crystal ribbons breaking into a flock of crystalline ice ravens on pure white background."
+  },
+  {
+    "id": "green_169_pressagio_revoada_selva",
+    "name": "Presságio da Revoada Espinhosa",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Espectro • Revoada • Prisma",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 1,
+    "hp": 6,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Fúria Crescente"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda."
+      }
+    ],
+    "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda. No início do seu turno, regenera 1 de Vida.",
+    "flavorText": "Dos cipós retorcidos erguem-se gaviões de esporos que defendem a mata viva.",
+    "imagePath": "/assets/cards/green_169_pressagio_revoada_selva.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, monolithic ironwood-and-briar robed omen entity with glowing emerald seed core, sweeping thorny vine ribbons and green spores breaking into a flock of emerald forest hawks on pure white background."
+  },
+  {
+    "id": "gold_169_pressagio_revoada_sol",
+    "name": "Presságio da Revoada Solar",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Espectro • Revoada • Prisma",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Escudo Divino"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 2,
+        "description": "Ao entrar, restaura 2 de Vida de todas as suas criaturas aliadas e do seu Soberano."
+      }
+    ],
+    "description": "Ao entrar, restaura 2 de Vida de todas as suas criaturas aliadas e do seu Soberano.",
+    "flavorText": "Quando o decreto dourado se desfaz em asas, toda ferida justa encontra alívio.",
+    "imagePath": "/assets/cards/gold_169_pressagio_revoada_sol.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, monolithic ceremonial obsidian-and-gold robed omen entity with blazing solar diamond core, sweeping sacred ink and liquid gold ribbons breaking into a flock of golden sun hawks on pure white background."
   }
 ];
 

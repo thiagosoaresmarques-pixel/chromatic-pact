@@ -16078,12 +16078,684 @@ input:focus-visible,
   color: rgba(226, 232, 240, 0.88);
 }
 
+/* =========================================================================
+   MAPA MUNDIAL NAVEGÁVEL DE VAELORIA (Campanha & Expedição)
+   ========================================================================= */
+.vwm-mode-switch {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(8, 12, 22, 0.92);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 7px;
+  padding: 2px;
+  gap: 2px;
+}
 
+.vwm-mode-switch-btn {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: #94a3b8;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  white-space: nowrap;
+}
 
+.vwm-mode-switch-btn:hover {
+  color: #f8fafc;
+}
 
+.vwm-mode-switch-btn.is-active {
+  background: linear-gradient(135deg, rgba(161, 98, 7, 0.55), rgba(120, 53, 15, 0.65));
+  color: #fef08a;
+  box-shadow: 0 0 12px rgba(234, 179, 8, 0.28);
+}
 
+.aaa-campaign-workspace.is-map-mode {
+  grid-template-columns: minmax(0, 1.56fr) minmax(320px, 0.86fr);
+  align-items: stretch;
+  height: auto;
+  min-height: 540px;
+  max-height: none;
+}
 
+@media (max-width: 1120px) {
+  .aaa-campaign-workspace.is-map-mode {
+    grid-template-columns: 1fr;
+  }
+}
 
+.aaa-boss-row-geo {
+  font-size: 0.66rem;
+  color: #94a3b8;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
+.vwm-dossier-geo-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0.25rem 0 0.45rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  font-size: 0.72rem;
+  color: #cbd5e1;
+  width: fit-content;
+}
 
+.vwm-dossier-geo-badge strong {
+  color: #fef08a;
+  font-weight: 700;
+}
+
+.vaeloria-world-map-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  background: linear-gradient(180deg, #0b101b 0%, #070a12 100%);
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  border-radius: 10px;
+  padding: 0.65rem;
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  min-width: 0;
+}
+
+.vwm-hud-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.vwm-territory-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 5px 11px;
+  border-radius: 8px;
+  background: rgba(10, 15, 28, 0.92);
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  min-width: 0;
+  flex: 1;
+}
+
+.vwm-territory-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.vwm-territory-texts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.vwm-territory-kicker {
+  font-family: var(--font-display);
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  color: #94a3b8;
+}
+
+.vwm-territory-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vwm-territory-landmark {
+  font-family: var(--font-body, sans-serif);
+  font-weight: 600;
+  font-size: 0.73rem;
+  color: #e2e8f0;
+}
+
+.vwm-controls-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.vwm-tool-btn {
+  padding: 4px 9px;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(15, 23, 42, 0.88);
+  color: #e2e8f0;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vwm-tool-btn:hover:not(:disabled) {
+  border-color: rgba(250, 204, 21, 0.75);
+  color: #fef08a;
+  background: rgba(30, 41, 59, 0.95);
+}
+
+.vwm-tool-btn.is-active {
+  border-color: rgba(250, 204, 21, 0.72);
+  color: #fde047;
+  background: rgba(120, 53, 15, 0.42);
+}
+
+.vwm-tool-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.vwm-zoom-readout {
+  min-width: 48px;
+  text-align: center;
+}
+
+.vwm-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #040812;
+  border: 1.5px solid rgba(212, 175, 55, 0.42);
+  box-shadow: inset 0 0 42px rgba(0, 0, 0, 0.85);
+  cursor: crosshair;
+  user-select: none;
+  touch-action: none;
+}
+
+.vwm-viewport.is-zoomed {
+  cursor: grab;
+}
+
+.vwm-viewport.is-zoomed:active {
+  cursor: grabbing;
+}
+
+.vwm-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.vwm-terrain-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  filter: saturate(1.06) contrast(1.03);
+}
+
+.vwm-svg-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.vwm-road-path {
+  stroke: rgba(148, 163, 184, 0.36);
+  stroke-width: 2.3;
+  stroke-dasharray: 7 7;
+  stroke-linecap: round;
+}
+
+.vwm-road-path.is-cleared-road {
+  stroke: rgba(250, 204, 21, 0.78);
+  stroke-width: 3;
+  stroke-dasharray: none;
+  filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.45));
+}
+
+.vwm-road-path.is-frontier-road {
+  stroke: rgba(251, 191, 36, 0.92);
+  stroke-width: 3;
+  stroke-dasharray: 9 6;
+  animation: vwmRoadDash 1.6s linear infinite;
+}
+
+@keyframes vwmRoadDash {
+  to {
+    stroke-dashoffset: -30;
+  }
+}
+
+.vwm-march-line {
+  stroke: #fef08a;
+  stroke-width: 3.4;
+  stroke-dasharray: 8 6;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.9));
+  animation: vwmRoadDash 0.8s linear infinite;
+}
+
+.vwm-march-beacon {
+  fill: rgba(250, 204, 21, 0.22);
+  stroke: #fde047;
+  stroke-width: 2.4;
+}
+
+.vwm-region-cardinal {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+}
+
+.vwm-region-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  fill: #fffbeb;
+}
+
+.vwm-sublandmark-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  fill: rgba(241, 245, 249, 0.88);
+}
+
+.vwm-compass-letter {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+/* Boss Citadel Interactive Pins */
+.vwm-boss-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--pin-color, #eab308);
+  background: radial-gradient(circle at 35% 30%, #1e293b, #090d16);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.92),
+    0 0 10px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.vwm-boss-node:hover {
+  transform: translate(-50%, -50%) scale(1.18);
+  z-index: 26;
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.96),
+    0 0 16px var(--pin-color, #facc15);
+}
+
+.vwm-boss-node.is-selected {
+  transform: translate(-50%, -50%) scale(1.22);
+  border-color: #fef08a;
+  z-index: 25;
+  box-shadow:
+    0 0 0 3px rgba(250, 204, 21, 0.32),
+    0 6px 20px rgba(0, 0, 0, 0.95),
+    0 0 20px rgba(250, 204, 21, 0.75);
+}
+
+.vwm-boss-node.is-cleared {
+  border-color: #34d399;
+}
+
+.vwm-boss-node.is-axial-apex {
+  width: 38px;
+  height: 38px;
+  border-width: 2.5px;
+}
+
+.vwm-boss-node-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1.5px dashed transparent;
+  pointer-events: none;
+}
+
+.vwm-boss-node.is-next-target .vwm-boss-node-ring,
+.vwm-boss-node.is-selected .vwm-boss-node-ring {
+  border-color: rgba(250, 204, 21, 0.85);
+  animation: vwmSpinRing 9s linear infinite;
+}
+
+@keyframes vwmSpinRing {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.vwm-boss-node-portrait {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vwm-boss-node-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vwm-boss-stage-badge {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  min-width: 17px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #090d16;
+  border: 1px solid var(--pin-color, #eab308);
+  color: #f8fafc;
+  font-family: var(--font-display);
+  font-size: 0.54rem;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+}
+
+.vwm-boss-node.is-cleared .vwm-boss-stage-badge {
+  background: #064e3b;
+  border-color: #34d399;
+  color: #ecfdf5;
+}
+
+.vwm-boss-tooltip {
+  position: absolute;
+  bottom: calc(100% + 9px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 9px;
+  border-radius: 7px;
+  background: rgba(7, 11, 20, 0.96);
+  border: 1px solid rgba(250, 204, 21, 0.65);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.vwm-boss-tooltip strong {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  color: #fef08a;
+}
+
+.vwm-boss-tooltip em {
+  font-style: normal;
+  font-size: 0.56rem;
+  color: #cbd5e1;
+}
+
+/* Traversable Sovereign Avatar Pawn */
+.vwm-sovereign-pawn {
+  position: absolute;
+  transform: translate(-50%, -82%);
+  z-index: 34;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.vwm-pawn-aura {
+  position: absolute;
+  bottom: -2px;
+  width: 44px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.58) 0%, rgba(250, 204, 21, 0) 72%);
+  animation: vwmPawnAuraPulse 2s ease-in-out infinite;
+}
+
+@keyframes vwmPawnAuraPulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.78;
+  }
+  50% {
+    transform: scale(1.16);
+    opacity: 1;
+  }
+}
+
+.vwm-pawn-token {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2.5px solid #fde047;
+  background: radial-gradient(circle at 35% 30%, #78350f, #0f172a);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.95),
+    0 0 18px rgba(250, 204, 21, 0.78);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.vwm-sovereign-pawn.is-marching .vwm-pawn-token {
+  animation: vwmPawnStride 0.34s ease-in-out infinite alternate;
+}
+
+.vwm-sovereign-pawn.is-facing-left .vwm-pawn-token img {
+  transform: scaleX(-1);
+}
+
+@keyframes vwmPawnStride {
+  from {
+    transform: translateY(0) rotate(-3deg);
+  }
+  to {
+    transform: translateY(-6px) rotate(3deg);
+  }
+}
+
+.vwm-pawn-token img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vwm-pawn-crown {
+  font-size: 1.15rem;
+}
+
+.vwm-pawn-pedestal {
+  width: 16px;
+  height: 6px;
+  margin-top: -2px;
+  border-radius: 50%;
+  background: #fde047;
+  border: 1px solid #78350f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+  z-index: 1;
+}
+
+.vwm-pawn-challenge-pill {
+  pointer-events: auto;
+  margin-bottom: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1.5px solid #fef08a;
+  background: linear-gradient(135deg, #b91c1c, #7c2d12);
+  color: #fffbeb;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.95),
+    0 0 14px rgba(250, 204, 21, 0.65);
+  transition: transform 0.14s ease, filter 0.14s ease;
+}
+
+.vwm-pawn-challenge-pill:hover {
+  transform: scale(1.07);
+  filter: brightness(1.12);
+}
+
+/* On-Screen Directional March Pad */
+.vwm-dpad {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 38;
+  display: grid;
+  grid-template-columns: repeat(3, 26px);
+  grid-template-rows: repeat(3, 26px);
+  gap: 2px;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgba(7, 11, 20, 0.82);
+  border: 1px solid rgba(212, 175, 55, 0.36);
+  backdrop-filter: blur(6px);
+}
+
+.vwm-dpad-btn {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(15, 23, 42, 0.92);
+  color: #fde68a;
+  font-size: 0.64rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.14s ease, border-color 0.14s ease;
+}
+
+.vwm-dpad-btn:hover,
+.vwm-dpad-btn:active {
+  background: rgba(161, 98, 7, 0.55);
+  border-color: #fde047;
+}
+
+.vwm-dpad-btn.up {
+  grid-column: 2;
+  grid-row: 1;
+}
+.vwm-dpad-btn.left {
+  grid-column: 1;
+  grid-row: 2;
+}
+.vwm-dpad-btn.center {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 0.72rem;
+}
+.vwm-dpad-btn.right {
+  grid-column: 3;
+  grid-row: 2;
+}
+.vwm-dpad-btn.down {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.vwm-bottom-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 32;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: rgba(7, 11, 20, 0.84);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  color: #cbd5e1;
+  font-size: 0.64rem;
+  white-space: nowrap;
+  max-width: calc(100% - 210px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.vwm-bottom-hint strong {
+  color: #fef08a;
+}
+
+@media (max-width: 720px) {
+  .vwm-bottom-hint {
+    display: none;
+  }
+
+  .vwm-boss-node {
+    width: 26px;
+    height: 26px;
+  }
+
+  .vwm-pawn-token {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vwm-road-path.is-frontier-road,
+  .vwm-march-line,
+  .vwm-boss-node.is-next-target .vwm-boss-node-ring,
+  .vwm-boss-node.is-selected .vwm-boss-node-ring,
+  .vwm-pawn-aura,
+  .vwm-sovereign-pawn.is-marching .vwm-pawn-token {
+    animation-duration: 0.01ms !important;
+  }
+}
 

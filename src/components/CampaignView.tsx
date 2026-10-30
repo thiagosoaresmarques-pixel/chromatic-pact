@@ -6,6 +6,8 @@ import { DOMAIN_META, CardInspectModal } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
 import { VICTORY_GOLD_REWARD } from '../utils/multiplayerEngine';
+import { VaeloriaWorldMap } from './VaeloriaWorldMap';
+import { resolveStageMapNode } from '../data/vaeloriaMapData';
 
 export interface CampaignViewProps {
   defeatedBossIds: string[];
@@ -158,6 +160,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     fullBossRoster[0]?.id ?? 'boss_1'
   );
   const [actFilter, setActFilter] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6>('all');
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
 
@@ -168,6 +171,25 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     if (prebuilt) return prebuilt.cardIds;
     return PREBUILT_DECKS[0]?.cardIds ?? [];
   };
+
+  const selectedDeckMeta = useMemo(() => {
+    const custom = customDecks.find((cd) => cd.id === selectedDeckId) ?? customDecks[0];
+    const prebuilt = PREBUILT_DECKS.find((d) => d.id === selectedDeckId) ?? PREBUILT_DECKS[0];
+    const cardIds = custom?.cardIds ?? prebuilt?.cardIds ?? [];
+    const label = custom?.name ?? prebuilt?.name ?? 'Soberano';
+    let bestAvatarId: string | undefined;
+    let bestScore = -1;
+    for (const id of cardIds) {
+      const c = CARDS_BY_ID[id];
+      if (!c?.imagePath) continue;
+      const score = (c.rarity === 'legendary' ? 100 : 0) + c.cost;
+      if (score > bestScore) {
+        bestScore = score;
+        bestAvatarId = c.id;
+      }
+    }
+    return { label, avatarCardId: bestAvatarId };
+  }, [customDecks, selectedDeckId]);
 
   const handleClickStartBoss = (boss: CampaignBoss) => {
     if (isGuest) {
@@ -200,6 +222,9 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const activeActInfo = activeBoss
     ? getActInfoForStage(activeBoss.stage)
     : { actLabel: 'ATO I', actTitle: '' };
+  const activeMapNode = activeBoss
+    ? resolveStageMapNode('campaign', activeBoss.id, activeBoss.stage)
+    : null;
 
   const pct = Math.min(
     100,
@@ -208,7 +233,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
   return (
     <div className="aaa-page-shell">
-      {/* Single Compact Toolbar: Act Tabs + Progress + Deck Picker */}
+      {/* Single Compact Toolbar: Act Tabs + Map/List Toggle + Progress + Deck Picker */}
       <div
         style={{
           display: 'flex',
@@ -260,6 +285,23 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div className="vwm-mode-switch">
+            <button
+              type="button"
+              className={`vwm-mode-switch-btn ${viewMode === 'map' ? 'is-active' : ''}`}
+              onClick={() => setViewMode('map')}
+            >
+              🗺️ Mapa de Vaeloria
+            </button>
+            <button
+              type="button"
+              className={`vwm-mode-switch-btn ${viewMode === 'list' ? 'is-active' : ''}`}
+              onClick={() => setViewMode('list')}
+            >
+              📜 Lista
+            </button>
+          </div>
+
           {!isGuest && customDecks.length > 0 && (
             <select
               value={selectedDeckId}
@@ -280,49 +322,63 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         </div>
       </div>
 
-      {/* Master-Detail Split Layout */}
-      <div className="aaa-campaign-workspace">
-        {/* Left Column: Clean 20-Stage Roster List */}
-        <aside className="aaa-boss-roster">
-          {filteredRoster.map((boss) => {
-            const isDefeated = defeatedBossIds.includes(boss.id);
-            const isSelected = boss.id === activeBoss?.id;
-            const avatar = CARDS_BY_ID[boss.avatarCardId];
-            const dom = boss.domains[0] ?? 'neutral';
-            const actInfo = getActInfoForStage(boss.stage);
+      {/* Master-Detail Split Layout (Traversable Continent Map OR Stage Roster List) */}
+      <div className={`aaa-campaign-workspace ${viewMode === 'map' ? 'is-map-mode' : ''}`}>
+        {viewMode === 'map' ? (
+          <VaeloriaWorldMap
+            mode="campaign"
+            bosses={filteredRoster}
+            selectedBossId={activeBoss?.id ?? ''}
+            clearedBossIds={defeatedBossIds}
+            sovereignAvatarCardId={selectedDeckMeta.avatarCardId}
+            sovereignLabel={selectedDeckMeta.label}
+            onSelectBoss={(boss) => setSelectedBossId(boss.id)}
+            onChallengeBoss={handleClickStartBoss}
+          />
+        ) : (
+          <aside className="aaa-boss-roster">
+            {filteredRoster.map((boss) => {
+              const isDefeated = defeatedBossIds.includes(boss.id);
+              const isSelected = boss.id === activeBoss?.id;
+              const avatar = CARDS_BY_ID[boss.avatarCardId];
+              const dom = boss.domains[0] ?? 'neutral';
+              const actInfo = getActInfoForStage(boss.stage);
+              const nodeInfo = resolveStageMapNode('campaign', boss.id, boss.stage);
 
-            return (
-              <div
-                key={boss.id}
-                onClick={() => setSelectedBossId(boss.id)}
-                className={`aaa-boss-row ${isSelected ? 'is-selected' : ''} ${
-                  isDefeated ? 'is-defeated' : ''
-                }`}
-              >
+              return (
                 <div
-                  className="aaa-boss-row-accent"
-                  style={{ backgroundColor: DOMAIN_META[dom].color }}
-                />
-                <div className="aaa-boss-row-thumb">
-                  {avatar?.imagePath && <img src={avatar.imagePath} alt={boss.name} />}
-                </div>
-                <div className="aaa-boss-row-info">
-                  <div className="aaa-boss-row-top">
-                    <span className="aaa-boss-stage-num">
-                      {actInfo.actLabel} • #{boss.stage}
-                    </span>
-                    {isDefeated && <span className="aaa-boss-cleared-tag">✓</span>}
+                  key={boss.id}
+                  onClick={() => setSelectedBossId(boss.id)}
+                  className={`aaa-boss-row ${isSelected ? 'is-selected' : ''} ${
+                    isDefeated ? 'is-defeated' : ''
+                  }`}
+                >
+                  <div
+                    className="aaa-boss-row-accent"
+                    style={{ backgroundColor: DOMAIN_META[dom].color }}
+                  />
+                  <div className="aaa-boss-row-thumb">
+                    {avatar?.imagePath && <img src={avatar.imagePath} alt={boss.name} />}
                   </div>
-                  <div className="font-cinzel aaa-boss-row-name">{boss.name}</div>
+                  <div className="aaa-boss-row-info">
+                    <div className="aaa-boss-row-top">
+                      <span className="aaa-boss-stage-num">
+                        {actInfo.actLabel} • #{boss.stage}
+                      </span>
+                      {isDefeated && <span className="aaa-boss-cleared-tag">✓</span>}
+                    </div>
+                    <div className="font-cinzel aaa-boss-row-name">{boss.name}</div>
+                    <div className="aaa-boss-row-geo">📍 {nodeInfo.landmarkName}</div>
+                  </div>
+                  <div className="aaa-boss-row-stats">
+                    <span>{boss.startingHp} PV</span>
+                    <span className="gold-text">+{VICTORY_GOLD_REWARD}</span>
+                  </div>
                 </div>
-                <div className="aaa-boss-row-stats">
-                  <span>{boss.startingHp} PV</span>
-                  <span className="gold-text">+{VICTORY_GOLD_REWARD}</span>
-                </div>
-              </div>
-            );
-          })}
-        </aside>
+              );
+            })}
+          </aside>
+        )}
 
         {/* Right Column: Selected Boss Cinematic Dossier */}
         {activeBoss && (
@@ -370,6 +426,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
               <h2 className="font-cinzel aaa-dossier-title">{activeBoss.name}</h2>
               <div className="aaa-dossier-subtitle">{activeBoss.title}</div>
+              {activeMapNode && (
+                <div className="vwm-dossier-geo-badge">
+                  <span>📍 {activeMapNode.regionName}</span>
+                  <span>•</span>
+                  <strong>{activeMapNode.landmarkName}</strong>
+                </div>
+              )}
 
               {activeBoss.loreIntro && (
                 <blockquote className="aaa-dossier-quote">{activeBoss.loreIntro}</blockquote>

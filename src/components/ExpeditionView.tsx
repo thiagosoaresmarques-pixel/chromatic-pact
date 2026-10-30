@@ -6,6 +6,8 @@ import { playSfx } from '../utils/soundEngine';
 import { VICTORY_GOLD_REWARD } from '../utils/multiplayerEngine';
 import { CardView, CardInspectModal, DOMAIN_META } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
+import { VaeloriaWorldMap } from './VaeloriaWorldMap';
+import { resolveStageMapNode } from '../data/vaeloriaMapData';
 
 export interface SovereignBlessing {
   id:
@@ -605,6 +607,32 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
 
   const currentBoss =
     EXPEDITION_STAGES.find((b) => b.stage === runState.currentStage) ?? EXPEDITION_STAGES[0];
+  const [trailViewMode, setTrailViewMode] = useState<'map' | 'list'>('map');
+
+  const clearedExpeditionBossIds = useMemo(
+    () =>
+      EXPEDITION_STAGES.filter((b) => runState.clearedStages.includes(b.stage)).map((b) => b.id),
+    [runState.clearedStages]
+  );
+
+  const expeditionAvatarCardId = useMemo(() => {
+    let bestId: string | undefined;
+    let bestScore = -1;
+    for (const c of deckStats.cards) {
+      if (!c.imagePath) continue;
+      const score = (c.rarity === 'legendary' ? 100 : 0) + c.cost;
+      if (score > bestScore) {
+        bestScore = score;
+        bestId = c.id;
+      }
+    }
+    return bestId;
+  }, [deckStats.cards]);
+
+  const currentStageMapNode = useMemo(
+    () => resolveStageMapNode('expedition', currentBoss.id, currentBoss.stage),
+    [currentBoss.id, currentBoss.stage]
+  );
 
   return (
     <div className="aaa-page-shell">
@@ -639,16 +667,37 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
           </span>
         </div>
 
-        {runState.phase !== 'blessing' && (
-          <button
-            type="button"
-            className="btn-fantasy btn-fantasy-danger"
-            style={{ padding: '4px 10px', fontSize: '0.72rem' }}
-            onClick={handleRestartExpedition}
-          >
-            Nova Expedição
-          </button>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {(runState.phase === 'trail' || runState.phase === 'completed') && (
+            <div className="vwm-mode-switch">
+              <button
+                type="button"
+                className={`vwm-mode-switch-btn ${trailViewMode === 'map' ? 'is-active' : ''}`}
+                onClick={() => setTrailViewMode('map')}
+              >
+                🗺️ Mapa de Vaeloria
+              </button>
+              <button
+                type="button"
+                className={`vwm-mode-switch-btn ${trailViewMode === 'list' ? 'is-active' : ''}`}
+                onClick={() => setTrailViewMode('list')}
+              >
+                📜 Lista
+              </button>
+            </div>
+          )}
+
+          {runState.phase !== 'blessing' && (
+            <button
+              type="button"
+              className="btn-fantasy btn-fantasy-danger"
+              style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+              onClick={handleRestartExpedition}
+            >
+              Nova Expedição
+            </button>
+          )}
+        </div>
       </div>
 
       {toastMsg && <div className="aaa-toast-banner">{toastMsg}</div>}
@@ -849,48 +898,67 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
             </div>
           )}
 
-          <div className="aaa-campaign-workspace">
-            <aside className="aaa-boss-roster">
-              {EXPEDITION_STAGES.map((stageBoss) => {
-                const isCleared = runState.clearedStages.includes(stageBoss.stage);
-                const isCurrent = stageBoss.stage === runState.currentStage;
-                const avatar = CARDS_BY_ID[stageBoss.avatarCardId];
-                const dom = stageBoss.domains[0] ?? 'neutral';
+          <div className={`aaa-campaign-workspace ${trailViewMode === 'map' ? 'is-map-mode' : ''}`}>
+            {trailViewMode === 'map' ? (
+              <VaeloriaWorldMap
+                mode="expedition"
+                bosses={EXPEDITION_STAGES}
+                selectedBossId={currentBoss.id}
+                clearedBossIds={clearedExpeditionBossIds}
+                sovereignAvatarCardId={expeditionAvatarCardId}
+                sovereignLabel={activeBlessing ? `Peregrino (${activeBlessing.name})` : 'Peregrino da Expedição'}
+                onSelectBoss={(boss) =>
+                  setRunState((prev) => ({ ...prev, currentStage: boss.stage }))
+                }
+                onChallengeBoss={(boss) =>
+                  onStartExpeditionBattle(boss, runState.deckCardIds, runState.blessingId)
+                }
+              />
+            ) : (
+              <aside className="aaa-boss-roster">
+                {EXPEDITION_STAGES.map((stageBoss) => {
+                  const isCleared = runState.clearedStages.includes(stageBoss.stage);
+                  const isCurrent = stageBoss.stage === runState.currentStage;
+                  const avatar = CARDS_BY_ID[stageBoss.avatarCardId];
+                  const dom = stageBoss.domains[0] ?? 'neutral';
+                  const nodeInfo = resolveStageMapNode('expedition', stageBoss.id, stageBoss.stage);
 
-                return (
-                  <div
-                    key={stageBoss.id}
-                    onClick={() =>
-                      setRunState((prev) => ({ ...prev, currentStage: stageBoss.stage }))
-                    }
-                    className={`aaa-boss-row ${isCurrent ? 'is-selected' : ''} ${
-                      isCleared ? 'is-defeated' : ''
-                    }`}
-                  >
+                  return (
                     <div
-                      className="aaa-boss-row-accent"
-                      style={{ backgroundColor: DOMAIN_META[dom].color }}
-                    />
-                    <div className="aaa-boss-row-thumb">
-                      {avatar?.imagePath && <img src={avatar.imagePath} alt={stageBoss.name} />}
-                    </div>
-                    <div className="aaa-boss-row-info">
-                      <div className="aaa-boss-row-top">
-                        <span className="aaa-boss-stage-num">
-                          ETAPA {stageBoss.stage}/{TOTAL_EXPEDITION_STAGES}
-                        </span>
-                        {isCleared && <span className="aaa-boss-cleared-tag">✓</span>}
+                      key={stageBoss.id}
+                      onClick={() =>
+                        setRunState((prev) => ({ ...prev, currentStage: stageBoss.stage }))
+                      }
+                      className={`aaa-boss-row ${isCurrent ? 'is-selected' : ''} ${
+                        isCleared ? 'is-defeated' : ''
+                      }`}
+                    >
+                      <div
+                        className="aaa-boss-row-accent"
+                        style={{ backgroundColor: DOMAIN_META[dom].color }}
+                      />
+                      <div className="aaa-boss-row-thumb">
+                        {avatar?.imagePath && <img src={avatar.imagePath} alt={stageBoss.name} />}
                       </div>
-                      <div className="font-cinzel aaa-boss-row-name">{stageBoss.name}</div>
+                      <div className="aaa-boss-row-info">
+                        <div className="aaa-boss-row-top">
+                          <span className="aaa-boss-stage-num">
+                            ETAPA {stageBoss.stage}/{TOTAL_EXPEDITION_STAGES}
+                          </span>
+                          {isCleared && <span className="aaa-boss-cleared-tag">✓</span>}
+                        </div>
+                        <div className="font-cinzel aaa-boss-row-name">{stageBoss.name}</div>
+                        <div className="aaa-boss-row-geo">📍 {nodeInfo.landmarkName}</div>
+                      </div>
+                      <div className="aaa-boss-row-stats">
+                        <span>{stageBoss.startingHp} PV</span>
+                        <span className="gold-text">+{VICTORY_GOLD_REWARD}</span>
+                      </div>
                     </div>
-                    <div className="aaa-boss-row-stats">
-                      <span>{stageBoss.startingHp} PV</span>
-                      <span className="gold-text">+{VICTORY_GOLD_REWARD}</span>
-                    </div>
-                  </div>
-                );
-              })}
-            </aside>
+                  );
+                })}
+              </aside>
+            )}
 
             <section
               className="aaa-boss-dossier"
@@ -936,6 +1004,11 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
 
                 <h2 className="font-cinzel aaa-dossier-title">{currentBoss.name}</h2>
                 <div className="aaa-dossier-subtitle">{currentBoss.title}</div>
+                <div className="vwm-dossier-geo-badge">
+                  <span>📍 {currentStageMapNode.regionName}</span>
+                  <span>•</span>
+                  <strong>{currentStageMapNode.landmarkName}</strong>
+                </div>
 
                 {currentBoss.loreIntro && (
                   <blockquote className="aaa-dossier-quote">{currentBoss.loreIntro}</blockquote>

@@ -1,7 +1,7 @@
 import { CardDefinition } from '../types/game';
 
 /**
- * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.026 CARTAS)
+ * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.032 CARTAS)
  * 100% Original Dark Fantasy IP — Sem Nomes, Anatomias ou Frases Protegidos por Direito Autoral.
  */
 export const ALL_CARDS: CardDefinition[] = [
@@ -33970,6 +33970,273 @@ export const ALL_CARDS: CardDefinition[] = [
     "flavorText": "Nenhum golpe alcança o teurgo enquanto o guardião de bronze solar vigiar seu voto.",
     "imagePath": "/assets/cards/gold_171_pactuario_elemental_sol.png",
     "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, slender hooded solar theurge mage standing in foreground framed beneath a colossal hunched celestial bronze-and-sunlight elemental beast-spirit with blazing gold eyes on pure white background."
+  },
+  {
+    "id": "neutral_172_armada_draconica_matriz",
+    "name": "Armada Dracônica do Prisma",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Dragão • Armada • Lendário",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 0,
+    "atk": 6,
+    "armor": 1,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Atropelar",
+      "Alcance"
+    ],
+    "breathDamage": 2,
+    "ascension": {
+      "cost": 4,
+      "newName": "Esquadra Suprema do Prisma",
+      "newAtk": 9,
+      "newArmor": 2,
+      "newMaxHp": 10,
+      "addedKeywords": [
+        "Escudo Divino"
+      ]
+    },
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Ao atacar, concede +2 de Essência extra neste turno."
+      }
+    ],
+    "description": "Ao entrar, causa 2 de dano a todas as criaturas na Vanguarda inimiga e invoca 2 criaturas aliadas 2/2 na sua Vanguarda. Ao atacar, concede +2 de Essência extra neste turno. Ascensão 4: evolui para Esquadra Suprema do Prisma 9/10.",
+    "flavorText": "Quando o Prisma fende o firmamento, não desce um único soberano alado, mas toda a revoada primordial.",
+    "imagePath": "/assets/cards/neutral_172_armada_draconica_matriz.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, organic swirling astral-silver and rainbow-prism nebula sky vignette packed with dozens of multi-winged geometric crystal-and-quicksilver construct dragons firing converging prismatic beams on pure white background."
+  },
+  {
+    "id": "purple_172_armada_draconica_abismo",
+    "name": "Legião Dracônica do Eclipse",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Dragão • Armada • Lendário",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 0,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Atropelar",
+      "Toque Letal",
+      "Renascer"
+    ],
+    "breathDamage": 2,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "revive_from_crypt",
+        "value": 1,
+        "description": "Ao atacar, reanima da sua Cripta a criatura aliada mais forte."
+      }
+    ],
+    "description": "Ao entrar, causa 2 de dano a todas as criaturas na Vanguarda inimiga e invoca 2 criaturas aliadas 2/2 na sua Vanguarda. Ao atacar, reanima da sua Cripta a criatura aliada mais forte.",
+    "flavorText": "Suas asas apagam o sol; seu sopro drena os vivos para que os ossos da Cripta voltem a voar.",
+    "imagePath": "/assets/cards/purple_172_armada_draconica_abismo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, organic swirling umbral-violet eclipse sky vignette swarming with dozens of undead skeletal dracoliches and shadow-wyrms breathing purple soul-fire on pure white background."
+  },
+  {
+    "id": "red_172_armada_draconica_chama",
+    "name": "Hoste Dracônica da Cratera",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Dragão • Armada • Lendário",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 7,
+    "armor": 0,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Atropelar",
+      "Ímpeto",
+      "Pele Incandescente"
+    ],
+    "breathDamage": 3,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 3,
+        "description": "Ao atacar, causa 3 de dano direto ao Soberano inimigo."
+      }
+    ],
+    "description": "Ao entrar, causa 3 de dano a todas as criaturas na Vanguarda inimiga e invoca 2 criaturas aliadas 2/2 na sua Vanguarda. Ao atacar, causa 3 de dano direto ao Soberano inimigo.",
+    "flavorText": "Não anunciam o ataque com trombetas: o céu simplesmente racha em lava e cem gargantas rugem.",
+    "imagePath": "/assets/cards/red_172_armada_draconica_chama.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, organic roaring crimson-orange volcanic firestorm sky vignette packed with dozens of bull-horned basalt-and-magma behemoth dragons charging diagonally and breathing liquid fire on pure white background."
+  },
+  {
+    "id": "blue_172_armada_draconica_gelo",
+    "name": "Esquadra Dracônica da Nevasca",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Dragão • Armada • Lendário",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 1,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Atropelar",
+      "Alcance"
+    ],
+    "breathDamage": 2,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Ao entrar, congela todas as criaturas na Vanguarda inimiga por 1 rodada."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao atacar, compra 1 carta."
+      }
+    ],
+    "description": "Ao entrar, causa 2 de dano a todas as criaturas na Vanguarda inimiga, as congela por 1 rodada e invoca 2 criaturas aliadas 2/2 na sua Vanguarda. Ao atacar, compra 1 carta.",
+    "flavorText": "Antes que a primeira garra toque o solo, todo o exército adversário já virou estátua de geada.",
+    "imagePath": "/assets/cards/blue_172_armada_draconica_gelo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, organic swirling deep-cobalt blizzard and cyan lightning storm-vortex sky vignette packed with dozens of sinuous frost-leviathan dragons banking in formation on pure white background."
+  },
+  {
+    "id": "green_172_armada_draconica_selva",
+    "name": "Enxame Dracônico Ancestral",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Dragão • Armada • Lendário",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 1,
+    "hp": 8,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Atropelar",
+      "Fúria Crescente"
+    ],
+    "breathDamage": 2,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Ao atacar, concede +1/+2 de Ataque e Vida a todas as suas criaturas aliadas."
+      }
+    ],
+    "description": "Ao entrar, causa 2 de dano a todas as criaturas na Vanguarda inimiga e invoca 2 criaturas aliadas 2/2 na sua Vanguarda. No início do seu turno, regenera 2 de Vida. Ao atacar, concede +1/+2 de Ataque e Vida a todas as suas criaturas aliadas.",
+    "flavorText": "A copa inteira da selva ergueu voo, faminta e indomável como no primeiro dia do mundo.",
+    "imagePath": "/assets/cards/green_172_armada_draconica_selva.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, organic swirling emerald-jade venomous spore-storm sky vignette packed with dozens of antlered leaf-plumed jungle wyverns ambush-diving and spraying emerald acid-venom on pure white background."
+  },
+  {
+    "id": "gold_172_armada_draconica_sol",
+    "name": "Armada Dracônica do Zênite",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Dragão • Armada • Lendário",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 2,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Atropelar",
+      "Escudo Divino",
+      "Guardião"
+    ],
+    "breathDamage": 2,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao entrar, invoca 2 criaturas aliadas 2/2 na sua Vanguarda."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "shield_all_allies",
+        "value": 2,
+        "description": "Ao atacar, concede Escudo Divino a todas as suas criaturas aliadas."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao atacar, restaura 3 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Ao entrar, causa 2 de dano a todas as criaturas na Vanguarda inimiga e invoca 2 criaturas aliadas 2/2 na sua Vanguarda. Ao atacar, concede Escudo Divino a todas as suas criaturas aliadas e restaura 3 de Vida do seu Soberano.",
+    "flavorText": "Descem em cunha dourada desde o zênite, julgando tiranos sob um firmamento de escudos solares.",
+    "imagePath": "/assets/cards/gold_172_armada_draconica_sol.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, organic blazing solar-gold dawn-cloud sky vignette packed with dozens of lion-maned six-winged celestial seraph-dragons flying in V-wedge formation breathing golden dawnfire on pure white background."
   }
 ];
 

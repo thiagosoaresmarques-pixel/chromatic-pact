@@ -899,6 +899,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             const isHovered = prov.id === hoveredProvId;
             const isAttackable = !hasActedThisSeason && attackableProvinceIds.has(prov.id);
             const isUnderSiege = activeInvasion?.toProvinceId === prov.id;
+            const isDockedChallengeHere = canChallengeDocked && dockedProvince?.id === prov.id;
 
             // Counter-scale pins slightly at deep zoom so they never become huge blobs!
             const pinCounterScale = zoom > 1.6 ? Math.max(0.56, 1.15 / Math.sqrt(zoom)) : 1;
@@ -912,7 +913,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 } ${isAttackable ? 'is-attackable' : ''} ${
                   ownerId === playerFactionId ? 'is-player-owned' : ''
                 } ${isUnderSiege ? 'is-under-siege' : ''} ${
-                  prov.y > 82 ? 'is-near-bottom' : ''
+                  prov.y > 82 && !isDockedChallengeHere ? 'is-near-bottom' : ''
                 } ${prov.x < 14 ? 'is-near-left' : prov.x > 86 ? 'is-near-right' : ''}`}
                 style={
                   {
@@ -1069,12 +1070,12 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             ▼
           </button>
         </div>
+      </div>
 
-        <div className="vwm-bottom-hint">
-          <span>
-            🔍 Roda do mouse para <strong>Zoom LOD (1x–3.8x)</strong> • Clique numa província rival conectada para <strong>Cercar</strong> • <strong>WASD</strong> para marchar
-          </span>
-        </div>
+      <div className="vwm-footer-hint">
+        <span>
+          🔍 Roda do mouse ou pinça para <strong>Zoom LOD (1x–3.8x)</strong> • Clique numa província rival conectada para <strong>Cercar</strong> • <strong>WASD</strong> para marchar
+        </span>
       </div>
     </div>
   );

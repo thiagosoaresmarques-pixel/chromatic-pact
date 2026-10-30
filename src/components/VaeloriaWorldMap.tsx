@@ -677,6 +677,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             const isCleared = clearedBossIds.includes(boss.id);
             const isNextTarget = boss.id === nextUnclearBossId;
             const isHovered = hoveredBossId === boss.id;
+            const isDockedHere = dockedBossEntry?.boss.id === boss.id;
             const domColor = DOMAIN_META[boss.domains[0] ?? 'neutral'].color;
             const bossCard = CARDS_BY_ID[boss.avatarCardId];
             const isFinalWheel = boss.stage === 26 || (mode === 'expedition' && boss.stage === 9);
@@ -714,7 +715,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                   {isCleared ? `✓${boss.stage}` : boss.stage}
                 </span>
 
-                {(isSelected || isHovered) && (
+                {!isDockedHere && (isSelected || isHovered) && (
                   <span className="vwm-boss-tooltip">
                     <strong>{boss.name}</strong>
                     <em>📍 {node.landmarkName}</em>
@@ -833,11 +834,13 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             ▼
           </button>
         </div>
+      </div>
 
-        {/* Bottom Instruction Hint */}
-        <div className="vwm-bottom-hint">
-          <span>🥾 Clique em qualquer região ou cidadela para marchar • <strong>WASD / Setas</strong> para explorar • <strong>Enter</strong> ou 2º clique para duelar</span>
-        </div>
+      {/* Subtle Cartographic Footer Hint (Outside viewport so it never covers Veridia) */}
+      <div className="vwm-footer-hint">
+        <span>
+          🥾 Clique em qualquer região ou cidadela para marchar • <strong>WASD / Setas</strong> para explorar • <strong>Enter</strong> ou 2º clique para duelar
+        </span>
       </div>
     </div>
   );

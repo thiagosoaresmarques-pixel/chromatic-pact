@@ -980,7 +980,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 </div>
               )}
 
-              <div className="aaa-dossier-content" style={{ padding: '1.25rem 1.5rem' }}>
+              <div className="aaa-dossier-content">
                 <div className="aaa-dossier-meta-row">
                   <span className="aaa-dossier-stage-pill">
                     ETAPA {currentBoss.stage}/{TOTAL_EXPEDITION_STAGES}

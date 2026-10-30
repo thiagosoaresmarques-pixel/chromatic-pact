@@ -674,7 +674,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   onChange={(e) =>
                     setRunState((prev) => ({ ...prev, selectedDeckId: e.target.value }))
                   }
-                  className="aaa-select"
+                  className="aaa-select aaa-toolbar-deck-select"
                   style={{ padding: '6px 10px', fontSize: '0.8rem' }}
                 >
                   {customDecks.map((cd) => (
@@ -781,8 +781,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   onChange={(e) =>
                     setRunState((prev) => ({ ...prev, selectedDeckId: e.target.value }))
                   }
-                  className="aaa-select"
-                  style={{ padding: '4px 8px', fontSize: '0.74rem' }}
+                  className="aaa-select aaa-toolbar-deck-select"
+                  style={{ padding: '4px 10px', fontSize: '0.74rem' }}
                 >
                   {customDecks.map((cd) => (
                     <option key={cd.id} value={cd.id}>
@@ -872,7 +872,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 } as React.CSSProperties
               }
             >
-              <div className="aaa-dossier-visual" style={{ maxHeight: 165 }}>
+              <div className="aaa-dossier-visual">
                 {selectedCommanderCard?.imagePath && (
                   <img
                     src={selectedCommanderCard.imagePath}
@@ -884,7 +884,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 <div className="aaa-dossier-vignette" />
               </div>
 
-              <div className="aaa-dossier-content" style={{ padding: '1rem 1.2rem' }}>
+              <div className="aaa-dossier-content">
                 <div className="aaa-dossier-meta-row">
                   <span
                     className="aaa-dossier-stage-pill"

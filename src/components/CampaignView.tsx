@@ -235,6 +235,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     <div className="aaa-page-shell">
       {/* Single Compact Toolbar: Act Tabs + Map/List Toggle + Progress + Deck Picker */}
       <div
+        className="aaa-campaign-toolbar"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -306,8 +307,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             <select
               value={selectedDeckId}
               onChange={(e) => setSelectedDeckId(e.target.value)}
-              className="aaa-select"
-              style={{ padding: '4px 8px', fontSize: '0.75rem' }}
+              className="aaa-select aaa-toolbar-deck-select"
+              style={{ padding: '4px 10px', fontSize: '0.75rem' }}
             >
               {customDecks.map((cd) => (
                 <option key={cd.id} value={cd.id}>

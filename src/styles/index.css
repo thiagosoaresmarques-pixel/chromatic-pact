@@ -17143,7 +17143,16 @@ input:focus-visible,
    EDGE-AWARE TOOLTIP & SOVEREIGN PILL CLAMPING + SMARTPHONE MAP/CONQUEST UX
    ========================================================================= */
 /* Desktop & Tablet 12-Tab Top Navbar Anti-Overlap Cascade (Placed at end for deterministic specificity) */
-@media (min-width: 769px) and (max-width: 1740px) {
+@media (min-width: 769px) {
+  .top-navbar .nav-account-label {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1840px) {
   .top-navbar .brand-subtitle {
     display: none !important;
   }
@@ -17169,7 +17178,7 @@ input:focus-visible,
   }
 }
 
-@media (min-width: 1261px) and (max-width: 1580px) {
+@media (min-width: 1261px) and (max-width: 1680px) {
   .top-navbar .nav-account-elo,
   .top-navbar .nav-gold-word,
   .top-navbar .nav-notif-label,
@@ -17259,6 +17268,168 @@ input:focus-visible,
   max-width: 1380px;
   margin: 0.85rem auto 0;
   padding: 0 1.75rem;
+}
+
+/* Inline Toolbar Deck Select: keep auto width so it sits on the same horizontal row as Map/List toggle */
+.aaa-toolbar-deck-select {
+  width: auto !important;
+  min-width: 170px;
+  max-width: 250px;
+}
+
+/* Cartographic Footer Hint below map frame (never covers Veridia or bottom ocean) */
+.vwm-footer-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(9, 13, 24, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  color: #cbd5e1;
+  font-size: 0.66rem;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.vwm-footer-hint strong {
+  color: #fef08a;
+}
+
+/* =========================================================================
+   RIGHT-HAND TACTICAL DOSSIER SIDEBAR IN MAP MODE (Campaign, Expedition & Conquest)
+   Overrides the 2-column (310px + 1fr) horizontal layout used in full-width List Mode
+   so the narrow right sidebar stacks Portrait on top + Full-Width Content below!
+   ========================================================================= */
+.aaa-campaign-workspace.is-map-mode {
+  grid-template-columns: minmax(0, 1.54fr) minmax(340px, 0.88fr);
+  align-items: start;
+  gap: 1rem;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-boss-dossier {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding: 1rem 1.15rem !important;
+  gap: 0.72rem !important;
+  height: auto !important;
+  min-width: 0 !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-dossier-visual {
+  width: 100% !important;
+  height: 172px !important;
+  max-height: 172px !important;
+  padding: 0.6rem !important;
+  flex-shrink: 0 !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-dossier-content {
+  padding: 0 !important;
+  gap: 0.62rem !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-dossier-title {
+  font-size: 1.24rem !important;
+  line-height: 1.2 !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-dossier-subtitle {
+  margin-top: -0.22rem !important;
+  font-size: 0.8rem !important;
+  line-height: 1.3 !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .vwm-dossier-geo-badge {
+  display: flex !important;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0 !important;
+  padding: 5px 10px !important;
+  border-radius: 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  line-height: 1.3;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-dossier-quote {
+  margin: 0 !important;
+  padding: 0.48rem 0.72rem !important;
+  font-size: 0.74rem !important;
+  line-height: 1.38 !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-dossier-metrics {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.45rem !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-metric-box {
+  padding: 0.44rem 0.55rem !important;
+  min-width: 0 !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-metric-lbl {
+  font-size: 0.52rem !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-metric-val {
+  font-size: 0.78rem !important;
+  line-height: 1.2 !important;
+  overflow-wrap: anywhere !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-dossier-passive-panel {
+  padding: 0.65rem 0.85rem !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-passive-desc {
+  font-size: 0.76rem !important;
+  line-height: 1.38 !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-dossier-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+}
+
+.aaa-campaign-workspace.is-map-mode .aaa-dossier-actions .aaa-btn-primary {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+@media (max-width: 1240px) {
+  /* Also stack List-Mode dossier cleanly on compact laptops so portrait never squeezes text */
+  .aaa-boss-dossier {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 1.15rem !important;
+    gap: 0.85rem !important;
+    height: auto !important;
+  }
+
+  .aaa-boss-dossier .aaa-dossier-visual {
+    height: 195px !important;
+  }
+}
+
+@media (max-width: 1120px) {
+  .aaa-campaign-workspace.is-map-mode {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
 }
 
 /* Prevent map tooltips & Sovereign challenge pills from clipping against viewport edges */
@@ -17478,6 +17649,63 @@ input:focus-visible,
   }
 
   .conquest-dossier .aaa-dossier-actions .aaa-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  /* Smartphone Dossier, Toolbar Select & Footer Hint Polish */
+  .aaa-campaign-toolbar {
+    padding: 6px 8px !important;
+    gap: 0.45rem !important;
+  }
+
+  .aaa-toolbar-deck-select {
+    flex: 1 1 150px !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .vwm-footer-hint {
+    font-size: 0.58rem;
+    padding: 3px 8px;
+  }
+
+  .aaa-campaign-workspace.is-map-mode .aaa-boss-dossier,
+  .aaa-boss-dossier {
+    padding: 0.8rem 0.85rem !important;
+    gap: 0.6rem !important;
+  }
+
+  .aaa-campaign-workspace.is-map-mode .aaa-dossier-visual,
+  .aaa-boss-dossier .aaa-dossier-visual {
+    height: 136px !important;
+    max-height: 136px !important;
+    padding: 0.45rem !important;
+  }
+
+  .aaa-campaign-workspace.is-map-mode .aaa-dossier-title,
+  .aaa-boss-dossier .aaa-dossier-title {
+    font-size: 1.08rem !important;
+  }
+
+  .aaa-campaign-workspace.is-map-mode .aaa-dossier-metrics,
+  .aaa-boss-dossier .aaa-dossier-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.35rem !important;
+  }
+
+  .aaa-campaign-workspace.is-map-mode .aaa-metric-box,
+  .aaa-boss-dossier .aaa-metric-box {
+    padding: 0.36rem 0.42rem !important;
+  }
+
+  .aaa-campaign-workspace.is-map-mode .aaa-metric-val,
+  .aaa-boss-dossier .aaa-metric-val {
+    font-size: 0.7rem !important;
+  }
+
+  .aaa-campaign-workspace.is-map-mode .aaa-dossier-actions .aaa-btn,
+  .aaa-boss-dossier .aaa-dossier-actions .aaa-btn {
     flex: 1 1 auto;
     justify-content: center;
   }

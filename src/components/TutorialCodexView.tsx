@@ -224,7 +224,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     subtitle: '1º Grimório 100% livre, edição completa por 100 de Ouro a partir da 2ª vez e expansão via Relicário.',
     cardId: 'blue_06_dragao_azul',
     summary:
-      'Seu 1º Grimório de 100 cartas é 100% livre entre as 996 cartas do jogo. A partir da 2ª vez, você pode trocar gratuitamente entre cartas que já possui na sua coleção (Grimório Base + pacotes do Relicário) ou pagar apenas 100 de Ouro na Forja para editar/substituir livremente todo o seu Grimório.',
+      `Seu 1º Grimório de 100 cartas é 100% livre entre as ${ALL_CARDS.length} cartas do jogo. A partir da 2ª vez, você pode trocar gratuitamente entre cartas que já possui na sua coleção (Grimório Base + pacotes do Relicário) ou pagar apenas 100 de Ouro na Forja para editar/substituir livremente todo o seu Grimório.`,
     keyPoints: [
       {
         tag: 'ARQUITETURA • 100 CARTAS',
@@ -236,7 +236,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
         tag: '100 OURO • TENTATIVA E ERRO',
         title: 'Editar Grimório (100 🪙)',
         detail:
-          'O 1º Grimório é gratuito. Da 2ª vez em diante, clique em "Editar (100 🪙)" na Forja de Grimórios para abrir todo o catálogo de 996 cartas ou carregar qualquer um dos 27 modelos táticos.',
+          `O 1º Grimório é gratuito. Da 2ª vez em diante, clique em "Editar (100 🪙)" na Forja de Grimórios para abrir todo o catálogo de ${ALL_CARDS.length} cartas ou carregar qualquer um dos 27 modelos táticos.`,
       },
       {
         tag: 'RELICÁRIO • RESERVA GRATUITA',
@@ -286,7 +286,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     subtitle: 'Domine os 62 combos catalogados no Oráculo: Monocromáticos, Alianças, Tríades e Pentacromáticos.',
     cardId: 'gold_166_trono_soberano_sol',
     summary:
-      'As 996 cartas foram desenhadas com sinergias cruzadas entre Criaturas Ascendidas (★), Relíquias de Retaguarda, Feitiços Cataclísmicos e Emboscadas Ocultas. Consulte o Compêndio de Combos no Oráculo de Guerra para ver quais combinações já estão ativas no seu Grimório.',
+      `As ${ALL_CARDS.length} cartas foram desenhadas com sinergias cruzadas entre Criaturas Ascendidas (★), Relíquias de Retaguarda, Feitiços Cataclísmicos e Emboscadas Ocultas. Consulte o Compêndio de Combos no Oráculo de Guerra para ver quais combinações já estão ativas no seu Grimório.`,
     keyPoints: [
       {
         tag: '1 A 2 CORES',

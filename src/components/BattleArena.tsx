@@ -6111,7 +6111,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   <div>
                     {isGuest
                       ? 'Crie sua conta gratuita para salvar seu progresso na nuvem, acumular +10 Ouro por vitória e resgatar imediatamente +160 Ouro de Boas-Vindas para abrir pacotes no Relicário!'
-                      : 'Lembrete: Sua conta gratuita salva seu progresso e garante +160 Ouro de Boas-Vindas no Relicário para expandir sua coleção de 996 cartas!'}
+                      : `Lembrete: Sua conta gratuita salva seu progresso e garante +160 Ouro de Boas-Vindas no Relicário para expandir sua coleção de ${ALL_CARDS.length} cartas!`}
                   </div>
                 </div>
               </div>

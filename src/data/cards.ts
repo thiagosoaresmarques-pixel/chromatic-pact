@@ -1,7 +1,7 @@
 import { CardDefinition } from '../types/game';
 
 /**
- * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (996 CARTAS)
+ * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.002 CARTAS)
  * 100% Original Dark Fantasy IP — Sem Nomes, Anatomias ou Frases Protegidos por Direito Autoral.
  */
 export const ALL_CARDS: CardDefinition[] = [
@@ -32944,6 +32944,212 @@ export const ALL_CARDS: CardDefinition[] = [
     "flavorText": "Perante o Selo Axial, toda espada deve baixar ou quebrar.",
     "imagePath": "/assets/cards/neutral_166_protocolo_torre_axial.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Five interlocking chains of silver and iron descending from a floating prism seal to lock enemy weapons."
+  },
+  {
+    "id": "neutral_167_arauto_prisma_matriz",
+    "name": "Matriz do Prisma Primordial",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Avatar • Prisma",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Escudo Divino"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao entrar, compra 1 carta."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao entrar, concede +1 de Essência extra neste turno."
+      }
+    ],
+    "description": "Ao entrar, compra 1 carta e concede +1 de Essência extra neste turno.",
+    "flavorText": "Antes de a luz escolher um juramento, todas as cores dormiam no mesmo coração de cristal.",
+    "imagePath": "/assets/cards/neutral_167_arauto_prisma_matriz.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, levitating platinum and diamond cosmic prism avatar with cyclopean white eye, astrolabe halo, rainbow-refracting diamond chest core, and liquid mercury orbital rings isolated on pure white background."
+  },
+  {
+    "id": "purple_167_arauto_prisma_abismo",
+    "name": "Arauto do Eclipse Prismático",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Avatar • Prisma",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 2,
+    "atk": 6,
+    "armor": 0,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Dreno de Vida"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Ao entrar, reduz em -2 o Ataque de todas as criaturas inimigas em campo."
+      }
+    ],
+    "description": "Ao entrar, reduz em -2 o Ataque de todas as criaturas inimigas em campo.",
+    "flavorText": "Onde o Prisma dobrou para a sombra, nasceu a fome silenciosa entre as estrelas.",
+    "imagePath": "/assets/cards/purple_167_arauto_prisma_abismo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, levitating abyssal void cosmic avatar with violet cyclopean eye, eclipse astrolabe halo, black-hole singularity chest core, and dark purple orbital rings isolated on pure white background."
+  },
+  {
+    "id": "red_167_arauto_prisma_chama",
+    "name": "Arauto da Supernova Prismática",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Avatar • Prisma",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 2,
+    "atk": 6,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Voo",
+      "Ímpeto"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao entrar, causa 2 de dano a todas as criaturas na Vanguarda inimiga."
+      }
+    ],
+    "description": "Ao entrar, causa 2 de dano a todas as criaturas na Vanguarda inimiga.",
+    "flavorText": "A faceta rubra do Prisma jamais ilumina sem incendiar o horizonte inteiro.",
+    "imagePath": "/assets/cards/red_167_arauto_prisma_chama.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, levitating volcanic basalt cosmic avatar with blazing orange eye, fiery astrolabe halo, molten supernova chest core, and sweeping lava orbital rings isolated on pure white background."
+  },
+  {
+    "id": "blue_167_arauto_prisma_gelo",
+    "name": "Arauto do Zero Prismático",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Avatar • Prisma",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Voo",
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Ao entrar, congela todas as criaturas na Vanguarda inimiga por 1 rodada."
+      }
+    ],
+    "description": "Ao entrar, congela todas as criaturas na Vanguarda inimiga por 1 rodada.",
+    "flavorText": "Na refração azul do Prisma, até o próprio instante congela em geometria perfeita.",
+    "imagePath": "/assets/cards/blue_167_arauto_prisma_gelo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, levitating glacial sapphire cosmic avatar with cyan cyclopean eye, frost astrolabe halo, cryo-star chest core, and icy ether orbital rings isolated on pure white background."
+  },
+  {
+    "id": "green_167_arauto_prisma_selva",
+    "name": "Arauto da Raiz Prismática",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Avatar • Prisma",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 2,
+    "atk": 6,
+    "armor": 1,
+    "hp": 7,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Atropelar",
+      "Fúria Crescente"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Ao entrar, concede +1/+2 de Ataque e Vida a todas as suas criaturas aliadas."
+      }
+    ],
+    "description": "Ao entrar, concede +1/+2 de Ataque e Vida a todas as suas criaturas aliadas. No início do seu turno, regenera 2 de Vida.",
+    "flavorText": "Quando o raio esmeralda tocou o solo, a pedra brotou como floresta ancestral.",
+    "imagePath": "/assets/cards/green_167_arauto_prisma_selva.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, levitating ironwood and emerald cosmic avatar with verdant glowing eye, spirit-vine astrolabe halo, living emerald seed chest core, and thorny briar orbital rings isolated on pure white background."
+  },
+  {
+    "id": "gold_167_arauto_prisma_sol",
+    "name": "Arauto do Zênite Prismático",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Avatar • Prisma",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 2,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Escudo Divino"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Ao entrar, concede Escudo Divino a todas as suas criaturas aliadas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 4,
+        "description": "Ao entrar, restaura 4 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Ao entrar, concede Escudo Divino a todas as suas criaturas aliadas e restaura 4 de Vida do seu Soberano.",
+    "flavorText": "Do feixe dourado do Prisma ergueu-se a lei que nenhum abismo ousa profanar.",
+    "imagePath": "/assets/cards/gold_167_arauto_prisma_sol.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, levitating celestial gold cosmic avatar with radiant solar eye, golden astrolabe halo, miniature sun chest core, and runic light orbital rings isolated on pure white background."
   }
 ];
 

@@ -265,7 +265,7 @@ export const CardView: React.FC<CardViewProps> = ({
             'card-frame',
             'card-3d-interactive',
             'mode-board',
-            'mtg-board-token',
+            'cpa-board-token',
             `domain-${displayCard.domain}`,
             `rarity-${displayCard.rarity}`,
             displayCard.type === 'relic' ? 'is-relic-arch' : '',
@@ -343,24 +343,24 @@ export const CardView: React.FC<CardViewProps> = ({
           )}
 
           {/* Compact Top Nameplate (Sitting cleanly ABOVE the artwork, never overlapping the head) */}
-          <div className="mtg-token-header">
+          <div className="cpa-token-header">
             <span
-              className="mtg-token-cost"
+              className="cpa-token-cost"
             >
               {displayCard.cost}
             </span>
-            <span className="mtg-token-name">
+            <span className="cpa-token-name">
               {unit?.isAscended ? `★ ${displayName}` : displayName}
             </span>
           </div>
 
           {/* Full-Height Portrait Artwork Stage (Uncropped Creature Silhouette) */}
-          <div className={`mtg-token-art aura-${displayCard.domain}`}>
+          <div className={`cpa-token-art aura-${displayCard.domain}`}>
             {!imgError && displayCard.imagePath ? (
               <img
                 src={`${displayCard.imagePath}?v=54`}
                 alt={displayName}
-                className="mtg-token-img"
+                className="cpa-token-img"
                 onError={() => setImgError(true)}
                 loading="lazy"
                 decoding="async"
@@ -369,9 +369,9 @@ export const CardView: React.FC<CardViewProps> = ({
               <div style={{ fontSize: '1.8rem' }}>{domainInfo.icon}</div>
             )}
 
-            {/* Tapped / Exhausted Curved Arrow Watermark (MTG Arena style) */}
+            {/* Tapped / Exhausted Curved Arrow Watermark */}
             {isTapped && (
-              <div className="mtg-tap-watermark">
+              <div className="cpa-tap-watermark">
                 ⤵
               </div>
             )}
@@ -379,7 +379,7 @@ export const CardView: React.FC<CardViewProps> = ({
             {/* Summoning Sickness Subtle Zzz */}
             {isSummoningSick && !isTapped && !unit?.isTrap && (
               <div
-                className="mtg-sick-indicator"
+                className="cpa-sick-indicator"
               >
                 💤
               </div>
@@ -399,34 +399,34 @@ export const CardView: React.FC<CardViewProps> = ({
           </div>
 
           {/* Bottom-Left Mini Keyword Icons (Tucked neatly at the bottom-left edge) */}
-          <div className="mtg-token-keywords">
+          <div className="cpa-token-keywords">
             {(unit?.invasionAtkBonus || unit?.terrainAtkBonus || unit?.formationAtkBonus) ? (
               <span
-                className="mtg-kw-hex bonus-invasion"
+                className="cpa-kw-hex bonus-invasion"
               >
                 +1⚔️
               </span>
             ) : null}
             {activeKeywords.slice(0, 2).map((kw) => (
-              <span key={kw} className="mtg-kw-hex">
+              <span key={kw} className="cpa-kw-hex">
                 {KEYWORD_ICONS[kw] ?? '✦'}
               </span>
             ))}
           </div>
 
-          {/* Bottom-Right Iconic MTG Arena Power/Toughness Plate (e.g. 3/2, 8/10) */}
+          {/* Bottom-Right Iconic Power/Toughness Plate (e.g. 3/2, 8/10) */}
           {isCreatureOrRelic && !unit?.isTrap && (
-            <div className="mtg-token-pt-cluster">
+            <div className="cpa-token-pt-cluster">
               {(currentArmor > 0 || displayCard.armor > 0) && (
                 <span
-                  className="mtg-armor-shield"
+                  className="cpa-armor-shield"
                 >
                   🛡️{currentArmor}
                 </span>
               )}
               <div
                 className={[
-                  'mtg-pt-plate',
+                  'cpa-pt-plate',
                   isDamagedHp ? 'is-damaged' : '',
                   isBuffedAtk || isBuffedHp ? 'is-buffed' : '',
                 ]

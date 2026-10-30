@@ -1641,7 +1641,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
           AUTHENTIC BATTLE ARENA STAGE (100% IDENTICAL DOM, CSS & ENGINE TO BattleArena.tsx!)
           ===================================================================== */}
       <div
-        className={`arena-main-column mtg-arena-table sim-authentic-arena-table ${
+        className={`arena-main-column cpa-arena-table sim-authentic-arena-table ${
           arenaShake ? `arena-shake-${arenaShake}` : ''
         }`}
       >
@@ -1988,14 +1988,14 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
 
           {/* FLOATING HOVER CARD ZOOM PANEL (Exact BattleArena.tsx Left Preview) */}
           {activeHoverCardInfo && (
-            <div className="mtg-hover-zoom-panel">
+            <div className="cpa-hover-zoom-panel">
               <CardView
                 card={activeHoverCardInfo.card}
                 unit={activeHoverCardInfo.unit}
                 mode="inspect"
               />
               {activeHoverCardInfo.unit && (
-                <div className="mtg-hover-unit-status">
+                <div className="cpa-hover-unit-status">
                   <div style={{ fontWeight: 700, color: '#e2e8f0', marginBottom: '2px' }}>
                     Posição:{' '}
                     {activeHoverCardInfo.unit.row === 'vanguard'
@@ -2263,7 +2263,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
 
           {/* 2. TABULEIRO 6×4 EM TELA CHEIA (MESA DE MADEIRA + EXPANSÃO DE DOMÍNIO — Exact BattleArena.tsx) */}
           <div
-            className={`mtg-battlefield-surface wooden-tabletop-surface ${
+            className={`cpa-battlefield-surface wooden-tabletop-surface ${
               gameState.domainExpansion
                 ? `has-domain-tabletop domain-tabletop-${gameState.domainExpansion.domain}`
                 : ''
@@ -2375,17 +2375,17 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             </div>
 
             {/* 1ª Fileira (Topo): AI Rearguard */}
-            <div className="mtg-board-lane rearguard-lane ai-rearguard-lane">
+            <div className="cpa-board-lane rearguard-lane ai-rearguard-lane">
               {spectacleFx?.kind === 'breath' && spectacleFx.targetLaneId === 'ai-rearguard' && (
                 <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
               )}
-              <div className="mtg-lane-slots">
+              <div className="cpa-lane-slots">
                 {[0, 1, 2, 3, 4, 5].map((idx) => {
                   const slotUnits = getSlotUnits(gameState.ai, 'rearguard', idx);
                   return (
                     <div
                       key={`ai-rear-${idx}`}
-                      className={`mtg-slot ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
+                      className={`cpa-slot ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
                     >
                       {slotUnits.length > 1 && (
                         <span className="slot-stack-count-badge enemy-stack-badge">
@@ -2447,11 +2447,11 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             </div>
 
             {/* 2ª Fileira: AI Vanguard (Logo à frente da Retaguarda do Adversário) */}
-            <div className="mtg-board-lane vanguard-lane ai-vanguard-lane">
+            <div className="cpa-board-lane vanguard-lane ai-vanguard-lane">
               {spectacleFx?.kind === 'breath' && spectacleFx.targetLaneId === 'ai-vanguard' && (
                 <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
               )}
-              <div className="mtg-lane-slots">
+              <div className="cpa-lane-slots">
                 {[0, 1, 2, 3, 4, 5].map((idx) => {
                   const slotUnits = getSlotUnits(gameState.ai, 'vanguard', idx);
                   const pVanUnits = getSlotUnits(gameState.player, 'vanguard', idx);
@@ -2461,7 +2461,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                   return (
                     <div
                       key={`ai-van-${idx}`}
-                      className={`mtg-slot ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
+                      className={`cpa-slot ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
                     >
                       {slotUnits.length > 1 && (
                         <span className="slot-stack-count-badge enemy-stack-badge">
@@ -2528,12 +2528,12 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             <div className="tabletop-clash-gap" />
 
             {/* 3ª Fileira: Player Vanguard (Logo à frente da nossa Retaguarda) */}
-            <div className="mtg-board-lane vanguard-lane player-vanguard-lane">
+            <div className="cpa-board-lane vanguard-lane player-vanguard-lane">
               {spectacleFx?.kind === 'breath' &&
                 spectacleFx.targetLaneId === 'player-vanguard' && (
                   <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
                 )}
-              <div className="mtg-lane-slots">
+              <div className="cpa-lane-slots">
                 {[0, 1, 2, 3, 4, 5].map((idx) => {
                   const slotUnits = getSlotUnits(gameState.player, 'vanguard', idx);
                   const aiVanUnits = getSlotUnits(gameState.ai, 'vanguard', idx);
@@ -2549,7 +2549,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                   return (
                     <div
                       key={`player-van-${idx}`}
-                      className={`mtg-slot ${canStackHere ? 'can-deploy' : ''} ${
+                      className={`cpa-slot ${canStackHere ? 'can-deploy' : ''} ${
                         slotUnits.length > 1 ? 'has-stacked-units' : ''
                       }`}
                       onClick={() => {
@@ -2649,7 +2649,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                           })}
                         </div>
                       ) : canStackHere ? (
-                        <span className="mtg-slot-watermark">
+                        <span className="cpa-slot-watermark">
                           +<span className="hide-on-mobile"> Vanguarda (1/{MAX_UNITS_PER_SLOT})</span>
                         </span>
                       ) : null}
@@ -2660,12 +2660,12 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
             </div>
 
             {/* 4ª Fileira (Base): Player Rearguard */}
-            <div className="mtg-board-lane rearguard-lane player-lane">
+            <div className="cpa-board-lane rearguard-lane player-lane">
               {spectacleFx?.kind === 'breath' &&
                 spectacleFx.targetLaneId === 'player-rearguard' && (
                   <div className={`dragon-breath-wave-fx domain-${spectacleFx.domain}`} />
                 )}
-              <div className="mtg-lane-slots">
+              <div className="cpa-lane-slots">
                 {[0, 1, 2, 3, 4, 5].map((idx) => {
                   const slotUnits = getSlotUnits(gameState.player, 'rearguard', idx);
                   const vanUnits = getSlotUnits(gameState.player, 'vanguard', idx);
@@ -2681,7 +2681,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                   return (
                     <div
                       key={`player-rear-${idx}`}
-                      className={`mtg-slot ${canStackHere ? 'can-deploy' : ''} ${
+                      className={`cpa-slot ${canStackHere ? 'can-deploy' : ''} ${
                         hasColumnCover && slotUnits.length === 0 ? 'has-column-cover' : ''
                       } ${slotUnits.length > 1 ? 'has-stacked-units' : ''}`}
                       onClick={() => {
@@ -2779,7 +2779,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                           })}
                         </div>
                       ) : canStackHere ? (
-                        <span className="mtg-slot-watermark">
+                        <span className="cpa-slot-watermark">
                           +
                           <span className="hide-on-mobile">
                             {canDeployTrap
@@ -2790,7 +2790,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                           </span>
                         </span>
                       ) : hasColumnCover ? (
-                        <span className="mtg-slot-cover-rune">+1 ATQ</span>
+                        <span className="cpa-slot-cover-rune">+1 ATQ</span>
                       ) : null}
                     </div>
                   );
@@ -2849,18 +2849,18 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                       </div>
 
                       <div className="hud-lands-showcase">
-                        <div className="mtg-lands-stack">
+                        <div className="cpa-lands-stack">
                           {gameState.player.channeledCards.slice(-6).map((c, i) => (
                             <div
                               key={`pl-land-${i}`}
-                              className={`mtg-land-card domain-${c.domain}`}
+                              className={`cpa-land-card domain-${c.domain}`}
                               style={{ marginLeft: i === 0 ? 0 : '-10px', zIndex: i + 1 }}
                               onMouseEnter={() => handleHoverCard(c)}
                               onMouseLeave={() => handleHoverCard(null)}
                               title={c.name}
                             >
                               {c.imagePath ? <img src={c.imagePath} alt={c.name} /> : null}
-                              <span className="mtg-land-domain-pip">
+                              <span className="cpa-land-domain-pip">
                                 {DOMAIN_META[c.domain]?.icon}
                               </span>
                             </div>
@@ -3125,7 +3125,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
           const enemyDomainSpec = getDomainExpansionSpec(scenario.p2Domain);
 
           return (
-            <div className="mtg-bottom-zone floating-bottom-hud">
+            <div className="cpa-bottom-zone floating-bottom-hud">
               {isDomainRitualDock ? (
                 <div
                   className={`selected-card-command-dock domain-dock-${domainDockSpec.domain} ${
@@ -3608,7 +3608,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                 </div>
               ) : (
                 <div
-                  className={`mtg-hand-drawer ${
+                  className={`cpa-hand-drawer ${
                     isHandExpanded ? 'is-expanded' : 'is-collapsed'
                   }`}
                 >
@@ -3627,9 +3627,9 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                     </button>
                   </div>
 
-                  <div className="mtg-hand-fan">
+                  <div className="cpa-hand-fan">
                     {gameState.player.hand.length === 0 ? (
-                      <div className="mtg-empty-hand-msg">
+                      <div className="cpa-empty-hand-msg">
                         Mão vazia — passe o turno para comprar.
                       </div>
                     ) : (
@@ -3645,7 +3645,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
                         return (
                           <div
                             key={`${card.id}-hand-${idx}`}
-                            className={`mtg-hand-card-slot ${
+                            className={`cpa-hand-card-slot ${
                               isHoveredInSim ? 'is-hovered-slot' : ''
                             }`}
                             style={{

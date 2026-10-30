@@ -3218,7 +3218,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
   },
 ];
 
-// Combina os 50 problemas base + 50 problemas de expansão agrupados por Grau (20 por Grau = 100 Problemas)
+// Combina os 50 problemas base + 60 problemas de expansão agrupados por Grau (22 por Grau = 110 Problemas)
 // Remove qualquer spoiler de mecânica do título e padroniza o objetivo para não entregar a resposta no enunciado
 export const TACTICAL_PROBLEMS: TacticalProblem[] = PROBLEM_TIERS_ORDER.flatMap((tier) => [
   ...BASE_50_TACTICAL_PROBLEMS.filter((p) => p.difficulty === tier),
@@ -3504,7 +3504,7 @@ export function isProblemTierUnlocked(
   const tierIdx = PROBLEM_TIERS_ORDER.indexOf(tier);
   if (tierIdx <= 0) return true; // Grau I (Iniciante) está sempre desbloqueado
   const solvedSet = new Set(solvedIdsInput ?? getSolvedProblemIds());
-  // Para desbloquear um Grau, todos os Graus anteriores devem estar 100% resolvidos (20/20)
+  // Para desbloquear um Grau, todos os Graus anteriores devem estar 100% resolvidos (22/22)
   for (let i = 0; i < tierIdx; i++) {
     const prevTier = PROBLEM_TIERS_ORDER[i];
     const prevTierProblems = TACTICAL_PROBLEMS.filter((p) => p.difficulty === prevTier);
@@ -3601,7 +3601,7 @@ export function getNextPlayableProblem(
     };
   }
 
-  // 2) Se chegou ao último problema deste Grau (#20, #40, #60, #80, #100):
+  // 2) Se chegou ao último problema deste Grau (#22, #44, #66, #88, #110):
   //    Verifica se ainda há problemas pendentes (pulados/errados) neste Grau que impedem o avanço ao próximo Grau
   if (pendingList.length > 0) {
     return {
@@ -3611,7 +3611,7 @@ export function getNextPlayableProblem(
     };
   }
 
-  // 3) Todos os 20 problemas deste Grau estão resolvidos! Avança para o 1º problema do próximo Grau se existir
+  // 3) Todos os 22 problemas deste Grau estão resolvidos! Avança para o 1º problema do próximo Grau se existir
   const globalIdx = TACTICAL_PROBLEMS.findIndex((p) => p.id === currentProblemId);
   const nextGlobal =
     globalIdx >= 0 && globalIdx + 1 < TACTICAL_PROBLEMS.length

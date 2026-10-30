@@ -1427,7 +1427,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           </div>
         )}
 
-        {/* Sleek MTG Arena-Style Card Tiles List */}
+        {/* Sleek Arena-Style Card Tiles List */}
         <div className={`db-deck-list ${isMobileDeckListOpen ? 'is-mobile-open' : ''}`}>
           {groupedDeckList.length === 0 ? (
             <div className="db-empty-state">

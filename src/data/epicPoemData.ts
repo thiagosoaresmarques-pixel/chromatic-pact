@@ -28,13 +28,14 @@ import { EPIC_POEM_PARALLEL_PART_22 } from './epicPoemParallelPart22';
 import { EPIC_POEM_PARALLEL_PART_23 } from './epicPoemParallelPart23';
 import { EPIC_POEM_PARALLEL_PART_24 } from './epicPoemParallelPart24';
 import { EPIC_POEM_PARALLEL_PART_25 } from './epicPoemParallelPart25';
+import { EPIC_POEM_PARALLEL_PART_26 } from './epicPoemParallelPart26';
 
 /**
  * O GRANDE POEMA ÉPICO DE VAELORIA — A CANÇÃO DA FRATURA CROMÁTICA (∞ A.F. — 1.240 D.F.)
  * Estrutura das 7 Grandes Eras Cronológicas (Era Zero à VIª Era), cujos capítulos narrativos
- * contínuos (76 Capítulos Canônicos) contam a História Principal de Vaeloria integrando as
- * Criaturas Lendárias, a Tríade da Refração do Prisma, as Armadas Dracônicas, os Generais da Roda
- * e as Relíquias e Feitiços das Seis Eras.
+ * contínuos (78 Capítulos Canônicos) contam a História Principal de Vaeloria integrando as
+ * Criaturas Lendárias, a Tríade da Refração do Prisma, os Flagelos Cornudos, as Armadas Dracônicas,
+ * os Generais da Roda, os Pactuários Elementais e as Relíquias e Feitiços das Seis Eras.
  */
 export const EPIC_POEM_CANTOS: EpicPoemCanto[] = [
   ...EPIC_POEM_PART_1,
@@ -45,7 +46,7 @@ export const EPIC_POEM_CANTOS: EpicPoemCanto[] = [
 
 /**
  * CAPÍTULOS NARRATIVOS DA CRÔNICA PRINCIPAL DE VAELORIA (CAPÍTULOS I-A a VII-K)
- * Os 76 capítulos contínuos distribuídos nos 7 Cantos cronológicos.
+ * Os 78 capítulos contínuos distribuídos nos 7 Cantos cronológicos.
  */
 const ROMAN_BY_CANTO_ID: Record<string, string> = {
   canto_1_vigilia: 'I',
@@ -83,6 +84,7 @@ const RAW_PARALLEL_CANTOS: EpicPoemCanto[] = [
   ...EPIC_POEM_PARALLEL_PART_23,
   ...EPIC_POEM_PARALLEL_PART_24,
   ...EPIC_POEM_PARALLEL_PART_25,
+  ...EPIC_POEM_PARALLEL_PART_26,
 ];
 
 /**

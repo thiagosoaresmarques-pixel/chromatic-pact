@@ -1090,7 +1090,7 @@ export function getBiomeTerrainInfo(actorState: PlayerState): TerrainStatusInfo 
 
 /**
  * ============================================================================
- * EXPANSÃO DE DOMÍNIO (RYOIKI TENKAI — ESTÁGIO II DO TERRENO DESPERTO)
+ * EXPANSÃO DE DOMÍNIO (ESTÁGIO II DO TERRENO DESPERTO)
  * ============================================================================
  * Requer 6+ de Afinidade no Domínio e custa 3⚡ de Essência.
  * - Potencial 120%: Amplifica os atributos de todas as unidades aliadas daquele Domínio.

@@ -1927,7 +1927,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   scene: '3–15s (Tela): Grave o momento em que Ignis (Forja Rubra) e Glacius (Abismo Glacial) ativam seus Domínios dividindo o tabuleiro 50/50.',
                   cta: '15–20s (CTA): "Qual dos 5 Domínios Soberanos você escolheria? Jogue de graça em 1 clique no celular ou PC pelo link da Bio!"',
                   caption:
-                    'Quando dois Domínios Soberanos colidem na arena, o tabuleiro se divide ao meio! 🔥❄️ Qual facção você domina em Vaeloria: Forja Rubra, Abismo Glacial, Selva Titânica, Eclipse Cinzento ou Sol Soberano? Jogue grátis direto no navegador (link na bio)! #tcgbrasil #magicbrasil #yugiohbrasil #hearthstonebrasil #rpgdemesa #jogosonline #chromaticpact',
+                    'Quando dois Domínios Soberanos colidem na arena, o tabuleiro se divide ao meio! 🔥❄️ Qual facção você domina em Vaeloria: Forja Rubra, Abismo Glacial, Selva Titânica, Eclipse Cinzento ou Sol Soberano? Jogue grátis direto no navegador (link na bio)! #tcgbrasil #cardgamebrasil #estrategia #fantasiamedieval #rpgdemesa #jogosonline #chromaticpact',
                 },
                 {
                   tag: '👑 FORMATO #3 • CONVERSÃO DE CONTA & RECOMPENSA',

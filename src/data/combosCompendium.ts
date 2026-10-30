@@ -395,6 +395,109 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
     payoff: 'Seus aliados sobrevivem ao terremoto graças ao +4/+4 enquanto a mesa adversária é dizimada.',
   },
 
+  {
+    id: 'mono_red_wheel_armada_blitz',
+    tier: 'mono',
+    tierLabel: '1 Cor • Monocromático',
+    domains: ['red'],
+    title: 'Roda Vulcânica & Bombardeio da Hoste Dracônica',
+    archetypeTag: 'Quebra de Domínio & Ímpeto Letal',
+    cardIds: [
+      'red_173_general_roda_chama',
+      'red_172_armada_draconica_chama',
+      'red_167_arauto_prisma_chama',
+      'red_170_flagelo_cornudo_chama',
+    ],
+    mechanism:
+      'Pyrrakon (General da Roda Vulcânica) entra quebrando imediatamente qualquer Expansão de Domínio inimiga (impondo 2 rodadas de Exaustão de Domínio ao rival), concede Escudo Divino a toda a sua tropa e varre a Vanguarda em 2 de dano ao atacar com Ímpeto. Na sequência, a Hoste Dracônica da Cratera limpa os sobreviventes com 3 de dano de entrada + Sopro 3, gera duas crias 2/2 e ataca com Ímpeto causando mais 3 de dano direto ao Soberano.',
+    payoff: 'Anulação total do Domínio inimigo, limpeza dupla de Vanguarda e 10+ de pressão imediata no mesmo turno.',
+  },
+  {
+    id: 'mono_purple_crypt_wheel_eclipse',
+    tier: 'mono',
+    tierLabel: '1 Cor • Monocromático',
+    domains: ['purple'],
+    title: 'Roda Fúnebre & Reanimação da Legião do Eclipse',
+    archetypeTag: 'Anti-Domínio, Execução & Cripta',
+    cardIds: [
+      'purple_173_general_roda_abismo',
+      'purple_172_armada_draconica_abismo',
+      'purple_23_dracolich',
+      'purple_169_pressagio_revoada_abismo',
+    ],
+    mechanism:
+      'Nyxaroth quebra a Expansão de Domínio rival, protege seus mortos-vivos com Escudo Divino e, ao atacar, executa a criatura inimiga mais forte ignorando Escudo Divino e Armadura. Em seguida, a Legião Dracônica do Eclipse aplica 2 em área + Sopro 2, invoca duas crias 2/2 e, ao declarar ataque, reanima gratuitamente o maior titã da sua Cripta (como Ossaurion).',
+    payoff: 'Destruição de Domínio e de colossos blindados somada à ressurreição gratuita de lendas de custo 7–8⚡.',
+  },
+  {
+    id: 'mono_blue_wheel_clash_lock',
+    tier: 'mono',
+    tierLabel: '1 Cor • Monocromático',
+    domains: ['blue'],
+    title: 'Vitória Instantânea em Disputa 50/50 & Trava Astral',
+    archetypeTag: 'Quebra de Choque de Domínios & Gelo',
+    cardIds: [
+      'blue_173_general_roda_gelo',
+      'blue_172_armada_draconica_gelo',
+      'blue_171_pactuario_elemental_gelo',
+      'blue_119_convergencia_runica',
+    ],
+    mechanism:
+      'Durante uma Disputa de Domínios (50/50) em que os Acertos Garantidos estão mutuamente suprimidos, invocar Cryonax (General da Roda Astral) estilhaça exclusivamente o domínio rival (clashRival) e impõe 2 rodadas de Exaustão de Domínio ao oponente — restaurando na mesma hora o +1/+1 e o Acerto Garantido da sua própria Expansão! Cryonax ainda congela toda a Vanguarda inimiga e concede Escudo Divino global antes da Esquadra Dracônica da Nevasca consolidar a trava.',
+    payoff: 'Soberania absoluta de Domínio recuperada instantaneamente + Vanguarda inimiga congelada por turnos seguidos.',
+  },
+  {
+    id: 'mono_green_primal_wheel_stampede',
+    tier: 'mono',
+    tierLabel: '1 Cor • Monocromático',
+    domains: ['green'],
+    title: 'Roda Primeva & Escalada do Enxame Ancestral',
+    archetypeTag: 'Anti-Domínio & Buff Exponencial',
+    cardIds: [
+      'green_173_general_roda_selva',
+      'green_172_armada_draconica_selva',
+      'green_169_pressagio_revoada_selva',
+      'green_167_arauto_prisma_selva',
+    ],
+    mechanism:
+      'O Presságio da Revoada Espinhosa povoa a Vanguarda com duas feras 2/2; o Arauto da Raiz Prismática (+1/+2 global) e Sylvarok (quebra a Expansão de Domínio inimiga + +1/+2 e Escudo Divino global) transformam as fichas em brucutus blindados. Por fim, o Enxame Dracônico Ancestral varre a frente rival em 2, cria mais duas feras 2/2 e concede +1/+2 adicional a todos os aliados ao atacar.',
+    payoff: 'Mesa larga com +3/+6 acumulado, Escudo Divino e Atropelar sobre um oponente em Exaustão de Domínio.',
+  },
+  {
+    id: 'mono_gold_celestial_wheel_aegis',
+    tier: 'mono',
+    tierLabel: '1 Cor • Monocromático',
+    domains: ['gold'],
+    title: 'Égide da Roda Celeste & Armada do Zênite',
+    archetypeTag: 'Cidadela Anti-Domínio & Escudos Infinitos',
+    cardIds: [
+      'gold_173_general_roda_sol',
+      'gold_172_armada_draconica_sol',
+      'gold_167_arauto_prisma_sol',
+      'gold_171_pactuario_elemental_sol',
+    ],
+    mechanism:
+      'Heliokar (General da Roda Celeste) destrói a Expansão de Domínio rival, concede Escudo Divino e +1 de Armadura permanente a todos os seus aliados e restaura 3 de Vida em todo o seu lado. Quando a Armada Dracônica do Zênite ataca com Voo e Sopro 2, ela renova o Escudo Divino de todo o exército aliado e cura mais 3 do seu Soberano.',
+    payoff: 'Falange virtualmente indestrutível com Armadura acumulada, Escudos Divinos renováveis e +10 de cura total ao Soberano.',
+  },
+  {
+    id: 'mono_neutral_vaelkor_ascension_refund',
+    tier: 'mono',
+    tierLabel: 'Suporte Universal • Éter Arcano',
+    domains: ['neutral'],
+    title: 'Reembolso de Essência & Ascensão Imediata de Vaelkor',
+    archetypeTag: 'Anti-Domínio Universal & Ascensão (★)',
+    cardIds: [
+      'neutral_173_general_roda_matriz',
+      'neutral_172_armada_draconica_matriz',
+      'neutral_170_flagelo_cornudo_matriz',
+      'neutral_60_calice_infinito',
+    ],
+    mechanism:
+      'Sem exigir Afinidade (0), Vaelkor entra por 7⚡ quebrando a Expansão de Domínio rival, concedendo Escudo Divino a todos os aliados e reembolsando +2⚡ imediatamente. Com 9⚡ disponíveis — ou somando os +2⚡ gerados pelo Graal do Prisma Infinito ou pelo ataque da Armada Dracônica do Prisma —, esses +2⚡ reembolsados pagam no mesmo turno a Ascensão (4⚡) para ★ Vaelkor, Roda da Perfeição (8/10)!',
+    payoff: 'Quebra de Domínio + Escudo Divino global + Guardião Ascendido 8/10 em campo num único turno decisivo.',
+  },
+
   // =========================================================================
   // 2 CORES — AS 10 ALIANÇAS BICROMÁTICAS (2 COMBOS POR ALIANÇA = 20 COMBOS)
   // =========================================================================
@@ -740,6 +843,59 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
     payoff: 'A maior parede de atributos do jogo: unidades com +5/+6, Guardião, Atropelar e Escudo Divino.',
   },
 
+  {
+    id: 'dual_red_purple_elemental_pact_burn',
+    tier: 'dual',
+    tierLabel: '2 Cores • Aliança Bicromática',
+    domains: ['red', 'purple'],
+    title: 'Conclave dos Pactuários & Corrente de Feitiços',
+    archetypeTag: 'Motor Duplo Ao Lançar Feitiço',
+    cardIds: [
+      'red_171_pactuario_elemental_chama',
+      'purple_171_pactuario_elemental_abismo',
+      'red_32_ritual_cinzas',
+      'red_85_tempo_emprestado',
+      'purple_168_tecelao_feixe_abismo',
+    ],
+    mechanism:
+      'Os dois Pactuários entram protegidos na Retaguarda com Alcance já invocando dois elementais 3/2 na Vanguarda. A partir daí, cada magia que reembolsa +1⚡ (Ritual da Pira de Cinzas e Fúria da Ampulheta Rubra) dispara simultaneamente 1 de dano em toda a Vanguarda inimiga e 2 de dano direto ao Soberano rival.',
+    payoff: 'Varredura contínua da fileira frontal inimiga combinada com 8–10 de queima direta ao Soberano num único turno.',
+  },
+  {
+    id: 'dual_blue_green_matrix_ascension_surge',
+    tier: 'dual',
+    tierLabel: '2 Cores • Aliança Bicromática',
+    domains: ['blue', 'green', 'neutral'],
+    title: 'Escalada Quimérica de Dupla Ascensão do Prisma',
+    archetypeTag: 'Reembolso de Mana & Colossos Ascendidos',
+    cardIds: [
+      'neutral_170_flagelo_cornudo_matriz',
+      'green_171_pactuario_elemental_selva',
+      'neutral_173_general_roda_matriz',
+      'neutral_172_armada_draconica_matriz',
+    ],
+    mechanism:
+      'O Flagelo Cornudo Primordial segura a Vanguarda cedo e ascende para 5/6, recebendo +1/+2 do Pactuário do Espírito Silvestre a cada feitiço de rampa/compra. Nos turnos finais, tanto Vaelkor (ao entrar) quanto a Armada Dracônica do Prisma (ao atacar) devolvem +2⚡ extras para financiar suas próprias Ascensões 8/10 e 9/10.',
+    payoff: 'Três ameaças Ascendidas (★) gigantescas sustentadas por geração contínua de Essência bônus.',
+  },
+  {
+    id: 'dual_green_gold_wheel_clash_supremacy',
+    tier: 'dual',
+    tierLabel: '2 Cores • Aliança Bicromática',
+    domains: ['green', 'gold'],
+    title: 'Supremacia de Domínio: Quebra de Choque 50/50 & Falange',
+    archetypeTag: 'Domínio Soberano & Empilhamento 3x',
+    cardIds: [
+      'gold_173_general_roda_sol',
+      'green_173_general_roda_selva',
+      'green_169_pressagio_revoada_selva',
+      'gold_168_tecelao_feixe_sol',
+    ],
+    mechanism:
+      'Se o oponente contestar seu Domínio num Choque 50/50, desça Heliokar ou Sylvarok: o efeito Quebrar Expansões de Domínio destrói apenas a barreira rival (clashRival), impõe 2 rodadas de Exaustão de Domínio ao inimigo e reativa na hora o +1/+1 e o Acerto Garantido do seu próprio Domínio sobre colunas empilhadas com Escudo Divino.',
+    payoff: 'Reativação imediata do seu Domínio Soberano somada a uma falange 3x blindada com +2/+3 efetivos.',
+  },
+
   // =========================================================================
   // 3 CORES — AS 10 TRÍADES TÁTICAS COMPLETAS + 2 TRÍADES COM ÉTER (12 COMBOS)
   // =========================================================================
@@ -958,6 +1114,43 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
     payoff: 'Remove 3 colossos inimigos em sequência enquanto mantém a mão sempre cheia.',
   },
 
+  {
+    id: 'tri_red_blue_purple_pact_cataclysm',
+    tier: 'tri',
+    tierLabel: '3 Cores • Tríade com Éter',
+    domains: ['red', 'blue', 'purple', 'neutral'],
+    title: 'Bateria Quádrupla de Pactuários Elementais (#171)',
+    archetypeTag: '4 Motores de Feitiço na Retaguarda',
+    cardIds: [
+      'neutral_171_pactuario_elemental_matriz',
+      'red_171_pactuario_elemental_chama',
+      'blue_171_pactuario_elemental_gelo',
+      'purple_171_pactuario_elemental_abismo',
+      'blue_119_convergencia_runica',
+    ],
+    mechanism:
+      'Posicione os 4 Pactuários Elementais na Retaguarda (povoando automaticamente a Vanguarda com 4 guardas elementais). Cada feitiço conjurado concede +1⚡ de volta (Éter), congela a maior ameaça inimiga (Gelo), causa 1 em toda a Vanguarda rival (Chama) e arranca 2 de Vida do Soberano inimigo (Abismo).',
+    payoff: 'Cada magia lançada custa -1⚡ efetivo e gera trava glacial, limpeza em área e dano direto simultâneos.',
+  },
+  {
+    id: 'tri_prism_triad_curve_escalation',
+    tier: 'tri',
+    tierLabel: '3 Cores • Tríade Tática',
+    domains: ['red', 'green', 'gold'],
+    title: 'Escalada da Tríade do Prisma (#170 → #168 → #169 → #167)',
+    archetypeTag: 'Curva Perfeita de Afinidade Baixa',
+    cardIds: [
+      'red_170_flagelo_cornudo_chama',
+      'green_168_tecelao_feixe_selva',
+      'gold_169_pressagio_revoada_sol',
+      'gold_167_arauto_prisma_sol',
+      'red_167_arauto_prisma_chama',
+    ],
+    mechanism:
+      'Exigindo apenas Afinidade 1–2 em baralhos tricolores, o Flagelo (3⚡, Ímpeto/Atropelar) abre agressão imediata, recebe +2/+2 do Tecelão Silvestre (4⚡), é curado pelo Presságio Solar (5⚡) e culmina nos dois Arautos do Prisma (6⚡): Escudo Divino global + cura 4 seguidos de 2 de dano em área e ataque aéreo com Ímpeto.',
+    payoff: 'Pressão ininterrupta do Turno 3 ao Turno 6 sem jamais travar por exigência tripla de Afinidade.',
+  },
+
   // =========================================================================
   // 4 E 5 CORES — CONVERGÊNCIA POLICROMÁTICA / PENTACROMÁTICA (8 COMBOS)
   // =========================================================================
@@ -1100,5 +1293,23 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
     mechanism:
       'Três Relíquias na Retaguarda (Trono do Crânio Dracônico, Coroa do Rei-Cadáver e Coroa da Chama Eterna) somam bônus contínuos à entrada de Sylvanhorn e Justinian na Vanguarda, finalizando com Mobilização da Torre dos Cinco Selos.',
     payoff: 'Transforma toda a sua Vanguarda em campeões 8/8+ com Escudo Divino.',
+  },
+  {
+    id: 'poly_prismatic_wheel_armada_convergence',
+    tier: 'poly',
+    tierLabel: '4–5 Cores • Convergência Pentacromática',
+    domains: ['red', 'blue', 'purple', 'green', 'gold', 'neutral'],
+    title: 'Convergência da Matriz: Vaelkor & Armada do Prisma',
+    archetypeTag: 'Afinidade Zero, Anti-Domínio & Sopro',
+    cardIds: [
+      'neutral_173_general_roda_matriz',
+      'neutral_172_armada_draconica_matriz',
+      'neutral_167_arauto_prisma_matriz',
+      'neutral_169_pressagio_revoada_matriz',
+      'neutral_168_tecelao_feixe_matriz',
+    ],
+    mechanism:
+      'Independentemente das cores canalizadas num grimório pentacolor, toda a espinha dorsal da Matriz tem Afinidade 0: Tecelão (compra 1) e Presságio (duas fichas 2/2) estabilizam a mesa; a Matriz do Prisma (compra 1 e +1⚡) acelera Vaelkor (quebra o Domínio rival + Escudo Divino global + +2⚡) e a Armada Dracônica do Prisma (2 em área, duas fichas 2/2, Sopro 2 e +2⚡ ao atacar rumo à Ascensão 9/10).',
+    payoff: 'Consistência absoluta em 5 cores com compra, geração de fichas, quebra de Domínio e Esquadra Suprema 9/10.',
   },
 ];

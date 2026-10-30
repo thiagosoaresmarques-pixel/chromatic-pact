@@ -126,6 +126,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
   });
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [bannerToast, setBannerToast] = useState<string | null>(null);
+  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -644,7 +645,11 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
     ];
 
   return (
-    <div className="aaa-page-shell">
+    <div
+      className={`aaa-page-shell ${
+        runState.phase === 'war_room' ? 'is-widescreen-map-page' : ''
+      }`}
+    >
       {bannerToast && <div className="aaa-toast-banner">{bannerToast}</div>}
 
       {/* =====================================================================
@@ -848,7 +853,11 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
           )}
 
           {/* Split Workspace: Multi-LOD Megamap + Province War Room Dossier */}
-          <div className="aaa-campaign-workspace is-map-mode conquest-workspace">
+          <div
+            className={`aaa-campaign-workspace is-map-mode conquest-workspace ${
+              isDossierCollapsed ? 'is-dossier-collapsed' : ''
+            }`}
+          >
             <ConquestMegamap
               playerFactionId={runState.playerFactionId}
               provinceOwners={runState.provinceOwners}
@@ -859,6 +868,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
               activeInvasion={runState.pendingDefenseAlarm}
               sovereignAvatarCardId={deckMeta.avatarId}
               hasActedThisSeason={runState.hasSiegedThisSeason}
+              isDossierCollapsed={isDossierCollapsed}
+              onToggleDossier={() => setIsDossierCollapsed((v) => !v)}
               onSelectProvince={(prov) => setSelectedProvinceId(prov.id)}
               onLaunchSiege={handleLaunchOffensiveSiege}
             />

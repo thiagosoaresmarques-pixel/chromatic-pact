@@ -161,6 +161,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   );
   const [actFilter, setActFilter] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6>('all');
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(false);
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
 
@@ -232,7 +233,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   );
 
   return (
-    <div className="aaa-page-shell">
+    <div className={`aaa-page-shell ${viewMode === 'map' ? 'is-widescreen-map-page' : ''}`}>
       {/* Single Compact Toolbar: Act Tabs + Map/List Toggle + Progress + Deck Picker */}
       <div
         className="aaa-campaign-toolbar"
@@ -324,15 +325,22 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       </div>
 
       {/* Master-Detail Split Layout (Traversable Continent Map OR Stage Roster List) */}
-      <div className={`aaa-campaign-workspace ${viewMode === 'map' ? 'is-map-mode' : ''}`}>
+      <div
+        className={`aaa-campaign-workspace ${viewMode === 'map' ? 'is-map-mode' : ''} ${
+          viewMode === 'map' && isDossierCollapsed ? 'is-dossier-collapsed' : ''
+        }`}
+      >
         {viewMode === 'map' ? (
           <VaeloriaWorldMap
             mode="campaign"
             bosses={filteredRoster}
+            allBosses={fullBossRoster}
             selectedBossId={activeBoss?.id ?? ''}
             clearedBossIds={defeatedBossIds}
             sovereignAvatarCardId={selectedDeckMeta.avatarCardId}
             sovereignLabel={selectedDeckMeta.label}
+            isDossierCollapsed={isDossierCollapsed}
+            onToggleDossier={() => setIsDossierCollapsed((v) => !v)}
             onSelectBoss={(boss) => setSelectedBossId(boss.id)}
             onChallengeBoss={handleClickStartBoss}
           />

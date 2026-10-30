@@ -634,8 +634,12 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
     [currentBoss.id, currentBoss.stage]
   );
 
+  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(false);
+  const isExpeditionMapActive =
+    (runState.phase === 'trail' || runState.phase === 'completed') && trailViewMode === 'map';
+
   return (
-    <div className="aaa-page-shell">
+    <div className={`aaa-page-shell ${isExpeditionMapActive ? 'is-widescreen-map-page' : ''}`}>
       {/* Compact Status Bar */}
       <div
         style={{
@@ -898,15 +902,22 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
             </div>
           )}
 
-          <div className={`aaa-campaign-workspace ${trailViewMode === 'map' ? 'is-map-mode' : ''}`}>
+          <div
+            className={`aaa-campaign-workspace ${trailViewMode === 'map' ? 'is-map-mode' : ''} ${
+              trailViewMode === 'map' && isDossierCollapsed ? 'is-dossier-collapsed' : ''
+            }`}
+          >
             {trailViewMode === 'map' ? (
               <VaeloriaWorldMap
                 mode="expedition"
                 bosses={EXPEDITION_STAGES}
+                allBosses={EXPEDITION_STAGES}
                 selectedBossId={currentBoss.id}
                 clearedBossIds={clearedExpeditionBossIds}
                 sovereignAvatarCardId={expeditionAvatarCardId}
                 sovereignLabel={activeBlessing ? `Peregrino (${activeBlessing.name})` : 'Peregrino da Expedição'}
+                isDossierCollapsed={isDossierCollapsed}
+                onToggleDossier={() => setIsDossierCollapsed((v) => !v)}
                 onSelectBoss={(boss) =>
                   setRunState((prev) => ({ ...prev, currentStage: boss.stage }))
                 }

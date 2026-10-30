@@ -1418,6 +1418,118 @@ export function getConquestMapGeometries(): {
   return cachedGeometries;
 }
 
+const cachedRegionalGeometries: Record<
+  string,
+  {
+    provinces: Record<string, ComputedProvinceGeometry>;
+    sharedBorders: SharedProvinceBorder[];
+  }
+> = {};
+
+/**
+ * Gera os polígonos Voronoi orgânicos e fronteiras compartilhadas para os 5 territórios
+ * de um Mapa Regional de alta resolução (3200x1800).
+ */
+export function getRegionalConquestGeometries(
+  cacheKey: string,
+  regionalSeeds: { provinceId: string; rx: number; ry: number }[]
+): {
+  provinces: Record<string, ComputedProvinceGeometry>;
+  sharedBorders: SharedProvinceBorder[];
+} {
+  if (cachedRegionalGeometries[cacheKey]) {
+    return cachedRegionalGeometries[cacheKey];
+  }
+
+  const regionalFrameBase: Point2D[] = [
+    { x: 110, y: 95 },
+    { x: 1600, y: 72 },
+    { x: 3090, y: 95 },
+    { x: 3120, y: 900 },
+    { x: 3090, y: 1705 },
+    { x: 1600, y: 1728 },
+    { x: 110, y: 1705 },
+    { x: 80, y: 900 },
+  ];
+
+  const seeds = regionalSeeds.map((rs) => ({
+    provinceId: rs.provinceId,
+    sx: (rs.rx / 100) * CONQUEST_MAP_WIDTH,
+    sy: (rs.ry / 100) * CONQUEST_MAP_HEIGHT,
+  }));
+
+  const rawPolys: Record<string, Point2D[]> = {};
+  for (const s of seeds) {
+    let cell = regionalFrameBase.map((pt) => ({ ...pt }));
+    for (const other of seeds) {
+      if (other.provinceId === s.provinceId) continue;
+      const midX = (s.sx + other.sx) / 2;
+      const midY = (s.sy + other.sy) / 2;
+      const nx = other.sx - s.sx;
+      const ny = other.sy - s.sy;
+      cell = clipPolygonHalfPlane(cell, midX, midY, nx, ny);
+      if (cell.length === 0) break;
+    }
+    rawPolys[s.provinceId] = cell;
+  }
+
+  const provinces: Record<string, ComputedProvinceGeometry> = {};
+  const edgeOwnerMap = new Map<
+    string,
+    { p1: Point2D; p2: Point2D; owners: string[] }
+  >();
+
+  for (const s of seeds) {
+    const poly = rawPolys[s.provinceId] ?? [];
+    const organicOutline: Point2D[] = [];
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i];
+      const b = poly[(i + 1) % poly.length];
+      if (Math.hypot(b.x - a.x, b.y - a.y) < 2) continue;
+
+      const ka = `${Math.round(a.x / 3) * 3},${Math.round(a.y / 3) * 3}`;
+      const kb = `${Math.round(b.x / 3) * 3},${Math.round(b.y / 3) * 3}`;
+      const edgeKey = ka < kb ? `${ka}|${kb}` : `${kb}|${ka}`;
+
+      const existing = edgeOwnerMap.get(edgeKey);
+      if (existing) {
+        if (!existing.owners.includes(s.provinceId)) {
+          existing.owners.push(s.provinceId);
+        }
+      } else {
+        edgeOwnerMap.set(edgeKey, { p1: a, p2: b, owners: [s.provinceId] });
+      }
+
+      const subPts = buildOrganicEdgePoints(a, b);
+      for (let k = 0; k < subPts.length - 1; k++) {
+        organicOutline.push(subPts[k]);
+      }
+    }
+
+    provinces[s.provinceId] = {
+      provinceId: s.provinceId,
+      svgPath: pointsToSvgPath(organicOutline, true),
+      centroid: { x: s.sx, y: s.sy },
+    };
+  }
+
+  const sharedBorders: SharedProvinceBorder[] = [];
+  for (const [edgeKey, info] of edgeOwnerMap.entries()) {
+    if (info.owners.length === 2) {
+      const subPts = buildOrganicEdgePoints(info.p1, info.p2);
+      sharedBorders.push({
+        key: edgeKey,
+        provA: info.owners[0],
+        provB: info.owners[1],
+        svgPath: pointsToSvgPath(subPts, false),
+      });
+    }
+  }
+
+  cachedRegionalGeometries[cacheKey] = { provinces, sharedBorders };
+  return cachedRegionalGeometries[cacheKey];
+}
+
 /**
  * Calcula todos os modificadores reais de combate para um Cerco (ofensivo ou defensivo)
  * com base nas províncias atualmente controladas pelo império do jogador, Bastiões e Crise!

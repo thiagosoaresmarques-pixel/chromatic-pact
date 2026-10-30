@@ -11,22 +11,50 @@ import {
   resolveStageMapNode,
   resolveNearestTerritory,
 } from '../data/vaeloriaMapData';
+import {
+  VAELORIA_REALM_ORDER,
+  VAELORIA_REGIONAL_MAPS,
+  VaeloriaMapScope,
+  VaeloriaRealmId,
+  RegionalBorderPortal,
+  mapTerritoryIdToRealmId,
+  resolveStageRegionalPlacement,
+} from '../data/vaeloriaMultimapData';
 
 export interface VaeloriaWorldMapProps {
   mode: 'campaign' | 'expedition';
   bosses: CampaignBoss[];
+  allBosses?: CampaignBoss[];
   selectedBossId: string;
   clearedBossIds: string[];
   sovereignAvatarCardId?: string;
   sovereignLabel?: string;
+  isDossierCollapsed?: boolean;
+  onToggleDossier?: () => void;
   onSelectBoss: (boss: CampaignBoss) => void;
   onChallengeBoss: (boss: CampaignBoss) => void;
 }
 
 interface PositionedBossEntry {
   boss: CampaignBoss;
-  node: VaeloriaStageMapNode;
+  worldNode: VaeloriaStageMapNode;
+  realm: VaeloriaRealmId;
+  rx: number;
+  ry: number;
+  /** Active X (0..100) in current mapScope */
+  x: number;
+  /** Active Y (0..100) in current mapScope */
+  y: number;
 }
+
+const LOCAL_LANDMARK_ICON: Record<string, string> = {
+  town: '🏘️',
+  ruin: '🏛️',
+  fort: '🛡️',
+  port: '⚓',
+  shrine: '⛩️',
+  pass: '🌉',
+};
 
 const CLAMP_MIN_X = 4.5;
 const CLAMP_MAX_X = 95.5;
@@ -36,39 +64,100 @@ const CLAMP_MAX_Y = 93.5;
 export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   mode,
   bosses,
+  allBosses,
   selectedBossId,
   clearedBossIds,
   sovereignAvatarCardId,
   sovereignLabel = 'Seu Soberano',
+  isDossierCollapsed = false,
+  onToggleDossier,
   onSelectBoss,
   onChallengeBoss,
 }) => {
-  const positionedBosses: PositionedBossEntry[] = useMemo(
-    () =>
-      bosses.map((boss) => ({
+  const completeRoster = allBosses && allBosses.length > 0 ? allBosses : bosses;
+
+  const isMobileViewport = () =>
+    typeof window !== 'undefined' && window.innerWidth <= 768;
+
+  const [mapScope, setMapScope] = useState<VaeloriaMapScope>('world');
+  const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(false);
+  const [followPawn, setFollowPawn] = useState<boolean>(() => !isMobileViewport());
+  const [showMinimap, setShowMinimap] = useState<boolean>(() => !isMobileViewport());
+  const [portalBanner, setPortalBanner] = useState<string | null>(null);
+
+  const enrichedAllBosses = useMemo(() => {
+    return completeRoster.map((boss) => {
+      const worldNode = resolveStageMapNode(mode, boss.id, boss.stage);
+      const reg = resolveStageRegionalPlacement(mode, boss.id, boss.stage);
+      return {
         boss,
-        node: resolveStageMapNode(mode, boss.id, boss.stage),
-      })),
-    [bosses, mode]
-  );
+        worldNode,
+        realm: reg.realm,
+        rx: reg.rx,
+        ry: reg.ry,
+      };
+    });
+  }, [completeRoster, mode]);
 
-  const selectedEntry = useMemo(
+  const realmBossCounts = useMemo(() => {
+    const counts: Record<VaeloriaRealmId, { total: number; cleared: number }> = {
+      veridia: { total: 0, cleared: 0 },
+      eclipse: { total: 0, cleared: 0 },
+      matrix: { total: 0, cleared: 0 },
+      solaria: { total: 0, cleared: 0 },
+      pyros: { total: 0, cleared: 0 },
+      vortex: { total: 0, cleared: 0 },
+    };
+    for (const item of enrichedAllBosses) {
+      counts[item.realm].total += 1;
+      if (clearedBossIds.includes(item.boss.id)) {
+        counts[item.realm].cleared += 1;
+      }
+    }
+    return counts;
+  }, [enrichedAllBosses, clearedBossIds]);
+
+  // Visible bosses in current map scope:
+  // - On 'world': show `bosses` (respects Act filter in Campaign)
+  // - Inside a Regional Map: show all bosses belonging to that Realm so the regional atlas is always complete!
+  const positionedBosses: PositionedBossEntry[] = useMemo(() => {
+    if (mapScope === 'world') {
+      const visibleIds = new Set(bosses.map((b) => b.id));
+      return enrichedAllBosses
+        .filter((item) => visibleIds.has(item.boss.id))
+        .map((item) => ({
+          ...item,
+          x: item.worldNode.x,
+          y: item.worldNode.y,
+        }));
+    }
+    return enrichedAllBosses
+      .filter((item) => item.realm === mapScope)
+      .map((item) => ({
+        ...item,
+        x: item.rx,
+        y: item.ry,
+      }));
+  }, [mapScope, bosses, enrichedAllBosses]);
+
+  const selectedEntryGlobal = useMemo(
     () =>
-      positionedBosses.find((entry) => entry.boss.id === selectedBossId) ?? positionedBosses[0],
-    [positionedBosses, selectedBossId]
+      enrichedAllBosses.find((entry) => entry.boss.id === selectedBossId) ??
+      enrichedAllBosses[0],
+    [enrichedAllBosses, selectedBossId]
   );
 
-  // Sovereign physical coordinates on the continent (in % 0..100)
+  // Sovereign physical coordinates in the active mapScope (in % 0..100)
   const [pawnPos, setPawnPos] = useState<{ x: number; y: number }>(() => ({
-    x: selectedEntry?.node.x ?? 50,
-    y: selectedEntry?.node.y ?? 50.5,
+    x: selectedEntryGlobal?.worldNode.x ?? 50,
+    y: selectedEntryGlobal?.worldNode.y ?? 50.5,
   }));
   const [marchOrigin, setMarchOrigin] = useState<{ x: number; y: number } | null>(null);
   const [marchTarget, setMarchTarget] = useState<{ x: number; y: number } | null>(null);
   const [facingLeft, setFacingLeft] = useState<boolean>(false);
 
-  // Camera Pan & Zoom
-  const [zoom, setZoom] = useState<number>(1);
+  // Camera Pan & Zoom (Desktop World Map starts at 1.75x exploratory scale!)
+  const [zoom, setZoom] = useState<number>(() => (isMobileViewport() ? 1 : 1.75));
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [showGeographyLabels, setShowGeographyLabels] = useState<boolean>(true);
   const [hoveredBossId, setHoveredBossId] = useState<string | null>(null);
@@ -77,6 +166,9 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const pawnPosRef = useRef<{ x: number; y: number }>(pawnPos);
   pawnPosRef.current = pawnPos;
+  const mapScopeRef = useRef<VaeloriaMapScope>(mapScope);
+  mapScopeRef.current = mapScope;
+  const portalCooldownUntilRef = useRef<number>(0);
 
   const heldKeysRef = useRef<Set<string>>(new Set());
   const dpadDirRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
@@ -98,6 +190,16 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     startPanY: 0,
   });
 
+  const showPortalNotification = useCallback((msg: string) => {
+    setPortalBanner(msg);
+  }, []);
+
+  useEffect(() => {
+    if (!portalBanner) return;
+    const t = window.setTimeout(() => setPortalBanner(null), 2800);
+    return () => window.clearTimeout(t);
+  }, [portalBanner]);
+
   const clampPan = useCallback((nextPan: { x: number; y: number }, nextZoom: number) => {
     if (nextZoom <= 1.01 || !viewportRef.current) {
       return { x: 0, y: 0 };
@@ -110,6 +212,50 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
       y: Math.max(-maxOffsetY, Math.min(maxOffsetY, nextPan.y)),
     };
   }, []);
+
+  const centerCameraAt = useCallback(
+    (pctX: number, pctY: number, targetZoom: number) => {
+      if (!viewportRef.current || targetZoom <= 1.01) {
+        setPan({ x: 0, y: 0 });
+        return;
+      }
+      const rect = viewportRef.current.getBoundingClientRect();
+      const desiredPanX = ((50 - pctX) / 100) * rect.width * targetZoom;
+      const desiredPanY = ((50 - pctY) / 100) * rect.height * targetZoom;
+      setPan(clampPan({ x: desiredPanX, y: desiredPanY }, targetZoom));
+    },
+    [clampPan]
+  );
+
+  // Initial camera alignment on mount so desktop starts centered on Sovereign at 1.75x
+  const didInitialCenterRef = useRef(false);
+  useEffect(() => {
+    if (didInitialCenterRef.current) return;
+    didInitialCenterRef.current = true;
+    if (!isMobileViewport() && zoom > 1.05) {
+      requestAnimationFrame(() => {
+        centerCameraAt(pawnPosRef.current.x, pawnPosRef.current.y, zoom);
+      });
+    }
+  }, [centerCameraAt, zoom]);
+
+  // Keep camera smoothly following the Sovereign whenever `followPawn` is active & zoomed in
+  useEffect(() => {
+    if (!followPawn || zoom <= 1.02) return;
+    centerCameraAt(pawnPos.x, pawnPos.y, zoom);
+  }, [followPawn, pawnPos.x, pawnPos.y, zoom, centerCameraAt]);
+
+  // Escape exits Theater Fullscreen
+  useEffect(() => {
+    if (!isTheaterFullscreen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsTheaterFullscreen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isTheaterFullscreen]);
 
   const startMarchTo = useCallback((destX: number, destY: number, silent = false) => {
     const clampedX = Math.max(CLAMP_MIN_X, Math.min(CLAMP_MAX_X, destX));
@@ -132,25 +278,153 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     }
   }, []);
 
-  // When selectedBossId changes externally (e.g. Act filter tab or Dossier navigation), march Sovereign there
+  // Switch between 'world' and any of the 6 Regional Maps seamlessly
+  const handleSwitchMapScope = useCallback(
+    (
+      nextScope: VaeloriaMapScope,
+      arrivalOverride?: { x: number; y: number; banner?: string }
+    ) => {
+      if (nextScope === mapScopeRef.current && !arrivalOverride) return;
+      portalCooldownUntilRef.current = performance.now() + 1100;
+      setMarchTarget(null);
+      setMarchOrigin(null);
+      playSfx('channel');
+
+      if (nextScope === 'world') {
+        // Place Sovereign on the continent at selected boss (if in previous realm) or previous realm's worldCenter
+        const prevScope = mapScopeRef.current;
+        let wx = selectedEntryGlobal?.worldNode.x ?? 50;
+        let wy = selectedEntryGlobal?.worldNode.y ?? 50.5;
+        if (prevScope !== 'world' && selectedEntryGlobal?.realm !== prevScope) {
+          const prevDef = VAELORIA_REGIONAL_MAPS[prevScope];
+          wx = prevDef.worldCenter.x;
+          wy = prevDef.worldCenter.y;
+        }
+        mapScopeRef.current = 'world';
+        setMapScope('world');
+        pawnPosRef.current = { x: wx, y: wy };
+        setPawnPos({ x: wx, y: wy });
+        const nextZoom = isMobileViewport() ? 1 : 1.75;
+        setZoom(nextZoom);
+        requestAnimationFrame(() => {
+          centerCameraAt(wx, wy, nextZoom);
+        });
+        showPortalNotification('🌍 Visão Continental de Vaeloria');
+        return;
+      }
+
+      const regDef = VAELORIA_REGIONAL_MAPS[nextScope];
+      const realmBosses = enrichedAllBosses.filter((b) => b.realm === nextScope);
+      const activeInRealm = realmBosses.find((b) => b.boss.id === selectedBossId);
+      const preferredEntry =
+        activeInRealm ??
+        realmBosses.find((b) => !clearedBossIds.includes(b.boss.id)) ??
+        realmBosses[0];
+
+      const destX = arrivalOverride?.x ?? preferredEntry?.rx ?? 50;
+      const destY = arrivalOverride?.y ?? preferredEntry?.ry ?? 50;
+
+      mapScopeRef.current = nextScope;
+      setMapScope(nextScope);
+      pawnPosRef.current = { x: destX, y: destY };
+      setPawnPos({ x: destX, y: destY });
+
+      // Full-bleed Regional Map starts at crisp 1.0x so all local landmarks & border gates fill the widescreen stage!
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
+
+      if (!arrivalOverride && preferredEntry && preferredEntry.boss.id !== selectedBossId) {
+        lastSyncedBossIdRef.current = preferredEntry.boss.id;
+        onSelectBoss(preferredEntry.boss);
+      }
+
+      showPortalNotification(
+        arrivalOverride?.banner ?? `${regDef.icon} ${regDef.name}`
+      );
+    },
+    [
+      selectedEntryGlobal,
+      enrichedAllBosses,
+      selectedBossId,
+      clearedBossIds,
+      centerCameraAt,
+      onSelectBoss,
+      showPortalNotification,
+    ]
+  );
+
+  const handleTraversePortal = useCallback(
+    (portal: RegionalBorderPortal) => {
+      const targetDef = VAELORIA_REGIONAL_MAPS[portal.targetRealm];
+      handleSwitchMapScope(portal.targetRealm, {
+        x: portal.arrivalX,
+        y: portal.arrivalY,
+        banner: `🧭 Fronteira atravessada: ${targetDef.icon} ${targetDef.name}`,
+      });
+    },
+    [handleSwitchMapScope]
+  );
+
+  // Sync Sovereign when selectedBossId changes externally (e.g. Act filter tab)
   const lastSyncedBossIdRef = useRef<string>(selectedBossId);
   useEffect(() => {
-    if (selectedBossId !== lastSyncedBossIdRef.current && selectedEntry) {
+    if (selectedBossId !== lastSyncedBossIdRef.current && selectedEntryGlobal) {
       lastSyncedBossIdRef.current = selectedBossId;
-      const dist = Math.hypot(
-        pawnPosRef.current.x - selectedEntry.node.x,
-        pawnPosRef.current.y - selectedEntry.node.y
-      );
-      if (dist > 1.8) {
-        startMarchTo(selectedEntry.node.x, selectedEntry.node.y, true);
+      if (mapScopeRef.current === 'world') {
+        const dist = Math.hypot(
+          pawnPosRef.current.x - selectedEntryGlobal.worldNode.x,
+          pawnPosRef.current.y - selectedEntryGlobal.worldNode.y
+        );
+        if (dist > 1.8) {
+          startMarchTo(selectedEntryGlobal.worldNode.x, selectedEntryGlobal.worldNode.y, true);
+        }
+      } else if (selectedEntryGlobal.realm !== mapScopeRef.current) {
+        // Jump regional atlas to the newly selected boss's Realm
+        handleSwitchMapScope(selectedEntryGlobal.realm, {
+          x: selectedEntryGlobal.rx,
+          y: selectedEntryGlobal.ry,
+        });
+      } else {
+        startMarchTo(selectedEntryGlobal.rx, selectedEntryGlobal.ry, true);
       }
     }
-  }, [selectedBossId, selectedEntry, startMarchTo]);
+  }, [selectedBossId, selectedEntryGlobal, startMarchTo, handleSwitchMapScope]);
 
-  // Smooth RAF Loop: handles both point-to-point March AND continuous WASD/Arrow/D-pad roaming
+  // Smooth RAF Loop: handles point-to-point March, continuous WASD/Arrow/D-pad roaming, AND Border Gate Portal crossings!
   useEffect(() => {
     let rafId = 0;
     let lastTs = performance.now();
+
+    const checkProximityTriggers = (nx: number, ny: number, nowTs: number) => {
+      // 1. Check Regional Border Gate Portals when inside a Regional Map
+      const activeScope = mapScopeRef.current;
+      if (activeScope !== 'world' && nowTs > portalCooldownUntilRef.current) {
+        const regDef = VAELORIA_REGIONAL_MAPS[activeScope];
+        for (const portal of regDef.portals) {
+          if (Math.hypot(nx - portal.x, ny - portal.y) <= 4.6) {
+            handleTraversePortal(portal);
+            return true;
+          }
+        }
+      }
+
+      // 2. Auto-select Boss Citadel when walking close to it
+      let closest: PositionedBossEntry | null = null;
+      let closestDist = 4.5;
+      for (const entry of positionedBosses) {
+        const d = Math.hypot(nx - entry.x, ny - entry.y);
+        if (d < closestDist) {
+          closestDist = d;
+          closest = entry;
+        }
+      }
+      if (closest && closest.boss.id !== lastSyncedBossIdRef.current) {
+        lastSyncedBossIdRef.current = closest.boss.id;
+        playSfx('channel');
+        onSelectBoss(closest.boss);
+      }
+      return false;
+    };
 
     const step = (now: number) => {
       const dt = Math.min(0.05, (now - lastTs) / 1000);
@@ -185,40 +459,29 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         }
         pawnPosRef.current = { x: nx, y: ny };
         setPawnPos({ x: nx, y: ny });
-
-        // Auto-select Boss Citadel when walking close to it
-        let closest: PositionedBossEntry | null = null;
-        let closestDist = 4.4;
-        for (const entry of positionedBosses) {
-          const d = Math.hypot(nx - entry.node.x, ny - entry.node.y);
-          if (d < closestDist) {
-            closestDist = d;
-            closest = entry;
-          }
-        }
-        if (closest && closest.boss.id !== lastSyncedBossIdRef.current) {
-          lastSyncedBossIdRef.current = closest.boss.id;
-          playSfx('channel');
-          onSelectBoss(closest.boss);
-        }
+        checkProximityTriggers(nx, ny, now);
       } else if (marchTarget) {
         const cur = pawnPosRef.current;
         const dx = marchTarget.x - cur.x;
         const dy = marchTarget.y - cur.y;
         const dist = Math.hypot(dx, dy);
-        const marchSpeed = Math.max(32, dist * 2.6);
+        const marchSpeed = Math.max(34, dist * 2.7);
         const maxStep = marchSpeed * dt;
 
         if (dist <= maxStep || dist < 0.35) {
-          pawnPosRef.current = { x: marchTarget.x, y: marchTarget.y };
-          setPawnPos({ x: marchTarget.x, y: marchTarget.y });
+          const fx = marchTarget.x;
+          const fy = marchTarget.y;
+          pawnPosRef.current = { x: fx, y: fy };
+          setPawnPos({ x: fx, y: fy });
           setMarchTarget(null);
           setMarchOrigin(null);
+          checkProximityTriggers(fx, fy, now);
         } else {
           const nx = cur.x + (dx / dist) * maxStep;
           const ny = cur.y + (dy / dist) * maxStep;
           pawnPosRef.current = { x: nx, y: ny };
           setPawnPos({ x: nx, y: ny });
+          checkProximityTriggers(nx, ny, now);
         }
       }
 
@@ -227,7 +490,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
 
     rafId = requestAnimationFrame(step);
     return () => cancelAnimationFrame(rafId);
-  }, [marchTarget, positionedBosses, onSelectBoss]);
+  }, [marchTarget, positionedBosses, onSelectBoss, handleTraversePortal]);
 
   // Keyboard listeners for WASD / Arrow Keys + Enter to Challenge nearby Citadel
   useEffect(() => {
@@ -246,7 +509,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
       } else if (key === 'enter') {
         const cur = pawnPosRef.current;
         const docked = positionedBosses.find(
-          (entry) => Math.hypot(cur.x - entry.node.x, cur.y - entry.node.y) <= 4.8
+          (entry) => Math.hypot(cur.x - entry.x, cur.y - entry.y) <= 4.8
         );
         if (docked) {
           e.preventDefault();
@@ -274,16 +537,20 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   }, [positionedBosses, onChallengeBoss]);
 
   // Live Geographic Region & Docked Boss Detection
-  const currentTerritory = useMemo(
+  const currentWorldTerritory = useMemo(
     () => resolveNearestTerritory(pawnPos.x, pawnPos.y),
     [pawnPos.x, pawnPos.y]
   );
 
+  const activeRegionalDef = mapScope !== 'world' ? VAELORIA_REGIONAL_MAPS[mapScope] : null;
+  const inferredRealmFromWorld: VaeloriaRealmId =
+    mapScope !== 'world' ? mapScope : mapTerritoryIdToRealmId(currentWorldTerritory.id);
+
   const dockedBossEntry = useMemo(() => {
     let best: PositionedBossEntry | null = null;
-    let bestDist = 4.6;
+    let bestDist = 4.8;
     for (const entry of positionedBosses) {
-      const d = Math.hypot(pawnPos.x - entry.node.x, pawnPos.y - entry.node.y);
+      const d = Math.hypot(pawnPos.x - entry.x, pawnPos.y - entry.y);
       if (d < bestDist) {
         bestDist = d;
         best = entry;
@@ -294,26 +561,26 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
 
   const sovereignCard = sovereignAvatarCardId ? CARDS_BY_ID[sovereignAvatarCardId] : undefined;
 
-  // Next sequential stage to highlight as active frontier
   const nextUnclearBossId = useMemo(() => {
-    const uncleared = positionedBosses.find((e) => !clearedBossIds.includes(e.boss.id));
+    const uncleared = enrichedAllBosses.find((e) => !clearedBossIds.includes(e.boss.id));
     return uncleared?.boss.id ?? null;
-  }, [positionedBosses, clearedBossIds]);
+  }, [enrichedAllBosses, clearedBossIds]);
 
   const applyZoom = (nextZoomRaw: number) => {
-    const nextZoom = Math.max(1, Math.min(2.25, Number(nextZoomRaw.toFixed(2))));
+    const nextZoom = Math.max(1, Math.min(2.8, Number(nextZoomRaw.toFixed(2))));
     setZoom(nextZoom);
-    setPan((prev) => clampPan(prev, nextZoom));
+    if (followPawn && nextZoom > 1.02) {
+      centerCameraAt(pawnPosRef.current.x, pawnPosRef.current.y, nextZoom);
+    } else {
+      setPan((prev) => clampPan(prev, nextZoom));
+    }
   };
 
   const handleCenterOnSovereign = () => {
-    if (!viewportRef.current) return;
-    const targetZoom = Math.max(zoom, 1.35);
-    const rect = viewportRef.current.getBoundingClientRect();
-    const desiredPanX = ((50 - pawnPos.x) / 100) * rect.width * targetZoom;
-    const desiredPanY = ((50 - pawnPos.y) / 100) * rect.height * targetZoom;
+    const targetZoom = mapScope === 'world' ? Math.max(zoom, 1.75) : Math.max(zoom, 1.45);
+    setFollowPawn(true);
     setZoom(targetZoom);
-    setPan(clampPan({ x: desiredPanX, y: desiredPanY }, targetZoom));
+    centerCameraAt(pawnPos.x, pawnPos.y, targetZoom);
   };
 
   const handlePointerDownViewport = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -360,6 +627,9 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
       st.moved = true;
     }
     if (st.moved && zoom > 1.01) {
+      if (followPawn) {
+        setFollowPawn(false);
+      }
       setPan(
         clampPan(
           {
@@ -385,9 +655,12 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     dragStateRef.current.active = false;
     if (st.moved) return;
 
-    // Ignore clicks on interactive controls or Boss Citadel buttons (handled by their own onClick)
     const targetEl = e.target as HTMLElement | null;
-    if (targetEl?.closest('.vwm-boss-node, .vwm-pawn-challenge-pill, .vwm-dpad, .vwm-floating-controls')) {
+    if (
+      targetEl?.closest(
+        '.vwm-boss-node, .vwm-pawn-challenge-pill, .vwm-dpad, .vwm-portal-gate, .vwm-realm-dive-chip, .vwm-minimap-radar, .vwm-minimap-toggle-pill'
+      )
+    ) {
       return;
     }
 
@@ -396,11 +669,10 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     const clickX = ((e.clientX - rect.left) / rect.width) * 100;
     const clickY = ((e.clientY - rect.top) / rect.height) * 100;
 
-    // Snap onto a Boss Citadel if clicked very close to one
     let snapEntry: PositionedBossEntry | null = null;
     let snapDist = 4.2;
     for (const entry of positionedBosses) {
-      const d = Math.hypot(clickX - entry.node.x, clickY - entry.node.y);
+      const d = Math.hypot(clickX - entry.x, clickY - entry.y);
       if (d < snapDist) {
         snapDist = d;
         snapEntry = entry;
@@ -410,71 +682,210 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     if (snapEntry) {
       lastSyncedBossIdRef.current = snapEntry.boss.id;
       onSelectBoss(snapEntry.boss);
-      startMarchTo(snapEntry.node.x, snapEntry.node.y);
+      startMarchTo(snapEntry.x, snapEntry.y);
     } else {
       startMarchTo(clickX, clickY);
     }
   };
 
   const handleWheelViewport = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (e.ctrlKey || zoom > 1.01) {
-      e.preventDefault();
-      const delta = e.deltaY < 0 ? 0.18 : -0.18;
-      applyZoom(zoom + delta);
-    }
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.2 : -0.2;
+    applyZoom(zoom + delta);
   };
 
   const handleClickBossPin = (e: React.MouseEvent, entry: PositionedBossEntry) => {
     e.stopPropagation();
-    const distFromPawn = Math.hypot(pawnPos.x - entry.node.x, pawnPos.y - entry.node.y);
+    const distFromPawn = Math.hypot(pawnPos.x - entry.x, pawnPos.y - entry.y);
     lastSyncedBossIdRef.current = entry.boss.id;
     onSelectBoss(entry.boss);
 
-    if (distFromPawn <= 2.4 && selectedBossId === entry.boss.id) {
+    if (distFromPawn <= 2.8 && selectedBossId === entry.boss.id) {
       onChallengeBoss(entry.boss);
     } else {
-      startMarchTo(entry.node.x, entry.node.y);
+      startMarchTo(entry.x, entry.y);
     }
   };
 
+  // Global Sovereign coordinates on the Continental Minimap Radar (0..100%)
+  const globalSovereignCoords = useMemo(() => {
+    if (mapScope === 'world') {
+      return { x: pawnPos.x, y: pawnPos.y };
+    }
+    const b = VAELORIA_REGIONAL_MAPS[mapScope].worldBounds;
+    return {
+      x: b.x + (pawnPos.x / 100) * b.w,
+      y: b.y + (pawnPos.y / 100) * b.h,
+    };
+  }, [mapScope, pawnPos.x, pawnPos.y]);
+
+  // Camera Viewport Box on Continental Minimap when viewing 'world' at zoom > 1
+  const worldCameraBox = useMemo(() => {
+    if (mapScope !== 'world') {
+      return VAELORIA_REGIONAL_MAPS[mapScope].worldBounds;
+    }
+    const w = 100 / zoom;
+    const h = 100 / zoom;
+    let cx = 50;
+    let cy = 50;
+    if (viewportRef.current && zoom > 1.01) {
+      const rect = viewportRef.current.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        cx = 50 - (pan.x / (rect.width * zoom)) * 100;
+        cy = 50 - (pan.y / (rect.height * zoom)) * 100;
+      }
+    }
+    return {
+      x: Math.max(0, Math.min(100 - w, cx - w / 2)),
+      y: Math.max(0, Math.min(100 - h, cy - h / 2)),
+      w,
+      h,
+    };
+  }, [mapScope, zoom, pan.x, pan.y]);
+
+  const pinCounterScale = zoom > 1.45 ? Math.max(0.68, 1.12 / Math.sqrt(zoom)) : 1;
+
   return (
-    <div className="vaeloria-world-map-shell">
-      {/* Top Cartographic Telemetry Bar */}
+    <div
+      className={`vaeloria-world-map-shell ${
+        isTheaterFullscreen ? 'is-theater-fullscreen' : ''
+      } ${mapScope !== 'world' ? 'is-regional-scope' : ''}`}
+    >
+      {/* 1. 7-MAP INTERCONNECTED MULTIMAP ATLAS BAR */}
+      <div className="vwm-multimap-atlas-bar" role="tablist" aria-label="Atlas Multimapa de Vaeloria">
+        <button
+          type="button"
+          className={`vwm-atlas-pill is-world-pill ${mapScope === 'world' ? 'is-active' : ''}`}
+          onClick={() => handleSwitchMapScope('world')}
+        >
+          <span>🌍</span>
+          <strong>Continente</strong>
+          <small>
+            {clearedBossIds.length}/{enrichedAllBosses.length}
+          </small>
+        </button>
+
+        {VAELORIA_REALM_ORDER.map((rid) => {
+          const rdef = VAELORIA_REGIONAL_MAPS[rid];
+          const stat = realmBossCounts[rid];
+          const isCurrent = mapScope === rid;
+          return (
+            <button
+              key={rid}
+              type="button"
+              className={`vwm-atlas-pill ${isCurrent ? 'is-active' : ''}`}
+              style={
+                {
+                  '--realm-accent': rdef.accentColor,
+                } as React.CSSProperties
+              }
+              onClick={() => handleSwitchMapScope(rid)}
+              title={`Abrir Mapa Regional de ${rdef.name}`}
+            >
+              <span>{rdef.icon}</span>
+              <strong>{rdef.shortName}</strong>
+              <small>
+                {stat.cleared}/{stat.total}
+              </small>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 2. Top Cartographic Telemetry & Camera Controls */}
       <div className="vwm-hud-top">
         <div
           className="vwm-territory-pill"
-          style={{ borderColor: `${currentTerritory.color}66` }}
+          style={{
+            borderColor: `${
+              activeRegionalDef ? activeRegionalDef.accentColor : currentWorldTerritory.color
+            }66`,
+          }}
         >
-          <span className="vwm-territory-icon">{currentTerritory.icon}</span>
+          <span className="vwm-territory-icon">
+            {activeRegionalDef ? activeRegionalDef.icon : currentWorldTerritory.icon}
+          </span>
           <div className="vwm-territory-texts">
             <span className="vwm-territory-kicker">
-              {currentTerritory.cardinalLabel} • POSIÇÃO DO SOBERANO
+              {activeRegionalDef
+                ? activeRegionalDef.cardinalTitle
+                : `${currentWorldTerritory.cardinalLabel} • VISÃO CONTINENTAL`}
             </span>
-            <strong className="font-cinzel vwm-territory-title" style={{ color: currentTerritory.color }}>
-              {currentTerritory.name}
+            <strong
+              className="font-cinzel vwm-territory-title"
+              style={{
+                color: activeRegionalDef
+                  ? activeRegionalDef.accentColor
+                  : currentWorldTerritory.color,
+              }}
+            >
+              {activeRegionalDef ? activeRegionalDef.name : currentWorldTerritory.name}
               <span className="vwm-territory-landmark">
                 {' '}
-                — {dockedBossEntry ? dockedBossEntry.node.landmarkName : currentTerritory.subtitle}
+                —{' '}
+                {dockedBossEntry
+                  ? dockedBossEntry.worldNode.landmarkName
+                  : activeRegionalDef
+                  ? activeRegionalDef.subtitle
+                  : currentWorldTerritory.subtitle}
               </span>
             </strong>
           </div>
         </div>
 
         <div className="vwm-controls-group">
+          {mapScope === 'world' ? (
+            <button
+              type="button"
+              className="vwm-tool-btn is-highlight-action"
+              onClick={() => handleSwitchMapScope(inferredRealmFromWorld)}
+              title={`Mergulhar no Mapa Regional detalhado de ${VAELORIA_REGIONAL_MAPS[inferredRealmFromWorld].shortName}`}
+            >
+              🔍 Entrar em {VAELORIA_REGIONAL_MAPS[inferredRealmFromWorld].shortName}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="vwm-tool-btn is-highlight-action"
+              onClick={() => handleSwitchMapScope('world')}
+              title="Voltar ao Mapa Continental de Vaeloria"
+            >
+              🌍 Mapa-Múndi
+            </button>
+          )}
+
+          <button
+            type="button"
+            className={`vwm-tool-btn ${followPawn ? 'is-active' : ''}`}
+            onClick={() => {
+              const next = !followPawn;
+              setFollowPawn(next);
+              if (next) {
+                const targetZ = Math.max(zoom, mapScope === 'world' ? 1.75 : 1.35);
+                setZoom(targetZ);
+                centerCameraAt(pawnPos.x, pawnPos.y, targetZ);
+              }
+            }}
+            title="Câmera exploratória que acompanha o Soberano em tempo real"
+          >
+            🎥 Seguir
+          </button>
+
           <button
             type="button"
             className={`vwm-tool-btn ${showGeographyLabels ? 'is-active' : ''}`}
             onClick={() => setShowGeographyLabels((v) => !v)}
-            title="Mostrar ou ocultar nomes geográficos dos reinos e marcos"
+            title="Mostrar ou ocultar nomes geográficos, vilas e marcos"
           >
-            🏷️ Geografia
+            🏷️ Marcos
           </button>
+
           <button
             type="button"
             className="vwm-tool-btn"
             onClick={() => applyZoom(zoom - 0.25)}
             disabled={zoom <= 1.01}
-            title="Afastar mapa"
+            title="Afastar câmera"
           >
             −
           </button>
@@ -482,10 +893,11 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             type="button"
             className="vwm-tool-btn vwm-zoom-readout"
             onClick={() => {
+              setFollowPawn(false);
               setZoom(1);
               setPan({ x: 0, y: 0 });
             }}
-            title="Restaurar visão continental completa (100%)"
+            title="Restaurar enquadramento 100% do mapa atual"
           >
             {Math.round(zoom * 100)}%
           </button>
@@ -493,23 +905,43 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             type="button"
             className="vwm-tool-btn"
             onClick={() => applyZoom(zoom + 0.25)}
-            disabled={zoom >= 2.24}
-            title="Aproximar mapa"
+            disabled={zoom >= 2.79}
+            title="Aproximar câmera"
           >
             +
           </button>
+
+          {onToggleDossier && !isTheaterFullscreen && (
+            <button
+              type="button"
+              className={`vwm-tool-btn hide-on-mobile ${isDossierCollapsed ? 'is-active' : ''}`}
+              onClick={onToggleDossier}
+              title={
+                isDossierCollapsed
+                  ? 'Mostrar painel lateral de Dossiê'
+                  : 'Ocultar Dossiê lateral para expandir o Mapa em Widescreen'
+              }
+            >
+              {isDossierCollapsed ? '📋 Mostrar Dossiê' : '↔️ Expandir'}
+            </button>
+          )}
+
           <button
             type="button"
-            className="vwm-tool-btn"
-            onClick={handleCenterOnSovereign}
-            title="Focar câmera na posição atual do seu Soberano"
+            className={`vwm-tool-btn ${isTheaterFullscreen ? 'is-active' : ''}`}
+            onClick={() => setIsTheaterFullscreen((v) => !v)}
+            title={
+              isTheaterFullscreen
+                ? 'Sair da Tela Cheia (Esc)'
+                : 'Abrir Multimapa em Tela Cheia (100% do monitor)'
+            }
           >
-            🎯 Soberano
+            {isTheaterFullscreen ? '✕ Sair' : '⛶ Tela Cheia'}
           </button>
         </div>
       </div>
 
-      {/* Main 16:9 Traversable Continent Viewport */}
+      {/* 3. Main 16:9 Traversable Giant Multimap Viewport */}
       <div
         ref={viewportRef}
         className={`vwm-viewport ${zoom > 1.01 ? 'is-zoomed' : ''}`}
@@ -519,6 +951,8 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         onPointerCancel={handlePointerUpViewport}
         onWheel={handleWheelViewport}
       >
+        {portalBanner && <div className="vwm-portal-toast">{portalBanner}</div>}
+
         <div
           ref={canvasRef}
           className="vwm-canvas"
@@ -526,15 +960,16 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom})`,
           }}
         >
-          {/* Illustrated High-Resolution Vaeloria Continent */}
+          {/* Illustrated High-Resolution Map (World Continent OR Full-Bleed Regional Realm) */}
           <img
-            src={VAELORIA_WORLD_MAP_IMAGE}
-            alt="Mapa Continental de Vaeloria"
+            key={activeRegionalDef ? activeRegionalDef.imagePath : VAELORIA_WORLD_MAP_IMAGE}
+            src={activeRegionalDef ? activeRegionalDef.imagePath : VAELORIA_WORLD_MAP_IMAGE}
+            alt={activeRegionalDef ? activeRegionalDef.name : 'Mapa Continental de Vaeloria'}
             className="vwm-terrain-img"
             draggable={false}
           />
 
-          {/* Vector SVG Layer: Roads, March Trail, Compass Rose & Geographic Labels */}
+          {/* Vector SVG Layer: Roads, Portal Trails, Landmarks & Compass Rose */}
           <svg
             className="vwm-svg-layer"
             viewBox="0 0 1600 900"
@@ -547,37 +982,89 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               </filter>
             </defs>
 
-            {/* Sequential Overland Roads */}
-            {positionedBosses.map((entry, idx) => {
-              if (idx === 0) return null;
-              const prev = positionedBosses[idx - 1];
-              const x1 = prev.node.x * 16;
-              const y1 = prev.node.y * 9;
-              const x2 = entry.node.x * 16;
-              const y2 = entry.node.y * 9;
-              const mx = (x1 + x2) / 2;
-              const my = (y1 + y2) / 2 - Math.min(48, Math.hypot(x2 - x1, y2 - y1) * 0.11);
+            {/* Regional Roads from Central Citadel to Neighboring Citadels & Border Portals */}
+            {activeRegionalDef ? (
+              <g className="vwm-regional-roads-group">
+                {positionedBosses.map((entry, idx) => {
+                  if (idx === 0) return null;
+                  const prev = positionedBosses[idx - 1];
+                  const x1 = prev.x * 16;
+                  const y1 = prev.y * 9;
+                  const x2 = entry.x * 16;
+                  const y2 = entry.y * 9;
+                  const mx = (x1 + x2) / 2;
+                  const my = (y1 + y2) / 2 - 22;
+                  const bothCleared =
+                    clearedBossIds.includes(prev.boss.id) &&
+                    clearedBossIds.includes(entry.boss.id);
+                  return (
+                    <path
+                      key={`reg-road-${prev.boss.id}-${entry.boss.id}`}
+                      d={`M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`}
+                      fill="none"
+                      className={`vwm-road-path ${bothCleared ? 'is-cleared-road' : 'is-frontier-road'}`}
+                    />
+                  );
+                })}
 
-              const bothCleared =
-                clearedBossIds.includes(prev.boss.id) && clearedBossIds.includes(entry.boss.id);
-              const isFrontierRoad =
-                clearedBossIds.includes(prev.boss.id) && entry.boss.id === nextUnclearBossId;
+                {/* Highway Spur Lines leading to Walkable Border Portals */}
+                {activeRegionalDef.portals.map((ptl) => {
+                  const anchor =
+                    positionedBosses.reduce<PositionedBossEntry | null>((best, cur) => {
+                      if (!best) return cur;
+                      const dCur = Math.hypot(cur.x - ptl.x, cur.y - ptl.y);
+                      const dBest = Math.hypot(best.x - ptl.x, best.y - ptl.y);
+                      return dCur < dBest ? cur : best;
+                    }, null) ?? null;
+                  if (!anchor) return null;
+                  return (
+                    <line
+                      key={`spur-${ptl.id}`}
+                      x1={anchor.x * 16}
+                      y1={anchor.y * 9}
+                      x2={ptl.x * 16}
+                      y2={ptl.y * 9}
+                      stroke="rgba(250, 204, 21, 0.55)"
+                      strokeWidth="3"
+                      strokeDasharray="10 8"
+                    />
+                  );
+                })}
+              </g>
+            ) : (
+              /* Continental Sequential Overland Roads */
+              positionedBosses.map((entry, idx) => {
+                if (idx === 0) return null;
+                const prev = positionedBosses[idx - 1];
+                const x1 = prev.x * 16;
+                const y1 = prev.y * 9;
+                const x2 = entry.x * 16;
+                const y2 = entry.y * 9;
+                const mx = (x1 + x2) / 2;
+                const my = (y1 + y2) / 2 - Math.min(48, Math.hypot(x2 - x1, y2 - y1) * 0.11);
 
-              return (
-                <path
-                  key={`road-${prev.boss.id}-${entry.boss.id}`}
-                  d={`M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`}
-                  fill="none"
-                  className={`vwm-road-path ${
-                    bothCleared
-                      ? 'is-cleared-road'
-                      : isFrontierRoad
-                      ? 'is-frontier-road'
-                      : ''
-                  }`}
-                />
-              );
-            })}
+                const bothCleared =
+                  clearedBossIds.includes(prev.boss.id) &&
+                  clearedBossIds.includes(entry.boss.id);
+                const isFrontierRoad =
+                  clearedBossIds.includes(prev.boss.id) && entry.boss.id === nextUnclearBossId;
+
+                return (
+                  <path
+                    key={`road-${prev.boss.id}-${entry.boss.id}`}
+                    d={`M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`}
+                    fill="none"
+                    className={`vwm-road-path ${
+                      bothCleared
+                        ? 'is-cleared-road'
+                        : isFrontierRoad
+                        ? 'is-frontier-road'
+                        : ''
+                    }`}
+                  />
+                );
+              })
+            )}
 
             {/* Active Overland March Route */}
             {marchTarget && marchOrigin && (
@@ -598,81 +1085,167 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               </g>
             )}
 
-            {/* Canonical Kingdom Banners & Landmarks */}
+            {/* Geography & Local Settlements Overlay */}
             {showGeographyLabels && (
               <g filter="url(#vwmTextShadow)">
-                {VAELORIA_SUB_LANDMARKS.map((lm) => (
-                  <text
-                    key={lm.id}
-                    x={lm.x * 16}
-                    y={lm.y * 9}
-                    textAnchor="middle"
-                    className="vwm-sublandmark-label"
-                  >
-                    ✦ {lm.name}
-                  </text>
-                ))}
+                {activeRegionalDef ? (
+                  <>
+                    {/* Regional Towns, Harbors, Bridges, Forts, Ruins & Shrines */}
+                    {activeRegionalDef.localLandmarks.map((lm, idx) => (
+                      <g
+                        key={`rlm-${idx}`}
+                        transform={`translate(${lm.x * 16}, ${lm.y * 9})`}
+                      >
+                        <circle
+                          cx="0"
+                          cy="0"
+                          r="11"
+                          fill="rgba(7, 11, 20, 0.88)"
+                          stroke={`${activeRegionalDef.accentColor}aa`}
+                          strokeWidth="1.6"
+                        />
+                        <text x="0" y="4.5" textAnchor="middle" fontSize="12">
+                          {LOCAL_LANDMARK_ICON[lm.kind] ?? '✦'}
+                        </text>
+                        <text
+                          x="0"
+                          y="23"
+                          textAnchor="middle"
+                          className="vwm-sublandmark-label"
+                          style={{ fontSize: '13.5px', fill: '#f1f5f9' }}
+                        >
+                          {lm.name}
+                        </text>
+                      </g>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {VAELORIA_SUB_LANDMARKS.map((lm) => (
+                      <text
+                        key={lm.id}
+                        x={lm.x * 16}
+                        y={lm.y * 9}
+                        textAnchor="middle"
+                        className="vwm-sublandmark-label"
+                      >
+                        ✦ {lm.name}
+                      </text>
+                    ))}
 
-                {VAELORIA_MAP_TERRITORIES.map((reg) => (
-                  <g key={reg.id} transform={`translate(${reg.labelX * 16}, ${reg.labelY * 9})`}>
-                    <text
-                      x="0"
-                      y="-11"
-                      textAnchor="middle"
-                      className="vwm-region-cardinal"
-                      fill={reg.color}
-                    >
-                      {reg.cardinalLabel}
-                    </text>
-                    <text x="0" y="9" textAnchor="middle" className="vwm-region-title">
-                      {reg.name}
-                    </text>
-                  </g>
-                ))}
+                    {VAELORIA_MAP_TERRITORIES.map((reg) => (
+                      <g key={reg.id} transform={`translate(${reg.labelX * 16}, ${reg.labelY * 9})`}>
+                        <text
+                          x="0"
+                          y="-11"
+                          textAnchor="middle"
+                          className="vwm-region-cardinal"
+                          fill={reg.color}
+                        >
+                          {reg.cardinalLabel}
+                        </text>
+                        <text x="0" y="9" textAnchor="middle" className="vwm-region-title">
+                          {reg.name}
+                        </text>
+                      </g>
+                    ))}
+                  </>
+                )}
               </g>
             )}
 
-            {/* Engraved Cartographic Compass Rose (Bottom-Right Ocean) */}
-            <g transform="translate(1490, 800)" opacity="0.88" filter="url(#vwmTextShadow)">
+            {/* Engraved Cartographic Compass Rose */}
+            <g transform="translate(1515, 815)" opacity="0.88" filter="url(#vwmTextShadow)">
               <circle
                 cx="0"
                 cy="0"
-                r="46"
-                fill="rgba(7, 11, 20, 0.72)"
+                r="42"
+                fill="rgba(7, 11, 20, 0.74)"
                 stroke="rgba(230, 200, 117, 0.55)"
                 strokeWidth="1.8"
               />
-              <circle
-                cx="0"
-                cy="0"
-                r="36"
-                fill="none"
-                stroke="rgba(230, 200, 117, 0.28)"
-                strokeDasharray="3 3"
-              />
-              <polygon points="0,-40 7,-8 0,-14 -7,-8" fill="#facc15" />
-              <polygon points="0,40 6,8 0,14 -6,8" fill="#10b981" />
-              <polygon points="-40,0 -8,-6 -14,0 -8,6" fill="#a855f7" />
-              <polygon points="40,0 8,-6 14,0 8,6" fill="#eab308" />
-              <circle cx="0" cy="0" r="5" fill="#fef08a" />
-              <text x="0" y="-48" textAnchor="middle" className="vwm-compass-letter" fill="#fde047">
+              <polygon points="0,-35 6,-7 0,-12 -6,-7" fill="#facc15" />
+              <polygon points="0,35 5,7 0,12 -5,7" fill="#10b981" />
+              <polygon points="-35,0 -7,-5 -12,0 -7,5" fill="#a855f7" />
+              <polygon points="35,0 7,-5 12,0 7,5" fill="#eab308" />
+              <circle cx="0" cy="0" r="4.5" fill="#fef08a" />
+              <text x="0" y="-44" textAnchor="middle" className="vwm-compass-letter" fill="#fde047">
                 N
               </text>
-              <text x="0" y="59" textAnchor="middle" className="vwm-compass-letter" fill="#6ee7b7">
+              <text x="0" y="54" textAnchor="middle" className="vwm-compass-letter" fill="#6ee7b7">
                 S
-              </text>
-              <text x="-53" y="4" textAnchor="middle" className="vwm-compass-letter" fill="#d8b4fe">
-                O
-              </text>
-              <text x="53" y="4" textAnchor="middle" className="vwm-compass-letter" fill="#fde047">
-                L
               </text>
             </g>
           </svg>
 
+          {/* On World Map: Clickable "Explorar Reino" Gateways on each of the 6 Realms */}
+          {mapScope === 'world' &&
+            showGeographyLabels &&
+            VAELORIA_REALM_ORDER.map((rid) => {
+              const rdef = VAELORIA_REGIONAL_MAPS[rid];
+              return (
+                <button
+                  key={`dive-${rid}`}
+                  type="button"
+                  className="vwm-realm-dive-chip"
+                  style={
+                    {
+                      left: `${rdef.worldCenter.x}%`,
+                      top: `${rdef.worldCenter.y + (rid === 'matrix' ? 8.5 : 6.5)}%`,
+                      borderColor: `${rdef.accentColor}99`,
+                      transform: `translate(-50%, -50%) scale(${pinCounterScale})`,
+                    } as React.CSSProperties
+                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSwitchMapScope(rid);
+                  }}
+                  title={`Entrar no Mapa Regional de ${rdef.name}`}
+                >
+                  <span>🔍</span>
+                  <strong>Mapa de {rdef.shortName}</strong>
+                </button>
+              );
+            })}
+
+          {/* Inside Regional Map: Walkable & Clickable Border Gate Portals to Neighboring Realms */}
+          {activeRegionalDef &&
+            activeRegionalDef.portals.map((portal) => {
+              const targetDef = VAELORIA_REGIONAL_MAPS[portal.targetRealm];
+              return (
+                <button
+                  key={portal.id}
+                  type="button"
+                  className={`vwm-portal-gate ${
+                    portal.x < 18 ? 'is-edge-left' : portal.x > 82 ? 'is-edge-right' : ''
+                  } ${portal.y < 16 ? 'is-edge-top' : portal.y > 84 ? 'is-edge-bottom' : ''}`}
+                  style={
+                    {
+                      left: `${portal.x}%`,
+                      top: `${portal.y}%`,
+                      '--portal-color': targetDef.accentColor,
+                    } as React.CSSProperties
+                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleTraversePortal(portal);
+                  }}
+                  title={`Cruzar fronteira para ${targetDef.name} (${portal.sublabel})`}
+                >
+                  <span className="vwm-portal-icon">
+                    {portal.directionIcon} {targetDef.icon}
+                  </span>
+                  <span className="vwm-portal-texts">
+                    <strong>{portal.label}</strong>
+                    <small>{portal.sublabel}</small>
+                  </span>
+                </button>
+              );
+            })}
+
           {/* Boss Citadel Pins */}
           {positionedBosses.map((entry) => {
-            const { boss, node } = entry;
+            const { boss, worldNode, x, y } = entry;
             const isSelected = boss.id === selectedBossId;
             const isCleared = clearedBossIds.includes(boss.id);
             const isNextTarget = boss.id === nextUnclearBossId;
@@ -689,19 +1262,19 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 className={`vwm-boss-node ${isSelected ? 'is-selected' : ''} ${
                   isCleared ? 'is-cleared' : ''
                 } ${isNextTarget ? 'is-next-target' : ''} ${isFinalWheel ? 'is-axial-apex' : ''} ${
-                  node.y < 23 ? 'is-near-top' : ''
-                } ${node.x < 16 ? 'is-near-left' : node.x > 84 ? 'is-near-right' : ''}`}
+                  y < 23 ? 'is-near-top' : ''
+                } ${x < 16 ? 'is-near-left' : x > 84 ? 'is-near-right' : ''}`}
                 style={
                   {
-                    left: `${node.x}%`,
-                    top: `${node.y}%`,
+                    left: `${x}%`,
+                    top: `${y}%`,
                     '--pin-color': domColor,
                   } as React.CSSProperties
                 }
                 onClick={(e) => handleClickBossPin(e, entry)}
                 onMouseEnter={() => setHoveredBossId(boss.id)}
                 onMouseLeave={() => setHoveredBossId((prev) => (prev === boss.id ? null : prev))}
-                title={`${boss.name} — ${node.landmarkName} (${node.regionName})`}
+                title={`${boss.name} — ${worldNode.landmarkName} (${worldNode.regionName})`}
               >
                 <span className="vwm-boss-node-ring" />
                 <span className="vwm-boss-node-portrait">
@@ -715,10 +1288,15 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                   {isCleared ? `✓${boss.stage}` : boss.stage}
                 </span>
 
+                {/* In Regional Maps, show a clean landmark nameplate under every citadel */}
+                {activeRegionalDef && !isSelected && !isHovered && (
+                  <span className="vwm-regional-citadel-tag">{worldNode.landmarkName}</span>
+                )}
+
                 {!isDockedHere && (isSelected || isHovered) && (
                   <span className="vwm-boss-tooltip">
                     <strong>{boss.name}</strong>
-                    <em>📍 {node.landmarkName}</em>
+                    <em>📍 {worldNode.landmarkName}</em>
                   </span>
                 )}
               </button>
@@ -762,7 +1340,75 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
           </div>
         </div>
 
-        {/* On-Screen Directional March Pad (Mobile & Mouse Free-Roaming) */}
+        {/* Live Continental Minimap Radar (Top-Right) */}
+        {showMinimap ? (
+          <div
+            className="vwm-minimap-radar"
+            onClick={(e) => {
+              e.stopPropagation();
+              const rect = e.currentTarget.getBoundingClientRect();
+              const mx = ((e.clientX - rect.left) / rect.width) * 100;
+              const my = ((e.clientY - rect.top) / rect.height) * 100;
+              if (mapScope === 'world') {
+                startMarchTo(mx, my);
+                if (zoom > 1.05) {
+                  centerCameraAt(mx, my, zoom);
+                }
+              } else {
+                const nearestTerr = resolveNearestTerritory(mx, my);
+                handleSwitchMapScope(mapTerritoryIdToRealmId(nearestTerr.id));
+              }
+            }}
+            title="Minimapa Continental de Vaeloria — Clique para saltar para qualquer Reino"
+          >
+            <img src={VAELORIA_WORLD_MAP_IMAGE} alt="Minimapa" draggable={false} />
+            <div
+              className="vwm-minimap-cam-box"
+              style={{
+                left: `${worldCameraBox.x}%`,
+                top: `${worldCameraBox.y}%`,
+                width: `${worldCameraBox.w}%`,
+                height: `${worldCameraBox.h}%`,
+                borderColor: activeRegionalDef ? activeRegionalDef.accentColor : '#facc15',
+              }}
+            />
+            <span
+              className="vwm-minimap-pawn-dot"
+              style={{
+                left: `${globalSovereignCoords.x}%`,
+                top: `${globalSovereignCoords.y}%`,
+              }}
+            />
+            <span className="vwm-minimap-caption">
+              {activeRegionalDef ? activeRegionalDef.shortName : 'GPS Vaeloria'}
+            </span>
+            <button
+              type="button"
+              className="vwm-minimap-close"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMinimap(false);
+              }}
+              title="Recolher minimapa"
+            >
+              ×
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="vwm-minimap-toggle-pill"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMinimap(true);
+            }}
+            title="Abrir Minimapa GPS Continental"
+          >
+            🗺️ GPS
+          </button>
+        )}
+
+        {/* On-Screen Directional March Pad */}
         <div
           className="vwm-dpad"
           onPointerUp={() => {
@@ -801,11 +1447,9 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             className="vwm-dpad-btn center"
             onClick={(e) => {
               e.stopPropagation();
-              if (selectedEntry) {
-                startMarchTo(selectedEntry.node.x, selectedEntry.node.y);
-              }
+              handleCenterOnSovereign();
             }}
-            title="Marchar até a cidadela selecionada"
+            title="Focar câmera no Soberano"
           >
             👑
           </button>
@@ -836,10 +1480,20 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         </div>
       </div>
 
-      {/* Subtle Cartographic Footer Hint (Outside viewport so it never covers Veridia) */}
+      {/* Bottom Cartographic Legend & Navigation Hint */}
       <div className="vwm-footer-hint">
         <span>
-          🥾 Clique em qualquer região ou cidadela para marchar • <strong>WASD / Setas</strong> para explorar • <strong>Enter</strong> ou 2º clique para duelar
+          {mapScope === 'world' ? (
+            <>
+              🧭 <strong>Multimapa (7 Mapas)</strong>: Clique em qualquer <strong>Reino acima</strong> ou em{' '}
+              <strong>🔍 Mapa do Reino</strong> para abrir o mapa regional detalhado • <strong>WASD</strong> / Clique para marchar
+            </>
+          ) : (
+            <>
+              🧭 Marche até os <strong>Portais de Fronteira</strong> nas bordas (ou clique neles) para cruzar entre Reinos vizinhos •{' '}
+              <strong>🌍 Continente</strong> retorna à visão global
+            </>
+          )}
         </span>
       </div>
     </div>

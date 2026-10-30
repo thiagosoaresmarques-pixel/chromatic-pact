@@ -17711,5 +17711,467 @@ input:focus-visible,
   }
 }
 
+/* =========================================================================
+   GIANT 7-MAP INTERCONNECTED MULTIMAP OF VAELORIA
+   Widescreen Stage, Regional Sub-Maps, Walkable Border Gate Portals,
+   Live Continental Minimap Radar & Full-Viewport Theater Mode
+   ========================================================================= */
+
+@media (min-width: 1121px) {
+  .aaa-page-shell.is-widescreen-map-page {
+    max-width: 1860px !important;
+    width: min(97.5vw, 1860px) !important;
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+  }
+
+  .aaa-page-shell.is-widescreen-map-page .aaa-campaign-workspace.is-map-mode {
+    grid-template-columns: minmax(0, 2.35fr) minmax(326px, 0.72fr) !important;
+    gap: 0.9rem !important;
+  }
+
+  .aaa-page-shell.is-widescreen-map-page
+    .aaa-campaign-workspace.is-map-mode.is-dossier-collapsed {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .aaa-page-shell.is-widescreen-map-page
+    .aaa-campaign-workspace.is-map-mode.is-dossier-collapsed
+    > .aaa-boss-dossier {
+    display: none !important;
+  }
+
+  .aaa-page-shell.is-widescreen-map-page .vwm-viewport,
+  .aaa-page-shell.is-widescreen-map-page .cqm-viewport {
+    min-height: clamp(540px, 67vh, 800px);
+  }
+}
+
+/* Full-Viewport Theater Mode (⛶ Tela Cheia) */
+.vaeloria-world-map-shell.is-theater-fullscreen,
+.conquest-megamap-shell.is-theater-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2250 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: radial-gradient(circle at 50% 35%, #0c1426 0%, #050811 100%) !important;
+  padding: 0.65rem 0.9rem !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+}
+
+.vaeloria-world-map-shell.is-theater-fullscreen .vwm-viewport,
+.conquest-megamap-shell.is-theater-fullscreen .vwm-viewport {
+  flex: 1 1 auto !important;
+  aspect-ratio: auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+/* 7-Map Interconnected Multimap Atlas Selector Bar */
+.vwm-multimap-atlas-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 5px;
+  border-radius: 9px;
+  background: rgba(6, 10, 19, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.26);
+}
+
+.vwm-multimap-atlas-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.vwm-atlas-pill {
+  flex: 1 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.72);
+  color: #cbd5e1;
+  font-size: 0.7rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.16s ease;
+}
+
+.vwm-atlas-pill strong {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.vwm-atlas-pill small {
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  color: #94a3b8;
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+.vwm-atlas-pill:hover {
+  background: rgba(30, 41, 59, 0.92);
+  color: #f8fafc;
+  border-color: var(--realm-accent, rgba(250, 204, 21, 0.55));
+}
+
+.vwm-atlas-pill.is-active {
+  background: linear-gradient(
+    135deg,
+    rgba(30, 41, 59, 0.96),
+    rgba(15, 23, 42, 0.98)
+  );
+  border-color: var(--realm-accent, #facc15);
+  color: #fffbeb;
+  box-shadow:
+    0 0 14px rgba(250, 204, 21, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.vwm-atlas-pill.is-active small {
+  color: #fef08a;
+  border-color: var(--realm-accent, #facc15);
+}
+
+.vwm-tool-btn.is-highlight-action {
+  border-color: rgba(250, 204, 21, 0.65);
+  background: linear-gradient(135deg, rgba(161, 98, 7, 0.35), rgba(15, 23, 42, 0.92));
+  color: #fef08a;
+  font-weight: 800;
+}
+
+.vwm-tool-btn.is-highlight-action:hover {
+  background: linear-gradient(135deg, rgba(202, 138, 4, 0.52), rgba(30, 41, 59, 0.96));
+}
+
+/* Clickable Kingdom Gateways on World Continent */
+.vwm-realm-dive-chip {
+  position: absolute;
+  z-index: 22;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(7, 11, 20, 0.88);
+  border: 1.5px solid rgba(250, 204, 21, 0.6);
+  color: #fef08a;
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.92);
+  transition: filter 0.15s ease, background 0.15s ease;
+}
+
+.vwm-realm-dive-chip:hover {
+  background: rgba(20, 30, 52, 0.96);
+  filter: brightness(1.16);
+}
+
+/* Walkable & Clickable Border Gate Portals inside Regional Maps */
+.vwm-portal-gate {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 27;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(8, 13, 25, 0.94), rgba(17, 24, 39, 0.96));
+  border: 1.5px solid var(--portal-color, #facc15);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.95),
+    0 0 14px rgba(250, 204, 21, 0.25);
+  color: #f8fafc;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.vwm-portal-gate:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+  filter: brightness(1.14);
+}
+
+.vwm-portal-gate.is-edge-left {
+  transform: translate(-12%, -50%);
+}
+.vwm-portal-gate.is-edge-left:hover {
+  transform: translate(-12%, -50%) scale(1.06);
+}
+
+.vwm-portal-gate.is-edge-right {
+  transform: translate(-88%, -50%);
+}
+.vwm-portal-gate.is-edge-right:hover {
+  transform: translate(-88%, -50%) scale(1.06);
+}
+
+.vwm-portal-gate.is-edge-top {
+  transform: translate(-50%, -18%);
+}
+.vwm-portal-gate.is-edge-top:hover {
+  transform: translate(-50%, -18%) scale(1.06);
+}
+
+.vwm-portal-gate.is-edge-bottom {
+  transform: translate(-50%, -82%);
+}
+.vwm-portal-gate.is-edge-bottom:hover {
+  transform: translate(-50%, -82%) scale(1.06);
+}
+
+.vwm-portal-icon {
+  font-size: 0.86rem;
+  line-height: 1;
+}
+
+.vwm-portal-texts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.18;
+}
+
+.vwm-portal-texts strong {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  color: #fef08a;
+  letter-spacing: 0.02em;
+}
+
+.vwm-portal-texts small {
+  font-size: 0.53rem;
+  color: #cbd5e1;
+}
+
+/* Regional Citadel Landmark Tag */
+.vwm-regional-citadel-tag {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(6, 10, 19, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #f8fafc;
+  font-family: var(--font-display);
+  font-size: 0.54rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.9);
+}
+
+/* Border Crossing / Realm Entry Toast Banner */
+.vwm-portal-toast {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 44;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(12, 19, 34, 0.96), rgba(30, 41, 59, 0.96));
+  border: 1.5px solid rgba(250, 204, 21, 0.78);
+  color: #fef08a;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.92);
+}
+
+/* Live Continental Minimap Radar (Top-Right of Map Viewport) */
+.vwm-minimap-radar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 39;
+  width: 162px;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid rgba(212, 175, 55, 0.62);
+  background: #04070f;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.92);
+  cursor: crosshair;
+}
+
+.vwm-minimap-radar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.9;
+}
+
+.vwm-minimap-cam-box {
+  position: absolute;
+  border: 1.8px solid #facc15;
+  background: rgba(250, 204, 21, 0.14);
+  box-sizing: border-box;
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+.vwm-minimap-pawn-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  border: 1.5px solid #fffbeb;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px #38bdf8;
+  pointer-events: none;
+}
+
+.vwm-minimap-caption {
+  position: absolute;
+  left: 5px;
+  bottom: 3px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(2, 6, 23, 0.85);
+  color: #fde68a;
+  font-family: var(--font-display);
+  font-size: 0.48rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.vwm-minimap-close {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(2, 6, 23, 0.88);
+  color: #e2e8f0;
+  font-size: 0.66rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vwm-minimap-toggle-pill {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 39;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  background: rgba(7, 11, 20, 0.88);
+  color: #fde68a;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
+}
+
+/* Smartphone Responsiveness for Giant 7-Map Multimap (<= 768px) */
+@media (max-width: 768px) {
+  .vwm-multimap-atlas-bar {
+    gap: 0.3rem;
+    padding: 3px 4px;
+  }
+
+  .vwm-atlas-pill {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    font-size: 0.62rem;
+    gap: 4px;
+  }
+
+  .vwm-atlas-pill small {
+    font-size: 0.52rem;
+    padding: 0 4px;
+  }
+
+  /* Hide extra dive chips on narrow smartphones since the 7-Map Atlas Bar sits right above */
+  .vwm-realm-dive-chip {
+    display: none;
+  }
+
+  /* Compact Border Gate Portals on smartphones so they never overlap regional pins */
+  .vwm-portal-gate {
+    padding: 3px 7px;
+    gap: 4px;
+    border-radius: 7px;
+  }
+
+  .vwm-portal-icon {
+    font-size: 0.72rem;
+  }
+
+  .vwm-portal-texts strong {
+    font-size: 0.52rem;
+  }
+
+  .vwm-portal-texts small {
+    display: none;
+  }
+
+  .vwm-regional-citadel-tag {
+    display: none;
+  }
+
+  .vwm-portal-toast {
+    font-size: 0.56rem;
+    padding: 4px 10px;
+    max-width: calc(100% - 24px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .vwm-minimap-radar {
+    width: 112px;
+    top: 6px;
+    right: 6px;
+  }
+
+  .vwm-minimap-toggle-pill {
+    top: 6px;
+    right: 6px;
+    padding: 3px 7px;
+    font-size: 0.54rem;
+  }
+
+  .vaeloria-world-map-shell.is-theater-fullscreen,
+  .conquest-megamap-shell.is-theater-fullscreen {
+    padding: 0.45rem !important;
+  }
+}
+
+
 
 

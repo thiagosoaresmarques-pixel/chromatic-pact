@@ -6967,7 +6967,7 @@ export const ALL_CARDS: CardDefinition[] = [
   },
   {
     "id": "red_44_gigante_forja",
-    "name": "Titã Encouraçado de Muspel",
+    "name": "Titã Encouraçado da Caldeira",
     "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
     "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
     "domain": "red",
@@ -10783,7 +10783,7 @@ export const ALL_CARDS: CardDefinition[] = [
   },
   {
     "id": "red_72_caldeirao_magma",
-    "name": "Fornalha Rúnica de Muspel",
+    "name": "Fornalha Rúnica da Caldeira",
     "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
     "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
     "domain": "red",
@@ -31890,7 +31890,7 @@ export const ALL_CARDS: CardDefinition[] = [
   },
   {
     "id": "neutral_135_elmo_compreensao_brilhante",
-    "name": "Elmo das Mil Jóias",
+    "name": "Elmo das Mil Joias",
     "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
     "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
     "domain": "neutral",

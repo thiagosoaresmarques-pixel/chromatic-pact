@@ -1,28 +1,29 @@
 import { EpicPoemCanto } from './epicPoemTypes';
 
 /**
- * CANTOS PARALELOS — PARTE 2 (V-A, VI-A e VII-A)
- * Crônicas paralelas completas (33 estrofes / 132 versos por Canto),
+ * CANTOS PARALELOS — PARTE 2 (V-B, VI-B e VII-A)
+ * Crônicas paralelas completas (33 estrofes / 132 versos por Capítulo),
  * ocorrendo no exato instante histórico de eventos-chave dos Cantos V, VI e VII.
  * Intercala 6 cartas ilustradas únicas (4 estrofes cada) com 3 interlúdios narrativos sem imagem (3 estrofes cada).
  */
 export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
   // ==========================================================================
-  // CANTO PARALELO V-A: GUARDA DAS CEM MEMÓRIAS (Ano 689 D.F. • Subsolo da Torre dos Cinco Selos)
+  // CAPÍTULO V-B: GUARDA DAS CEM MEMÓRIAS (Ano 689 D.F. • Torre dos Cinco Selos)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_5a_conclaves_ocultos',
     isParallel: true,
     parentCantoId: 'canto_5_pacto',
+    chronologicalOrder: 45,
     anchorNodeId: 'node_canto5_prelude_juramento_torre',
-    parallelCode: 'V-A',
+    parallelCode: 'V-B',
     shortTitle: 'Guarda das Cem Memórias',
-    cantoNumber: 'CANTO PARALELO V-A',
+    cantoNumber: 'CAPÍTULO V-B',
     eraNumber: 'IVª ERA • CRÔNICA PARALELA',
-    periodLabel: 'Ano 689 D.F. • Subsolo da Torre dos Cinco Selos',
+    periodLabel: 'Ano 689 D.F. • Torre dos Cinco Selos',
     title: 'A Noite das Cem Memórias e a Emboscada do Subsolo',
-    subtitle: 'Como o Comandante Garrick defendeu o Tomo das Estrelas Viajantes contra os sabotadores umbrais durante a assinatura do Pacto Cromático',
+    subtitle: 'Como o Comandante Garrick defendeu o Tomo das Estrelas Viajantes contra os sabotadores umbrais na noite em que a Torre Cinzenta tornou-se Torre dos Cinco Selos, sendo investido Guardião Imortal',
     accentColor: '#10b981',
     bannerImage: '/assets/arena/tabletop_green.png',
     nodes: [
@@ -32,13 +33,13 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'neutral_13_grimorio_astral',
         domain: 'neutral',
         title: 'O Cofre do Tomo das Estrelas Viajantes',
-        subtitle: 'Enquanto Valkyra colhia o sangue dos Soberanos no salão superior, a matriz das Cem Memórias pulsava no subsolo da Torre',
+        subtitle: 'Enquanto Valkyra colhia o sangue dos Soberanos no salão superior, a matriz das Cem Memórias pulsava no subsolo da Torre recém-consagrada',
         yearLabel: 'Ano 689 D.F.',
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
           [
             'No Ano Seiscentos e Oitenta e Nove, à meia-noite fria,',
-            'Enquanto no alto da Torre o grande Pacto nascia,',
+            'Na velha Torre Cinzenta, que Cinco Selos vestia,',
             'Cem pés abaixo do mármore onde os reis juravam paz,',
             'Ardia em silêncio o cofre da memória mais audaz.',
           ],
@@ -105,7 +106,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'purple',
         title: 'O Sussurro dos Sabotadores',
-        subtitle: 'A abertura secreta do aqueduto antigo por onde a seita dissidente de Umbra penetrou sob a Torre',
+        subtitle: 'A abertura secreta do aqueduto antigo por onde a seita dissidente do Eclipse penetrou sob a Torre',
         yearLabel: 'Ano 689 D.F.',
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
@@ -160,14 +161,14 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           [
             'Garrick aparou o ferro com a lâmina inclinada,',
             'E correu pela galeria fingindo uma retirada;',
-            'Malakor gritou: "Atrás dele! Não o deixem escapar!",',
+            'Malakor gritou: "Atrás dele! Não o deixem escapar!" —',
             'Sem saber que o Mercenário os levava a naufragar!',
           ],
         ],
       },
       {
         id: 'node_5a_5_fosso_vinhas',
-        kind: 'creature',
+        kind: 'prelude',
         cardId: 'green_35_fosso_vinhas',
         domain: 'green',
         title: 'Fosso de Vinhas Estranguladoras',
@@ -179,12 +180,12 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Quando doze sabotadores pisaram no vão central,',
             'Garrick decepou a corda do alçapão vegetal;',
             'As lajes de pedra falsa tombaram no sorvedouro,',
-            'Despertando na umidade um selvagem rugido louro!',
+            'Onde as raízes guardavam da Torre o vivo tesouro!',
           ],
           [
             'Lá no fundo, por Veridia preparado contra a insídia,',
             'O Fosso de Vinhas vivas aguardava a vil perfídia;',
-            'Cipós grossos como jibóias saltaram da escuridão,',
+            'Cipós grossos como jiboias saltaram da escuridão,',
             'Enlaçando os assassinos pelo torso e pela mão!',
           ],
           [
@@ -234,7 +235,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
       },
       {
         id: 'node_5a_7_cripta_espinhos',
-        kind: 'creature',
+        kind: 'prelude',
         cardId: 'purple_34_cripta_espinhos',
         domain: 'purple',
         title: 'Sarcófago de Espinhos Negros',
@@ -305,7 +306,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'gold_119_soberano_ordem_eterna',
         domain: 'gold',
         title: 'Justinian, Soberano da Ordem Eterna',
-        subtitle: 'O rei legislador que reconheceu o feito de Garrick e inscreveu a Lei da Retaguarda e das Reações Ocultas no Pacto',
+        subtitle: 'O rei legislador que inscreveu a Lei da Retaguarda no Pacto enquanto Valkyra e o Relógio da Eternidade investiam Garrick como Guardião Juramentado Imortal da Torre',
         yearLabel: 'Ano 689 D.F.',
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
@@ -316,7 +317,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Usando o terreno oculto para o número vencer!"',
           ],
           [
-            'Voltando-se para Valkyra e aos outros reis do salão,',
+            'Voltando-se a Valkyra e aos outros reis do salão,',
             'Justinian ergueu o cetro da dourada legislação:',
             '"Que este combate noturno seja lei em toda Arena:',
             'Não só a força de frente decide a sorte terrena!"',
@@ -328,10 +329,10 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Despertará no instante a oculta Reação!"',
           ],
           [
-            'Valkyra bateu o cetro e o sexto parágrafo abriu,',
-            'Gravando no Tomo Astral o que a meia-noite viu;',
-            'E assim o Comandante Garrick, com vinha e ferro cruel,',
-            'Deu aos duelos de Vaeloria seu mais tático papel!',
+            'Valkyra uniu seu espírito ao Relógio ancestral,',
+            'Sagrando o bravo Garrick Guardião Imortal;',
+            'E desde aquela vigília, de vinha e ferro cruel,',
+            'Eterno vela na Torre seu mais tático papel!',
           ],
         ],
       },
@@ -339,21 +340,22 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CANTO PARALELO VI-A: RITUAL DA FORJA SOLAR (Ano 880 D.F. • Fronteira de Pyros e Solária)
+  // CAPÍTULO VI-B: RITUAL DA FORJA SOLAR (Ano 880 D.F. • Laboratórios da Concordata)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_6a_alquimistas_hibridos',
     isParallel: true,
     parentCantoId: 'canto_6_tratados',
+    chronologicalOrder: 56,
     anchorNodeId: 'canto6_interlude_forja_solar',
-    parallelCode: 'VI-A',
+    parallelCode: 'VI-B',
     shortTitle: 'Ritual da Forja Solar',
-    cantoNumber: 'CANTO PARALELO VI-A',
+    cantoNumber: 'CAPÍTULO VI-B',
     eraNumber: 'Vª ERA • CRÔNICA PARALELA',
-    periodLabel: 'Ano 880 D.F. • Fronteira de Pyros e Solária',
-    title: 'O Ritual da Forja Solar e o Primeiro Combo Bicolor',
-    subtitle: 'Como o General Varkas e a fada Lyra conduziram o duelo experimental que provou a sinergia entre quatro domínios no dia da Concordata',
+    periodLabel: 'Ano 880 D.F. • Laboratórios da Concordata',
+    title: 'O Ritual da Forja Solar e a Bancada dos Pares Bicolores',
+    subtitle: 'Como o Campeão Juramentado Varkas e a fada Lyra conduziram o ensaio cruzado entre dois pares bicolores aliados (Pyros-Solária e Vórtex-Veridia) nos Laboratórios da Concordata',
     accentColor: '#38bdf8',
     bannerImage: '/assets/arena/tabletop_blue.png',
     nodes: [
@@ -362,34 +364,34 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'blue_10_portal_runas',
         domain: 'blue',
-        title: 'O Códice da Ressonância no Pátio da Forja',
-        subtitle: 'A desconfiança dos generais no dia da Concordata e a instalação do arco de runas azuis sobre a bigorna de Pyros',
+        title: 'O Códice da Ressonância nos Laboratórios',
+        subtitle: 'A desconfiança dos generais na Concordata e a levitação do Códice da Ressonância Astral na bancada experimental de pares duplos',
         yearLabel: 'Ano 880 D.F.',
-        locationLabel: 'Fronteira de Pyros e Solária',
+        locationLabel: 'Laboratórios da Concordata',
         stanzas: [
           [
             'No Ano Oitocentos e Oitenta, onde a lava encontra a luz,',
             'Erguia-se a Forja Solar com sua dourada cruz;',
-            'Embaixadores dos reinos vieram o acordo assinar,',
-            'Para permitir que duas cores pudessem juntas lutar.',
+            'Dois pares de Grimórios vieram ao pátio ensaiar,',
+            'Testando em bancada dupla a lei de dois tons juntar.',
           ],
           [
             'Porém nas arquibancadas reinava a desconfiança:',
-            '"Como o fogo e a floresta farão a mesma aliança?',
-            'Se misturarmos as manas num único invocador,',
-            'Um domínio há de apagar do outro todo o fulgor!"',
+            '"Como dois pares distintos mantêm a mesma balança?',
+            'Se num Grimório bicolor cada mestre invocar,',
+            'Não vão as forças cruzadas na Arena se anular?"',
           ],
           [
             'Para calar os céticos antes da tinta secar,',
-            'Os arquimagos de Vórtex mandaram no chão cravar',
-            'O Códice da Ressonância, um Portal de Runas vivas,',
-            'Que espelhava no cristal as correntes combativas.',
+            'Os arquimagos de Vórtex puseram no ar a pairar',
+            'O Códice da Ressonância, aberto em folhas vivas,',
+            'Projetando um aro astral de runas interativas.',
           ],
           [
-            'Faltava quem comandasse a prova naquele anel,',
-            'Sem medo de ver queimar o seu próprio quartel;',
-            'Foi quando desceu à arena, em couraça carmesim,',
-            'O velho Marechal Férreo de olhar severo e sem fim!',
+            'De um lado o par Vórtex-Verde, do outro o par Rubro-Solar,',
+            'Uniram seus dois ensaios no mesmo pátio exemplar;',
+            'E desceu à bancada, em couraça carmesim,',
+            'O Campeão Juramentado de brio eterno e sem fim!',
           ],
         ],
       },
@@ -399,33 +401,33 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'red_18_marechal_rubro',
         domain: 'red',
         title: 'General Varkas, Marechal da Legião Férrea',
-        subtitle: 'O comandante veterano de Pyros que aceitou o desafio de testar a fusão dos domínios diante dos tronos',
+        subtitle: 'O Campeão Imortal reencarnado pelo Grimório Rubi em 851 D.F. que liderou a bancada Pyros-Solária diante dos tronos',
         yearLabel: 'Ano 880 D.F.',
-        locationLabel: 'Fronteira de Pyros e Solária',
+        locationLabel: 'Laboratórios da Concordata',
         stanzas: [
           [
-            'General Varkas, o Marechal da Férrea Legião,',
-            'Bateu a manopla rubra no centro do pavilhão;',
-            'Por trinta anos lutara somente com puro ardor,',
-            'Desprezando qualquer magia que não fosse de calor.',
+            'General Varkas, reerguido do Grimório carmesim,',
+            'Bateu a manopla rubra no centro daquele afim;',
+            'Desde Oitocentos e Cinquenta e Um, jurado guardião,',
+            'Testava a ferro e verdade cada nova invocação.',
           ],
           [
-            '"Vós dizeis que duas cores multiplicam o poder!" —',
-            'Bradou Varkas às tribunas fazendo a brisa tremer —',
-            '"Pois tragam o meu artilheiro e tragam a fera bruta,',
-            'Que eu quero ver na bigorna o valor dessa permuta!"',
+            '"Cada Grimório tem duas cores por estrita lei!" —',
+            'Bradou Varkas às tribunas diante de cada rei —',
+            '"Mas hoje em bancada aliada veremos na prova bruta',
+            'Como Pyros com Solária ao par vizinho comuta!"',
           ],
           [
-            '"Se o fogo de Pyros cair ao tocar outra semente,',
-            'Rasgarei a Concordata na frente de toda a gente!',
-            'Mas se a chama redobrar com a ajuda do estrangeiro,',
-            'Eu mesmo porei meu selo neste tratado guerreiro!"',
+            '"Se o feitiço de meu par falhar na ressonância,',
+            'Direi que a Concordata não passa de vã jactância!',
+            'Mas se o Códice astral dobrar o dardo certeiro,',
+            'Eu mesmo porei meu selo neste acordo verdadeiro!"',
           ],
           [
             'Com um gesto de comando chamou para o seu lado',
-            'O melhor Lança-Chamas de seu batalhão blindado;',
-            'Enquanto da jaula verde soltavam no mesmo instante',
-            'Um colosso de Veridia de estatura ameaçante!',
+            'O Piromante de elite de seu par abençoado;',
+            'Enquanto na outra bancada Lyra punha no instante',
+            'O Códice e um Troll do Pântano de porte gigante!',
           ],
         ],
       },
@@ -435,28 +437,28 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'blue_10_portal_runas',
         hideCardArt: true,
         domain: 'blue',
-        title: 'A Equação das Correntes Opostas',
-        subtitle: 'O silêncio tenso nas arquibancadas enquanto o Piromante e o Troll tomam posição diante do Portal de Runas',
+        title: 'A Equação das Bancadas Aliadas',
+        subtitle: 'O silêncio tenso nos Laboratórios enquanto o Piromante mira o aro projetado pelo Códice flutuante',
         yearLabel: 'Ano 880 D.F.',
-        locationLabel: 'Fronteira de Pyros e Solária',
+        locationLabel: 'Laboratórios da Concordata',
         stanzas: [
           [
-            'No lado norte da arena, o Portal de Runas brilhava,',
-            'Girando anéis de safira que o vento quente soprava;',
-            'No lado sul, acorrentado até o sino soar,',
+            'No alto do pátio, o Códice em luz azul flutuava,',
+            'Abrindo um anel de runas que toda magia ecoava;',
+            'No lado sul, aguardando o toque que o faz vibrar,',
             'O Troll do Pântano urrava querendo tudo esmagar.',
           ],
           [
             'Os nobres de Solária olhavam com mão no peito,',
             'Temendo que a experiência saísse fora do jeito;',
-            'Pois ninguém nunca tentara num mesmo turno fundir',
-            'O disparo que destrói com a carne que vai florir!',
+            'Pois ninguém nunca tentara na bancada convergir',
+            'O feitiço que incendeia com a carne que vai florir!',
           ],
           [
-            'Varkas ergueu a espada e gritou: "Pode atirar!',
-            'Aponta para o Portal e deixa a runa trabalhar!"',
-            'E o artilheiro de Pyros girou a válvula ardente,',
-            'Despejando no cristal sua fúria incandescente!',
+            'Varkas ergueu a espada e gritou: "Pode lançar!',
+            'Dispara através do aro que o Códice faz girar!"',
+            'E o Piromante de Pyros fechou a manopla ardente,',
+            'Conjurando nas falanges sua chama incandescente!',
           ],
         ],
       },
@@ -466,27 +468,27 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'red_97_lancador_chamas',
         domain: 'red',
         title: 'Piromante Lança-Chamas',
-        subtitle: 'O jato de fogo rubro que atravessou o Códice de Vórtex e dividiu-se em duas línguas de dragão',
+        subtitle: 'A rajada conjurada pelas manoplas ígneas que ressoou no anel astral do Códice e duplicou seu impacto',
         yearLabel: 'Ano 880 D.F.',
-        locationLabel: 'Fronteira de Pyros e Solária',
+        locationLabel: 'Laboratórios da Concordata',
         stanzas: [
           [
             'O Piromante Lança-Chamas firmou a bota no chão,',
-            'E do sifão de bronze rubro soltou o seu furacão;',
-            'Um único jato de brasa voou como um dardo reto,',
-            'Entrando pelo Portal de traçado tão discreto!',
+            'E das manoplas gravadas soltou sua conjuração;',
+            'Um dardo puro de brasa voou num traçado direto,',
+            'Cruzando o aro flutuante do tomo aberto e discreto!',
           ],
           [
-            'Ao tocar a geometria do Códice de safira,',
+            'Ao tocar a ressonância das páginas de safira,',
             'A chama não se apagou como muita gente vira:',
-            'A runa de Vórtex leu a essência do calor,',
-            'E duplicou o disparo com o dobro do esplendor!',
+            'O Códice leu o pulso daquele rubro calor,',
+            'Ecoando um segundo raio com o mesmo resplendor!',
           ],
           [
-            'Duas serpentes de fogo saíram do outro lado,',
+            'Duas serpentes de fogo saíram do aro azulado,',
             'Riscando o pátio de pedra num rastro gêmeo e dourado;',
             '"Por todas as forjas vivas!" — exclamou Varkas a rir —',
-            '"Um gasto só de energia fez dois canhões explodir!"',
+            '"Um gasto só de energia fez duplo fogo rugir!"',
           ],
           [
             'Mas o prodígio maior ainda estava por chegar,',
@@ -504,7 +506,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         title: 'Troll Regenerador do Pântano',
         subtitle: 'O colosso de Veridia que bebeu o impacto duplo do fogo para despertar sua Fúria Crescente',
         yearLabel: 'Ano 880 D.F.',
-        locationLabel: 'Fronteira de Pyros e Solária',
+        locationLabel: 'Laboratórios da Concordata',
         stanzas: [
           [
             'Qualquer besta comum teria caído em cinza e carvão',
@@ -527,8 +529,8 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           [
             'Porém tanta energia junta ameaçava estourar',
             'O coração do gigante que não parava de urrar;',
-            'A febre de Pyros e a seiva precisavam de um canal,',
-            'Para que a fúria bruta não fosse a ambos fatal!',
+            'A febre e a seiva bruta pediam freio leal,',
+            'Para que a fúria acesa não fosse a todos fatal!',
           ],
         ],
       },
@@ -538,20 +540,20 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'green_07_troll',
         hideCardArt: true,
         domain: 'green',
-        title: 'O Ponto de Ruptura na Arena',
-        subtitle: 'Quando o Troll em chamas avança descontrolado, uma pequena luz silvestre desce das árvores da fronteira',
+        title: 'O Ponto de Ruptura no Pátio',
+        subtitle: 'Quando o Troll em chamas avança descontrolado, Lyra intervém da bancada Vórtex-Veridia',
         yearLabel: 'Ano 880 D.F.',
-        locationLabel: 'Fronteira de Pyros e Solária',
+        locationLabel: 'Laboratórios da Concordata',
         stanzas: [
           [
             'Com os punhos incandescentes e os olhos cheios de breu,',
             'O Troll avançou sem freio contra quem o acendeu;',
-            'O Piromante recuou com o tubo superaquecido,',
-            'E os guardas da tribuna ergueram o aço polido.',
+            'O Piromante recuou com a manopla aquecida,',
+            'E os guardas da tribuna ergueram a hasta polida.',
           ],
           [
-            '"O combo é forte demais para o corpo suportar!" —',
-            'Gritaram os sacerdotes querendo o duelo parar;',
+            '"O ensaio é forte demais para o corpo suportar!" —',
+            'Gritaram os sacerdotes querendo a prova encerrar;',
             'Mas Varkas ergueu o braço: "Esperem! Olhem no céu!',
             'A mensageira da mata está descendo o seu véu!"',
           ],
@@ -569,9 +571,9 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'green_12_pixie',
         domain: 'green',
         title: 'Lyra, a Fada Pixie do Pó Estelar',
-        subtitle: 'A tecelã encantada que harmonizou a febre rubra do Troll com a frequência luminosa de Solária',
+        subtitle: 'A tecelã encantada que harmonizou a febre rubra do Troll com a segunda metade da bancada Pyros-Solária',
         yearLabel: 'Ano 880 D.F.',
-        locationLabel: 'Fronteira de Pyros e Solária',
+        locationLabel: 'Laboratórios da Concordata',
         stanzas: [
           [
             'Lyra, a Fada Pixie, pousou no ombro do gigante,',
@@ -583,19 +585,19 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             '"A chama não é inimiga da raiz que quer crescer!" —',
             'Cantou Lyra num timbre que fez a brasa ceder —',
             '"Basta abrir o canal certo entre a terra e o firmamento,',
-            'Para que a dor virada força receba o coroamento!"',
+            'P’ra que a dor tornada em força receba o coroamento!"',
           ],
           [
             'Traçando no ar um círculo de pólen e luz dourada,',
-            'A pequena Pixie uniu o Piromante à bancada;',
-            'A sobra da mana azul que no Portal restou presa',
-            'Subiu como um farol puro de cristalina beleza!',
+            'A pequena Pixie uniu o Códice à outra bancada;',
+            'A ressonância celeste do livro no ar suspensa',
+            'Chamou do par de Varkas a solar recompensa!',
           ],
           [
             'Vendo o sinal da fada brilhar no alto do céu,',
-            'O coro de Solária abriu seu branco véu;',
-            'Pois a ponte estava pronta para o quarto elemento',
-            'Fechar com chave de ouro o grande experimento!',
+            'A bancada Pyros-Solária abriu seu áureo véu;',
+            'Pois a ponte estava pronta para o coro reluzente',
+            'Selar com chave de ouro o ensaio surpreendente!',
           ],
         ],
       },
@@ -606,9 +608,9 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'gold',
         title: 'O Clarim das Nuvens Douradas',
-        subtitle: 'As nuvens sobre a Forja Solar se abrem ao toque do pó estelar de Lyra',
+        subtitle: 'As nuvens sobre os Laboratórios da Concordata se abrem ao feitiço solar do par de Varkas',
         yearLabel: 'Ano 880 D.F.',
-        locationLabel: 'Fronteira de Pyros e Solária',
+        locationLabel: 'Laboratórios da Concordata',
         stanzas: [
           [
             'Três toques de trombeta soaram além do sol,',
@@ -619,8 +621,8 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           [
             'O General Varkas tirou o elmo da fronte dura,',
             'Maravilhado ao contemplar a celeste arquitetura:',
-            'Vórtex dobrara a chama, Pyros dera o furor,',
-            'Veridia dera o corpo, e Solária trazia o amor!',
+            'Dois pares de duas cores, cada qual em seu rigor,',
+            'Provavam que os Dez Tratados dobravam todo o valor!',
           ],
           [
             'As guerreiras aladas tocaram o chão da arena,',
@@ -632,13 +634,13 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
       },
       {
         id: 'node_6a_9_chamado_valquirias',
-        kind: 'creature',
+        kind: 'prelude',
         cardId: 'gold_35_chamado_valquirias',
         domain: 'gold',
         title: 'Chamado das Valquírias Solares',
-        subtitle: 'O Escudo Divino que blindou o Troll enfurecido e o Piromante, levando Varkas a assinar a Concordata',
+        subtitle: 'O Escudo Divino que blindou o Troll enfurecido e o Piromante, levando Varkas a selar a Concordata',
         yearLabel: 'Ano 880 D.F.',
-        locationLabel: 'Fronteira de Pyros e Solária',
+        locationLabel: 'Laboratórios da Concordata',
         stanzas: [
           [
             'Com o Chamado das Valquírias, a luz desceu em cascata,',
@@ -648,21 +650,21 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           ],
           [
             'Ao Piromante exausto deram também proteção,',
-            'Envolvendo o artilheiro num dourado resplendor são;',
+            'Dando ao bravo conjurador sagrada guarnição;',
             'Imune a qualquer revide, com o dobro de poder,',
-            'Aquela dupla na Arena ninguém podia vencer!',
+            'Aquela aliança viva ninguém podia vencer!',
           ],
           [
             'General Varkas subiu ao trono do pergaminho,',
             'E molhou a pena férrea sem hesitar no caminho:',
-            '"Eu vi o fogo de Pyros tornar a mata imortal,',
-            'E o céu dourado guardar a nossa fúria letal!"',
+            '"Eu vi dois pares bicolores honrarem a lei real,',
+            'O fogo unido ao sol puro e o mar à mata imortal!"',
           ],
           [
             'Cravou seu selo de bronze ao lado do sol dourado,',
             'E as arquibancadas rugiram pelo tratado assinado;',
             'Assim nasceu na Forja a arte de combinar,',
-            'Onde as cartas conversam para a vitória alcançar!',
+            'Onde cada par bicolor sabe o poder elevar!',
           ],
         ],
       },
@@ -670,21 +672,22 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CANTO PARALELO VII-A: FENDA DO SÉTIMO SELO (Ano 1.121 D.F. • Subsolo da Torre dos Cinco Selos)
+  // CAPÍTULO VII-A: FENDA DO SÉTIMO SELO (Ano 1.121 D.F. • Subsolo da Torre dos Cinco Selos)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_7a_ladroes_relicario',
     isParallel: true,
     parentCantoId: 'canto_7_presente',
+    chronologicalOrder: 68,
     anchorNodeId: 'canto7_prelude_setimo_selo',
     parallelCode: 'VII-A',
     shortTitle: 'Fenda do Sétimo Selo',
-    cantoNumber: 'CANTO PARALELO VII-A',
+    cantoNumber: 'CAPÍTULO VII-A',
     eraNumber: 'VIª ERA • CRÔNICA PARALELA',
     periodLabel: 'Ano 1.121 D.F. • Subsolo da Torre dos Cinco Selos',
     title: 'A Noite da Fenda Áurea e o Decreto do Relicário',
-    subtitle: 'O embate titânico entre Garrick, Vesperion, Kongor, Zephaniel e Valkyra quando a Pedra Filosofal abriu o cofre das 996 Memórias',
+    subtitle: 'O embate titânico entre Garrick, Vesperion, Kongor, Zephaniel e Valkyra quando a Pedra Filosofal abriu o cofre das 1.038 Memórias',
     accentColor: '#eab308',
     bannerImage: '/assets/arena/tabletop_gold.png',
     nodes: [
@@ -718,7 +721,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           ],
           [
             'Lá dentro brilhavam soltas, como estrelas em prisão,',
-            'Novecentas e noventa e seis Memórias da criação;',
+            'Mil e trinta e oito vivas Memórias da criação;',
             'Das Cem originais até os prodígios novos,',
             'Todo o acervo de Vaeloria fulgia perante os povos!',
           ],
@@ -730,7 +733,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'neutral_01_mercenario_veterano',
         domain: 'neutral',
         title: 'A Vigília Eterna do Comandante Garrick',
-        subtitle: 'A memória viva do velho Capitão da Fronteira que guardava o sétimo alicerce e soou o trompa de alarme diante da fenda',
+        subtitle: 'A memória viva do velho Capitão da Fronteira que guardava o sétimo alicerce e soou a trompa de alarme diante da fenda',
         yearLabel: 'Ano 1.121 D.F.',
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
@@ -741,7 +744,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'O Capitão da Fronteira vigiava o limiar astral.',
           ],
           [
-            'Sentindo o cheiro de ozônio e de enxofre sepulcral,',
+            'Sentindo o hálito de cinza e de enxofre sepulcral,',
             'Garrick desembainhou sua lâmina habitual:',
             '"Quatrocentos anos se foram desde a primeira traição,',
             'E outra vez a madrugada me traz a mesma ambição!"',
@@ -785,7 +788,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           ],
           [
             'Pisando sobre os destroços do sétimo corredor,',
-            'Surgiu o Rei de Umbra em todo o seu esplendor;',
+            'Surgiu o Rei do Eclipse em todo o seu esplendor;',
             'Seus olhos de chama roxa miravam a fenda aberta,',
             'Sedentos de colher tudo naquela noite deserta!',
           ],
@@ -797,7 +800,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'purple_07_lich',
         domain: 'purple',
         title: 'Vesperion, Arquimago Lich Imortal',
-        subtitle: 'O soberano da não-vida que estendeu seu cajado para absorver as 996 Memórias num único vórtice',
+        subtitle: 'O soberano da não-vida que estendeu seu cajado para absorver as 1.038 Memórias num único vórtice',
         yearLabel: 'Ano 1.121 D.F.',
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
@@ -805,7 +808,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Vesperion, o Lich Imortal, ergueu seu crânio tirano,',
             'Iluminando de roxo o abismo subterrâneo e profano;',
             '"Cem memórias não bastaram para a minha eternidade,',
-            'Mas Novecentas e Noventa e Seis me dão divindade!"',
+            'Mas Mil e Trinta e Oito hoje me dão divindade!"',
           ],
           [
             'Sua mão esquelética abriu um vórtice de absorção,',
@@ -822,7 +825,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
           [
             'Mas antes que o raio negro saísse de sua mão,',
             'A abóbada da direita explodiu num furacão;',
-            'Blocos de três toneladas voaram como cascalho,',
+            'Blocos de pedra maciça voaram como cascalho,',
             'Anunciando a chegada do titânico malho!',
           ],
         ],
@@ -853,7 +856,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'O escudo de ossos negros partiu-se em mil estilhaços,',
             'Jogando o Lich Imortal para trás de seus espaços;',
             'O vórtice de drenagem quebrou sua negra rede,',
-            'E as Memórias voltaram a girar entre a parede!',
+            'E as Memórias voltaram a girar rente à parede!',
           ],
           [
             '"A força não pertence a um saco de ossos frios!" —',
@@ -875,8 +878,8 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
           [
-            'Vesperion ergueu-se em fúria, cercado a poucos metros,',
-            'Lançando com seus espectros cem lâminas de seus cetros;',
+            'Vesperion ergueu o báculo num turbilhão sombrio,',
+            'Lançando contra o primata mil lâminas de ar frio;',
             'Kongor arrancou do chão um pilar de pedra inteira,',
             'Girando o tronco de mármore como clava justiceira!',
           ],
@@ -884,7 +887,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Cada choque entre os dois reis fazia a fenda alargar,',
             'E a Pedra Filosofal ameaçava estilhaçar;',
             'Se o núcleo explodisse ali sob o peso da ambição,',
-            'As Novecentas e Noventa e Seis cairiam na perdição!',
+            'As Mil e Trinta e Oito cairiam na perdição!',
           ],
           [
             'Foi quando a trompa de Garrick teve enfim sua resposta:',
@@ -935,7 +938,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         kind: 'interlude',
         cardId: 'neutral_10_valkyra_pentacromatica',
         hideCardArt: true,
-        domain: 'gold',
+        domain: 'neutral',
         title: 'O Silêncio Diante da Imperatriz',
         subtitle: 'Vesperion e Kongor baixam as armas diante da chegada conjunta de Valkyra e Zephaniel',
         yearLabel: 'Ano 1.121 D.F.',
@@ -943,7 +946,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         stanzas: [
           [
             'Nem o senhor dos sepulcros, nem o rei da mata espessa',
-            'Ousaram mover um dedo contra aquela excelsa peça;',
+            'Puderam sustentar juntos sua ambição avessa;',
             'Pois Zephaniel tinha a espada do meio-dia em brasão,',
             'E Valkyra detinha a chave de toda a constituição.',
           ],
@@ -951,7 +954,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'A Imperatriz caminhou até a Pedra Filosofal,',
             'Que ainda vertia Ouro pela fenda de cristal;',
             'Olhou para o velho Garrick, agradeceu-lhe a vigia,',
-            'E voltou-se aos dois monarcas com severa majestria:',
+            'E voltou-se aos dois monarcas em plena soberania:',
           ],
           [
             '"Vós provastes esta noite que o Sétimo Selo aberto',
@@ -967,7 +970,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
         cardId: 'neutral_10_valkyra_pentacromatica',
         domain: 'neutral',
         title: 'Valkyra e a Fundação do Relicário Astral',
-        subtitle: 'Como a Imperatriz e Zephaniel selaram as 996 Memórias em Pacotes Áureos conquistados apenas pelo Ouro da Arena',
+        subtitle: 'Como a Imperatriz e Zephaniel selaram as 1.038 Memórias em Pacotes Áureos conquistados apenas pelo Ouro da Arena',
         yearLabel: 'Ano 1.121 D.F.',
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         stanzas: [
@@ -978,7 +981,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             'Subiu formando envelopes de ligadura astral!',
           ],
           [
-            'As Novecentas e Noventa e Seis memórias do mundo',
+            'Todas as Mil e Trinta e Oito memórias do mundo',
             'Foram lacradas em Pacotes naquele cofre profundo:',
             'Cinco relíquias por invólucro, guardadas pelo esplendor,',
             'Imunes ao roubo bruto de qualquer usurpador!',
@@ -993,7 +996,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
             '"Com esse Ouro limpo e justo o pacote se abrirá,',
             'E a memória escolhida ao Grimório se unirá!"',
             'Assim o Estalo do Sétimo Selo mudou a história,',
-            'Abrindo a cada jogador o caminho para a glória!',
+            'Abrindo ao invocador o caminho para a glória!',
           ],
         ],
       },

@@ -1,25 +1,26 @@
 import { EpicPoemCanto } from './epicPoemTypes';
 
 /**
- * CANTOS PARALELOS — PARTE 23 (VI-L e VII-K)
+ * CANTOS PARALELOS — PARTE 23 (VI-K e VII-F)
  * Crônicas da Bússola Navegadora dos Planos e os Cinco Santuários (1.070–1.090 D.F.)
  * e do Decreto de Paz Armada e Armadilhas Rúnicas da Torre (1.210–1.219 D.F.).
  */
 export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
   // ==========================================================================
-  // CAPÍTULO VI-L: OS SANTUÁRIOS DOS CINCO DOMÍNIOS (1.070–1.090 D.F.)
+  // CAPÍTULO VI-K: OS SANTUÁRIOS DOS CINCO DOMÍNIOS (1.070–1.090 D.F.)
   // 10 nós = 6 com imagem (4 estrofes) + 4 pontes sem imagem (3 estrofes) = 36 estrofes
   // ==========================================================================
   {
     id: 'canto_6l_santuarios_bussolas_planos',
+    chronologicalOrder: 65,
     isParallel: true,
     parentCantoId: 'canto_6_tratados',
     anchorNodeId: 'creature_62_aetherion',
-    parallelCode: 'VI-L',
+    parallelCode: 'VI-K',
     shortTitle: 'Bússola & Santuários',
-    cantoNumber: 'CAPÍTULO VI-L',
+    cantoNumber: 'CAPÍTULO VI-K',
     eraNumber: 'Vª ERA • OS SANTUÁRIOS DOS CINCO DOMÍNIOS',
-    periodLabel: 'Anos 1.070–1.090 D.F. • Catedrais e Observatórios de Vaeloria',
+    periodLabel: 'Anos 1.070–1.090 D.F. • Os Cinco Santuários',
     title: 'A Bússola Navegadora dos Planos e os Cinco Santuários Consagrados',
     subtitle: 'Como Aetherion e os artífices dos Tratados Bicolores alinharam a Bússola Navegadora dos Planos ao Coração da Selva Viva, ao Astrolábio do Infinito, ao Campanário dos Mortos, à Bigorna Dracônica e ao Santuário da Ordem Suprema',
     accentColor: '#10b981',
@@ -33,7 +34,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         title: 'Bússola Navegadora dos Planos',
         subtitle: 'No Ano 1.070 D.F., sob a supervisão de Aetherion, os mestres cartógrafos calibram o instrumento astral que aponta para os cinco eixos de poder de Vaeloria',
         yearLabel: 'Ano 1.070 D.F.',
-        locationLabel: 'Câmara de Cartografia de Aethel-Vahr',
+        locationLabel: 'Câmara de Cartografia de Vórtex',
         stanzas: [
           [
             'No ano mil e setenta, em mesa de cristal,',
@@ -67,9 +68,9 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         cardId: 'green_126_coracao_selva_viva',
         domain: 'green',
         title: 'Coração da Selva Viva',
-        subtitle: 'Em 1.074 D.F., no centro de Sylvan, o santuário esmeralda pulsa em harmonia com a Bússola, renovando a fertilidade das fronteiras',
+        subtitle: 'Em 1.074 D.F., no centro de Veridia, o santuário esmeralda pulsa em harmonia com a Bússola, renovando a fertilidade das fronteiras',
         yearLabel: 'Ano 1.074 D.F.',
-        locationLabel: 'Clareira Central de Sylvan',
+        locationLabel: 'Clareira Central de Veridia',
         stanzas: [
           [
             'Em mil e setenta e quatro, no bosque sem igual,',
@@ -90,8 +91,8 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
             'Marcando o ponto vivo no mapa do painel!',
           ],
           [
-            'Depois a agulha azul girou para o nascente,',
-            'Apontando os terraços da torre transparente;',
+            'Depois a agulha azul girou pro mar gelado,',
+            'Apontando os terraços do polo iluminado;',
             'Onde as esferas de ouro giravam sem parar,',
             'Medindo os movimentos do abismo estelar!',
           ],
@@ -104,7 +105,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'blue',
         title: 'A Escadaria dos Ventos Claros',
-        subtitle: 'Em 1.076 D.F., os emissários sobem os mil degraus de mármore azul até a cúpula astronômica de Aethel-Vahr',
+        subtitle: 'Em 1.076 D.F., os emissários sobem os mil degraus de mármore azul até a cúpula astronômica de Vórtex',
         yearLabel: 'Ano 1.076 D.F.',
         locationLabel: 'Torre Alta de Safira',
         stanzas: [
@@ -136,7 +137,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         title: 'Astrolábio do Infinito',
         subtitle: 'No Ano 1.078 D.F., o grande Astrolábio do Infinito é conectado à rede planar, prevendo eclipses e tempestades de mana com décadas de antecedência',
         yearLabel: 'Ano 1.078 D.F.',
-        locationLabel: 'Grande Observatório de Aethel-Vahr',
+        locationLabel: 'Grande Observatório de Vórtex',
         stanzas: [
           [
             'No ano mil e setenta e oito, a máquina brilhou:',
@@ -172,13 +173,13 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         title: 'Campanário dos Mortos',
         subtitle: 'Em 1.082 D.F., nas terras do Eclipse, o Campanário dos Mortos é integrado ao tratado para guardar o repouso das almas ancestrais',
         yearLabel: 'Ano 1.082 D.F.',
-        locationLabel: 'Necrópole Silenciosa de Umbros',
+        locationLabel: 'Necrópole Silenciosa de Nocturna',
         stanzas: [
           [
             'Em mil e oitenta e dois, na névoa de carvão,',
             'Ergueu-se o Campanário dos Mortos na amplidão;',
             'Uma torre de basalto com sinos de metal,',
-            'Que guardava o silêncio do campo funerário e real!',
+            'Que guardava o repouso do vale sepulcral!',
           ],
           [
             'Quando o vento batia no bronze enfeitiçado,',
@@ -187,7 +188,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
             'Para trazer aos vivos o medo e o perigo!',
           ],
           [
-            'Os prelados de Umbros tocaram a badalada,',
+            'Os prelados da noite tocaram a badalada,',
             'Ligando a torre negra à rede consagrada;',
             'E um fio de luz violeta subiu na escuridão,',
             'Firmando o terceiro eixo da grande comunhão!',
@@ -207,9 +208,9 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'red',
         title: 'A Estrada das Cinzas Quentes',
-        subtitle: 'Em 1.084 D.F., os artífices atravessam as pontes de basalto sobre os rios de magma rumo ao coração industrial de Ignis',
+        subtitle: 'Em 1.084 D.F., os artífices atravessam as pontes de basalto sobre os rios de magma rumo ao coração vulcânico de Pyros',
         yearLabel: 'Ano 1.084 D.F.',
-        locationLabel: 'Pontes de Basalto de Ignis',
+        locationLabel: 'Pontes de Basalto de Pyros',
         stanzas: [
           [
             'Saindo da neblina do vale sepulcral,',
@@ -239,7 +240,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         title: 'Bigorna Dracônica da Cratera',
         subtitle: 'No Ano 1.086 D.F., a Bigorna Dracônica da Cratera recebe o selo de alinhamento, canalizando o calor telúrico para sustentar as defesas do mundo',
         yearLabel: 'Ano 1.086 D.F.',
-        locationLabel: 'Cratera Central de Ignis',
+        locationLabel: 'Cratera Central de Pyros',
         stanzas: [
           [
             'No ano mil e oitenta e seis, na boca do vulcão,',
@@ -276,17 +277,17 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         title: 'As Colunas de Alabastro',
         subtitle: 'Em 1.088 D.F., a embaixada dos quatro domínios adentra a capital solar para concluir a ligação dos santuários',
         yearLabel: 'Ano 1.088 D.F.',
-        locationLabel: 'Via Sacra de Solaria',
+        locationLabel: 'Via Sacra de Solária',
         stanzas: [
           [
-            'Limpando a fuligem da forja montanhesa,',
+            'Limpando a fuligem da rude aspereza,',
             'Entraram na cidade de cândida beleza;',
             'As ruas de alabastro brilhavam ao sol posto,',
             'E um coro de trombetas saudava cada rosto.',
           ],
           [
-            'Quatro feixes de cores já vinham pelo céu:',
-            'O verde, o azul, o roxo e o rubro escarlateu;',
+            'Quatro feixes de cores rasgavam o alto véu:',
+            'Verde, safira, roxo e o rubro fogaréu;',
             'Faltava a coluna áurea subir do grande altar',
             'Para a abóbada inteira dos planos segurar.',
           ],
@@ -300,11 +301,11 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
       },
       {
         id: 'node_6l_9_santuario_ordem_suprema',
-        kind: 'interlude',
+        kind: 'prelude',
         cardId: 'gold_108_trono_ordem_suprema',
         domain: 'gold',
         title: 'Santuário da Ordem Suprema',
-        subtitle: 'No Ano 1.090 D.F., o Santuário da Ordem Suprema fecha o circuito dos cinco domínios, estabilizando as fronteiras planares por mais de um século',
+        subtitle: 'No Ano 1.090 D.F., o Santuário da Ordem Suprema fecha o circuito dos cinco domínios, estabilizando as fronteiras planares por décadas inteiras',
         yearLabel: 'Ano 1.090 D.F.',
         locationLabel: 'Catedral Solar do Zênite',
         stanzas: [
@@ -352,7 +353,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
             'A Bússola ficou em perpétua observação.',
           ],
           [
-            'Por mais de cem invernos a rede sustentou',
+            'Durante longos anos a rede sustentou',
             'A paz que nos tratados a pena assinou;',
             'E quando na Sexta Era a fenda quis abrir,',
             'Foi graças aos santuários que o mundo pôde reagir!',
@@ -369,19 +370,20 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CAPÍTULO VII-K: AS DEFESAS E RELÍQUIAS FINAIS DA TORRE (1.210–1.219 D.F.)
+  // CAPÍTULO VII-F: AS DEFESAS E RELÍQUIAS FINAIS DA TORRE (1.210–1.219 D.F.)
   // 10 nós = 6 com imagem (4 estrofes) + 4 pontes sem imagem (3 estrofes) = 36 estrofes
   // ==========================================================================
   {
     id: 'canto_7k_protocolo_defesas_torre',
+    chronologicalOrder: 73,
     isParallel: true,
     parentCantoId: 'canto_7_presente',
     anchorNodeId: 'creature_70_sylvanhorn',
-    parallelCode: 'VII-K',
+    parallelCode: 'VII-F',
     shortTitle: 'Protocolo da Torre',
-    cantoNumber: 'CAPÍTULO VII-K',
-    eraNumber: 'VIª ERA • AS DEFESAS E RELIQUÍAS FINAIS DA TORRE',
-    periodLabel: 'Anos 1.210–1.219 D.F. • Corredores e Muralhas da Torre dos Cinco Selos',
+    cantoNumber: 'CAPÍTULO VII-F',
+    eraNumber: 'VIª ERA • AS DEFESAS E RELÍQUIAS FINAIS DA TORRE',
+    periodLabel: 'Anos 1.210–1.219 D.F. • Muralhas da Torre',
     title: 'O Decreto de Paz Armada e as Armadilhas Rúnicas da Torre',
     subtitle: 'Como o Comandante Garrick e o Mestre da Lâmina Cantante acionaram o Decreto de Paz Armada da Torre, o Selo de Anulação Instantânea, a Égide de Adamantina Planar e as Escrituras das Asas de Pérola para blindar a Arena antes do cerco final',
     accentColor: '#94a3b8',
@@ -410,8 +412,8 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
             'Nem temia o veneno ou a garra do draco!',
           ],
           [
-            'Quando o comandante deu o primeiro passo,',
-            'As lajes do corredor sentiram o peso de aço;',
+            'Quando o comandante firmou o seu passo,',
+            'As lajes responderam no mesmo compasso;',
             'Mas nos ombros do herói a malha era ligeira,',
             'Como se fosse pano de seda verdadeira!',
           ],
@@ -465,8 +467,8 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         cardId: 'gold_165_arca_lei_celestial',
         hideCardArt: true,
         domain: 'green',
-        title: 'Os Entalhes de Carvalho Vivo',
-        subtitle: 'Em 1.213 D.F., os guardiões silvestres esculpem nos troncos ao redor da Arena a semblança do grande dragão das matas',
+        title: 'A Presa Entalhada na Seiva Sagrada',
+        subtitle: 'Em 1.213 D.F., os guardiões silvestres banham na seiva sagrada do bosque a presa de um colosso primordial para erguer o totem da Arena',
         yearLabel: 'Ano 1.213 D.F.',
         locationLabel: 'Anel Florestal da Arena',
         stanzas: [
@@ -474,19 +476,19 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
             'Cercando a esplanada onde a Torre se erguia,',
             'Um bosque de carvalhos antigos florescia;',
             'Ali os mestres druidas, com facas de cristal,',
-            'Gravaram na madeira o símbolo ancestral.',
+            'Trouxeram a grande presa de um monstro primordial.',
           ],
           [
-            'Não cortavam a árvore para fazê-la cair,',
-            'Mas moldavam a casca fazendo-a reagir;',
+            'Banhando o marfim branco na seiva reluzente,',
+            'Gravaram na relíquia a escama da serpente;',
             'Deixando que o musgo e a resina cheirosa',
-            'Formassem na floresta a cara majestosa.',
+            'Formassem no troféu a cara majestosa.',
           ],
           [
-            'Quando o vento da noite passava no ramalho,',
-            'Parecia respirar o rosto de carvalho;',
-            'Pronto para soltar, sobre qualquer invasor,',
-            'O rugido selvagem do antigo protetor!',
+            'Cravada junto ao muro do verde matagal,',
+            'A presa respirava um fôlego vital;',
+            'Pronta para infundir, na tropa defensora,',
+            'A força indomável da mata protetora!',
           ],
         ],
       },
@@ -496,7 +498,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         cardId: 'green_165_totem_presa_ancestral',
         domain: 'green',
         title: 'Visagem do Dragão da Floresta',
-        subtitle: 'No Ano 1.214 D.F., o totem vivo desperta na orla da Arena, projetando a presença esmagadora dos dracos primordiais de Sylvan',
+        subtitle: 'No Ano 1.214 D.F., o totem de presa ancestral desperta na orla da Arena, fortalecendo os campeões da Vanguarda com o vigor de Veridia',
         yearLabel: 'Ano 1.214 D.F.',
         locationLabel: 'Portão Verde da Torre',
         stanzas: [
@@ -507,16 +509,16 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
             'Enchendo os batedores da sombra de pavor e medo!',
           ],
           [
-            'Acima das copas verdes formou-se a projeção',
+            'Da presa consagrada subia a projeção',
             'De um draco feito de folhas, cipós e furacão;',
-            'Cujo sopro de espinhos e pólen estonteante',
-            'Fazia recuar o monstro mais gigante!',
+            'E a cada novo turno da linha vigilante,',
+            'Nutria a Vanguarda de força transbordante!',
           ],
           [
-            'Quem marchava com honra recebia seu vigor,',
-            'Sentindo nos joelhos a força do verdor;',
-            'Mas quem trazia a marca da podridão abissal',
-            'Ficava paralisado no limiar do portal!',
+            'Quem punha o pé na frente sentia seu vigor,',
+            'Crescendo na batalha ao sopro do verdor;',
+            'Enquanto o invasor da podridão abissal',
+            'Tremia ante o rugido da presa elemental!',
           ],
           [
             'No flanco ocidental, nas galerias frias,',
@@ -532,7 +534,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         cardId: 'purple_145_orgao_catedrais_negras',
         domain: 'purple',
         title: 'Órgão Fantasma da Catedral Negra',
-        subtitle: 'Em 1.216 D.F., os acordes graves do Órgão Fantasma são sintonizados para despedaçar a mente das bestas invasoras nos fossos externos',
+        subtitle: 'Em 1.216 D.F., o Órgão Fantasma trazido das Catedrais Negras é instalado na galeria ocidental para drenar a vitalidade dos comandantes invasores',
         yearLabel: 'Ano 1.216 D.F.',
         locationLabel: 'Galeria Acústica Ocidental',
         stanzas: [
@@ -549,10 +551,10 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
             'Numa nota tão grave que fazia o chão vibrar!',
           ],
           [
-            'Quando soava a fuga daquela catedral,',
-            'Quebrava-se o feitiço da horda abissal;',
-            'As feras do vazio tapavam os ouvidos,',
-            'Tontas pelo clamor dos baixos doloridos!',
+            'Ao simples despertar daquela catedral,',
+            'Drenava-se o vigor do chefe abissal;',
+            'E a cada compasso dos baixos doloridos,',
+            'Sofriam os tiranos nos tronos escondidos!',
           ],
           [
             'E para garantir que nos salões internos',
@@ -580,16 +582,16 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
             'Para deixar o piso inteiramente selado.',
           ],
           [
-            'Cada letra geométrica tinha a função precisa',
-            'De cortar a corrente que o feitiço canaliza;',
+            'Cada letra geométrica tinha a linha precisa',
+            'De cortar o feitiço no ponto onde ele pisa;',
             'Como um dique de pedra que fecha o ribeirão,',
             'Deixando a magia seca no meio do salão.',
           ],
           [
             'Quando o último glifo esfriou no pavimento,',
             'Fizeram o ensaio do seu funcionamento;',
-            'E a chama de uma tocha lançada por magia',
-            'Apagou-se no ar antes que o chão atingia!',
+            'E a chama de uma tocha lançada por feitiço',
+            'Apagou-se no ar sem tocar no maciço!',
           ],
         ],
       },
@@ -630,7 +632,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
         ],
       },
       {
-        id: 'node_7k_8_interlude_assembléia_armas',
+        id: 'node_7k_8_interlude_assembleia_armas',
         kind: 'interlude',
         cardId: 'neutral_165_quebra_feiticaria_runica',
         hideCardArt: true,
@@ -653,7 +655,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
             'Garrick bateu no solo a maça que detinha!',
           ],
           [
-            'Do teto da abóbada desceram os correntes',
+            'Do teto da abóbada desceram as correntes',
             'Dos cinco selos grandes sobre os combatentes;',
             'E o arauto da Torre, abrindo o pergaminho,',
             'Leu a lei marcial que rege o seu caminho!',
@@ -662,7 +664,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
       },
       {
         id: 'node_7k_9_decreto_paz_armada_torre',
-        kind: 'interlude',
+        kind: 'prelude',
         cardId: 'neutral_166_protocolo_torre_axial',
         domain: 'neutral',
         title: 'Decreto de Paz Armada da Torre',

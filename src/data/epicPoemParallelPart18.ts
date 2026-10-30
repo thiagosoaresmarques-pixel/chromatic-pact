@@ -1,14 +1,14 @@
 import { EpicPoemCanto } from './epicPoemTypes';
 
 /**
- * CANTOS PARALELOS — PARTE 18 (IV-I e V-I)
- * Crônicas paralelas das Eras IV e V (36 estrofes / 144 versos por Canto),
- * aprofundando o Julgamento de Atlas-Khor e a Caçada a Fenris-Vael (520–588 D.F.)
- * e os Sete Selos de Valerius junto à Vigília de Skrym-Khor (680–740 D.F.).
+ * CANTOS PARALELOS — PARTE 18 (IV-H e V-A)
+ * Crônicas paralelas das Eras III e IV (36 estrofes / 144 versos por Canto),
+ * aprofundando o Julgamento de Atlas-Khor e a Caçada a Fenris-Vael (572–588 D.F.)
+ * e os Sete Selos de Valerius junto à Vigília de Skrym-Khor (688–689 D.F.).
  */
 export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
   // ==========================================================================
-  // CANTO PARALELO IV-I: ATLAS-KHOR & FENRIS-VAEL (Anos 520–588 D.F. • Trono da Rocha Submersa & Tundra Norte)
+  // CAPÍTULO IV-H: ATLAS-KHOR & FENRIS-VAEL (Anos 572–588 D.F. • Memórias de 520–532 D.F.)
   // 10 nós = 6 com imagem (4 estrofes) + 4 sem imagem (3 estrofes) = 36 estrofes (144 versos)
   // ==========================================================================
   {
@@ -16,13 +16,14 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
     isParallel: true,
     parentCantoId: 'canto_4_guerra',
     anchorNodeId: 'node_creature_40_fenris_vael',
-    parallelCode: 'IV-I',
+    parallelCode: 'IV-H',
+    chronologicalOrder: 40,
     shortTitle: 'Atlas-Khor & Fenris-Vael',
-    cantoNumber: 'CANTO PARALELO IV-I',
+    cantoNumber: 'CAPÍTULO IV-H',
     eraNumber: 'IIIª ERA • O ORDENAMENTO E O LOBO DO FIM',
-    periodLabel: 'Anos 520–588 D.F. • Trono da Rocha Submersa & Tundra Norte',
+    periodLabel: 'Anos 572–588 D.F. (Memórias de 520–532 D.F.)',
     title: 'O Julgamento de Atlas-Khor e a Caçada a Fenris-Vael',
-    subtitle: 'Como o monarca gigante Atlas-Khor interveio na Guerra do Sangue em 520 D.F., abateu o Behemoth Ossário das Catacumbas e uniu-se a Kongor e Varkas em 588 D.F. para conter Fenris-Vael antes que seu uivo despertasse Kragmorth',
+    subtitle: 'Como, ao despertar das geleiras em 572 D.F., recordaram-se os juízos de Atlas-Khor contra o Behemoth Ossário (520–532 D.F.), culminando na aliança com Kongor e o Marechal Kael-Varkas em 588 D.F. para conter Fenris-Vael',
     accentColor: '#10b981',
     bannerImage: '/assets/arena/tabletop_green.png',
     nodes: [
@@ -32,8 +33,8 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_122_rei_hekaton_neutro_arbitro',
         domain: 'neutral',
         title: 'Atlas-Khor, O Regente do Ordenamento',
-        subtitle: 'No Ano 520 D.F., o monarca supremo dos gigantes da tempestade ergue-se do Trono da Rocha Submersa para julgar os excessos da Guerra do Sangue',
-        yearLabel: 'Ano 520 D.F.',
+        subtitle: 'Em 572 D.F., os bardos do norte recordam como o monarca supremo dos gigantes da tempestade se erguera em 520 D.F. para julgar os excessos da Guerra do Sangue',
+        yearLabel: 'Ano 572 D.F. (Memória de 520 D.F.)',
         locationLabel: 'Trono da Rocha Submersa',
         stanzas: [
           [
@@ -68,8 +69,8 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_125_estandarte_runa_krig',
         domain: 'neutral',
         title: 'Estandarte da Runa Krig (Guerra)',
-        subtitle: 'Atlas-Khor finca no pico costeiro o estandarte ancestral gravado com a runa de combate dos primeiros titãs',
-        yearLabel: 'Ano 520 D.F.',
+        subtitle: 'A memória de como Atlas-Khor fincara no pico costeiro o estandarte ancestral gravado com a runa de combate dos primeiros titãs',
+        yearLabel: 'Ano 572 D.F. (Memória de 520 D.F.)',
         locationLabel: 'Picos da Costa Boreal',
         stanzas: [
           [
@@ -91,8 +92,8 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
             'Apontando seu cetro ao vale fumegante.',
           ],
           [
-            'Pois nas catacumbas do sul tenebroso,',
-            'Os necromantes de Eclipse, num rito odioso,',
+            'Pois nas catacumbas do oeste sombrio,',
+            'Os magos de Eclipse, num rito doentio,',
             'Costuravam ossadas de três mil guerreiros',
             'Para formar o terror dos desfiladeiros!',
           ],
@@ -105,9 +106,9 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'O Tremor das Sete Colinas',
-        subtitle: 'Durante doze anos, a guarda de Atlas-Khor patrulha as linhas de falha até cercar a necrópole onde a abominação de ossos despertou em 532 D.F.',
-        yearLabel: 'Ano 532 D.F.',
-        locationLabel: 'Catacumbas da Fronteira Sul',
+        subtitle: 'A lembrança da patrulha de doze anos de Atlas-Khor pelas linhas de falha até cercar a necrópole ocidental em 532 D.F.',
+        yearLabel: 'Ano 572 D.F. (Memória de 532 D.F.)',
+        locationLabel: 'Catacumbas da Fronteira Oeste',
         stanzas: [
           [
             'Doze anos marcharam os filhos da rocha,',
@@ -135,9 +136,9 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'purple_154_cavaleiro_morte_eterna',
         domain: 'purple',
         title: 'Behemoth Ossário das Catacumbas',
-        subtitle: 'O colosso necromântico erguido em 532 D.F. que tentou derrubar os pilares da terra antes de ser esmagado pelo julgamento de Atlas-Khor',
-        yearLabel: 'Ano 532 D.F.',
-        locationLabel: 'Catacumbas da Fronteira Sul',
+        subtitle: 'O colosso necromântico abatido pelo julgamento de Atlas-Khor em 532 D.F., prova de que somente o rei gigante poderia enfrentar o novo horror de 572 D.F.',
+        yearLabel: 'Ano 572 D.F. (Memória de 532 D.F.)',
+        locationLabel: 'Catacumbas da Fronteira Oeste',
         stanzas: [
           [
             'O Behemoth Ossário das Catacumbas rugiu,',
@@ -172,13 +173,13 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'green',
         title: 'Os Sinais na Tundra Norte',
-        subtitle: 'Nos anos seguintes, o gelo ancestral começa a rachar sob as patas de uma fera primordial, levando os clãs bárbaros a pedirem socorro em 588 D.F.',
-        yearLabel: 'Ano 588 D.F.',
+        subtitle: 'A partir de 572 D.F., o gelo ancestral começa a rachar sob as patas de uma fera primordial, levando os clãs bárbaros a pedirem socorro em 588 D.F.',
+        yearLabel: 'Anos 572–588 D.F.',
         locationLabel: 'Tundra Norte de Vaeloria',
         stanzas: [
           [
-            'Passaram-se décadas de ferro e de frio,',
-            'E em Quinhentos e Oitenta e Oito veio o desafio:',
+            'Em Quinhentos e Setenta e Dois veio o frio,',
+            'E dezesseis anos cresceu o desafio:',
             'O estalo das geleiras do polo a quebrar,',
             'Sob o peso da besta que vinha caçar.',
           ],
@@ -189,7 +190,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
             'Mas a fúria selvagem do antigo terror!',
           ],
           [
-            'Nas torres de vigia da extrema fronteira,',
+            'Em Quinhentos e Oitenta e Oito, na extrema fronteira,',
             'Os guerreiros do gelo acenderam a fogueira;',
             'E tiraram do cofre de ferro batido',
             'O chifre que chama o socorro perdido!',
@@ -202,7 +203,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_142_trombeta_valhalla_ferro',
         domain: 'neutral',
         title: 'Trombeta de Ferro dos Berserkers',
-        subtitle: 'O instrumento bélico ancestral soprado em 588 D.F. para convocar Atlas-Khor, Kongor e o General Varkas à barreira de gelo',
+        subtitle: 'O instrumento bélico ancestral soprado em 588 D.F. para convocar Atlas-Khor, Kongor e o Marechal Kael-Varkas à barreira de gelo',
         yearLabel: 'Ano 588 D.F.',
         locationLabel: 'Forte da Geada • Tundra Norte',
         stanzas: [
@@ -215,8 +216,8 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
           [
             'As runas gravadas no bojo de aço',
             'Mandaram o alerta através do espaço:',
-            'Em Pyros, o Marechal Varkas ouviu,',
-            'E na selva de Veridia Kongor sacudiu!',
+            'Em Pyros, Kael-Varkas o alerta escutou,',
+            'E na selva de Veridia Kongor acordou!',
           ],
           [
             'Atlas-Khor veio andando por cima das serras,',
@@ -252,7 +253,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
             'De um bote partiu dez carruagens de guerra,',
             'E sua garra abriu valas no ventre da terra;',
             'Kongor pulou firme no flanco peludo,',
-            'Enquanto Varkas formava a parede de escudo!',
+            'E o filho de Varkas firmou seu escudo!',
           ],
           [
             'Atlas-Khor segurou pelo cachaço a fera,',
@@ -275,24 +276,24 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'green',
         title: 'A Corrente de Punhos e Escudos',
-        subtitle: 'Enquanto Atlas-Khor e Kongor imobilizam as patas de Fenris-Vael, Varkas avança pela tempestade com a relíquia juramentada da fronteira',
+        subtitle: 'Enquanto Atlas-Khor e Kongor imobilizam as patas de Fenris-Vael, o Marechal Kael-Varkas avança com o escudo paterno e a relíquia juramentada da fronteira',
         yearLabel: 'Ano 588 D.F.',
         locationLabel: 'Tundra Norte de Vaeloria',
         stanzas: [
           [
             'A nevasca cegava os olhos mortais,',
             'E o fôlego do Lobo virava cristais;',
-            'Kongor tinha o braço rasgado até o osso,',
-            'Mas não afrouxava o aperto no pescoço!',
+            'Kongor no barranco firmava-se ao poço,',
+            'E não afrouxava o aperto ao pescoço!',
           ],
           [
             'Atlas-Khor ajoelhou-se na pedra gelada,',
             'Sustentando nas costas a fera pesada:',
-            '"Fere agora, soldado da forja vermelha,',
-            'Antes que ele solte o uivo que a terra centelha!"',
+            '"Fere agora, guerreiro da forja ancestral,',
+            'Antes que o seu uivo parta o solo central!"',
           ],
           [
-            'Varkas correu pela crista de gelo,',
+            'Kael-Varkas correu pela crista de gelo,',
             'Agarrando do Lobo o áspero pelo;',
             'E puxou da bainha de prata e latão',
             'O ferro que guarda o antigo bastião!',
@@ -301,11 +302,11 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
       },
       {
         id: 'node_4i_9_gladio_juramentado',
-        kind: 'interlude',
+        kind: 'prelude',
         cardId: 'neutral_132_espada_vingadora_runica',
         domain: 'neutral',
         title: 'Gládio Juramentado da Fronteira',
-        subtitle: 'A espada rúnica empunhada em 588 D.F. para decepar a presa direita de Fenris-Vael e forçá-lo a recuar para as geleiras polares',
+        subtitle: 'A espada rúnica empunhada por Kael-Varkas em 588 D.F. para decepar a presa direita de Fenris-Vael e forçá-lo a recuar para as geleiras polares',
         yearLabel: 'Ano 588 D.F.',
         locationLabel: 'Tundra Norte de Vaeloria',
         stanzas: [
@@ -316,8 +317,8 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
             'Só acende na hora de o mundo acudir!',
           ],
           [
-            'Varkas cravou a lâmina na queixada fria,',
-            'Partindo o canino que o norte engolia;',
+            'Kael-Varkas cravou na queixada tão fria',
+            'A lâmina antiga que o norte acudia;',
             'E Atlas-Khor bateu com o pomo do malho,',
             'Rasgando do monstro o profundo agasalho!',
           ],
@@ -350,7 +351,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
             'Na neve ficou o canino partido,',
             'Qual marco de pedra do monstro vencido;',
             'Kongor voltou para a mata fechada,',
-            'E Varkas marchou com a tropa cansada.',
+            'E o herdeiro de Varkas honrou a jornada.',
           ],
           [
             'Atlas-Khor recolheu o Estandarte da Guerra,',
@@ -370,7 +371,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CANTO PARALELO V-I: VALERIUS & SKRYM-KHOR (Anos 680–740 D.F. • Torre dos Cinco Selos & Espinha Cinzenta)
+  // CAPÍTULO V-A: VALERIUS & SKRYM-KHOR (Anos 688–689 D.F. • Torre Cinzenta → Torre dos Cinco Selos & Espinha Cinzenta)
   // 10 nós = 6 com imagem (4 estrofes) + 4 sem imagem (3 estrofes) = 36 estrofes (144 versos)
   // ==========================================================================
   {
@@ -378,13 +379,14 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
     isParallel: true,
     parentCantoId: 'canto_5_pacto',
     anchorNodeId: 'node_canto5_prelude_juramento_torre',
-    parallelCode: 'V-I',
+    parallelCode: 'V-A',
+    chronologicalOrder: 44,
     shortTitle: 'Valerius & Skrym-Khor',
-    cantoNumber: 'CANTO PARALELO V-I',
+    cantoNumber: 'CAPÍTULO V-A',
     eraNumber: 'IVª ERA • OS SETE SELOS DO PACTO',
-    periodLabel: 'Anos 680–740 D.F. • Torre dos Cinco Selos & Espinha Cinzenta',
+    periodLabel: 'Ano 689 D.F. (Vigília de 688 D.F.) • Espinha Cinzenta',
     title: 'Os Sete Selos de Valerius e a Vigília de Skrym-Khor',
-    subtitle: 'Como o Arquimago Valerius redigiu as cláusulas originais do Pacto Cromático em 680 D.F. com as grandes relíquias da Torre, enquanto o gigante Skrym-Khor fechava as passagens da Espinha Cinzenta contra invasores',
+    subtitle: 'Como o Arquimago Valerius preparou as cláusulas do Pacto Cromático na vigília de 688 D.F. e como Skrym-Khor fechou a Espinha Cinzenta em 689 D.F. para proteger a subida inaugural à Torre',
     accentColor: '#eab308',
     bannerImage: '/assets/arena/tabletop_neutral.png',
     nodes: [
@@ -394,18 +396,18 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_117_elminster_sabio_cinzento',
         domain: 'neutral',
         title: 'Valerius, Arquimago dos Sete Selos',
-        subtitle: 'No Ano 680 D.F., nove anos antes da assinatura final, o decano de manto cinzento reúne os pergaminhos primordiais para desenhar a arquitetura do Pacto',
-        yearLabel: 'Ano 680 D.F.',
-        locationLabel: 'Torre dos Cinco Selos',
+        subtitle: 'Na vigília de exaustão de 688 D.F., véspera da grande convocação, o decano de manto cinzento reúne os pergaminhos primordiais na Torre Cinzenta para desenhar o Pacto',
+        yearLabel: 'Ano 688 D.F.',
+        locationLabel: 'Torre Cinzenta',
         stanzas: [
           [
-            'No Ano Seiscentos e Oitenta, na torre central,',
+            'Em Seiscentos e Oitenta e Oito, na torre central,',
             'Subiu os degraus o decano imortal:',
             'Valerius, o Arquimago dos Sete Selos, trazia',
             'No manto cinzento a antiga sabedoria!',
           ],
           [
-            'Cansado de ver cinco séculos em chama,',
+            'Cansado de quase três séculos em chama,',
             'Onde a espada governa e o sangue derrama,',
             'Abriu sobre a mesa de pedra estelar',
             'O plano que a guerra viria encerrar.',
@@ -430,9 +432,9 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_40_cajado_magi',
         domain: 'neutral',
         title: 'Cajado Supremo do Arquimago',
-        subtitle: 'A haste de madeira-mundo e cristal neutro com que Valerius gravou no piso da Torre os círculos de contenção mágica em 680 D.F.',
-        yearLabel: 'Ano 680 D.F.',
-        locationLabel: 'Câmara Alta da Torre dos Cinco Selos',
+        subtitle: 'A haste de madeira-mundo e cristal neutro com que Valerius gravou no piso da Torre Cinzenta os círculos de contenção mágica em 688 D.F.',
+        yearLabel: 'Ano 688 D.F.',
+        locationLabel: 'Câmara Alta da Torre Cinzenta',
         stanzas: [
           [
             'Em sua mão direita Valerius ergueu',
@@ -466,15 +468,15 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_40_cajado_magi',
         hideCardArt: true,
         domain: 'neutral',
-        title: 'Oito Anos de Diplomacia Silenciosa',
-        subtitle: 'Entre 680 e 688 D.F., Valerius viaja pelas cinco capitais recolhendo uma gota de mana pura de cada soberano para o rito de fundação',
+        title: 'A Vigília de Exaustão nas Cinco Frentes',
+        subtitle: 'Durante os últimos meses de 688 D.F., Valerius percorre as cinco capitais exaustas recolhendo uma gota de essência pura de cada soberano',
         yearLabel: 'Ano 688 D.F.',
         locationLabel: 'Estradas da Fronteira Cinzenta',
         stanzas: [
           [
-            'Oito anos andou sob a túnica lisa,',
-            'Atravessando a brasa e a neve que frisa;',
-            'Falou com Ignis na forja de ardor,',
+            'Nos meses finais, sob a túnica lisa,',
+            'Cruzou pela brasa e a neve que frisa;',
+            'Falou com Pyros na forja de ardor,',
             'E ouviu de Vesperion o frio rancor.',
           ],
           [
@@ -484,7 +486,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
             'Guardando os cinco elos com zelo e com fé.',
           ],
           [
-            'Em Seiscentos e Oitenta e Oito voltou ao altar,',
+            'Ao fim desse inverno voltou ao altar,',
             'Pronto para as cinco correntes juntar;',
             'E pôs sobre o plinto de mármore liso',
             'A taça de vidro do antigo paraíso!',
@@ -497,9 +499,9 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_60_calice_infinito',
         domain: 'neutral',
         title: 'Graal do Prisma Infinito',
-        subtitle: 'O cálice multifacetado consagrado em 688 D.F. onde as cinco essências cromáticas se misturaram sem se destruir',
+        subtitle: 'O cálice multifacetado consagrado na última noite de 688 D.F. onde as cinco essências cromáticas se misturaram sem se destruir',
         yearLabel: 'Ano 688 D.F.',
-        locationLabel: 'Torre dos Cinco Selos',
+        locationLabel: 'Torre Cinzenta',
         stanzas: [
           [
             'O Graal do Prisma Infinito brilhou,',
@@ -522,8 +524,8 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
           [
             'Com esse licor de perfeita união,',
             'Preparou a tinta da constituição;',
-            'Para no ano seguinte, no dia marcado,',
-            'O tempo do mundo ser enfim selado!',
+            'Para na alvorada do ano marcado,',
+            'O Pacto das Cores ser enfim selado!',
           ],
         ],
       },
@@ -533,7 +535,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_50_relogio_eternidade',
         domain: 'neutral',
         title: 'O Grande Relógio da Eternidade',
-        subtitle: 'No Ano 689 D.F., Valerius e Thaddeus ativam na cúpula da Torre o marcador perpétuo que inaugura oficialmente a Era do Pacto',
+        subtitle: 'No Ano 689 D.F., Valerius e Valkyra ativam na cúpula da recém-consagrada Torre dos Cinco Selos o marcador perpétuo que inaugura a Era do Pacto',
         yearLabel: 'Ano 689 D.F.',
         locationLabel: 'Pináculo da Torre dos Cinco Selos',
         stanzas: [
@@ -541,7 +543,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
             'No Ano Seiscentos e Oitenta e Nove soou',
             'O sino que a velha carnificina encerrou:',
             'O Grande Relógio da Eternidade bateu,',
-            'E um arco de cinco cores rasgou todo o céu!',
+            'E um arco de cinco cores venceu todo o breu!',
           ],
           [
             'Seus ponteiros de ouro e de prata estelar',
@@ -556,10 +558,10 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
             'É o Grimório de Cartas que a guerra conduz!',
           ],
           [
-            'Porém para ler cada mente secreta',
-            'Que viesse tramar contra a nova meta,',
+            'Porém para conter toda tropa secreta',
+            'Que viesse atacar a sagrada meta,',
             'O sábio guardou na vigília real',
-            'A coroa de gemas de vista total!',
+            'A coroa de gemas de fúria ancestral!',
           ],
         ],
       },
@@ -569,28 +571,28 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_50_relogio_eternidade',
         hideCardArt: true,
         domain: 'neutral',
-        title: 'Os Inconformados da Guerra Antiga',
-        subtitle: 'Nas décadas após 689 D.F., senhores da guerra renegados tentam burlar os selos da Torre ocultando feitiços proibidos nas montanhas',
-        yearLabel: 'Ano 710 D.F.',
+        title: 'Os Inconformados na Subida de 689 D.F.',
+        subtitle: 'Enquanto as comitivas reais sobem à Torre em 689 D.F., senhores da guerra renegados marcham pela Espinha Cinzenta para sabotar o Conclave',
+        yearLabel: 'Ano 689 D.F.',
         locationLabel: 'Observatório da Torre dos Cinco Selos',
         stanzas: [
           [
-            'Vinte e um anos passaram em calma aparente,',
-            'Mas nem todo tirano dobrava a sua mente;',
-            'Em Setecentos e Dez, nos vales do norte,',
-            'Cabalas secretas forjavam a morte.',
+            'No próprio dia em que o Pacto nascia,',
+            'Nem todo senhor da matança cedia;',
+            'Pelos desfiladeiros das serras do norte,',
+            'Colunas rebeldes marchavam p’ra a morte.',
           ],
           [
-            'Escreviam feitiços em língua cifrada,',
-            'Para quebrar da Arena a regra sagrada;',
+            'Juravam quebrar das comitivas a estrada,',
+            'Antes que a paz fosse em tinta gravada;',
             'Achando que os olhos do velho senhor',
-            'Já estavam cansados de tanto labor.',
+            'Estavam presos apenas ao salão interior.',
           ],
           [
             'Mas Valerius subiu ao terraço de vento,',
-            'Onde a brisa trazia o mau pensamento;',
+            'Sentindo na pedra o hostil movimento;',
             'E pôs na cabeça de cãs prateadas',
-            'O elmo que enxerga as verdades veladas!',
+            'O elmo que guarda tormentas seladas!',
           ],
         ],
       },
@@ -599,32 +601,32 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'neutral_135_elmo_compreensao_brilhante',
         domain: 'neutral',
-        title: 'Elmo das Mil Jóias',
-        subtitle: 'A relíquia de onisciência linguística e mental usada por Valerius em 710 D.F. para decifrar os planos dos renegados da Espinha Cinzenta',
-        yearLabel: 'Ano 710 D.F.',
+        title: 'Elmo das Mil Joias',
+        subtitle: 'A coroa engastada de tempestades elementais usada por Valerius em 689 D.F. para fulminar a vanguarda renegada e alertar Skrym-Khor na Espinha Cinzenta',
+        yearLabel: 'Ano 689 D.F.',
         locationLabel: 'Observatório da Torre dos Cinco Selos',
         stanzas: [
           [
-            'O Elmo das Mil Jóias na fronte brilhou,',
-            'E cada diamante um segredo mostrou;',
+            'O Elmo das Mil Joias na fronte brilhou,',
+            'E cada diamante um relâmpago armou;',
             'Rubis, esmeraldas e opalas de luz',
-            'Traduziam na hora o que a sombra produz!',
+            'Guardavam tormentas que o sábio conduz!',
           ],
           [
-            'Nenhuma palavra em código antigo,',
-            'Nem sussurro falado por lábio inimigo,',
-            'Podia esconder-se do brilho facetado',
-            'Daquela coroa de bronze encantado!',
+            'Disparou da muralha um clarão sideral,',
+            'Varrendo a vanguarda do cerco brutal;',
+            'Nenhum batedor da falange invasora',
+            'Suportou a descarga de luz protetora!',
           ],
           [
-            'Valerius leu claro o plano traidor:',
-            'Uma horda de monstros e carros de horror',
-            'Desceria da Espinha Cinzenta em segredo,',
-            'Para atacar a Torre sem lei e sem medo!',
+            'Mas vinha mais tropa com carros de horror,',
+            'Subindo a garganta em rebelde furor;',
+            'Marchavam na Espinha Cinzenta em segredo,',
+            'Querendo partir o tratado sem medo!',
           ],
           [
             'Para fechar o passo da serra escarpada,',
-            'Sem gastar da Torre uma única espada,',
+            'Guardando a subida da Torre sagrada,',
             'Valerius mandou seu falcão mensageiro',
             'Chamar nas geleiras o amigo guerreiro!',
           ],
@@ -636,26 +638,26 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_135_elmo_compreensao_brilhante',
         hideCardArt: true,
         domain: 'neutral',
-        title: 'O Guardião Solitário das Cumeeiras',
-        subtitle: 'Durante trinta anos, os passos da Espinha Cinzenta são vigiados até a grande investida dos quebradores de pacto em 740 D.F.',
-        yearLabel: 'Ano 740 D.F.',
+        title: 'O Guarda-Costas Inaugural do Pacto',
+        subtitle: 'Postado nas cumeeiras para escoltar e proteger o Conclave de 689 D.F., o gigante do inverno barra a investida dos quebradores de trégua',
+        yearLabel: 'Ano 689 D.F.',
         locationLabel: 'Desfiladeiro da Espinha Cinzenta',
         stanzas: [
           [
             'Lá onde as montanhas parecem espinhos,',
             'E o gelo governa os estreitos caminhos,',
-            'Morava um gigante de casco de drago,',
-            'Leal ao conselho do velho arquimago.',
+            'Velava o gigante de casco de drago,',
+            'Escolta jurada do velho arquimago.',
           ],
           [
-            'No Ano Setecentos e Quarenta marcharam',
-            'Os chefes rebeldes que o Pacto negaram;',
+            'Na tarde sagrada em que os reis assinavam,',
+            'Os chefes rebeldes o passo forçavam;',
             'Traziam aríetes de negro metal',
             'Para arrombar a garganta central!',
           ],
           [
             'Porém na curva onde o abismo se fende,',
-            'Viram a sombra que o passo defende:',
+            'Viram a sombra que o Pacto defende:',
             'Apoiado no cabo do grande machado,',
             'Estava o colosso de inverno encouraçado!',
           ],
@@ -667,19 +669,19 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         cardId: 'neutral_116_harshnag_machado_inverno',
         domain: 'neutral',
         title: 'Skrym-Khor, O Gigante Quebra-Tronos',
-        subtitle: 'O veterano gigante do gelo que em 740 D.F. derrubou os penhascos da Espinha Cinzenta para soterrar a invasão dos renegados',
-        yearLabel: 'Ano 740 D.F.',
+        subtitle: 'O veterano gigante do gelo que em 689 D.F. derrubou os penhascos da Espinha Cinzenta para soterrar os sabotadores e garantir a paz do Conclave',
+        yearLabel: 'Ano 689 D.F.',
         locationLabel: 'Desfiladeiro da Espinha Cinzenta',
         stanzas: [
           [
             'Skrym-Khor, o Gigante Quebra-Tronos, ergueu',
-            'O crânio de dragão que de elmo lhe deu;',
+            'O crânio dracônico que a glória lhe deu;',
             'Irmão das geleiras, de barba trançada,',
             'Fechou com seu corpo a estreita passada!',
           ],
           [
-            '"Valerius selou a concórdia no sul,',
-            'Sob o teto dourado e a cúpula azul!',
+            '"Valerius reúne o conclave central,',
+            'Sob o teto dourado da Torre imortal!',
             'Quem quiser levar guerra de volta ao salão,',
             'Terá de passar pelo meu gume no chão!"',
           ],
@@ -704,14 +706,14 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'O Manto Cinzento e o Machado de Gelo',
-        subtitle: 'Como a sabedoria de Valerius na Torre e a força de Skrym-Khor nas montanhas garantiram a estabilidade da Quarta Era',
-        yearLabel: 'Ano 740 D.F.',
+        subtitle: 'Como a vigília de Valerius na Torre e a escolta de Skrym-Khor na Espinha Cinzenta asseguraram a fundação inviolável de 689 D.F.',
+        yearLabel: 'Ano 689 D.F.',
         locationLabel: 'Torre dos Cinco Selos & Espinha Cinzenta',
         stanzas: [
           [
-            'Na Torre, Valerius tirou da cabeça',
-            'O Elmo de Jóias, cumprida a promessa;',
-            'Guardou o Cajado e o Graal no altar,',
+            'Valerius ergueu a fronte onde a paz recomeça,',
+            'Guardando o Elmo das Joias, cumprida a promessa;',
+            'Pousou o Cajado e o Graal no altar,',
             'Ouvindo o Relógio da paz palpitar.',
           ],
           [
@@ -721,7 +723,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
             'Nenhum traidor poderá atravessar.',
           ],
           [
-            'Assim os Sete Selos ficaram seguros,',
+            'Assim os Sete Selos nasceram seguros,',
             'Por dentro das leis e por fora dos muros:',
             'Com a mente do sábio escrevendo a razão,',
             'E o braço gigante guardando o portão!',

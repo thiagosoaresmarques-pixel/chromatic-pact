@@ -7,7 +7,7 @@ export interface LegendaryCreatureBiography extends CardMythologyEntry {
 }
 
 /**
- * O PANTHEON E CRÔNICA PARTICULAR DAS 73 CRIATURAS LENDÁRIAS DE VAELORIA
+ * O PANTHEON E CRÔNICA PARTICULAR DAS 100 CRIATURAS LENDÁRIAS DE VAELORIA
  * Ordenadas cronologicamente da Era Zero (∞ A.F.) até a VIª Era (1.240 D.F.).
  * Cada Criatura Lendária possui uma história particular em prosa e uma quadra rimada exclusiva.
  */
@@ -22,7 +22,7 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     chronologicalOrder: 1,
     locationLabel: 'Cume do Monte Axial (Fronteira Cinzenta)',
     proseStory:
-      'Nascida do próprio reflexo do Coroa-Prisma antes que o tempo tivesse nome, Valkyra foi a única entidade capaz de suportar em suas escamas as cinco frequências de luz simultaneamente. Quando os Cinco Titãs Primogênitos subiram ao Monte Axial para romper a estase eterna, Valkyra não os impediu — pois sabia que um mundo imóvel estava morto em vida. Após a Fratura, recolheu as cascas sem cor do astro partido para erguer a Torre dos Cinco Selos e tornou-se a árbitra eterna do Pacto Cromático.',
+      'Nascida do próprio reflexo do Coroa-Prisma antes que o tempo tivesse nome, Valkyra foi a única entidade capaz de suportar em suas escamas as cinco frequências de luz simultaneamente. Quando os Cinco Titãs Primogênitos subiram ao Monte Axial para romper a estase eterna, Valkyra não os impediu — pois sabia que um mundo imóvel estava morto em vida. Após a Fratura, recolheu as cascas sem cor do astro partido para erguer a Torre Cinzenta — futura Torre dos Cinco Selos — e tornou-se a árbitra eterna do Pacto Cromático.',
     sungStanza: [
       'Das cinco correntes que o céu dividiu,',
       'Valkyra nas asas o espectro reuniu;',
@@ -41,7 +41,7 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     proseStory:
       'O mais velho dos Cinco Primogênitos que conspiraram contra a estase do Coroa-Prisma. No silêncio sem tempo antes da Fratura, Vulcanis bateu em segredo no núcleo líquido do mundo o malho que partiria o sol branco. Quando o Fragmento Rubro caiu no norte, seu corpo de basalto e brasa fundiu-se à maior caldeira de Pyros, de onde ainda hoje ergue o martelo para partir montanhas.',
     sungStanza: [
-      'No abismo sem tempo o malho bateu,',
+      'No abismo sem tempo rasgou todo o véu,',
       'Até que a faísca subisse até o céu;',
       'Vulcanis ferreiro do primeiro ardor,',
       'Deu fogo às montanhas e ao sangue o calor!',
@@ -128,8 +128,8 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     proseStory:
       'Nascido onde os ventos polares de Vórtex chocam-se com as dunas salgadas do litoral, Vorthurion aprendeu a armazenar relâmpagos inteiros sob as placas de safira do dorso. No Ano 14 D.F., vitrificou uma cadeia inteira de dunas com um único sopro elétrico para demarcar a fronteira aérea do domínio azul.',
     sungStanza: [
-      'O cheiro de ozônio nos ares voou,',
-      'Enquanto nas nuvens o raio ecoou;',
+      'O cheiro do raio nos ares voou,',
+      'Enquanto nas nuvens a fúria ecoou;',
       'Vorthurion desce rasgando o trovão,',
       'Cravando uma lança de raio no chão!',
     ],
@@ -415,7 +415,7 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     eraTitle: 'IIª Era — As Cinco Cidadelas',
     eraId: 'era_2_cidadelas',
     chronologicalOrder: 25,
-    locationLabel: 'Portões da Torre dos Cinco Selos',
+    locationLabel: 'Portões da Torre Cinzenta',
     proseStory:
       'Construído pelos mestres artífices da Fronteira Cinzenta no Ano 340 D.F. para guardar a neutralidade das caravanas, este colosso não possui lealdade a nenhuma cor. Sua couraça maciça de adamantina cinzenta suporta tanto o fogo de Pyros quanto o gelo de Vórtex.',
     sungStanza: [
@@ -1303,7 +1303,7 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   neutral_118_volothamp_cronista_mundos: {
     cardId: 'neutral_118_volothamp_cronista_mundos',
     properTitle: 'Aldous, Grande Cronista do Bestiário',
-    yearLabel: 'Ano 890 D.F.',
+    yearLabel: 'Ano 965 D.F.',
     eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
     eraId: 'era_5_tratados',
     chronologicalOrder: 76,
@@ -1626,13 +1626,13 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   neutral_173_general_roda_matriz: {
     cardId: 'neutral_173_general_roda_matriz',
     properTitle: 'Vaelkor, General da Roda Prismática',
-    yearLabel: 'Ano 828 D.F.',
+    yearLabel: 'Ano 839 D.F.',
     eraTitle: 'IVª Era — A Assinatura do Pacto',
     eraId: 'era_4_pacto',
     chronologicalOrder: 95,
     locationLabel: 'Átrio Axial da Torre dos Cinco Selos',
     proseStory:
-      'Primeiro dos Seis Generais da Roda consagrado em 828 D.F. durante a Crise das Redomas Soberanas, Vaelkor carrega às costas o astrolábio de oito prismas octaédricos. Ao pisar na Arena ou avançar em combate, o giro de sua roda decifra e estilhaça qualquer Expansão de Domínio inimiga enquanto reveste seus aliados em Escudos Divinos.',
+      'Primeiro dos Seis Generais da Roda consagrado em 839 D.F. durante a Crise das Redomas Soberanas, Vaelkor carrega às costas o astrolábio de oito prismas octaédricos. Ao pisar na Arena ou avançar em combate, o giro de sua roda decifra e estilhaça qualquer Expansão de Domínio inimiga enquanto reveste seus aliados em Escudos Divinos.',
     sungStanza: [
       'Do núcleo cinzento de mercúrio e cristal,',
       'Ergueu-se o primeiro juiz imortal:',
@@ -1643,16 +1643,16 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   red_173_general_roda_chama: {
     cardId: 'red_173_general_roda_chama',
     properTitle: 'Pyrrakon, General da Roda Vulcânica',
-    yearLabel: 'Ano 832 D.F.',
+    yearLabel: 'Ano 841 D.F.',
     eraTitle: 'IVª Era — A Assinatura do Pacto',
     eraId: 'era_4_pacto',
     chronologicalOrder: 96,
     locationLabel: 'Bigorna Suprema de Pyros',
     proseStory:
-      'Forjado em 832 D.F. nas bigornas abissais de Pyros com dois cutelos vulcânicos acorrentados e uma roda de oito cadinhos ferventes às costas, Pyrrakon derrete instantaneamente qualquer Expansão de Domínio que tente aprisionar as falanges da fornalha.',
+      'Forjado em 841 D.F. nas bigornas abissais de Pyros com dois cutelos vulcânicos acorrentados e uma roda de oito cadinhos ferventes às costas, Pyrrakon derrete instantaneamente qualquer Expansão de Domínio que tente aprisionar as falanges da fornalha.',
     sungStanza: [
       'Elmo de grelha vomitando fumaça,',
-      'Dois cutelos presos em elos de brasa;',
+      'Dois cutelos presos onde a chama esvoaça;',
       'Às costas girava o terrível brasão:',
       'Oito cadinhos cheios de magma em fusão!',
     ],
@@ -1660,13 +1660,13 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   blue_173_general_roda_gelo: {
     cardId: 'blue_173_general_roda_gelo',
     properTitle: 'Cryonax, General da Roda Astral',
-    yearLabel: 'Ano 836 D.F.',
+    yearLabel: 'Ano 843 D.F.',
     eraTitle: 'IVª Era — A Assinatura do Pacto',
     eraId: 'era_4_pacto',
     chronologicalOrder: 97,
     locationLabel: 'Câmara do Astrolábio Frio (Vórtex)',
     proseStory:
-      'Consagrado em 836 D.F. pelos mestres horológicos de Vórtex, Cryonax flutua sobre quatro asas de geada eletrostática com uma roda de oito globos de tempestade. Basta um estalo de seu astrolábio polar para trincar Expansões de Domínio rivais como vidro e congelar toda a Vanguarda adversária.',
+      'Consagrado em 843 D.F. pelos mestres horológicos de Vórtex, Cryonax flutua sobre quatro asas de geada eletrostática com uma roda de oito globos de tempestade. Basta um estalo de seu astrolábio polar para trincar Expansões de Domínio rivais como vidro e congelar toda a Vanguarda adversária.',
     sungStanza: [
       'Atrás de seus ombros, sem falha ou ruído,',
       'Girava o astrolábio de gelo polido:',
@@ -1677,13 +1677,13 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   purple_173_general_roda_abismo: {
     cardId: 'purple_173_general_roda_abismo',
     properTitle: 'Nyxaroth, General da Roda Fúnebre',
-    yearLabel: 'Ano 841 D.F.',
+    yearLabel: 'Ano 845 D.F.',
     eraTitle: 'IVª Era — A Assinatura do Pacto',
     eraId: 'era_4_pacto',
     chronologicalOrder: 98,
     locationLabel: 'Nave Sem Luz da Catedral de Obsidiana',
     proseStory:
-      'Erguido na Catedral de Obsidiana em 841 D.F. com quatro braços rituais e uma roda de ferro forjado ornada por oito lanternas cranianas, Nyxaroth desfaz Expansões de Domínio inimigas em cinza violeta e executa o campeão mais forte do oponente sem respeitar cota ou escudo.',
+      'Erguido na Catedral de Obsidiana em 845 D.F. com quatro braços rituais e uma roda de ferro forjado ornada por oito lanternas cranianas, Nyxaroth desfaz Expansões de Domínio inimigas em cinza violeta e executa o campeão mais forte do oponente sem respeitar cota ou escudo.',
     sungStanza: [
       'Em roda de ferro batido em lamento,',
       'Oito crânios acesos giravam ao vento;',
@@ -1694,13 +1694,13 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   green_173_general_roda_selva: {
     cardId: 'green_173_general_roda_selva',
     properTitle: 'Sylvarok, General da Roda Primeva',
-    yearLabel: 'Ano 845 D.F.',
+    yearLabel: 'Ano 847 D.F.',
     eraTitle: 'IVª Era — A Assinatura do Pacto',
     eraId: 'era_4_pacto',
     chronologicalOrder: 99,
     locationLabel: 'Trono de Pau-Ferro (Veridia)',
     proseStory:
-      'Despertado pelo Círculo de Raiz-Ferro em 845 D.F., Sylvarok carrega a roda ancestral de oito orbes de seiva bioluminescente. Suas raízes arrombam de baixo para cima qualquer Expansão de Domínio artificial, devolvendo o céu aberto e revestindo a matilha aliada de força e Escudos Divinos.',
+      'Despertado pelo Círculo de Raiz-Ferro em 847 D.F., Sylvarok carrega a roda ancestral de oito orbes de seiva bioluminescente. Suas raízes arrombam de baixo para cima qualquer Expansão de Domínio artificial, devolvendo o céu aberto e revestindo a matilha aliada de força e Escudos Divinos.',
     sungStanza: [
       'Onde um mago fechava sua redoma vã,',
       'Arrombava o cimento a raiz temporã;',
@@ -1711,18 +1711,18 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
   gold_173_general_roda_sol: {
     cardId: 'gold_173_general_roda_sol',
     properTitle: 'Heliokar, General da Roda Celeste',
-    yearLabel: 'Ano 848 D.F.',
+    yearLabel: 'Ano 849 D.F.',
     eraTitle: 'IVª Era — A Assinatura do Pacto',
     eraId: 'era_4_pacto',
     chronologicalOrder: 100,
     locationLabel: 'Zimbório Dourado de Solária',
     proseStory:
-      'Sexto e último General da Roda consagrado em 848 D.F. sob o zimbório de Solária, Heliokar desce em alabastro e ouro com oito sóis de bronze girando às suas costas, dissolvendo Expansões de Domínio tirânicas em poeira luminosa enquanto blinda e restaura toda a hoste fiel.',
+      'Sexto e último General da Roda consagrado em 849 D.F. sob o zimbório de Solária, Heliokar desce em alabastro e ouro com oito sóis de bronze girando às suas costas, dissolvendo Expansões de Domínio tirânicas em poeira luminosa enquanto blinda e restaura toda a hoste fiel.',
     sungStanza: [
       'Trazia nos ombros o círculo ardente',
       'De oito sóis de bronze girando em torrente;',
       'Ao erguer a mão destra em sereno julgar,',
-      'Fazia todo falso firmamento ruir pelo ar!',
+      'Fazia o falso céu em centelhas quebrar!',
     ],
   },
 };

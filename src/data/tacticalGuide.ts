@@ -110,9 +110,9 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
         "cards": [
           "Botas Aladas do Mensageiro",
           "Bigorna Dracônica da Cratera",
-          "Fornalha Rúnica de Muspel"
+          "Fornalha Rúnica da Caldeira"
         ],
-        "howItWorks": "Combine Botas Aladas do Mensageiro + Bigorna Dracônica da Cratera + Fornalha Rúnica de Muspel para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
+        "howItWorks": "Combine Botas Aladas do Mensageiro + Bigorna Dracônica da Cratera + Fornalha Rúnica da Caldeira para gerar vantagem contínua de campo e pressionar a fileira inimiga sem perder tempo de Essência."
       },
       {
         "title": "Quebra de Domínio & Contra-Ofensiva (Pyrrakon)",

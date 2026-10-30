@@ -1,28 +1,29 @@
 import { EpicPoemCanto } from './epicPoemTypes';
 
 /**
- * CANTOS PARALELOS — PARTE 6 (V-C, VI-C e VII-C)
- * Crônicas paralelas da Onda C (33 estrofes / 132 versos por Canto),
+ * CAPÍTULOS PARALELOS — PARTE 6 (V-F, VI-A e VII-D)
+ * Crônicas paralelas da Onda C (33 estrofes / 132 versos por Capítulo),
  * aprofundando o Paradoxo Temporal de Ignis-Aeterna (741 D.F.), a Escolta dos Dez Tratados (851 D.F.)
  * e a Batalha das Caravanas Douradas no Planalto do Trono de Ossos (1.181 D.F.).
  */
 export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
   // ==========================================================================
-  // CANTO PARALELO V-C: PARADOXO DA FÊNIX (Ano 741 D.F. • Pináculo Horológico da Torre)
+  // CAPÍTULO V-F: PARADOXO DA FÊNIX (Ano 741 D.F. • Pira Perpétua da Arena)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_5c_paradoxo_fenix',
+    chronologicalOrder: 49,
     isParallel: true,
     parentCantoId: 'canto_5_pacto',
     anchorNodeId: 'node_creature_46_ignis_aeterna',
-    parallelCode: 'V-C',
+    parallelCode: 'V-F',
     shortTitle: 'Paradoxo da Fênix',
-    cantoNumber: 'CANTO PARALELO V-C',
+    cantoNumber: 'CAPÍTULO V-F',
     eraNumber: 'IVª ERA • BASTIDORES DO TEMPO EMPRESTADO',
-    periodLabel: 'Ano 741 D.F. • Pináculo Horológico da Torre',
+    periodLabel: 'Ano 741 D.F. • Pira Perpétua da Arena',
     title: 'O Incêndio Temporal de Ignis-Aeterna e a Vigília de Thaddeus',
-    subtitle: 'Como a Fênix do Tempo Emprestado abriu uma fenda para a Era Zero em 741 D.F., permitindo que Thaddeus, o velho espírito de Aldric e o artífice Kaelen impedissem Nihil-Vael de apagar o Pacto',
+    subtitle: 'Como a Fênix do Tempo Emprestado abriu uma fresta temporal em 741 D.F., e como Thaddeus, o eco de Aldric e o artífice Kaelen repeliram o primeiro sussurro faminto de Nihil-Vael antes que apagasse o Pacto',
     accentColor: '#ef4444',
     bannerImage: '/assets/arena/tabletop_red.png',
     nodes: [
@@ -51,14 +52,14 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           [
             'O ar cheirou a trovão e a cinza que já passou,',
             'E o ponteiro de bronze para trás escorregou;',
-            'Num clarão de taquions que cegou a sentinela,',
+            'Num clarão de táquions que cegou a sentinela,',
             'Abriu-se no firmamento uma temporal janela!',
           ],
           [
-            'Através do rasgo rubro via-se o ano passado:',
-            'A mesa dos Cinco Selos antes de o Pacto assinado!',
+            'Através do rasgo rubro via-se um tempo sagrado:',
+            'A noite em que o grande Pacto ainda ia ser selado!',
             'E do fundo do vazio, farejando a ocasião,',
-            'O Devorador das Horas estendeu a sua mão!',
+            'Um sussurro sem retorno estendeu a sua mão!',
           ],
         ],
       },
@@ -68,30 +69,30 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         cardId: 'purple_82_senhor_malogro',
         domain: 'purple',
         title: 'Nihil-Vael, Devorador de Linhas do Tempo',
-        subtitle: 'A entidade abissal que tentou atravessar a fenda de Ignis-Aeterna para extinguir a noite de 689 D.F.',
+        subtitle: 'O primeiro sussurro sem rosto da entidade abissal que espreitou pela fresta de 741 D.F. décadas antes de sua invasão maior',
         yearLabel: 'Ano 741 D.F.',
         locationLabel: 'Pináculo Horológico da Torre',
         stanzas: [
           [
-            'Nihil-Vael, o Senhor do Malogro e da extinção,',
-            'Deslizou pela fenda como um negro furacão;',
+            'Do fundo do vácuo, ainda em sombra e projeção,',
+            'Nihil-Vael estendeu seu sussurro de extinção;',
             'Seu manto era tecido de futuros abortados,',
             'De reinos que não nasceram e de sóis assassinados!',
           ],
           [
             '"Obrigado, ave tola!" — sibilou o ser sem face —',
-            '"Abriste a porta exata para que o Tratado passe!',
-            'Basta eu soprar na vela do Ano Seiscentos e Oitenta,',
-            'E toda a paz de Vaeloria virará poeira cinzenta!"',
+            '"Abriste a fresta exata para que o meu sopro passe!',
+            'Se eu apagar Seiscentos e Oitenta e Nove agora,',
+            'Toda a paz de Vaeloria se desfaz antes da aurora!"',
           ],
           [
-            'Ele agarrou pela cauda a Fênix que se debatia,',
-            'Usando o fogo do tempo como ponte de agonia;',
+            'Sua garra de penumbra prendeu a ave em agonia,',
+            'Usando o fogo do tempo como ponte que se abria;',
             'As cartas nos Grimórios começaram a desbotar,',
             'Como se a própria história estivesse a se apagar!',
           ],
           [
-            'Mas antes que Nihil-Vael cruzasse o portal aberto,',
+            'Mas antes que aquele espectro cruzasse o portal aberto,',
             'Doze badaladas soaram no campanário desperto;',
             'E descendo pelas rodas do mecanismo estelar,',
             'Surgiu o guardião supremo que as horas sabe contar!',
@@ -105,7 +106,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'blue',
         title: 'O Congelamento do Segundo Fatal',
-        subtitle: 'As engrenagens de safira do Pináculo Horológico travam a passagem de Nihil-Vael por um único fôlego',
+        subtitle: 'As engrenagens de safira do Pináculo Horológico travam o sussurro de Nihil-Vael por um único fôlego',
         yearLabel: 'Ano 741 D.F.',
         locationLabel: 'Pináculo Horológico da Torre',
         stanzas: [
@@ -113,7 +114,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'As gotas de chuva pararam suspensas no meio do ar,',
             'E a faísca de Ignis-Aeterna deixou de crepitar;',
             'Uma teia de linhas azuis envolveu o torreão,',
-            'Segurando o pé do monstro na borda da dimensão.',
+            'Segurando a sombra escura na borda da dimensão.',
           ],
           [
             '"Ninguém reescreve o livro que o sangue real selou!" —',
@@ -142,7 +143,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           [
             'Thaddeus, o Senhor do Tempo, girou seu anel de prata,',
             'Enfrentando Nihil-Vael na beira da catarata;',
-            '"Tu vives do que se perde, ó verme da escuridão,',
+            '"Tu vives do que se perde, ó sombra da escuridão,',
             'Mas cada segundo salvo é minha jurisdição!"',
           ],
           [
@@ -153,13 +154,13 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           ],
           [
             '"Ignis-Aeterna!" — gritou ele para a Fênix em pavor —',
-            '"Não lutas contra a corrente, devolve o teu calor!',
-            'Voaste para o passado fugindo da tua dor,',
-            'Mas o tempo emprestado cobra juros ao devedor!"',
+            '"Não lutes contra a corrente, recolhe o teu calor!',
+            'Voaste para o passado fugindo da agonia,',
+            'Mas o tempo emprestado cobra o preço a cada dia!"',
           ],
           [
-            'Nihil-Vael riu nas sombras: "Velho, o teu pulso falha!',
-            'Em três batidas de peito rasgarei tua muralha!"',
+            'A sombra riu na fresta: "Velho, o teu pulso falha!',
+            'Mais cedo ou mais tarde eu rasgarei tua muralha!"',
             'Foi quando Thaddeus ergueu do cinto o vaso sagrado,',
             'Virando sobre o abismo o vidro do tempo guardado!',
           ],
@@ -167,11 +168,11 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
       },
       {
         id: 'node_5c_5_ampulheta_tempo',
-        kind: 'creature',
+        kind: 'prelude',
         cardId: 'neutral_15_ampulheta_tempo',
         domain: 'neutral',
         title: 'A Ampulheta das Areias Eternas',
-        subtitle: 'O vaso de quartzo primordial cujo pó dourado soterrou os tentáculos temporais de Nihil-Vael',
+        subtitle: 'O vaso de quartzo primordial cujo pó dourado soterrou as garras temporais de Nihil-Vael',
         yearLabel: 'Ano 741 D.F.',
         locationLabel: 'Pináculo Horológico da Torre',
         stanzas: [
@@ -179,19 +180,19 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'A Ampulheta das Areias Eternas brilhou no ar,',
             'Deixando um rio de grãos áureos pelo gargalo passar;',
             'Cada grão daquele vidro era um dia já vivido,',
-            'Tão pesado de verdade que não pode ser sumido!',
+            'Tão pesado de memória que não pode ser banido!',
           ],
           [
-            'A areia caiu nos braços do monstro devorador,',
+            'A areia caiu nas garras do espectro devorador,',
             'Queimando a névoa vazia com o peso do valor;',
-            'Nihil-Vael soltou um grito quando o pó de ouro o tocou,',
-            'E a cauda de Ignis-Aeterna de sua garra escapou!',
+            'Nihil-Vael soltou um silvo quando o pó de ouro o tocou,',
+            'E a cauda de Ignis-Aeterna de sua sombra escapou!',
           ],
           [
             'Porém o vidro da Ampulheta começou a trincar,',
-            'Sous a pressão da fenda que teimava em alargar;',
-            'Faltava uma mente antiga para o cálculo fechar,',
-            'E um martelo de fogo vivo para a trinca soldar!',
+            'Sob a pressão da fenda que teimava em se alargar;',
+            'Faltava uma mente antiga que traçasse a proporção,',
+            'E um martelo de fogo vivo para selar a junção!',
           ],
           [
             'Então do Cetro guardado no centro do observatório,',
@@ -234,7 +235,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
       },
       {
         id: 'node_5c_7_cetro_oniciencia',
-        kind: 'creature',
+        kind: 'prelude',
         cardId: 'blue_166_trono_oniciencia_astral',
         domain: 'blue',
         title: 'O Cetro do Arquimago Astral',
@@ -251,12 +252,12 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           [
             'Aldric e Thaddeus juntos, passado e presente em par,',
             'Fizeram os anéis de Vórtex ao redor da fenda girar;',
-            '"Vê, Nihil-Vael!" — disse o Cetro — "A memória não é pó:',
+            '"Vê, sombra vã!" — disse o Cetro — "A memória não é pó:',
             'Quanto mais tentas cortá-la, mais apertamos o nó!"',
           ],
           [
             'Preso na grade geométrica de pura sabedoria,',
-            'O Devorador das Horas perdia a sua valia;',
+            'O sussurro do Malogro perdia a sua valia;',
             'Mas para trancar a porta sem nunca mais se romper,',
             'Era preciso o bronze rubro na fenda derreter!',
           ],
@@ -274,7 +275,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         cardId: 'red_11_azer',
         hideCardArt: true,
         domain: 'red',
-        title: 'A Solda de Fogo e Taquion',
+        title: 'A Solda de Fogo e Táquion',
         subtitle: 'Ignis-Aeterna entrega voluntariamente uma de suas penas solares para o malho de Kaelen',
         yearLabel: 'Ano 741 D.F.',
         locationLabel: 'Pináculo Horológico da Torre',
@@ -288,7 +289,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           [
             'Deixou-a cair na bigorna que Kaelen segurava,',
             'E o bronze daquele artífice brilhou mais forte que a lava;',
-            'Nihil-Vael tentou fugir recuando para o breu,',
+            'A sombra tentou escapar recuando para o breu,',
             'Mas o malho do ferreiro como um cometa desceu!',
           ],
           [
@@ -305,19 +306,19 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         cardId: 'red_11_azer',
         domain: 'red',
         title: 'Kaelen, Artífice Bronze-Ardente',
-        subtitle: 'O mestre forjador que rebitou a fenda temporal com a pena de Ignis-Aeterna, expulsando Nihil-Vael',
+        subtitle: 'O mestre forjador que rebitou a fresta temporal com a pena de Ignis-Aeterna, repelindo o sussurro de Nihil-Vael',
         yearLabel: 'Ano 741 D.F.',
         locationLabel: 'Pináculo Horológico da Torre',
         stanzas: [
           [
             'Kaelen, o Bronze-Ardente, com barba de labareda,',
             'Cravou o rebite eterno onde a sombra se enreda;',
-            'Ao terceiro golpe exato a fenda se fechou,',
-            'E o braço de Nihil-Vael decepado evaporou!',
+            'Ao terceiro golpe exato a fresta se trancou,',
+            'E a garra da sombra externa para o abismo recuou!',
           ],
           [
             'Expulso para o vazio além das rodas do mundo,',
-            'O Devorador fugiu num uivo rouco e profundo;',
+            'O sussurro recolheu-se num silvo rouco e profundo;',
             'A Ampulheta aquietou-se, o Cetro voltou a dormir,',
             'E o relógio da alta Torre tornou a noite a medir.',
           ],
@@ -339,21 +340,22 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CANTO PARALELO VI-C: ESCOLTA DOS DEZ TRATADOS (Ano 851 D.F. • Estrada Real da Fronteira Cinzenta)
+  // CAPÍTULO VI-A: ESCOLTA DOS DEZ TRATADOS (Ano 851 D.F. • Estrada dos Cinco Reinos)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_6c_caravana_dez_tratados',
+    chronologicalOrder: 55,
     isParallel: true,
     parentCantoId: 'canto_6_tratados',
     anchorNodeId: 'canto6_prelude_tratados',
-    parallelCode: 'VI-C',
+    parallelCode: 'VI-A',
     shortTitle: 'Escolta dos Dez Tratados',
-    cantoNumber: 'CANTO PARALELO VI-C',
+    cantoNumber: 'CAPÍTULO VI-A',
     eraNumber: 'Vª ERA • BASTIDORES DA ALIANÇA DAS DUAS CORES',
-    periodLabel: 'Ano 851 D.F. • Estrada Real da Fronteira Cinzenta',
+    periodLabel: 'Ano 851 D.F. • Estrada dos Cinco Reinos',
     title: 'A Escolta da Coroa dos Pactos e o Cerco na Estrada Cinzenta',
-    subtitle: 'Como o Comandante Garrick, o General Varkas e Justinian protegeram a caravana que levava os Dez Tratados Bicolores contra a emboscada de Mephistar, salvos pelo voo de Astrolon',
+    subtitle: 'Como o Guardião Imortal Garrick, o General Varkas — reencarnado do Grimório Rubro por Valkyra como Campeão Juramentado — e Justinian protegeram os Dez Tratados Bicolores contra Mephistar, salvos pelo voo de Astrolon',
     accentColor: '#eab308',
     bannerImage: '/assets/arena/tabletop_gold.png',
     nodes: [
@@ -362,8 +364,8 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'neutral_30_coroa_pactos',
         domain: 'neutral',
-        title: 'O Comboio da Coroa dos Cinco Pactos',
-        subtitle: 'No Ano 851 D.F., os Dez Tratados de Aliança Bicolor saem da Torre em direção às capitais sob a guarda da Coroa',
+        title: 'Diadema Supremo Pentacromático — A Coroa dos Pactos',
+        subtitle: 'No Ano 851 D.F., os Dez Tratados de Aliança Bicolor saem da Torre em direção às capitais sob a guarda da Coroa dos Pactos',
         yearLabel: 'Ano 851 D.F.',
         locationLabel: 'Estrada Real da Fronteira Cinzenta',
         stanzas: [
@@ -375,8 +377,8 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           ],
           [
             'No carro central brilhava, sobre almofada carmim,',
-            'A Coroa dos Cinco Pactos de lavor sem igual nem fim;',
-            'E junto a ela os Dez Tratados das alianças de par,',
+            'O Diadema Supremo de brilho sem par nem fim;',
+            'E junto à Coroa os Dez Tratados das alianças de par,',
             'Que davam aos invocadores o direito de combinar!',
           ],
           [
@@ -399,7 +401,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         cardId: 'neutral_01_mercenario_veterano',
         domain: 'neutral',
         title: 'Comandante Garrick na Vanguarda Real',
-        subtitle: 'O veterano da Fronteira Cinzenta que reconheceu o silêncio anormal dos pássaros antes da emboscada',
+        subtitle: 'O Guardião Imortal da Fronteira Cinzenta que reconheceu o silêncio anormal dos pássaros antes da emboscada',
         yearLabel: 'Ano 851 D.F.',
         locationLabel: 'Estrada Real da Fronteira Cinzenta',
         stanzas: [
@@ -413,13 +415,13 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             '"Alto a coluna!" — gritou ele erguendo o guante de couro —',
             '"Não canta um grilo no mato, nem voa um só besouro!',
             'Quando a Fronteira Cinzenta se cala dessa maneira,',
-            'É porque o diabo armou barraca na ribanceira!"',
+            'É porque o abismo armou cilada na ribanceira!"',
           ],
           [
-            'Ao seu lado cavalgava, em armadura de brasa,',
-            'O General Varkas de Pyros, que nunca ficava em casa;',
-            '"Velho Garrick" — disse o Marechal puxando o malho pesado —',
-            '"O teu nariz de fronteira jamais esteve enganado!"',
+            'Ao seu lado vinha Varkas, do Grimório invocado,',
+            'Campeão imortal pelo Pacto jurado;',
+            '"Velho Garrick" — disse o Marechal erguendo o malho ardente —',
+            '"Teu faro de fronteira jamais falha à nossa frente!"',
           ],
           [
             'Mal fecharam os escudos em roda das carruagens,',
@@ -441,8 +443,8 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         locationLabel: 'Estrada Real da Fronteira Cinzenta',
         stanzas: [
           [
-            'Cem demônios de armadura brotaram do penhasco,',
-            'Enchendo o ar da manhã de fumaça e de borrasco;',
+            'Cem demônios em armas saltaram da escura fraga,',
+            'Enchendo a borrasca fria de enxofre, cinza e praga;',
             'Não queriam só queimar os pergaminhos reais,',
             'Mas falsificar as letras com cláusulas infernais!',
           ],
@@ -466,7 +468,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         cardId: 'red_18_marechal_rubro',
         domain: 'red',
         title: 'General Varkas, o Muro de Ferro Rubro',
-        subtitle: 'O Marechal da Legião Férrea que formou a linha de escudos flamejantes em torno da carruagem da Coroa',
+        subtitle: 'Reencarnado em chama e ferro pelo chamado de Valkyra, o Marechal forma a linha de escudos flamejantes em torno da Coroa dos Pactos',
         yearLabel: 'Ano 851 D.F.',
         locationLabel: 'Estrada Real da Fronteira Cinzenta',
         stanzas: [
@@ -474,7 +476,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'General Varkas plantou seu estandarte no chão,',
             'Formando em torno do carro um rubro meio-bastião;',
             '"Soldados da Férrea Linha, firmai o ombro no escudo!',
-            'Hoje o aço de Pyros será o nosso conteúdo!"',
+            'Contra o ferro de Pyros se quebra o golpe agudo!"',
           ],
           [
             'A primeira vaga umbral bateu na linha vermelha,',
@@ -483,14 +485,14 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'Enquanto Garrick cobria o flanco do seu tropel!',
           ],
           [
-            '"Antigamente eu lutava contra a tua farda cinzenta!" —',
+            '"Em vida lutamos firmes contra a tua farda cinzenta!" —',
             'Gritou Varkas para Garrick no meio da tormenta;',
-            '"E hoje guardas as minhas costas contra o inferno inteiro!" —',
+            '"E hoje, imortais no Pacto, varremos o inferno inteiro!" —',
             'Respondeu Garrick sorrindo com um golpe certeiro!',
           ],
           [
-            'Mas as fileiras demônias abriram-se pelo meio,',
-            'Dando passagem ao tirano que comandava o rodeio;',
+            'Mas as hostes profanas abriram-se pelo meio,',
+            'Dando passo ao tirano sem sombra de receio;',
             'Trazendo na mão esquerda um pergaminho de dor,',
             'Mephistar adiantou-se com seu maligno esplendor!',
           ],
@@ -502,7 +504,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         cardId: 'purple_83_arquidemonio_tempo',
         domain: 'purple',
         title: 'Mephistar, O Demônio do Pacto Eterno',
-        subtitle: 'O arquidemônio que tentou corromper a Coroa dos Cinco Pactos com o grilhão da dívida perpétua',
+        subtitle: 'O arquidemônio que tentou corromper a Coroa dos Pactos com o grilhão da dívida perpétua',
         yearLabel: 'Ano 851 D.F.',
         locationLabel: 'Estrada Real da Fronteira Cinzenta',
         stanzas: [
@@ -576,7 +578,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           [
             'Justinian, o Soberano da Ordem, desceu a espada,',
             'Cortando ao meio a corrente que tinha a arca laçada;',
-            'Colocou na própria fronte a Coroa dos Cinco Pactos,',
+            'Pôs sobre a própria fronte a Coroa dos Pactos,',
             'Unindo na sua guarda os dez pergaminhos intactos!',
           ],
           [
@@ -613,13 +615,13 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           [
             'A fumaça negra abriu-se como cortina rasgada,',
             'Deixando ver em pleno dia a abóbada estrelada;',
-            'Cem jardas de envergadura feitas de cosmos e luz',
+            'Cem braças de envergadura feitas de cosmos e luz',
             'Mergulharam sobre a serra num voo que tudo seduz!',
           ],
           [
             'O meteorito do abismo que Mephistar invocara',
             'Foi apanhado no ar pela mandíbula rara;',
-            'Como se fosse uma brasa diante de um sol maior,',
+            'Qual faísca apagada perante um sol em ardor,',
             'A pedra negra desfez-se num pó de estelar fulgor!',
           ],
           [
@@ -670,19 +672,20 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CANTO PARALELO VII-C: COMBOIO DO RELICÁRIO (Ano 1.181 D.F. • Planalto do Trono de Ossos)
+  // CAPÍTULO VII-D: COMBOIO DO RELICÁRIO (Ano 1.181 D.F. • Ossário do Eclipse)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_7c_batalha_trono_ossos',
+    chronologicalOrder: 71,
     isParallel: true,
     parentCantoId: 'canto_7_presente',
     anchorNodeId: 'creature_68_necrothor',
-    parallelCode: 'VII-C',
+    parallelCode: 'VII-D',
     shortTitle: 'Comboio do Relicário',
-    cantoNumber: 'CANTO PARALELO VII-C',
+    cantoNumber: 'CAPÍTULO VII-D',
     eraNumber: 'VIª ERA • BASTIDORES DA GUERRA DOS RELICÁRIOS',
-    periodLabel: 'Ano 1.181 D.F. • Planalto do Trono de Ossos',
+    periodLabel: 'Ano 1.181 D.F. • Ossário do Eclipse',
     title: 'A Batalha das Caravanas Douradas no Planalto do Trono de Ossos',
     subtitle: 'Como Necrothor e Vesperion cercaram o comboio de Pacotes do Relicário em 1.181 D.F., e como Garrick, Varkas, Kongor e Tellurion abriram caminho até a Arena',
     accentColor: '#10b981',
@@ -705,15 +708,15 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'Mil Pacotes do Relicário lacrados contra a má sorte.',
           ],
           [
-            'Mas no meio da passagem onde o desfiladeiro abre,',
-            'Ergueu-se da terra seca um monumento macabre:',
+            'Mas no estreito da serra, de aspecto sombrio,',
+            'Ergueu-se um macabro bastião no vazio:',
             'Milhares de carcaças velhas de antigas guerras passadas',
             'Fundiram-se numa torre de costelas entrelaçadas!',
           ],
           [
             'No topo daquele monte de marfim apodrecido,',
             'Necrothor, o Rei da Carniça, soltou seu rouco bramido;',
-            'Trinta metros de estatura feitos de morte e rancor',
+            'Quinze braças de altura, de morte e rancor,',
             'Fecharam a estrada inteira diante do condutor!',
           ],
           [
@@ -767,7 +770,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'A Linha dos Inquebráveis',
-        subtitle: 'Invoções vivas de Garrick e Varkas posicionam os canhões e as armadilhas diante da marcha de Necrothor',
+        subtitle: 'Invocações vivas de Garrick e Varkas posicionam os canhões e as armadilhas diante da marcha de Necrothor',
         yearLabel: 'Ano 1.181 D.F.',
         locationLabel: 'Planalto do Trono de Ossos',
         stanzas: [
@@ -784,10 +787,10 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'Mas quanto maior o osso, mais o meu fogo o atiça!"',
           ],
           [
-            'Enquanto os dois comandantes travavam a primeira vaga,',
-            'Sabiam que contra o colosso precisavam de maisaga;',
-            'Por isso Garrick quebrou no chão dois selos de cor,',
-            'Chamando os titãs de Veridia para o embate maior!',
+            'Enquanto os dois comandantes detinham a praga,',
+            'Sabiam que o monstro pedia outra chaga;',
+            'Por isso Garrick quebrou dois selos de ardor,',
+            'Chamando Veridia ao embate e ao clamor!',
           ],
         ],
       },
@@ -850,7 +853,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'Mas ergueu-se cuspindo fogo e mantendo a posição!',
           ],
           [
-            '"Tu és grande, rei dos mortos, mas és oco por interior!" —',
+            '"Tu és grande, rei morto, mas tens oco o interior!" —',
             'Rugiu Varkas levantando seu estandarte de ardor —',
             '"Garrick prendeu-te a canela e eu rachei o teu pilar:',
             'Agora vem quem tem braço para te desmantelar!"',
@@ -876,7 +879,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
         stanzas: [
           [
             'O céu escureceu um instante com a sombra do primata,',
-            'Cinco toneladas vivas de músculo e pelo prata;',
+            'Montanha viva de fúria, de músculo e pelo prata;',
             'Kongor vira Vesperion de longe no chapadão,',
             'E guardava desde a Torre a sede de retaliação!',
           ],
@@ -917,7 +920,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'Kongor partiu a cadeira do Arquimago imortal!',
           ],
           [
-            'Vesperion caiu do alto envolto em chamas lilás,',
+            'Vesperion caiu do alto envolto em chama lilás,',
             'Perdendo o controle negro sobre os pacotes da paz;',
             'Porém Necrothor ainda se debatia no chão,',
             'Espalhando uma tormenta de lascas e podridão!',
@@ -948,8 +951,8 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
             'Sacudindo a pedra bruta que o planalto compõe e produz.',
           ],
           [
-            'Kongor saltou para o chão com Varkas e Garrick a pique,',
-            'Vendo a própria terra viva fazer que a morte claudique;',
+            'Kongor saltou para o chão junto a Varkas e ao guerreiro,',
+            'Vendo a própria terra viva abalar o ossário inteiro;',
             'Vesperion, vendo erguer-se o colosso primordial,',
             'Abriu um portal de fuga e deixou o lodo mortal!',
           ],
@@ -992,7 +995,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
           [
             'Assim seguiram os carros com seu Ouro reluzente,',
             'Levando às Arenas livres o espólio de toda a gente;',
-            'E cada pacote aberto pelo jogador fiel',
+            'E cada pacote aberto pelo invocador fiel',
             'Traz o suor dessa escolta que venceu o breu cruel!',
           ],
         ],

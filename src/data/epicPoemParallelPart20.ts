@@ -5,12 +5,13 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
     id: 'canto_2j_tempestade_vazio_primordial',
     isParallel: true,
     parentCantoId: 'canto_2_fratura',
+    chronologicalOrder: 17,
     anchorNodeId: 'canto_2_creature_11_verme_fendas',
-    parallelCode: 'II-J',
+    parallelCode: 'II-I',
     shortTitle: 'Tiara & Astrolábio',
-    cantoNumber: 'CAPÍTULO II-J',
+    cantoNumber: 'CAPÍTULO II-I',
     eraNumber: 'Iª ERA • OS PRIMEIROS CATACLISMOS E RELÍQUIAS',
-    periodLabel: 'Anos 48–75 D.F. • Estreito dos Ventos & Fenda do Vazio',
+    periodLabel: 'Anos 48–75 D.F. • Fronteira Cinzenta',
     title: 'A Tiara Escarlate, o Astrolábio do Furacão e o Eclipse do Vazio',
     subtitle: 'Como Aldric, Kaelen, Lyra e Zik usaram a Concha do Teleporte Uvar e as Grevas Relâmpago para sobreviver ao embate entre a Tempestade Psiônica do Vórtex e o Eclipse do Vazio Eterno',
     accentColor: '#38bdf8',
@@ -24,11 +25,11 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         title: 'Tiara do Arauto Escarlate',
         subtitle: 'O diadema forjado no magma primordial que canaliza o furor vulcânico sem consumir a mente do portador',
         yearLabel: 'Ano 48 D.F.',
-        locationLabel: 'Cratera Cinzenta de Ignis-Kar',
+        locationLabel: 'Cratera Cinzenta de Pyros',
         stanzas: [
           [
             'No topo da cratera de fogo e fumaça,',
-            'Onde a lava fervente jamais se desfaça,',
+            'Onde a cinza fervente nos picos esvoaça,',
             'Kaelen recolheu um metal reluzente',
             'Banhado no sangue da rocha candente.',
           ],
@@ -97,7 +98,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         title: 'A Convergência dos Ventos Mentais',
         subtitle: 'Como os anéis do Astrolábio dispararam em rotação insana ao detectar o despertar da primeira Tempestade Psiônica',
         yearLabel: 'Ano 56 D.F.',
-        locationLabel: 'Observatório Costeiro de Azúria',
+        locationLabel: 'Observatório Costeiro de Vórtex',
         stanzas: [
           [
             'Quatro anos depois, no salão de vigia,',
@@ -149,7 +150,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
           ],
           [
             'Só Lyra, segurando o Astrolábio na mão,',
-            'Achou o equilíbrio no meio ao clarão;',
+            'Achou o equilíbrio em meio ao clarão;',
             'Guiando os amigos por entre a tormenta',
             'Que a alma dos homens esmaga e rebenta.',
           ],
@@ -162,7 +163,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'purple',
         title: 'O Rasgo na Sombra Profunda',
-        subtitle: 'Como o impacto psíquico nos céus despertou a fome faminta da Fenda do Vazio Eterno',
+        subtitle: 'Como o impacto psíquico nos céus despertou a fome insaciável da Fenda do Vazio Eterno',
         yearLabel: 'Ano 62 D.F.',
         locationLabel: 'Borda da Fenda do Vazio',
         stanzas: [
@@ -212,7 +213,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
             'A coroa da treva brilhava em violeta,',
             'Puxando p’ra o nada a poeira quieta;',
             'Os soldados caíam de joelhos no barro,',
-            'Sentindo no peito o funesto esgarro.',
+            'Sentindo na alma o funesto desgarro.',
           ],
           [
             'Nem mesmo a Tiara do Arauto Escarlate',
@@ -270,14 +271,14 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         locationLabel: 'Oficina de Liga Metálica da Fronteira',
         stanzas: [
           [
-            'Na praia seguros, olharam p’ra trás,',
-            'Onde a nuvem e a sombra faziam a paz;',
+            'Na praia seguros, em calma capaz,',
+            'Miraram ao longe o retorno da paz;',
             'Mas viram que a Concha, depois de usada,',
             'Ficava por meses sem força encantada.',
           ],
           [
             '— "Precisamos correr mais veloz do que o raio,',
-            'Sem nunca sofrer de cansaço ou desmaio!",',
+            'Sem nunca sofrer de cansaço ou desmaio!" —',
             'Disse Kaelen batendo na bigorna fria,',
             'Misturando mercúrio com prata do dia.',
           ],
@@ -291,7 +292,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
       },
       {
         id: 'node_2j_botas_velocidade_mercurio',
-        kind: 'interlude',
+        kind: 'prelude',
         cardId: 'neutral_137_botas_velocidade_mercurio',
         domain: 'neutral',
         title: 'Grevas da Velocidade Relâmpago',
@@ -362,14 +363,15 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
     id: 'canto_3j_trono_celestial_estase',
     isParallel: true,
     parentCantoId: 'canto_3_cidadelas',
+    chronologicalOrder: 28,
     anchorNodeId: 'canto3_creature_22_zephaniel',
-    parallelCode: 'III-J',
+    parallelCode: 'III-G',
     shortTitle: 'Trono do Zênite & Estase',
-    cantoNumber: 'CAPÍTULO III-J',
+    cantoNumber: 'CAPÍTULO III-G',
     eraNumber: 'IIª ERA • RELÍQUIAS DO ZÊNITE E ESTASE',
-    periodLabel: 'Anos 295–355 D.F. • Bastião dos Sete Sóis & Pináculo de Safira',
+    periodLabel: 'Anos 290–308 D.F. • Zênite de Solária',
     title: 'O Trono Celestial do Zênite, o Talismã Puro e a Estase Absoluta',
-    subtitle: 'Como Zephaniel consagrou o Trono Celestial e o Talismã do Zênite Puro em Solária, enquanto Nereus congelava uma invasão inteira na Estase Temporal Absoluta e os guardiões da Fronteira forjavam suas relíquias de vigília',
+    subtitle: 'Como Zephaniel consagrou o Trono Celestial e o Talismã do Zênite Puro em Solária, enquanto o Oráculo Astral do Pináculo congelava uma invasão inteira na Estase Temporal Absoluta e os guardiões da Fronteira forjavam suas relíquias de vigília',
     accentColor: '#eab308',
     bannerImage: '/assets/arena/tabletop_gold.png',
     nodes: [
@@ -380,7 +382,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         domain: 'gold',
         title: 'Trono Celestial do Zênite',
         subtitle: 'O assento suspenso de ouro solar e mármore branco de onde a justiça radiante de Solária irradia sobre os sete terraços',
-        yearLabel: 'Ano 295 D.F.',
+        yearLabel: 'Ano 290 D.F.',
         locationLabel: 'Cúpula Suprema do Bastião dos Sete Sóis',
         stanzas: [
           [
@@ -416,7 +418,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         domain: 'gold',
         title: 'Talismã do Zênite Puro',
         subtitle: 'O medalhão consagrado com uma lágrima solar de Zephaniel que dissolve maldições e repele a corrupção das trevas',
-        yearLabel: 'Ano 302 D.F.',
+        yearLabel: 'Ano 293 D.F.',
         locationLabel: 'Altar da Consagração Solar',
         stanzas: [
           [
@@ -434,8 +436,8 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
           [
             'Se a sombra do Abismo tentava tocar',
             'Aquele que soube a relíquia portar,',
-            'Um halo dourado saltava da peça,',
-            'Queimando o feitiço da noite avessa.',
+            'Um halo dourado saltava depressa,',
+            'Queimando o feitiço da treva que cessa.',
           ],
           [
             'E até os feridos na dura batalha',
@@ -452,9 +454,9 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'blue',
         title: 'O Cerco ao Pináculo de Safira',
-        subtitle: 'Como uma horda de feras vulcânicas ameaçou destruir a biblioteca de Nereus antes que o socorro chegasse',
-        yearLabel: 'Ano 318 D.F.',
-        locationLabel: 'Passagem de Gelo do Pináculo de Safira',
+        subtitle: 'Como uma horda de feras vulcânicas ameaçou destruir a biblioteca do Oráculo Astral em Vórtex antes que o socorro chegasse',
+        yearLabel: 'Ano 296 D.F.',
+        locationLabel: 'Passagem de Gelo do Pináculo de Safira, Vórtex',
         stanzas: [
           [
             'Enquanto Solária brilhava em esplendor,',
@@ -469,7 +471,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
             'Restava apenas a extrema lembrança.',
           ],
           [
-            'O Arquimago Nereus subiu ao balcão,',
+            'O Oráculo Astral subiu ao balcão,',
             'Abrindo o seu livro de antiga lição;',
             'Decidiu pagar o tributo supremo',
             'P’ra deter do ataque o furor extremo!',
@@ -483,11 +485,11 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         domain: 'blue',
         title: 'Estase Temporal Absoluta',
         subtitle: 'O feitiço supremo de cronomancia que congela o fluxo dos segundos, prendendo exércitos inteiros como estátuas no ar',
-        yearLabel: 'Ano 320 D.F.',
-        locationLabel: 'Pátio Exterior do Pináculo de Safira',
+        yearLabel: 'Ano 298 D.F.',
+        locationLabel: 'Pátio Exterior do Pináculo de Safira, Vórtex',
         stanzas: [
           [
-            'Nereus bateu com o cajado no chão,',
+            'O Oráculo bateu seu cajado no chão,',
             'Prendendo o segundo na sua amplidão;',
             'Na Estase Absoluta o tempo parou,',
             'E a horda inteira no ar congelou.',
@@ -505,7 +507,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
             'Sem que uma fagulha saísse do ar.',
           ],
           [
-            'As tropas de safira marcharam em paz',
+            'As tropas de Vórtex marcharam em paz',
             'Por entre o exército imóvel e audaz;',
             'Retirando as armas de cada invasor',
             'Antes que voltasse o tempo e o calor.',
@@ -519,7 +521,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'Manto da Pantera Espectral',
         subtitle: 'A capa tecida com pelo de fera das brumas que projeta a imagem do usuário a três passos de onde ele realmente está',
-        yearLabel: 'Ano 332 D.F.',
+        yearLabel: 'Ano 301 D.F.',
         locationLabel: 'Bosque das Brumas Cinzentas',
         stanzas: [
           [
@@ -538,7 +540,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
             'Três palmos ao lado do vulto pintado',
             'Marchava em silêncio o astuto soldado;',
             'A luz se dobrava nas dobras do pano,',
-            'Salvando o patrulha do golpe tirano.',
+            'Salvando a patrulha do golpe tirano.',
           ],
           [
             'Assim os batedores da livre Fronteira',
@@ -556,7 +558,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'As Emboscadas da Madrugada',
         subtitle: 'Como os guardas das caravanas precisavam de olhos que nunca dormissem nas estradas entre as Cidadelas',
-        yearLabel: 'Ano 340 D.F.',
+        yearLabel: 'Ano 303 D.F.',
         locationLabel: 'Encruzilhada dos Mercadores',
         stanzas: [
           [
@@ -586,7 +588,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'Escudo Sentinela Sempre-Atento',
         subtitle: 'O broquel de aço polido cravejado com um olho de âmbar arcano que desperta o portador ao menor sinal de emboscada',
-        yearLabel: 'Ano 345 D.F.',
+        yearLabel: 'Ano 305 D.F.',
         locationLabel: 'Forte da Vigília Cinzenta',
         stanzas: [
           [
@@ -598,12 +600,12 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
           [
             'Se um vulto rasteiro pisasse no galho,',
             'Ou se uma serpente movesse o cascalho,',
-            'O Escudo Sentinela vibrava no braço,',
+            'O Escudo Sentinela vibrava no passo,',
             'Guiando a defesa no exato compasso.',
           ],
           [
             'Nenhuma emboscada vencia a patrulha',
-            'Que trás no broquel a sagrada fagulha;',
+            'Que traz no broquel a sagrada fagulha;',
             'O olho avistava o que a sombra escondia,',
             'Trocando a surpresa por clara vigia.',
           ],
@@ -623,14 +625,14 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'O Bloqueio das Estradas Reais',
         subtitle: 'Como os tiranos ergueram portões de ferro maciço para impedir a passagem dos mensageiros livres',
-        yearLabel: 'Ano 350 D.F.',
+        yearLabel: 'Ano 307 D.F.',
         locationLabel: 'Garganta do Portão Negro',
         stanzas: [
           [
             'Vendo que a patrulha não era enganada,',
             'Os nobres fecharam o meio da estrada;',
             'Ergueram muralhas e portas de bronze',
-            'Com trancas pesadas de metros a onze.',
+            'Com trancas maciças que somam mais d’onze.',
           ],
           [
             'Carregar um aríete de tronco pesado',
@@ -648,12 +650,12 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
       },
       {
         id: 'node_3j_anel_ariete_forca',
-        kind: 'interlude',
+        kind: 'prelude',
         cardId: 'neutral_138_anel_ariete_forca',
         domain: 'neutral',
         title: 'Anel do Aríete de Ferro',
         subtitle: 'O aro forjado com a cabeça de um carneiro de batalha que dispara uma onda de impacto capaz de estilhaçar muralhas',
-        yearLabel: 'Ano 355 D.F.',
+        yearLabel: 'Ano 308 D.F.',
         locationLabel: 'Portão da Garganta Rochosa',
         stanzas: [
           [
@@ -689,19 +691,19 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'As Cidadelas e a Estrada Aberta',
-        subtitle: 'Como o equilíbrio entre as grandes magias das Cidadelas e o engenho da Fronteira marcou o fim da Segunda Era',
-        yearLabel: 'Ano 355 D.F.',
+        subtitle: 'Como o equilíbrio entre as grandes magias das Cidadelas e o engenho da Fronteira marcou o apogeu da Segunda Era',
+        yearLabel: 'Ano 308 D.F.',
         locationLabel: 'Marco Zero das Caravanas',
         stanzas: [
           [
             'Enquanto no alto o Trono brilhava',
-            'E Nereus no gelo o minuto parava,',
+            'E o sábio no gelo o minuto parava,',
             'Na terra de baixo o manto e o broquel',
-            'cumpriam do homem o nobre papel.',
+            'Cumpriam do homem o nobre papel.',
           ],
           [
             'Com o Talismã Puro curando a ferida,',
-            'E o Anel do Aríete abrindo a saída,',
+            'E o Anel do Aríete abrindo a guarida,',
             'A Segunda Era gravou na memória',
             'As armas que deram ao fraco a vitória.',
           ],

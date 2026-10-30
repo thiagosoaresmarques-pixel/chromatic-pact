@@ -4,7 +4,7 @@ import { EpicPoemCanto } from './epicPoemTypes';
  * CANTOS PARALELOS — PARTE 25
  * 1) CAPÍTULO IV-K (IIIª Era, 655–688 D.F.): A Guerra dos Céus Sem Horizonte e as Seis Armadas Dracônicas (#172)
  *    — O clímax aéreo apocalíptico da Guerra do Sangue Derramado imediatamente antes do Pacto de 689 D.F.
- * 2) CAPÍTULO V-K (IVª Era, 825–849 D.F.): A Heresia das Redomas Soberanas e os Seis Generais da Roda (#173)
+ * 2) CAPÍTULO V-K (IVª Era, 839–850 D.F.): A Heresia das Redomas Soberanas e os Seis Generais da Roda (#173)
  *    — O despertar dos Arcontes Quebra-Domínios no fechamento da Quarta Era para preservar o equilíbrio da Arena.
  */
 export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
@@ -14,6 +14,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
   // ==========================================================================
   {
     id: 'canto_4k_armadas_draconicas_ceu_sem_sol',
+    chronologicalOrder: 43,
     isParallel: true,
     parentCantoId: 'canto_4_guerra',
     anchorNodeId: 'node_creature_42_tauron_khor',
@@ -21,7 +22,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
     shortTitle: 'As Armadas Dracônicas',
     cantoNumber: 'CAPÍTULO IV-K',
     eraNumber: 'IIIª ERA • O CLÍMAX AÉREO DA GUERRA DO SANGUE DERRAMADO',
-    periodLabel: 'Anos 655–688 D.F. • Firmamento Rasgado sobre Vaeloria',
+    periodLabel: 'Anos 655–688 D.F. • Céu Sem Sol',
     title: 'A Guerra dos Céus Sem Horizonte e o Choque das Seis Armadas Dracônicas',
     subtitle:
       'De como, quando o solo rachado por Kragmorth impediu a marcha dos exércitos terrestres, as Cinco Cidadelas e a Fronteira Cinzenta lançaram revoadas inteiras de guerra aos ares até apagarem o próprio azul do céu na véspera do Pacto de 689 D.F.',
@@ -29,7 +30,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
     bannerImage: '/assets/arena/domain_red.png',
     nodes: [
       {
-        id: 'node_4j_1_hoste_cratera',
+        id: 'node_4k_1_hoste_cratera',
         kind: 'creature',
         cardId: 'red_172_armada_draconica_chama',
         domain: 'red',
@@ -59,14 +60,14 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
           ],
           [
             'Seu ataque descia qual chuva de breu,',
-            'Atingindo na tenda o monarca plebeu;',
+            'Atingindo na tenda o monarca e o plebeu;',
             'Mas do polo gelado soprou em resposta',
             'A segunda revoada varrendo a encosta!',
           ],
         ],
       },
       {
-        id: 'node_4j_2_esquadra_nevasca',
+        id: 'node_4k_2_esquadra_nevasca',
         kind: 'creature',
         cardId: 'blue_172_armada_draconica_gelo',
         domain: 'blue',
@@ -89,8 +90,8 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
             'Costurando de azul a tormenta bravia!',
           ],
           [
-            'Antes mesmo da garra tocar o broquel,',
-            'Congelava a vanguarda debaixo do céu;',
+            'Antes mesmo da garra rasgar o dossel,',
+            'Congelava a vanguarda detrás do broquel;',
             'Transformando soldados, cavalos e lança',
             'Num jardim de estátuas sem voz nem mudança!',
           ],
@@ -103,7 +104,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         ],
       },
       {
-        id: 'node_4j_3_interlude_choque_vapor',
+        id: 'node_4k_3_interlude_choque_vapor',
         kind: 'interlude',
         cardId: 'blue_172_armada_draconica_gelo',
         hideCardArt: true,
@@ -117,7 +118,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
           [
             'Quando o sopro de magma bateu no cristal,',
             'Rebentou nas alturas um estrondo mortal;',
-            'Nem vencia a geada, nem punha-se o ardor:',
+            'Nem vencia a geada, nem cedia o ardor:',
             'Todo o céu virou nuvem de espesso vapor!',
           ],
           [
@@ -135,7 +136,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         ],
       },
       {
-        id: 'node_4j_4_legiao_eclipse',
+        id: 'node_4k_4_legiao_eclipse',
         kind: 'creature',
         cardId: 'purple_172_armada_draconica_abismo',
         domain: 'purple',
@@ -172,7 +173,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         ],
       },
       {
-        id: 'node_4j_5_enxame_ancestral',
+        id: 'node_4k_5_enxame_ancestral',
         kind: 'creature',
         cardId: 'green_172_armada_draconica_selva',
         domain: 'green',
@@ -209,7 +210,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         ],
       },
       {
-        id: 'node_4j_6_interlude_noite_escamas',
+        id: 'node_4k_6_interlude_noite_escamas',
         kind: 'interlude',
         cardId: 'green_172_armada_draconica_selva',
         hideCardArt: true,
@@ -241,7 +242,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         ],
       },
       {
-        id: 'node_4j_7_armada_zenite',
+        id: 'node_4k_7_armada_zenite',
         kind: 'creature',
         cardId: 'gold_172_armada_draconica_sol',
         domain: 'gold',
@@ -253,21 +254,21 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         stanzas: [
           [
             'Rompendo as camadas de fumo e geada,',
-            'Desceu em V d’ouro a falange sagrada:',
+            'Desceu em cunha áurea a falange sagrada:',
             'A Armada do Zênite, em seis asas belas,',
             'Acesa qual frota de vivas estrelas!',
           ],
           [
             'Com jubas de leão e couraça luzente,',
-            'Varriam de fogo dourado a vanguarda da frente;',
+            'Varriam de chama toda a tropa da frente;',
             'E a cada investida do bando solar,',
             'Mil escudos divinos vestiam o ar!',
           ],
           [
             'Curavam de longe o seu rei combalido,',
             'Sustentando nas asas o povo ferido;',
-            'Mas nem mesmo Solária logrou pôr um fim',
-            'À tormenta de cinco bandeiras sem fim!',
+            'Mas nem mesmo Solária pôde extinguir',
+            'A tormenta de escamas que vinha rugir!',
           ],
           [
             'Pois quanto mais ouro brilhava no espaço,',
@@ -278,7 +279,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         ],
       },
       {
-        id: 'node_4j_8_armada_prisma',
+        id: 'node_4k_8_armada_prisma',
         kind: 'creature',
         cardId: 'neutral_172_armada_draconica_matriz',
         domain: 'neutral',
@@ -315,7 +316,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         ],
       },
       {
-        id: 'node_4j_9_interlude_silencio_688',
+        id: 'node_4k_9_interlude_silencio_688',
         kind: 'interlude',
         cardId: 'neutral_172_armada_draconica_matriz',
         hideCardArt: true,
@@ -324,7 +325,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         subtitle:
           'No inverno de 688 D.F., exaustos sob um firmamento prestes a colapsar, os Cinco Soberanos recolhem suas revoadas e atendem à convocação de Valkyra',
         yearLabel: 'Ano 688 D.F.',
-        locationLabel: 'Escadarias da Torre dos Cinco Selos',
+        locationLabel: 'Escadarias da Torre Cinzenta',
         stanzas: [
           [
             'Olharam os reis para o teto rasgado,',
@@ -350,11 +351,12 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CAPÍTULO V-K: OS SEIS GENERAIS DA RODA (Anos 825–849 D.F.)
+  // CAPÍTULO V-K: OS SEIS GENERAIS DA RODA (Anos 839–850 D.F.)
   // 9 nós = 6 com imagem (4 estrofes) + 3 pontes sem imagem (3 estrofes) = 33 estrofes
   // ==========================================================================
   {
     id: 'canto_5k_generais_roda_quebra_dominios',
+    chronologicalOrder: 54,
     isParallel: true,
     parentCantoId: 'canto_5_pacto',
     anchorNodeId: 'node_creature_50_smaragda',
@@ -362,7 +364,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
     shortTitle: 'Os Generais da Roda',
     cantoNumber: 'CAPÍTULO V-K',
     eraNumber: 'IVª ERA • A CRISE DAS REDOMAS SOBERANAS NA ARENA',
-    periodLabel: 'Anos 825–849 D.F. • Arena Ritual e Câmaras Axiais da Torre',
+    periodLabel: 'Anos 839–850 D.F. • Os Seis Domínios',
     title: 'A Heresia das Redomas Soberanas e a Consagração dos Seis Generais da Roda',
     subtitle:
       'De como, no fim da Quarta Era, monarcas soberbos descobriram como aprisionar a Arena em Expansões de Domínio inexpugnáveis, e de como foram despertados Vaelkor, Pyrrakon, Cryonax, Nyxaroth, Sylvarok e Heliokar para quebrar todo falso firmamento',
@@ -377,12 +379,12 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'A Brecha das Redomas Absolutas',
         subtitle:
-          'No Ano 825 D.F., duelistas reais distorcem os artigos do Pacto Cromático projetando as primeiras Expansões de Domínio sobre o campo sagrado',
-        yearLabel: 'Ano 825 D.F.',
+          'No Ano 839 D.F., duelistas reais distorcem os artigos do Pacto Cromático projetando as primeiras Expansões de Domínio sobre o campo sagrado',
+        yearLabel: 'Ano 839 D.F.',
         locationLabel: 'Arena Central da Torre dos Cinco Selos',
         stanzas: [
           [
-            'Cem anos depois que o Tratado vigia,',
+            'Século e meio após que o Tratado vigia,',
             'Surgiu nos duelos sutil tirania:',
             'Não podendo marchar em campanha campal,',
             'Inventaram os reis a redoma mortal!',
@@ -390,7 +392,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
           [
             'Erguiam na Arena uma cúpula extrema —',
             'A Expansão de Domínio, soberba e suprema —,',
-            'Fechando o oponente num mundo fechado',
+            'Trancando o oponente num cerco blindado',
             'Onde o próprio destino já estava julgado!',
           ],
           [
@@ -408,8 +410,8 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'Vaelkor, General da Roda Prismática',
         subtitle:
-          'Em 828 D.F., o primeiro Arconte-Juiz ergue-se no Átrio Axial carregando às costas a roda de oito octaedros capaz de refratar e estilhaçar qualquer cúpula soberana',
-        yearLabel: 'Ano 828 D.F.',
+          'Em 840 D.F., o primeiro Arconte-Juiz ergue-se no Átrio Axial carregando às costas a roda de oito octaedros capaz de refratar e estilhaçar qualquer cúpula soberana',
+        yearLabel: 'Ano 840 D.F.',
         locationLabel: 'Átrio Axial da Torre dos Cinco Selos',
         stanzas: [
           [
@@ -445,8 +447,8 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         domain: 'red',
         title: 'Pyrrakon, General da Roda Vulcânica',
         subtitle:
-          'No Ano 832 D.F., das bigornas abissais de Pyros salta o colosso acorrentado cujos oito cadinhos ferventes derretem barreiras e domínios rivais',
-        yearLabel: 'Ano 832 D.F.',
+          'No Ano 841 D.F., das bigornas abissais de Pyros salta o colosso acorrentado cujos oito cadinhos ferventes derretem barreiras e domínios rivais',
+        yearLabel: 'Ano 841 D.F.',
         locationLabel: 'Bigorna Suprema de Pyros',
         stanzas: [
           [
@@ -456,8 +458,8 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
             'Pyrrakon, o senhor da fornalha vivente!',
           ],
           [
-            'Elmo de grelha vomitando fumaça,',
-            'Dois cutelos presos em elos de brasa;',
+            'Elmo de grelha soprando fumaça,',
+            'Dois cutelos presos em rija couraça;',
             'Às costas girava o terrível brasão:',
             'Oito cadinhos cheios de magma em fusão!',
           ],
@@ -482,8 +484,8 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         domain: 'blue',
         title: 'Cryonax, General da Roda Astral',
         subtitle:
-          'Em 836 D.F., os mestres horológicos consagram o duelista de safira espelhada cujo astrolábio de oito esferas tempestuosas decifra e trinca redomas como vidro',
-        yearLabel: 'Ano 836 D.F.',
+          'Em 843 D.F., os mestres horológicos consagram o duelista de safira espelhada cujo astrolábio de oito esferas tempestuosas decifra e trinca redomas como vidro',
+        yearLabel: 'Ano 843 D.F.',
         locationLabel: 'Câmara do Astrolábio Frio, Vórtex',
         stanzas: [
           [
@@ -499,10 +501,10 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
             'Calculando a fraqueza da cúpula armada!',
           ],
           [
-            'Bastou um estalo do aro celeste',
-            'P’ra quebrar a redoma qual vidro agreste;',
+            'Bastou um estalo do aro polar',
+            'P’ra partir a redoma qual vidro no ar;',
             'Congelou na vanguarda o exército alheio',
-            'E cobriu seus irmãos de sagrado arneio!',
+            'E cobriu seus irmãos de celeste bloqueio!',
           ],
           [
             'A cada investida da lança serena,',
@@ -520,8 +522,8 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         domain: 'purple',
         title: 'A Doutrina dos Oito Raios e a Exaustão do Trono',
         subtitle:
-          'Em 838 D.F., os escribas do Conclave registram por que nenhum Soberano consegue reerguer imediatamente um Domínio despedaçado por um General da Roda',
-        yearLabel: 'Ano 838 D.F.',
+          'Em 844 D.F., os escribas do Conclave registram por que nenhum Soberano consegue reerguer imediatamente um Domínio despedaçado por um General da Roda',
+        yearLabel: 'Ano 844 D.F.',
         locationLabel: 'Salão dos Escribas da Torre',
         stanzas: [
           [
@@ -551,12 +553,12 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         domain: 'purple',
         title: 'Nyxaroth, General da Roda Fúnebre',
         subtitle:
-          'No Ano 841 D.F., da Catedral de Obsidiana levita o arconte de quatro braços e roda de oito lanternas cranianas que executa campeões e desfaz santuários',
-        yearLabel: 'Ano 841 D.F.',
+          'No Ano 845 D.F., da Catedral de Obsidiana levita o arconte de quatro braços e roda de oito lanternas cranianas que executa campeões e desfaz santuários',
+        yearLabel: 'Ano 845 D.F.',
         locationLabel: 'Nave Sem Luz da Catedral de Obsidiana',
         stanzas: [
           [
-            'Nas criptas profundas de pedra-sabão,',
+            'Nas criptas profundas de negro carvão,',
             'Despertou Nyxaroth em funérea oração;',
             'Quatro braços erguidos: dois ferros curvos,',
             'Dois selos de raios violetas e turvos!',
@@ -588,8 +590,8 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         domain: 'green',
         title: 'Sylvarok, General da Roda Primeva',
         subtitle:
-          'Em 845 D.F., o Círculo de Raiz-Ferro desperta o guardião de pau-ferro e jade cujas raízes arrombam qualquer fronteira artificial imposta sobre a terra',
-        yearLabel: 'Ano 845 D.F.',
+          'Em 847 D.F., o Círculo de Raiz-Ferro desperta o guardião de pau-ferro e jade cujas raízes arrombam qualquer fronteira artificial imposta sobre a terra',
+        yearLabel: 'Ano 847 D.F.',
         locationLabel: 'Trono de Pau-Ferro, Veridia',
         stanzas: [
           [
@@ -611,8 +613,8 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
             'E devolvendo o ar livre às criaturas do mundo!',
           ],
           [
-            'Revestia a matilha de força e de escudo,',
-            'Curando na carne o golpe mais rudo;',
+            'Revestia a matilha de força e de brio,',
+            'Curando na carne o golpe mais frio;',
             'Faltando somente na cúpula auroral',
             'Descer das alturas o sexto General!',
           ],
@@ -625,15 +627,15 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         domain: 'gold',
         title: 'Heliokar, General da Roda Celeste',
         subtitle:
-          'No Ano 848 D.F., sob o zimbório de Solária desce o arconte de alabastro e ouro com sua roda de oito sóis de bronze para selar o equilíbrio definitivo da Arena',
-        yearLabel: 'Ano 848 D.F.',
+          'No Ano 849 D.F., sob o zimbório de Solária desce o arconte de alabastro e ouro com sua roda de oito sóis de bronze para selar o equilíbrio definitivo da Arena',
+        yearLabel: 'Ano 849 D.F.',
         locationLabel: 'Zimbório Dourado de Solária',
         stanzas: [
           [
             'Por fim, quando o sol bateu reto no altar,',
             'Desceu de Solária o supremo Heliokar;',
             'Em mármore branco e armadura dourada,',
-            'Plantando nas lajes a grande montante sagrada!',
+            'Plantando nas lajes a espada sagrada!',
           ],
           [
             'Com quatro asas claras de pluma imortal',
@@ -663,12 +665,12 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
         domain: 'gold',
         title: 'O Decreto das Cúpulas Quebráveis',
         subtitle:
-          'Em 849 D.F., com os Seis Generais da Roda inscritos nos Grimórios, nenhuma Expansão de Domínio volta a ser absoluta, abrindo caminho para os Dez Tratados Bicolores',
-        yearLabel: 'Ano 849 D.F.',
+          'Em 850 D.F., com os Seis Generais da Roda inscritos nos Grimórios, nenhuma Expansão de Domínio volta a ser absoluta, abrindo caminho para os Dez Tratados Bicolores',
+        yearLabel: 'Ano 850 D.F.',
         locationLabel: 'Mesa dos Selos, Fronteira Cinzenta',
         stanzas: [
           [
-            'Desde oito-quatro-nove ficou assenteado',
+            'Em oitocentos e cinquenta ficou assentado',
             'No código vivo do nosso Tratado:',
             'Um rei pode erguer seu Domínio no chão,',
             'Mas nunca terá inquebrável prisão!',
@@ -676,7 +678,7 @@ export const EPIC_POEM_PARALLEL_PART_25: EpicPoemCanto[] = [
           [
             'Pois basta que gire nos ombros de um bravo',
             'A Roda de Oito Raios que livra o escravo,',
-            'E toda redoma, por forte que for,',
+            'E toda redoma, de qualquer senhor,',
             'Desaba em estilhaços diante do fulgor!',
           ],
           [

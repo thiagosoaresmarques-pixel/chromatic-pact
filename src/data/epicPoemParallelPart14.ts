@@ -1,26 +1,27 @@
 import { EpicPoemCanto } from './epicPoemTypes';
 
 /**
- * CANTOS PARALELOS — PARTE 14 (V-G, VI-G e VII-G)
+ * CANTOS PARALELOS — PARTE 14 (V-D, VI-G e VII-B)
  * Crônicas paralelas da Onda G (33 estrofes / 132 versos por Canto),
  * aprofundando o Mecanismo dos Turnos do Draco Horológico (718 D.F.), o Tratado da Cinza Fértil
  * entre Khorvath e Silvathor (988 D.F.) e o Grilhão da Entropia de Malakor (1.132 D.F.).
  */
 export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
   // ==========================================================================
-  // CANTO PARALELO V-G: MECANISMO DOS TURNOS (Ano 718 D.F. • Engrenagens Subterrâneas da Arena)
+  // CAPÍTULO V-D: MECANISMO DOS TURNOS (Ano 718 D.F. • Cúpula Horológica)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_5g_relogio_turnos_arena',
     isParallel: true,
     parentCantoId: 'canto_5_pacto',
+    chronologicalOrder: 47,
     anchorNodeId: 'node_creature_45_draco_horologico',
-    parallelCode: 'V-G',
+    parallelCode: 'V-D',
     shortTitle: 'Mecanismo dos Turnos',
-    cantoNumber: 'CANTO PARALELO V-G',
+    cantoNumber: 'CAPÍTULO V-D',
     eraNumber: 'IVª ERA • BASTIDORES DO DRACO HOROLÓGICO',
-    periodLabel: 'Ano 718 D.F. • Engrenagens Subterrâneas da Arena',
+    periodLabel: 'Ano 718 D.F. • Cúpula Horológica',
     title: 'O Duelo de Sete Dias e a Invenção do Relógio de Turnos',
     subtitle: 'Como Thaddeus, Justinian, o Draco Horológico, Kaelen, o Comandante Garrick e Valkyra instalaram sob a Arena o grande pêndulo que divide cada partida em Fases e Turnos invioláveis',
     accentColor: '#eab308',
@@ -31,8 +32,8 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'neutral_44_dragao_relogio',
         domain: 'neutral',
-        title: 'O Caos das Invocações Simultâneas',
-        subtitle: 'No Ano 718 D.F., um duelo sem regras de tempo dura sete dias seguidos, levando à criação do Draco Horológico de Aeternus',
+        title: 'O Caos das Invocações Desordenadas',
+        subtitle: 'No Ano 718 D.F., um duelo sem regras de tempo dura sete dias seguidos, levando à ativação do Draco Horológico de Aeternus',
         yearLabel: 'Ano 718 D.F.',
         locationLabel: 'Engrenagens Subterrâneas da Arena',
         stanzas: [
@@ -68,7 +69,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         cardId: 'blue_80_senhor_tempo',
         domain: 'blue',
         title: 'A Equação das Quatro Fases de Thaddeus',
-        subtitle: 'O Senhor do Tempo desenha na cabeça do Draco Horológico a divisão exata entre Compra, Principal, Combate e Fim',
+        subtitle: 'O Senhor do Tempo grava no Draco Horológico o compasso fundador de fases que ordenou os duelos clássicos da Arena',
         yearLabel: 'Ano 718 D.F.',
         locationLabel: 'Engrenagens Subterrâneas da Arena',
         stanzas: [
@@ -154,8 +155,8 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           [
             'Ao ouvir aquela cláusula que acabava com a trapaça,',
             'Os jogadores desonestos que lucravam na fumaça',
-            'Mandaram pelo esgoto dez ladrões de alavanca,',
-            'Para quebrar a roda mestra com marreta e com alavanca!',
+            'Mandaram pelo esgoto dez ladrões de emboscada,',
+            'Para quebrar a roda mestra a ferro e marretada!',
           ],
           [
             '"Quebrem a boca desse dragão antes que dê a badalada!" —',
@@ -196,8 +197,8 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           [
             'O Draco Horológico abriu os dois olhos de rubi,',
             'Soltando o primeiro tique-taque que a Torre ouviu ali;',
-            'Mas um último sabotador, escondido sob o fólio,',
-            'Lançou uma bomba de breu contra o nobre capitólio!',
+            'Mas um último sabotador, oculto atrás do fole,',
+            'Lançou uma bomba de breu p’ra que a máquina atole!',
           ],
         ],
       },
@@ -207,8 +208,8 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         cardId: 'neutral_01_mercenario_veterano',
         hideCardArt: true,
         domain: 'neutral',
-        title: 'O Escudo no Tempo Certo',
-        subtitle: 'Garrick intercepta o artefato explosivo no ar, demonstrando na prática o funcionamento de uma Reação',
+        title: 'O Golpe no Tempo Certo',
+        subtitle: 'Garrick intercepta o artefato explosivo no ar em pleno ímpeto, demonstrando na prática o funcionamento de uma Reação',
         yearLabel: 'Ano 718 D.F.',
         locationLabel: 'Engrenagens Subterrâneas da Arena',
         stanzas: [
@@ -225,7 +226,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'Agiu no exato gatilho da inimiga provocação!',
           ],
           [
-            'Com a prancha do escudo velho bateu na bomba no ar,',
+            'Com a prancha da espada larga bateu na bomba no ar,',
             'Devolvendo o fogo negro para quem o quis lançar;',
             'E o estrondo na galeria jogou o ladrão no chão,',
             'Deixando intacta a máquina da nova marcação!',
@@ -238,7 +239,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         cardId: 'neutral_01_mercenario_veterano',
         domain: 'neutral',
         title: 'A Lição Prática do Comandante Garrick',
-        subtitle: 'Como o golpe de escudo de Garrick foi integrado ao mecanismo do Draco como o gatilho oficial de Retaguarda',
+        subtitle: 'Como o golpe veloz de Garrick foi integrado ao mecanismo do Draco como o gatilho oficial de Retaguarda',
         yearLabel: 'Ano 718 D.F.',
         locationLabel: 'Engrenagens Subterrâneas da Arena',
         stanzas: [
@@ -286,7 +287,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'Que fez calar num instante todo o barulho do mundo!',
           ],
           [
-            'Os dois magos que gritavam há sete dias a fio',
+            'Os dois magos que gritavam num furioso desafio',
             'Viram suas cartas paradas por um luminoso fio;',
             'Metade do tabuleiro acendeu em luz dourada,',
             'Enquanto a outra metade ficou em sombra pousada.',
@@ -325,7 +326,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'O Draco Horológico soltou um sopro de vapor branco,',
             'Virando a placa de bronze de um para o outro flanco;',
             'Em três minutos de ordem o duelo terminou,',
-            'E a multidão nas tribunas de pé os seis aplaudiu e louvou!',
+            'E o povo nas arquibancadas de pé os aclamou!',
           ],
           [
             'Lá embaixo, junto à caldeira, Garrick e Kaelen brindaram,',
@@ -339,19 +340,20 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CANTO PARALELO VI-G: TRATADO DA CINZA FÉRTIL (Ano 988 D.F. • Garganta Vulcânica de Pyros & Veridia)
+  // CAPÍTULO VI-G: TRATADO DA CINZA FÉRTIL (Ano 988 D.F. • Encostas de Cinza Fértil)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_6g_cinza_fertil_khorvath',
     isParallel: true,
     parentCantoId: 'canto_6_tratados',
+    chronologicalOrder: 61,
     anchorNodeId: 'creature_57_khorvath',
     parallelCode: 'VI-G',
     shortTitle: 'Tratado da Cinza Fértil',
-    cantoNumber: 'CANTO PARALELO VI-G',
+    cantoNumber: 'CAPÍTULO VI-G',
     eraNumber: 'Vª ERA • BASTIDORES DO TRATADO RUBRO-ESMERALDA',
-    periodLabel: 'Ano 988 D.F. • Garganta Vulcânica de Pyros & Veridia',
+    periodLabel: 'Ano 988 D.F. • Encostas de Cinza Fértil',
     title: 'O Encontro entre Khorvath e Silvathor no Vale das Cinzas Verdes',
     subtitle: 'Como o General Varkas, Kongor, Lyra e o Comandante Garrick transformaram a erupção de Khorvath sobre as matas de Silvathor no rito de fertilidade e fúria do Tratado Rubro-Esmeralda',
     accentColor: '#ef4444',
@@ -370,14 +372,14 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           [
             'No Ano Novecentos e Oitenta e Oito, na serra onde o fogo mora,',
             'E a mata de esmeralda começa logo lá fora,',
-            'A montanha de obsidiana abriu a boca vermelha,',
-            'Lançando até às estrelas um milhão de centelha!',
+            'A montanha de obsidiana abriu a goela vermelha,',
+            'Lançando p’ra as estrelas uma chuva de centelha!',
           ],
           [
             'De dentro do magma vivo subiu o monstro ancião:',
             'Khorvath, o Dragão Vulcânico, senhor da deflagração;',
             'Suas escamas eram placas de rocha fundida e brasa,',
-            'E cada bater de asas queimava léguas em rasa!',
+            'E cada bater de asas deixava a floresta rasa!',
           ],
           [
             'Dormira duzentos anos no fundo da chaminé,',
@@ -399,7 +401,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         cardId: 'green_103_dragao_floresta_anciao',
         domain: 'green',
         title: 'O Muro de Sequoias de Silvathor',
-        subtitle: 'O Dragão-Floresta Ancião ergue raízes úmidas de cem metros para conter o rio de magma de Khorvath',
+        subtitle: 'O Dragão-Floresta Ancião ergue raízes úmidas de cinquenta braças para conter o rio de magma de Khorvath',
         yearLabel: 'Ano 988 D.F.',
         locationLabel: 'Garganta Vulcânica de Pyros & Veridia',
         stanzas: [
@@ -418,8 +420,8 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           [
             '"Recua para a tua fornalha, lagarto de carvão!" —',
             'Rugiu Silvathor soprando um vendaval de verão;',
-            '"Queimarei cada folha que sombrear meu vulcão!" —',
-            'Respondeu Khorvath cuspindo um novo turbilhão!',
+            '"Queimarei cada sequoia que sombrear meu altar!" —',
+            'Respondeu Khorvath cuspindo brasas vivas pelo ar!',
           ],
           [
             'Se os dois dragões primordiais lutassem até à morte,',
@@ -644,16 +646,16 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'Comandante Garrick guardou a cópia no bornal de couro,',
             'Dizendo ao General Varkas com seu riso de tesouro:',
             '"Primeiro quase morri afogado lá no mar,',
-            'E hoje quase virei churrasco para dois dragões casar!"',
+            'E hoje quase virei cinza p’ra os dois reis conciliar!"',
           ],
           [
-            'Varkas deu uma gargalhada batendo nas costas dele:',
-            '"Mas olha a força da tropa que sai da união daquele!',
+            'Varkas deu uma gargalhada batendo no ombro do par:',
+            '"Mas olha a força da tropa que essa aliança vai gerar!',
             'Fúria de Pyros na veia e de Veridia a lida:',
             'Não há muralha no mundo que aguente essa investida!"',
           ],
           [
-            'Assim entrou para a história do Ano Novecentos e Oitenta',
+            'Em Novecentos e Oitenta e Oito firmou-se na rocha benta',
             'O Tratado da Cinza Fértil que a Arena movimenta;',
             'Onde a faísca inicial prepara o solo fecundo',
             'Para as maiores criaturas atropelarem o mundo!',
@@ -670,21 +672,22 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CANTO PARALELO VII-G: GRILHÃO DA ENTROPIA (Ano 1.132 D.F. • Fenda Entrópica do Oeste)
+  // CAPÍTULO VII-B: GRILHÃO DA ENTROPIA (Ano 1.132 D.F. • Catedral de Obsidiana)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_7g_contencao_malakor',
     isParallel: true,
     parentCantoId: 'canto_7_presente',
+    chronologicalOrder: 69,
     anchorNodeId: 'creature_65_malakor',
-    parallelCode: 'VII-G',
+    parallelCode: 'VII-B',
     shortTitle: 'Grilhão da Entropia',
-    cantoNumber: 'CANTO PARALELO VII-G',
+    cantoNumber: 'CAPÍTULO VII-B',
     eraNumber: 'VIª ERA • BASTIDORES DO IMPERADOR DA ENTROPIA',
-    periodLabel: 'Ano 1.132 D.F. • Fenda Entrópica do Oeste',
+    periodLabel: 'Ano 1.132 D.F. • Catedral de Obsidiana',
     title: 'O Dia em que Malakor Quis Devorar o Próprio Trono de Eclipse',
-    subtitle: 'Como a chegada de Malakor em 1.132 D.F. ameaçou desintegrar tanto a Torre quanto as legiões de Vesperion, forçando Zephaniel, o General Varkas, o Comandante Garrick e Valkyra a selá-lo como carta Lendária',
+    subtitle: 'Como a chegada corpórea de Malakor em 1.132 D.F. ameaçou desintegrar tanto a Torre quanto as legiões de Vesperion, forçando Zephaniel, o General Varkas, o Comandante Garrick e Valkyra a selar sua encarnação física como carta Lendária',
     accentColor: '#a855f7',
     bannerImage: '/assets/arena/tabletop_purple.png',
     nodes: [
@@ -694,13 +697,13 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         cardId: 'purple_119_soberano_entropia',
         domain: 'purple',
         title: 'A Abertura da Fenda Entrópica do Oeste',
-        subtitle: 'No Ano 1.132 D.F., onze anos após o Estalo do Sétimo Selo, o Imperador da Entropia emerge para dissolver toda matéria e memória',
+        subtitle: 'No Ano 1.132 D.F., onze anos após o Estalo do Sétimo Selo, o Imperador da Entropia emerge em forma física para dissolver toda matéria e memória',
         yearLabel: 'Ano 1.132 D.F.',
         locationLabel: 'Fenda Entrópica do Oeste',
         stanzas: [
           [
             'No Ano Mil Cento e Trinta e Dois, nas terras do sol poente,',
-            'Onde a fronteira de Umbra toca o abismo dormente,',
+            'Onde o Vale do Eclipse toca o abismo dormente,',
             'A cicatriz que o Sétimo Selo deixara no chão',
             'Abriu-se num sorvedouro de fria desintegração!',
           ],
@@ -711,8 +714,8 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'Mas a própria lei do fim querendo tudo apagar!',
           ],
           [
-            'Onde a sua sombra passava, a rocha virava areia,',
-            'A areia virava fumo e o fumo se desvaneia;',
+            'Onde seu manto arrastava, a rocha virava areia,',
+            'O rio perdia o seu leito onde a bruma serpenteia;',
             'Nem mesmo a alma dos mortos ficava para servir,',
             'Pois o fogo da Entropia fazia o espírito sumir!',
           ],
@@ -735,16 +738,16 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         locationLabel: 'Fenda Entrópica do Oeste',
         stanzas: [
           [
-            'Vesperion saiu ao campo com trinta legiões de osso,',
-            'Julgando dobrar o monstro que saíra daquele poço;',
-            '"Curva-te ao Rei de Umbra, criatura da escuridão,',
+            'Vesperion saiu ao campo com trinta legiões no fosso,',
+            'Julgando dobrar o monstro com muralhas de puro osso;',
+            '"Curva-te ao Rei do Eclipse, criatura da escuridão,',
             'Pois tudo que traz a morte está sob a minha mão!"',
           ],
           [
             'Malakor olhou o Lich com desprezo sombrio:',
             '"Tu és apenas um resto no meu prato vazio!',
             'Guarda-te em caixas de vidro fingindo ser imortal,',
-            'Mas para a fome da Entropia o osso e a carne são igual!"',
+            'Pois diante da Entropia o morto ao vivo é igual!"',
           ],
           [
             'O Imperador estendeu a palma desintegradora,',
@@ -754,19 +757,19 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
           ],
           [
             'Pela primeira vez em mil anos de ambição,',
-            'O Senhor da Necromancia conheceu a precisão:',
+            'O Senhor da Necromancia conheceu a hesitação:',
             'Se Malakor avançasse até a Torre central,',
             'Não sobraria nem trono, nem vivo, nem imortal!',
           ],
         ],
       },
       {
-        id: 'node_7g_3_interlude_tregua_forçada',
+        id: 'node_7g_3_interlude_tregua_forcada',
         kind: 'interlude',
         cardId: 'gold_09_serafim_solar',
         hideCardArt: true,
         domain: 'gold',
-        title: 'OSinal de Socorro na Fronteira Oeste',
+        title: 'O Sinal de Socorro na Fronteira Oeste',
         subtitle: 'Garrick e Varkas seguram os refugiados na linha da ravina enquanto Zephaniel desce diante de um Vesperion encurralado',
         yearLabel: 'Ano 1.132 D.F.',
         locationLabel: 'Fenda Entrópica do Oeste',
@@ -839,7 +842,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         stanzas: [
           [
             'General Varkas avançou pelo flanco da direita,',
-            'Onde o vento da Entropia a armadura desfeita;',
+            'Onde o sopro do Nada a couraça rejeita;',
             'Trazia quatro colunas de ferro da Forja Solar,',
             'Que nem mesmo o frio do nada podia desintegrar!',
           ],
@@ -859,7 +862,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'Do outro lado da fenda, faltava prender o cabo',
             'Na quarta estaca de ferro junto à perna do diabo;',
             'E lá corria na poeira, com a corrente na mão,',
-            'O veterano que nunca falhou numa precisão!',
+            'O veterano que nunca falhou numa missão!',
           ],
         ],
       },
@@ -905,8 +908,8 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         locationLabel: 'Fenda Entrópica do Oeste',
         stanzas: [
           [
-            'Não tendo pino de ferro para a argola trancar,',
-            'Garrick usou o toco da espada que lhe restar;',
+            'Não tendo pino grosso na argola singular,',
+            'Usou da velha espada o toco a lhe sobrar;',
             'Enfiou a guarda de aço no elo da contenção,',
             'Travando o pé de Malakor no meio do furacão!',
           ],
@@ -917,14 +920,14 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
             'Mas amarrei o fantasma pelo pé e pelo pescoço!"',
           ],
           [
-            'Varkas puxou o amigo pelo colarinho roto,',
-            'Tirando o bravo guerreiro daquele abismo devoto;',
+            'Varkas puxou o amigo pelo manto chamuscado,',
+            'Tirando o bravo guerreiro do vórtice esfaimado;',
             'Zephaniel manteve o monstro de cabeça abaixada,',
             'E até Vesperion puxou sua ponta acorrentada!',
           ],
           [
-            'Preso pelos quatro cantos entre a luz, o fogo e o breu,',
-            'Malakor urrou tentando rasgar a tela do céu;',
+            'Preso pelos quatro cantos entre a luz, a brasa e o breu,',
+            'Malakor urrou tentando romper o laço que o prendeu;',
             'Mas sobre a jaula acesa desceu a Imperatriz,',
             'Trazendo a carta vazia de borda roxa e matriz!',
           ],
@@ -937,27 +940,27 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'A Redução do Infinito a uma Carta',
-        subtitle: 'Valkyra comprime a imensidão destrutiva de Malakor dentro dos limites da lei do Pacto Cromático',
+        subtitle: 'Valkyra comprime a encarnação física de Malakor dentro dos limites da lei do Pacto Cromático',
         yearLabel: 'Ano 1.132 D.F.',
         locationLabel: 'Fenda Entrópica do Oeste',
         stanzas: [
           [
             '"Tu queres ser o fim de tudo sem regra nem medida," —',
-            'Disse Valkyra apontando a lâmina colorida —',
+            'Disse Valkyra expandindo a asa multicor erguida —',
             '"Mas neste mundo selado até o próprio fim tem lei:',
             'Vais caber num retângulo como qualquer outro rei!"',
           ],
           [
             'O Diadema Pentacromático girou sobre a fenda aberta,',
-            'Puxando a nuvem de nada para a moldura certa;',
-            'Trinta metros de vazio foram-se comprimindo,',
+            'Puxando a carne de nada para a moldura certa;',
+            'Quinze braças de vazio foram-se comprimindo,',
             'Enquanto a fenda no solo ia aos poucos se extinguindo!',
           ],
           [
             'Malakor lutou com fúria, mas a jaula dos heróis',
             'Segurava o seu espírito com a força de cinco sóis;',
             'Até que num estalo seco de púrpura e de cristal,',
-            'O Imperador da Entropia virou memória no sal!',
+            'Sua forma corpórea selou-se no ritual!',
           ],
         ],
       },
@@ -967,21 +970,21 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
         cardId: 'neutral_10_valkyra_pentacromatica',
         domain: 'neutral',
         title: 'Valkyra e o Lacre de Malakor no Relicário',
-        subtitle: 'Como o Imperador da Entropia foi trancado como uma das cartas mais custosas e devastadoras de Umbra, e Vesperion bateu em retirada',
+        subtitle: 'Como a encarnação física do Imperador da Entropia foi trancada em estampa Lendária, restando apenas ecos abissais nas fendas',
         yearLabel: 'Ano 1.132 D.F.',
         locationLabel: 'Fenda Entrópica do Oeste',
         stanzas: [
           [
             'Na mão de Valkyra brilhava a carta recém-selada:',
             '"Malakor, Imperador da Entropia", lá gravada;',
-            'Seu poder de destruir os exércitos do chão',
-            'Ficou sujeito ao alto custo da mais dura invocação!',
+            'Sua matéria inteira ficou presa na prisão,',
+            'Só restando vagos ecos na profunda escuridão!',
           ],
           [
             'Vesperion olhou a carta com cobiça e com receio,',
             'Pois agora aquele monstro tinha coleira e tinha freio;',
             'Sem dizer uma palavra aos inimigos do dia,',
-            'O Lich sumiu nas sombras voltando à sua bacia.',
+            'O Lich sumiu nas sombras da escura serrania.',
           ],
           [
             'Valkyra entregou a Garrick uma espada de aço astral,',

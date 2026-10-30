@@ -22,12 +22,12 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
         title: 'A Aliança das Duas Cores',
         subtitle: 'A descoberta dos limites de um domínio isolado e a fundação dos Trinta Grimórios Oficiais',
         yearLabel: 'Ano 851 D.F.',
-        locationLabel: 'Grande Biblioteca da Torre Cinzenta',
+        locationLabel: 'Grande Biblioteca da Torre dos Cinco Selos',
         domain: 'neutral',
         stanzas: [
           [
             'Buscando caminhos de nova vitória,',
-            'Viu-se na Torre Cinzenta a memória:',
+            'Abriu-se na Torre dos Selos a história:',
             'Que uma só cor em batalha isolada',
             'Tinha na guerra a sua força quebrada.',
           ],
@@ -53,13 +53,13 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
         title: 'Astrolon, Dragão do Vácuo Estelar',
         subtitle: 'O arauto cósmico que pousou sobre a Cúpula Astral durante a assinatura dos pactos',
         yearLabel: 'Ano 862 D.F.',
-        locationLabel: 'Cúpula Astral da Torre Cinzenta',
+        locationLabel: 'Cúpula Astral da Torre dos Cinco Selos',
         domain: 'neutral',
         stanzas: [
           [
             'Do vácuo estelar num clarão faiscante,',
             'Desceu do cosmos um astro gigante:',
-            'Sobre a alta Cúpula da Torre Cinzenta,',
+            'Sobre a alta Cúpula da Torre assenta,',
             'Astrolon pousa e os tratados sustenta.',
           ],
           [
@@ -163,7 +163,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
           [
             'Ao seu comando ninguém desfalece:',
             'Toda a falange em vigor resplandece;',
-            'Dobra o ataque e a vida ao seu par,',
+            'Eleva o ataque e a vida ao seu par,',
             'Enquanto o raio já corta o alto-mar!',
           ],
         ],
@@ -243,8 +243,8 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
           [
             'Sob a névoa calada do inverno sombrio,',
             'Uniu-se a Cripta ao império do frio:',
-            'No Estreito Sombrio de Vórtex firmou-se',
-            'O Códice mudo que em gelo gravou-se.',
+            'No Estreito Sombrio de Vórtex firmou',
+            'O Códice mudo que o gelo gravou.',
           ],
           [
             'Onde a geada prendeu o vivente,',
@@ -335,7 +335,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
         stanzas: [
           [
             'Quando a névoa nos rios do sul fez morada,',
-            'Na Torre Cinzenta ficou registrada:',
+            'Nos tomos da Torre ficou consagrada:',
             'No Delta Esmeralda surgiu do lamaçal',
             'A fera que barra a falange real.',
           ],
@@ -379,8 +379,44 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
           [
             'Pousando na frente com pólen dourado,',
             'Dá força dobrada a qualquer aliado;',
-            'E lá nos céus de Solária ressoa',
-            'O canto divino da paz que coroa!',
+            'E os seis tratados que ainda faltavam',
+            'Nos trinta Grimórios a roda fechavam!',
+          ],
+        ],
+      },
+      {
+        id: 'canto6_interlude_eras_ouro',
+        kind: 'interlude',
+        cardId: 'neutral_30_coroa_pactos',
+        title: 'A Roda Completa dos Dez Tratados Bicolores',
+        subtitle: 'A consagração dos seis pactos restantes que completaram os Trinta Grimórios Oficiais de Vaeloria',
+        yearLabel: 'Anos 1.008–1.038 D.F.',
+        locationLabel: 'Salão dos Dez Tratados (Torre dos Cinco Selos)',
+        domain: 'neutral',
+        stanzas: [
+          [
+            'Além da Forja Solar e do Inverno Umbral,',
+            'Das Marés com as Matas e a Cinza vital,',
+            'Seis outras alianças selaram na história',
+            'A roda completa de paz e memória.',
+          ],
+          [
+            'No pacto do Vapor Astral reluzente,',
+            'Uniu-se a Caldeira à Safira fulgente;',
+            'E a Pira Abissal misturou num crisol',
+            'A brasa de Pyros à noite sem sol.',
+          ],
+          [
+            'A Lei Celeste uniu Vórtex à Aurora,',
+            'E o Jardim Solar fez brotar toda flora;',
+            'No Ciclo do Húmus a tumba sombria',
+            'Nutriu a raiz que no bosque crescia.',
+          ],
+          [
+            'Por fim o Crepúsculo Julgador ata',
+            'Solária ao Eclipse em balança exata:',
+            'Dez nobres Tratados na Torre brilharam,',
+            'Enquanto em Solária seis asas cantaram!',
           ],
         ],
       },
@@ -436,7 +472,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
             'Escamas d’ouro do zênite ardente,',
             'Olhos que cegam a tropa insolente;',
             'Guarda fiel da coroa solar,',
-            'Pronto a falange dourada guiar.',
+            'Pronto p’ra a tropa dourada guiar.',
           ],
           [
             'Seu rugido eleva a força e o vigor',
@@ -466,8 +502,8 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
           [
             'Nas asas translúcidas brilha o cometa,',
             'Seguindo dos astros a rota secreta;',
-            'Colhendo a luz da mais longe constelação,',
-            'Transforma o vácuo em pura criação.',
+            'Colhendo o fulgor da longínqua amplidão,',
+            'Transforma o silêncio em astral criação.',
           ],
           [
             'Entrega duas cargas de Essência no ar',
@@ -534,8 +570,8 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
           [
             'Fere a Vanguarda e congela o vivente,',
             'Cobrindo de escarcha a fileira da frente;',
-            'Mas ai! lá no fundo da Torre estalou',
-            'O Sétimo Selo que o mundo abalou!',
+            'Pressentindo que em breve no fundo ia soar',
+            'O Sétimo Selo prestes a rachar!',
           ],
         ],
       },
@@ -552,7 +588,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
     eraNumber: 'VIª ERA',
     periodLabel: '1.121 D.F. — 1.240 D.F. (Presente)',
     title: 'O Eclipse do Sétimo Selo e a Guerra dos Relicários',
-    subtitle: 'Quando as fissuras do Vazio se abriram e as 996 Memórias despertaram para o duelo final',
+    subtitle: 'Quando as fissuras do Vazio se abriram e as 1.038 Memórias despertaram para o duelo final',
     accentColor: '#f43f5e',
     bannerImage: '/assets/arena/tabletop_purple.png',
     nodes: [
@@ -561,7 +597,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
         kind: 'prelude',
         cardId: 'neutral_55_ruptura_planar',
         title: 'O Estalo do Sétimo Selo',
-        subtitle: 'O tremor nos alicerces da Torre Cinzenta e o despertar dos Relicários Ancestrais',
+        subtitle: 'O tremor nos alicerces da Torre dos Cinco Selos e o despertar dos Relicários Ancestrais',
         yearLabel: 'Ano 1.121 D.F.',
         locationLabel: 'Subsolo da Torre dos Cinco Selos',
         domain: 'purple',
@@ -569,7 +605,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
           [
             'No fundo esquecido do velho sacrário,',
             'Tremeu no subsolo o real relicário:',
-            'Debaixo da Torre dos Cinco Selos,',
+            'Bem fundo na Torre dos Cinco Selos,',
             'Ouviu-se o estalo que trouxe pesadelos.',
           ],
           [
@@ -606,8 +642,8 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
           [
             'Imperador da entropia na luta,',
             'Que veste a mortalha da sombra astuta;',
-            'Ao erguer nos ares seu negro cutelo,',
-            'Estende nos vivos o toque de gelo.',
+            'Ao erguer sobre o campo a sua lâmina fria,',
+            'Estende nos vivos mortal agonia.',
           ],
           [
             'De todas as tropas rivais tira a vida,',
@@ -668,7 +704,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
           [
             'Não nada na espuma, mas nada nas horas,',
             'Engolindo poentes e antigas auroras;',
-            'Relógios de estrelas nas barbatanas tem,',
+            'Relógios de estrelas no dorso ele tem,',
             'E o giro do mundo no peito detém.',
           ],
           [
@@ -700,7 +736,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
             'Sentado no Trono de Ossos partidos,',
             'Comanda o lamento dos mortos erguidos;',
             'Nas órbitas ocas arde a chama fria,',
-            'Que prostra em tormento a mais brava companhia.',
+            'Que prostra na treva qualquer companhia.',
           ],
           [
             'Com chamas de almas a tropa incinera,',
@@ -855,12 +891,12 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
             'Monarca de Três Crânios num único trono,',
             'Chamando os exércitos fora do sono:',
             'Um fala o Passado, outro diz o Agora,',
-            'E o terceiro anuncia do Fim a última hora!',
+            'E o terceiro anuncia a derradeira hora!',
           ],
           [
             'Ao seu grande mando a Cripta desperta,',
             'Ferindo a fileira na linha descoberta;',
-            'Setenta e três lendas fecharam o anel:',
+            'Cem lendas eternas fecharam o anel:',
             'E agora é tua mão que governa o broquel!',
           ],
         ],
@@ -876,8 +912,8 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
         domain: 'neutral',
         stanzas: [
           [
-            'Oitocentas e noventa memórias no ar',
-            'Esperam tua voz para a guerra começar:',
+            'Mil e trinta e oito memórias no ar',
+            'Esperam tua voz p’ra a batalha soar:',
             'Do Coroa-Prisma que em cinco se abriu,',
             'Toda a história do mundo teu olho seguiu.',
           ],

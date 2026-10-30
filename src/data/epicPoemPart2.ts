@@ -95,7 +95,7 @@ export const EPIC_POEM_PART_2: EpicPoemCanto[] = [
           [
             'Na Cidadela da Caldeira o malho é soberano,',
             'E a Bigorna Primordial desperta o fogo insano;',
-            'Dalí saíram armas de têmpera e fulgor,',
+            'Dali saíram armas de têmpera e fulgor,',
             'E do fosso mais fundo ergueu-se o seu senhor!',
           ],
         ],
@@ -107,7 +107,7 @@ export const EPIC_POEM_PART_2: EpicPoemCanto[] = [
         cardId: 'red_22_tirano_fogo',
         title: 'Baelgor, Senhor do Fosso Ardente',
         subtitle:
-          'O demônio soberano das galerias inferiores que selou o pacto de sangue e enxofre com as fornalhas de Pyros.',
+          'O demônio tirano das galerias inferiores contido sob selo de enxofre para alimentar as fornalhas de Pyros.',
         yearLabel: 'Ano 178 D.F.',
         locationLabel: 'Fosso Inferior da Cidadela da Caldeira',
         domain: 'red',
@@ -119,15 +119,15 @@ export const EPIC_POEM_PART_2: EpicPoemCanto[] = [
             'Onde o rio de escória os rochedos arrasa.',
           ],
           [
-            'Selou pacto de sangue e de enxofre candente,',
-            'Nutrindo as fornalhas da legião combatente;',
+            'Curvado sob selo de enxofre candente,',
+            'Nutriu as fornalhas da legião combatente;',
             'De suas largas asas tal calor se desprende,',
-            'Que derrete as couraças e os escudos incende!',
+            'Que derrete as couraças e os escudos fende!',
           ],
           [
             'Quando desce na Arena, seu sopro abrasador',
             'Varre toda a vanguarda num incêndio de dor;',
-            'Enquanto no sul sombrio, entre névoa e segredo,',
+            'Enquanto a oeste sombrio, entre névoa e segredo,',
             'A Catedral do Eclipse vencia o próprio medo!',
           ],
         ],
@@ -171,13 +171,13 @@ export const EPIC_POEM_PART_2: EpicPoemCanto[] = [
         cardId: 'green_09_hidra',
         title: 'Vorágine, Hidra Voraz do Pântano',
         subtitle:
-          'A besta policéfala dos charcos do norte cuja seiva esmeralda multiplica cada cabeça decepada.',
+          'A besta policéfala dos charcos do sul cuja seiva esmeralda multiplica cada cabeça decepada.',
         yearLabel: 'Ano 214 D.F.',
         locationLabel: 'Pântanos Limítrofes de Veridia',
         domain: 'green',
         stanzas: [
           [
-            'Nos charcos do norte, entre o lodo e a bruma,',
+            'Nos charcos do sul, entre o lodo e a bruma,',
             'Onde o rio de Veridia em pântano se espuma,',
             'Caçadores estranhos vieram profanar',
             'As margens limítrofes daquele verde mar.',
@@ -292,7 +292,7 @@ export const EPIC_POEM_PART_2: EpicPoemCanto[] = [
         cardId: 'gold_09_serafim_solar',
         title: 'Zephaniel, Arcanjo Solar do Zênite',
         subtitle:
-          'O serafim executor que desceu pelo feixe convergente dos sete espelhos do Bastião de Solária.',
+          'O serafim executor que desceu em regência perpétua pelo feixe convergente dos sete espelhos de Solária.',
         yearLabel: 'Ano 289 D.F.',
         locationLabel: 'Torre Zênite de Solária',
         domain: 'gold',
@@ -358,13 +358,13 @@ export const EPIC_POEM_PART_2: EpicPoemCanto[] = [
         subtitle:
           'O colosso imparcial da Fronteira Cinzenta, imune tanto às chamas de Pyros quanto ao gelo de Vórtex.',
         yearLabel: 'Ano 340 D.F.',
-        locationLabel: 'Portões da Torre dos Cinco Selos',
+        locationLabel: 'Portões da Torre Cinzenta',
         domain: 'neutral',
         stanzas: [
           [
             'Na Fronteira Cinzenta, sobre o vasto planalto,',
             'Onde nenhum monarca governa do seu alto,',
-            'Junto aos Portões da Torre dos Cinco Selos jaz',
+            'Junto aos Portões da Torre Cinzenta ali jaz',
             'O autômato gigante que guarda aquela paz.',
           ],
           [
@@ -496,7 +496,7 @@ export const EPIC_POEM_PART_2: EpicPoemCanto[] = [
           ],
           [
             'Na Arena ele concede a redoma sagrada,',
-            'Tornando cada tropa em luz invulnerada;',
+            'Deixando cada tropa em fulgor escudada;',
             'Porém nas criptas frias do reino nocturnal,',
             'Despertava o patriarca do sangue ancestral!',
           ],
@@ -510,7 +510,7 @@ export const EPIC_POEM_PART_2: EpicPoemCanto[] = [
         title: 'Vladislaus, O Patriarca de Sangue',
         subtitle:
           'O fundador das sete linhagens nobres do Vale do Eclipse que ignora escudeiros para caçar o próprio Soberano.',
-        yearLabel: 'Ano 402 D.F.',
+        yearLabel: 'Anos 402–410 D.F.',
         locationLabel: 'Cripta Real da Corte Carmesim',
         domain: 'purple',
         stanzas: [

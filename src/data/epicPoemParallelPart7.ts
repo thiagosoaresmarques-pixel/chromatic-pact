@@ -6,11 +6,12 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
     isParallel: true,
     parentCantoId: 'canto_1_vigilia',
     anchorNodeId: 'canto_1_creature_05_sylvanor',
-    parallelCode: 'I-D',
+    chronologicalOrder: 2,
+    parallelCode: 'I-B',
     shortTitle: 'Semente sob o Gelo',
-    cantoNumber: 'CANTO PARALELO I-D',
+    cantoNumber: 'CAPÍTULO I-B',
     eraNumber: 'ERA ZERO • BASTIDORES DO CORAÇÃO DO MUNDO',
-    periodLabel: '∞ A.F. • Raízes Abissais do Monte Axial',
+    periodLabel: '∞ A.F. • A Semente Oculta sob as Raízes',
     title: 'O Cofre de Raízes e o Primeiro Sopro de Veridia',
     subtitle: 'Como Sylvanor, Chronos, Aldric e Kaelen abrigaram o Coração da Árvore-Mundo nas galerias aquecidas antes da Fratura, fazendo despertar a primeira centelha da fada Lyra',
     accentColor: '#10b981',
@@ -58,18 +59,18 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         cardId: 'green_166_coracao_arvore_mundo',
         domain: 'green',
         title: 'Totem do Espírito Urso Ancestral',
-        subtitle: 'A relíquia pulsante de âmbar e esmeralda que continha os espíritos de todas as matas futuras',
+        subtitle: 'O totem-relíquia pulsante de âmbar e esmeralda, velado pelo Espírito do Grande Urso, que continha os espíritos de todas as matas futuras',
         yearLabel: '∞ A.F.',
         locationLabel: 'Santuário Subterrâneo das Raízes',
         stanzas: [
           [
             'Brilhava na palma do grande titã',
-            'O Coração verde da selva-irmã;',
+            'O Totem sagrado da selva-irmã;',
             'Um globo de seiva e de âmbar dourado,',
             'Por quatro raízes de jade abraçado.',
           ],
           [
-            'Lá dentro dormiam o cervo e o leão,',
+            'Lá dentro dormiam o grande urso e o leão,',
             'O carvalho altivo e a relva do chão;',
             'Cada batimento daquele cristal',
             'Sonhava com a chuva e o vento estival.',
@@ -103,19 +104,19 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Desceram mais fundo que a própria bigorna,',
             'Onde o rio de lava a rocha contorna;',
             'Ali nem o gelo do topo matava,',
-            'Nem a chama bruta de Muspel queimava.',
+            'Nem a brasa ardente da forja queimava.',
           ],
           [
             'Sylvanor pousou o sagrado coração',
             'Num berço de argila no meio do chão;',
-            'Mas quando o martelo batesse lá em cima,',
-            'A montanha inteira cairia por cima!',
+            'Mas quando o martelo ferisse o cristal,',
+            'Cairia sobre ela a montanha fatal!',
           ],
           [
             'Era necessário um casulo de aço',
             'E uma dobra suave na curva do espaço,',
-            'Para que a semente dormisse em sossego',
-            'Enquanto ruía o domínio cego.',
+            'Para que a semente dormisse abrigada',
+            'Enquanto ruía a redoma gelada.',
           ],
         ],
       },
@@ -130,8 +131,8 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         locationLabel: 'Fenda Termo-Cristalina',
         stanzas: [
           [
-            'Chronos inclinou a sua fronte de estrela,',
-            'Tocando com zelo a semente singela;',
+            'Chronos inclinou sua fronte serena,',
+            'Tocando com zelo a semente pequena;',
             'Desprendeu um anel do seu pulso de luz,',
             'Que a força do giro governa e conduz.',
           ],
@@ -203,8 +204,8 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         locationLabel: 'Estufa Oculta das Raízes',
         stanzas: [
           [
-            'Nunca antes no mundo a água correra,',
-            'Pois tudo era gelo na branca quimera;',
+            'Jamais uma fonte brotava na terra,',
+            'Pois tudo era gelo no cume da serra;',
             'Mas entre a redoma de Chronos e o ardor,',
             'Subiu pela gruta um suave vapor.',
           ],
@@ -271,7 +272,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           [
             'Das pétalas verdes de brilho estelar,',
             'Nasceu a pequena rainha do ar:',
-            'Era Lyra, a fada de riso cristal,',
+            'Era Lyra, a fada de voz de cristal,',
             'Primeira filha do pacto imortal!',
           ],
           [
@@ -281,13 +282,13 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Sem saber do medo, só tendo esperança.',
           ],
           [
-            'Pousou no nariz do ferreiro barbudo,',
-            'Fazendo sorrir aquele rosto rudo;',
+            'Pousou no nariz do ferreiro sisudo,',
+            'Fazendo sorrir seu semblante carrudo;',
             'Depois beijou a fronte do jovem aprendiz,',
             'E afagou de Sylvanor a velha raiz.',
           ],
           [
-            '— "Eu guardo a semente enquanto subis!",',
+            '— "Eu guardo a semente enquanto subis!"',
             'Cantou a pequena com voz de matiz;',
             '"Ide romper a prisão lá do monte,',
             'Que eu fico velando o jardim desta fonte!"',
@@ -301,7 +302,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'green',
         title: 'O Berço Pronto para a Primavera',
-        subtitle: 'Como Lyra permaneceu junto ao Coração da Árvore-Mundo enquanto os Titãs subiam para a Fratura',
+        subtitle: 'Como Lyra permaneceu junto ao Coração da Árvore-Mundo aguardando que os Titãs desferissem o Golpe lá no alto',
         yearLabel: '∞ A.F.',
         locationLabel: 'Estufa Oculta das Raízes',
         stanzas: [
@@ -312,15 +313,15 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Cantando p’ra o broto da nova manhã.',
           ],
           [
-            'Quando o estrondo da Fratura abalou o salão,',
-            'Lyra abraçou o grande Coração;',
-            'A redoma de Chronos e o cobre de Kaelen também',
-            'Não deixaram perder o que as matas contêm.',
+            'Quando o estrondo supremo abalasse o salão,',
+            'A fada fiel guardaria o embrião;',
+            'A estase de Chronos e o cobre de ardor',
+            'Salvariam a seiva do grande tremor.',
           ],
           [
-            'E assim que os Cinco Sóis rasgaram o véu,',
-            'O broto rompeu a caverna p’ra o céu:',
-            'Nascia Veridia no Dia Primeiro,',
+            'E assim que os Cinco Sóis rasgassem o véu,',
+            'O broto subiria da gruta ao alto céu:',
+            'Nasceria Veridia no Dia Primeiro,',
             'Guiada pelo canto do ser mais ligeiro!',
           ],
         ],
@@ -332,11 +333,12 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
     isParallel: true,
     parentCantoId: 'canto_2_fratura',
     anchorNodeId: 'canto_2_creature_12_vulcanor',
-    parallelCode: 'II-D',
+    chronologicalOrder: 18,
+    parallelCode: 'II-J',
     shortTitle: 'Grilhões da Caldeira',
-    cantoNumber: 'CANTO PARALELO II-D',
+    cantoNumber: 'CAPÍTULO II-J',
     eraNumber: 'Iª ERA • BASTIDORES DA CALDEIRA PRIMORDIAL',
-    periodLabel: 'Ano 83 D.F. • Caldeira Primordial do Norte',
+    periodLabel: 'Ano 83 D.F. • Caldeira de Pyros',
     title: 'A Domesticação de Vulcanor e a Fundação das Forjas do Norte',
     subtitle: 'Como Kaelen, Zik, o Colosso Forjador e o Soberano Ígneo forjaram os Grilhões da Fornalha em 83 D.F. para impedir que a fúria de Vulcanor partisse o continente',
     accentColor: '#ef4444',
@@ -350,13 +352,13 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         title: 'Vulcanor, Colosso da Caldeira Primordial',
         subtitle: 'O titã de magma bruto cujos passos cegos no Ano 83 D.F. ameaçavam afundar toda a cordilheira norte no mar',
         yearLabel: 'Ano 83 D.F.',
-        locationLabel: 'Caldeira Primordial do Norte',
+        locationLabel: 'Caldeira Primordial de Pyros',
         stanzas: [
           [
             'Oitenta e três anos após a Fratura,',
             'O norte tremeu numa febre escura;',
-            'Do fundo do lago de lava e carvão,',
-            'Ergueu-se Vulcanor, o cego titão!',
+            'Do fundo do lago de brasa malsã,',
+            'Ergueu-se Vulcanor, o cego titã!',
           ],
           [
             'Não tinha maldade no peito de brasa,',
@@ -427,7 +429,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           [
             'Zik amarrou na cintura o cordão',
             'Feito de escama de velho dragão;',
-            'Cospiu nas mãozinhas, ajeitou o capacete,',
+            'Cuspiu nas mãozinhas, ajeitou o capacete,',
             'E saltou p’ra a caldeira qual vivo foguete!',
           ],
           [
@@ -444,9 +446,9 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           ],
           [
             'Com o fio passado na rocha do fundo,',
-            'Faltava a potência do braço mais fundo;',
-            'Kaelen gritou p’ra a caverna maior,',
-            'Chamando o gigante do malho senhor!',
+            'Faltava a potência maior deste mundo;',
+            'Kaelen gritou no calor sufocante,',
+            'Chamando da forja o mestre gigante!',
           ],
         ],
       },
@@ -501,7 +503,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             '— "Puxa, irmão cego, que eu não vou ceder!',
             'Filho da bigorna não sabe correr!" —',
             'E batendo o malho no cravo do chão,',
-            'Prendeu a primeira argola ao titão!',
+            'Prendeu a primeira argola ao vulcão!',
           ],
           [
             'Vulcanor puxava p’ra a esquerda e p’ra a frente,',
@@ -547,7 +549,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           ],
           [
             'Unindo a magia do nobre senhor',
-            'À arte de Kaelen e ao braço maior,',
+            'À arte de Kaelen e ao pulso de ardor,',
             'Os quatro fecharam o círculo ardente,',
             'Erguendo a relíquia que prende a torrente!',
           ],
@@ -559,9 +561,9 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         cardId: 'red_26_grilhoes_incandescentes',
         domain: 'red',
         title: 'Grilhões da Fornalha',
-        subtitle: 'As quatro correntes rúnicas que transformaram o furor de Vulcanor no coração industrial de Muspel',
+        subtitle: 'As quatro correntes rúnicas que transformaram o furor de Vulcanor no coração industrial de Pyros',
         yearLabel: 'Ano 83 D.F.',
-        locationLabel: 'Coração da Caldeira do Norte',
+        locationLabel: 'Coração da Caldeira de Pyros',
         stanzas: [
           [
             'Cravaram-se os quatro Grilhões da Fornalha,',
@@ -609,7 +611,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           [
             'Ouvindo o compasso de ferro a cantar,',
             'Vulcanor sorria no seu respirar;',
-            'Soprava nas foles com gosto e cadência,',
+            'Soprava nos foles com gosto e cadência,',
             'Trocando a revolta por pura potência.',
           ],
           [
@@ -645,9 +647,9 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           ],
           [
             'Com a Caldeira segura e o norte em labor,',
-            'Kaelen pôde olhar p’ra um projeto maior:',
-            'Ir ao centro do mundo nas eras seguintes',
-            'Ergas as capitais dos cinco requintes!',
+            'Kaelen pôde erguer um projeto de ardor:',
+            'Unir nos domínios dos tempos vindouros',
+            'As cinco muralhas de eternos tesouros!',
           ],
         ],
       },
@@ -657,14 +659,15 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
     id: 'canto_3d_arquitetos_capitais',
     isParallel: true,
     parentCantoId: 'canto_3_cidadelas',
-    anchorNodeId: 'canto3_prelude_143df',
-    parallelCode: 'III-D',
+    anchorNodeId: 'canto3_creature_16_aeternus',
+    chronologicalOrder: 22,
+    parallelCode: 'III-A',
     shortTitle: 'Pacto dos Arquitetos',
-    cantoNumber: 'CANTO PARALELO III-D',
+    cantoNumber: 'CAPÍTULO III-A',
     eraNumber: 'IIª ERA • BASTIDORES DAS CINCO CAPITAIS',
-    periodLabel: 'Ano 143 D.F. • Planalto Solar & Linhas Ley',
+    periodLabel: 'Anos 143–152 D.F. • Fundação das Cinco Capitais',
     title: 'O Traçado das Cinco Linhas de Mana e o Despertar de Aeternus',
-    subtitle: 'A assembleia secreta entre Kaelen, o Arquimago Aldric, Zephaniel e o Mestre da Forja Celestial para ligar as Cinco Capitais recém-fundadas ao núcleo de Aeternus',
+    subtitle: 'A assembleia secreta entre Kaelen, o Arquimago Aldric e o Arconte da Trombeta Dourada para ligar as Cinco Capitais fundadas em 143 D.F. ao despertar de Aeternus em 152 D.F.',
     accentColor: '#eab308',
     bannerImage: '/assets/arena/tabletop_gold.png',
     nodes: [
@@ -674,9 +677,9 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         cardId: 'gold_166_trono_soberano_sol',
         domain: 'gold',
         title: 'Diadema dos Cristais Orbitais',
-        subtitle: 'O marco zero de mármore e ouro no Planalto Central onde as cinco linhas de força do mundo se cruzavam',
+        subtitle: 'O marco real de mármore e ouro no Planalto Oriental de Solária onde os cinco canais continentais se enlaçaram',
         yearLabel: 'Ano 143 D.F.',
-        locationLabel: 'Átrio Central de Solária',
+        locationLabel: 'Átrio Oriental de Solária',
         stanzas: [
           [
             'No ano de cento e quarenta e três,',
@@ -691,7 +694,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Secando as nascentes do monte e do mar.',
           ],
           [
-            'Por isso no centro do alto planalto,',
+            'Por isso no leste do claro planalto,',
             'Onde o Trono do Sol se levanta mais alto,',
             'Reuniram-se os mestres da pedra e da luz',
             'Para atar os caminhos que a terra conduz.',
@@ -710,13 +713,13 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         cardId: 'gold_83_forjado_ancestral',
         domain: 'gold',
         title: 'Aeternus, O Primeiro Forjado de Guerra',
-        subtitle: 'O corpo colossal de ouro branco e cristal que aguardava a centelha da consciência no centro das linhas ley',
-        yearLabel: 'Ano 143 D.F.',
+        subtitle: 'O corpo colossal de ouro branco e cristal que em 152 D.F. aguardava a centelha da consciência no enlace das linhas ley',
+        yearLabel: 'Ano 152 D.F.',
         locationLabel: 'Câmara da Convergência, Solária',
         stanzas: [
           [
-            'Deitado no centro da estrela do chão,',
-            'Estava o colosso da perfeição:',
+            'Em cento e cinquenta e dois, no salão,',
+            'Jazia o colosso da perfeição:',
             'Aeternus, o primeiro forjado ancestral,',
             'Moldado em platina, topázio e cristal.',
           ],
@@ -735,8 +738,8 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           [
             'Por isso chamaram em noite discreta',
             'Os dois companheiros da era secreta:',
-            'O velho ferreiro da barba de brasa',
-            'E o sábio das estrelas que o tempo compassa!',
+            'O velho ferreiro que a têmpera enlaça',
+            'E o sábio celeste que o tempo compassa!',
           ],
         ],
       },
@@ -747,9 +750,9 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'gold',
         title: 'O Reencontro sob as Colunas Douradas',
-        subtitle: 'Como Aldric e Kaelen se abraçaram em Solária mais de um século após o Dia dos Cinco Sóis',
-        yearLabel: 'Ano 143 D.F.',
-        locationLabel: 'Colunata de Solária',
+        subtitle: 'Como Aldric e Kaelen se abraçaram em Solária século e meio após o Dia dos Cinco Sóis',
+        yearLabel: 'Ano 152 D.F.',
+        locationLabel: 'Colunata Oriental de Solária',
         stanzas: [
           [
             'Mais de cem anos tinham passado',
@@ -764,7 +767,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Lembrando o caminho que tinham trilhado.',
           ],
           [
-            '— "Outrora forjamos o malho que parte!",',
+            '— "Outrora forjamos o malho que parte!"',
             'Disse o ferreiro mostrando a sua arte;',
             '"Hoje, meu velho amigo do azul,',
             'Vamos unir desde o norte até o sul!"',
@@ -778,7 +781,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'red',
         title: 'Kaelen, Artífice Bronze-Ardente',
         subtitle: 'O mestre que instalou no peito de Aeternus a válvula de cinco câmaras',
-        yearLabel: 'Ano 143 D.F.',
+        yearLabel: 'Ano 152 D.F.',
         locationLabel: 'Câmara da Convergência, Solária',
         stanzas: [
           [
@@ -809,12 +812,12 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
       },
       {
         id: 'node_3d_aldric_cetro',
-        kind: 'creature',
+        kind: 'prelude',
         cardId: 'blue_166_trono_oniciencia_astral',
         domain: 'blue',
         title: 'Cetro do Arquimago Astral',
         subtitle: 'O bastão empunhado por Aldric para gravar na fronte de Aeternus as leis da geometria e da trégua',
-        yearLabel: 'Ano 143 D.F.',
+        yearLabel: 'Ano 152 D.F.',
         locationLabel: 'Câmara da Convergência, Solária',
         stanzas: [
           [
@@ -831,9 +834,9 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
           ],
           [
             'Desenhou no chão as cinco estradas de luz:',
-            'A que vai p’ra Vórtex, a que ao norte conduz,',
-            'A que desce à floresta, a que vai ao pendor,',
-            'E a que brilha aqui mesmo no trono de alvor.',
+            'A que sobe ao polo e a que ao norte conduz,',
+            'Do sul de Veridia ao oeste sem cor,',
+            'E a que brilha a leste no trono de alvor.',
           ],
           [
             'As linhas acenderam num traço perfeito,',
@@ -849,15 +852,15 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         cardId: 'gold_152_mestre_forja_celestial',
         domain: 'gold',
         title: 'Arconte da Trombeta Dourada',
-        subtitle: 'O arconte dourado que desceu com o malho solar para selar a couraça de Aeternus',
-        yearLabel: 'Ano 143 D.F.',
+        subtitle: 'O arconte dourado que uniu o malho solar e o toque de sua trombeta para selar a couraça de Aeternus',
+        yearLabel: 'Ano 152 D.F.',
         locationLabel: 'Câmara da Convergência, Solária',
         stanzas: [
           [
-            'Avançou o Arconte da Forja do Sol,',
-            'Brilhando mais claro que o próprio farol;',
+            'Avançou o Arconte do claro arrebol,',
+            'Trazendo a trombeta e o malho do Sol;',
             'Reconheceu em Kaelen um par de ofício,',
-            'Saudando o ferreiro sem ter preconceito ou vício.',
+            'Saudando o ferreiro sem sombra de vício.',
           ],
           [
             '— "O fogo da terra e o fogo do céu',
@@ -872,9 +875,9 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Selando o prodígio que ao mundo ainda resta.',
           ],
           [
-            'E do alto da abóbada aberta ao luar,',
-            'Desceu o serafim de seis asas no ar,',
-            'Trazendo na espada um raio de aurora',
+            'E erguendo aos vitrais o seu áureo clarim,',
+            'Chamou das alturas a luz sem confim,',
+            'Trazendo do Zênite um raio de aurora',
             'Para acordar o guardião nessa hora!',
           ],
         ],
@@ -887,13 +890,13 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'gold',
         title: 'A Pulsação das Cinco Estradas',
         subtitle: 'O instante em que a mana de todas as regiões convergiu para o coração de Aeternus',
-        yearLabel: 'Ano 143 D.F.',
+        yearLabel: 'Ano 152 D.F.',
         locationLabel: 'Linhas Ley de Vaeloria',
         stanzas: [
           [
             'De todas as pontas do vasto continente,',
             'Veio correndo a sagrada corrente:',
-            'O calor de Muspel, a maré de Vórtex,',
+            'A brasa de Pyros, o gelo de Vórtex,',
             'A seiva do bosque e a sombra do córtex.',
           ],
           [
@@ -903,25 +906,25 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Pedindo o espírito p’ra tudo guiar.',
           ],
           [
-            'Foi quando Zephaniel inclinou o seu rosto,',
+            'Foi quando o Arconte inclinou o seu rosto,',
             'Diante do gigante no centro disposto,',
-            'E soprou na viseira do elmo fechado',
-            'O alento divino do sol temperado!',
+            'E fez ressoar no elmo fechado',
+            'O toque sagrado do sol temperado!',
           ],
         ],
       },
       {
         id: 'node_3d_zephaniel_sopro',
         kind: 'creature',
-        cardId: 'gold_09_serafim_solar',
+        cardId: 'gold_152_mestre_forja_celestial',
         domain: 'gold',
-        title: 'Zephaniel, Arcanjo Solar do Zênite',
-        subtitle: 'O serafim que concedeu a centelha da vigília a Aeternus, fazendo o colosso abrir os olhos pela primeira vez',
-        yearLabel: 'Ano 143 D.F.',
+        title: 'O Sopro Solar da Trombeta Dourada',
+        subtitle: 'O arconte celeste que canalizou o alento do Zênite pela trombeta sagrada, fazendo Aeternus abrir os olhos pela primeira vez em 152 D.F.',
+        yearLabel: 'Ano 152 D.F.',
         locationLabel: 'Câmara da Convergência, Solária',
         stanzas: [
           [
-            'Zephaniel tocou com a ponta da asa',
+            'O Arconte tocou com a trombeta em brasa',
             'A fronte onde a runa de Aldric se casa;',
             'E disse com voz que os séculos corta:',
             '— "Desperta, Aeternus, e guarda esta porta!"',
@@ -933,8 +936,8 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Sustentando nos ombros o fluxo partido.',
           ],
           [
-            'Olhou para Kaelen, p’ra Aldric e o anjo,',
-            'E curvou a cabeça num nobre arranjo:',
+            'Olhou para Kaelen, p’ra Aldric e o arconte,',
+            'E curvou a cabeça qual nobre horizonte:',
             '— "Enquanto meu núcleo puder palpitar,',
             'As cinco cidades não hão de secar!"',
           ],
@@ -954,8 +957,8 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'gold',
         title: 'A Sentinela Silenciosa dos Séculos',
         subtitle: 'Como os arquitetos partiram sabendo que Aeternus manteria o mundo unido',
-        yearLabel: 'Ano 143 D.F.',
-        locationLabel: 'Átrio Central de Solária',
+        yearLabel: 'Ano 152 D.F.',
+        locationLabel: 'Átrio Oriental de Solária',
         stanzas: [
           [
             'Aeternus postou-se diante do trono,',
@@ -984,11 +987,12 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
     isParallel: true,
     parentCantoId: 'canto_4_guerra',
     anchorNodeId: 'node_creature_36_mycoria',
-    parallelCode: 'IV-D',
+    chronologicalOrder: 37,
+    parallelCode: 'IV-E',
     shortTitle: 'Cerco dos Esporos',
-    cantoNumber: 'CANTO PARALELO IV-D',
+    cantoNumber: 'CAPÍTULO IV-E',
     eraNumber: 'IIIª ERA • BASTIDORES DA PRAGA DE MYCORIA',
-    periodLabel: 'Ano 510 D.F. • Pântanos de Esporos do Sul',
+    periodLabel: 'Ano 531 D.F. • Matas Contaminadas',
     title: 'A Muralha de Fogo e Seiva contra a Rainha dos Fungos',
     subtitle: 'Como Vesperion alimentou os esporos de Mycoria para tomar Veridia por dentro, e como Lyra, Kongor, o Arquidruida e o General Varkas selaram o vale infectado',
     accentColor: '#10b981',
@@ -1000,12 +1004,12 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         cardId: 'purple_63_rainha_fungos',
         domain: 'purple',
         title: 'Mycoria, Dama da Podridão',
-        subtitle: 'A soberana da podridão que em 510 D.F. ergueu uma nuvem de esporos roxos para escravizar a fauna de Veridia',
-        yearLabel: 'Ano 510 D.F.',
+        subtitle: 'A soberana da podridão que em 531 D.F. ergueu uma nuvem de esporos roxos para escravizar a fauna de Veridia',
+        yearLabel: 'Ano 531 D.F.',
         locationLabel: 'Vale Apodrecido do Sul',
         stanzas: [
           [
-            'No ano quinhentos e dez da Fratura,',
+            'Em quinhentos e trinta e um da Fratura,',
             'Brotou nos pântanos uma febre impura;',
             'Dos troncos das Cinzas, nas águas indecisas,',
             'Subiram os fungos de roxas divisas.',
@@ -1037,7 +1041,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'purple',
         title: 'Vesperion, Arquimago Lich Imortal',
         subtitle: 'O necromante que soprava ventos arcanos por trás do pântano para empurrar os esporos sobre as defesas druídicas',
-        yearLabel: 'Ano 510 D.F.',
+        yearLabel: 'Ano 531 D.F.',
         locationLabel: 'Colina dos Ossos Úmidos',
         stanzas: [
           [
@@ -1047,15 +1051,15 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Regando a semente daquele lamaçal!',
           ],
           [
-            '— "Não pude tomar o bosque na espada,',
-            'Pois a força de Yggdrasil é muito pesada;',
+            '— "Não pude tomar a floresta na espada,',
+            'Pois a Raiz-Ferro é muralha sagrada;',
             'Mas com Mycoria e seu cheiro de escória,',
             'A própria floresta me entrega a vitória!"',
           ],
           [
             'Com seu cajado de crânio encantado,',
             'Soprava uma brisa do pântano inchado;',
-            'Empurrando os esporos p’ra o norte florido,',
+            'Empurrando os esporos p’ra o bosque florido,',
             'Onde o povo da mata dormia escondido.',
           ],
           [
@@ -1073,8 +1077,8 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'green',
         title: 'Lyra, Fada Pixie do Pó Estelar',
         subtitle: 'A guardiã feérica que purificou o ar com seu pó de luz e voou em busca de auxílio nas duas fronteiras',
-        yearLabel: 'Ano 510 D.F.',
-        locationLabel: 'Fronteira Sul de Veridia',
+        yearLabel: 'Ano 531 D.F.',
+        locationLabel: 'Fronteira de Veridia',
         stanzas: [
           [
             'Lyra sentiu na garganta o amargor',
@@ -1089,7 +1093,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'O bicho acordava da escravidão!',
           ],
           [
-            '— "É muito veneno p’ra mim segurar!',
+            '— "É muito veneno p’ra eu dissipar!',
             'Vesperion e a Rainha querem tudo tomar!',
             'Preciso da força que arranca o rochedo,',
             'E até de uma chama que queime este medo!"',
@@ -1110,7 +1114,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'green',
         title: 'A Barreira dos Troncos Caídos',
         subtitle: 'O avanço da horda infectada de Mycoria contra o desfiladeiro que protegia o bosque central',
-        yearLabel: 'Ano 510 D.F.',
+        yearLabel: 'Ano 531 D.F.',
         locationLabel: 'Passo das Raízes Altas',
         stanzas: [
           [
@@ -1140,20 +1144,20 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'green',
         title: 'Kongor, Rei de Costas Prateadas',
         subtitle: 'O colosso primata que derrubou os pilares de pedra do desfiladeiro para conter a marcha dos infectados',
-        yearLabel: 'Ano 510 D.F.',
+        yearLabel: 'Ano 531 D.F.',
         locationLabel: 'Passo das Raízes Altas',
         stanzas: [
           [
-            'Kongor amarrou uma folha de lótus nos votos',
-            'De filtrar no rosto os esporos remotos;',
+            'Kongor atou folhas de lótus no rosto,',
+            'Filtrando os esporos do ar decomposto;',
             'E com o pó de Lyra brilhando no pelo,',
             'Saltou na garganta sem ter pesadelo!',
           ],
           [
             'Quando os ursos tomados vieram bater,',
             'Ele não quis os seus primos ferir ou morder;',
-            'Agarrava as feras com braço de ferro,',
-            'E jogava-as de volta p’ra dentro do erro!',
+            'Agarrava as feras num laço cerval,',
+            'E jogava-as de volta ao fundo lamaçal!',
           ],
           [
             'Depois abraçou a coluna da serra,',
@@ -1176,7 +1180,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'green',
         title: 'Arquidruida da Coroa de Galhada',
         subtitle: 'O ancião silvestre que ergueu uma sebe viva de espinhos solares para filtrar o ar contaminado',
-        yearLabel: 'Ano 510 D.F.',
+        yearLabel: 'Ano 531 D.F.',
         locationLabel: 'Crista do Passo Fechado',
         stanzas: [
           [
@@ -1211,10 +1215,10 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         cardId: 'red_18_marechal_rubro',
         hideCardArt: true,
         domain: 'red',
-        title: 'As Trombetas na Estrada do Leste',
-        subtitle: 'A chegada inesperada da patrulha do Marechal Varkas chamada por Lyra',
-        yearLabel: 'Ano 510 D.F.',
-        locationLabel: 'Estrada da Fronteira Sul',
+        title: 'As Trombetas na Estrada do Norte',
+        subtitle: 'A chegada inesperada da patrulha do Marechal Varkas descendo das cordilheiras boreais ao chamado de Lyra',
+        yearLabel: 'Ano 531 D.F.',
+        locationLabel: 'Estrada do Norte de Veridia',
         stanzas: [
           [
             'Os druidas temiam usar chama forte,',
@@ -1229,7 +1233,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Vinha o Marechal naquela mesma hora!',
           ],
           [
-            'Quase cem anos depois das Cinzas Partidas,',
+            'Mais de cem anos depois das Cinzas Partidas,',
             'Varkas lembrava quem salvara vidas;',
             'Com barba já branca sob o elmo de aço,',
             'Trouxe seus arqueiros de fogo no braço!',
@@ -1243,7 +1247,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'red',
         title: 'General Varkas, Marechal da Legião Férrea',
         subtitle: 'O velho comandante que ordenou uma saraivada cirúrgica sobre o ninho de Mycoria sem queimar uma única árvore sã',
-        yearLabel: 'Ano 510 D.F.',
+        yearLabel: 'Ano 531 D.F.',
         locationLabel: 'Crista do Passo Fechado',
         stanzas: [
           [
@@ -1265,7 +1269,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
             'Explodindo em chamas o podre estofo!',
           ],
           [
-            'O fogo de Muspel queimou o bolor,',
+            'O fogo de Pyros queimou o bolor,',
             'Limpando a bacia do roxo vapor;',
             'Mycoria gritou, recolhendo a raiz,',
             'E Vesperion fugiu sem ter o que quis!',
@@ -1280,7 +1284,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
         domain: 'green',
         title: 'O Despertar dos Animais Libertos',
         subtitle: 'A saudação entre o Arquidruida, Kongor e o Marechal Varkas após a limpeza dos esporos',
-        yearLabel: 'Ano 510 D.F.',
+        yearLabel: 'Ano 531 D.F.',
         locationLabel: 'Passo das Raízes Altas',
         stanzas: [
           [

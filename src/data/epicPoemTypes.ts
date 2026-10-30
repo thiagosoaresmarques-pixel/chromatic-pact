@@ -4,13 +4,13 @@ import { Domain } from '../types/game';
  * Um nó dentro do Grande Poema Épico de Vaeloria (Coluna Única Contínua).
  * Pode ser:
  * - 'prelude' / 'interlude': Estrofes de transição histórica, batalhas, tratados e marcos cronológicos.
- * - 'creature': Episódio poético completo de uma das 73 Criaturas Lendárias (#1 a #73),
+ * - 'creature': Episódio poético completo de uma das 100 Criaturas Lendárias (#1 a #100),
  *   inserida em seu exato momento histórico e geográfico com múltiplas estrofes rimadas.
  */
 export interface EpicPoemNode {
   id: string;
   kind: 'prelude' | 'interlude' | 'creature';
-  /** Ordem cronológica global da criatura (1 a 73) se kind === 'creature' */
+  /** Ordem cronológica global da criatura (1 a 100) se kind === 'creature' */
   creatureOrder?: number;
   /** ID da carta ilustrada associada a este trecho do poema */
   cardId: string;
@@ -51,6 +51,8 @@ export interface EpicPoemCanto {
   anchorNodeId?: string;
   /** Código curto para a régua lateral (ex: 'I-A', 'II-A') */
   parallelCode?: string;
+  /** Ordem cronológica canônica global dos 78 capítulos narrativos (1 a 78) */
+  chronologicalOrder?: number;
   /** Rótulo curto para subitem da régua lateral e filtro (ex: 'Conjura do Prisma') */
   shortTitle?: string;
   /** Sequência contínua de prelúdios, criaturas lendárias e interlúdios históricos em coluna única */

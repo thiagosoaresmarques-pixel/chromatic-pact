@@ -15,14 +15,15 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
   // ==========================================================================
   {
     id: 'canto_2aa_arautos_prisma',
+    chronologicalOrder: 9,
     isParallel: true,
     parentCantoId: 'canto_2_fratura',
     anchorNodeId: 'canto_2_prelude_cinco_sois',
-    parallelCode: 'II-01',
+    parallelCode: 'II-A',
     shortTitle: 'Arautos do Prisma',
     cantoNumber: 'CAPÍTULO II-A',
     eraNumber: 'Iª ERA • A PRIMEIRA HORA APÓS A DESTRUIÇÃO DO PRISMA',
-    periodLabel: 'Ano 1 D.F. (1ª Hora) • Zênite Partido sobre o Monte Axial',
+    periodLabel: 'Ano 1 D.F. • Primeira Hora da Fratura',
     title: 'O Despertar dos Seis Arautos no Zênite Partido',
     subtitle:
       'De como, no primeiro segundo após o Golpe Pentacromático partir o Coroa-Prisma, sua alma despedaçada encarnou na Matriz Primordial e nos cinco Arautos elementais suspensos sobre Vaeloria',
@@ -86,7 +87,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
           [
             'Ao redor de sua fronte girava inclemente',
             'Um halo forjado em escória candente;',
-            'Onde antes dormia o silêncio polar,',
+            'Onde antes dormia o silêncio estelar,',
             'Seu sopro incendiou as camadas do ar!',
           ],
           [
@@ -187,11 +188,11 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
             'Enquanto o Coroa-Prisma sozinho existia,',
             'Sombra nenhuma no mundo caía;',
             'Mas quando a Matriz em pedaços partiu,',
-            'A costas da luz o Primeiro Véu riu!',
+            'Às costas da luz o Primeiro Véu riu!',
           ],
           [
-            'Com anéis de ametista e um vórtice oco,',
-            'Que suga as estrelas aos poucos, a pouco,',
+            'Com anéis de ametista em funéreo sufoco,',
+            'Sugando as estrelas no vórtice oco,',
             'O Arauto do Eclipse Prismático veio,',
             'Trazendo um abismo faminto no seio!',
           ],
@@ -266,7 +267,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
           ],
           [
             'Não teme ferida, pois torna a crescer,',
-            'Dando força aos irmãos que com ele combater;',
+            'Dando força ao irmão que ao seu lado combater;',
             'Sylvanor, lá embaixo, estendeu sua mão,',
             'Bebendo o milagre daquela estação!',
           ],
@@ -296,8 +297,8 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
             'Qual sol em miniatura no berço do dia!',
           ],
           [
-            'Vendo que o choque dos cinco elementos',
-            'Podia rasgar os terrenos nascentes,',
+            'Vendo que o embate dos cinco elementos',
+            'Podia arrasar os primeiros assentos,',
             'Abriu sobre os justos seu manto sagrado,',
             'Deixando o horizonte de escudos cercado!',
           ],
@@ -356,14 +357,15 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
   // ==========================================================================
   {
     id: 'canto_2ab_teceloes_feixe',
+    chronologicalOrder: 10,
     isParallel: true,
     parentCantoId: 'canto_2_fratura',
     anchorNodeId: 'canto_2_prelude_cinco_sois',
-    parallelCode: 'II-02',
+    parallelCode: 'II-B',
     shortTitle: 'Tecelões do Feixe',
     cantoNumber: 'CAPÍTULO II-B',
     eraNumber: 'Iª ERA • A SEGUNDA HORA APÓS A DESTRUIÇÃO DO PRISMA',
-    periodLabel: 'Ano 1 D.F. (2ª Hora) • Correntes Superiores do Firmamento',
+    periodLabel: 'Ano 1 D.F. • Segunda Hora da Fratura',
     title: 'As Mãos que Curvaram o Dilúvio — Os Tecelões do Feixe',
     subtitle:
       'Como seis entidades silenciosas de sombra estelar tocaram os raios mortais recém-saídos dos Arautos e os desviaram em arcos perfeitos para os cinco cantos de Vaeloria',
@@ -400,8 +402,8 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
             'Pousou como prata no vale acinzentado!',
           ],
           [
-            'Com um gesto sereno aos cinco irmãos seus,',
-            'Mostrou na teia os caminhos dos céus:',
+            'Com gesto sereno aos irmãos sob os véus,',
+            'Mostrou na alta teia os caminhos dos céus:',
             '— "Curvai cada feixe p’ra sua morada,',
             'Ou morre Vaeloria na primeira alvorada!"',
           ],
@@ -434,13 +436,13 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
             'Em vez de queimar as planícies do meio,',
             'O rio de fogo nos montes deu freio;',
             'Abrindo as crateras onde Pyros nasceu,',
-            'Guardando nas rochas o dom prometeu!',
+            'Guardando nas rochas o dom que lhe deu!',
           ],
           [
             'Quem hoje na Arena o vê apontar,',
             'Sabe que um só raio faz o ferro estalar;',
-            'Pois traz na mão escura a memória fiel',
-            'Do dia em que dobrou um vulcão pelo céu!',
+            'Pois traz na mão negra o brasão sem igual',
+            'Do dia em que arqueou um vulcão sideral!',
           ],
         ],
       },
@@ -469,7 +471,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
             'Que descia faminta buscando o calor.',
           ],
           [
-            'Nos ventos mais altos, lado a lado no véu,',
+            'Nos ventos mais altos do imenso dossel,',
             'Dois novos Tecelões assumiram o papel:',
             'Um feito de aurora e poeira glacial,',
             'Outro feito de névoa e silêncio abissal!',
@@ -491,7 +493,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
             'Coberto de geada e poeira de estrela,',
             'Surgiu quem governa a nevasca e a congela:',
             'O Tecelão do Feixe Astral estendeu',
-            'Os dedos escuros no jorro do céu!',
+            'Os dedos escuros no jorro que desceu!',
           ],
           [
             'A luz de safira, cortante qual faca,',
@@ -634,7 +636,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
             'Embora vestido de breu sideral,',
             'Trazia nos olhos a chama real:',
             'O Tecelão do Feixe Solar acolheu',
-            'O raio dourado mais puro do céu!',
+            'O raio dourado que no alto esplendeu!',
           ],
           [
             'Por isso não houve cratera ou estrago',
@@ -697,14 +699,15 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
   // ==========================================================================
   {
     id: 'canto_2ac_pressagios_revoada',
+    chronologicalOrder: 11,
     isParallel: true,
     parentCantoId: 'canto_2_fratura',
     anchorNodeId: 'canto_2_prelude_cinco_sois',
-    parallelCode: 'II-03',
+    parallelCode: 'II-C',
     shortTitle: 'Presságios da Revoada',
     cantoNumber: 'CAPÍTULO II-C',
     eraNumber: 'Iª ERA • OS MENSAGEIROS ALADOS DA GRANDE FRATURA',
-    periodLabel: 'Ano 1 D.F. (Alvorada) • Vales e Horizontes de Vaeloria',
+    periodLabel: 'Ano 1 D.F. • Alvorada ao Meio-Dia',
     title: 'As Asas do Primeiro Anúncio — Os Presságios da Revoada',
     subtitle:
       'Como seis espectros monolíticos desfeitos em revoadas elementais cruzaram Vaeloria antes da queda dos meteoros, despertando os povos adormecidos para a Era das Cores',
@@ -824,7 +827,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
         domain: 'red',
         title: 'Presságio da Revoada Cinzenta',
         subtitle:
-          'O espectro envolto em carvão e fumo ardente cujas aves de brasa varreram os obstáculos diante das tribos do norte',
+          'O espectro envolto em carvão e fumo ardente cujas aves de brasa varreram os obstáculos rumo ao norte diante do olhar de Kaelen nas encostas centrais',
         yearLabel: 'Ano 1 D.F. • Alvorada',
         locationLabel: 'Encostas Fumegantes de Pyros',
         stanzas: [
@@ -847,10 +850,10 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
             '— "Quem hesita no fogo vira cinza no chão!"',
           ],
           [
-            'Kaelen, lá embaixo, viu o bando passar,',
-            'E soube p’ra onde seu povo levar;',
-            'Ao tempo em que Aldric olhava pro norte,',
-            'Vendo nas nuvens de gelo outro porte!',
+            'Das faldas do monte, Kaelen viu passar',
+            'O bando que ao norte mandava marchar;',
+            'Ao lado dele, Aldric mirou mais além,',
+            'Vendo a revoada polar vir também!',
           ],
         ],
       },
@@ -878,10 +881,10 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
             'Devolvendo ao abismo o monstro atrevido!',
           ],
           [
-            'Uma pena caída nas mãos do aprendiz',
-            'Mostrou o desenho que o cosmos prediz;',
-            'Foi lendo no voo daquela revoada',
-            'Que Aldric ergueu sua abóbada azulada!',
+            'Uma pena trazida ao olhar do aprendiz',
+            'Mostrou lá do vale o que o cosmos prediz;',
+            'Foi lendo ao longe naquela revoada',
+            'Que Aldric traçou sua abóbada azulada!',
           ],
           [
             'E lá para o sul e os campos do leste,',
@@ -930,7 +933,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
         domain: 'green',
         title: 'Presságio da Revoada Espinhosa',
         subtitle:
-          'O vulto de pau-ferro e cipós vivos de cujo manto saltaram gaviões de esporos para escoltar Lyra e as criaturas da mata',
+          'O vulto de pau-ferro e cipós vivos cujos gaviões de esporos cruzaram o horizonte meridional sob o olhar atento de Lyra nas encostas centrais',
         yearLabel: 'Ano 1 D.F. • Alvorada',
         locationLabel: 'Orla Verdejante de Veridia',
         stanzas: [
@@ -949,8 +952,8 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
           [
             'Se o fogo lambia a borda do chão,',
             'O bando curava o verde torrão;',
-            'E Lyra seguiu o seu rastro brilhante',
-            'Até encontrar o cortejo errante!',
+            'Das serras centrais Lyra viu reluzir',
+            'O rastro que ao sul chamava a florir!',
           ],
           [
             'Enquanto nas serras banhadas de alvor,',
@@ -986,7 +989,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
           [
             'Coberto por um Escudo Divino de luz,',
             'Mostrou a Solária o dever que conduz:',
-            'Que toda grandeza nascida do céu',
+            'Que toda grandeza do eterno dossel',
             'Existe p’ra ser dos humildes broquel!',
           ],
           [
@@ -1024,7 +1027,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
           [
             'Lá embaixo, nos vales de cinza e suor,',
             'Os povos já ouviam o grande clamor;',
-            'E à frente da turba que punha-se a andar,',
+            'E à frente da turba que ia marchar,',
             'Aldric ergueu seu cajado no ar!',
           ],
         ],

@@ -5,14 +5,15 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
     id: 'canto_5j_santuario_horas_cataclismos',
     isParallel: true,
     parentCantoId: 'canto_5_pacto',
+    chronologicalOrder: 52,
     anchorNodeId: 'node_creature_48_mephistar',
-    parallelCode: 'V-J',
+    parallelCode: 'V-I',
     shortTitle: 'Santuário do Relógio',
-    cantoNumber: 'CAPÍTULO V-J',
+    cantoNumber: 'CAPÍTULO V-I',
     eraNumber: 'IVª ERA • OS TRÊS CATACLISMOS CONTIDOS PELO RELÓGIO',
-    periodLabel: 'Anos 798–845 D.F. • Santuário Horológico de Solária & Fronteira',
+    periodLabel: 'Anos 798–812 D.F. • Santuário das Horas',
     title: 'O Santuário do Relógio da Eternidade e a Contenção dos Três Cataclismos',
-    subtitle: 'Como Thaddeus, Justinian e o Comandante Garrick ergueram o Santuário do Relógio da Eternidade e acionaram a Ruptura Arcana Universal para selar em pergaminhos a Detonação do Sol Carmesim, o Colapso Gravitacional e o Eclipse do Sol Abissal',
+    subtitle: 'Como Thaddeus, Justinian e o imortal Comandante Garrick ergueram o Santuário do Relógio da Eternidade e acionaram a Ruptura Arcana Universal para selar em pergaminhos a Detonação do Sol Carmesim, o Colapso Gravitacional e o Eclipse do Sol Abissal',
     accentColor: '#eab308',
     bannerImage: '/assets/arena/tabletop_gold.png',
     nodes: [
@@ -58,18 +59,18 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         cardId: 'red_123_cataclismo_solar',
         domain: 'red',
         title: 'Detonação do Sol Carmesim',
-        subtitle: 'A invocação de uma esfera termonuclear de magma estelar que ameaçou incinerar toda a cordilheira oriental',
-        yearLabel: 'Ano 808 D.F.',
-        locationLabel: 'Deserto de Vidro da Cratera Rubra',
+        subtitle: 'A invocação de uma esfera incandescente de magma estelar que ameaçou incinerar toda a cordilheira boreal de Pyros',
+        yearLabel: 'Ano 800 D.F.',
+        locationLabel: 'Deserto de Vidro da Cratera Rubra, Pyros',
         stanzas: [
           [
-            'Na terra do fogo, o furor transbordou,',
+            'Nas serras do norte, o furor transbordou,',
             'E um astro vermelho no vale baixou;',
             'A Detonação do Sol Carmesim',
             'Queria levar a província ao seu fim.',
           ],
           [
-            'A esfera de plasma crescia no ar,',
+            'A esfera de brasa crescia no ar,',
             'Fazendo a montanha de pedra suar;',
             'A areia do chão transformou-se em cristal',
             'Sob o peso daquele calor infernal.',
@@ -84,7 +85,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
             'Thaddeus lançou uma rede de luz',
             'Que a fúria vermelha ao silêncio reduz;',
             'Dobrando os segundos ao redor da fornalha,',
-            'Conteram a chama no meio da batalha.',
+            'Contiveram a chama no ardor da batalha.',
           ],
         ],
       },
@@ -95,9 +96,9 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'blue',
         title: 'O Peso da Estrela Comprimida',
-        subtitle: 'Como a contenção da esfera solar provocou um desequilíbrio nas linhas de força do Pináculo Azul',
-        yearLabel: 'Ano 814 D.F.',
-        locationLabel: 'Câmara dos Pêndulos de Azúria',
+        subtitle: 'Como a contenção da esfera rubra provocou um desequilíbrio nas linhas de força do Pináculo de Vórtex',
+        yearLabel: 'Ano 802 D.F.',
+        locationLabel: 'Câmara dos Pêndulos de Vórtex',
         stanzas: [
           [
             'Conter um sol rubro custou muito caro,',
@@ -126,8 +127,8 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         domain: 'blue',
         title: 'Colapso Gravitacional',
         subtitle: 'A singularidade arcana que multiplica o peso da matéria por mil, esmagando fortalezas contra o próprio solo',
-        yearLabel: 'Ano 818 D.F.',
-        locationLabel: 'Platô Esmagado de Safira',
+        yearLabel: 'Ano 804 D.F.',
+        locationLabel: 'Platô Esmagado de Vórtex',
         stanzas: [
           [
             'Um ponto azul-escuro formou-se no centro,',
@@ -161,9 +162,9 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         cardId: 'purple_123_eclipse_abissal',
         domain: 'purple',
         title: 'Eclipse do Sol Abissal',
-        subtitle: 'A ascensão da estrela morta de Noctharis que drena a vitalidade dos vivos e ergue legiões de espectros famintos',
-        yearLabel: 'Ano 828 D.F.',
-        locationLabel: 'Zimbório Negro de Umbra-Vex',
+        subtitle: 'A ascensão da estrela morta de Nocturna que drena a vitalidade dos vivos e ergue legiões de espectros famintos',
+        yearLabel: 'Ano 806 D.F.',
+        locationLabel: 'Zimbório Negro do Vale do Eclipse',
         stanzas: [
           [
             'Vendo que o fogo e o peso falharam,',
@@ -198,14 +199,14 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'O Plano do Comandante Garrick',
-        subtitle: 'Como Garrick propôs usar a relojoaria de guerra para concentrar o choque de anulação no exato segundo',
-        yearLabel: 'Ano 832 D.F.',
-        locationLabel: 'Sala de Comando da Fronteira',
+        subtitle: 'Como Garrick, castelão juramentado de vigília perene na Torre dos Cinco Selos, propôs usar a relojoaria de guerra para concentrar o choque de anulação no exato segundo',
+        yearLabel: 'Ano 808 D.F.',
+        locationLabel: 'Sala de Comando da Torre dos Cinco Selos',
         stanzas: [
           [
-            'Garrick reuniu os doutores da guerra',
-            'Para salvar o futuro da terra:',
-            '— "Se o grande Relógio não pode conter,',
+            'Garrick, castelão que os Selos guardaram',
+            'Com vida perene que os pactos juraram,',
+            'Disse aos doutores: — "Se é vão só conter,',
             'Devemos os três cataclismos romper!"',
           ],
           [
@@ -229,7 +230,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'Bomba do Tempo de Engrenagem',
         subtitle: 'O artefato esférico de latão e quartzo temporal que comprime horas perdidas para detonar uma onda de choque cronológica',
-        yearLabel: 'Ano 836 D.F.',
+        yearLabel: 'Ano 809 D.F.',
         locationLabel: 'Vale da Tripla Convergência',
         stanzas: [
           [
@@ -251,8 +252,8 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
             'Abriu-se no vale um clarão de cristal.',
           ],
           [
-            'A Bomba do Tempo soltou de uma vez',
-            'A força de um ano num único mês;',
+            'A Bomba do Tempo soltou num clarão',
+            'A força de um ano num só turbilhão;',
             'Rasgando a costura do feitiço tirano',
             'E abrindo o caminho p’ra o golpe soberano!',
           ],
@@ -266,7 +267,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'O Círculo da Anulação',
         subtitle: 'Como Thaddeus e os arquimagos aproveitaram a brecha temporal da Bomba para entoar o cântico de dissipação',
-        yearLabel: 'Ano 842 D.F.',
+        yearLabel: 'Ano 811 D.F.',
         locationLabel: 'Anfiteatro das Runas Partidas',
         stanzas: [
           [
@@ -291,12 +292,12 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
       },
       {
         id: 'node_5j_dissipar_magia_absoluta',
-        kind: 'interlude',
+        kind: 'prelude',
         cardId: 'neutral_153_dissipar_magia_absoluta',
         domain: 'neutral',
         title: 'Ruptura Arcana Universal',
         subtitle: 'A onda suprema de contramagia cinzenta que desfaz encantamentos cataclísmicos e devolve o éter ao estado de repouso',
-        yearLabel: 'Ano 845 D.F.',
+        yearLabel: 'Ano 812 D.F.',
         locationLabel: 'Zênite da Fronteira Central',
         stanzas: [
           [
@@ -332,8 +333,8 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'gold',
         title: 'Os Três Pergaminhos no Eixo do Tempo',
-        subtitle: 'Como os feitiços contidos foram guardados sob o pêndulo do Santuário do Relógio da Eternidade',
-        yearLabel: 'Ano 845 D.F.',
+        subtitle: 'Como os feitiços contidos foram guardados sob o pêndulo do Santuário do Relógio da Eternidade em 812 D.F.',
+        yearLabel: 'Ano 812 D.F.',
         locationLabel: 'Cripta Horológica de Solária',
         stanzas: [
           [
@@ -362,14 +363,15 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
     id: 'canto_6k_coroa_solar_julgamentos',
     isParallel: true,
     parentCantoId: 'canto_6_tratados',
+    chronologicalOrder: 66,
     anchorNodeId: 'creature_63_pyroclasmos',
-    parallelCode: 'VI-K',
+    parallelCode: 'VI-L',
     shortTitle: 'Coroa Solar & Fendas',
-    cantoNumber: 'CAPÍTULO VI-K',
+    cantoNumber: 'CAPÍTULO VI-L',
     eraNumber: 'Vª ERA • A COROA DO IMPERADOR SOLAR E AS TRÊS FENDAS',
-    periodLabel: 'Anos 1.092–1.112 D.F. • Fronteiras Bicolores & Portais Cinzentos',
+    periodLabel: 'Anos 1.092–1.112 D.F. • Caldeira & Julgamentos',
     title: 'A Coroa do Imperador Solar e a Travessia das Três Fendas',
-    subtitle: 'Como os soberanos portando a Coroa do Imperador Solar atravessaram o Portal Astral para conter a Fissura do Julgamento Vulcânico, o Dilúvio da Fenda Cósmica e o Apocalipse da Fenda Umbral às vésperas da Ruptura do Sétimo Selo',
+    subtitle: 'Como os soberanos portando a Coroa do Imperador Solar atravessaram o Portal Astral para subjugar em definitivo a insurgência de Pyroclasmos na Fissura do Julgamento Vulcânico e conter o Dilúvio da Fenda Cósmica e o Apocalipse da Fenda Umbral às vésperas da Ruptura do Sétimo Selo',
     accentColor: '#ef4444',
     bannerImage: '/assets/arena/tabletop_red.png',
     nodes: [
@@ -415,19 +417,19 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         cardId: 'red_143_julgamento_vulcanico',
         domain: 'red',
         title: 'Fissura do Julgamento Vulcânico',
-        subtitle: 'O rasgo tectônico despertado por Pyroclasmos que engole exércitos em rios de enxofre e lança colunas de basalto incandescente',
+        subtitle: 'O rasgo tectônico aberto quando Pyroclasmos rompeu a contenção provisória da Caldeira, engolindo muralhas em enxofre e colunas de basalto incandescente',
         yearLabel: 'Ano 1.096 D.F.',
-        locationLabel: 'Planície Partida de Ignis-Kar',
+        locationLabel: 'Planície Partida de Pyros',
         stanzas: [
           [
-            'Ao sul da muralha, o terreno tremeu,',
+            'Ao norte da Torre, o terreno tremeu,',
             'E um rasgo vermelho na rocha nasceu;',
             'A Fissura do Julgamento Vulcânico abriu,',
             'E um rio de enxofre da terra subiu.',
           ],
           [
-            'Pyroclasmos rugia no fundo da greta,',
-            'Lançando p’ra o céu a fumaça preta;',
+            'Quebrando os grilhões do primeiro tratado,',
+            'Pyroclasmos rugia no fosso inflamado;',
             'Muralhas inteiras caíam na brasa,',
             'Não deixando de pé nem torre nem casa.',
           ],
@@ -440,7 +442,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
           [
             'O Imperador Solar avançou na fumaça,',
             'Brilhando a Coroa no meio da desgraça;',
-            'Cravou seu estandarte na borda do fosso,',
+            'Cravou seu estandarte em meio ao destroço,',
             'Segurando da lava o primeiro alvoroço.',
           ],
         ],
@@ -452,15 +454,15 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'blue',
         title: 'O Choque entre o Magma e o Éter',
-        subtitle: 'Como o vapor da fissura vulcânica subiu à estratosfera e rompeu as comportas da Fenda Cósmica',
+        subtitle: 'Como o vapor da fissura vulcânica subiu à estratosfera polar e rompeu as comportas da Fenda Cósmica em Vórtex',
         yearLabel: 'Ano 1.098 D.F.',
-        locationLabel: 'Costa Vaporosa do Mar de Safira',
+        locationLabel: 'Costa Vaporosa do Mar de Vórtex',
         stanzas: [
           [
             'O calor da fissura encontrou o oceano,',
             'Subindo p’ra as nuvens num giro insano;',
             'A pressão lá no alto rasgou o véu azul,',
-            'Abrindo no espaço um abismo no sul.',
+            'Varrendo as correntes do polo até o sul.',
           ],
           [
             'Não caía das nuvens a chuva normal,',
@@ -482,9 +484,9 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         cardId: 'blue_142_diluvio_astral',
         domain: 'blue',
         title: 'Dilúvio da Fenda Cósmica',
-        subtitle: 'A inundação cataclísmica de águas astrais luminescentes que desce do firmamento aberto para submergir continentes',
+        subtitle: 'A inundação cataclísmica de águas astrais luminescentes que desce do firmamento aberto para submergir as costas polares',
         yearLabel: 'Ano 1.100 D.F.',
-        locationLabel: 'Baía Submersa das Estrelas',
+        locationLabel: 'Baía Submersa das Estrelas, Vórtex',
         stanzas: [
           [
             'Da Fenda do céu despejou-se a maré,',
@@ -499,8 +501,8 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
             'Naquela enchente que afoga o mundo.',
           ],
           [
-            'Redemoinhos de prata puxavam p’ra o fundo',
-            'O barco, a carreta e a ponte do mundo;',
+            'Redemoinhos de prata puxavam p’ra o leito',
+            'O barco, a carreta e o pilar mais perfeito;',
             'E o frio das estrelas gelava o pulmão',
             'De quem procurava no monte a salvação.',
           ],
@@ -518,13 +520,13 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         cardId: 'purple_142_apocalipse_umbral',
         domain: 'purple',
         title: 'Apocalipse da Fenda Umbral',
-        subtitle: 'O rompimento das comportas do submundo que despeja rios de miasma violeta e mãos espectrais sobre os campos de batalha',
+        subtitle: 'O rompimento das comportas do submundo ocidental que despeja rios de miasma violeta e mãos espectrais sobre os campos de batalha',
         yearLabel: 'Ano 1.105 D.F.',
-        locationLabel: 'Campos Cinzentos da Fronteira Norte',
+        locationLabel: 'Campos Cinzentos da Fronteira Oeste',
         stanzas: [
           [
-            'Enquanto o sul ardia e o leste alagava,',
-            'No norte a caverna profunda rachava;',
+            'Enquanto o norte ardia e o polo alagava,',
+            'A oeste a caverna profunda rachava;',
             'O Apocalipse da Fenda Umbral',
             'Soltou das entranhas o sopro mortal.',
           ],
@@ -538,7 +540,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
             'Os mortos antigos queriam voltar,',
             'Rasgando a cortina que guarda o altar;',
             'E o grito das sombras gelava a coragem',
-            'Dos guardas que faziam na torre a vigiagem.',
+            'Dos guardas postados na fria passagem.',
           ],
           [
             'Três fendas abertas sangravam na terra,',
@@ -557,7 +559,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         title: 'A Engenharia da Terra Mole',
         subtitle: 'Como os geomantes da Fronteira decidiram derreter os penhascos ao redor das fendas para soterrar as aberturas abissais',
         yearLabel: 'Ano 1.106 D.F.',
-        locationLabel: 'Escarpa Rochosa do Norte',
+        locationLabel: 'Escarpa Rochosa do Oeste',
         stanzas: [
           [
             'Espadas não matam um furo no chão,',
@@ -567,7 +569,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
           ],
           [
             '— "Se a rocha do monte virar lama grossa,',
-            'Taparemos a boca da horrível fossa!",',
+            'Taparemos a boca da horrível fossa!" —',
             'Disseram cravando cajados de cobre',
             'Na pedra maciça que o vale recobre.',
           ],
@@ -585,9 +587,9 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
         cardId: 'neutral_151_transmutar_rocha_lama',
         domain: 'neutral',
         title: 'Colapso de Pedra Transmutada',
-        subtitle: 'O feitiço geomântico que converte muralhas e penhascos de granito em avalanches de lama pesada, soterrando fissuras e invasores',
+        subtitle: 'O feitiço geomântico que converte penhascos de granito em avalanches de lama pesada, soterrando fissuras e selando Pyroclasmos nos Grimórios',
         yearLabel: 'Ano 1.108 D.F.',
-        locationLabel: 'Garganta de Granito de Umbra-Vex',
+        locationLabel: 'Garganta de Granito do Vale do Eclipse',
         stanzas: [
           [
             'Ao toque da runa, o granito cedeu,',
@@ -596,14 +598,14 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
             'A serra virou uma lama pesada.',
           ],
           [
-            'Milhões de toneladas de barro cinzento',
+            'Avalanches colossais de barro cinzento',
             'Desceram a encosta num só movimento;',
             'Entupindo a garganta da Fenda Umbral',
             'Com um tampão espesso de argila e de sal.',
           ],
           [
             'Na Fissura Vulcânica o barro caiu,',
-            'Abafando a fornalha que tanto rugiu;',
+            'Selando em estampa o titã que rugiu;',
             'E diante das águas do mar sideral,',
             'Secou-se a barreira num dique real.',
           ],
@@ -635,7 +637,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
           [
             'Cercados por léguas de barro fervente,',
             'Não tinham saída p’ra a sua gente;',
-            'E ao longe já ouviam o sexto estalar',
+            'E ao longe já ouviam o surdo estalar',
             'Dos Selos que estavam prestes a quebrar.',
           ],
           [
@@ -648,13 +650,13 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
       },
       {
         id: 'node_6k_portal_dimensional_cinza',
-        kind: 'interlude',
+        kind: 'prelude',
         cardId: 'neutral_152_portal_dimensional_cinza',
         domain: 'neutral',
         title: 'Travessia pelo Portal Astral',
         subtitle: 'O arco de pedra rúnica que rasga uma ponte direta através do plano cinzento, permitindo a evacuação imediata de exércitos',
         yearLabel: 'Ano 1.112 D.F.',
-        locationLabel: 'Arco de Pedra do Rocha Central',
+        locationLabel: 'Arco de Pedra da Rocha Central',
         stanzas: [
           [
             'Do círculo escrito subiu um pilar,',
@@ -663,9 +665,9 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
             'Brilhava a estrada de prata e cristal.',
           ],
           [
-            'Lá dentro do arco não havia distância,',
-            'Nem fogo, nem lama, nem negra ânsia;',
-            'Um passo bastava p’ra o homem cruzar',
+            'Lá dentro do arco vencia-se a distância,',
+            'Com passo seguro de firme constância;',
+            'Um salto bastava p’ra o homem cruzar',
             'Cem léguas de terra e cem léguas de mar.',
           ],
           [

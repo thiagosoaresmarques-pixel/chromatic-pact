@@ -10,10 +10,11 @@ import { EpicPoemCanto } from './epicPoemTypes';
 export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
   // ==========================================================================
   // CAPÍTULO 1 (Canto III): OS SEIS FLAGELOS CORNUDOS (Anos 324–346 D.F.)
-  // 9 nós = 6 ilustrados (kind: 'prelude', 4 estrofes) + 3 pontes (kind: 'interlude', hideCardArt: true, 3 estrofes) = 33 estrofes
+  // 9 nós = 6 ilustrados (kind: 'creature', 4 estrofes) + 3 pontes (kind: 'interlude', hideCardArt: true, 3 estrofes) = 33 estrofes
   // ==========================================================================
   {
     id: 'canto_3k_flagelos_cornudos_fronteira',
+    chronologicalOrder: 30,
     isParallel: true,
     parentCantoId: 'canto_3_cidadelas',
     anchorNodeId: 'canto3_creature_24_tita_adamantina',
@@ -21,7 +22,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
     shortTitle: 'Os Flagelos Cornudos',
     cantoNumber: 'CAPÍTULO III-I',
     eraNumber: 'IIª ERA • A REVOLTA DAS PEDREIRAS E OS BRUTOS DO PRISMA',
-    periodLabel: 'Anos 324–346 D.F. • Fronteira Cinzenta & Muralhas das Cinco Cidadelas',
+    periodLabel: 'Anos 324–346 D.F. • Fronteira Cinzenta',
     title: 'A Ruptura dos Grilhões e a Marcha dos Seis Flagelos Cornudos',
     subtitle:
       'De como seis linhagens de brutos couraçados nascidos das cascas cristalinas do Prisma despedaçaram as correntes das pedreiras reais, exigindo a vigília do Titã de Adamantina antes de se tornarem baluartes juramentados das seis bandeiras',
@@ -30,7 +31,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
     nodes: [
       {
         id: 'node_3k_1_flagelo_primordial',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'neutral_170_flagelo_cornudo_matriz',
         domain: 'neutral',
         title: 'Flagelo Cornudo Primordial',
@@ -67,7 +68,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_3k_2_flagelo_fornalha',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'red_170_flagelo_cornudo_chama',
         domain: 'red',
         title: 'Flagelo Cornudo da Fornalha',
@@ -136,7 +137,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_3k_4_flagelo_geada',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'blue_170_flagelo_cornudo_gelo',
         domain: 'blue',
         title: 'Flagelo Cornudo da Geada',
@@ -173,7 +174,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_3k_5_flagelo_mata',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'green_170_flagelo_cornudo_selva',
         domain: 'green',
         title: 'Flagelo Cornudo da Mata',
@@ -214,11 +215,11 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
         cardId: 'green_170_flagelo_cornudo_selva',
         hideCardArt: true,
         domain: 'neutral',
-        title: 'A Vigília nos Portões da Torre dos Cinco Selos',
+        title: 'A Vigília nos Portões da Torre Cinzenta',
         subtitle:
           'No Ano 340 D.F., a fundação do Titã de Adamantina estabiliza o planalto central enquanto o Vale do Eclipse e Solária revelam os dois últimos Flagelos',
         yearLabel: 'Ano 340 D.F.',
-        locationLabel: 'Portões da Torre dos Cinco Selos',
+        locationLabel: 'Portões da Torre Cinzenta',
         stanzas: [
           [
             'No ano trezentos e quarenta contado,',
@@ -242,7 +243,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_3k_7_flagelo_abismo',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'purple_170_flagelo_cornudo_abismo',
         domain: 'purple',
         title: 'Flagelo Cornudo do Abismo',
@@ -279,7 +280,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_3k_8_flagelo_alvorada',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'gold_170_flagelo_cornudo_sol',
         domain: 'gold',
         title: 'Flagelo Cornudo da Alvorada',
@@ -295,8 +296,8 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
             'E o bruto ajoelhou-se no chão consagrado!',
           ],
           [
-            'Banhado em alabastro e bronze solar,',
-            'Seus chifres brunidos puseram-se a arfar;',
+            'Banhado em alabastro e em fogo solar,',
+            'Ergueu os seus chifres brunidos no ar;',
             'Guardando nos pulsos as argolas d’ouro',
             'Não mais como pena, mas nobre tesouro!',
           ],
@@ -307,8 +308,8 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
             'Sustenta o impacto da lança inclemente!',
           ],
           [
-            'Assim seis irmãos de uma mesma raiz',
-            'Tomaram assento em cada país;',
+            'Assim seis irmãos da primeira matriz',
+            'Ergueram muralha de eterna raiz;',
             'Provando que o jugo partido na mão',
             'Se torna na guerra o mais forte bastião!',
           ],
@@ -351,18 +352,19 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
 
   // ==========================================================================
   // CAPÍTULO 2 (Canto VI): OS SEIS PACTUÁRIOS ELEMENTAIS (Anos 1.008–1.034 D.F.)
-  // 9 nós = 6 ilustrados (kind: 'prelude', 4 estrofes) + 3 pontes (kind: 'interlude', hideCardArt: true, 3 estrofes) = 33 estrofes
+  // 9 nós = 6 ilustrados (kind: 'creature', 4 estrofes) + 3 pontes (kind: 'interlude', hideCardArt: true, 3 estrofes) = 33 estrofes
   // ==========================================================================
   {
     id: 'canto_6m_collegium_pactuarios_elementais',
+    chronologicalOrder: 62,
     isParallel: true,
     parentCantoId: 'canto_6_tratados',
-    anchorNodeId: 'creature_59_silvathor',
+    anchorNodeId: 'canto6_interlude_eras_ouro',
     parallelCode: 'VI-H',
     shortTitle: 'Pactuários Elementais',
     cantoNumber: 'CAPÍTULO VI-H',
     eraNumber: 'Vª ERA • O COLLEGIUM DOS VOTOS ELEMENTAIS',
-    periodLabel: 'Anos 1.008–1.034 D.F. • Grande Biblioteca & Fronteiras dos Tratados',
+    periodLabel: 'Anos 1.008–1.034 D.F. • Collegium Elemental',
     title: 'Os Votos da Dupla Presença e o Collegium dos Pactuários Elementais',
     subtitle:
       'De como seis conjuradores encapuzados da Retaguarda selaram juramentos vitais com espíritos colossais das seis essências, projetando guardiões na Vanguarda enquanto cada feitiço entoado desperta a fúria elemental às suas costas',
@@ -371,12 +373,12 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
     nodes: [
       {
         id: 'node_6m_1_pactuario_eter',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'neutral_171_pactuario_elemental_matriz',
         domain: 'neutral',
         title: 'Pactuário do Éter Primordial',
         subtitle:
-          'No Ano 1.008 D.F., na Grande Biblioteca da Torre Cinzenta, o primeiro arcanista de manto prateado vincula sua respiração à montanha viva de mercúrio e cristal',
+          'No Ano 1.008 D.F., na Grande Biblioteca da Torre dos Cinco Selos, o primeiro arcanista de manto prateado vincula sua respiração à montanha viva de mercúrio e cristal',
         yearLabel: 'Ano 1.008 D.F.',
         locationLabel: 'Claustro Cinzento da Grande Biblioteca',
         stanzas: [
@@ -389,8 +391,8 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
           [
             'Foi quando no Claustro de prata e metal',
             'Surgiu o Pactuário do Éter Primordial:',
-            'De capuz sereno que guarda a sua paz,',
-            'E um monstro de vidro curvado por trás!',
+            'De capuz sereno e semblante sagaz,',
+            'Com um monstro de vidro curvado na paz!',
           ],
           [
             'Assim que na Arena seu voto ressoa,',
@@ -408,7 +410,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_6m_2_pactuario_glacial',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'blue_171_pactuario_elemental_gelo',
         domain: 'blue',
         title: 'Pactuário do Espírito Glacial',
@@ -453,7 +455,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
         subtitle:
           'No Ano 1.016 D.F., os mestres dos Trinta Grimórios codificam a escola pactuária, despertando a ambição das caldeiras de Pyros e das matas de Veridia',
         yearLabel: 'Ano 1.016 D.F.',
-        locationLabel: 'Anfiteatro Tático da Torre Cinzenta',
+        locationLabel: 'Anfiteatro Tático da Torre dos Cinco Selos',
         stanzas: [
           [
             'Nas aulas solenes do grande salão,',
@@ -465,7 +467,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
             'Com Alcance longo na linha traseira,',
             'O mago comanda a batalha inteira;',
             'Enquanto na frente a forma invocada',
-            'Aparava o bote da tropa avançada.',
+            'Apara o bote da tropa avançada.',
           ],
           [
             'Ao verem a força de tal simetria,',
@@ -477,7 +479,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_6m_4_pactuario_magmatico',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'red_171_pactuario_elemental_chama',
         domain: 'red',
         title: 'Pactuário do Espírito Magmático',
@@ -514,12 +516,12 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_6m_5_pactuario_silvestre',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'green_171_pactuario_elemental_selva',
         domain: 'green',
         title: 'Pactuário do Espírito Silvestre',
         subtitle:
-          'No Ano 1.023 D.F., um ano após o voo de Silvathor, uma xamã de Veridia sela paz com o espírito ancestral de pau-ferro, erguendo guarda robusta e nutrindo o campeão aliado',
+          'No Ano 1.023 D.F., um ano após a consagração do grande voo meridional de Silvathor, uma xamã de Veridia sela paz com o espírito ancestral de pau-ferro, erguendo guarda robusta e nutrindo o campeão aliado',
         yearLabel: 'Ano 1.023 D.F.',
         locationLabel: 'Clareira do Coração de Raiz-Ferro (Veridia)',
         stanzas: [
@@ -557,7 +559,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
         domain: 'gold',
         title: 'O Debate do Voto Sagrado e do Preço da Sombra',
         subtitle:
-          'No Ano 1.027 D.F., emissários de Solária e do Vale do Eclipse confrontam na Torre Cinzenta duas visões opostas sobre o preço espiritual de um Pactuário',
+          'No Ano 1.027 D.F., emissários de Solária e do Vale do Eclipse confrontam na Torre dos Cinco Selos duas visões opostas sobre o preço espiritual de um Pactuário',
         yearLabel: 'Ano 1.027 D.F.',
         locationLabel: 'Câmara Diplomática dos Cinco Selos',
         stanzas: [
@@ -583,7 +585,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_6m_7_pactuario_solar',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'gold_171_pactuario_elemental_sol',
         domain: 'gold',
         title: 'Pactuário do Espírito Solar',
@@ -620,7 +622,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
       },
       {
         id: 'node_6m_8_pactuario_umbral',
-        kind: 'prelude',
+        kind: 'creature',
         cardId: 'purple_171_pactuario_elemental_abismo',
         domain: 'purple',
         title: 'Pactuário do Espírito Umbral',
@@ -642,7 +644,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
             'Atento ao menor estalar de sua voz!',
           ],
           [
-            'Enquanto a senhora conjura de trás,',
+            'Enquanto a senhora conjura fugaz,',
             'O vulto sedento jamais fica em paz:',
             'A cada feitiço atravessa o salão,',
             'Rasgando dois pontos no rei de plantão!',
@@ -663,15 +665,15 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
         domain: 'neutral',
         title: 'O Selamento do Códice das Seis Vozes',
         subtitle:
-          'Em 1.034 D.F., o Collegium deposita os seis pergaminhos pactuários na Torre Cinzenta, onze anos antes do Concílio das Seis Asas de Seraphiel',
+          'Em 1.034 D.F., o Collegium deposita os seis pergaminhos pactuários na Torre dos Cinco Selos, onze anos antes do Concílio das Seis Asas de Seraphiel',
         yearLabel: 'Ano 1.034 D.F.',
-        locationLabel: 'Abóbada dos Grimórios (Torre Cinzenta)',
+        locationLabel: 'Abóbada dos Grimórios (Torre dos Cinco Selos)',
         stanzas: [
           [
             'No ano mil e trinta e quatro marcado,',
             'Ficou na Biblioteca o Códice atado:',
-            'Seis mantos de estudo, seis bestas atrás,',
-            'Servindo aos tratados de guerra e de paz!',
+            'Seis mantos de estudo, seis bestas leais,',
+            'Servindo aos tratados das cortes reais!',
           ],
           [
             'Por cinco de Essência qualquer Soberano',
@@ -680,8 +682,8 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
             'E voz na Retaguarda fazendo tremer!',
           ],
           [
-            'Assim preparou-se o terreno florido',
-            'Para o grande canto que vinha em seguido:',
+            'Assim preparou-se o caminho florido',
+            'P’ra o grande Concílio que havia surgido:',
             'Pois logo em Solária, num coro sem par,',
             'As seis brancas asas iam se abrir no ar!',
           ],

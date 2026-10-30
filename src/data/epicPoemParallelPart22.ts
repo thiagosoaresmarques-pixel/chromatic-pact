@@ -1,25 +1,26 @@
 import { EpicPoemCanto } from './epicPoemTypes';
 
 /**
- * CANTOS PARALELOS — PARTE 22 (IV-J e VII-J)
+ * CANTOS PARALELOS — PARTE 22 (IV-C e VII-I)
  * Crônicas das Relíquias da Guerra do Sangue Derramado (470–508 D.F.)
- * e do Orbe do Sol Aprisionado e Apocalipses Finais da Torre (1.225–1.238 D.F.).
+ * e do Orbe do Sol Aprisionado e Apocalipses Finais da Torre (1.233–1.238 D.F.).
  */
 export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
   // ==========================================================================
-  // CAPÍTULO IV-J: AS GRANDES RELÍQUIAS E ESTRATAGEMAS DA GUERRA (470–508 D.F.)
+  // CAPÍTULO IV-C: AS GRANDES RELÍQUIAS E ESTRATAGEMAS DA GUERRA (470–508 D.F.)
   // 10 nós = 6 com imagem (4 estrofes) + 4 pontes sem imagem (3 estrofes) = 36 estrofes
   // ==========================================================================
   {
     id: 'canto_4j_arsenal_reliquias_guerra',
     isParallel: true,
     parentCantoId: 'canto_4_guerra',
+    chronologicalOrder: 35,
     anchorNodeId: 'node_creature_34_ignis_vael',
-    parallelCode: 'IV-J',
+    parallelCode: 'IV-C',
     shortTitle: 'Relíquias da Guerra',
-    cantoNumber: 'CAPÍTULO IV-J',
+    cantoNumber: 'CAPÍTULO IV-C',
     eraNumber: 'IIIª ERA • AS GRANDES RELÍQUIAS E ESTRATAGEMAS DA GUERRA',
-    periodLabel: 'Anos 470–508 D.F. • Campos Centrais & Arsenal da Fronteira',
+    periodLabel: 'Anos 470–508 D.F. • Forjas de Campanha',
     title: 'A Égide Soberana, a Singularidade Nula e os Cofres da Guerra',
     subtitle: 'Como, no auge da Guerra do Sangue Derramado, os cinco domínios e a Fronteira Cinzenta abriram seus arsenais sagrados, opondo o Cálice da Aurora Imortal e a Arca do Pacto Radiante ao Espelho Devorador de Almas e ao Orbe da Singularidade Nula',
     accentColor: '#f59e0b',
@@ -153,13 +154,13 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
           [
             'Cem cavaleiros fortes perderam a razão,',
             'Puxados pelo feitiço daquela escuridão;',
-            'Enquanto seus espíritos gritavam na prisão,',
-            'As cascas sem memória tombavam pelo chão!',
+            'Enquanto seus espíritos gritavam sem guarida,',
+            'As cascas sem memória tombavam na descida!',
           ],
           [
             'Para quebrar o encanto daquele vidro impuro,',
             'Era preciso a força do tronco mais maduro;',
-            'E das matas profundas de Sylvan despertou',
+            'E das matas profundas de Veridia despertou',
             'O cetro de esmeralda que a floresta consagrou!',
           ],
         ],
@@ -171,9 +172,9 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'green',
         title: 'O Murmúrio da Seiva Antiga',
-        subtitle: 'Em 490 D.F., os arquidruidas de Sylvan trazem do santuário interior o galho vivo da primeira árvore do mundo',
+        subtitle: 'Em 490 D.F., os arquidruidas de Veridia trazem do santuário interior o galho vivo da primeira árvore do mundo',
         yearLabel: 'Ano 490 D.F.',
-        locationLabel: 'Orla da Grande Floresta',
+        locationLabel: 'Orla da Grande Floresta, Veridia',
         stanzas: [
           [
             'Sentindo o solo morto onde a sombra dominava,',
@@ -237,9 +238,9 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         cardId: 'red_54_coroa_chama_eterna',
         domain: 'red',
         title: 'Coroa do Sol Incandescente',
-        subtitle: 'Em 498 D.F., os regentes vulcânicos de Ignis ostentam a coroa de brasas perpétuas que incendeia o próprio ar ao redor de seu portador',
+        subtitle: 'Em 498 D.F., os regentes vulcânicos de Pyros ostentam a coroa de brasas perpétuas que incendeia o próprio ar ao redor de seu portador',
         yearLabel: 'Ano 498 D.F.',
-        locationLabel: 'Cratera de Cinzas do Flanco Leste',
+        locationLabel: 'Cratera de Cinzas do Flanco Norte, Pyros',
         stanzas: [
           [
             'Em quatrocentos e noventa e oito, o horizonte avermelhou,',
@@ -300,7 +301,7 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
       },
       {
         id: 'node_4j_9_orbe_singularidade_nula',
-        kind: 'interlude',
+        kind: 'prelude',
         cardId: 'neutral_29_esfera_aniquilacao',
         domain: 'neutral',
         title: 'Orbe da Singularidade Nula',
@@ -352,7 +353,7 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
             'E o Báculo sagrado foi a mata guardar.',
           ],
           [
-            'O Orbe foi contido por campos de imã forte,',
+            'O Orbe foi contido por campos de ímã forte,',
             'Trancado sete léguas abaixo do pátio norte;',
             'Pois todos compreenderam naquela tarde fria',
             'Que se a esfera escapasse, o mundo acabaria!',
@@ -369,19 +370,20 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CAPÍTULO VII-J: O ORBE DO SOL APRISIONADO E OS APOCALIPSES FINAIS (1.225–1.238 D.F.)
+  // CAPÍTULO VII-I: O ORBE DO SOL APRISIONADO E OS APOCALIPSES FINAIS (1.233–1.238 D.F.)
   // 11 nós = 7 com imagem (4 estrofes) + 4 pontes sem imagem (3 estrofes) = 40 estrofes
   // ==========================================================================
   {
     id: 'canto_7j_orbe_sol_apocalipses_finais',
     isParallel: true,
     parentCantoId: 'canto_7_presente',
+    chronologicalOrder: 76,
     anchorNodeId: 'creature_72_dragao_safira_sonico',
-    parallelCode: 'VII-J',
+    parallelCode: 'VII-I',
     shortTitle: 'Orbe do Sol & Cataclismos',
-    cantoNumber: 'CAPÍTULO VII-J',
+    cantoNumber: 'CAPÍTULO VII-I',
     eraNumber: 'VIª ERA • O ORBE DO SOL APRISIONADO E OS APOCALIPSES FINAIS',
-    periodLabel: 'Anos 1.225–1.238 D.F. • Cúpula Axial & Torre dos Cinco Selos',
+    periodLabel: 'Anos 1.233–1.238 D.F. • Os Cinco Continentes',
     title: 'O Orbe do Sol Aprisionado e a Mobilização da Torre dos Cinco Selos',
     subtitle: 'Como a abertura do Orbe do Sol Aprisionado desencadeou a Ira do Firmamento Dourado, os Pilares da Geada Eterna e a Colheita do Cálice de Obsidiana, levando o Comandante Garrick e Valkyra a decretarem a Mobilização da Torre dos Cinco Selos',
     accentColor: '#ef4444',
@@ -393,12 +395,12 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         cardId: 'red_166_coroa_imperador_vulcao',
         domain: 'red',
         title: 'Orbe do Sol Aprisionado',
-        subtitle: 'No Ano 1.225 D.F., os senhores da forja de Ignis abrem a gaiola de adamantina que mantém cativa uma estrela em miniatura',
-        yearLabel: 'Ano 1.225 D.F.',
-        locationLabel: 'Fornalha Suprema de Ignis',
+        subtitle: 'No Ano 1.233 D.F., os senhores da forja de Pyros abrem a gaiola de adamantina que mantém cativa uma estrela em miniatura',
+        yearLabel: 'Ano 1.233 D.F.',
+        locationLabel: 'Fornalha Suprema de Pyros',
         stanzas: [
           [
-            'Em mil duzentos e vinte e cinco, a forja estremeceu,',
+            'Em mil duzentos e trinta e três, a forja estremeceu,',
             'Quando o Orbe do Sol Aprisionado apareceu;',
             'Entre anéis de adamantina e correntes de metal,',
             'Rugia uma estrela viva de fogo primordial!',
@@ -406,8 +408,8 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
           [
             'Para deter a marcha das bestas do vazio,',
             'Os príncipes da brasa lançaram desafio;',
-            'Abriram três comporta da jaula reluzente,',
-            'Soltando sobre os montes o plasma incandescente!',
+            'Abriram três comportas da jaula reluzente,',
+            'Soltando sobre os montes o clarão incandescente!',
           ],
           [
             'As nuvens da tormenta viraram fumo e pó,',
@@ -429,12 +431,12 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         cardId: 'gold_140_ira_firmamento_dourado',
         domain: 'gold',
         title: 'Ira do Firmamento Dourado',
-        subtitle: 'Em 1.228 D.F., os céus de Vaeloria abrem-se em colunas de julgamento solar para purificar os campos corrompidos pela guerra final',
-        yearLabel: 'Ano 1.228 D.F.',
+        subtitle: 'Em 1.234 D.F., os céus de Vaeloria abrem-se em colunas de julgamento solar para purificar os campos corrompidos pela guerra final',
+        yearLabel: 'Ano 1.234 D.F.',
         locationLabel: 'Zênite sobre a Planície Axial',
         stanzas: [
           [
-            'No ano mil duzentos e vinte e oito, o céu se abriu,',
+            'Em mil duzentos e trinta e quatro, o céu se abriu,',
             'E a Ira do Firmamento Dourado reluziu;',
             'Mil lanças de luz pura caíram da amplidão,',
             'Cauterizando a chaga de toda a região!',
@@ -453,7 +455,7 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
           ],
           [
             'Para esfriar a crosta que começava a arder,',
-            'O círculo de Aethel-Vahr ergueu o seu poder;',
+            'O círculo de Vórtex ergueu o seu poder;',
             'Chamando das geleiras do polo boreal',
             'O inverno repentino do gelo mais letal!',
           ],
@@ -465,10 +467,10 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         cardId: 'gold_140_ira_firmamento_dourado',
         hideCardArt: true,
         domain: 'blue',
-        title: 'O Vapor das Sete Mares',
-        subtitle: 'Em 1.229 D.F., os arquimagos de Safira canalizam as correntes polares para conter o superaquecimento planar',
-        yearLabel: 'Ano 1.229 D.F.',
-        locationLabel: 'Observatório Glacial de Aethel',
+        title: 'O Vapor das Sete Marés',
+        subtitle: 'Ainda em 1.234 D.F., os arquimagos de Vórtex canalizam as correntes polares para conter o superaquecimento planar',
+        yearLabel: 'Ano 1.234 D.F.',
+        locationLabel: 'Observatório Glacial de Vórtex',
         stanzas: [
           [
             'As pedras estalavam com o calor sem fim,',
@@ -484,8 +486,8 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
           ],
           [
             'Onde antes fervia a lava no chão espedaçado,',
-            'O vento do norte uivou com sopro congelado;',
-            'Ergendo num instante, do vale até o altar,',
+            'O vento do polo uivou com sopro congelado;',
+            'Erguendo num instante, do vale até o altar,',
             'As torres cristalinas do frio secular!',
           ],
         ],
@@ -496,19 +498,19 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         cardId: 'blue_161_singularidade_temporal',
         domain: 'blue',
         title: 'Pilares da Geada Eterna',
-        subtitle: 'No Ano 1.230 D.F., colunas titânicas de gelo absoluto brotam da terra, congelando exércitos inteiros e o próprio fluxo do tempo ao redor',
-        yearLabel: 'Ano 1.230 D.F.',
+        subtitle: 'No Ano 1.235 D.F., colunas titânicas de gelo absoluto brotam da terra, congelando exércitos inteiros e o próprio fluxo do tempo ao redor',
+        yearLabel: 'Ano 1.235 D.F.',
         locationLabel: 'Vale dos Glaciares Súbitos',
         stanzas: [
           [
-            'Em mil duzentos e trinta, o inverno triunfou:',
+            'Em mil duzentos e trinta e cinco, o inverno triunfou:',
             'A força dos Pilares da Geada Eterna brotou;',
             'Colunas de safira de cem braças de altura',
             'Prenderam a batalha na fria sepultura!',
           ],
           [
             'Tão baixa era a temperatura daquele gelo azul',
-            'Que o próprio tempo parou de norte até o sul;',
+            'Que o próprio tempo parou do polo até o sul;',
             'As chamas no ar ficaram imóveis como flor,',
             'Presas dentro do vidro de um gelo sem calor!',
           ],
@@ -532,27 +534,27 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         cardId: 'purple_162_apocalipse_necrotico',
         domain: 'purple',
         title: 'Colheita do Cálice de Obsidiana',
-        subtitle: 'Em 1.233 D.F., os senhores do Eclipse realizam o grande rito de drenagem vital sobre os campos devastados pelos cataclismos',
-        yearLabel: 'Ano 1.233 D.F.',
+        subtitle: 'Em 1.236 D.F., os senhores do Eclipse lançam a foice abissal que abate o maior campeão inimigo e drena a vitalidade do Soberano rival',
+        yearLabel: 'Ano 1.236 D.F.',
         locationLabel: 'Altar Negro da Planície Gelada',
         stanzas: [
           [
-            'No ano mil duzentos e trinta e três, na escuridão,',
+            'Em mil duzentos e trinta e seis, na densa escuridão,',
             'Ergueu-se o grande cálice de negra perdição;',
             'A Colheita do Cálice de Obsidiana começou,',
             'E um vento de cinza roxa o vale atravessou!',
           ],
           [
-            'De cada combatente caído ou congelado,',
-            'Um fio de névoa rubra no ar foi aspirado;',
-            'Correndo como rios para a boca do altar,',
-            'A fim de a taça escura de sangue alimentar!',
+            'A foice de obsidiana ceifou sem compaixão',
+            'O campeão mais forte do hostil batalhão;',
+            'Drenando três alentos do rei adversário',
+            'P’ra restaurar a vida no negro santuário!',
           ],
           [
-            'À medida que o cálice enchia até a borda,',
-            'A legião dos mortos nas catacumbas acorda;',
-            'Erguendo-se das covas com olhos de carvão,',
-            'Imunes à geada e ao fogo do vulcão!',
+            'À medida que o cálice sombrio transbordava,',
+            'A força recolhida o seu trono revigorava;',
+            'Deixando nos exércitos um rastro de pavor,',
+            'Sem que armadura simples vencesse tal langor!',
           ],
           [
             'Para que os defensores da Torre dos Cinco Selos',
@@ -569,8 +571,8 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'Os Alambiques de Mercúrio e Aço',
-        subtitle: 'Em 1.234 D.F., nas forjas alquímicas da Torre, o pó de adamantina é dissolvido em éter puro para distribuir à guarda da muralha',
-        yearLabel: 'Ano 1.234 D.F.',
+        subtitle: 'No final de 1.236 D.F., nas forjas alquímicas da Torre, o pó de adamantina é dissolvido em éter puro para distribuir à guarda da muralha',
+        yearLabel: 'Ano 1.236 D.F.',
         locationLabel: 'Laboratórios da Torre dos Cinco Selos',
         stanzas: [
           [
@@ -599,15 +601,15 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         cardId: 'neutral_154_elixir_pedra_ferro',
         domain: 'neutral',
         title: 'Elixir de Pele de Adamantina',
-        subtitle: 'No Ano 1.235 D.F., os batalhões da Fronteira bebem o elixir metálico que torna sua epiderme impenetrável a lâminas, chamas e drenagens',
-        yearLabel: 'Ano 1.235 D.F.',
+        subtitle: 'No Ano 1.237 D.F., os batalhões da Fronteira bebem o elixir metálico que torna sua epiderme impenetrável a lâminas, chamas e drenagens',
+        yearLabel: 'Ano 1.237 D.F.',
         locationLabel: 'Pátio d’Armas da Torre',
         stanzas: [
           [
-            'Em mil duzentos e trinta e cinco, a guarda bebeu:',
+            'Em mil duzentos e trinta e sete, a guarda bebeu:',
             'O Elixir de Pele de Adamantina resplandeceu;',
-            'Mal a gota prateada descia na garganta,',
-            'Uma couraça viva no corpo se levanta!',
+            'Mal desceu na garganta a poção prateada,',
+            'Fez-se em torno do corpo a couraça blindada!',
           ],
           [
             'A pele dos guerreiros ganhou brilho de aço,',
@@ -635,12 +637,12 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
         cardId: 'neutral_156_cataclismo_gravidade_reversa',
         domain: 'neutral',
         title: 'Inversão Gravitacional Planar',
-        subtitle: 'Em 1.237 D.F., os geradores axiais da Torre invertem o peso do campo de batalha, fazendo exércitos sitiantes e rochas caírem em direção às nuvens',
+        subtitle: 'Ainda em 1.237 D.F., os geradores axiais da Torre invertem o peso do campo de batalha, fazendo exércitos sitiantes e rochas caírem em direção às nuvens',
         yearLabel: 'Ano 1.237 D.F.',
         locationLabel: 'Anel Exterior da Torre Axial',
         stanzas: [
           [
-            'No ano mil duzentos e trinta e sete, o chão falhou:',
+            'Naquele mesmo outono, o próprio chão falhou:',
             'A Inversão Gravitacional Planar se disparou;',
             'O que era embaixo foi-se ao alto firmamento,',
             'E o peso do mundo virou num só momento!',
@@ -648,7 +650,7 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
           [
             'Rochas de cem arrobas, catapultas e dragões',
             'Caíram para cima entre nuvens e trovões;',
-            'Enquanto a guarda de aço, com botas de imã forte,',
+            'Enquanto a guarda de aço, com botas de ímã forte,',
             'Ficava presa às lajes da muralha do norte!',
           ],
           [
@@ -698,7 +700,7 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
       },
       {
         id: 'node_7j_10_mobilizacao_torre_cinco_selos',
-        kind: 'interlude',
+        kind: 'prelude',
         cardId: 'neutral_155_chamado_armas_fronteira',
         domain: 'neutral',
         title: 'Mobilização da Torre dos Cinco Selos',
@@ -727,8 +729,8 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
           [
             'Com os arsenais abertos e os escudos na mão,',
             'Olharam para o centro da grande escuridão;',
-            'Prontos para escrever, a ferro e a clarão,',
-            'O último capítulo daquela criação!',
+            'Prontos para sustentar, no fogo e no estilhaço,',
+            'A derradeira guarda daquele imenso espaço!',
           ],
         ],
       },

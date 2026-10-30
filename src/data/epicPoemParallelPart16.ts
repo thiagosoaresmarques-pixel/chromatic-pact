@@ -6,13 +6,14 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
     isParallel: true,
     parentCantoId: 'canto_5_pacto',
     anchorNodeId: 'node_creature_47_nihil_vael',
-    parallelCode: 'V-H',
+    parallelCode: 'V-G',
+    chronologicalOrder: 50,
     shortTitle: 'Resgate das Horas Perdidas',
-    cantoNumber: 'CANTO PARALELO V-H',
+    cantoNumber: 'CAPÍTULO V-G',
     eraNumber: 'IVª ERA • BASTIDORES DO ABISMO CRONOLÓGICO',
-    periodLabel: 'Ano 768 D.F. • Fenda do Esquecimento sob a Torre',
+    periodLabel: 'Ano 768 D.F. • Cofre das Linhas Apagadas',
     title: 'A Descida de Thaddeus e Lyra ao Ventre de Nihil-Vael',
-    subtitle: 'Como Thaddeus, Justinian, o Comandante Garrick, Lyra e a voz de Aldric no Cetro Astral recuperaram os três séculos de memórias que Nihil-Vael havia tentado apagar em 768 D.F.',
+    subtitle: 'Como Thaddeus, Justinian, o Comandante Garrick, Lyra e a voz espiritual de Aldric no Cetro Astral recuperaram os três séculos de memórias que Nihil-Vael manifestara sua fome para apagar em 768 D.F.',
     accentColor: '#a855f7',
     bannerImage: '/assets/arena/tabletop_purple.png',
     nodes: [
@@ -22,14 +23,14 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'purple_82_senhor_malogro',
         domain: 'purple',
         title: 'Nihil-Vael, Devorador de Linhas do Tempo',
-        subtitle: 'A entidade de vácuo temporal que engoliu os pergaminhos da Segunda e da Terceira Era sob a fundação da Torre',
+        subtitle: 'A entidade de vácuo temporal que se manifestou plenamente em 768 D.F., engolindo os pergaminhos da Segunda e da Terceira Era sob a fundação da Torre',
         yearLabel: 'Ano 768 D.F.',
-        locationLabel: 'Fenda do Esquecimento sob a Torre',
+        locationLabel: 'Cofre das Linhas Apagadas',
         stanzas: [
           [
             'No ano setecentos e sessenta e oito, o chão',
             'Abriu sob os arquivos da grande fundação;',
-            'E lá da profundeza onde o relógio pára,',
+            'E lá da profundeza onde o relógio para,',
             'Subiu a criatura de fome mais avara.',
           ],
           [
@@ -77,8 +78,8 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           [
             'Atou na cintura a corrente do pêndulo real,',
             'Pronto para pular no ventre abissal;',
-            'Mas ninguém desce vivo ao reino do malogro',
-            'Sem ter quem lá em cima segure o cabo ao logro!',
+            'Mas ninguém desce vivo à goela do abismo',
+            'Sem ter quem lá na borda o guarde em heroísmo!',
           ],
           [
             'Foi quando três amigos das eras de esplendor',
@@ -161,7 +162,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'neutral_01_mercenario_veterano',
         domain: 'neutral',
         title: 'Comandante Garrick, Capitão Mercenário da Fronteira',
-        subtitle: 'O capitão que cravou sua espada na fenda da rocha para ancorar Justinian e Thaddeus',
+        subtitle: 'O castelão imortal da Guarda Cinzenta, atado ao Relógio da Eternidade, que cravou sua espada na fenda da rocha para ancorar Justinian e Thaddeus',
         yearLabel: 'Ano 768 D.F.',
         locationLabel: 'Borda da Fenda do Esquecimento',
         stanzas: [
@@ -173,7 +174,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           ],
           [
             'O vento do esquecimento soprava em sua cara,',
-            'Tentando fazer com que a mente se apagasse rara;',
+            'Querendo apagar tudo o que o peito jurara;',
             'Quase esqueceu a vila onde havia nascido,',
             'Mas não esqueceu o dever que tinha prometido!',
           ],
@@ -202,8 +203,8 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         locationLabel: 'Ventre Escuro de Nihil-Vael',
         stanzas: [
           [
-            'De dentro do bolso do manto de Thaddeus,',
-            'Voou a pequenina que viu nascer os céus;',
+            'De dentro da algibeira do manto cor de véu,',
+            'Voou a pequenina que viu nascer o céu;',
             'Lyra, a Fada Pixie do Pó Estelar antigo,',
             'Abriu as asas verdes no meio do perigo!',
           ],
@@ -221,7 +222,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           ],
           [
             'Thaddeus estendeu a mão para a esfera tomar,',
-            'Mas as garras do monstro vieram lhe fechar;',
+            'Mas as garras do monstro vieram-no cercar;',
             'Quando de dentro do saco das relíquias do passado,',
             'Despertou o artefato do primeiro magistrado!',
           ],
@@ -234,7 +235,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'blue',
         title: 'O Eco da Primeira Era no Fundo do Poço',
-        subtitle: 'Como a memória de Aldric despertou ao toque do pó estelar de Lyra',
+        subtitle: 'Como a voz espiritual de Aldric preservada no Cetro despertou ao toque do pó estelar de Lyra',
         yearLabel: 'Ano 768 D.F.',
         locationLabel: 'Núcleo de Nihil-Vael',
         stanzas: [
@@ -251,8 +252,8 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'Não pode ser digerida por nenhuma escuridão!',
           ],
           [
-            'Nas mãos de Thaddeus o cetro se formou,',
-            'E o espírito de Aldric junto a ele falou;',
+            'Nas mãos de Thaddeus o cetro rebrilhou,',
+            'E o eco espiritual de Aldric ressoou;',
             'Unindo a Primeira Era à Quarta num só feixe,',
             'Para que o devorador a presa enfim deixe!',
           ],
@@ -260,23 +261,23 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
       },
       {
         id: 'node_5h_cetro_aldric_oniciencia',
-        kind: 'creature',
+        kind: 'prelude',
         cardId: 'blue_166_trono_oniciencia_astral',
         domain: 'blue',
         title: 'Cetro do Arquimago Astral',
-        subtitle: 'A relíquia viva da Primeira Era cuja luz de onisciência abriu o ventre de Nihil-Vael e devolveu a história',
+        subtitle: 'A relíquia viva da Primeira Era cuja voz espiritual de Aldric abriu o ventre de Nihil-Vael e devolveu a história',
         yearLabel: 'Ano 768 D.F.',
         locationLabel: 'Núcleo de Nihil-Vael',
         stanzas: [
           [
-            'Brilhando como o Trono da Onisciência Astral,',
-            'O Cetro de Aldric rompeu o matagal;',
+            'Brilhando com o lume da Onisciência Astral,',
+            'O Cetro do Arquimago rompeu o vendaval;',
             'Sete olhos de safira abriram-se no topo,',
             'Gravando a verdade dentro daquele escopo!',
           ],
           [
             '— "Nada do que foi vivido se perde no vazio!"',
-            'Ecoou a voz de Aldric num trovão senhorio;',
+            'Ecoou a voz de Aldric cortando o breu sombrio;',
             'O raio de safira rasgou o negro véu,',
             'Devolvendo as memórias para a luz do céu!',
           ],
@@ -289,8 +290,8 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           [
             'As cartas nos arquivos voltaram a brilhar,',
             'Cada nome de herói voltou ao seu lugar;',
-            'Pois graças ao resgate de setecentos e sessenta e oito,',
-            'A história de Vaeloria jamais virou biscoito!',
+            'Pois graças ao resgate daquele nobre pleito,',
+            'O livro de Vaeloria manteve-se perfeito!',
           ],
         ],
       },
@@ -308,8 +309,8 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           [
             'Garrick lembrou de novo da vila onde nasceu,',
             'E Justinian gravou o decreto que valeu;',
-            'Enquanto Lyra pousava no ombro de Thaddeus,',
-            'Vendo os pergaminhos salvos sob a bênção dos céus.',
+            'Enquanto Lyra pousava junto ao velho guardião,',
+            'Vendo os pergaminhos salvos da eterna escuridão.',
           ],
           [
             'Nihil-Vael hoje dorme como carta de poder,',
@@ -332,13 +333,14 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
     isParallel: true,
     parentCantoId: 'canto_6_tratados',
     anchorNodeId: 'creature_53_aurelion',
-    parallelCode: 'VI-H',
+    parallelCode: 'VI-C',
+    chronologicalOrder: 57,
     shortTitle: 'Escudo de Ouro e Magma',
-    cantoNumber: 'CANTO PARALELO VI-H',
+    cantoNumber: 'CAPÍTULO VI-C',
     eraNumber: 'Vª ERA • BASTIDORES DO TITÃ EMPÍREO',
-    periodLabel: 'Ano 901 D.F. • Praça do Sol Invicto, Solária',
+    periodLabel: 'Ano 901 D.F. • Forja Solar de Solária',
     title: 'A Prova de Fogo entre Aurelion e Magmarok na Praça Solar',
-    subtitle: 'Como Kaelen, o General Varkas, Zephaniel e o Comandante Garrick fundiram o sopro de Magmarok e a luz de Aurelion em 901 D.F. para forjar o primeiro brasão bicolor da Concordata',
+    subtitle: 'Como Kaelen, o General Varkas, Zephaniel e o Comandante Garrick fundiram o sopro de Magmarok e a luz de Aurelion em 901 D.F. para ratificar em metal bélico o Tratado da Forja Solar de 880 D.F.',
     accentColor: '#eab308',
     bannerImage: '/assets/arena/tabletop_gold.png',
     nodes: [
@@ -348,31 +350,31 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'gold_65_emperion_solar',
         domain: 'gold',
         title: 'Aurelion, O Titã Empíreo',
-        subtitle: 'O colosso de luz sólida de Solária que exigiu uma prova de resistência antes de aceitar o metal de Rubi',
+        subtitle: 'O colosso de luz sólida de Solária que exigiu uma prova militar de resistência para consagrar em aço o Tratado de 880 D.F.',
         yearLabel: 'Ano 901 D.F.',
-        locationLabel: 'Praça do Sol Invicto, Solária',
+        locationLabel: 'Forja Solar de Solária',
         stanzas: [
           [
             'No ano novecentos e um, na praça reluzente,',
             'Solária recebia do vulcão toda a gente;',
-            'Para selar o primeiro dos Dez Tratados reais,',
-            'Unindo em duas cores os reinos imortais.',
+            'Para provar no fogo o primeiro dos pactos reais,',
+            'Forjando em duas cores as armas imortais.',
           ],
           [
             'No centro do terraço de mármore dourado,',
             'Ergueu-se Aurelion, o Titã consagrado;',
             'Trezentos pés de altura de puro ouro solar,',
-            'Olhando com desdém para a forja secular.',
+            'Olhando com rigor para a forja secular.',
           ],
           [
-            '— "Quereis unir o ferro da vossa montanha escura',
-            'Com a luz imaculada da minha armadura?"',
+            '— "Vinte anos de papel já selaram a aliança,',
+            'Mas falta ao nosso escudo a prova da matança!"',
             'Trovejou o Titã Empíreo perante a legião:',
             '— "Mostrai-me um metal rubro que aguente o meu clarão!"',
           ],
           [
             'Se o aço derretesse ao toque do seu peito,',
-            'O Tratado da Forja Solar estaria desfeito;',
+            'O orgulho militar sairia desfeito;',
             'Mas das nuvens de cinza do monte fumegante,',
             'Desceu a resposta em chamas naquele mesmo instante!',
           ],
@@ -386,7 +388,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         title: 'Magmarok, o Tirano Piroclástico',
         subtitle: 'O dragão ancião de magma que trouxe no papo o minério do núcleo da terra para desafiar Aurelion',
         yearLabel: 'Ano 901 D.F.',
-        locationLabel: 'Praça do Sol Invicto, Solária',
+        locationLabel: 'Forja Solar de Solária',
         stanzas: [
           [
             'Batendo asas pesadas de basalto e de brasa,',
@@ -420,9 +422,9 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'red_11_azer',
         domain: 'red',
         title: 'Kaelen, Artífice Bronze-Ardente',
-        subtitle: 'O mestre forjador de barbas de fogo que entrou no cruzamento dos dois jatos para bater o primeiro escudo bicolor',
+        subtitle: 'O mestre forjador de barbas de fogo que entrou no cruzamento dos dois jatos para bater o brasão bélico bicolor',
         yearLabel: 'Ano 901 D.F.',
-        locationLabel: 'Bigorna Central da Praça Solar',
+        locationLabel: 'Bigorna Central da Forja Solar',
         stanzas: [
           [
             'Saltou para o meio do fogo Kaelen também,',
@@ -432,7 +434,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           ],
           [
             'Cada pancada sua no bloco incandescente',
-            'Dobrada a luz solar dentro da lava ardente;',
+            'Dobrava a luz solar dentro da lava ardente;',
             'O ouro dava a forma que nunca se corrompe,',
             'O rubi dava o peso que todo escudo rompe!',
           ],
@@ -440,11 +442,11 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             '— "Mais forte, Magmarok! Mais claro no clarão!"',
             'Gritava o anão de fogo no meio do trovão;',
             'Suas barbas de labareda dançavam de alegria,',
-            'Vendo nascer a liga que a Quinta Era abriria!',
+            'Vendo nascer a liga que os exércitos uniria!',
           ],
           [
             'Mas a pressão dos jatos do dragão e do titã',
-            'Começou a empurrar a bigorna pagã;',
+            'Começou a empurrar a forja da manhã;',
             'Se o bloco escorregasse um palmo para o lado,',
             'O molde da aliança sairia rachado!',
           ],
@@ -459,7 +461,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         title: 'As Duas Escoltas no Fogo Cruzado',
         subtitle: 'O momento em que os comandantes de Ouro e Rubi precisaram escorar a bigorna de Kaelen',
         yearLabel: 'Ano 901 D.F.',
-        locationLabel: 'Praça do Sol Invicto, Solária',
+        locationLabel: 'Forja Solar de Solária',
         stanzas: [
           [
             'O calor naquela praça derretia as bandeiras,',
@@ -487,9 +489,9 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'red_18_marechal_rubro',
         domain: 'red',
         title: 'General Varkas, Marechal da Legião Férrea',
-        subtitle: 'O general que segurou a alça esquerda da bigorna sob o feixe direto de Aurelion',
+        subtitle: 'O marechal imortal da memória rubra, convocado do Relicário para segurar a alça esquerda da bigorna sob o feixe direto de Aurelion',
         yearLabel: 'Ano 901 D.F.',
-        locationLabel: 'Bigorna Central da Praça Solar',
+        locationLabel: 'Bigorna Central da Forja Solar',
         stanzas: [
           [
             'Pelo flanco do fogo avançou o General,',
@@ -501,7 +503,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'A armadura vermelha ficou branca de ardor,',
             'Mas o velho comandante não soltou o pegador;',
             '— "Bate o martelo, Kaelen, que o lado do Vulcão',
-            'Não recua um milímetro diante do clarão!"',
+            'Não recua um só passo diante do clarão!"',
           ],
           [
             'Porém do lado oposto, onde a lava caía,',
@@ -525,7 +527,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         title: 'Zephaniel, Arcanjo Solar do Zênite',
         subtitle: 'O arcanjo que queimou as pontas das próprias asas no sopro de Magmarok para equilibrar o lado de Varkas',
         yearLabel: 'Ano 901 D.F.',
-        locationLabel: 'Bigorna Central da Praça Solar',
+        locationLabel: 'Bigorna Central da Forja Solar',
         stanzas: [
           [
             'Zephaniel pousou na poça de carvão,',
@@ -542,8 +544,8 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           [
             '— "Pelos céus de Solária, segura firme, irmão!"',
             'Gritou Zephaniel no meio da explosão;',
-            'E para travar no centro a tenaz que segura o escudo,',
-            'Chegou o terceiro homem que aguenta o golpe rudo!',
+            'E p’ra travar no centro a tenaz sobre o escudo,',
+            'Chegou o capitão de pulso firme e agudo!',
           ],
           [
             'Pois entre o ouro puro e o rubi inflamado,',
@@ -559,15 +561,15 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'neutral_01_mercenario_veterano',
         domain: 'neutral',
         title: 'Comandante Garrick, Capitão Mercenário da Fronteira',
-        subtitle: 'O capitão neutro que segurou a tenaz central sobre a bigorna para Kaelen desferir os três golpes finais',
+        subtitle: 'O castelão imortal da Guarda Cinzenta que segurou a tenaz central sobre a bigorna para Kaelen desferir os três golpes finais',
         yearLabel: 'Ano 901 D.F.',
-        locationLabel: 'Bigorna Central da Praça Solar',
+        locationLabel: 'Bigorna Central da Forja Solar',
         stanzas: [
           [
             'O Comandante Garrick tomou a grande tenaz,',
             'Firmando o escudo em brasa onde a fusão se faz;',
             'Entre as asas do anjo e o ombro do general,',
-            'O mercenário humano manteve o ponto igual!',
+            'O castelão da Torre manteve o ponto igual!',
           ],
           [
             '— "Bate agora, ferreiro, que a peça está no eixo!"',
@@ -598,7 +600,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         title: 'A Saudação entre o Titã e o Dragão',
         subtitle: 'O momento em que Aurelion colocou o brasão no próprio peito e saudou Magmarok',
         yearLabel: 'Ano 901 D.F.',
-        locationLabel: 'Praça do Sol Invicto, Solária',
+        locationLabel: 'Forja Solar de Solária',
         stanzas: [
           [
             'Aurelion baixou a mão sobre os anéis,',
@@ -609,8 +611,8 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           [
             'Magmarok inclinou a cabeça de vulcão,',
             'Soprando uma lufada de morna aprovação;',
-            'E os dois grandes colossos, perante a multidão,',
-            'Deram por aprovado o pacto da nação!',
+            'E os dois grandes colossos, num gesto secular,',
+            'Deram por consagrado o brasão militar!',
           ],
           [
             'Kaelen enxugou a testa com um riso de prazer,',
@@ -626,10 +628,10 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'gold_65_emperion_solar',
         hideCardArt: true,
         domain: 'gold',
-        title: 'O Primeiro Elo dos Dez Tratados',
-        subtitle: 'Como a prova de fogo na Praça Solar inspirou todas as outras nove alianças da Quinta Era',
+        title: 'A Ratificação Bélica da Forja Solar',
+        subtitle: 'Como a prova de fogo de 901 D.F. consagrou em metal o Tratado de 880 D.F. e fortaleceu toda a Era dos Dez Tratados',
         yearLabel: 'Ano 901 D.F.',
-        locationLabel: 'Solária e Cratera de Ignis',
+        locationLabel: 'Solária e Cordilheiras de Pyros',
         stanzas: [
           [
             'Pendurado no alto do pórtico de Solária,',
@@ -638,15 +640,15 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'Que a mistura das cores não parte nada ao meio.',
           ],
           [
-            'Depois do Ouro e do Rubi vieram o Mar e a Mata,',
-            'A Sombra com o Gelo e toda a Concordata;',
+            'Unindo-se ao tratado que Oitocentos e Oitenta abrira,',
+            'A liga daquela praça por toda a Era inspira;',
             'Duzentos anos inteiros de grimórios dobrados,',
-            'Nascidos nos três golpes por Kaelen martelados.',
+            'Honrando aqueles golpes por Kaelen martelados.',
           ],
           [
-            'Quando jogares hoje com um simples toque,',
-            'Lembra daquela praça que aguentou o choque;',
-            'Pois a força bicolor que tens na tua mão',
+            'Quando o invocador ergue a carta num toque,',
+            'Honra aquela praça que aguentou o choque;',
+            'Pois a força dupla em fiel união',
             'Foi temperada junta no mesmo caldeirão!',
           ],
         ],
@@ -659,10 +661,11 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
     parentCantoId: 'canto_7_presente',
     anchorNodeId: 'creature_72_dragao_safira_sonico',
     parallelCode: 'VII-H',
+    chronologicalOrder: 75,
     shortTitle: 'Ruptura da Nuvem Negra',
-    cantoNumber: 'CANTO PARALELO VII-H',
+    cantoNumber: 'CAPÍTULO VII-H',
     eraNumber: 'VIª ERA • BASTIDORES DO DRAGÃO DE SAFIRA SÔNICO',
-    periodLabel: 'Ano 1.232 D.F. • Estratosfera da Torre dos Cinco Selos',
+    periodLabel: 'Ano 1.232 D.F. • Pináculo Acústico de Vórtex',
     title: 'O Mergulho Sônico que Rasgou o Véu de Vesperion sobre a Torre',
     subtitle: 'Como, oito anos antes do presente, o Dragão de Safira Sônico, Thaddeus, Zephaniel, o General Varkas, o Comandante Garrick e Valkyra dissiparam a abóbada de cinzas que cercava a Arena',
     accentColor: '#38bdf8',
@@ -674,7 +677,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'blue_154_dragao_safira_soberano',
         domain: 'blue',
         title: 'Dragão de Safira Sônico',
-        subtitle: 'O soberano alado das alturas que subiu até o limite das estrelas para preparar o mergulho de ruptura',
+        subtitle: 'O soberano alado das alturas que ascendeu à estratosfera em 1.232 D.F. para o despertar oficial de seu mergulho sônico',
         yearLabel: 'Ano 1.232 D.F.',
         locationLabel: 'Estratosfera da Torre dos Cinco Selos',
         stanzas: [
@@ -729,7 +732,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           [
             'Ajustou os ponteiros ao milésimo exato,',
             'Para que no momento do sônico contato',
-            'O dragão desviasse a três metros do chão,',
+            'O dragão desviasse a três braças do chão,',
             'Espalhando a onda acústica em toda direção!',
           ],
           [
@@ -754,25 +757,25 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'Zephaniel lançou-se dentro do nevoeiro,',
             'Subindo cinco léguas no lodo traiçoeiro;',
             'As cinzas sufocavam o brilho do seu peito,',
-            'E espectros da nuvem mordiam seu direito.',
+            'Mas nada corrompia seu coração eleito.',
           ],
           [
             'Parou bem na metade do caminho vertical,',
-            'Cravando no ar escuro sua lança divinal;',
+            'Cravando no ar escuro a espada divinal;',
             'E abriu as seis asas num clarão concentrado,',
             'Como estrela teimosa no breu acorrentado!',
           ],
           [
             '— "Aqui está o meio do caminho, ó Dragão!"',
             'Cantou o Serafim vencendo a escuridão;',
-            '— "Mira na minha lança quando fores descer,',
+            '— "Mira na minha espada quando fores descer,',
             'Que no último instante eu saberei recolher!"',
           ],
           [
             'Se o Arcanjo errasse um segundo ao sair,',
             'O bólido de safira o faria partir;',
-            'Enquanto lá na Torre, junto aos sinos de bronze,',
-            'Dois velhos companheiros puxavam como onze!',
+            'Enquanto lá na Torre, no sino colossal,',
+            'Puxavam lado a lado o cabo de metal!',
           ],
         ],
       },
@@ -791,7 +794,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'O vento da tormenta prendia os badalos,',
             'Cobrindo de gelo negro todos os intervalos;',
             'Nenhum sineiro comum conseguia mover',
-            'As dez toneladas que precisavam bater.',
+            'O peso titânico que era preciso bater.',
           ],
           [
             'Thaddeus olhava o relógio chegando no segundo,',
@@ -800,8 +803,8 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'Ou o Dragão Sônico se esmaga no salão!"',
           ],
           [
-            'Foi quando o Marechal e o velho Capitão',
-            'Uniram os quatro braços na mesma corda em mão;',
+            'Foi quando o Marechal e o bravo veterano',
+            'Uniram os quatro braços no cabo soberano;',
             'Fazendo o bronze antigo cantar como trovão,',
             'Do fundo da muralha até a constelação!',
           ],
@@ -813,7 +816,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'red_18_marechal_rubro',
         domain: 'red',
         title: 'General Varkas, Marechal da Legião Férrea',
-        subtitle: 'O general que aqueceu os sinos congelados com o fogo de suas manoplas e puxou o cabo mestre',
+        subtitle: 'O marechal guardião da Torre que aqueceu os sinos congelados com o fogo de suas manoplas e puxou o cabo mestre',
         yearLabel: 'Ano 1.232 D.F.',
         locationLabel: 'Campanário da Torre dos Cinco Selos',
         stanzas: [
@@ -836,10 +839,10 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'Fechando as asas claras no instante em que apontou!',
           ],
           [
-            'Mas faltavam seis toques na conta de Thaddeus,',
-            'Para guiar a curva que vem lá dos céus;',
-            'E junto ao Marechal, puxando sem parar,',
-            'Estava o companheiro que nunca soube falhar!',
+            'Mas faltavam seis toques na conta singular,',
+            'Para guiar a curva do monstro pelo ar;',
+            'E junto ao Marechal, ardendo de suor,',
+            'Estava o companheiro de indômito valor!',
           ],
         ],
       },
@@ -849,7 +852,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'neutral_01_mercenario_veterano',
         domain: 'neutral',
         title: 'Comandante Garrick, Capitão Mercenário da Fronteira',
-        subtitle: 'O veterano que manteve a cadência perfeita das seis badaladas sob o olhar do relógio de Thaddeus',
+        subtitle: 'O castelão imortal da Guarda Cinzenta que manteve a cadência perfeita das seis badaladas sob o olhar do relógio de Thaddeus',
         yearLabel: 'Ano 1.232 D.F.',
         locationLabel: 'Campanário da Torre dos Cinco Selos',
         stanzas: [
@@ -863,7 +866,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
             'Segunda badalada: o dragão entrou no breu!',
             'Terceira badalada: a barreira se rompeu!',
             'Quarta badalada: passou por Zephaniel,',
-            'Que recolheu as asas num giro de corcel!',
+            'Recolhendo seis asas sob o aéreo dossel!',
           ],
           [
             'Na quinta badalada, o teto do salão',
@@ -873,7 +876,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
           ],
           [
             'O som bateu de frente no bólido que vinha,',
-            'Marcando a três metros a curva da linha;',
+            'Marcando a duas braças a curva da linha;',
             'O Dragão de Safira arqueou o peito azul,',
             'E a onda de choque explodiu de norte a sul!',
           ],
@@ -916,12 +919,12 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'neutral_10_valkyra_pentacromatica',
         domain: 'neutral',
         title: 'Valkyra, Imperatriz Pentacromática',
-        subtitle: 'A soberana da Torre que projetou o feixe de cinco cores pelo furo sônico para manter o céu aberto até 1.240 D.F.',
+        subtitle: 'A soberana da Torre que projetou o feixe de cinco cores pelo furo sônico para manter o canal estelar aberto até 1.240 D.F.',
         yearLabel: 'Ano 1.232 D.F.',
         locationLabel: 'Terraço Supremo da Torre dos Cinco Selos',
         stanzas: [
           [
-            'Valkyra ergueu a espada no centro do terraço,',
+            'Valkyra abriu cinco frontes no centro do terraço,',
             'Lançando as cinco cores pelo aberto espaço;',
             'Pelo túnel que o Dragão de Safira rasgou,',
             'A coluna do Prisma novamente brilhou!',
@@ -952,16 +955,16 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
         cardId: 'blue_154_dragao_safira_soberano',
         hideCardArt: true,
         domain: 'blue',
-        title: 'Os Oito Anos de Céu Claro',
-        subtitle: 'A preparação final sob o sol limpo entre 1.232 e 1.240 D.F.',
-        yearLabel: 'Ano 1.232 – 1.240 D.F.',
+        title: 'O Canal Estelar Inviolável',
+        subtitle: 'Como o corredor de luz no zênite da Torre jamais voltou a fechar entre 1.232 e 1.240 D.F., mesmo sob os cataclismos finais',
+        yearLabel: 'Anos 1.232–1.240 D.F.',
         locationLabel: 'Torre dos Cinco Selos',
         stanzas: [
           [
-            'Por oito anos seguidos o céu permaneceu',
-            'Mais claro que o cristal que do Prisma nasceu;',
-            'E quem olha hoje para cima na Arena do presente',
-            'Vê a luz que entrou naquele dia ardente.',
+            'Por oito anos seguidos o zênite se abriu,',
+            'E nem nos cataclismos seu facho sucumbiu;',
+            'Quem olha hoje p’ra o alto na Arena do presente',
+            'Vê no canal da Torre aquela luz ardente.',
           ],
           [
             'Sem o mergulho sônico do dragão de safira,',

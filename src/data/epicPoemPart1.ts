@@ -58,7 +58,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         title: 'Valkyra, Imperatriz Pentacromática',
         subtitle: 'A árbitra primordial nascida do reflexo indiviso do astro branco',
         yearLabel: '∞ A.F.',
-        locationLabel: 'Cume do Monte Axial (Fronteira Cinzenta)',
+        locationLabel: 'Cume do Monte Axial',
         domain: 'neutral',
         stanzas: [
           [
@@ -74,8 +74,8 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
             'Pois sabia que a terra ansiava viver.',
           ],
           [
-            'Das cinco correntes que o céu repartiu,',
-            'Na envergadura real todo o brilho reuniu;',
+            'Cinco frontes coroadas de sopro imortal,',
+            'Que abrasam e gelam a linha rival;',
             'Na Arena ela paira, senhora da lei,',
             'E julga com glória o mendigo e o rei!',
           ],
@@ -89,7 +89,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         title: 'Vulcanis, Titã da Bigorna Primordial',
         subtitle: 'O 1º Irmão Primogênito (Chama), que forjou o Malho da Ruptura no núcleo do mundo',
         yearLabel: '∞ A.F.',
-        locationLabel: 'Fornalha Axial de Pyros',
+        locationLabel: 'Fornalha Axial Primordial',
         domain: 'red',
         stanzas: [
           [
@@ -107,7 +107,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
           [
             'Hoje ainda na Arena seu malho incendeia,',
             'Partindo os escudos em rubra candeia;',
-            'E ao erguer sua arma pro cume central,',
+            'E ao erguer o seu malho rumo ao cume central,',
             'Conclamou os irmãos para o pacto imortal!',
           ],
         ],
@@ -120,7 +120,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         title: 'Titã Primogênito da Alvorada',
         subtitle: 'O 2º Irmão Primogênito (Ordem), que ergueu a Lança e o Escudo Solar no leste',
         yearLabel: '∞ A.F.',
-        locationLabel: 'Planalto Oriental de Solária',
+        locationLabel: 'Planalto Oriental Primordial',
         domain: 'gold',
         stanzas: [
           [
@@ -151,7 +151,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         title: 'Nocturnus, Avatar da Noite Sem Fim',
         subtitle: 'O 3º Irmão Primogênito (Sombra), que forjou a Foice Umbral para dar sono e noite ao mundo',
         yearLabel: '∞ A.F.',
-        locationLabel: 'Fenda Abissal do Vale do Eclipse',
+        locationLabel: 'Fenda Abissal do Oeste',
         domain: 'purple',
         stanzas: [
           [
@@ -170,7 +170,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
             'Na Arena ele apaga a soberba do dia,',
             'E desperta os caídos da tumba sombria;',
             'Entregando ao seu pacto o segredo do véu,',
-            'Viu o quarto primogênito erguer-se pro céu!',
+            'Viu o quarto primogênito erguer-se p’ra o céu!',
           ],
         ],
       },
@@ -182,7 +182,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         title: 'Sylvanor, o Coração do Mundo',
         subtitle: 'O 4º Irmão Primogênito (Selva), que ergueu a Presa Tectônica e abrigou a semente da vida',
         yearLabel: '∞ A.F.',
-        locationLabel: 'Bosque Matriz de Veridia',
+        locationLabel: 'Bosque Subterrâneo do Sul',
         domain: 'green',
         stanzas: [
           [
@@ -213,7 +213,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         title: 'Chronos, Guardião do Eixo Eterno',
         subtitle: 'O 5º Irmão Primogênito (Tempestade), que forjou o Raio Astral e os ponteiros do Tempo',
         yearLabel: '∞ A.F.',
-        locationLabel: 'Pináculo Polar de Vórtex',
+        locationLabel: 'Pináculo Polar do Norte',
         domain: 'blue',
         stanzas: [
           [
@@ -285,7 +285,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
       {
         id: 'canto_2_prelude_cinco_sois',
         kind: 'prelude',
-        cardId: 'red_162_cataclismo_estrela_rubra',
+        cardId: 'red_29_meteoro_draconico',
         title: 'O Dia dos Cinco Sóis',
         subtitle: 'O batismo elemental dos cinco extremos continentais de Vaeloria',
         yearLabel: 'Ano 1 D.F.',
@@ -317,7 +317,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         kind: 'creature',
         creatureOrder: 7,
         cardId: 'red_08_dragao_vermelho',
-        title: 'Igniskar, Tirano da Cratera',
+        title: 'Igniskar, Tirano das Cinzas',
         subtitle: 'O primeiro soberano dracônico nascido do magma condensado de Pyros',
         yearLabel: 'Ano 3 D.F.',
         locationLabel: 'Grande Cratera de Pyros',
@@ -339,7 +339,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
             'Quando abre nos ares a goela de brasa,',
             'A linha inimiga num sopro ele arrasa;',
             'Mas enquanto no norte reinava o vulcão,',
-            'Nos desertos costeios crescia o trovão!',
+            'Nos desertos costeiros crescia o trovão!',
           ],
         ],
       },
@@ -361,7 +361,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
             'O dragão que nas placas o raio prendeu.',
           ],
           [
-            'O aroma de ozônio nos ares pairava,',
+            'O cheiro do raio nos ares pairava,',
             'Enquanto nas nuvens a faísca estalava;',
             'Com um único sopro de azul tempestade,',
             'Demarcou nas alturas a sua potestade.',
@@ -440,7 +440,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         id: 'canto_2_interlude_casca_cinzenta',
         kind: 'interlude',
         cardId: 'neutral_53_colosso_prismantico',
-        title: 'A Queda da Casca Cinzenta e a Torre dos Cinco Selos',
+        title: 'A Queda da Casca Cinzenta e a Torre Axial',
         subtitle: 'A fundação do eixo neutro onde repousam as relíquias do astro partido',
         yearLabel: 'Ano 39 D.F.',
         locationLabel: 'Umbigo da Fronteira Cinzenta',
@@ -450,7 +450,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
             'Das alturas celestes, a casca sem cor',
             'Caiu onde o mapa não tinha senhor;',
             'No centro exato das terras pousou,',
-            'E a Torre dos Cinco Selos ali despontou.',
+            'E a Torre Cinzenta no centro brotou.',
           ],
           [
             'De prata e de cinza fez-se o chão primordial,',
@@ -571,9 +571,9 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         domain: 'green',
         stanzas: [
           [
-            'Por longas idades julgou o navegador',
-            'Que a verde península coberta de flor',
-            'Fosse rocha firme plantada no mar,',
+            'Cinquenta invernos calmos dormiu junto à flor,',
+            'E o jovem marujo, novel navegador,',
+            'Julgou que a península fosse do mar,',
             'Até a grande escarpa nas águas nadar.',
           ],
           [
@@ -628,7 +628,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
         cardId: 'blue_63_leviata_primordial',
         title: 'Thalassia, A Maré Devoradora',
         subtitle: 'O próprio oceano vivo erguido em defesa do arquipélago de Vórtex',
-        yearLabel: 'Ano 134 D.F.',
+        yearLabel: 'Anos 134–142 D.F.',
         locationLabel: 'Mar Circular de Vórtex',
         domain: 'blue',
         stanzas: [

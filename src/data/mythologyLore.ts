@@ -88,7 +88,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
       {
         yearLabel: '∞ A.F.',
         title: 'A Conspiração dos Cinco Primogênitos',
-        summary: 'Vulcanis, Vorthurion, Malakor, Terrakhor e Aurelius reúnem-se no pico central do continente e forjam o Juramento da Ruptura.',
+        summary: 'Vulcanis, o Titã Primogênito da Alvorada, Nocturnus, Sylvanor e Chronos reúnem-se no pico central do continente e forjam o Juramento da Ruptura.',
         sungCouplet: 'Cinco vozes antigas juraram no monte: / Partir o sol branco e rasgar o horizonte!',
         cardId: 'red_157_dragao_tiamat_carmesim',
       },
@@ -138,7 +138,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
       {
         yearLabel: '39 D.F.',
         title: 'A Queda da Casca Cinzenta',
-        summary: 'O núcleo descolorido do Prisma afunda no centro de Vaeloria, erguendo a Torre dos Cinco Selos.',
+        summary: 'O núcleo descolorido do Prisma afunda no centro de Vaeloria, erguendo a Torre Cinzenta — futura Torre dos Cinco Selos.',
         sungCouplet: 'No centro do mapa, sem cor e sem rei, / Ergueu-se a muralha da antiga lei.',
         cardId: 'neutral_53_colosso_prismantico',
       },
@@ -169,7 +169,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
       'Cinco fortalezas tocaram o véu:',
       'Caldeira de bronze, safira no céu,',
       'Igreja de sombra e raiz imortal,',
-      'E o Bastião Dourado de glória solar!',
+      'E o Bastião Dourado em fulgor triunfal!',
     ],
     milestones: [
       {
@@ -264,7 +264,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
       'No inverno de 689 D.F., Valkyra — guardiã da Fronteira Cinzenta — convocou os monarcas das Cinco Cidadelas à Torre dos Cinco Selos. Sobre a mesa de obsidiana e ouro, foi assinado o Pacto Cromático.',
       'Pela lei sagrada do Pacto, ficou proibida a guerra de extermínio em campo aberto. Toda disputa por território, relíquias ou soberania passou a ser decidida na Arena do Pacto: um campo ritual de duas fileiras (Vanguarda de Escudos e Retaguarda de Comando) onde cada Soberano traz exatamente 100 memórias encadernadas em um Grimório.',
       'Para invocar o poder das cartas, o Soberano realiza a Oferenda ao Prisma: dissolve uma memória por turno para gerar Essência (⚡) e Afinidade cromática.',
-      'Quando monarcas soberbos tentaram burlar o tratado trancando a Arena em Expansões de Domínio inexpugnáveis (825–849 D.F.), foram consagrados os Seis Generais da Roda — Vaelkor, Pyrrakon, Cryonax, Nyxaroth, Sylvarok e Heliokar —, cujas rodas de oito raios estilhaçam qualquer falso firmamento.',
+      'Quando monarcas soberbos tentaram burlar o tratado trancando a Arena em Expansões de Domínio inexpugnáveis (839–850 D.F.), foram consagrados os Seis Generais da Roda — Vaelkor, Pyrrakon, Cryonax, Nyxaroth, Sylvarok e Heliokar —, cujas rodas de oito raios estilhaçam qualquer falso firmamento.',
     ],
     bardBallad: [
       'Na Torre Cinzenta o tratado se fez:',
@@ -288,7 +288,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
         cardId: 'purple_06_tirano_ocular',
       },
       {
-        yearLabel: '828–849 D.F.',
+        yearLabel: '839–850 D.F.',
         title: 'A Heresia das Redomas e os Seis Generais da Roda',
         summary: 'Diante das primeiras Expansões de Domínio que transformavam a Arena em cativeiro, despertam os Seis Generais da Roda para quebrar qualquer cúpula soberana e exaurir o trono infrator.',
         sungCouplet: 'Quando a Roda gira nos ombros do juiz, / Toda falsa cúpula em cacos desdiz!',
@@ -438,7 +438,7 @@ export const MYTHOLOGY_BOOKS: MythologyBook[] = [
           [
             'Do núcleo partido seis olhos abriram,',
             'Os grandes Arautos no zênite ardiram;',
-            'E seis Tecelões, com dedos de breu,',
+            'E seis Tecelões, entre as brumas do véu,',
             'Curvaram nos ares os feixes do céu!',
           ],
           [
@@ -594,7 +594,7 @@ export const MYTHOLOGY_BOOKS: MythologyBook[] = [
         ],
         sungStanzas: [
           [
-            'Não chores o morto que cai no vallado,',
+            'Não chores o morto que cai no valado,',
             'Pois sob o Eclipse ele é só convocado;',
             'Ao toque do sino da negra catedral,',
             'Levanta-se o osso em couraça real!',
@@ -641,8 +641,8 @@ export const MYTHOLOGY_BOOKS: MythologyBook[] = [
           [
             'Na mata fechada onde o sol é esmeralda,',
             'A pedra respira e a raiz se respalda;',
-            'Caminha o colosso coberto de musgo,',
-            'Partindo em gravetos o muro mais brusco!',
+            'Caminha o colosso de tronco robusto,',
+            'Partindo em gravetos o muro mais justo!',
           ],
           [
             'Se feres a hidra, seu colo redobra,',

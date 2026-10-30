@@ -28,10 +28,10 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
             'Abriu três longos séculos de ferro e pavor.',
           ],
           [
-            'As legiões da Fornalha de Pyros em fúria desceram então,',
-            'Contra as falanges do Bastião de Solária em dura formação;',
-            'Choveram meteoros ardentes sobre o escudo dourado,',
-            'Deixando todo o horizonte de brasa e fuligem manchado.',
+            'As hostes de Pyros em fúria desceram então,',
+            'Contra o Bastião de Solária em fechada legião;',
+            'Choveram meteoros ardentes no escudo dourado,',
+            'Deixando o horizonte de brasa e fuligem manchado.',
           ],
           [
             'Quarenta dias sem noite o céu rubicundo',
@@ -48,7 +48,7 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
         cardId: 'red_46_tirano_carmesim',
         title: 'Ignarok, o Devorador de Reinos',
         subtitle: 'O flagelo alado de Pyros que incendeia simultaneamente a vanguarda e o trono rival',
-        yearLabel: 'Ano 412 D.F.',
+        yearLabel: 'Anos 411–412 D.F.',
         locationLabel: 'Planícies Calcinadas do Centro',
         domain: 'red',
         stanzas: [
@@ -78,7 +78,7 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
         creatureOrder: 31,
         cardId: 'purple_08_lorde_abissal',
         title: 'Balgorath, Flagelo do Abismo',
-        subtitle: 'A fornalha viva de entropia cujo coração explode ao tombar em combate',
+        subtitle: 'A fornalha viva de entropia cuja Tempestade Abissal açoita a vanguarda e explode ao cair',
         yearLabel: 'Ano 429 D.F.',
         locationLabel: 'Garganta de Cinzas do Oeste',
         domain: 'purple',
@@ -96,10 +96,10 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
             'Contendo a tormenta suprema de um cataclismo mortal.',
           ],
           [
-            'Ai do guerreiro imprudente que em luta o consegue ferir,',
-            'Pois quando Balgorath tombado começa na arena a ruir,',
-            'Rebenta seu núcleo em tormenta varrendo a fileira da frente,',
-            'E o estrondo desperta nas matas a fúria do monstro dormente.',
+            'Mal pisa na Arena, a Tempestade Abissal se desprende,',
+            'Açoitando em relâmpago negro quem a linha da frente defende;',
+            'E ao tombar em combate rebenta seu núcleo inclemente,',
+            'Despertando nas matas do sul o rugido do monstro dormente.',
           ],
         ],
       },
@@ -153,7 +153,7 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
           ],
           [
             'Seis asas de puro fulgor rasgaram o céu carregado,',
-            'E Caelestius desceu imponente com seu gládio sagrado;',
+            'E Caelestius desceu imponente co’ o arco sagrado;',
             'Choveram plumagens de luz sobre a tropa ferida no chão,',
             'Curando as chagas abertas num sopro de restauração.',
           ],
@@ -177,10 +177,10 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
         domain: 'red',
         stanzas: [
           [
-            'Nas entranhas da Câmara Magmática de Pyros, em brasa e clarão,',
-            'O conclave das chamas eternas reuniu a sua ardente nação;',
-            'Proclamaram o Príncipe Regente dos elementais do vulcão,',
-            'Nascido da lava mais pura que corre debaixo do chão.',
+            'Na Câmara Magmática rubra, em vivo esplendor,',
+            'O conclave das chamas ergueu o seu alto clamor;',
+            'Proclamaram o Príncipe ardente nascido em vulcão,',
+            'Forjado na lava mais pura debaixo do chão.',
           ],
           [
             'Não veste couraça de ferro quem é feito de brasa estelar,',
@@ -245,8 +245,8 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
             'O manto macio de fungos que ergue o caído em torpor.',
           ],
           [
-            'Para a Dama da Podridão toda morte é semente e lavor,',
-            'Pois nos ossos dos bravos vencidos floresce o seu torpe esplendor;',
+            'Para a Dama dos Fungos a morte é cruel sementeira,',
+            'Pois nos ossos vencidos floresce a letal trepadeira;',
             'Nuvens densas de esporos invadem os elmos caídos no chão,',
             'Tecendo nos nervos desfeitos os fios da ressurreição.',
           ],
@@ -261,7 +261,7 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
       {
         id: 'node_canto4_interlude_longa_exumacao',
         kind: 'interlude',
-        cardId: 'purple_154_cavaleiro_morte_eterna',
+        cardId: 'purple_68_exumar_legiao',
         title: 'A Noite da Longa Exumação',
         subtitle: 'O toque do sino negro na Catedral de Obsidiana que reergueu quatro exércitos',
         yearLabel: 'Ano 532 D.F.',
@@ -365,7 +365,7 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
             'Nos penhascos da ardente Fronteira de Basalto o solo tremeu,',
             'Quando a vanguarda punitiva da Fornalha de Pyros desceu;',
             'À frente das tropas de fogo marchava o senhor infernal,',
-            'Bael-Khor, o implacável verdugo do exército meridional.',
+            'Bael-Khor, o implacável verdugo do norte vulcânico e real.',
           ],
           [
             'Gigante de chifres recurvos e peito de rocha em fusão,',
@@ -389,11 +389,11 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
         title: 'Fenris-Vael, O Lobo do Fim das Eras',
         subtitle: 'O predador lupino da tundra cuja fúria e velocidade crescem a cada assalto',
         yearLabel: 'Ano 588 D.F.',
-        locationLabel: 'Tundra Selvagem do Norte de Veridia',
+        locationLabel: 'Tundra Gelada das Escarpas Altas',
         domain: 'green',
         stanzas: [
           [
-            'Nos gelos da Tundra Selvagem do Norte de Veridia cedeu',
+            'Nos gelos da Tundra Selvagem da escarpa cedeu',
             'A jaula de antigas raízes que o lobo primevo prendeu;',
             'Partindo os grilhões milenares com uivos de fome glacial,',
             'Fenris-Vael disparou pela neve qual vento de morte brutal.',
@@ -469,8 +469,8 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
           [
             'Foi preciso que a própria Valkyra descesse com selos de luz,',
             'Para conter na fronteira o machado que em sangue reluz;',
-            'E exaustos de tanta ruína, os monarcas ouviram o clamor,',
-            'Subindo à Torre Cinzenta em busca de um pacto maior.',
+            'E após décadas negras de armadas cobrindo o fulgor,',
+            'Subiram à Torre Cinzenta em busca de um pacto maior.',
           ],
         ],
       },
@@ -530,8 +530,8 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
           [
             'Sobre a mesa sagrada da Torre dos Cinco Selos reluz',
             'A pena de ouro maciço que o Pacto Cromático conduz;',
-            'Em nome do Bastião de Solária, Justinian à mesa se pôs,',
-            'Selando a paz das coroas com firme e solene voz.',
+            'Pelo nobre Bastião de Solária falou entre nós,',
+            'Selando a concórdia dos tronos com firme e solene voz.',
           ],
           [
             'Foi ele quem escreveu os artigos da lei de defesa leal,',
@@ -586,11 +586,11 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
         title: 'Draco Horológico de Aeternus',
         subtitle: 'O guardião mecânico de bronze e cristal que gera Essência pura a cada bater de asas',
         yearLabel: 'Ano 718 D.F.',
-        locationLabel: 'Oficinas da Torre Cinzenta',
+        locationLabel: 'Oficinas da Torre dos Cinco Selos',
         domain: 'neutral',
         stanzas: [
           [
-            'Nas profundas Oficinas da Torre Cinzenta o malho forjou',
+            'Nas profundas Oficinas da Torre dos Selos o malho forjou',
             'A aliança que a ciência de Vórtex ao bronze neutro casou;',
             'Para ser guardião imparcial dos relógios de cada duelo,',
             'Moldaram em bronze e cristal um autômato nobre e belo.',
@@ -727,8 +727,8 @@ export const EPIC_POEM_PART_3: EpicPoemCanto[] = [
           [
             'Na Arena ele cobra os juros em sangue do rei opositor,',
             'Enquanto levanta da tumba o antigo e fiel servidor;',
-            'Mas contra essa sombra furtiva que vinha das criptas do sul,',
-            'Ergueu-se nos muros do leste o dragão sob o céu todo azul.',
+            'Mas contra essa sombra furtiva que vinha do oeste sem luz,',
+            'Ergueu-se nos muros do leste o dragão que na aurora reluz.',
           ],
         ],
       },

@@ -1,28 +1,29 @@
 import { EpicPoemCanto } from './epicPoemTypes';
 
 /**
- * CANTOS PARALELOS — PARTE 10 (V-E, VI-E e VII-E)
+ * CANTOS PARALELOS — PARTE 10 (V-C, VI-D e VII-C)
  * Crônicas paralelas da Onda E (33 estrofes / 132 versos por Canto),
- * aprofundando o Censo das 996 Memórias (702 D.F.), a Purificação dos Recifes Profundos (948 D.F.)
- * e a Âncora do Chronoleviatã na Costa Astral de Vórtex (1.166 D.F.).
+ * aprofundando o Primeiro Censo e as 1.038 Molduras Proféticas (702 D.F.), a Purificação dos Recifes Profundos (948 D.F.)
+ * e a Âncora do Chronoleviatã na Fenda Temporal de Vórtex (1.166 D.F.).
  */
 export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
   // ==========================================================================
-  // CANTO PARALELO V-E: CENSO DAS 996 MEMÓRIAS (Ano 702 D.F. • Biblioteca Astral da Torre dos Cinco Selos)
+  // CAPÍTULO V-C: CENSO DAS TRÊS ERAS E AS 1.038 MOLDURAS (Ano 702 D.F. • Arquivo Astral da Torre)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
     id: 'canto_5e_censo_oitocentas_memorias',
+    chronologicalOrder: 46,
     isParallel: true,
     parentCantoId: 'canto_5_pacto',
     anchorNodeId: 'node_creature_44_thaddeus',
-    parallelCode: 'V-E',
-    shortTitle: 'Censo das 996 Memórias',
-    cantoNumber: 'CANTO PARALELO V-E',
+    parallelCode: 'V-C',
+    shortTitle: 'Censo das Três Eras',
+    cantoNumber: 'CAPÍTULO V-C',
     eraNumber: 'IVª ERA • BASTIDORES DO ARQUIVO TEMPORAL',
-    periodLabel: 'Ano 702 D.F. • Biblioteca Astral da Torre dos Cinco Selos',
-    title: 'A Catalogação das Novecentas e Noventa e Seis Almas no Grimório Maior',
-    subtitle: 'Como Thaddeus, Justinian, a Esfinge do Pináculo e o Comandante Garrick usaram o Cetro de Aldric para gravar todas as 996 cartas e frustraram a infiltração de Carmilla',
+    periodLabel: 'Ano 702 D.F. • Arquivo Astral da Torre',
+    title: 'O Primeiro Censo das Eras Antigas e as Mil e Trinta e Oito Molduras',
+    subtitle: 'Como Thaddeus, Justinian, a Esfinge do Pináculo e o Comandante Garrick catalogaram as três eras passadas, abriram 1.038 molduras proféticas no Relógio Astral e frustraram a infiltração de Carmilla',
     accentColor: '#38bdf8',
     bannerImage: '/assets/arena/tabletop_blue.png',
     nodes: [
@@ -32,20 +33,20 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'blue_80_senhor_tempo',
         domain: 'blue',
         title: 'O Decreto de Catalogação de Thaddeus',
-        subtitle: 'No Ano 702 D.F., treze anos após o Pacto, Thaddeus convoca o grande censo para registrar todas as criaturas e feitiços das cinco eras',
+        subtitle: 'No Ano 702 D.F., treze anos após o Pacto, Thaddeus convoca o primeiro censo das três eras antigas e abre as molduras proféticas do Arquivo Astral',
         yearLabel: 'Ano 702 D.F.',
-        locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
+        locationLabel: 'Arquivo Astral da Torre',
         stanzas: [
           [
             'No Ano Setecentos e Dois, sob a cúpula de safira,',
             'Onde a poeira do tempo em silenciosa roda gira,',
-            'Thaddeus abriu as portas da Biblioteca Maior,',
-            'Chamando os escribas reais para o trabalho de valor.',
+            'Thaddeus abriu as portas do Arquivo Superior,',
+            'Chamando os escribas reais para o labor de valor.',
           ],
           [
             '"As Cem Memórias primeiras já não bastam à nação!" —',
             'Declarou o Senhor do Tempo batendo o seu bastão —',
-            '"Cada herói que já viveu, cada feitiço ou baluarte,',
+            '"Cada herói das três eras, cada feitiço ou baluarte,',
             'Precisa ter seu registro gravado na nossa arte!"',
           ],
           [
@@ -58,19 +59,19 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Porém sondar o passado desde a Era da Vigília',
             'Exigia mais que tinta e mais que humana família;',
             'Era preciso abrir o Tomo das Estrelas Viajantes,',
-            'E ligar suas raízes às esferas mais distantes!',
+            'E ligar suas raízes às eras mais distantes!',
           ],
         ],
       },
       {
         id: 'node_5e_2_grimorio_astral',
-        kind: 'creature',
+        kind: 'prelude',
         cardId: 'neutral_13_grimorio_astral',
         domain: 'neutral',
         title: 'A Expansão do Tomo das Estrelas Viajantes',
-        subtitle: 'O livro matriz se multiplica em novecentas e noventa e seis lâminas de luz suspensas no salão',
+        subtitle: 'O livro matriz projeta mil e trinta e oito molduras proféticas no Relógio Astral para abrigar o passado e o porvir',
         yearLabel: 'Ano 702 D.F.',
-        locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
+        locationLabel: 'Arquivo Astral da Torre',
         stanzas: [
           [
             'No centro do octógono, sobre o pedestal de prata,',
@@ -79,10 +80,10 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Pois crescia como árvore que encontra novo caminho!',
           ],
           [
-            'Folhas de luz estelar subiram até o teto,',
-            'Flutuando em espiral num movimento completo;',
-            'Cada folha em branco pedia o nome e o brasão',
-            'De uma lenda que deixara sua marca pelo chão.',
+            'Mil e trinta e oito molduras subiram até o teto,',
+            'Desenhando no Relógio o mosaico mais completo;',
+            'Parte guardava os heróis das eras já vividas,',
+            'Parte aguardava em silêncio as lendas prometidas.',
           ],
           [
             '"Como acharemos os nomes que a guerra fez esquecer?" —',
@@ -105,9 +106,9 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'blue',
         title: 'A Ressonância de Aldric na Biblioteca',
-        subtitle: 'Thaddeus conecta sua ampulheta ao Cetro do Arquimago Astral, fazendo chover memórias das cinco cores',
+        subtitle: 'Thaddeus conecta sua ampulheta ao Cetro do Arquimago Astral, fazendo chover memórias das três eras antigas',
         yearLabel: 'Ano 702 D.F.',
-        locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
+        locationLabel: 'Arquivo Astral da Torre',
         stanzas: [
           [
             'Quando a mão de Thaddeus tocou a haste de cristal,',
@@ -117,13 +118,13 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           ],
           [
             'Raios vermelhos de Pyros, verdes brisas da floresta,',
-            'Soles de ouro de Solária e a sombra que ainda resta',
+            'Os sóis d’ouro de Solária e a sombra que ainda resta',
             'Começaram a descer pelos vitrais da galeria,',
             'Pintando cada estampa com perfeita simetria!',
           ],
           [
-            'Oitocentas, novecentas lâminas iam se enchendo,',
-            'Enquanto os olhos de todos aquele prodígio iam vendo;',
+            'Centenas de pergaminhos antigos iam se enchendo,',
+            'Enquanto as vagas futuras em branco seguiam ardendo;',
             'Mas para julgar o custo e o atributo de cada ser,',
             'Desceu do alto pináculo quem os enigmas sabe ler!',
           ],
@@ -131,13 +132,13 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
       },
       {
         id: 'node_5e_4_cetro_aldric',
-        kind: 'creature',
+        kind: 'prelude',
         cardId: 'blue_166_trono_oniciencia_astral',
         domain: 'blue',
         title: 'O Cetro do Arquimago Astral em Pleno Voo',
-        subtitle: 'O instrumento de onisciência que resgatou do esquecimento os feitos ocultos das criaturas',
+        subtitle: 'O instrumento de onisciência que resgatou do esquecimento os feitos ocultos das criaturas ancestrais',
         yearLabel: 'Ano 702 D.F.',
-        locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
+        locationLabel: 'Arquivo Astral da Torre',
         stanzas: [
           [
             'O Cetro do Arquimago Astral levitou sobre o salão,',
@@ -158,7 +159,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Hoje vira sabedoria nas cartas deste domínio!"',
           ],
           [
-            'Já passavam de novecentas as memórias catalogadas,',
+            'Já brilhavam no arquivo as três eras passadas,',
             'Quando as sombras das estantes mexeram-se disfarçadas;',
             'Pois o cheiro de tanto sangue lembrado naquele altar',
             'Atraíra uma condessa sedenta de usurpar!',
@@ -171,9 +172,9 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'blue_03_esfinge',
         domain: 'blue',
         title: 'O Julgamento do Oráculo Esfinge do Pináculo',
-        subtitle: 'A guardiã alada dos enigmas que pesou o ataque, a vida e o custo de mana das 996 cartas, e farejou a intrusa no salão',
+        subtitle: 'A guardiã alada dos enigmas que pesou o ataque, a vida e o custo de essência das memórias e farejou a intrusa no salão',
         yearLabel: 'Ano 702 D.F.',
-        locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
+        locationLabel: 'Arquivo Astral da Torre',
         stanzas: [
           [
             'Pousada sobre a cornija de mármore reluzente,',
@@ -188,10 +189,10 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'O ataque, a vitalidade e o custo da sua fé.',
           ],
           [
-            'Ao chegar à carta Novecentas e Noventa e Seis,',
-            'A Esfinge virou o rosto guardando as antigas leis:',
-            '"Há um coração sem batida escondido no balcão,',
-            'Querendo beber a tinta da nossa catalogação!"',
+            'Ao selar das eras velhas os tombos e as leis,',
+            'Contando mil e trinta e oito molduras dos reis,',
+            '"Há um coração sem batida escondido no balcão," —',
+            'Disse a Esfinge — "querendo manchar a catalogação!"',
           ],
           [
             'Seus olhos de safira lançaram um facho agudo',
@@ -210,13 +211,13 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'O Vinho das Almas Gravadas',
         subtitle: 'Carmilla tenta cravar suas presas no Tomo das Estrelas para tingir de carmesim umbral todas as cartas neutras e solares',
         yearLabel: 'Ano 702 D.F.',
-        locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
+        locationLabel: 'Arquivo Astral da Torre',
         stanzas: [
           [
             'Enquanto Vesperion fingia dormir em sua cidadela,',
-            'Mandara à Biblioteca a sua serva mais bela;',
-            'Carmilla entrara em forma de névoa pela janela,',
-            'Cobiçando a essência viva que o grande Tomo revela.',
+            'Mandara ao Arquivo Astral a sua serva mais bela;',
+            'Como névoa de rubi cruzou o vitral escuro,',
+            'Trazendo o frio do Eclipse por cima do antigo muro.',
           ],
           [
             '"Para que guardar em papel o sangue de tantos reis,',
@@ -238,9 +239,9 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'purple_46_noiva_vampira',
         domain: 'purple',
         title: 'Carmilla, Condessa de Sangue e Ouro',
-        subtitle: 'O duelo entre a aristocrata vampírica que queria escravizar o registro das almas e os guardiões da Biblioteca',
+        subtitle: 'O duelo entre a aristocrata vampírica que queria escravizar o registro das almas e os guardiões do Arquivo',
         yearLabel: 'Ano 702 D.F.',
-        locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
+        locationLabel: 'Arquivo Astral da Torre',
         stanzas: [
           [
             'Carmilla girou no ar num vestido de brocado,',
@@ -263,8 +264,8 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           [
             '"Minha farda é de poeira, senhora de taça cheia,',
             'Mas não deixo sanguessuga beber em colheita alheia!"',
-            'E num golpe de prancha que na testa lhe bateu,',
-            'Jogou a Noiva Vampira pela janela do céu!',
+            'E ao golpe de prancha fria que no cálice bateu,',
+            'Carmilla fugiu em névoa rumo ao noturno breu!',
           ],
         ],
       },
@@ -275,9 +276,9 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'A Própria Carta da Condessa',
-        subtitle: 'Em vez de destruir a memória de Carmilla, o Cetro de Aldric grava a própria tentativa de furto como uma das 996 cartas',
+        subtitle: 'Em vez de destruir a memória de Carmilla, o Cetro de Aldric grava a própria tentativa de furto em uma das molduras do Arquivo',
         yearLabel: 'Ano 702 D.F.',
-        locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
+        locationLabel: 'Arquivo Astral da Torre',
         stanzas: [
           [
             'Fugindo na madrugada em nuvem de escuridão,',
@@ -288,14 +289,14 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           [
             '"Vede!" — disse Thaddeus rindo ao olhar o pergaminho —',
             '"Ela veio roubar o livro e ficou no seu caminho!',
-            'Agora a própria Condessa é parte da coleção,',
-            'Sendo a carta que faltava para fechar a conta em mão!"',
+            'Agora a própria Condessa já tem sua gravação,',
+            'Preenchendo mais uma vaga da grande constelação!"',
           ],
           [
             'Justinian bateu o selo e a Esfinge deu seu aval,',
             'Enquanto Garrick guardava a porta do tribunal;',
-            'Estavam completas as Novecentas e Noventa e Seis,',
-            'Sem faltar uma só alma no livro dos cinco reis!',
+            'Mil e trinta e oito espaços brilhavam perante as leis,',
+            'Guardando o passado e o futuro no livro dos cinco reis!',
           ],
         ],
       },
@@ -305,9 +306,9 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'neutral_01_mercenario_veterano',
         domain: 'neutral',
         title: 'O Juramento de Guarda do Comandante Garrick',
-        subtitle: 'Como o veterano da fronteira viu seu próprio rosto gravado na carta #01 neutra e jurou proteger o arquivo pelas eras seguintes',
+        subtitle: 'Como o veterano da fronteira viu seu rosto gravado na carta #01 neutra, tornando-se guardião perpétuo do Arquivo pelas eras seguintes',
         yearLabel: 'Ano 702 D.F.',
-        locationLabel: 'Biblioteca Astral da Torre dos Cinco Selos',
+        locationLabel: 'Arquivo Astral da Torre',
         stanzas: [
           [
             'Antes de fechar o Tomo com sete chaves de luz,',
@@ -325,13 +326,13 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             '"Eu não sou rei nem arcanjo" — disse Garrick comovido —',
             '"Sou apenas um vigia que não dorme no ruído;',
             'Mas enquanto houver um teto nesta Torre para olhar,',
-            'Minha memória e meu ferro estarão a vigiar!"',
+            'Minha estampa imortalizada estará a vigiar!"',
           ],
           [
             'Assim terminou o Censo no Ano Setecentos e Dois,',
-            'Deixando pronto o tesouro para os séculos depois;',
-            'Novecentas e noventa e seis lendas de esplendor,',
-            'Esperando nos Grimórios a mão do invocador!',
+            'Abrindo as molduras vivas para os séculos depois;',
+            'Mil e trinta e oito lendas em luz e esplendor,',
+            'Aguardando nos Grimórios a mão do invocador!',
           ],
         ],
       },
@@ -339,7 +340,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CANTO PARALELO VI-E: ALIANÇA DAS MARÉS E MATAS (Ano 948 D.F. • Fendas Abissais & Manguezais de Veridia)
+  // CAPÍTULO VI-D: ALIANÇA DAS MARÉS E MATAS (Ano 948 D.F. • Estuário Esmeralda-Safira)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
@@ -347,13 +348,14 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
     isParallel: true,
     parentCantoId: 'canto_6_tratados',
     anchorNodeId: 'creature_55_aegirion',
-    parallelCode: 'VI-E',
+    chronologicalOrder: 58,
+    parallelCode: 'VI-D',
     shortTitle: 'Aliança das Marés e Matas',
-    cantoNumber: 'CANTO PARALELO VI-E',
+    cantoNumber: 'CAPÍTULO VI-D',
     eraNumber: 'Vª ERA • BASTIDORES DO TRATADO SAFIRA-ESMERALDA',
-    periodLabel: 'Ano 948 D.F. • Fendas Abissais & Manguezais de Veridia',
+    periodLabel: 'Ano 948 D.F. • Estuário Esmeralda-Safira',
     title: 'A Purificação dos Recifes Profundos por Aegirion e Silvathor',
-    subtitle: 'Como Aegirion, Nereus, Silvathor, Polydra, Lyra e o Comandante Garrick limparam o veneno necromântico de Vesperion nas fendas marinhas para selar o Tratado Safira-Esmeralda',
+    subtitle: 'Como Aegirion, Nereus, os guardiões costeiros Silvathor e Polydra, Lyra e o sentinela imortal Garrick purificaram o veneno necromântico de Vesperion no estuário em 948 D.F., preparando o Tratado Safira-Esmeralda',
     accentColor: '#10b981',
     bannerImage: '/assets/arena/tabletop_green.png',
     nodes: [
@@ -365,13 +367,13 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'O Despertar de Aegirion nas Fendas Abissais',
         subtitle: 'No Ano 948 D.F., uma mancha de cinza necromântica envenena a fronteira submarina entre Vórtex e os manguezais de Veridia',
         yearLabel: 'Ano 948 D.F.',
-        locationLabel: 'Fendas Abissais & Manguezais de Veridia',
+        locationLabel: 'Estuário Esmeralda-Safira',
         stanzas: [
           [
             'No Ano Novecentos e Quarenta e Oito, onde o rio beija o mar,',
             'E as raízes de Veridia vão nas ondas mergulhar,',
             'Uma febre de óleo negro subiu do fundo abissal,',
-            'Matando os corais azuis e a floresta litorânea igual.',
+            'Matando o coral vivo e todo o manguezal.',
           ],
           [
             'Das trincheiras submarinas onde a luz nunca desceu,',
@@ -399,12 +401,12 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'green_103_dragao_floresta_anciao',
         domain: 'green',
         title: 'Silvathor Detém a Vaga de Aegirion',
-        subtitle: 'O Dragão-Floresta Ancião estende suas asas de copa milenar para segurar a muralha de água salgada',
+        subtitle: 'Décadas antes de sua grande diplomacia continental de 1.022 D.F., o Dragão-Floresta Ancião desperta como guardião costeiro para deter a muralha de água salgada',
         yearLabel: 'Ano 948 D.F.',
-        locationLabel: 'Fendas Abissais & Manguezais de Veridia',
+        locationLabel: 'Estuário Esmeralda-Safira',
         stanzas: [
           [
-            'Silvathor, o Dragão-Floresta, avançou pelo manguezal,',
+            'Silvathor, guardião da orla, avançou pelo manguezal,',
             'Cravando as garras de cedro no banco de lodo e sal;',
             'Quando a vaga de Aegirion veio a costa abalroar,',
             'Suas asas de ramagem seguraram todo o mar!',
@@ -424,8 +426,8 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           [
             'Para achar o foco oculto daquela peste infiltrada,',
             'Era preciso descer na garganta envenenada;',
-            'Foi quando dos pântanos fundos, sibilando com ardor,',
-            'Surgiu a fera de nove bocas que do veneno é senhor!',
+            'Foi quando dos pântanos fundos, sibilando com furor,',
+            'Surgiu o monstro de nove bocas, do veneno o senhor!',
           ],
         ],
       },
@@ -436,9 +438,9 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'green',
         title: 'O Faro das Nove Gargantas',
-        subtitle: 'Acostumada a todas as toxinas naturais, Polydra fareja a diferença entre o veneno vivo de Veridia e a podridão morta de Umbra',
+        subtitle: 'Ainda como sentinela selvagem dos estuários antes de seu pacto de 1.004 D.F., Polydra fareja a podridão morta do Eclipse sob os recifes',
         yearLabel: 'Ano 948 D.F.',
-        locationLabel: 'Fendas Abissais & Manguezais de Veridia',
+        locationLabel: 'Estuário Esmeralda-Safira',
         stanzas: [
           [
             'Deslizando entre as raízes onde a água fervilhava,',
@@ -455,8 +457,8 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           [
             'Mergulhando no estuário sob a escolta dos dois reis,',
             'A Hidra seguiu o rastro contra aquelas negras leis;',
-            'Lá no fundo do recife, preso a uma âncora de osso,',
-            'Encontraram um relicário vomitando o negro poço!',
+            'Lá no fundo do recife, cravado na rocha escura,',
+            'Encontraram um relicário vertendo negra amargura!',
           ],
         ],
       },
@@ -466,21 +468,21 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'green_102_hidra_venenosa',
         domain: 'green',
         title: 'Polydra, A Hidra de Nove Cabeças',
-        subtitle: 'Como Polydra engoliu a nuvem tóxica do artefato umbral e transmutou a morte em ácido purificador',
+        subtitle: 'Décadas antes de sua inscrição oficial em 1.004 D.F., Polydra devora a nuvem tóxica com Toque Letal, Regeneração e Fúria Crescente',
         yearLabel: 'Ano 948 D.F.',
-        locationLabel: 'Fendas Abissais & Manguezais de Veridia',
+        locationLabel: 'Estuário Esmeralda-Safira',
         stanzas: [
           [
             'Polydra, a Hidra de Nove Cabeças, cercou o altar',
             'Que os servos de Vesperion tinham descido a plantar;',
-            'Quando a armadilha de ossos disparou seu gás mortal,',
+            'Com sua dura Armadura contra o disparo mortal,',
             'As nove bocas beberam o veneno sepulcral!',
           ],
           [
             'Duas cabeças caíram queimadas pela magia,',
-            'Mas do pescoço cortado o dobro logo nascia!',
-          	'Convertendo a cinza morta no seu estômago ardente,',
-            'Polydra cuspiu de volta uma seiva astringente!',
+            'Mas pela Regeneração outra dupla renascia!',
+            'Em Fúria Crescente e viva, co’ o Toque Letal ardente,',
+            'Polydra cuspiu de volta uma seiva adstringente!',
           ],
           [
             'Aquele ácido vivo derreteu o altar de breu,',
@@ -504,7 +506,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'Nereus, Soberano das Sete Marés',
         subtitle: 'O Oráculo Abissal que entrelaçou as correntes oceânicas de Aegirion com a seiva regeneradora de Silvathor',
         yearLabel: 'Ano 948 D.F.',
-        locationLabel: 'Fendas Abissais & Manguezais de Veridia',
+        locationLabel: 'Estuário Esmeralda-Safira',
         stanzas: [
           [
             'Nereus, o Soberano das Sete Marés, chegou,',
@@ -513,7 +515,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Silvathor, solta nas ondas a tua seiva que cura!"',
           ],
           [
-            'O Oráculo Abissal traçou na espuma um espiral,',
+            'O Oráculo Abissal traçou na espuma uma espiral,',
             'Misturando o sal de Vórtex ao bálsamo vegetal;',
             'Onde o giro azul passava, a lama negra sumia,',
             'E o coral junto ao manguezal num abraço renascia!',
@@ -526,7 +528,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           ],
           [
             'Mas nos rochedos da praia, os sabotadores restantes',
-            'Tentavam fugir em barcos com os mapas traficantes;',
+            'Tentavam fugir nos barcos de piratas traficantes;',
             'Para fechar o estuário e prender a vil quadrilha,',
             'Brilhou o pó das estrelas sobre a verde maravilha!',
           ],
@@ -539,13 +541,13 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'green',
         title: 'A Bruma Cintilante do Mangue',
-        subtitle: 'Lyra e a patrulha costeira de Garrick interceptam os navios furtivos que haviam lançado o altar de ossos no mar',
+        subtitle: 'Lyra e a patrulha costeira do sentinela imortal Garrick interceptam os navios furtivos que haviam lançado o altar de ossos no mar',
         yearLabel: 'Ano 948 D.F.',
-        locationLabel: 'Fendas Abissais & Manguezais de Veridia',
+        locationLabel: 'Estuário Esmeralda-Safira',
         stanzas: [
           [
             'Três galeras de velas negras corriam pelo canal,',
-            'Achando que escapariam da purga primaveril e sal;',
+            'Achando que escapariam da fúria do vendaval;',
             'Mas do topo das palmeiras desceu um pó de esplendor',
             'Que deixou cada navio aceso como um refletor!',
           ],
@@ -571,7 +573,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'O Voo de Lyra sobre as Águas Purificadas',
         subtitle: 'A Fada Pixie que semeou esporos luminosos entre os corais de Aegirion e as copas de Silvathor',
         yearLabel: 'Ano 948 D.F.',
-        locationLabel: 'Fendas Abissais & Manguezais de Veridia',
+        locationLabel: 'Estuário Esmeralda-Safira',
         stanzas: [
           [
             'Lyra, a Fada do Pó Estelar, dançou sobre a maré,',
@@ -587,14 +589,14 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           ],
           [
             'Com seu pó de luz antiga cegou o timoneiro vil',
-            'Que tentava abrir caminho com um disparo de fuzil;',
+            'Que tentava abrir caminho com um arpão de ferro hostil;',
             'A galera desgovernada bateu no banco de areia,',
-            'Cairando direto na rede que o bom Capitão semeia!',
+            'Caindo direto na rede que o bom Capitão semeia!',
           ],
           [
-            '"Bem-vinda sejas, pequena!" — gritou Garrick do convés —',
+            'Gritou Garrick da amurada com serena intrepidez:',
             '"Com tua luz no meu olho, pego dez de cada vez!"',
-            'E saltando de espada em punho sobre o barco sabotador,',
+            'E saltando de espada em punho sobre a nau do malfeitor,',
             'O veterano encerrou daquela intriga o rumor!',
           ],
         ],
@@ -608,7 +610,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'As Provas no Convés Capturado',
         subtitle: 'Garrick apresenta a Aegirion e Silvathor os selos falsificados que provavam a inocência de ambos os reinos',
         yearLabel: 'Ano 948 D.F.',
-        locationLabel: 'Fendas Abissais & Manguezais de Veridia',
+        locationLabel: 'Estuário Esmeralda-Safira',
         stanzas: [
           [
             'No porão da nau capturada, Garrick achou os barris',
@@ -619,14 +621,14 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           [
             'Aegirion olhou as provas e pediu perdão à mata,',
             'Silvathor curvou a fronte perante a onda de prata;',
-            'Polydra deitou as nove cabeças na areia mansa,',
-            'Enquanto Nereus lavrava o texto da aliança!',
+            'Polydra deitou as nove cabeças em paz serena,',
+            'Enquanto Nereus lavrava o pacto daquela cena!',
           ],
           [
             'Para assinar como testemunha daquela reconciliação,',
             'Chamaram o próprio guarda que fizera a detenção;',
             'Pois onde havia um tratado ameaçado de ruir,',
-            'O Capitão da Fronteira estava sempre a acudir!',
+            'O Sentinela Imortal estava sempre a acudir!',
           ],
         ],
       },
@@ -636,13 +638,13 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'neutral_01_mercenario_veterano',
         domain: 'neutral',
         title: 'Comandante Garrick e o Tratado Safira-Esmeralda',
-        subtitle: 'A assinatura da aliança entre Vórtex e Veridia sobre o recife florido no Ano 948 D.F.',
+        subtitle: 'O Sentinela Imortal da Torre dos Cinco Selos testemunha a aliança costeira entre Vórtex e Veridia no Ano 948 D.F.',
         yearLabel: 'Ano 948 D.F.',
-        locationLabel: 'Fendas Abissais & Manguezais de Veridia',
+        locationLabel: 'Estuário Esmeralda-Safira',
         stanzas: [
           [
-            'Comandante Garrick limpou o sal da couraça velha,',
-            'Vendo o sol do fim da tarde brilhar na nuvem vermelha:',
+            'Garrick, guarda imortal da Torre, limpou a espada luzente,',
+            'Vendo o sol do fim da tarde dourar a calma corrente:',
             '"Já lutei em masmorra seca e em planalto de carvão,',
             'Mas hoje aprendi a nadar com dragão e tubarão!"',
           ],
@@ -659,8 +661,8 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Somada ao crescimento bruto da indomável natureza!',
           ],
           [
-            'Aegirion voltou às fendas, Silvathor voltou ao monte,',
-            'Deixando limpa e florida toda a linha do horizonte;',
+            'Aegirion voltou às fendas; Silvathor guardou seu monte,',
+            'Até que o século novo ampliasse esse horizonte;',
             'E até hoje nos duelos quem une o verde e o anil',
             'Carrega a força daquele estuário varonil!',
           ],
@@ -670,7 +672,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
   },
 
   // ==========================================================================
-  // CANTO PARALELO VII-E: ÂNCORA DO CHRONOLEVIATÃ (Ano 1.166 D.F. • Costa Astral de Vórtex)
+  // CAPÍTULO VII-C: ÂNCORA DO CHRONOLEVIATÃ (Ano 1.166 D.F. • Fenda Temporal de Vórtex)
   // 9 nós = 6 com imagem (4 estrofes) + 3 sem imagem (3 estrofes) = 33 estrofes (132 versos)
   // ==========================================================================
   {
@@ -678,11 +680,12 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
     isParallel: true,
     parentCantoId: 'canto_7_presente',
     anchorNodeId: 'creature_67_chronoleviata',
-    parallelCode: 'VII-E',
+    chronologicalOrder: 70,
+    parallelCode: 'VII-C',
     shortTitle: 'Âncora do Chronoleviatã',
-    cantoNumber: 'CANTO PARALELO VII-E',
+    cantoNumber: 'CAPÍTULO VII-C',
     eraNumber: 'VIª ERA • BASTIDORES DO MAR DE VIDRO TEMPORAL',
-    periodLabel: 'Ano 1.166 D.F. • Costa Astral de Vórtex',
+    periodLabel: 'Ano 1.166 D.F. • Fenda Temporal de Vórtex',
     title: 'A Batalha para Impedir o Rebobinamento das Eras',
     subtitle: 'Como Vesperion tentou cavalgar o Chronoleviatã em 1.166 D.F. para apagar a assinatura do Pacto Cromático, sendo detido por Thaddeus, Nereus, Zephaniel e Valkyra',
     accentColor: '#38bdf8',
@@ -694,15 +697,15 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'blue_136_leviata_cronos',
         domain: 'blue',
         title: 'A Subida do Chronoleviatã no Mar de Vidro',
-        subtitle: 'No Ano 1.166 D.F., a besta soberana das marés temporais emerge na Costa Astral de Vórtex a cada mil anos',
+        subtitle: 'No Ano 1.166 D.F., a besta soberana das marés temporais emerge na Fenda Temporal de Vórtex',
         yearLabel: 'Ano 1.166 D.F.',
-        locationLabel: 'Costa Astral de Vórtex',
+        locationLabel: 'Fenda Temporal de Vórtex',
         stanzas: [
           [
             'No Ano Mil Cento e Sessenta e Seis, na costa de cristal,',
             'Onde as ondas não são de água, mas de espuma temporal,',
-            'O oceano de Vórtex ficou liso como espelho,',
-            'Refletindo no seu fundo o mundo novo e o mundo velho.',
+            'O oceano de Vórtex lisou seu manto profundo,',
+            'Refletindo no seu leito as eras de todo o mundo.',
           ],
           [
             'Das fossas onde os milênios dormem em silencioso par,',
@@ -730,9 +733,9 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'purple_07_lich',
         domain: 'purple',
         title: 'O Arpão de Ossos de Vesperion',
-        subtitle: 'O Arquimago Lich lança grilhões necromânticos nas guelras do Chronoleviatã para forçá-lo a nadar rumo a 689 D.F.',
+        subtitle: 'O Arquimago Lich lança grilhões necromânticos nas guelras do Chronoleviatã para forçá-lo a nadar rumo a antes de 689 D.F.',
         yearLabel: 'Ano 1.166 D.F.',
-        locationLabel: 'Costa Astral de Vórtex',
+        locationLabel: 'Fenda Temporal de Vórtex',
         stanzas: [
           [
             'Vesperion, o Lich Imortal, surgiu qual sombra e sudário,',
@@ -747,14 +750,14 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Tentou virar a cabeça da besta que reluzia!',
           ],
           [
-            '"Nada para trás, gigante! Leva o mar a Seiscentos e Oitenta!',
-            'Apaga a Torre dos Selos e a assinatura que me afrenta!"',
+            '"Nada para trás, gigante! Volta à velha Era Cinzenta!',
+            'Apaga a Torre dos Selos e o Pacto que me atormenta!"',
             'Ferido pelo veneno daquele freio de morte,',
             'O Chronoleviatã girou perdendo o rumo do norte!',
           ],
           [
-            'Na praia, as pedras começaram a voltar à forma bruta,',
-            'E as estrelas no céu recuaram na sua ruta;',
+            'Na praia, as pedras voltaram à sua feição mais bruta,',
+            'E os astros no firmamento mudaram sua conduta;',
             'Mas no farol da enseada, vigiando o mar sem fim,',
             'Thaddeus viu o ponteiro girar para trás assim!',
           ],
@@ -766,10 +769,10 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         cardId: 'blue_80_senhor_tempo',
         hideCardArt: true,
         domain: 'blue',
-        title: 'OContra-Giro da Torre Costeira',
+        title: 'O Contra-Giro da Torre Costeira',
         subtitle: 'Thaddeus e Nereus unem o relógio astral às Sete Marés para segurar a cauda do Leviatã',
         yearLabel: 'Ano 1.166 D.F.',
-        locationLabel: 'Costa Astral de Vórtex',
+        locationLabel: 'Fenda Temporal de Vórtex',
         stanzas: [
           [
             '"Ele quer virar o peixe que carrega a nossa história!" —',
@@ -799,7 +802,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'A Âncora Cronológica de Thaddeus',
         subtitle: 'O Senhor do Tempo crava seu cajado nas escamas do Leviatã para impedir que o ano retroceda além de 1.166 D.F.',
         yearLabel: 'Ano 1.166 D.F.',
-        locationLabel: 'Costa Astral de Vórtex',
+        locationLabel: 'Fenda Temporal de Vórtex',
         stanzas: [
           [
             'Thaddeus saltou sobre o dorso da besta desgovernada,',
@@ -835,7 +838,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'Nereus e o Canto das Sete Marés',
         subtitle: 'O Oráculo Abissal acalma o coração do Chronoleviatã e dissolve os arpões necromânticos com água primordial',
         yearLabel: 'Ano 1.166 D.F.',
-        locationLabel: 'Costa Astral de Vórtex',
+        locationLabel: 'Fenda Temporal de Vórtex',
         stanzas: [
           [
             'Nereus, o Soberano das Sete Marés, cantou',
@@ -844,14 +847,14 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
             'Mas lembrava ao Leviatã o pulso da criação!',
           ],
           [
-            '"Lembra-te, irmão das profundezas, de quando o mundo nasceu,',
-            'E tu juraste levar os dias sob a luz do céu!',
+            '"Lembra-te, irmão das profundezas, da aurora que te concebeu,',
+            'Quando juraste levar os séculos contra o breu!',
             'Não deixes que um osso seco te faça nadar à ré,',
             'Pois a água que volta ao poço perde a força da maré!"',
           ],
           [
-            'Ouvindo a voz do Oráculo, o grande Leviatã chorou',
-            'Lágrimas de mercúrio vivo que pelo dorso rolou;',
+            'Ouvindo a voz do Oráculo, o grande Leviatã chorou,',
+            'E um pranto vivo de prata pelo seu dorso rolou;',
             'Dois arpões de Vesperion soltaram-se da ferida,',
             'Expulsos pela pressão daquela carne aquecida!',
           ],
@@ -872,7 +875,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'O Sol da Meia-Noite sobre o Mar de Vidro',
         subtitle: 'Zephaniel e Valkyra chegam pelos céus de Vórtex guiados pelo farol de Thaddeus',
         yearLabel: 'Ano 1.166 D.F.',
-        locationLabel: 'Costa Astral de Vórtex',
+        locationLabel: 'Fenda Temporal de Vórtex',
         stanzas: [
           [
             'As nuvens roxas que o Lich juntara sobre a baía',
@@ -888,9 +891,9 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
           ],
           [
             'Vesperion rangeu os dentes ao ver os dois soberanos',
-            'Que quarenta anos atrás frustraram todos os seus planos;',
-            'Apertou a última corrente tentando o golpe final,',
-            'Mas o Arcanjo do Zênite caiu como um raio igual!',
+            'Que há quarenta e cinco invernos frustraram todos seus planos;',
+            'Puxou a última corrente tentando o golpe final,',
+            'Mas o Arcanjo do Zênite desceu num corte letal!',
           ],
         ],
       },
@@ -902,7 +905,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'O Golpe Solar de Zephaniel',
         subtitle: 'O Arcanjo do Zênite decepa a última corrente de Vesperion sobre a cabeça do Chronoleviatã',
         yearLabel: 'Ano 1.166 D.F.',
-        locationLabel: 'Costa Astral de Vórtex',
+        locationLabel: 'Fenda Temporal de Vórtex',
         stanzas: [
           [
             'Zephaniel desceu do céu num mergulho vertical,',
@@ -937,14 +940,14 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         hideCardArt: true,
         domain: 'neutral',
         title: 'O Pacto com o Guardião dos Séculos',
-        subtitle: 'Valkyra toca a fronte do Chronoleviatã com o Diadema Pentacromático, curando as cicatrizes deixadas pelos arpões',
+        subtitle: 'A Dragão Pentacromática Valkyra toca a fronte do Chronoleviatã com seu Diadema imperial, curando as cicatrizes deixadas pelos arpões',
         yearLabel: 'Ano 1.166 D.F.',
-        locationLabel: 'Costa Astral de Vórtex',
+        locationLabel: 'Fenda Temporal de Vórtex',
         stanzas: [
           [
             'Livre das garras da morte, o colosso das idades',
             'Olhou para a Imperatriz sem rancor nem tempestades;',
-            'Valkyra pousou a mão nas escamas de safira,',
+            'Valkyra tocou a fronte nas escamas de safira,',
             'Onde a engrenagem das eras em paz novamente gira.',
           ],
           [
@@ -969,7 +972,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
         title: 'Valkyra e o Rumo para o Futuro',
         subtitle: 'A Imperatriz Pentacromática sela a aliança com o Chronoleviatã, garantindo que a história de Vaeloria jamais ande para trás',
         yearLabel: 'Ano 1.166 D.F.',
-        locationLabel: 'Costa Astral de Vórtex',
+        locationLabel: 'Fenda Temporal de Vórtex',
         stanzas: [
           [
             '"Nada sempre para a frente, ó Rei do Mar Temporal!" —',

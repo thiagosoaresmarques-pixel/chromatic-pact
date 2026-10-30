@@ -33578,12 +33578,11 @@ export const ALL_CARDS: CardDefinition[] = [
       "cost": 4,
       "newName": "Colosso Cornudo do Prisma",
       "newAtk": 5,
+      "newArmor": 2,
       "newMaxHp": 6,
-      "newKeywords": [
-        "Guardião",
+      "addedKeywords": [
         "Escudo Divino"
-      ],
-      "bonusDescription": "Ganha +2/+2 e Escudo Divino."
+      ]
     },
     "description": "Ascensão 4: evolui para Colosso Cornudo do Prisma 5/6.",
     "flavorText": "Nem os grilhões da Primeira Era contiveram a força bruta adormecida no cristal.",

@@ -223,6 +223,22 @@ export interface ArenaColumnRune {
   color: Domain;
 }
 
+export interface ConquestBattleModifiers {
+  provinceId: string;
+  provinceName: string;
+  provinceDomain: Domain;
+  isDefensiveSiege: boolean;
+  isCapitalSiege: boolean;
+  playerBonusHp: number;
+  playerBonusEssence: number;
+  enemyOpeningDamage: number;
+  vanguardArmorBonus: number;
+  relicDiscount: boolean;
+  dragonSkyBonus: boolean;
+  legendaryWheelBonus: boolean;
+  bannerSummary: string;
+}
+
 export interface GameState {
   turn: number;
   activePlayer: 'player' | 'ai';
@@ -234,6 +250,7 @@ export interface GameState {
   winReason: string;
   bossId?: string;
   expeditionBlessingId?: string;
+  conquestModifiers?: ConquestBattleModifiers | null;
   weather?: ArenaWeatherState | null;
   columnRunes?: ArenaColumnRune[];
   player: PlayerState;

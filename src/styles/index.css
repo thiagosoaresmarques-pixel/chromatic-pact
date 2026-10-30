@@ -16754,8 +16754,411 @@ input:focus-visible,
   .vwm-boss-node.is-next-target .vwm-boss-node-ring,
   .vwm-boss-node.is-selected .vwm-boss-node-ring,
   .vwm-pawn-aura,
-  .vwm-sovereign-pawn.is-marching .vwm-pawn-token {
+  .vwm-sovereign-pawn.is-marching .vwm-pawn-token,
+  .cqm-invasion-arrow,
+  .cqm-prov-pin.is-attackable,
+  .cqm-prov-pin.is-under-siege {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* =========================================================================
+   MODO CONQUISTA CONTINENTAL & MEGAMAPA GEOPOLÍTICO MULTI-LOD (30 PROVÍNCIAS)
+   ========================================================================= */
+.conquest-setup-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.conquest-setup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(11, 16, 28, 0.96), rgba(20, 27, 45, 0.92));
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 10px;
+}
+
+.conquest-faction-card {
+  gap: 0.7rem;
+}
+
+.conquest-faction-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.conquest-faction-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(250, 204, 21, 0.65);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
+  flex-shrink: 0;
+}
+
+.conquest-doctrine-box {
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(9, 13, 22, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.conquest-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  background: #0b0f17;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 8px;
+}
+
+.conquest-empire-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.conquest-empire-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1.5px solid #eab308;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+}
+
+.conquest-stat-chip {
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  font-size: 0.73rem;
+  color: #cbd5e1;
+}
+
+.conquest-stat-chip strong {
+  color: #f8fafc;
+}
+
+.conquest-stat-chip.gold {
+  border-color: rgba(234, 179, 8, 0.42);
+}
+
+.conquest-stat-chip.gold strong {
+  color: #fde047;
+}
+
+.conquest-stat-chip small {
+  color: #86efac;
+  font-size: 0.66rem;
+}
+
+.conquest-crisis-chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(30, 27, 75, 0.55);
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  font-size: 0.71rem;
+  font-weight: 700;
+  color: #fef08a;
+  cursor: help;
+}
+
+.conquest-defense-alarm {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(127, 29, 29, 0.88), rgba(30, 15, 25, 0.95));
+  border: 1.5px solid rgba(248, 113, 113, 0.92);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.85), 0 0 24px rgba(239, 68, 68, 0.35);
+}
+
+.cda-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cda-kicker {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #fecaca;
+}
+
+.cda-copy strong {
+  font-size: 0.86rem;
+  color: #ffffff;
+}
+
+.cda-copy span {
+  font-size: 0.74rem;
+  color: #e2e8f0;
+}
+
+.cda-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.conquest-megamap-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  background: linear-gradient(180deg, #0b101b 0%, #070a12 100%);
+  border: 1px solid rgba(212, 175, 55, 0.36);
+  border-radius: 10px;
+  padding: 0.65rem;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.78);
+  min-width: 0;
+}
+
+.cqm-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.cqm-lod-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cqm-lod-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  border: 1px solid rgba(212, 175, 55, 0.48);
+  background: rgba(15, 23, 42, 0.92);
+  color: #fde047;
+}
+
+.cqm-lod-pill.lod-2 {
+  border-color: rgba(56, 189, 248, 0.65);
+  color: #bae6fd;
+}
+
+.cqm-lod-pill.lod-3 {
+  border-color: rgba(52, 211, 153, 0.75);
+  color: #a7f3d0;
+}
+
+.cqm-zoom-pct {
+  min-width: 44px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fef08a;
+}
+
+.cqm-terrain-hd {
+  filter: saturate(1.08) contrast(1.05);
+}
+
+.cqm-svg-mesh {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 6;
+}
+
+.cqm-poly-hit {
+  cursor: pointer;
+  transition: fill-opacity 0.16s ease, stroke-width 0.16s ease;
+}
+
+.cqm-invasion-arrow {
+  animation: vwmRoadDash 0.7s linear infinite;
+}
+
+.cqm-prov-pin {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--prov-color, #eab308);
+  background: radial-gradient(circle at 35% 30%, #1e293b, #070b14);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.92);
+  cursor: pointer;
+  z-index: 18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.cqm-prov-pin.is-capital {
+  width: 34px;
+  height: 34px;
+  border-width: 2.5px;
+  box-shadow:
+    0 0 0 2px rgba(250, 204, 21, 0.35),
+    0 6px 16px rgba(0, 0, 0, 0.95);
+}
+
+.cqm-prov-pin.is-selected {
+  z-index: 29;
+  border-color: #fef08a;
+  box-shadow:
+    0 0 0 3px rgba(250, 204, 21, 0.42),
+    0 0 18px rgba(250, 204, 21, 0.85);
+}
+
+.cqm-prov-pin.is-attackable {
+  box-shadow:
+    0 0 0 2px rgba(248, 113, 113, 0.55),
+    0 0 14px rgba(249, 115, 22, 0.65);
+}
+
+.cqm-prov-pin.is-under-siege {
+  border-color: #ef4444;
+  animation: vwmPawnAuraPulse 1s ease-in-out infinite;
+}
+
+.cqm-pin-emblem {
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.cqm-prov-pin.is-capital .cqm-pin-emblem {
+  font-size: 0.98rem;
+}
+
+.cqm-pin-faction-dot {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid #020617;
+  font-size: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
+}
+
+.cqm-pin-fort-badge {
+  position: absolute;
+  bottom: -6px;
+  left: -6px;
+  padding: 0 3px;
+  border-radius: 5px;
+  background: #0f172a;
+  border: 1px solid #38bdf8;
+  color: #bae6fd;
+  font-size: 0.5rem;
+  font-weight: 900;
+}
+
+.cqm-pin-truce-badge {
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  font-size: 0.62rem;
+}
+
+.cqm-prov-label {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(6, 10, 19, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.9);
+}
+
+.cqm-prov-pin.is-selected .cqm-prov-label {
+  border-color: rgba(250, 204, 21, 0.8);
+  background: rgba(9, 13, 24, 0.96);
+}
+
+.cqm-prov-label strong {
+  font-family: var(--font-display);
+  font-size: 0.54rem;
+  color: #f8fafc;
+  letter-spacing: 0.02em;
+}
+
+.cqm-prov-label em {
+  font-style: normal;
+  font-size: 0.48rem;
+  color: #fde68a;
+}
+
+.conquest-warlog-box {
+  margin-top: 0.65rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(7, 11, 20, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.conquest-warlog-title {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #e6c875;
+}
+
+.conquest-warlog-scroll {
+  max-height: 118px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 4px;
+}
+
+.conquest-warlog-item {
+  font-size: 0.69rem;
+  color: #cbd5e1;
+  line-height: 1.32;
+  padding-bottom: 3px;
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.12);
+}
+
 

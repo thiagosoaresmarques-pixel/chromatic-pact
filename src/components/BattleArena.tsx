@@ -3,6 +3,7 @@ import {
   BoardUnit,
   CampaignBoss,
   CardDefinition,
+  ConquestBattleModifiers,
   Domain,
   FloatingFeedback,
   GameState,
@@ -151,12 +152,14 @@ export interface BattleArenaProps {
   campaignBoss?: CampaignBoss | null;
   campaignPlayerDeckIds?: string[] | null;
   expeditionBlessingId?: string | null;
+  conquestModifiers?: ConquestBattleModifiers | null;
   tacticalProblem?: TacticalProblem | null;
   onSelectProblem?: (problem: TacticalProblem) => void;
   onExitProblems?: () => void;
   initialPlayerDeckId?: string;
   initialAiDeckId?: string;
   onCampaignVictory?: (boss: CampaignBoss) => void;
+  onCampaignDefeat?: (boss: CampaignBoss) => void;
   onExitArena?: () => void;
   onExitCampaign?: () => void;
   onRewardGold?: (amount: number, reason: string) => void;
@@ -335,12 +338,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   campaignBoss,
   campaignPlayerDeckIds,
   expeditionBlessingId,
+  conquestModifiers,
   tacticalProblem,
   onSelectProblem,
   onExitProblems,
   initialPlayerDeckId,
   initialAiDeckId,
   onCampaignVictory,
+  onCampaignDefeat,
   onExitArena,
   onExitCampaign,
   onRewardGold,
@@ -451,6 +456,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiStartingHp: campaignBoss.startingHp,
             bossId: campaignBoss.id,
             expeditionBlessingId: expeditionBlessingId ?? undefined,
+            conquestModifiers: conquestModifiers ?? null,
           }
         : {
             playerName: 'Seu Soberano',
@@ -903,6 +909,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiStartingHp: campaignBoss.startingHp,
             bossId: campaignBoss.id,
             expeditionBlessingId: expeditionBlessingId ?? undefined,
+            conquestModifiers: conquestModifiers ?? null,
           }
         )
       );
@@ -912,7 +919,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       setIsMulliganOpen(true);
       setMulliganSwapIndices([]);
     }
-  }, [campaignBoss, campaignPlayerDeckIds, expeditionBlessingId]);
+  }, [campaignBoss, campaignPlayerDeckIds, expeditionBlessingId, conquestModifiers]);
 
   // Detect Domain Expansion lifecycle transitions: Entry (AI), Clash, Natural Expiration, Sacred Wheel Shatter, and Destruction
   useEffect(() => {
@@ -1738,6 +1745,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         playSfx('defeat');
         if (onlineMatch) {
           onlineMatch.onPvpResult(false);
+        } else if (campaignBoss && onCampaignDefeat) {
+          onCampaignDefeat(campaignBoss);
         }
       }
 
@@ -1752,6 +1761,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     rewardClaimed,
     campaignBoss,
     onCampaignVictory,
+    onCampaignDefeat,
     onRewardGold,
   ]);
 

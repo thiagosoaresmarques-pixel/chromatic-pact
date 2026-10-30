@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { CampaignBoss, CardDefinition } from './types/game';
+import { CampaignBoss, CardDefinition, ConquestBattleModifiers } from './types/game';
 import { ALL_CARDS, CARDS_BY_ID } from './data/cards';
 import { getSharedAudioContext, isMuted, toggleMute } from './utils/soundEngine';
 import {
@@ -15,6 +15,8 @@ import { CampaignView } from './components/CampaignView';
 import { PackOpener } from './components/PackOpener';
 import { TacticalGuideView } from './components/TacticalGuideView';
 import { ExpeditionView } from './components/ExpeditionView';
+import { ConquestBattleOutcome, ConquestView } from './components/ConquestView';
+import { ConquestFactionId } from './data/vaeloriaConquestData';
 import { TutorialCodexView } from './components/TutorialCodexView';
 import { MythologyAtlasView } from './components/MythologyAtlasView';
 import {
@@ -68,12 +70,20 @@ type ActiveTab =
   | 'multiplayer'
   | 'campaign'
   | 'expedition'
+  | 'conquest'
   | 'tactics'
   | 'deckbuilder'
   | 'packs'
   | 'mythology'
   | 'rules'
   | 'admin';
+
+interface ActiveConquestContext {
+  provinceId: string;
+  isDefensive: boolean;
+  attackerFactionId?: ConquestFactionId;
+  modifiers: ConquestBattleModifiers;
+}
 
 const APP_NAV_STATE_STORAGE_KEY = 'chromatic_pact_app_nav_state_v1';
 const ACTIVE_BATTLE_STORAGE_KEY = 'chromatic_pact_active_battle_v1';
@@ -85,6 +95,7 @@ interface SavedAppNavState {
   campaignPlayerDeckIds: string[] | null;
   isExpeditionBattle: boolean;
   expeditionBlessingId?: string | null;
+  activeConquestContext?: ActiveConquestContext | null;
   quickDuelDecks: {
     playerDeckId?: string;
     aiDeckId?: string;
@@ -106,6 +117,7 @@ function loadSavedAppNavState(): SavedAppNavState | null {
         : null,
       isExpeditionBattle: Boolean(parsed.isExpeditionBattle),
       expeditionBlessingId: parsed.expeditionBlessingId ?? null,
+      activeConquestContext: parsed.activeConquestContext ?? null,
       quickDuelDecks: parsed.quickDuelDecks ?? {},
     };
   } catch {
@@ -196,6 +208,12 @@ export const App: React.FC = () => {
   const [lastClearedExpeditionBossId, setLastClearedExpeditionBossId] = useState<string | null>(
     null
   );
+  const [activeConquestContext, setActiveConquestContext] = useState<ActiveConquestContext | null>(
+    () => initialNavState?.activeConquestContext ?? null
+  );
+  const [lastConquestOutcome, setLastConquestOutcome] = useState<ConquestBattleOutcome | null>(
+    null
+  );
   const [quickDuelDecks, setQuickDuelDecks] = useState<{
     playerDeckId?: string;
     aiDeckId?: string;
@@ -226,6 +244,7 @@ export const App: React.FC = () => {
         campaignPlayerDeckIds,
         isExpeditionBattle,
         expeditionBlessingId,
+        activeConquestContext,
         quickDuelDecks,
       };
       localStorage.setItem(APP_NAV_STATE_STORAGE_KEY, JSON.stringify(stateToSave));
@@ -239,6 +258,7 @@ export const App: React.FC = () => {
     campaignPlayerDeckIds,
     isExpeditionBattle,
     expeditionBlessingId,
+    activeConquestContext,
     quickDuelDecks,
   ]);
 
@@ -468,6 +488,7 @@ export const App: React.FC = () => {
     setActiveProblem(null);
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
+    setActiveConquestContext(null);
     if (!isGuest && customDecks.length === 0) {
       setActiveTab('deckbuilder');
       return;
@@ -484,6 +505,7 @@ export const App: React.FC = () => {
     setActiveCampaignBoss(null);
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
+    setActiveConquestContext(null);
     setActiveProblem(problem);
     setActiveTab('arena');
   };
@@ -522,7 +544,12 @@ export const App: React.FC = () => {
   // Update non-arena tabs' ambient music mood
   useEffect(() => {
     if (activeTab === 'arena' || activeTab === 'home') return; // BattleArena & HomeSimulatedDuelShowcase manage real-time combat intensity
-    if (activeTab === 'campaign' || activeTab === 'expedition' || activeTab === 'problems') {
+    if (
+      activeTab === 'campaign' ||
+      activeTab === 'expedition' ||
+      activeTab === 'conquest' ||
+      activeTab === 'problems'
+    ) {
       setMusicState('tactical', 'purple');
     } else if (activeTab === 'packs') {
       setMusicState('sanctuary', 'gold');
@@ -544,6 +571,7 @@ export const App: React.FC = () => {
     setActiveProblem(null);
     setIsExpeditionBattle(false);
     setExpeditionBlessingId(null);
+    setActiveConquestContext(null);
     setActiveCampaignBoss(boss);
     setCampaignPlayerDeckIds(playerDeckIds);
     setActiveTab('arena');
@@ -564,15 +592,57 @@ export const App: React.FC = () => {
     setActiveProblem(null);
     setIsExpeditionBattle(true);
     setExpeditionBlessingId(blessingId ?? null);
+    setActiveConquestContext(null);
     setActiveCampaignBoss(boss);
     setCampaignPlayerDeckIds(playerDeckIds);
+    setActiveTab('arena');
+  };
+
+  const handleStartConquestBattle = (params: {
+    boss: CampaignBoss;
+    playerDeckCardIds: string[];
+    modifiers: ConquestBattleModifiers;
+    provinceId: string;
+    isDefensive: boolean;
+    attackerFactionId?: ConquestFactionId;
+  }) => {
+    trackAdsEvent('start_campaign_boss', { bossId: params.boss.id, isExpedition: false });
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+    setActiveOnlineMatch(null);
+    setActiveProblem(null);
+    setIsExpeditionBattle(false);
+    setExpeditionBlessingId(null);
+    setActiveConquestContext({
+      provinceId: params.provinceId,
+      isDefensive: params.isDefensive,
+      attackerFactionId: params.attackerFactionId,
+      modifiers: params.modifiers,
+    });
+    setActiveCampaignBoss(params.boss);
+    setCampaignPlayerDeckIds(params.playerDeckCardIds);
     setActiveTab('arena');
   };
 
   const handleCampaignVictory = (boss: CampaignBoss) => {
     if (isGuest) return;
     const nextGold = gold + VICTORY_GOLD_REWARD;
-    if (isExpeditionBattle) {
+    if (activeConquestContext) {
+      setLastConquestOutcome({
+        outcomeId: `cq_win_${boss.id}_${Date.now()}`,
+        provinceId: activeConquestContext.provinceId,
+        isDefensive: activeConquestContext.isDefensive,
+        attackerFactionId: activeConquestContext.attackerFactionId,
+        didWin: true,
+      });
+      updateCurrentUserProgression({
+        gold: nextGold,
+        arenaWins: arenaWins + 1,
+      });
+    } else if (isExpeditionBattle) {
       setLastClearedExpeditionBossId(boss.id);
       updateCurrentUserProgression({
         gold: nextGold,
@@ -598,6 +668,18 @@ export const App: React.FC = () => {
       actionLabel: nextGold >= 80 ? 'Abrir Relicário' : undefined,
       actionTarget: nextGold >= 80 ? 'packs' : undefined,
     });
+  };
+
+  const handleCampaignDefeat = (boss: CampaignBoss) => {
+    if (activeConquestContext) {
+      setLastConquestOutcome({
+        outcomeId: `cq_loss_${boss.id}_${Date.now()}`,
+        provinceId: activeConquestContext.provinceId,
+        isDefensive: activeConquestContext.isDefensive,
+        attackerFactionId: activeConquestContext.attackerFactionId,
+        didWin: false,
+      });
+    }
   };
 
   const handleRewardGold = (amount: number) => {
@@ -825,7 +907,10 @@ export const App: React.FC = () => {
             type="button"
             className={`nav-tab-btn ${
               activeTab === 'campaign' ||
-              (activeTab === 'arena' && activeCampaignBoss && !isExpeditionBattle)
+              (activeTab === 'arena' &&
+                activeCampaignBoss &&
+                !isExpeditionBattle &&
+                !activeConquestContext)
                 ? 'active'
                 : ''
             }`}
@@ -847,6 +932,20 @@ export const App: React.FC = () => {
           >
             <span className="nav-tab-icon">🧭</span>
             <span>Expedição</span>
+          </button>
+
+          <button
+            type="button"
+            className={`nav-tab-btn ${
+              activeTab === 'conquest' ||
+              (activeTab === 'arena' && activeCampaignBoss && !!activeConquestContext)
+                ? 'active'
+                : ''
+            }`}
+            onClick={() => setActiveTab('conquest')}
+          >
+            <span className="nav-tab-icon">🗺️</span>
+            <span>Conquista</span>
           </button>
 
           <button
@@ -927,10 +1026,12 @@ export const App: React.FC = () => {
                   setActiveProblem(null);
                   setActiveTab('problems');
                 } else if (activeCampaignBoss) {
+                  const wasConquest = Boolean(activeConquestContext);
                   const wasExp = isExpeditionBattle;
                   setActiveCampaignBoss(null);
                   setIsExpeditionBattle(false);
-                  setActiveTab(wasExp ? 'expedition' : 'campaign');
+                  setActiveConquestContext(null);
+                  setActiveTab(wasConquest ? 'conquest' : wasExp ? 'expedition' : 'campaign');
                 } else {
                   setActiveTab('home');
                 }
@@ -1194,6 +1295,7 @@ export const App: React.FC = () => {
             campaignBoss={activeCampaignBoss}
             campaignPlayerDeckIds={campaignPlayerDeckIds}
             expeditionBlessingId={isExpeditionBattle ? expeditionBlessingId : null}
+            conquestModifiers={activeConquestContext?.modifiers ?? null}
             tacticalProblem={activeProblem}
             onSelectProblem={(nextProb) => setActiveProblem(nextProb)}
             onExitProblems={() => {
@@ -1203,18 +1305,22 @@ export const App: React.FC = () => {
             initialPlayerDeckId={quickDuelDecks.playerDeckId}
             initialAiDeckId={quickDuelDecks.aiDeckId}
             onCampaignVictory={handleCampaignVictory}
+            onCampaignDefeat={handleCampaignDefeat}
             onExitArena={() => {
               setActiveCampaignBoss(null);
               setActiveProblem(null);
               setActiveOnlineMatch(null);
               setIsExpeditionBattle(false);
+              setActiveConquestContext(null);
               setActiveTab('home');
             }}
             onExitCampaign={() => {
+              const wasConquest = Boolean(activeConquestContext);
               const wasExp = isExpeditionBattle;
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
-              setActiveTab(wasExp ? 'expedition' : 'campaign');
+              setActiveConquestContext(null);
+              setActiveTab(wasConquest ? 'conquest' : wasExp ? 'expedition' : 'campaign');
             }}
             onRewardGold={handleRewardGold}
             onlineMatch={
@@ -1272,6 +1378,18 @@ export const App: React.FC = () => {
             onSaveCustomDeck={handleSaveCustomDeck}
             onRewardGold={handleRewardGold}
             lastClearedExpeditionBossId={lastClearedExpeditionBossId}
+          />
+        )}
+
+        {activeTab === 'conquest' && (
+          <ConquestView
+            customDecks={customDecks}
+            isGuest={isGuest}
+            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireDeckSetup={() => setActiveTab('deckbuilder')}
+            onStartConquestBattle={handleStartConquestBattle}
+            onRewardGold={handleRewardGold}
+            lastConquestOutcome={lastConquestOutcome}
           />
         )}
 

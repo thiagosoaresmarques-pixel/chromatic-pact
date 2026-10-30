@@ -7,6 +7,7 @@ import {
   CardDefinition,
   CardEffect,
   CombatLogEntry,
+  ConquestBattleModifiers,
   Domain,
   DomainExpansionState,
   FloatingFeedback,
@@ -574,6 +575,7 @@ export function createInitialGameState(
     playerStartingHp?: number;
     bossId?: string;
     expeditionBlessingId?: string;
+    conquestModifiers?: ConquestBattleModifiers | null;
   }
 ): GameState {
   const shuffledPlayerDeck = shuffleCards(playerDeck);
@@ -582,9 +584,11 @@ export function createInitialGameState(
   const playerHand = buildBalancedOpeningHand(shuffledPlayerDeck);
   const aiHand = buildBalancedOpeningHand(shuffledAiDeck);
 
-  const playerMaxHp = options?.playerStartingHp ?? STARTING_SOVEREIGN_HP;
+  const cq = options?.conquestModifiers ?? null;
+  const playerMaxHp = (options?.playerStartingHp ?? STARTING_SOVEREIGN_HP) + (cq?.playerBonusHp ?? 0);
   const aiMaxHp = options?.aiStartingHp ?? STARTING_SOVEREIGN_HP;
-  const playerBonusEssence = options?.expeditionBlessingId === 'arcane_conclave' ? 1 : 0;
+  const playerBonusEssence =
+    (options?.expeditionBlessingId === 'arcane_conclave' ? 1 : 0) + (cq?.playerBonusEssence ?? 0);
   const aiBonusEssence = options?.bossId === 'boss_stage_23_refraction_triad' ? 1 : 0;
 
   const aiStartingAffinities = createStartingAffinitiesForDeck(aiDeck);
@@ -665,6 +669,7 @@ export function createInitialGameState(
     winReason: '',
     bossId: options?.bossId,
     expeditionBlessingId: options?.expeditionBlessingId,
+    conquestModifiers: cq,
     weather: null,
     columnRunes: [],
     player,
@@ -677,8 +682,21 @@ export function createInitialGameState(
     state,
     'system',
     'turn',
-    `Partida iniciada! Você começa com ${STARTING_ESSENCE}⚡ de Essência, ${STARTING_HAND_SIZE} cartas na mão e ${BOARD_COLS} colunas táticas por fileira!`
+    `Partida iniciada! Você começa com ${player.currentEssence}⚡ de Essência, ${STARTING_HAND_SIZE} cartas na mão e ${BOARD_COLS} colunas táticas por fileira!`
   );
+
+  if (cq) {
+    if (cq.enemyOpeningDamage > 0) {
+      state.ai.hp = Math.max(1, state.ai.hp - cq.enemyOpeningDamage);
+      addFeedback(state, 'ai-sovereign', `-${cq.enemyOpeningDamage}⚔️ Artilharia Imperial`, 'damage');
+    }
+    addLog(
+      state,
+      'system',
+      'effect',
+      `🗺️ CERCO EM [${cq.provinceName.toUpperCase()}]: ${cq.bannerSummary}`
+    );
+  }
 
   spawnColumnRuneIfNeeded(state);
 
@@ -2103,8 +2121,8 @@ export function getEffectiveCardCost(
 ): number {
   if (
     actor === 'player' &&
-    state.expeditionBlessingId === 'forge_crown' &&
-    card.type === 'relic'
+    card.type === 'relic' &&
+    (state.expeditionBlessingId === 'forge_crown' || state.conquestModifiers?.relicDiscount)
   ) {
     return Math.max(0, card.cost - 1);
   }
@@ -3307,6 +3325,26 @@ export function playCard(
     ) {
       unit.currentArmor += 1;
       addFeedback(next, unit.instanceId, '+1🛡️ Falange Imortal', 'shield');
+    }
+
+    if (actor === 'player' && next.conquestModifiers && card.type === 'creature') {
+      const cq = next.conquestModifiers;
+      if (cq.vanguardArmorBonus > 0 && slot.row === 'vanguard' && newStackSize === 1) {
+        unit.currentArmor += cq.vanguardArmorBonus;
+        addFeedback(next, unit.instanceId, `+${cq.vanguardArmorBonus}🛡️ Bastião Imperial`, 'shield');
+      }
+      if (
+        cq.dragonSkyBonus &&
+        (card.keywords.includes('Voo') || (card.breathDamage ?? 0) > 0 || card.id.includes('_172_'))
+      ) {
+        unit.currentAtk += 1;
+        addFeedback(next, unit.instanceId, '+1⚔️ Corredor das Armadas', 'buff');
+      }
+      if (cq.legendaryWheelBonus && (card.rarity === 'legendary' || card.id.includes('_173_'))) {
+        unit.currentArmor += 1;
+        unit.regeneration += 1;
+        addFeedback(next, unit.instanceId, '☸ +1🛡️/+1♻️ Selo Axial', 'shield');
+      }
     }
 
     const rowLabel = slot.row === 'vanguard' ? 'Vanguarda' : 'Retaguarda';

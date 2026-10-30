@@ -78,7 +78,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   const [marchTarget, setMarchTarget] = useState<{ x: number; y: number } | null>(null);
   const [facingLeft, setFacingLeft] = useState<boolean>(false);
 
-  const [zoom, setZoom] = useState<number>(1.35);
+  const [zoom, setZoom] = useState<number>(() =>
+    typeof window !== 'undefined' && window.innerWidth <= 768 ? 1 : 1.35
+  );
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [overlayMode, setOverlayMode] = useState<'political' | 'terrain'>('political');
   const [hoveredProvId, setHoveredProvId] = useState<string | null>(null);
@@ -90,6 +92,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
 
   const heldKeysRef = useRef<Set<string>>(new Set());
   const dpadDirRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
+  const activePointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchStartRef = useRef<{ dist: number; startZoom: number } | null>(null);
   const dragRef = useRef({
     active: false,
     moved: false,
@@ -330,7 +334,17 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   const sovereignCard = sovereignAvatarCardId ? CARDS_BY_ID[sovereignAvatarCardId] : undefined;
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (activePointersRef.current.size === 2) {
+      const pts = Array.from(activePointersRef.current.values());
+      const dist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+      pinchStartRef.current = { dist: Math.max(20, dist), startZoom: zoom };
+      dragRef.current.moved = true;
+      return;
+    }
+
     dragRef.current = {
       active: true,
       moved: false,
@@ -342,6 +356,19 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointersRef.current.has(e.pointerId)) {
+      activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+
+    if (activePointersRef.current.size === 2 && pinchStartRef.current) {
+      const pts = Array.from(activePointersRef.current.values());
+      const dist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+      const ratio = dist / pinchStartRef.current.dist;
+      applyZoom(pinchStartRef.current.startZoom * ratio);
+      dragRef.current.moved = true;
+      return;
+    }
+
     const st = dragRef.current;
     if (!st.active) return;
     const dx = e.clientX - st.startX;
@@ -355,6 +382,14 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    activePointersRef.current.delete(e.pointerId);
+    if (activePointersRef.current.size < 2) {
+      pinchStartRef.current = null;
+    }
+    if (activePointersRef.current.size > 0) {
+      return;
+    }
+
     const st = dragRef.current;
     dragRef.current.active = false;
     if (st.moved) return;
@@ -486,10 +521,11 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
       {/* Interactive 16:9 Deep-Zoom Megamap Viewport */}
       <div
         ref={viewportRef}
-        className={`vwm-viewport cqm-viewport ${zoom > 1.01 ? 'is-zoomed' : ''}`}
+        className={`vwm-viewport cqm-viewport lod-${lodLevel} ${zoom > 1.01 ? 'is-zoomed' : ''}`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         onWheel={handleWheel}
       >
         <div
@@ -875,7 +911,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                   isSelected ? 'is-selected' : ''
                 } ${isAttackable ? 'is-attackable' : ''} ${
                   ownerId === playerFactionId ? 'is-player-owned' : ''
-                } ${isUnderSiege ? 'is-under-siege' : ''}`}
+                } ${isUnderSiege ? 'is-under-siege' : ''} ${
+                  prov.y > 82 ? 'is-near-bottom' : ''
+                } ${prov.x < 14 ? 'is-near-left' : prov.x > 86 ? 'is-near-right' : ''}`}
                 style={
                   {
                     left: `${prov.x}%`,
@@ -929,6 +967,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
           <div
             className={`vwm-sovereign-pawn ${marchTarget ? 'is-marching' : ''} ${
               facingLeft ? 'is-facing-left' : ''
+            } ${pawnPos.y < 23 ? 'is-near-top' : ''} ${
+              pawnPos.x < 16 ? 'is-near-left' : pawnPos.x > 84 ? 'is-near-right' : ''
             }`}
             style={{
               left: `${pawnPos.x}%`,

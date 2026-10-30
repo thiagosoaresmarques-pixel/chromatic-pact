@@ -821,6 +821,30 @@ export const App: React.FC = () => {
     [arenaWins, defeatedBossIds.length, uniqueUnlockedCount, customDecks.length]
   );
 
+  const navTabsRef = useRef<HTMLElement | null>(null);
+
+  // Keep active navigation tab centered inside horizontal scrollbars (smartphone bottom bar & compact tablets)
+  useEffect(() => {
+    const navEl = navTabsRef.current;
+    if (!navEl) return;
+    if (navEl.scrollWidth <= navEl.clientWidth + 4) return;
+    const activeBtn = navEl.querySelector<HTMLElement>('.nav-tab-btn.active');
+    if (!activeBtn) return;
+    const targetLeft =
+      activeBtn.offsetLeft - navEl.clientWidth / 2 + activeBtn.offsetWidth / 2;
+    navEl.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: 'smooth',
+    });
+  }, [
+    activeTab,
+    activeCampaignBoss,
+    activeOnlineMatch,
+    activeProblem,
+    isExpeditionBattle,
+    activeConquestContext,
+  ]);
+
   return (
     <div className="app-shell">
       {/* Top Navigation Bar */}
@@ -845,6 +869,7 @@ export const App: React.FC = () => {
         </div>
 
         <nav
+          ref={navTabsRef}
           className={`nav-tabs ${activeTab === 'arena' ? 'is-arena-tabs' : ''} ${
             isArenaNavExpanded ? 'is-expanded-mobile' : ''
           }`}
@@ -1002,7 +1027,7 @@ export const App: React.FC = () => {
             title="Painel de Administração"
           >
             <span>👑</span>
-            <span className="hide-on-mobile">ADMIN</span>
+            <span className="hide-on-mobile nav-admin-label">ADMIN</span>
           </button>
           {activeTab === 'arena' && (
             <button
@@ -1063,7 +1088,10 @@ export const App: React.FC = () => {
                   {isAdmin ? '👑 ' : ''}
                   {currentUser.username}
                 </span>
-                <span className="hide-on-mobile" style={{ opacity: 0.78, fontSize: '0.68rem' }}>
+                <span
+                  className="hide-on-mobile nav-account-elo"
+                  style={{ opacity: 0.78, fontSize: '0.68rem' }}
+                >
                   ({currentUser.eloRating})
                 </span>
                 <span className="nav-account-badge hide-on-mobile">
@@ -1086,7 +1114,7 @@ export const App: React.FC = () => {
                 : gold >= 100000
                 ? `${Math.floor(gold / 1000)}k`
                 : gold.toLocaleString('pt-BR')}
-              <span className="hide-on-mobile"> OURO</span>
+              <span className="hide-on-mobile nav-gold-word"> OURO</span>
             </span>
           </div>
 
@@ -1108,7 +1136,7 @@ export const App: React.FC = () => {
               title="Central de Notificações do Soberano"
             >
               <span>🔔</span>
-              <span className="hide-on-mobile">AVISOS</span>
+              <span className="hide-on-mobile nav-notif-label">AVISOS</span>
               {unreadNotifCount > 0 && (
                 <span className="nav-notif-badge">
                   {unreadNotifCount > 99 ? '99+' : unreadNotifCount}
@@ -1196,8 +1224,8 @@ export const App: React.FC = () => {
                 : `Trilha Adaptativa Ativa: ${musicInfo.label}`
             }
           >
-            <span className="show-on-mobile-inline">{soundMuted ? '🔇' : '🔊'}</span>
-            <span className="hide-on-mobile">
+            <span className="show-on-mobile-inline nav-audio-icon">{soundMuted ? '🔇' : '🔊'}</span>
+            <span className="hide-on-mobile nav-audio-label">
               {soundMuted
                 ? 'ÁUDIO OFF'
                 : `${musicInfo.stage === 'climax' ? 'CLÍMAX' : 'ÁUDIO ON'}`}
@@ -1213,7 +1241,7 @@ export const App: React.FC = () => {
           activeTab !== 'deckbuilder' &&
           activeTab !== 'arena' &&
           !isOnboardingCalloutHidden && (
-            <div style={{ maxWidth: '1380px', margin: '0.85rem auto 0', padding: '0 1.75rem' }}>
+            <div className="aaa-onboarding-shell">
               <div className="aaa-status-callout is-onboarding">
                 <div className="aaa-callout-copy">
                   <span className="aaa-callout-kicker">

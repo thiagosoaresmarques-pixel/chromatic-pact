@@ -80,6 +80,8 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
 
   const heldKeysRef = useRef<Set<string>>(new Set());
   const dpadDirRef = useRef<{ dx: number; dy: number }>({ dx: 0, dy: 0 });
+  const activePointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchStartRef = useRef<{ dist: number; startZoom: number } | null>(null);
   const dragStateRef = useRef<{
     active: boolean;
     moved: boolean;
@@ -315,7 +317,17 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   };
 
   const handlePointerDownViewport = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (activePointersRef.current.size === 2) {
+      const pts = Array.from(activePointersRef.current.values());
+      const dist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+      pinchStartRef.current = { dist: Math.max(20, dist), startZoom: zoom };
+      dragStateRef.current.moved = true;
+      return;
+    }
+
     dragStateRef.current = {
       active: true,
       moved: false,
@@ -327,6 +339,19 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   };
 
   const handlePointerMoveViewport = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (activePointersRef.current.has(e.pointerId)) {
+      activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+
+    if (activePointersRef.current.size === 2 && pinchStartRef.current) {
+      const pts = Array.from(activePointersRef.current.values());
+      const dist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+      const ratio = dist / pinchStartRef.current.dist;
+      applyZoom(pinchStartRef.current.startZoom * ratio);
+      dragStateRef.current.moved = true;
+      return;
+    }
+
     const st = dragStateRef.current;
     if (!st.active) return;
     const dx = e.clientX - st.startClientX;
@@ -348,6 +373,14 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   };
 
   const handlePointerUpViewport = (e: React.PointerEvent<HTMLDivElement>) => {
+    activePointersRef.current.delete(e.pointerId);
+    if (activePointersRef.current.size < 2) {
+      pinchStartRef.current = null;
+    }
+    if (activePointersRef.current.size > 0) {
+      return;
+    }
+
     const st = dragStateRef.current;
     dragStateRef.current.active = false;
     if (st.moved) return;
@@ -483,6 +516,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         onPointerDown={handlePointerDownViewport}
         onPointerMove={handlePointerMoveViewport}
         onPointerUp={handlePointerUpViewport}
+        onPointerCancel={handlePointerUpViewport}
         onWheel={handleWheelViewport}
       >
         <div
@@ -653,7 +687,9 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 type="button"
                 className={`vwm-boss-node ${isSelected ? 'is-selected' : ''} ${
                   isCleared ? 'is-cleared' : ''
-                } ${isNextTarget ? 'is-next-target' : ''} ${isFinalWheel ? 'is-axial-apex' : ''}`}
+                } ${isNextTarget ? 'is-next-target' : ''} ${isFinalWheel ? 'is-axial-apex' : ''} ${
+                  node.y < 23 ? 'is-near-top' : ''
+                } ${node.x < 16 ? 'is-near-left' : node.x > 84 ? 'is-near-right' : ''}`}
                 style={
                   {
                     left: `${node.x}%`,
@@ -692,6 +728,8 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
           <div
             className={`vwm-sovereign-pawn ${marchTarget ? 'is-marching' : ''} ${
               facingLeft ? 'is-facing-left' : ''
+            } ${pawnPos.y < 23 ? 'is-near-top' : ''} ${
+              pawnPos.x < 16 ? 'is-near-left' : pawnPos.x > 84 ? 'is-near-right' : ''
             }`}
             style={{
               left: `${pawnPos.x}%`,

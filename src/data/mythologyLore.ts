@@ -110,8 +110,8 @@ export const TIMELINE_ERAS: TimelineEra[] = [
     accentColor: '#f59e0b',
     bannerImage: '/assets/arena/domain_red.png',
     proseOverview: [
-      'Com o estilhaçar do Coroa-Prisma no Ano 1 D.F. (Depois da Fratura), a luz branca decompôs-se em cinco rios colossais de Essência que despencaram sobre os extremos de Vaeloria, tingindo a geografia, a fauna e o sangue dos povos.',
-      'Ao norte vulcânico jorrou a Corrente Rubra, abrindo as Caldeiras de Pyros; aos arquipélagos polares desceu a Corrente Safira de Vórtex; às fendas profundas do oeste escorreu a Corrente Umbral do Eclipse; ao sul selvagem brotou a Corrente Esmeralda de Veridia; e nos planaltos orientais pousou a Corrente Dourada de Solária.',
+      'Com o estilhaçar do Coroa-Prisma no Ano 1 D.F. (Depois da Fratura), a alma do astro partido manifestou-se imediatamente na Tríade da Refração: primeiro despertaram no zênite a Matriz Primordial e os cinco Arautos do Prisma; em seguida, os seis Tecelões do Feixe curvaram com as próprias mãos as torrentes cegas de luz para que não despedaçassem o continente; por fim, das fitas luminosas sacudidas nas nuvens nasceram os seis Presságios da Revoada, cruzando os céus em milhares de asas elementais para anunciar o fim da estase.',
+      'Guiadas pelos Tecelões, as cinco correntes tingiram os extremos de Vaeloria: ao norte vulcânico jorrou a Corrente Rubra de Pyros; aos arquipélagos polares desceu a Corrente Safira de Vórtex; às fendas profundas do oeste escorreu a Corrente Umbral do Eclipse; ao sul selvagem brotou a Corrente Esmeralda de Veridia; e nos planaltos orientais pousou a Corrente Dourada de Solária.',
       'No umbigo do continente, onde caíram as cascas sem cor do astro partido, formou-se a Fronteira Cinzenta — uma terra neutra de cinza prateada e relíquias adormecidas.',
     ],
     bardBallad: [
@@ -121,6 +121,13 @@ export const TIMELINE_ERAS: TimelineEra[] = [
       'E o Ouro da Aurora em seu trono de alvor!',
     ],
     milestones: [
+      {
+        yearLabel: '1 D.F. (1ª Hora)',
+        title: 'A Aparição dos Arautos, Tecelões e Presságios da Revoada',
+        summary: 'Logo após a destruição do Coroa-Prisma, despertam no céu os seis Arautos do Prisma, os seis Tecelões do Feixe curvam os raios primordiais e os seis Presságios da Revoada anunciam o novo mundo.',
+        sungCouplet: 'Do Prisma partido saltou o esplendor: / Arauto, Tecelão e a Revoada em clamor!',
+        cardId: 'neutral_167_arauto_prisma_matriz',
+      },
       {
         yearLabel: '1 D.F.',
         title: 'O Dia dos Cinco Sóis',
@@ -318,7 +325,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
     bannerImage: '/assets/arena/tabletop_gold.png',
     proseOverview: [
       'Chegamos ao Ano 1.240 D.F. Após mais de meio milênio de estabilidade, os Cinco Selos da Torre Cinzenta começaram a vibrar com uma frequência desconhecida.',
-      'Antigos cofres da Primeira Era — os Relicários — emergiram das fendas trazendo à tona 996 ecos de criaturas, feitiços e artefatos de todas as eras passadas. Ao mesmo tempo, vinte Senhores da Guerra rebeldes ocuparam as rotas da Campanha em cinco atos, desafiando a autoridade da Torre.',
+      'Antigos cofres da Primeira Era — os Relicários — emergiram das fendas trazendo à tona 1.038 ecos de criaturas, feitiços e artefatos de todas as eras passadas. Ao mesmo tempo, vinte Senhores da Guerra rebeldes ocuparam as rotas da Campanha em cinco atos, desafiando a autoridade da Torre.',
       'Agora, o destino do Coroa-Prisma repousa nas mãos de quem abrir os Grimórios, atravessar a Expedição do Vazio e cantar a última estrofe de Vaeloria.',
     ],
     bardBallad: [
@@ -338,7 +345,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
       {
         yearLabel: '1.240 D.F.',
         title: 'A Convocação dos Novecentos e Noventa e Seis Ecos',
-        summary: 'Todas as 996 cartas das seis eras despertam simultaneamente nos Relicários de Vaeloria.',
+        summary: 'Todas as 1.038 cartas das seis eras despertam simultaneamente nos Relicários de Vaeloria.',
         sungCouplet: 'Novecentas e noventa e seis lendas no ar: / Qual delas tua voz hoje vai invocar?',
         cardId: 'gold_166_trono_soberano_sol',
       },
@@ -389,8 +396,36 @@ export const MYTHOLOGY_BOOKS: MythologyBook[] = [
         ],
       },
       {
+        id: 'canto_p1_refracao',
+        heading: 'Canto II — Os Arautos, os Tecelões e os Presságios da Revoada',
+        chronicleYear: 'Aurora do Ano 1 D.F. (Iª Era)',
+        proseParagraphs: [
+          'No exato instante em que o Coroa-Prisma se partiu, sua luz não caiu morta: do coração diamantino suspenso no zênite despertou a Matriz do Prisma Primordial e, de suas cinco faces fendidas, ergueram-se os Arautos da Supernova, do Zero, do Eclipse, da Raiz e do Zênite. Para impedir que os seis jorros perpendiculares perfurassem Vaeloria, surgiram da poeira estelar os seis Tecelões do Feixe, dobrando cada raio com as próprias mãos rumo aos horizontes do continente.',
+          'Ao rasgarem as nuvens, as fitas excedentes de mercúrio, brasa, geada, sombra, esporos e ouro desprenderam-se dos feixes e tomaram a forma dos seis Presságios da Revoada — espectros monolíticos que se desfizeram em bandos elementais para despertar os povos adormecidos antes da chegada dos meteoros.',
+        ],
+        sungStanzas: [
+          [
+            'Do núcleo partido seis olhos abriram,',
+            'Os grandes Arautos no zênite ardiram;',
+            'E seis Tecelões, com dedos de breu,',
+            'Curvaram nos ares os feixes do céu!',
+          ],
+          [
+            'Das fitas rasgadas na brisa da aurora,',
+            'Voou a Revoada chamando p’ra fora:',
+            'Corvos de prata, de brasa e cristal,',
+            'Cantando o princípio do tempo mortal!',
+          ],
+        ],
+        featuredCardIds: [
+          'neutral_167_arauto_prisma_matriz',
+          'blue_168_tecelao_feixe_gelo',
+          'gold_169_pressagio_revoada_sol',
+        ],
+      },
+      {
         id: 'canto_p2',
-        heading: 'Canto II — A Lei da Arena e da Oferenda',
+        heading: 'Canto III — A Lei da Arena e da Oferenda',
         chronicleYear: 'Ano 689 D.F. (IVª Era)',
         proseParagraphs: [
           'Quando o astro se partiu, cada um dos cinco fragmentos tingiu uma ponta de Vaeloria, dando origem aos Cinco Domínios. Por quase setecentos anos, os herdeiros dessas correntes guerrearam até que o próprio continente ameaçou ruir sob os passos de Kragmorth e o peso dos cataclismos.',
@@ -722,7 +757,7 @@ const DOMAIN_META: Record<
 
 /**
  * Gera a Crônica Histórica (para ser lida) e a Estrofe Rimada (para ser cantada),
- * além do Ano Cronológico oficial (D.F.), para QUALQUER uma das 996 cartas do jogo.
+ * além do Ano Cronológico oficial (D.F.), para QUALQUER uma das 1.038 cartas do jogo.
  */
 export function getCardChronicleAndSong(card: CardDefinition): CardMythologyEntry {
   const bespokeLegendary = LEGENDARY_CREATURE_BIOGRAPHIES[card.id];

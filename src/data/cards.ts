@@ -1,7 +1,7 @@
 import { CardDefinition } from '../types/game';
 
 /**
- * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.020 CARTAS)
+ * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.026 CARTAS)
  * 100% Original Dark Fantasy IP — Sem Nomes, Anatomias ou Frases Protegidos por Direito Autoral.
  */
 export const ALL_CARDS: CardDefinition[] = [
@@ -33741,6 +33741,235 @@ export const ALL_CARDS: CardDefinition[] = [
     "flavorText": "Redimido pelo juramento solar, transformou os próprios grilhões em baluarte dos justos.",
     "imagePath": "/assets/cards/gold_170_flagelo_cornudo_sol.png",
     "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, hulking crouched horned skull-beast juggernaut with sacred ivory skull, golden glowing eyes, colossal burnished solar-gold horns, bronze-alabaster musculature, and golden wrist chains on pure white background."
+  },
+  {
+    "id": "neutral_171_pactuario_elemental_matriz",
+    "name": "Pactuário do Éter Primordial",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Mago • Pactuário • Elemental",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "secondaryValue": 3,
+        "description": "Ao entrar, invoca 1 criatura aliada 2/3 na sua Vanguarda."
+      },
+      {
+        "trigger": "spell_cast",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao lançar um feitiço, concede +1 de Essência extra neste turno."
+      }
+    ],
+    "description": "Ao entrar, invoca 1 criatura aliada 2/3 na sua Vanguarda. Ao lançar um feitiço, concede +1 de Essência extra neste turno.",
+    "flavorText": "O arcanista sussurra a fórmula; atrás dele, a montanha de mercúrio e cristal respira.",
+    "imagePath": "/assets/cards/neutral_171_pactuario_elemental_matriz.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, slender hooded silver-and-iron mage standing in foreground framed beneath a colossal hunched fanged crystal-and-mercury elemental beast-spirit with glowing diamond eyes on pure white background."
+  },
+  {
+    "id": "purple_171_pactuario_elemental_abismo",
+    "name": "Pactuário do Espírito Umbral",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Mago • Pactuário • Elemental",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 3,
+        "secondaryValue": 2,
+        "description": "Ao entrar, invoca 1 criatura aliada 3/2 na sua Vanguarda."
+      },
+      {
+        "trigger": "spell_cast",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Ao lançar um feitiço, causa 2 de dano direto ao Soberano inimigo."
+      }
+    ],
+    "description": "Ao entrar, invoca 1 criatura aliada 3/2 na sua Vanguarda. Ao lançar um feitiço, causa 2 de dano direto ao Soberano inimigo.",
+    "flavorText": "Ela cedeu a própria sombra ao Vazio, e a sombra cresceu dentes para guardá-la.",
+    "imagePath": "/assets/cards/purple_171_pactuario_elemental_abismo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, slender hooded umbral mage standing in foreground framed beneath a colossal hunched fanged shadow-and-void elemental beast-spirit with glowing violet eyes on pure white background."
+  },
+  {
+    "id": "red_171_pactuario_elemental_chama",
+    "name": "Pactuário do Espírito Magmático",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Mago • Pactuário • Elemental",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 3,
+        "secondaryValue": 2,
+        "description": "Ao entrar, invoca 1 criatura aliada 3/2 na sua Vanguarda."
+      },
+      {
+        "trigger": "spell_cast",
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Ao lançar um feitiço, causa 1 de dano a todas as criaturas na Vanguarda inimiga."
+      }
+    ],
+    "description": "Ao entrar, invoca 1 criatura aliada 3/2 na sua Vanguarda. Ao lançar um feitiço, causa 1 de dano a todas as criaturas na Vanguarda inimiga.",
+    "flavorText": "Cada sílaba piromântica desperta a fornalha viva que caminha às suas costas.",
+    "imagePath": "/assets/cards/red_171_pactuario_elemental_chama.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, slender hooded pyromancer mage standing in foreground framed beneath a colossal hunched fanged volcanic basalt-and-magma elemental beast-spirit with blazing fire eyes on pure white background."
+  },
+  {
+    "id": "blue_171_pactuario_elemental_gelo",
+    "name": "Pactuário do Espírito Glacial",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Mago • Pactuário • Elemental",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 2,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "secondaryValue": 3,
+        "description": "Ao entrar, invoca 1 criatura aliada 2/3 na sua Vanguarda."
+      },
+      {
+        "trigger": "spell_cast",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao lançar um feitiço, congela a criatura inimiga de maior Ataque por 1 rodada."
+      }
+    ],
+    "description": "Ao entrar, invoca 1 criatura aliada 2/3 na sua Vanguarda. Ao lançar um feitiço, congela a criatura inimiga de maior Ataque por 1 rodada.",
+    "flavorText": "O inverno jurou obedecer à sua voz contanto que jamais lhe faltasse geada.",
+    "imagePath": "/assets/cards/blue_171_pactuario_elemental_gelo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, slender hooded cryomancer mage standing in foreground framed beneath a colossal hunched icicle-fanged glacier-and-storm elemental beast-spirit with glowing cyan eyes on pure white background."
+  },
+  {
+    "id": "green_171_pactuario_elemental_selva",
+    "name": "Pactuário do Espírito Silvestre",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Mago • Pactuário • Elemental",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 2,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 3,
+        "secondaryValue": 3,
+        "description": "Ao entrar, invoca 1 criatura aliada 3/3 na sua Vanguarda."
+      },
+      {
+        "trigger": "spell_cast",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Ao lançar um feitiço, concede +1/+2 de Ataque e Vida à sua criatura aliada mais forte."
+      }
+    ],
+    "description": "Ao entrar, invoca 1 criatura aliada 3/3 na sua Vanguarda. Ao lançar um feitiço, concede +1/+2 de Ataque e Vida à sua criatura aliada mais forte.",
+    "flavorText": "Onde a xamã pisa em paz, toda a fúria da mata ancestral se curva como escudo.",
+    "imagePath": "/assets/cards/green_171_pactuario_elemental_selva.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, slender hooded forest-shaman mage standing in foreground framed beneath a colossal hunched ironwood-and-moss elemental beast-spirit with glowing emerald eyes on pure white background."
+  },
+  {
+    "id": "gold_171_pactuario_elemental_sol",
+    "name": "Pactuário do Espírito Solar",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Mago • Pactuário • Elemental",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 2,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "secondaryValue": 3,
+        "description": "Ao entrar, invoca 1 criatura aliada 2/3 na sua Vanguarda."
+      },
+      {
+        "trigger": "spell_cast",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Ao lançar um feitiço, concede Escudo Divino a um aliado."
+      }
+    ],
+    "description": "Ao entrar, invoca 1 criatura aliada 2/3 na sua Vanguarda. Ao lançar um feitiço, concede Escudo Divino à sua criatura aliada mais forte.",
+    "flavorText": "Nenhum golpe alcança o teurgo enquanto o guardião de bronze solar vigiar seu voto.",
+    "imagePath": "/assets/cards/gold_171_pactuario_elemental_sol.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, slender hooded solar theurge mage standing in foreground framed beneath a colossal hunched celestial bronze-and-sunlight elemental beast-spirit with blazing gold eyes on pure white background."
   }
 ];
 

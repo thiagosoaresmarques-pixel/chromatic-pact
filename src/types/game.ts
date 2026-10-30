@@ -233,6 +233,7 @@ export interface GameState {
   winner: 'player' | 'ai' | null;
   winReason: string;
   bossId?: string;
+  expeditionBlessingId?: string;
   weather?: ArenaWeatherState | null;
   columnRunes?: ArenaColumnRune[];
   player: PlayerState;

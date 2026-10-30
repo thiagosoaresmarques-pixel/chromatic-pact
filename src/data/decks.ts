@@ -3764,5 +3764,113 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
     "rewardGold": 1500,
     "loreIntro": "No ápice do Prisma Infinito, Valkyra reúne os cinco Dragões Anciões Primordiais. Esta é a provação suprema do Pacto Cromático!",
     "deckId": "deck_penta_valkyra_pact"
+  },
+  {
+    "id": "boss_stage_21_crater_armada",
+    "stage": 21,
+    "name": "Hoste da Cratera & Esquadra da Nevasca",
+    "title": "Ato VI • Almirantes Alados de Pyros e do Vórtex",
+    "domains": [
+      "red",
+      "blue"
+    ],
+    "avatarCardId": "red_172_armada_draconica_chama",
+    "startingHp": 92,
+    "passiveName": "Barragem das Armadas Aladas",
+    "passiveDescription": "Suas criaturas com Voo, Sopro Elemental ou Armadas Dracônicas entram com +1 ATQ e atingem o Soberano rival com 1 de dano de rasante!",
+    "rewardGold": 1650,
+    "loreIntro": "Quando os céus do Norte e dos Polos se uniram em formação de guerra, nuvens de cinza e granizo ocultaram o próprio sol sobre a Fronteira Cinzenta.",
+    "deckId": "deck_squad_siege_battery"
+  },
+  {
+    "id": "boss_stage_22_eclipse_zenith_armada",
+    "stage": 22,
+    "name": "Legião do Eclipse & Armada do Zênite",
+    "title": "Ato VI • As Duas Revoadas da Sombra e da Luz",
+    "domains": [
+      "gold",
+      "green",
+      "purple"
+    ],
+    "avatarCardId": "gold_172_armada_draconica_sol",
+    "startingHp": 94,
+    "passiveName": "Céu Blindado da Esquadra",
+    "passiveDescription": "Todas as criaturas invocadas por este Soberano entram com +1 Armadura, e em rodadas pares o fulgor do Zênite restaura +2 PV.",
+    "rewardGold": 1800,
+    "loreIntro": "Entre as torres douradas de Solária e o dossel ancestral de Veridia, esquadrões encouraçados patrulham cada coluna com disciplina implacável.",
+    "deckId": "deck_squad_thousand_shields"
+  },
+  {
+    "id": "boss_stage_23_refraction_triad",
+    "stage": 23,
+    "name": "Covenante da Tríade da Refração",
+    "title": "Ato VI • Presságios, Flagelos e Pactuários do Éter",
+    "domains": [
+      "purple",
+      "red",
+      "blue"
+    ],
+    "avatarCardId": "neutral_171_pactuario_elemental_matriz",
+    "startingHp": 96,
+    "passiveName": "Ressonância do Prisma Partido",
+    "passiveDescription": "Inicia o duelo com +1 de Essência Máxima e fere o Soberano rival em 1 PV no início de cada rodada caso não haja Guardiões na defesa.",
+    "rewardGold": 1950,
+    "loreIntro": "Nascidos imediatamente após o estilhaçamento do Prisma Primordial, os Arautos, Tecelões e Pactuários reclamam o éter que escorre pelas fendas do mundo.",
+    "deckId": "deck_tri_astral_cataclysm"
+  },
+  {
+    "id": "boss_stage_24_primal_volcanic_wheels",
+    "stage": 24,
+    "name": "Pyrrakon & Sylvarok, Rodas da Terra Ardente",
+    "title": "Ato VI • Generais da Roda Vulcânica e da Roda Primeva",
+    "domains": [
+      "red",
+      "green"
+    ],
+    "avatarCardId": "red_173_general_roda_chama",
+    "startingHp": 98,
+    "passiveName": "Giro da Adaptação Brutal",
+    "passiveDescription": "Suas criaturas entram com +1 ATQ e +1 Regeneração; além disso, cada giro no início da rodada desgasta em -1 turno qualquer Expansão de Domínio rival!",
+    "rewardGold": 2150,
+    "loreIntro": "Nas encostas onde o magma de Pyros encontra as raízes de ferro de Veridia, duas Rodas de Oito Raios giram para esmagar toda barreira soberana.",
+    "deckId": "deck_dual_primal_fury"
+  },
+  {
+    "id": "boss_stage_25_celestial_funeral_wheels",
+    "stage": 25,
+    "name": "Heliokar, Cryonax & Nyxaroth",
+    "title": "Ato VI • Conclave das Rodas Celeste, Astral e Fúnebre",
+    "domains": [
+      "gold",
+      "blue",
+      "purple"
+    ],
+    "avatarCardId": "gold_173_general_roda_sol",
+    "startingHp": 100,
+    "passiveName": "Sentença Anti-Domínio",
+    "passiveDescription": "Suas lendas entram com Escudo Divino (+1 Armadura nas demais tropas) e punem qualquer Expansão de Domínio rival ativa drenando 2 PV por rodada!",
+    "rewardGold": 2400,
+    "loreIntro": "O sol do julgamento, o astrolábio de gelo e o ossuário fúnebre alinham seus oito raios: perante o Tribunal Triplo, nenhum santuário permanece intacto.",
+    "deckId": "deck_tri_eternal_reliquary"
+  },
+  {
+    "id": "boss_stage_26_vaelkor_supreme_wheel",
+    "stage": 26,
+    "name": "Vaelkor, Supremo General da Roda Prismática",
+    "title": "Ato VI • Árbitro Final das Cem Lendas e Quebrador de Domínios",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "green",
+      "gold"
+    ],
+    "avatarCardId": "neutral_173_general_roda_matriz",
+    "startingHp": 108,
+    "passiveName": "Julgamento dos Oito Raios",
+    "passiveDescription": "Inicia com as 5 Afinidades despertas; suas criaturas entram com +1 Armadura e +1 Regeneração, e a cada rodada a Roda Prismática restaura +1 PV e concede +1 ATQ às suas fileiras!",
+    "rewardGold": 3000,
+    "loreIntro": "Forjado na Fronteira Cinzenta antes da divisão dos tronos, Vaelkor gira a Roda Matriz de Oito Raios para julgar se você é digno de governar Vaeloria!",
+    "deckId": "deck_penta_valkyra_pact"
   }
 ];

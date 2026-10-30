@@ -150,6 +150,7 @@ export interface BattleArenaProps {
   isGuest?: boolean;
   campaignBoss?: CampaignBoss | null;
   campaignPlayerDeckIds?: string[] | null;
+  expeditionBlessingId?: string | null;
   tacticalProblem?: TacticalProblem | null;
   onSelectProblem?: (problem: TacticalProblem) => void;
   onExitProblems?: () => void;
@@ -333,6 +334,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   isGuest = false,
   campaignBoss,
   campaignPlayerDeckIds,
+  expeditionBlessingId,
   tacticalProblem,
   onSelectProblem,
   onExitProblems,
@@ -447,6 +449,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiTitle: campaignBoss.title,
             aiAvatarCardId: campaignBoss.avatarCardId,
             aiStartingHp: campaignBoss.startingHp,
+            bossId: campaignBoss.id,
+            expeditionBlessingId: expeditionBlessingId ?? undefined,
           }
         : {
             playerName: 'Seu Soberano',
@@ -898,6 +902,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiAvatarCardId: campaignBoss.avatarCardId,
             aiStartingHp: campaignBoss.startingHp,
             bossId: campaignBoss.id,
+            expeditionBlessingId: expeditionBlessingId ?? undefined,
           }
         )
       );
@@ -907,7 +912,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       setIsMulliganOpen(true);
       setMulliganSwapIndices([]);
     }
-  }, [campaignBoss, campaignPlayerDeckIds]);
+  }, [campaignBoss, campaignPlayerDeckIds, expeditionBlessingId]);
 
   // Detect Domain Expansion lifecycle transitions: Entry (AI), Clash, Natural Expiration, Sacred Wheel Shatter, and Destruction
   useEffect(() => {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
+import { CAMPAIGN_BOSSES } from '../data/decks';
 import {
   adminDeleteCloudProfile,
   adminDeleteCloudRoom,
@@ -35,15 +36,7 @@ interface AdminDashboardViewProps {
 
 type AdminSectionTab = 'overview' | 'users' | 'telemetry' | 'rooms' | 'system';
 
-const ALL_CAMPAIGN_BOSS_IDS = [
-  'boss_1_goblin_king',
-  'boss_2_frost_archmage',
-  'boss_3_jungle_titan',
-  'boss_4_abyssal_lich',
-  'boss_5_solar_emperor',
-  'boss_6_valkyra',
-  'boss_7_chronos',
-];
+const ALL_CAMPAIGN_BOSS_IDS = CAMPAIGN_BOSSES.map((b) => b.id);
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   currentUser,
@@ -273,7 +266,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       };
       await handleSaveModifiedUser(
         updated,
-        'Códice Completo Desbloqueado (500 Cartas)',
+        `Códice Completo Desbloqueado (${ALL_CARDS.length} Cartas)`,
         `Todas as ${ALL_CARDS.length} cartas foram liberadas na conta ${currentUser.username}.`
       );
     } else if (mode === 'bosses') {
@@ -1147,7 +1140,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.2rem' }}>
                     E-mail: <strong>{selectedUser.email || 'Não informado'}</strong> • Título:{' '}
                     {selectedUser.title} • Grimórios: {selectedUser.customDecks?.length ?? 0} • Chefes
-                    vencidos: {selectedUser.defeatedBossIds?.length ?? 0}/7
+                    vencidos: {selectedUser.defeatedBossIds?.length ?? 0}/{CAMPAIGN_BOSSES.length}
                   </div>
                 </div>
                 <button
@@ -1500,7 +1493,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           {p.pvpWins ?? 0}V/{p.pvpLosses ?? 0}D PvP • {p.arenaWins ?? 0}V IA
                         </td>
                         <td style={{ padding: '0.75rem', color: '#cbd5e1' }}>
-                          {p.customDecks?.length ?? 0} deck(s) • {p.defeatedBossIds?.length ?? 0}/7 chefes
+                          {p.customDecks?.length ?? 0} deck(s) • {p.defeatedBossIds?.length ?? 0}/{CAMPAIGN_BOSSES.length} chefes
                         </td>
                         <td style={{ padding: '0.75rem', color: '#94a3b8', fontSize: '0.75rem' }}>
                           {p.lastActiveAt

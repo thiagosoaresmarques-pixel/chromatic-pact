@@ -573,6 +573,7 @@ export function createInitialGameState(
     aiStartingHp?: number;
     playerStartingHp?: number;
     bossId?: string;
+    expeditionBlessingId?: string;
   }
 ): GameState {
   const shuffledPlayerDeck = shuffleCards(playerDeck);
@@ -583,6 +584,22 @@ export function createInitialGameState(
 
   const playerMaxHp = options?.playerStartingHp ?? STARTING_SOVEREIGN_HP;
   const aiMaxHp = options?.aiStartingHp ?? STARTING_SOVEREIGN_HP;
+  const playerBonusEssence = options?.expeditionBlessingId === 'arcane_conclave' ? 1 : 0;
+  const aiBonusEssence = options?.bossId === 'boss_stage_23_refraction_triad' ? 1 : 0;
+
+  const aiStartingAffinities = createStartingAffinitiesForDeck(aiDeck);
+  if (
+    options?.bossId === 'boss_stage_6_valkyra' ||
+    options?.bossId === 'boss_stage_14_valkyra_eternal' ||
+    options?.bossId === 'boss_stage_20_supreme_valkyra' ||
+    options?.bossId === 'boss_stage_26_vaelkor_supreme_wheel' ||
+    options?.bossId === 'exp_boss_8_valkyra' ||
+    options?.bossId === 'exp_boss_9_vaelkor'
+  ) {
+    for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
+      aiStartingAffinities[dom] = Math.max(aiStartingAffinities[dom], 2);
+    }
+  }
 
   const player: PlayerState = {
     id: 'player',
@@ -592,8 +609,8 @@ export function createInitialGameState(
     hp: playerMaxHp,
     maxHp: playerMaxHp,
     corruption: 0,
-    currentEssence: STARTING_ESSENCE,
-    maxEssence: STARTING_ESSENCE,
+    currentEssence: STARTING_ESSENCE + playerBonusEssence,
+    maxEssence: STARTING_ESSENCE + playerBonusEssence,
     hasChanneledThisTurn: false,
     hasMovedThisTurn: false,
     hasUsedSovereignPowerThisTurn: false,
@@ -619,15 +636,15 @@ export function createInitialGameState(
     hp: aiMaxHp,
     maxHp: aiMaxHp,
     corruption: 0,
-    currentEssence: STARTING_ESSENCE,
-    maxEssence: STARTING_ESSENCE,
+    currentEssence: STARTING_ESSENCE + aiBonusEssence,
+    maxEssence: STARTING_ESSENCE + aiBonusEssence,
     hasChanneledThisTurn: false,
     hasMovedThisTurn: false,
     hasUsedSovereignPowerThisTurn: false,
     hasUsedBloodPactThisTurn: false,
     hasUsedSimpleDomainThisTurn: false,
     domainExhaustionTurns: 0,
-    affinities: createStartingAffinitiesForDeck(aiDeck),
+    affinities: aiStartingAffinities,
     channeledCards: [],
     deck: shuffledAiDeck,
     hand: aiHand,
@@ -647,6 +664,7 @@ export function createInitialGameState(
     winner: null,
     winReason: '',
     bossId: options?.bossId,
+    expeditionBlessingId: options?.expeditionBlessingId,
     weather: null,
     columnRunes: [],
     player,
@@ -1607,6 +1625,10 @@ export function shatterEnemyDomainExpansionByUnit(
       'effect',
       `💥 QUEBRA DE EXPANSÃO DE DOMÍNIO! [${sourceName}] estilhaçou a barreira rival [${brokenRival.name}] na Disputa de Domínios!`
     );
+    if (actor === 'player' && state.expeditionBlessingId === 'celestial_wheel') {
+      state.player.hp = Math.min(state.player.maxHp, state.player.hp + 4);
+      addFeedback(state, 'player-sovereign', '+4❤️ Juramento da Roda!', 'heal');
+    }
     return true;
   }
 
@@ -1643,6 +1665,10 @@ export function shatterEnemyDomainExpansionByUnit(
       'effect',
       `💥 QUEBRA DE EXPANSÃO DE DOMÍNIO! [${sourceName}] estilhaçou imediatamente a Expansão de Domínio [${brokenExp.name}]!`
     );
+    if (actor === 'player' && state.expeditionBlessingId === 'celestial_wheel') {
+      state.player.hp = Math.min(state.player.maxHp, state.player.hp + 4);
+      addFeedback(state, 'player-sovereign', '+4❤️ Juramento da Roda!', 'heal');
+    }
     return true;
   }
 
@@ -2070,6 +2096,21 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
   return next;
 }
 
+export function getEffectiveCardCost(
+  state: GameState,
+  actor: 'player' | 'ai',
+  card: CardDefinition
+): number {
+  if (
+    actor === 'player' &&
+    state.expeditionBlessingId === 'forge_crown' &&
+    card.type === 'relic'
+  ) {
+    return Math.max(0, card.cost - 1);
+  }
+  return card.cost;
+}
+
 export function canPlayCard(
   state: GameState,
   actor: 'player' | 'ai',
@@ -2083,11 +2124,12 @@ export function canPlayCard(
   }
 
   const actorState = state[actor];
+  const effectiveCost = getEffectiveCardCost(state, actor, card);
 
-  if (actorState.currentEssence < card.cost) {
+  if (actorState.currentEssence < effectiveCost) {
     return {
       allowed: false,
-      reason: `Essência insuficiente (${actorState.currentEssence}/${card.cost}).`,
+      reason: `Essência insuficiente (${actorState.currentEssence}/${effectiveCost}).`,
     };
   }
 
@@ -3118,11 +3160,12 @@ export function playCard(
   const enemyState = next[enemyActor];
 
   const [card] = actorState.hand.splice(handIndex, 1);
-  actorState.currentEssence -= card.cost;
+  const effectiveCost = getEffectiveCardCost(next, actor, card);
+  actorState.currentEssence -= effectiveCost;
   addFeedback(
     next,
     `${actor}-sovereign`,
-    `-${card.cost}⚡ (${actorState.currentEssence}/${actorState.maxEssence})`,
+    `-${effectiveCost}⚡ (${actorState.currentEssence}/${actorState.maxEssence})`,
     'ess'
   );
 
@@ -3168,7 +3211,7 @@ export function playCard(
 
     const unit = createBoardUnit(card, actor, slot.row, slot.slotIndex, corruptionAtkBonus);
 
-    // Campaign Boss Passives on AI Creature Summon
+    // Campaign & Expedition Boss Passives on AI Creature Summon
     if (actor === 'ai' && card.type === 'creature' && next.bossId) {
       if (next.bossId === 'boss_stage_1_goblin_king') {
         unit.regeneration += 1;
@@ -3179,6 +3222,75 @@ export function playCard(
       } else if (next.bossId === 'boss_stage_5_crater_tyrant') {
         unit.currentAtk += 1;
         addFeedback(next, unit.instanceId, '+1⚔️ Fornalha (Passiva Chefe)', 'buff');
+      } else if (
+        next.bossId === 'boss_stage_21_crater_armada' ||
+        next.bossId === 'exp_boss_7_armada'
+      ) {
+        if (
+          card.keywords.includes('Voo') ||
+          (card.breathDamage ?? 0) > 0 ||
+          card.id.includes('_172_')
+        ) {
+          unit.currentAtk += 1;
+          next.player.hp = Math.max(0, next.player.hp - 1);
+          addFeedback(next, unit.instanceId, '+1⚔️ Armada Alada', 'buff');
+          addFeedback(next, 'player-sovereign', '-1🐉 Rasante da Armada', 'damage');
+        }
+      } else if (next.bossId === 'boss_stage_22_eclipse_zenith_armada') {
+        unit.currentArmor += 1;
+        addFeedback(next, unit.instanceId, '+1🛡️ Céu Blindado', 'shield');
+      } else if (next.bossId === 'boss_stage_24_primal_volcanic_wheels') {
+        unit.currentAtk += 1;
+        unit.regeneration += 1;
+        addFeedback(next, unit.instanceId, '+1⚔️/+1❤️ Giro Brutal', 'buff');
+      } else if (next.bossId === 'boss_stage_25_celestial_funeral_wheels') {
+        if (card.rarity === 'legendary') {
+          unit.hasDivineShield = true;
+          addFeedback(next, unit.instanceId, '✨ Escudo da Roda', 'shield');
+        } else {
+          unit.currentArmor += 1;
+          addFeedback(next, unit.instanceId, '+1🛡️ Roda Tripla', 'shield');
+        }
+      } else if (
+        next.bossId === 'boss_stage_26_vaelkor_supreme_wheel' ||
+        next.bossId === 'exp_boss_9_vaelkor'
+      ) {
+        unit.currentArmor += 1;
+        unit.regeneration += 1;
+        addFeedback(next, unit.instanceId, '☸ +1🛡️/+1❤️ Roda Prismática', 'shield');
+      }
+    }
+
+    // Expedition Sovereign Blessings on Player Deploy
+    if (actor === 'player' && next.expeditionBlessingId) {
+      if (next.expeditionBlessingId === 'forge_crown' && card.type === 'relic') {
+        actorState.hp = Math.min(actorState.maxHp, actorState.hp + 1);
+        addFeedback(next, 'player-sovereign', '+1❤️ Coroa da Forja', 'heal');
+      } else if (next.expeditionBlessingId === 'dragon_blood' && card.type === 'creature') {
+        if (
+          card.keywords.includes('Ímpeto') ||
+          (card.breathDamage ?? 0) > 0 ||
+          card.id.includes('_172_')
+        ) {
+          unit.currentAtk += 1;
+          addFeedback(next, unit.instanceId, '+1⚔️ Sangue Dracônico', 'buff');
+        }
+      } else if (next.expeditionBlessingId === 'celestial_wheel' && card.type === 'creature') {
+        if (card.rarity === 'legendary' || card.id.includes('_173_')) {
+          unit.currentArmor += 1;
+          unit.regeneration += 1;
+          addFeedback(next, unit.instanceId, '☸ +1🛡️/+1❤️ Juramento da Roda', 'shield');
+        }
+      } else if (next.expeditionBlessingId === 'sky_armada' && card.type === 'creature') {
+        if (
+          card.keywords.includes('Voo') ||
+          /_(167|168|169|170|171|172)_/.test(card.id)
+        ) {
+          unit.currentAtk += 1;
+          enemyState.hp = Math.max(0, enemyState.hp - 1);
+          addFeedback(next, unit.instanceId, '+1⚔️ Esquadra Alada', 'buff');
+          addFeedback(next, 'ai-sovereign', '-1🦅 Rasante da Esquadra', 'damage');
+        }
       }
     }
 
@@ -3186,6 +3298,16 @@ export function playCard(
     consumeColumnRuneOnDeploy(next, actor, slot.row, slot.slotIndex, unit);
     summonedInstanceId = unit.instanceId;
     const newStackSize = getSlotUnits(actorState, slot.row, slot.slotIndex).length;
+
+    if (
+      actor === 'player' &&
+      next.expeditionBlessingId === 'immortal_phalanx' &&
+      card.type === 'creature' &&
+      newStackSize === 1
+    ) {
+      unit.currentArmor += 1;
+      addFeedback(next, unit.instanceId, '+1🛡️ Falange Imortal', 'shield');
+    }
 
     const rowLabel = slot.row === 'vanguard' ? 'Vanguarda' : 'Retaguarda';
     addLog(
@@ -4407,57 +4529,9 @@ export function endTurn(state: GameState): GameState {
     }
   }
 
-  // Passivas de Início de Turno dos Chefes da Campanha (Estágios 2 e 6)
+  // Passivas de Início de Turno dos Chefes da Campanha & Expedição
   if (newActiveActor === 'ai' && next.bossId) {
-    if (next.bossId === 'boss_stage_2_storm_oracle') {
-      const playerUnits = getAllBoardUnits(next.player).filter(
-        (u) => !u.isTrap && !u.isFrozen && u.card.type === 'creature'
-      );
-      if (playerUnits.length > 0 && next.turn % 2 === 0) {
-        const picked = playerUnits[0];
-        picked.isFrozen = true;
-        addFeedback(next, picked.instanceId, '❄️ Zero Absoluto!', 'freeze');
-        addLog(
-          next,
-          'ai',
-          'effect',
-          `[Passiva de Chefe — Zero Absoluto] Zephyros congelou [${picked.card.name}]!`
-        );
-      }
-    } else if (next.bossId === 'boss_stage_13_chronomancer') {
-      // Thaddeus & Chronos, Senhores do Tempo: congela 1 inimigo em turnos pares e restaura +1❤️!
-      newActiveState.hp = Math.min(newActiveState.maxHp, newActiveState.hp + 1);
-      addFeedback(next, 'ai-sovereign', '+1⏳ Roda do Tempo', 'heal');
-      const playerUnits = getAllBoardUnits(next.player).filter(
-        (u) => !u.isTrap && !u.isFrozen && u.card.type === 'creature'
-      );
-      if (playerUnits.length > 0 && next.turn % 2 === 0) {
-        const picked = playerUnits[0];
-        picked.isFrozen = true;
-        addFeedback(next, picked.instanceId, '⏳ Parar o Tempo!', 'freeze');
-        addLog(
-          next,
-          'ai',
-          'effect',
-          `[Passiva de Chefe — Roda da Eternidade] Thaddeus & Chronos paralisaram [${picked.card.name}] no tempo!`
-        );
-      }
-    } else if (
-      next.bossId === 'boss_stage_6_valkyra' ||
-      next.bossId === 'boss_stage_14_valkyra_eternal'
-    ) {
-      // Valkyra, Imperatriz Pentacromática: causa 1 de dano cromático e cura +1❤️ a cada turno!
-      next.player.hp = Math.max(0, next.player.hp - 1);
-      newActiveState.hp = Math.min(newActiveState.maxHp, newActiveState.hp + 1);
-      addFeedback(next, 'player-sovereign', '-1🐉 Chama Pentacromática', 'damage');
-      addFeedback(next, 'ai-sovereign', '+1🐉 Escama Imperial', 'heal');
-      addLog(
-        next,
-        'ai',
-        'effect',
-        `[Passiva de Chefe — Convergência Pentacromática] Valkyra drenou 1❤️ de ${next.player.name}!`
-      );
-    }
+    applyBossStartOfRoundPassives(next);
   }
 
   // 4. Draw 1 card for new active player
@@ -5249,55 +5323,9 @@ export function resolveCombatPhaseAndAdvanceRound(
     drawCardsForActor(next, actor, 1);
   }
 
-  // Campaign Boss Start-of-Round Passives
+  // Campaign & Expedition Boss Start-of-Round Passives
   if (next.bossId) {
-    if (next.bossId === 'boss_stage_2_storm_oracle') {
-      const playerUnits = getAllBoardUnits(next.player).filter(
-        (u) => !u.isTrap && !u.isFrozen && u.card.type === 'creature'
-      );
-      if (playerUnits.length > 0 && next.turn % 2 === 0) {
-        const picked = playerUnits[0];
-        picked.isFrozen = true;
-        addFeedback(next, picked.instanceId, '❄️ Zero Absoluto!', 'freeze');
-        addLog(
-          next,
-          'ai',
-          'effect',
-          `[Passiva de Chefe — Zero Absoluto] Zephyros congelou [${picked.card.name}]!`
-        );
-      }
-    } else if (next.bossId === 'boss_stage_13_chronomancer') {
-      next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
-      addFeedback(next, 'ai-sovereign', '+1⏳ Roda do Tempo', 'heal');
-      const playerUnits = getAllBoardUnits(next.player).filter(
-        (u) => !u.isTrap && !u.isFrozen && u.card.type === 'creature'
-      );
-      if (playerUnits.length > 0 && next.turn % 2 === 0) {
-        const picked = playerUnits[0];
-        picked.isFrozen = true;
-        addFeedback(next, picked.instanceId, '⏳ Parar o Tempo!', 'freeze');
-        addLog(
-          next,
-          'ai',
-          'effect',
-          `[Passiva de Chefe — Roda da Eternidade] Thaddeus & Chronos paralisaram [${picked.card.name}] no tempo!`
-        );
-      }
-    } else if (
-      next.bossId === 'boss_stage_6_valkyra' ||
-      next.bossId === 'boss_stage_14_valkyra_eternal'
-    ) {
-      next.player.hp = Math.max(0, next.player.hp - 1);
-      next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
-      addFeedback(next, 'player-sovereign', '-1🐉 Chama Pentacromática', 'damage');
-      addFeedback(next, 'ai-sovereign', '+1🐉 Escama Imperial', 'heal');
-      addLog(
-        next,
-        'ai',
-        'effect',
-        `[Passiva de Chefe — Convergência Pentacromática] Valkyra drenou 1❤️ de ${next.player.name}!`
-      );
-    }
+    applyBossStartOfRoundPassives(next);
   }
 
   addLog(
@@ -5311,4 +5339,122 @@ export function resolveCombatPhaseAndAdvanceRound(
 
   cleanupDeadUnits(next);
   return next;
+}
+
+function applyBossStartOfRoundPassives(next: GameState): void {
+  if (!next.bossId) return;
+
+  if (next.bossId === 'boss_stage_2_storm_oracle') {
+    const playerUnits = getAllBoardUnits(next.player).filter(
+      (u) => !u.isTrap && !u.isFrozen && u.card.type === 'creature'
+    );
+    if (playerUnits.length > 0 && next.turn % 2 === 0) {
+      const picked = playerUnits[0];
+      picked.isFrozen = true;
+      addFeedback(next, picked.instanceId, '❄️ Zero Absoluto!', 'freeze');
+      addLog(
+        next,
+        'ai',
+        'effect',
+        `[Passiva de Chefe — Zero Absoluto] Zephyros congelou [${picked.card.name}]!`
+      );
+    }
+  } else if (next.bossId === 'boss_stage_13_chronomancer') {
+    next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
+    addFeedback(next, 'ai-sovereign', '+1⏳ Roda do Tempo', 'heal');
+    const playerUnits = getAllBoardUnits(next.player).filter(
+      (u) => !u.isTrap && !u.isFrozen && u.card.type === 'creature'
+    );
+    if (playerUnits.length > 0 && next.turn % 2 === 0) {
+      const picked = playerUnits[0];
+      picked.isFrozen = true;
+      addFeedback(next, picked.instanceId, '⏳ Parar o Tempo!', 'freeze');
+      addLog(
+        next,
+        'ai',
+        'effect',
+        `[Passiva de Chefe — Roda da Eternidade] Thaddeus & Chronos paralisaram [${picked.card.name}] no tempo!`
+      );
+    }
+  } else if (
+    next.bossId === 'boss_stage_6_valkyra' ||
+    next.bossId === 'boss_stage_14_valkyra_eternal' ||
+    next.bossId === 'exp_boss_8_valkyra'
+  ) {
+    next.player.hp = Math.max(0, next.player.hp - 1);
+    next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
+    addFeedback(next, 'player-sovereign', '-1🐉 Chama Pentacromática', 'damage');
+    addFeedback(next, 'ai-sovereign', '+1🐉 Escama Imperial', 'heal');
+    addLog(
+      next,
+      'ai',
+      'effect',
+      `[Passiva de Chefe — Convergência Pentacromática] Valkyra drenou 1❤️ de ${next.player.name}!`
+    );
+  } else if (next.bossId === 'boss_stage_22_eclipse_zenith_armada') {
+    if (next.turn % 2 === 0) {
+      next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 2);
+      addFeedback(next, 'ai-sovereign', '+2☀️ Armada do Zênite', 'heal');
+    }
+  } else if (next.bossId === 'boss_stage_23_refraction_triad') {
+    const hasGuardian = getAllBoardUnits(next.player).some(
+      (u) => !u.isTrap && u.card.type === 'creature' && u.keywords.includes('Guardião')
+    );
+    if (!hasGuardian) {
+      next.player.hp = Math.max(0, next.player.hp - 1);
+      addFeedback(next, 'player-sovereign', '-1💎 Prisma Partido', 'damage');
+      addLog(
+        next,
+        'ai',
+        'effect',
+        `[Passiva de Chefe — Ressonância do Prisma Partido] Estilhaços de Éter feriram ${next.player.name} em 1❤️!`
+      );
+    }
+  } else if (next.bossId === 'boss_stage_24_primal_volcanic_wheels') {
+    if (
+      next.domainExpansion &&
+      next.domainExpansion.owner === 'player' &&
+      next.domainExpansion.turnsRemaining > 1
+    ) {
+      next.domainExpansion.turnsRemaining -= 1;
+      addFeedback(next, 'player-sovereign', '☸ -1 Rodada de Domínio!', 'damage');
+      addLog(
+        next,
+        'ai',
+        'effect',
+        `[Passiva de Chefe — Giro da Adaptação] As Rodas de Pyrrakon & Sylvarok corroeram 1 rodada de [${next.domainExpansion.name}]!`
+      );
+    }
+  } else if (next.bossId === 'boss_stage_25_celestial_funeral_wheels') {
+    if (next.domainExpansion && next.domainExpansion.owner === 'player') {
+      next.player.hp = Math.max(0, next.player.hp - 2);
+      addFeedback(next, 'player-sovereign', '-2☸ Sentença Anti-Domínio', 'damage');
+      for (const ally of getAllBoardUnits(next.ai)) {
+        if (!ally.isTrap && ally.card.type === 'creature') {
+          ally.currentArmor += 1;
+        }
+      }
+      addLog(
+        next,
+        'ai',
+        'effect',
+        `[Passiva de Chefe — Sentença Anti-Domínio] O Conclave de Oito Raios puniu a barreira ativa drenando 2❤️ de ${next.player.name}!`
+      );
+    }
+  } else if (
+    next.bossId === 'boss_stage_26_vaelkor_supreme_wheel' ||
+    next.bossId === 'exp_boss_9_vaelkor'
+  ) {
+    next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
+    addFeedback(next, 'ai-sovereign', '+1☸ Roda Prismática', 'heal');
+    const aiUnits = getAllBoardUnits(next.ai).filter(
+      (u) => !u.isTrap && u.card.type === 'creature'
+    );
+    if (aiUnits.length > 0) {
+      aiUnits[0].currentAtk += 1;
+      addFeedback(next, aiUnits[0].instanceId, '+1⚔️ Giro dos Oito Raios', 'buff');
+    }
+  }
+
+  checkWinCondition(next);
 }

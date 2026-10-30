@@ -8,7 +8,13 @@ import { CardView, CardInspectModal, DOMAIN_META } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 
 export interface SovereignBlessing {
-  id: 'forge_crown' | 'dragon_blood' | 'arcane_conclave' | 'immortal_phalanx';
+  id:
+    | 'forge_crown'
+    | 'dragon_blood'
+    | 'arcane_conclave'
+    | 'immortal_phalanx'
+    | 'celestial_wheel'
+    | 'sky_armada';
   name: string;
   kicker: string;
   icon: string;
@@ -38,7 +44,7 @@ export const SOVEREIGN_BLESSINGS: SovereignBlessing[] = [
     icon: '🐉',
     accent: '#ef4444',
     description:
-      'Unidades com Ímpeto ou Sopro Elemental recebem +1 ATQ ofensivo. Pacotes do Draft priorizam Dragões e Feras de Assalto.',
+      'Unidades com Ímpeto, Sopro Elemental ou Armadas Dracônicas entram com +1 ATQ. Pacotes do Draft priorizam Dragões e Feras de Assalto.',
     tacticalTip:
       'Varra colunas empilhadas com Sopro Elemental e invada colunas abertas para abates rápidos.',
     preferredDomains: ['red', 'green'],
@@ -67,6 +73,30 @@ export const SOVEREIGN_BLESSINGS: SovereignBlessing[] = [
       'Ideal para empilhamento 3x por slot: seu líder de coluna absorve o impacto enquanto a pilha contra-ataca.',
     preferredDomains: ['green', 'purple', 'gold'],
   },
+  {
+    id: 'celestial_wheel',
+    name: 'Juramento da Roda de Oito Raios',
+    kicker: 'BÊNÇÃO ANTI-DOMÍNIO & LENDAS',
+    icon: '☸️',
+    accent: '#eab308',
+    description:
+      'Suas criaturas Lendárias entram com +1 Armadura e +1 Regeneração, e quebrar uma Expansão de Domínio restaura +4 PV! Prioriza Generais da Roda no Draft.',
+    tacticalTip:
+      'Guarde seus Generais da Roda para estilhaçar barreiras dos chefes finais e converter a exaustão rival em contra-ataque letal.',
+    preferredDomains: ['neutral', 'gold', 'purple'],
+  },
+  {
+    id: 'sky_armada',
+    name: 'Esquadra das Seis Asas & Refração',
+    kicker: 'BÊNÇÃO DAS ARMADAS & PRISMA',
+    icon: '🦅',
+    accent: '#60a5fa',
+    description:
+      'Criaturas com Voo, Armadas ou da Tríade da Refração entram com +1 ATQ e causam 1 de dano de rasante ao Soberano inimigo!',
+    tacticalTip:
+      'Combine Presságios da Revoada, Pactuários e Armadas Dracônicas para pressionar os PV do chefe diretamente pelo céu.',
+    preferredDomains: ['red', 'blue', 'neutral'],
+  },
 ];
 
 interface DraftPackBucket {
@@ -90,12 +120,14 @@ interface ExpeditionRunState {
 
 const EXPEDITION_STORAGE_KEY = 'chromatic_pact_expedition_v1';
 
+const TOTAL_EXPEDITION_STAGES = 9;
+
 const EXPEDITION_STAGES: CampaignBoss[] = [
   {
     id: 'exp_boss_1',
     stage: 1,
     name: 'Rastejador da Fenda Umbral',
-    title: 'Guardião do Limiar (Etapa 1/7)',
+    title: 'Guardião do Limiar (Etapa 1/9)',
     domains: ['green'],
     avatarCardId: 'green_03_ursogrifo',
     startingHp: 38,
@@ -109,7 +141,7 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     id: 'exp_boss_2',
     stage: 2,
     name: 'Magus Kaelen do Vórtex',
-    title: 'Tecelão de Relâmpagos (Etapa 2/7)',
+    title: 'Tecelão de Relâmpagos (Etapa 2/9)',
     domains: ['blue', 'red'],
     avatarCardId: 'blue_06_dragao_azul',
     startingHp: 44,
@@ -123,12 +155,12 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     id: 'exp_boss_3',
     stage: 3,
     name: 'Forjador-Mor Vaelgor',
-    title: 'Senhor dos Autômatos Solares (Etapa 3/7)',
+    title: 'Senhor dos Autômatos Solares (Etapa 3/9)',
     domains: ['gold', 'red'],
     avatarCardId: 'gold_07_dragao_ouro',
     startingHp: 50,
     passiveName: 'Bigorna Eterna',
-    passiveDescription: 'Posiciona Relíquias na Retaguarda e Golems com Armadura pesada.',
+    passiveDescription: 'Posiciona Relíquias na Retaguarda e Golens com Armadura pesada.',
     rewardGold: 210,
     loreIntro: 'As forjas abandonadas do Vazio ainda batem em ritmo de guerra.',
     deckId: 'deck_gold_bastion',
@@ -137,7 +169,7 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     id: 'exp_boss_4',
     stage: 4,
     name: 'Sacerdotisa Nyx da Cripta',
-    title: ' Dama dos Ecos Abissais (Etapa 4/7)',
+    title: 'Dama dos Ecos Abissais (Etapa 4/9)',
     domains: ['purple', 'blue'],
     avatarCardId: 'purple_07_lich',
     startingHp: 55,
@@ -150,8 +182,8 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
   {
     id: 'exp_boss_5',
     stage: 5,
-    name: 'Ignis-Vोर, Devorador de Crateras',
-    title: 'Tirano Dracônico do Vazio (Etapa 5/7)',
+    name: 'Ignis-Vor, Devorador de Crateras',
+    title: 'Tirano Dracônico do Vazio (Etapa 5/9)',
     domains: ['red', 'gold'],
     avatarCardId: 'red_08_dragao_vermelho',
     startingHp: 62,
@@ -165,74 +197,138 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     id: 'exp_boss_6',
     stage: 6,
     name: 'Chronos-Vael, Juiz das Eras',
-    title: 'Regente do Relógio Quebrado (Etapa 6/7)',
+    title: 'Regente do Relógio Quebrado (Etapa 6/9)',
     domains: ['blue', 'gold', 'purple'],
     avatarCardId: 'blue_80_senhor_tempo',
     startingHp: 68,
     passiveName: 'Paradoxo Temporal',
-    passiveDescription: 'Congela a Vanguarda e comanda 10 Relíquias temporais na Retaguarda.',
+    passiveDescription: 'Congela a Vanguarda e comanda Relíquias temporais na Retaguarda.',
     rewardGold: 400,
-    loreIntro: 'Faltando um passo para o coração do Vazio, o próprio tempo tenta detê-lo.',
+    loreIntro: 'Nas galerias suspensas do Vazio, o próprio tempo tenta detê-lo.',
     deckId: 'deck_spec_chronomancer',
   },
   {
-    id: 'exp_boss_7',
+    id: 'exp_boss_7_armada',
     stage: 7,
+    name: 'Almirantes da Armada do Prisma',
+    title: 'Esquadrões Alados da Fenda (Etapa 7/9)',
+    domains: ['red', 'blue', 'gold'],
+    avatarCardId: 'neutral_172_armada_draconica_matriz',
+    startingHp: 74,
+    passiveName: 'Barragem das Armadas Aladas',
+    passiveDescription:
+      'Suas criaturas com Voo, Sopro Elemental ou Armadas Dracônicas entram com +1 ATQ e causam 1 de dano de rasante ao seu Soberano!',
+    rewardGold: 500,
+    loreIntro:
+      'Sete esquadras dracônicas rompem as nuvens do Vazio em formação cerrada, cobrindo todas as colunas com sopro prismático.',
+    deckId: 'deck_squad_siege_battery',
+  },
+  {
+    id: 'exp_boss_8_valkyra',
+    stage: 8,
     name: 'Valkyra do Eclipsar Pentacromático',
-    title: 'Soberana Suprema da Expedição (Etapa Final 7/7)',
+    title: 'Penúltima Guardiã do Vazio (Etapa 8/9)',
     domains: ['red', 'blue', 'purple', 'green', 'gold'],
     avatarCardId: 'neutral_10_valkyra_pentacromatica',
-    startingHp: 76,
-    passiveName: 'Convergência do Vazio',
-    passiveDescription: 'Domina os 5 Domínios simultaneamente com lendas de todas as cores.',
-    rewardGold: 600,
-    loreIntro: 'No trono despedaçado do Vazio, as cinco tormentas aguardam seu desafio final!',
+    startingHp: 80,
+    passiveName: 'Convergência Pentacromática',
+    passiveDescription:
+      'Inicia com as 5 Afinidades ativas, drena 1 PV por rodada e comanda lendas de todos os domínios!',
+    rewardGold: 620,
+    loreIntro:
+      'Antes do santuário final da Roda Matriz, as cinco cabeças de Valkyra testam a coesão do seu grimório.',
     deckId: 'deck_spec_pentachromatic',
+  },
+  {
+    id: 'exp_boss_9_vaelkor',
+    stage: 9,
+    name: 'Vaelkor, Árbitro da Roda do Vazio',
+    title: 'Chefe Supremo da Expedição (Etapa Final 9/9)',
+    domains: ['red', 'blue', 'purple', 'green', 'gold'],
+    avatarCardId: 'neutral_173_general_roda_matriz',
+    startingHp: 88,
+    passiveName: 'Julgamento dos Oito Raios',
+    passiveDescription:
+      'Inicia com as 5 Afinidades; suas criaturas entram com +1 Armadura e +1 Regeneração, estilhaça Expansões de Domínio e gira a Roda a cada rodada (+1 PV e +1 ATQ)!',
+    rewardGold: 850,
+    loreIntro:
+      'No eixo silencioso onde todos os planos se cruzam, a Roda Matriz de Oito Raios gira pela última vez. Vença o Árbitro Supremo!',
+    deckId: 'deck_penta_valkyra_pact',
   },
 ];
 
 const PACK_ARCHETYPES: {
+  id: string;
   title: string;
   subtitle: string;
   domain: Domain;
   filter: (c: CardDefinition) => boolean;
 }[] = [
   {
+    id: 'crater_scales',
     title: 'Escamas da Cratera',
     subtitle: 'Dragões, Sopro Elemental & Piroclasmos',
     domain: 'red',
     filter: (c) => c.domain === 'red' || (c.breathDamage ?? 0) > 0,
   },
   {
+    id: 'chrono_conclave',
     title: 'Conclave Cronomante',
     subtitle: 'Congelamento, Voo & Feitiços Rúnicos',
     domain: 'blue',
     filter: (c) => c.domain === 'blue' || c.type === 'spell',
   },
   {
+    id: 'black_sun',
     title: 'Legião do Sol Negro',
     subtitle: 'Renascer, Dreno de Vida & Toque Letal',
     domain: 'purple',
     filter: (c) => c.domain === 'purple' || c.keywords.includes('Renascer'),
   },
   {
+    id: 'primal_pack',
     title: 'Matilha Primordial',
     subtitle: 'Feras Colossais, Atropelar & Regeneração',
     domain: 'green',
     filter: (c) => c.domain === 'green' || c.keywords.includes('Atropelar'),
   },
   {
+    id: 'bastion_relics',
     title: 'Baluarte & Relíquias',
     subtitle: 'Guardiões, Escudo Divino & Relíquias Contínuas',
     domain: 'gold',
     filter: (c) => c.domain === 'gold' || c.type === 'relic',
   },
   {
+    id: 'ambush_web',
     title: 'Rede de Emboscadas',
     subtitle: 'Reações de Retaguarda, Alcance & Precisão',
     domain: 'neutral',
     filter: (c) =>
       c.type === 'reaction' || c.keywords.includes('Alcance') || c.domain === 'neutral',
+  },
+  {
+    id: 'sky_armadas',
+    title: 'Armadas do Firmamento',
+    subtitle: 'Armadas Dracônicas, Voo & Tríade da Refração',
+    domain: 'red',
+    filter: (c) =>
+      c.id.includes('_172_') ||
+      /_(167|168|169|170|171)_/.test(c.id) ||
+      c.keywords.includes('Voo') ||
+      (c.breathDamage ?? 0) > 0,
+  },
+  {
+    id: 'wheel_tribunal',
+    title: 'Tribunal da Roda & Lendas',
+    subtitle: 'Generais da Roda, Escudo Divino & Regeneração',
+    domain: 'gold',
+    filter: (c) =>
+      c.id.includes('_173_') ||
+      c.id.includes('_171_') ||
+      c.rarity === 'legendary' ||
+      c.keywords.includes('Escudo Divino') ||
+      c.keywords.includes('Guardião'),
   },
 ];
 
@@ -243,11 +339,17 @@ function generateThreeDraftBuckets(
   const blessing = SOVEREIGN_BLESSINGS.find((b) => b.id === blessingId);
   const shuffledArchetypes = [...PACK_ARCHETYPES].sort(() => Math.random() - 0.5);
 
-  // Ensure at least one bucket matches the blessing's preferred domain
+  // Ensure at least one bucket matches the blessing's signature archetype or preferred domain
   if (blessing) {
-    const prefIdx = shuffledArchetypes.findIndex((a) =>
-      blessing.preferredDomains.includes(a.domain)
-    );
+    const signatureArchId =
+      blessing.id === 'celestial_wheel'
+        ? 'wheel_tribunal'
+        : blessing.id === 'sky_armada'
+        ? 'sky_armadas'
+        : null;
+    const prefIdx = signatureArchId
+      ? shuffledArchetypes.findIndex((a) => a.id === signatureArchId)
+      : shuffledArchetypes.findIndex((a) => blessing.preferredDomains.includes(a.domain));
     if (prefIdx > 0) {
       const [item] = shuffledArchetypes.splice(prefIdx, 1);
       shuffledArchetypes.unshift(item);
@@ -285,7 +387,11 @@ function generateThreeDraftBuckets(
 }
 
 export interface ExpeditionViewProps {
-  onStartExpeditionBattle: (boss: CampaignBoss, playerDeckIds: string[]) => void;
+  onStartExpeditionBattle: (
+    boss: CampaignBoss,
+    playerDeckIds: string[],
+    blessingId?: string | null
+  ) => void;
   onSaveCustomDeck: (deck: CustomSavedDeck) => void;
   onRewardGold: (amount: number) => void;
   lastClearedExpeditionBossId?: string | null;
@@ -346,12 +452,16 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
     setRunState((prev) => {
       if (prev.clearedStages.includes(boss.stage)) return prev;
       const nextCleared = [...prev.clearedStages, boss.stage];
-      const isAllCleared = nextCleared.length >= 7;
-      // Generate 3 rare/legendary loot upgrade options
+      const isAllCleared = nextCleared.length >= TOTAL_EXPEDITION_STAGES;
+      // Generate 3 rare/legendary loot upgrade options (at least 1 from Refraction/Armada/Wheel cycles!)
       const highTier = ALL_CARDS.filter((c) => c.rarity === 'legendary' || c.rarity === 'rare');
+      const featuredNew = ALL_CARDS.filter((c) => /_(167|168|169|170|171|172|173)_/.test(c.id));
       const picks: CardDefinition[] = [];
-      for (let i = 0; i < 3; i += 1) {
-        picks.push(highTier[Math.floor(Math.random() * highTier.length)] ?? ALL_CARDS[i]);
+      if (featuredNew.length > 0) {
+        picks.push(featuredNew[Math.floor(Math.random() * featuredNew.length)]);
+      }
+      while (picks.length < 3) {
+        picks.push(highTier[Math.floor(Math.random() * highTier.length)] ?? ALL_CARDS[picks.length]);
       }
       setLootChoices(picks);
 
@@ -359,7 +469,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
         ...prev,
         phase: isAllCleared ? 'completed' : 'trail',
         clearedStages: nextCleared,
-        currentStage: Math.min(7, boss.stage + 1),
+        currentStage: Math.min(TOTAL_EXPEDITION_STAGES, boss.stage + 1),
         lootPending: !isAllCleared,
         totalGoldEarned: prev.totalGoldEarned + VICTORY_GOLD_REWARD,
       };
@@ -525,7 +635,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
             Deck: <strong>{runState.deckCardIds.length}/100</strong>
           </span>
           <span style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
-            Etapa: <strong>{runState.clearedStages.length}/7</strong>
+            Etapa: <strong>{runState.clearedStages.length}/{TOTAL_EXPEDITION_STAGES}</strong>
           </span>
         </div>
 
@@ -544,7 +654,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
       {toastMsg && <div className="aaa-toast-banner">{toastMsg}</div>}
 
       {/* =====================================================================
-          STEP 1: CHOOSE 1 OF 4 SOVEREIGN PASSIVE BLESSINGS
+          STEP 1: CHOOSE 1 OF 6 SOVEREIGN PASSIVE BLESSINGS
           ===================================================================== */}
       {runState.phase === 'blessing' && (
         <div className="exp-step-container">
@@ -554,14 +664,40 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 key={b.id}
                 className="exp-blessing-card"
                 onClick={() => handleSelectBlessing(b)}
+                style={
+                  {
+                    '--bless-accent': b.accent,
+                    borderColor: `${b.accent}45`,
+                  } as React.CSSProperties
+                }
               >
                 <div className="exp-blessing-top">
                   <span className="exp-blessing-icon">{b.icon}</span>
+                  <span
+                    style={{
+                      fontSize: '0.6rem',
+                      fontWeight: 800,
+                      letterSpacing: '0.08em',
+                      color: b.accent,
+                    }}
+                  >
+                    {b.kicker}
+                  </span>
                 </div>
                 <h3 className="font-cinzel exp-blessing-title">{b.name}</h3>
                 <p className="exp-blessing-desc">{b.description}</p>
+                <p
+                  style={{
+                    fontSize: '0.7rem',
+                    color: '#94a3b8',
+                    fontStyle: 'italic',
+                    margin: '0 0 0.65rem',
+                  }}
+                >
+                  Dica: {b.tacticalTip}
+                </p>
                 <button type="button" className="aaa-btn aaa-btn-primary" style={{ marginTop: 'auto' }}>
-                  Escolher
+                  Escolher Bênção
                 </button>
               </div>
             ))}
@@ -655,10 +791,44 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
       )}
 
       {/* =====================================================================
-          STEP 3: 7-BATTLE GAUNTLET TRAIL
+          STEP 3: 9-BATTLE GAUNTLET TRAIL (CULMINATING IN ARMADAS & WHEEL ARBITER)
           ===================================================================== */}
       {(runState.phase === 'trail' || runState.phase === 'completed') && (
         <div className="exp-trail-workspace">
+          {runState.phase === 'completed' && (
+            <div
+              className="exp-loot-sanctuary"
+              style={{
+                borderColor: 'rgba(250, 204, 21, 0.72)',
+                textAlign: 'center',
+                marginBottom: '0.85rem',
+              }}
+            >
+              <h3 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.2rem', margin: '0 0 0.35rem' }}>
+                ☸ Expedição Concluída! O Vazio Curvou-se ao Seu Grimório!
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: '#e2e8f0', margin: '0 0 0.75rem' }}>
+                Você superou as {TOTAL_EXPEDITION_STAGES} etapas da Expedição — incluindo as Armadas do Prisma, Valkyra e Vaelkor! Salve seu grimório ou inicie uma nova jornada com outra Bênção.
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-primary"
+                  onClick={handleSaveExpeditionDeckToGrimoire}
+                >
+                  ★ Salvar Grimório Campeão
+                </button>
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-secondary"
+                  onClick={handleRestartExpedition}
+                >
+                  Iniciar Nova Expedição
+                </button>
+              </div>
+            </div>
+          )}
+
           {runState.lootPending && lootChoices.length > 0 && (
             <div className="exp-loot-sanctuary">
               <h3 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.1rem' }}>
@@ -706,7 +876,9 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                     </div>
                     <div className="aaa-boss-row-info">
                       <div className="aaa-boss-row-top">
-                        <span className="aaa-boss-stage-num">ETAPA {stageBoss.stage}/7</span>
+                        <span className="aaa-boss-stage-num">
+                          ETAPA {stageBoss.stage}/{TOTAL_EXPEDITION_STAGES}
+                        </span>
                         {isCleared && <span className="aaa-boss-cleared-tag">✓</span>}
                       </div>
                       <div className="font-cinzel aaa-boss-row-name">{stageBoss.name}</div>
@@ -720,16 +892,54 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
               })}
             </aside>
 
-            <section className="aaa-boss-dossier">
-              <div className="aaa-dossier-content" style={{ padding: '1.5rem' }}>
+            <section
+              className="aaa-boss-dossier"
+              style={
+                {
+                  '--boss-accent': DOMAIN_META[currentBoss.domains[0] ?? 'neutral'].color,
+                } as React.CSSProperties
+              }
+            >
+              {CARDS_BY_ID[currentBoss.avatarCardId]?.imagePath && (
+                <div className="aaa-dossier-visual">
+                  <img
+                    src={CARDS_BY_ID[currentBoss.avatarCardId].imagePath}
+                    alt={currentBoss.name}
+                    className="aaa-dossier-portrait"
+                    onClick={() => setInspectCard(CARDS_BY_ID[currentBoss.avatarCardId])}
+                  />
+                  <div className="aaa-dossier-vignette" />
+                </div>
+              )}
+
+              <div className="aaa-dossier-content" style={{ padding: '1.25rem 1.5rem' }}>
                 <div className="aaa-dossier-meta-row">
                   <span className="aaa-dossier-stage-pill">
-                    ETAPA {currentBoss.stage}/7
+                    ETAPA {currentBoss.stage}/{TOTAL_EXPEDITION_STAGES}
                   </span>
+                  <div className="aaa-dossier-domains">
+                    {currentBoss.domains.map((dom) => (
+                      <span
+                        key={dom}
+                        className="aaa-domain-tag"
+                        style={{ borderColor: DOMAIN_META[dom].color }}
+                      >
+                        <i
+                          className="aaa-domain-dot"
+                          style={{ backgroundColor: DOMAIN_META[dom].color }}
+                        />
+                        {DOMAIN_META[dom].shortName}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 <h2 className="font-cinzel aaa-dossier-title">{currentBoss.name}</h2>
                 <div className="aaa-dossier-subtitle">{currentBoss.title}</div>
+
+                {currentBoss.loreIntro && (
+                  <blockquote className="aaa-dossier-quote">{currentBoss.loreIntro}</blockquote>
+                )}
 
                 <div className="aaa-dossier-metrics">
                   <div className="aaa-metric-box">
@@ -740,11 +950,19 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                     <span className="aaa-metric-lbl">RECOMPENSA</span>
                     <span className="aaa-metric-val gold-text">+{VICTORY_GOLD_REWARD} OURO</span>
                   </div>
+                  {activeBlessing && (
+                    <div className="aaa-metric-box">
+                      <span className="aaa-metric-lbl">SUA BÊNÇÃO ATIVA</span>
+                      <span className="aaa-metric-val" style={{ color: activeBlessing.accent }}>
+                        {activeBlessing.icon} {activeBlessing.name}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="aaa-dossier-passive-panel">
                   <div className="aaa-passive-kicker">
-                    PASSIVA • {currentBoss.passiveName.toUpperCase()}
+                    PASSIVA DO CHEFE • {currentBoss.passiveName.toUpperCase()}
                   </div>
                   <p className="aaa-passive-desc">{currentBoss.passiveDescription}</p>
                 </div>
@@ -753,9 +971,15 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-primary aaa-btn-lg"
-                    onClick={() => onStartExpeditionBattle(currentBoss, runState.deckCardIds)}
+                    onClick={() =>
+                      onStartExpeditionBattle(
+                        currentBoss,
+                        runState.deckCardIds,
+                        runState.blessingId
+                      )
+                    }
                   >
-                    ⚔️ Iniciar Etapa {currentBoss.stage}/7
+                    ⚔️ Iniciar Etapa {currentBoss.stage}/{TOTAL_EXPEDITION_STAGES}
                   </button>
 
                   <button
@@ -765,6 +989,16 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   >
                     Salvar Deck
                   </button>
+
+                  {CARDS_BY_ID[currentBoss.avatarCardId] && (
+                    <button
+                      type="button"
+                      className="aaa-btn aaa-btn-ghost"
+                      onClick={() => setInspectCard(CARDS_BY_ID[currentBoss.avatarCardId])}
+                    >
+                      Carta-Chefe
+                    </button>
+                  )}
                 </div>
               </div>
             </section>

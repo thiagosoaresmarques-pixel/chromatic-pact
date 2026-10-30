@@ -128,7 +128,10 @@ function getActInfoForStage(stage: number): { actLabel: string; actTitle: string
   if (stage <= 14) {
     return { actLabel: 'ATO IV', actTitle: 'A Convergência do Tempo (Estágios 13–14)' };
   }
-  return { actLabel: 'ATO V', actTitle: 'Os Tronos Tripartidos (Estágios 15–20)' };
+  if (stage <= 20) {
+    return { actLabel: 'ATO V', actTitle: 'Os Tronos Tripartidos (Estágios 15–20)' };
+  }
+  return { actLabel: 'ATO VI', actTitle: 'As Armadas e o Julgamento das Rodas (Estágios 21–26)' };
 }
 
 export const CampaignView: React.FC<CampaignViewProps> = ({
@@ -141,7 +144,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 }) => {
   const fullBossRoster: CampaignBoss[] = useMemo(() => {
     if (CAMPAIGN_BOSSES.length >= 20) {
-      return CAMPAIGN_BOSSES;
+      return [...CAMPAIGN_BOSSES].sort((a, b) => a.stage - b.stage);
     }
     const existingStages = new Set(CAMPAIGN_BOSSES.map((b) => b.stage));
     const extras = FALLBACK_ACT_V_BOSSES.filter((fb) => !existingStages.has(fb.stage));
@@ -154,7 +157,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const [selectedBossId, setSelectedBossId] = useState<string>(
     fullBossRoster[0]?.id ?? 'boss_1'
   );
-  const [actFilter, setActFilter] = useState<'all' | 1 | 2 | 3 | 4 | 5>('all');
+  const [actFilter, setActFilter] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6>('all');
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
 
@@ -185,7 +188,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       if (actFilter === 2) return b.stage >= 5 && b.stage <= 8;
       if (actFilter === 3) return b.stage >= 9 && b.stage <= 12;
       if (actFilter === 4) return b.stage >= 13 && b.stage <= 14;
-      return b.stage >= 15 && b.stage <= 20;
+      if (actFilter === 5) return b.stage >= 15 && b.stage <= 20;
+      return b.stage >= 21 && b.stage <= 26;
     });
   }, [fullBossRoster, actFilter]);
 
@@ -227,13 +231,27 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               { id: 3, label: 'Ato III (9–12)' },
               { id: 4, label: 'Ato IV (13–14)' },
               { id: 5, label: 'Ato V (15–20)' },
+              { id: 6, label: '☸ Ato VI (21–26)' },
             ] as const
           ).map((tab) => (
             <button
               key={String(tab.id)}
               type="button"
               className={`nav-tab-btn ${actFilter === tab.id ? 'active' : ''}`}
-              onClick={() => setActFilter(tab.id)}
+              onClick={() => {
+                setActFilter(tab.id);
+                if (tab.id !== 'all') {
+                  const firstInAct = fullBossRoster.find((b) => {
+                    if (tab.id === 1) return b.stage >= 1 && b.stage <= 4;
+                    if (tab.id === 2) return b.stage >= 5 && b.stage <= 8;
+                    if (tab.id === 3) return b.stage >= 9 && b.stage <= 12;
+                    if (tab.id === 4) return b.stage >= 13 && b.stage <= 14;
+                    if (tab.id === 5) return b.stage >= 15 && b.stage <= 20;
+                    return b.stage >= 21 && b.stage <= 26;
+                  });
+                  if (firstInAct) setSelectedBossId(firstInAct.id);
+                }
+              }}
               style={{ padding: '0.32rem 0.75rem', fontSize: '0.72rem' }}
             >
               {tab.label}
@@ -352,6 +370,10 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
               <h2 className="font-cinzel aaa-dossier-title">{activeBoss.name}</h2>
               <div className="aaa-dossier-subtitle">{activeBoss.title}</div>
+
+              {activeBoss.loreIntro && (
+                <blockquote className="aaa-dossier-quote">{activeBoss.loreIntro}</blockquote>
+              )}
 
               <div className="aaa-dossier-metrics">
                 <div className="aaa-metric-box">

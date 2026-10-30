@@ -84,6 +84,7 @@ interface SavedAppNavState {
   activeProblem: TacticalProblem | null;
   campaignPlayerDeckIds: string[] | null;
   isExpeditionBattle: boolean;
+  expeditionBlessingId?: string | null;
   quickDuelDecks: {
     playerDeckId?: string;
     aiDeckId?: string;
@@ -104,6 +105,7 @@ function loadSavedAppNavState(): SavedAppNavState | null {
         ? parsed.campaignPlayerDeckIds
         : null,
       isExpeditionBattle: Boolean(parsed.isExpeditionBattle),
+      expeditionBlessingId: parsed.expeditionBlessingId ?? null,
       quickDuelDecks: parsed.quickDuelDecks ?? {},
     };
   } catch {
@@ -188,6 +190,9 @@ export const App: React.FC = () => {
   const [isExpeditionBattle, setIsExpeditionBattle] = useState<boolean>(
     () => initialNavState?.isExpeditionBattle ?? false
   );
+  const [expeditionBlessingId, setExpeditionBlessingId] = useState<string | null>(
+    () => initialNavState?.expeditionBlessingId ?? null
+  );
   const [lastClearedExpeditionBossId, setLastClearedExpeditionBossId] = useState<string | null>(
     null
   );
@@ -220,6 +225,7 @@ export const App: React.FC = () => {
         activeProblem,
         campaignPlayerDeckIds,
         isExpeditionBattle,
+        expeditionBlessingId,
         quickDuelDecks,
       };
       localStorage.setItem(APP_NAV_STATE_STORAGE_KEY, JSON.stringify(stateToSave));
@@ -232,6 +238,7 @@ export const App: React.FC = () => {
     activeProblem,
     campaignPlayerDeckIds,
     isExpeditionBattle,
+    expeditionBlessingId,
     quickDuelDecks,
   ]);
 
@@ -536,12 +543,17 @@ export const App: React.FC = () => {
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(false);
+    setExpeditionBlessingId(null);
     setActiveCampaignBoss(boss);
     setCampaignPlayerDeckIds(playerDeckIds);
     setActiveTab('arena');
   };
 
-  const handleStartExpeditionBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
+  const handleStartExpeditionBattle = (
+    boss: CampaignBoss,
+    playerDeckIds: string[],
+    blessingId?: string | null
+  ) => {
     trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: true });
     try {
       localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
@@ -551,6 +563,7 @@ export const App: React.FC = () => {
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(true);
+    setExpeditionBlessingId(blessingId ?? null);
     setActiveCampaignBoss(boss);
     setCampaignPlayerDeckIds(playerDeckIds);
     setActiveTab('arena');
@@ -1180,6 +1193,7 @@ export const App: React.FC = () => {
             isGuest={isGuest}
             campaignBoss={activeCampaignBoss}
             campaignPlayerDeckIds={campaignPlayerDeckIds}
+            expeditionBlessingId={isExpeditionBattle ? expeditionBlessingId : null}
             tacticalProblem={activeProblem}
             onSelectProblem={(nextProb) => setActiveProblem(nextProb)}
             onExitProblems={() => {

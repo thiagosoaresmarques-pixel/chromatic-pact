@@ -1,7 +1,7 @@
 import { CardDefinition } from '../types/game';
 
 /**
- * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.002 CARTAS)
+ * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.008 CARTAS)
  * 100% Original Dark Fantasy IP — Sem Nomes, Anatomias ou Frases Protegidos por Direito Autoral.
  */
 export const ALL_CARDS: CardDefinition[] = [
@@ -33150,6 +33150,205 @@ export const ALL_CARDS: CardDefinition[] = [
     "flavorText": "Do feixe dourado do Prisma ergueu-se a lei que nenhum abismo ousa profanar.",
     "imagePath": "/assets/cards/gold_167_arauto_prisma_sol.png",
     "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, levitating celestial gold cosmic avatar with radiant solar eye, golden astrolabe halo, miniature sun chest core, and runic light orbital rings isolated on pure white background."
+  },
+  {
+    "id": "neutral_168_tecelao_feixe_matriz",
+    "name": "Tecelão do Feixe Primordial",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Entidade • Prisma",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance",
+      "Escudo Divino"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao entrar, compra 1 carta."
+      }
+    ],
+    "description": "Ao entrar, compra 1 carta.",
+    "flavorText": "Com um toque nos fios brancos do éter, ele decide qual cor despertará primeiro.",
+    "imagePath": "/assets/cards/neutral_168_tecelao_feixe_matriz.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, shadowy obsidian astral humanoid dusted with silver stardust, glowing silver crown sparks, narrow white slit eyes, foreground dark hand bending a diagonal beam of diamond-white prismatic light on pure white background."
+  },
+  {
+    "id": "purple_168_tecelao_feixe_abismo",
+    "name": "Tecelão do Feixe Umbral",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Entidade • Prisma",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance",
+      "Toque Letal"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Ao entrar, causa 2 de dano direto ao Soberano inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao entrar, restaura 2 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Ao entrar, causa 2 de dano direto ao Soberano inimigo e restaura 2 de Vida do seu Soberano.",
+    "flavorText": "Ele dedilha a fenda violeta como quem arranca o último suspiro de um astro.",
+    "imagePath": "/assets/cards/purple_168_tecelao_feixe_abismo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, shadowy abyssal humanoid dusted with violet nebula sparks, purple void sparks in curly hair, narrow violet slit eyes, foreground dark hand bending a diagonal beam of eldritch violet rift light on pure white background."
+  },
+  {
+    "id": "red_168_tecelao_feixe_chama",
+    "name": "Tecelão do Feixe Ígneo",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Entidade • Prisma",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Ímpeto",
+      "Pele Incandescente"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 3,
+        "description": "Ao entrar, causa 3 de dano a 1 criatura inimiga à sua escolha."
+      }
+    ],
+    "description": "Ao entrar, causa 3 de dano a 1 criatura inimiga à sua escolha.",
+    "flavorText": "Basta curvar um único raio de brasa para transformar escudos em cinza.",
+    "imagePath": "/assets/cards/red_168_tecelao_feixe_chama.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, charred volcanic shadow humanoid dusted with glowing embers, blazing cinders in curly hair, narrow fiery orange slit eyes, foreground dark hand bending a diagonal torrent beam of magma fire on pure white background."
+  },
+  {
+    "id": "blue_168_tecelao_feixe_gelo",
+    "name": "Tecelão do Feixe Astral",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Entidade • Prisma",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": [
+      "Alcance",
+      "Voo"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao entrar, congela 1 criatura inimiga à sua escolha por 1 rodada."
+      }
+    ],
+    "description": "Ao entrar, congela 1 criatura inimiga à sua escolha por 1 rodada.",
+    "flavorText": "Onde seus dedos tocam a corrente estelar, o movimento cristaliza em silêncio.",
+    "imagePath": "/assets/cards/blue_168_tecelao_feixe_gelo.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, midnight shadow humanoid dusted with frost stardust, icy cyan aurora sparks in curly hair, narrow cyan slit eyes, foreground dark hand bending a diagonal beam of frozen sapphire starlight on pure white background."
+  },
+  {
+    "id": "green_168_tecelao_feixe_selva",
+    "name": "Tecelão do Feixe Silvestre",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Entidade • Prisma",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 0,
+    "hp": 5,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Atropelar"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Ao entrar, concede +2/+2 de Ataque e Vida a 1 criatura aliada à sua escolha."
+      }
+    ],
+    "description": "Ao entrar, concede +2/+2 de Ataque e Vida a 1 criatura aliada à sua escolha. No início do seu turno, regenera 1 de Vida.",
+    "flavorText": "Ele desvia a seiva luminosa do mundo antigo direto para o coração da alcateia.",
+    "imagePath": "/assets/cards/green_168_tecelao_feixe_selva.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, dark forest-shadow humanoid dusted with glowing emerald spores, bioluminescent green sparks in mossy hair, narrow emerald slit eyes, foreground dark hand bending a diagonal beam of emerald life energy on pure white background."
+  },
+  {
+    "id": "gold_168_tecelao_feixe_sol",
+    "name": "Tecelão do Feixe Solar",
+    "originalInspiration": "Códice Autoral de Vaeloria (Chromatic Pact)",
+    "ipSafeNotes": "Criação 100% autoral do universo de Vaeloria (Chromatic Pact), com identidade, lore e nomenclatura próprias.",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Entidade • Prisma",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": [
+      "Guardião",
+      "Dreno de Vida"
+    ],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_target_ally",
+        "value": 3,
+        "description": "Ao entrar, restaura 3 de Vida de 1 criatura aliada à sua escolha."
+      }
+    ],
+    "description": "Ao entrar, restaura 3 de Vida de 1 criatura aliada à sua escolha.",
+    "flavorText": "Mesmo envolto na noite eterna, suas mãos guiam a alvorada até os feridos.",
+    "imagePath": "/assets/cards/gold_168_tecelao_feixe_sol.png",
+    "aiArtPrompt": "2D Dark Fantasy cel-shaded graphic novel ink illustration, pitch-black shadow humanoid dusted with golden stardust, radiant gold sun-sparks in curly hair, narrow golden slit eyes, foreground dark hand bending a diagonal beam of pure golden sunlight on pure white background."
   }
 ];
 

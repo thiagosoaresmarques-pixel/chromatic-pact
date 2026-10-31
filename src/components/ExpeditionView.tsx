@@ -7,7 +7,7 @@ import { VICTORY_GOLD_REWARD } from '../utils/multiplayerEngine';
 import { CardView, CardInspectModal, DOMAIN_META } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { VaeloriaWorldMap } from './VaeloriaWorldMap';
-import { resolveStageMapNode } from '../data/vaeloriaMapData';
+import { resolvePrimaryBossDomain, resolveStageMapNode } from '../data/vaeloriaMapData';
 import { clearExpeditionVisitedLandmarks } from '../data/vaeloriaOverworldEvents';
 import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
 
@@ -33,7 +33,7 @@ export const SOVEREIGN_BLESSINGS: SovereignBlessing[] = [
     id: 'forge_crown',
     name: 'Coroa da Forja',
     kicker: 'BÊNÇÃO DAS RELÍQUIAS & FERRO',
-    icon: '⚒️',
+    icon: '⬢',
     accent: '#f59e0b',
     description:
       'Relíquias custam -1 de Essência e curam +1 PV do Soberano ao entrar. Pacotes do Draft têm maior chance de Relíquias e Guardiões.',
@@ -45,7 +45,7 @@ export const SOVEREIGN_BLESSINGS: SovereignBlessing[] = [
     id: 'dragon_blood',
     name: 'Sangue Dracônico',
     kicker: 'BÊNÇÃO DO SOPRO & FÚRIA',
-    icon: '🐉',
+    icon: '◆',
     accent: '#ef4444',
     description:
       'Unidades com Ímpeto, Sopro Elemental ou Armadas Dracônicas entram com +1 ATQ. Pacotes do Draft priorizam Dragões e Feras de Assalto.',
@@ -57,7 +57,7 @@ export const SOVEREIGN_BLESSINGS: SovereignBlessing[] = [
     id: 'arcane_conclave',
     name: 'Conclave Arcano',
     kicker: 'BÊNÇÃO DA TEMPESTADE & RUNAS',
-    icon: '⚡',
+    icon: '◈',
     accent: '#38bdf8',
     description:
       'Comece cada duelo com +1 de Essência Máxima adicional e feitiços de alto impacto nos pacotes do Draft.',
@@ -69,7 +69,7 @@ export const SOVEREIGN_BLESSINGS: SovereignBlessing[] = [
     id: 'immortal_phalanx',
     name: 'Falange Imortal',
     kicker: 'BÊNÇÃO DA CRIPTA & BALUARTE',
-    icon: '🛡️',
+    icon: '⛨',
     accent: '#10b981',
     description:
       'A primeira unidade de cada coluna ganha +1 Armadura e unidades com Renascer/Regeneração aparecem com frequência no Draft.',
@@ -81,8 +81,8 @@ export const SOVEREIGN_BLESSINGS: SovereignBlessing[] = [
     id: 'celestial_wheel',
     name: 'Juramento da Roda de Oito Raios',
     kicker: 'BÊNÇÃO ANTI-DOMÍNIO & LENDAS',
-    icon: '☸️',
-    accent: '#eab308',
+    icon: '☸',
+    accent: '#d4af37',
     description:
       'Suas criaturas Lendárias entram com +1 Armadura e +1 Regeneração, e quebrar uma Expansão de Domínio restaura +4 PV! Prioriza Generais da Roda no Draft.',
     tacticalTip:
@@ -93,7 +93,7 @@ export const SOVEREIGN_BLESSINGS: SovereignBlessing[] = [
     id: 'sky_armada',
     name: 'Esquadra das Seis Asas & Refração',
     kicker: 'BÊNÇÃO DAS ARMADAS & PRISMA',
-    icon: '🦅',
+    icon: '▲',
     accent: '#60a5fa',
     description:
       'Criaturas com Voo, Armadas ou da Tríade da Refração entram com +1 ATQ e causam 1 de dano de rasante ao Soberano inimigo!',
@@ -694,14 +694,14 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 className={`vwm-mode-switch-btn ${trailViewMode === 'map' ? 'is-active' : ''}`}
                 onClick={() => setTrailViewMode('map')}
               >
-                🗺️ Mapa de Vaeloria
+                Mapa de Vaeloria
               </button>
               <button
                 type="button"
                 className={`vwm-mode-switch-btn ${trailViewMode === 'list' ? 'is-active' : ''}`}
                 onClick={() => setTrailViewMode('list')}
               >
-                📜 Lista
+                Lista
               </button>
             </div>
           )}
@@ -735,18 +735,20 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 style={
                   {
                     '--bless-accent': b.accent,
-                    borderColor: `${b.accent}45`,
+                    borderTop: `2px solid ${b.accent}`,
                   } as React.CSSProperties
                 }
               >
                 <div className="exp-blessing-top">
-                  <span className="exp-blessing-icon">{b.icon}</span>
+                  <span className="exp-blessing-icon" style={{ color: '#e5c97b' }}>
+                    {b.icon}
+                  </span>
                   <span
                     style={{
                       fontSize: '0.6rem',
                       fontWeight: 800,
                       letterSpacing: '0.08em',
-                      color: b.accent,
+                      color: '#cbd5e1',
                     }}
                   >
                     {b.kicker}
@@ -790,7 +792,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 className="btn-fantasy"
                 onClick={handleAutoFinishDraft}
               >
-                ⚡ Completar
+                Completar Draft
               </button>
             </div>
 
@@ -957,7 +959,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                     return { ...prev, deckCardIds: nextDeck };
                   });
                   setToastMsg(
-                    `🃏 Marco Regional: [${recruited.name}] juntou-se ao seu Grimório da Expedição!`
+                    `Marco Regional: [${recruited.name}] juntou-se ao seu Grimório da Expedição.`
                   );
                   setTimeout(() => setToastMsg(null), 3200);
                 }}
@@ -968,7 +970,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   const isCleared = runState.clearedStages.includes(stageBoss.stage);
                   const isCurrent = stageBoss.stage === runState.currentStage;
                   const avatar = CARDS_BY_ID[stageBoss.avatarCardId];
-                  const dom = stageBoss.domains[0] ?? 'neutral';
+                  const dom = resolvePrimaryBossDomain(stageBoss.domains);
                   const nodeInfo = resolveStageMapNode('expedition', stageBoss.id, stageBoss.stage);
 
                   return (
@@ -996,7 +998,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                           {isCleared && <span className="aaa-boss-cleared-tag">✓</span>}
                         </div>
                         <div className="font-cinzel aaa-boss-row-name">{stageBoss.name}</div>
-                        <div className="aaa-boss-row-geo">📍 {nodeInfo.landmarkName}</div>
+                        <div className="aaa-boss-row-geo">{nodeInfo.landmarkName}</div>
                       </div>
                       <div className="aaa-boss-row-stats">
                         <span>{stageBoss.startingHp} PV</span>
@@ -1012,7 +1014,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
               className="aaa-boss-dossier"
               style={
                 {
-                  '--boss-accent': DOMAIN_META[currentBoss.domains[0] ?? 'neutral'].color,
+                  '--boss-accent': DOMAIN_META[resolvePrimaryBossDomain(currentBoss.domains)].color,
                 } as React.CSSProperties
               }
             >
@@ -1034,26 +1036,32 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                     ETAPA {currentBoss.stage}/{TOTAL_EXPEDITION_STAGES}
                   </span>
                   <div className="aaa-dossier-domains">
-                    {currentBoss.domains.map((dom) => (
-                      <span
-                        key={dom}
-                        className="aaa-domain-tag"
-                        style={{ borderColor: DOMAIN_META[dom].color }}
-                      >
+                    {currentBoss.domains.length >= 5 ? (
+                      <span className="aaa-domain-tag">
                         <i
                           className="aaa-domain-dot"
-                          style={{ backgroundColor: DOMAIN_META[dom].color }}
+                          style={{ backgroundColor: '#d4af37' }}
                         />
-                        {DOMAIN_META[dom].shortName}
+                        Pentacromático • Matriz Axial
                       </span>
-                    ))}
+                    ) : (
+                      currentBoss.domains.map((dom) => (
+                        <span key={dom} className="aaa-domain-tag">
+                          <i
+                            className="aaa-domain-dot"
+                            style={{ backgroundColor: DOMAIN_META[dom].color }}
+                          />
+                          {DOMAIN_META[dom].shortName}
+                        </span>
+                      ))
+                    )}
                   </div>
                 </div>
 
                 <h2 className="font-cinzel aaa-dossier-title">{currentBoss.name}</h2>
                 <div className="aaa-dossier-subtitle">{currentBoss.title}</div>
                 <div className="vwm-dossier-geo-badge">
-                  <span>📍 {currentStageMapNode.regionName}</span>
+                  <span>{currentStageMapNode.regionName}</span>
                   <span>•</span>
                   <strong>{currentStageMapNode.landmarkName}</strong>
                 </div>
@@ -1074,8 +1082,8 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   {activeBlessing && (
                     <div className="aaa-metric-box">
                       <span className="aaa-metric-lbl">SUA BÊNÇÃO ATIVA</span>
-                      <span className="aaa-metric-val" style={{ color: activeBlessing.accent }}>
-                        {activeBlessing.icon} {activeBlessing.name}
+                      <span className="aaa-metric-val" style={{ color: '#e5c97b' }}>
+                        {activeBlessing.name}
                       </span>
                     </div>
                   )}
@@ -1100,7 +1108,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                       )
                     }
                   >
-                    ⚔️ Iniciar Etapa {currentBoss.stage}/{TOTAL_EXPEDITION_STAGES}
+                    Iniciar Etapa {currentBoss.stage}/{TOTAL_EXPEDITION_STAGES}
                   </button>
 
                   <button

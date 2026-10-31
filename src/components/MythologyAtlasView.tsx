@@ -246,11 +246,10 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
   const [isCompassOpen, setIsCompassOpen] = useState<boolean>(false);
   const [compassSubMode, setCompassSubMode] = useState<'compass' | 'gallery21'>('gallery21');
   const [selectedAtlasScope, setSelectedAtlasScope] = useState<VaeloriaMapScope>('world');
-  const [atlasZoom, setAtlasZoom] = useState<number>(1.45);
-  const [atlasLayers, setAtlasLayers] = useState<AtlasLayerVisibility>(() => ({
-    ...DEFAULT_ATLAS_LAYER_VISIBILITY,
-    historicalEras: true,
-  }));
+  const [atlasZoom, setAtlasZoom] = useState<number>(1);
+  const [atlasLayers, setAtlasLayers] = useState<AtlasLayerVisibility>(
+    DEFAULT_ATLAS_LAYER_VISIBILITY
+  );
   const [eraFilter, setEraFilter] = useState<VaeloriaHistoricalEraId>('all_eras');
   const [inspectedNote, setInspectedNote] = useState<CartographicInspectionNote | null>(null);
   const [gazetteerHighlight, setGazetteerHighlight] =
@@ -900,6 +899,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
                   mapScope={selectedAtlasScope}
                   onSelectScope={(nextScope) => {
                     setSelectedAtlasScope(nextScope);
+                    setAtlasZoom(1);
                     setInspectedNote(null);
                   }}
                   worldBadge={`${CONQUEST_PROVINCES.length} Prov.`}
@@ -922,8 +922,12 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
                               : undefined
                           }
                           onClick={() => {
-                            setAtlasLayers((prev) => ({ ...prev, historicalEras: true }));
-                            setEraFilter(era.id);
+                            if (isEraActive) {
+                              setAtlasLayers((prev) => ({ ...prev, historicalEras: false }));
+                            } else {
+                              setAtlasLayers((prev) => ({ ...prev, historicalEras: true }));
+                              setEraFilter(era.id);
+                            }
                           }}
                           title={`${era.title} (${era.yearLabel}) — ${era.summary}`}
                         >
@@ -934,17 +938,17 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
                   </div>
 
                   <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <div className="aaa-pill-tabs" title="Ajustar densidade de topônimos (LOD 1 a LOD 4)">
+                    <div className="aaa-pill-tabs" title="Ajustar zoom e densidade de topônimos (100% / LOD 1 a LOD 4)">
                       {[
-                        { z: 1.15, label: 'LOD 1' },
-                        { z: 1.85, label: 'LOD 2' },
-                        { z: 2.65, label: 'LOD 3' },
-                        { z: 3.5, label: 'LOD 4' },
+                        { z: 1.0, label: '100% (1x)' },
+                        { z: 1.65, label: 'LOD 2' },
+                        { z: 2.35, label: 'LOD 3' },
+                        { z: 3.1, label: 'LOD 4' },
                       ].map((opt) => (
                         <button
                           key={opt.label}
                           type="button"
-                          className={`aaa-pill-tab ${Math.abs(atlasZoom - opt.z) < 0.32 ? 'is-active' : ''}`}
+                          className={`aaa-pill-tab ${Math.abs(atlasZoom - opt.z) < 0.28 ? 'is-active' : ''}`}
                           onClick={() => setAtlasZoom(opt.z)}
                         >
                           {opt.label}
@@ -1012,6 +1016,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
                           eraFilter={eraFilter}
                           showUnifiedSettlements={atlasZoom >= 1.8}
                           highlightTarget={gazetteerHighlight}
+                          inspectedNoteId={inspectedNote?.id ?? null}
                           onInspectNote={setInspectedNote}
                         />
 

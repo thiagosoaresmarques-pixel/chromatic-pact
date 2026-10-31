@@ -81,7 +81,7 @@ const DOMAIN_ACCENT_HEX: Record<Domain, string> = {
   purple: '#c084fc',
   green: '#34d399',
   gold: '#fbbf24',
-  neutral: '#e2e8f0',
+  neutral: '#cbd5e1',
 };
 
 const TRAFFIC_EMOJI: Record<
@@ -175,7 +175,7 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
               }}
               title="1ª Escala: Carta Geral do Continente de Vaeloria"
             >
-              <span>🌍 Continente</span>
+              <span>Continente</span>
               {worldBadge !== undefined && (
                 <span className="multiscale-chip-badge">{worldBadge}</span>
               )}
@@ -193,7 +193,7 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
               onClick={() => setManualTierTab('cardinal_realm')}
               title="2ª Escala: Os 6 Reinos Cardeais"
             >
-              👑 6 Reinos
+              6 Reinos
             </button>
 
             <button
@@ -208,7 +208,7 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
               onClick={() => setManualTierTab('deep_frontier')}
               title="3ª Escala: As 6 Fronteiras Profundas (Ato VII)"
             >
-              🌌 6 Fronteiras
+              6 Fronteiras
             </button>
 
             <button
@@ -223,7 +223,7 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
               onClick={() => setManualTierTab('transit_corridor')}
               title="3ª Escala: Corredores Náutico & Celeste"
             >
-              ⚓ 2 Corredores
+              2 Corredores
             </button>
 
             <button
@@ -238,7 +238,7 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
               onClick={() => setManualTierTab('imperial_capital')}
               title="4ª Escala: As 6 Cidadelas-Capitais Imperiais"
             >
-              🏰 6 Capitais
+              6 Capitais
             </button>
 
             {/* Breadcrumb + Quick Capital Dive / Exit */}
@@ -254,7 +254,6 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
                     onClick={() => onSelectScope(crumb.scope)}
                     title={crumb.tierLabel}
                   >
-                    <span>{crumb.icon}</span>
                     <span>{crumb.label}</span>
                   </button>
                 </React.Fragment>
@@ -264,11 +263,10 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
                 <button
                   type="button"
                   className="multiscale-capital-dive-btn"
-                  style={{ borderColor: linkedCapitalDef.accentColor }}
                   onClick={() => onSelectScope(linkedCapitalDef.id)}
                   title={`Mergulhar na 4ª Escala Urbana: ${linkedCapitalDef.name}`}
                 >
-                  🏰 Entrar em {linkedCapitalDef.shortName}
+                  Entrar em {linkedCapitalDef.shortName}
                 </button>
               )}
 
@@ -297,21 +295,17 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
                   key={rid}
                   type="button"
                   className={`multiscale-realm-chip ${isSelected ? 'active' : ''}`}
-                  style={
-                    isSelected
-                      ? {
-                          borderColor: r.accentColor,
-                          boxShadow: `0 0 12px ${r.accentColor}55`,
-                        }
-                      : undefined
-                  }
                   onClick={() => {
                     setManualTierTab(r.tier);
                     onSelectScope(rid);
                   }}
                   title={`${r.name} — ${r.subtitle}`}
                 >
-                  <span className="multiscale-realm-icon">{r.icon}</span>
+                  <span
+                    className="multiscale-realm-dot"
+                    style={{ background: r.accentColor }}
+                    aria-hidden="true"
+                  />
                   <span className="multiscale-realm-name">{r.shortName}</span>
                   {badge !== undefined && (
                     <span className="multiscale-chip-badge">{badge}</span>
@@ -390,7 +384,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
               }
               title={`Buscar entre ${totalIndexed} locais cartografados de Vaeloria`}
             >
-              🔎 Buscar ({totalIndexed})
+              ⊕ Buscar ({totalIndexed})
             </button>
 
             <button
@@ -403,7 +397,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
               }
               title="Ligar ou desligar camadas de Rios, Relevo, Linhas de Ley, Tráfego e Assentamentos"
             >
-              🗺️ Camadas
+              Camadas
             </button>
 
             <button
@@ -419,14 +413,14 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
               }}
               title="Filtrar Campos de Batalha Históricos dos VII Cantos"
             >
-              ⏳ {layers.historicalEras ? activeEraDef.shortLabel : 'Cantos'}
+              {layers.historicalEras ? activeEraDef.shortLabel : 'Cantos'}
             </button>
           </div>
 
           {openPopover === 'layers' && (
             <div className="atlas-hud-popover atlas-layers-popover">
               <div className="atlas-popover-header">
-                <span>🗺️ Camadas Cartográficas</span>
+                <span>Camadas Cartográficas</span>
                 <button
                   type="button"
                   className="atlas-popover-close"
@@ -441,7 +435,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
                   checked={layers.hydrographyAndRoutes}
                   onChange={() => toggleLayer('hydrographyAndRoutes')}
                 />
-                <span>🌊 Rios, Magma, Mares & Rotas Aéreas</span>
+                <span>Rios, Magma, Mares & Rotas Aéreas</span>
               </label>
               <label className="atlas-layer-toggle-row">
                 <input
@@ -449,7 +443,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
                   checked={layers.reliefAndToponyms}
                   onChange={() => toggleLayer('reliefAndToponyms')}
                 />
-                <span>🏔️ Relevo & Topônimos (LOD 1–4)</span>
+                <span>Relevo & Topônimos (LOD 1–4)</span>
               </label>
               <label className="atlas-layer-toggle-row">
                 <input
@@ -457,7 +451,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
                   checked={layers.leyLines}
                   onChange={() => toggleLayer('leyLines')}
                 />
-                <span>🔮 Malha Pentacromática de Ley</span>
+                <span>Malha Pentacromática de Ley</span>
               </label>
               <label className="atlas-layer-toggle-row">
                 <input
@@ -465,7 +459,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
                   checked={layers.livingTraffic}
                   onChange={() => toggleLayer('livingTraffic')}
                 />
-                <span>🐪 Tráfego Vivo (Caravanas & Frotas)</span>
+                <span>Tráfego Vivo (Caravanas & Frotas)</span>
               </label>
               <label className="atlas-layer-toggle-row">
                 <input
@@ -473,7 +467,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
                   checked={layers.settlementsAndDistricts}
                   onChange={() => toggleLayer('settlementsAndDistricts')}
                 />
-                <span>🏰 Distritos Urbanos & Assentamentos</span>
+                <span>Distritos Urbanos & Assentamentos</span>
               </label>
               <label className="atlas-layer-toggle-row">
                 <input
@@ -481,7 +475,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
                   checked={layers.historicalEras}
                   onChange={() => toggleLayer('historicalEras')}
                 />
-                <span>⚔️ Batalhas Históricas dos Cantos</span>
+                <span>Batalhas Históricas dos Cantos</span>
               </label>
             </div>
           )}
@@ -489,7 +483,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
           {openPopover === 'eras' && (
             <div className="atlas-hud-popover atlas-eras-popover">
               <div className="atlas-popover-header">
-                <span>⏳ Cronologia Militar dos VII Cantos</span>
+                <span>Cronologia Militar dos VII Cantos</span>
                 <button
                   type="button"
                   className="atlas-popover-close"
@@ -506,11 +500,6 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
                     className={`atlas-era-option-btn ${
                       eraFilter === era.id && layers.historicalEras ? 'active' : ''
                     }`}
-                    style={
-                      eraFilter === era.id && layers.historicalEras
-                        ? { borderColor: era.accentColor }
-                        : undefined
-                    }
                     onClick={() => {
                       playSfx('draw');
                       onChangeLayers({ ...layers, historicalEras: true });
@@ -545,7 +534,7 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
           {openPopover === 'search' && (
             <div className="atlas-hud-popover atlas-gazetteer-popover">
               <div className="atlas-popover-header">
-                <span>🔎 Almanaque Real de Vaeloria</span>
+                <span>Almanaque Real de Vaeloria</span>
                 <button
                   type="button"
                   className="atlas-popover-close"
@@ -580,11 +569,10 @@ export const AtlasLayerAndSearchHud: React.FC<AtlasLayerAndSearchHudProps> =
                       }}
                     >
                       <span
-                        className="atlas-gaz-icon"
-                        style={{ color: DOMAIN_ACCENT_HEX[entry.domain] }}
-                      >
-                        {entry.icon}
-                      </span>
+                        className="atlas-gaz-dot"
+                        style={{ background: DOMAIN_ACCENT_HEX[entry.domain] }}
+                        aria-hidden="true"
+                      />
                       <span className="atlas-gaz-body">
                         <span className="atlas-gaz-title">{entry.name}</span>
                         <span className="atlas-gaz-sub">{entry.subtitle}</span>
@@ -651,8 +639,7 @@ export const CartographicSvgLayer: React.FC<CartographicSvgLayerProps> =
               p.kind === 'ley_conduit'
                 ? DOMAIN_ACCENT_HEX[p.domain]
                 : styleSpec.stroke;
-            const baseWidth = 2.8 * styleSpec.widthFactor * scaleUnit * zoomDamp;
-            const showCurvedName = zoom >= 1.25 || scope !== 'world';
+            const baseWidth = 2.6 * styleSpec.widthFactor * scaleUnit * zoomDamp;
             const showTraffic =
               layers.livingTraffic && Boolean(p.trafficKind) && Boolean(d);
 
@@ -661,14 +648,15 @@ export const CartographicSvgLayer: React.FC<CartographicSvgLayerProps> =
                 key={p.id}
                 className={`carto-path-group carto-path-${p.kind}`}
               >
-                {/* Soft Luminous Aura */}
+                {/* Soft Luminous Aura (intensifies on hover) */}
                 <path
                   d={d}
                   fill="none"
                   stroke={styleSpec.glow}
-                  strokeWidth={baseWidth * 3.1}
+                  strokeWidth={baseWidth * 2.8}
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  className="carto-path-aura"
                   style={{ pointerEvents: 'none' }}
                 />
 
@@ -682,22 +670,22 @@ export const CartographicSvgLayer: React.FC<CartographicSvgLayerProps> =
                   strokeDasharray={styleSpec.dash}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className={
+                  className={`carto-primary-stroke ${
                     p.kind === 'ley_conduit'
                       ? 'carto-ley-animated-stroke'
                       : p.kind === 'river' || p.kind === 'lava_stream'
                         ? 'carto-fluid-animated-stroke'
-                        : undefined
-                  }
+                        : ''
+                  }`}
                   style={{ pointerEvents: 'none' }}
                 />
 
-                {/* Wide Invisible Clickable Hit Target */}
+                {/* Wide Invisible Clickable & Hoverable Hit Target */}
                 <path
                   d={d}
                   fill="none"
                   stroke="rgba(255,255,255,0.001)"
-                  strokeWidth={Math.max(14 * scaleUnit, baseWidth * 5)}
+                  strokeWidth={Math.max(16 * scaleUnit, baseWidth * 5.5)}
                   strokeLinecap="round"
                   style={{ cursor: 'pointer', pointerEvents: 'stroke' }}
                   onClick={(e) => {
@@ -709,23 +697,21 @@ export const CartographicSvgLayer: React.FC<CartographicSvgLayerProps> =
                   <title>{`${p.name} (${p.elevationLabel}) — Clique para abrir no Caderno do Cartógrafo`}</title>
                 </path>
 
-                {/* Curved Calligraphic River / Route Label */}
-                {showCurvedName && (
-                  <text
-                    dy={-5 * scaleUnit * zoomDamp}
-                    fontSize={Math.max(9.5, 11.5 * scaleUnit * zoomDamp)}
-                    className={`carto-curved-path-label carto-curved-label-${p.kind}`}
-                    style={{ pointerEvents: 'none' }}
+                {/* Curved Calligraphic River / Route Label (Revealed on Hover!) */}
+                <text
+                  dy={-5 * scaleUnit * zoomDamp}
+                  fontSize={Math.max(10.5, 12.5 * scaleUnit * zoomDamp)}
+                  className={`carto-curved-path-label carto-curved-label-${p.kind}`}
+                  style={{ pointerEvents: 'none' }}
+                >
+                  <textPath
+                    href={`#${pathDomId}`}
+                    startOffset="50%"
+                    textAnchor="middle"
                   >
-                    <textPath
-                      href={`#${pathDomId}`}
-                      startOffset="50%"
-                      textAnchor="middle"
-                    >
-                      {p.name}
-                    </textPath>
-                  </text>
-                )}
+                    {p.name}
+                  </textPath>
+                </text>
 
                 {/* Living Cartographic Traffic Token */}
                 {showTraffic && p.trafficKind && (
@@ -777,8 +763,18 @@ export interface CartographicHtmlPinsLayerProps {
   layers: AtlasLayerVisibility;
   eraFilter: VaeloriaHistoricalEraId;
   showUnifiedSettlements: boolean;
+  inspectedNoteId?: string | null;
   highlightTarget?: GazetteerHighlightTarget | null;
   onInspectNote: (note: CartographicInspectionNote) => void;
+}
+
+function getEdgeTooltipClasses(x: number, y: number): string {
+  const cls: string[] = [];
+  if (x < 16) cls.push('is-edge-left');
+  else if (x > 84) cls.push('is-edge-right');
+  if (y < 16) cls.push('is-edge-top');
+  else if (y > 84) cls.push('is-edge-bottom');
+  return cls.join(' ');
 }
 
 export const CartographicHtmlPinsLayer: React.FC<CartographicHtmlPinsLayerProps> =
@@ -789,6 +785,7 @@ export const CartographicHtmlPinsLayer: React.FC<CartographicHtmlPinsLayerProps>
       layers,
       eraFilter,
       showUnifiedSettlements,
+      inspectedNoteId,
       highlightTarget,
       onInspectNote,
     }) => {
@@ -881,106 +878,135 @@ export const CartographicHtmlPinsLayer: React.FC<CartographicHtmlPinsLayerProps>
 
       return (
         <div className="cartographic-html-pins-layer">
-          {/* 1. Multi-LOD Toponyms (LOD 1–4) */}
-          {visibleToponyms.map((top) => (
-            <button
-              key={top.id}
-              type="button"
-              className={`carto-toponym-pin carto-toponym-lod-${top.lod} carto-toponym-${top.kind}`}
-              style={{
-                left: `${top.x}%`,
-                top: `${top.y}%`,
-                transform: `translate(-50%, -50%) scale(${invScale.toFixed(3)}) rotate(${
-                  top.angleDeg ?? 0
-                }deg)`,
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                playSfx('landmark_discover');
-                onInspectNote(buildToponymInspectionNote(top));
-              }}
-              title={`${top.name} (${top.elevationLabel}) — Clique para ler no Caderno do Cartógrafo`}
-            >
-              {top.name}
-            </button>
-          ))}
+          {/* 1. Multi-LOD Toponyms (Discreet Survey Diamond; Text Card on Hover / Click) */}
+          {visibleToponyms.map((top) => {
+            const isInspected = inspectedNoteId === top.id;
+            return (
+              <button
+                key={top.id}
+                type="button"
+                className={`carto-toponym-pin carto-toponym-lod-${top.lod} carto-toponym-${top.kind} ${getEdgeTooltipClasses(
+                  top.x,
+                  top.y
+                )} ${isInspected ? 'is-inspected' : ''}`}
+                style={{
+                  left: `${top.x}%`,
+                  top: `${top.y}%`,
+                  transform: `translate(-50%, -50%) scale(${invScale.toFixed(3)})`,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playSfx('landmark_discover');
+                  onInspectNote(buildToponymInspectionNote(top));
+                }}
+              >
+                <span
+                  className="carto-toponym-glyph"
+                  style={{ color: DOMAIN_ACCENT_HEX[top.domain] }}
+                >
+                  ❖
+                </span>
+                <span className="carto-hover-card">
+                  <strong>{top.name}</strong>
+                  <small>{top.elevationLabel}</small>
+                </span>
+              </button>
+            );
+          })}
 
-          {/* 2. Unified 162 Micro-Settlements (Overworld) */}
-          {unifiedSettlementPins.map((pin) => (
-            <button
-              key={pin.key}
-              type="button"
-              className="carto-unified-settlement-pin"
-              style={{
-                left: `${pin.x}%`,
-                top: `${pin.y}%`,
-                transform: `translate(-50%, -50%) scale(${invScale.toFixed(3)})`,
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                playSfx('landmark_discover');
-                onInspectNote(pin.note);
-              }}
-              title={`${pin.name} — Clique para inspecionar assentamento e cartas nativas`}
-            >
-              <span className="carto-settle-dot">{pin.icon}</span>
-              {zoom >= 1.9 && (
-                <span className="carto-settle-name">{pin.name}</span>
-              )}
-            </button>
-          ))}
+          {/* 2. Unified 162 Micro-Settlements (Icon Dot; Name Card on Hover / Click) */}
+          {unifiedSettlementPins.map((pin) => {
+            const isInspected = inspectedNoteId === pin.note.id;
+            return (
+              <button
+                key={pin.key}
+                type="button"
+                className={`carto-unified-settlement-pin ${getEdgeTooltipClasses(
+                  pin.x,
+                  pin.y
+                )} ${isInspected ? 'is-inspected' : ''}`}
+                style={{
+                  left: `${pin.x}%`,
+                  top: `${pin.y}%`,
+                  transform: `translate(-50%, -50%) scale(${invScale.toFixed(3)})`,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playSfx('landmark_discover');
+                  onInspectNote(pin.note);
+                }}
+              >
+                <span className="carto-settle-dot">{pin.icon}</span>
+                <span className="carto-hover-card">
+                  <strong>{pin.name}</strong>
+                </span>
+              </button>
+            );
+          })}
 
-          {/* 3. 36 Interactive Imperial Capital Districts (4th Scale) */}
-          {capitalDistricts.map((dist) => (
-            <button
-              key={dist.id}
-              type="button"
-              className={`carto-capital-district-pin carto-district-${dist.role}`}
-              style={{
-                left: `${dist.x}%`,
-                top: `${dist.y}%`,
-                borderColor: DOMAIN_ACCENT_HEX[dist.domain],
-                transform: `translate(-50%, -50%) scale(${invScale.toFixed(3)})`,
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                playSfx('diplomacy_seal');
-                onInspectNote(buildDistrictInspectionNote(dist));
-              }}
-              title={`${dist.name} (${dist.roleLabel}) — Clique para inspecionar Distrito Imperial`}
-            >
-              <span className="carto-district-crest">{dist.icon}</span>
-              <span className="carto-district-meta">
-                <span className="carto-district-role">{dist.roleLabel}</span>
-                <span className="carto-district-title">{dist.name}</span>
-              </span>
-            </button>
-          ))}
+          {/* 3. 36 Interactive Imperial Capital Districts (Crest Medallion; Info Card on Hover / Click) */}
+          {capitalDistricts.map((dist) => {
+            const isInspected = inspectedNoteId === dist.id;
+            return (
+              <button
+                key={dist.id}
+                type="button"
+                className={`carto-capital-district-pin carto-district-${dist.role} ${getEdgeTooltipClasses(
+                  dist.x,
+                  dist.y
+                )} ${isInspected ? 'is-inspected' : ''}`}
+                style={{
+                  left: `${dist.x}%`,
+                  top: `${dist.y}%`,
+                  borderColor: DOMAIN_ACCENT_HEX[dist.domain],
+                  transform: `translate(-50%, -50%) scale(${invScale.toFixed(3)})`,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playSfx('diplomacy_seal');
+                  onInspectNote(buildDistrictInspectionNote(dist));
+                }}
+              >
+                <span className="carto-district-crest">{dist.icon}</span>
+                <span className="carto-district-meta">
+                  <span className="carto-district-role">{dist.roleLabel}</span>
+                  <span className="carto-district-title">{dist.name}</span>
+                </span>
+              </button>
+            );
+          })}
 
-          {/* 4. Historical Battlefields of the VII Cantos */}
-          {historicalSites.map((bf) => (
-            <button
-              key={bf.id}
-              type="button"
-              className="carto-historical-battle-pin"
-              style={{
-                left: `${bf.displayX}%`,
-                top: `${bf.displayY}%`,
-                borderColor: DOMAIN_ACCENT_HEX[bf.domain],
-                transform: `translate(-50%, -50%) scale(${invScale.toFixed(3)})`,
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                playSfx('landmark_discover');
-                onInspectNote(buildBattlefieldInspectionNote(bf, scope));
-              }}
-              title={`${bf.name} (${bf.yearLabel}) — ${bf.cantoRef}`}
-            >
-              <span className="carto-battle-swords">⚔️</span>
-              <span className="carto-battle-year">{bf.yearLabel}</span>
-              <span className="carto-battle-name">{bf.name}</span>
-            </button>
-          ))}
+          {/* 4. Historical Battlefields of the VII Cantos (Swords Badge; Chronicle Card on Hover / Click) */}
+          {historicalSites.map((bf) => {
+            const isInspected = inspectedNoteId === bf.id;
+            return (
+              <button
+                key={bf.id}
+                type="button"
+                className={`carto-historical-battle-pin ${getEdgeTooltipClasses(
+                  bf.displayX,
+                  bf.displayY
+                )} ${isInspected ? 'is-inspected' : ''}`}
+                style={{
+                  left: `${bf.displayX}%`,
+                  top: `${bf.displayY}%`,
+                  borderColor: DOMAIN_ACCENT_HEX[bf.domain],
+                  transform: `translate(-50%, -50%) scale(${invScale.toFixed(3)})`,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playSfx('landmark_discover');
+                  onInspectNote(buildBattlefieldInspectionNote(bf, scope));
+                }}
+              >
+                <span className="carto-battle-swords">⚔️</span>
+                <span className="carto-battle-meta">
+                  <span className="carto-battle-year">{bf.yearLabel}</span>
+                  <span className="carto-battle-name">{bf.name}</span>
+                </span>
+              </button>
+            );
+          })}
 
           {/* 5. Gazetteer Pulsing Compass Highlight Ring */}
           {highlightTarget && highlightTarget.scope === scope && (
@@ -1025,21 +1051,15 @@ export const CartographerInspectorCard: React.FC<CartographerInspectorCardProps>
       <>
         <aside
           className="cartographer-notebook-card"
-          style={{ borderColor: `${accent}88` }}
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
         >
           <div className="cartographer-notebook-header">
             <div className="cartographer-notebook-heading">
-              <span
-                className="cartographer-notebook-kicker"
-                style={{ color: accent }}
-              >
-                📖 CADERNO DO CARTÓGRAFO • {note.categoryBadge}
+              <span className="cartographer-notebook-kicker">
+                CADERNO DO CARTÓGRAFO • {note.categoryBadge}
               </span>
-              <h4 className="cartographer-notebook-title">
-                <span>{note.icon}</span> {note.title}
-              </h4>
+              <h4 className="cartographer-notebook-title">{note.title}</h4>
               <div className="cartographer-notebook-sub">{note.subtitle}</div>
             </div>
             <button
@@ -1054,21 +1074,26 @@ export const CartographerInspectorCard: React.FC<CartographerInspectorCardProps>
 
           <div className="cartographer-telemetry-grid">
             <div className="cartographer-telemetry-cell">
-              <span className="carto-tel-label">🏔️ Altitude / Cota</span>
+              <span className="carto-tel-label">Altitude / Cota</span>
               <span className="carto-tel-val">{note.elevationLabel}</span>
             </div>
             <div className="cartographer-telemetry-cell">
-              <span className="carto-tel-label">🌦️ Microclima</span>
+              <span className="carto-tel-label">Microclima</span>
               <span className="carto-tel-val">{note.climateLabel}</span>
             </div>
             <div className="cartographer-telemetry-cell">
-              <span className="carto-tel-label">📜 Registro Épico</span>
+              <span className="carto-tel-label">Registro Épico</span>
               <span className="carto-tel-val">{note.cantoRef}</span>
             </div>
             <div className="cartographer-telemetry-cell">
-              <span className="carto-tel-label">◈ Afinidade</span>
-              <span className="carto-tel-val" style={{ color: accent }}>
-                {domainMeta.icon} {domainMeta.name}
+              <span className="carto-tel-label">Afinidade</span>
+              <span className="carto-tel-val carto-tel-val-domain">
+                <span
+                  className="carto-tel-domain-dot"
+                  style={{ background: accent }}
+                  aria-hidden="true"
+                />
+                {domainMeta.name}
               </span>
             </div>
           </div>
@@ -1076,11 +1101,8 @@ export const CartographerInspectorCard: React.FC<CartographerInspectorCardProps>
           <p className="cartographer-lore-paragraph">{note.loreText}</p>
 
           {note.tacticalSummary && (
-            <div
-              className="cartographer-tactical-box"
-              style={{ borderLeftColor: accent }}
-            >
-              <strong>⚜ Doutrina & Relevo:</strong> {note.tacticalSummary}
+            <div className="cartographer-tactical-box">
+              <strong>Doutrina & Relevo:</strong> {note.tacticalSummary}
             </div>
           )}
 
@@ -1088,21 +1110,23 @@ export const CartographerInspectorCard: React.FC<CartographerInspectorCardProps>
             <button
               type="button"
               className="cartographer-fasttravel-btn"
-              style={{ borderColor: accent }}
               onClick={() => {
                 const dest = note.fastTravelScope!;
                 onClose();
                 onNavigateScope(dest);
               }}
             >
-              🧭 {note.fastTravelLabel ?? 'Viajar para Mapa Conectado'}
+              {(note.fastTravelLabel ?? 'Viajar para Mapa Conectado').replace(
+                /^[^\p{L}\p{N}]+/u,
+                ''
+              )}
             </button>
           )}
 
           {note.nativeCards.length > 0 && (
             <div className="cartographer-native-cards-section">
               <div className="cartographer-native-header">
-                <span>🃏 Fauna, Relíquias & Forças Nativas (Clique p/ abrir)</span>
+                <span>Fauna, Relíquias & Forças Nativas</span>
               </div>
               <div className="cartographer-native-cards-grid">
                 {note.nativeCards.map((card) => {
@@ -1112,7 +1136,7 @@ export const CartographerInspectorCard: React.FC<CartographerInspectorCardProps>
                       key={card.id}
                       type="button"
                       className="cartographer-native-card-chip"
-                      style={{ borderColor: `${cAccent}66` }}
+                      style={{ borderLeft: `3px solid ${cAccent}` }}
                       onClick={() => {
                         playSfx('draw');
                         setInspectCard(card);
@@ -1128,12 +1152,9 @@ export const CartographerInspectorCard: React.FC<CartographerInspectorCardProps>
                             loading="lazy"
                           />
                         ) : (
-                          <span className="carto-ncard-fallback">🃏</span>
+                          <span className="carto-ncard-fallback">◈</span>
                         )}
-                        <span
-                          className="carto-ncard-cost"
-                          style={{ background: cAccent }}
-                        >
+                        <span className="carto-ncard-cost">
                           {card.cost}
                         </span>
                       </div>
@@ -1141,12 +1162,12 @@ export const CartographerInspectorCard: React.FC<CartographerInspectorCardProps>
                         <span className="carto-ncard-name">{card.name}</span>
                         <span className="carto-ncard-stats">
                           {card.type === 'creature'
-                            ? `⚔️${card.atk} • ❤️${card.hp}`
+                            ? `ATQ ${card.atk} • PV ${card.hp}`
                             : card.type === 'spell'
-                              ? '✨ Feitiço'
+                              ? 'Feitiço'
                               : card.type === 'relic'
-                                ? '🏺 Relíquia'
-                                : '⚡ Reação'}
+                                ? 'Relíquia'
+                                : 'Reação'}
                         </span>
                       </div>
                     </button>

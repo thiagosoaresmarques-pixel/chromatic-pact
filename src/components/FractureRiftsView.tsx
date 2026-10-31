@@ -71,12 +71,12 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
   return (
     <div className="aaa-page-shell rifts-page-shell">
       {/* Header & Weekly Spotlight */}
-      <header className="rifts-hero-banner" style={{ '--rift-accent': weeklyRift.accent } as React.CSSProperties}>
+      <header className="rifts-hero-banner">
         <div className="rifts-hero-top">
           <div>
             <span className="aaa-kicker">EVENTOS TÁTICOS • MUTADORES DE REGRA</span>
             <h1 className="font-cinzel gold-gradient-text rifts-hero-title">
-              🌀 Fendas da Fratura
+              Fendas da Fratura
             </h1>
             <p className="rifts-hero-sub">
               Anomalias planares distorcem as leis da Essência, do Clima e da Cripta. Escolha seu
@@ -86,7 +86,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
 
           <div className="rifts-hero-controls">
             <div className="rifts-deck-picker">
-              <label htmlFor="rift-deck-select">📖 Grimório de Combate</label>
+              <label htmlFor="rift-deck-select">Grimório de Combate</label>
               {!isGuest && customDecks.length === 0 ? (
                 <button
                   type="button"
@@ -109,14 +109,14 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                         const rec = w + l > 0 ? ` (${w}V/${l}D)` : '';
                         return (
                           <option key={cd.id} value={cd.id}>
-                            📖 {cd.name}
+                            ★ {cd.name}
                             {rec}
                           </option>
                         );
                       })
                     : PREBUILT_DECKS.slice(0, 5).map((pd) => (
                         <option key={pd.id} value={pd.id}>
-                          ⚔️ {pd.name} (Visitante)
+                          {pd.name} (Visitante)
                         </option>
                       ))}
                 </select>
@@ -124,7 +124,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
             </div>
 
             <div className="rifts-progress-pill">
-              <span>🏆 Vitórias em Fendas:</span>
+              <span>Vitórias em Fendas:</span>
               <strong>{totalRiftsCleared}</strong>
             </div>
           </div>
@@ -142,13 +142,13 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
         <div className="rifts-weekly-spotlight">
           <div className="rifts-weekly-badge-col">
             <span className="rifts-weekly-tag">
-              🌟 FENDA EM DESTAQUE DA SEMANA ({currentWeekKey})
+              FENDA EM DESTAQUE DA SEMANA ({currentWeekKey})
             </span>
             <h2 className="font-cinzel rifts-weekly-name">
-              <span>{weeklyRift.icon}</span> {weeklyRift.name}
+              {weeklyRift.name}
             </h2>
             <p className="rifts-weekly-rule">{weeklyRift.detailedRule}</p>
-            <div className="rifts-weekly-tip">💡 {weeklyRift.tacticalTip}</div>
+            <div className="rifts-weekly-tip">{weeklyRift.tacticalTip}</div>
           </div>
 
           <div className="rifts-weekly-cta-col">
@@ -156,7 +156,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
               {isGuest ? (
                 <>
                   <span className="rwr-label">MODO VISITANTE</span>
-                  <strong>Crie sua conta para ganhar +{WEEKLY_RIFT_GOLD_BONUS} 🪙 + {WEEKLY_RIFT_SHARDS_BONUS} 💎!</strong>
+                  <strong>Crie sua conta para ganhar +{WEEKLY_RIFT_GOLD_BONUS} Ouro • +{WEEKLY_RIFT_SHARDS_BONUS} Estilhaços!</strong>
                   <button
                     type="button"
                     className="rifts-link-btn"
@@ -168,13 +168,13 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
               ) : isWeeklyClaimed ? (
                 <>
                   <span className="rwr-label">✓ BÔNUS SEMANAL CONQUISTADO</span>
-                  <strong>Recompensa padrão ativa: +{STANDARD_RIFT_WIN_GOLD} 🪙 por vitória</strong>
+                  <strong>Recompensa padrão ativa: +{STANDARD_RIFT_WIN_GOLD} Ouro por vitória</strong>
                 </>
               ) : (
                 <>
-                  <span className="rwr-label">🎁 1ª VITÓRIA NESTA SEMANA</span>
+                  <span className="rwr-label">1ª VITÓRIA NESTA SEMANA</span>
                   <strong>
-                    +{STANDARD_RIFT_WIN_GOLD + WEEKLY_RIFT_GOLD_BONUS} 🪙 Ouro & +{WEEKLY_RIFT_SHARDS_BONUS} 💎 Estilhaços
+                    +{STANDARD_RIFT_WIN_GOLD + WEEKLY_RIFT_GOLD_BONUS} Ouro • +{WEEKLY_RIFT_SHARDS_BONUS} Estilhaços
                   </strong>
                 </>
               )}
@@ -185,7 +185,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
               className="aaa-btn aaa-btn-primary rifts-enter-btn"
               onClick={() => handleLaunchRift(weeklyRift)}
             >
-              {weeklyRift.icon} Desafiar Fenda Semanal →
+              Desafiar Fenda Semanal →
             </button>
           </div>
         </div>
@@ -202,7 +202,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
             <article
               key={rift.id}
               className={`rift-card ${isWeekly ? 'is-weekly-featured' : ''}`}
-              style={{ '--rift-accent': rift.accent } as React.CSSProperties}
+              style={{ borderTop: `2px solid ${rift.accent}` }}
             >
               <div className="rift-card-header">
                 <div className="rift-icon-medal">{rift.icon}</div>
@@ -216,10 +216,10 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
               </div>
 
               <div className="rift-rule-box">
-                <strong>📜 Lei da Fenda:</strong> {rift.shortRule}
+                <strong>Lei da Fenda:</strong> {rift.shortRule}
               </div>
 
-              <p className="rift-tip-text">💡 {rift.tacticalTip}</p>
+              <p className="rift-tip-text">{rift.tacticalTip}</p>
 
               <div className="rift-challenger-strip">
                 {avatarCard?.imagePath && (
@@ -231,7 +231,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                   />
                 )}
                 <div className="rift-challenger-copy">
-                  <span className="rift-challenger-label">GUARDIÃO DA FENDA ({rift.challengerHp}❤️)</span>
+                  <span className="rift-challenger-label">GUARDIÃO DA FENDA ({rift.challengerHp} PV)</span>
                   <strong>{rift.challengerName}</strong>
                   <small>{rift.challengerTitle}</small>
                 </div>
@@ -246,7 +246,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                   className="btn-fantasy btn-fantasy-primary rift-card-btn"
                   onClick={() => handleLaunchRift(rift)}
                 >
-                  🌀 Entrar na Fenda
+                  Entrar na Fenda →
                 </button>
               </div>
             </article>

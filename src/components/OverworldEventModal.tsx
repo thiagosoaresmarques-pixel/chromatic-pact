@@ -50,17 +50,16 @@ export const OverworldEventModal: React.FC<OverworldEventModalProps> = ({
     >
       <div
         className="modal-panel ow-event-modal"
-        style={
-          {
-            '--ow-accent': realmDef.accentColor,
-          } as React.CSSProperties
-        }
         onClick={(e) => e.stopPropagation()}
       >
         <div className="ow-event-header">
-          <div className="ow-event-realm-pill" style={{ borderColor: `${realmDef.accentColor}88` }}>
-            <span>{realmDef.icon}</span>
-            <span style={{ color: realmDef.accentColor }}>{eventDef.kicker}</span>
+          <div className="ow-event-realm-pill">
+            <span
+              className="ow-event-realm-dot"
+              style={{ background: realmDef.accentColor }}
+              aria-hidden="true"
+            />
+            <span>{eventDef.kicker}</span>
           </div>
           <button
             type="button"
@@ -77,7 +76,7 @@ export const OverworldEventModal: React.FC<OverworldEventModalProps> = ({
 
         {alreadyExplored ? (
           <div className="ow-event-explored-box">
-            <strong>✓ Marco já explorado</strong>
+            <strong>Marco já explorado</strong>
             <span>
               {mode === 'conquest' && cooldownSeasonsLeft > 0
                 ? `Novas provisões estarão disponíveis neste marco em ${cooldownSeasonsLeft} estação(ões).`
@@ -95,7 +94,7 @@ export const OverworldEventModal: React.FC<OverworldEventModalProps> = ({
               choicePreviews.length >= 3 ? 'has-three-choices' : ''
             }`}
           >
-            {choicePreviews.map(({ choice, preview }) => (
+            {choicePreviews.map(({ choice, preview }, idx) => (
               <button
                 key={choice.id}
                 type="button"
@@ -108,7 +107,7 @@ export const OverworldEventModal: React.FC<OverworldEventModalProps> = ({
                 }}
               >
                 <div className="ow-choice-top">
-                  <span className="ow-choice-icon">{choice.icon}</span>
+                  <span className="ow-choice-icon">{['I', 'II', 'III'][idx] ?? choice.icon}</span>
                   <strong className="font-cinzel ow-choice-title">{choice.title}</strong>
                 </div>
                 <p className="ow-choice-desc">{choice.flavorOutcome}</p>

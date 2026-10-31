@@ -1125,7 +1125,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 <div
                   key={f.id}
                   className="exp-blessing-card conquest-faction-card"
-                  style={{ borderColor: `${f.color}55` }}
+                  style={{ borderTop: `2px solid ${f.color}` }}
                   onClick={() => handleBeginCampaignWithFaction(f.id)}
                 >
                   <div className="conquest-faction-card-top">
@@ -1141,7 +1141,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                           color: f.color,
                         }}
                       >
-                        {f.icon} CAPITAL: {cap?.name.toUpperCase()}
+                        CAPITAL: {cap?.name.toUpperCase()}
                       </span>
                       <h3 className="font-cinzel" style={{ margin: '2px 0', fontSize: '1rem', color: '#f8fafc' }}>
                         {f.name}
@@ -1151,8 +1151,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   </div>
 
                   <div className="conquest-doctrine-box">
-                    <strong style={{ color: '#fef08a', fontSize: '0.72rem' }}>
-                      ✦ {f.imperialDoctrineName}
+                    <strong style={{ color: '#e5c97b', fontSize: '0.72rem' }}>
+                      {f.imperialDoctrineName}
                     </strong>
                     <p style={{ margin: '3px 0 0', fontSize: '0.74rem', color: '#cbd5e1', lineHeight: 1.38 }}>
                       {f.imperialDoctrineDesc}
@@ -1160,7 +1160,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   </div>
 
                   <button type="button" className="aaa-btn aaa-btn-primary" style={{ marginTop: 'auto' }}>
-                    ⚔️ Erguer Estandarte de {f.shortName}
+                    Erguer Estandarte de {f.shortName}
                   </button>
                 </div>
               );
@@ -1177,52 +1177,70 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
           {/* Top Imperial Command Bar */}
           <div className="conquest-top-bar">
             <div className="conquest-empire-summary">
-              <span className="conquest-empire-badge" style={{ borderColor: playerFaction.color }}>
-                <span>{playerFaction.icon}</span>
-                <strong style={{ color: playerFaction.color }}>{playerFaction.shortName}</strong>
+              <span className="conquest-empire-badge">
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    background: playerFaction.color,
+                    display: 'inline-block',
+                    flexShrink: 0,
+                  }}
+                />
+                <strong style={{ color: '#f8fafc' }}>{playerFaction.shortName}</strong>
               </span>
               <span className="conquest-stat-chip">
-                ⏳ Estação <strong>{runState.season}</strong>
+                Estação <strong>{runState.season}</strong>
               </span>
               <span className="conquest-stat-chip">
-                🏰 Províncias: <strong>{ownedProvinceIds.length}/{CONQUEST_PROVINCES.length}</strong>
+                Províncias: <strong>{ownedProvinceIds.length}/{CONQUEST_PROVINCES.length}</strong>
               </span>
               <span className="conquest-stat-chip">
-                👑 Capitais: <strong>{ownedCapitalsCount}/6</strong>
+                Capitais: <strong>{ownedCapitalsCount}/6</strong>
               </span>
               <span
                 className="conquest-stat-chip"
                 title={
                   playerSupplyStatus.isolatedIds.size > 0
-                    ? 'Províncias sem linha conectada a uma Capital ou Porto Mercante sofrem -50%⚙️ de renda e -4❤️ na defesa!'
+                    ? 'Províncias sem linha conectada a uma Capital ou Porto Mercante sofrem -50% de renda e -4 PV na defesa!'
                     : 'Todas as suas províncias possuem Linha de Suprimento ativa!'
                 }
               >
                 {playerSupplyStatus.isolatedIds.size > 0 ? (
                   <>
-                    ⚠️ Isoladas: <strong style={{ color: '#f87171' }}>{playerSupplyStatus.isolatedIds.size}</strong>
+                    Isoladas: <strong style={{ color: '#f87171' }}>{playerSupplyStatus.isolatedIds.size}</strong>
                   </>
                 ) : (
                   <>
-                    📦 Logística:{' '}
-                    <strong style={{ color: '#34d399' }}>
+                    Logística:{' '}
+                    <strong style={{ color: '#e2e8f0' }}>
                       {playerSupplyStatus.hubConnectedIds.size > 0
-                        ? `Malha +5⚙️ (${playerSupplyStatus.suppliedIds.size})`
+                        ? `Malha +5 (${playerSupplyStatus.suppliedIds.size})`
                         : `100% Suprida`}
                     </strong>
                   </>
                 )}
               </span>
               <span className="conquest-stat-chip gold">
-                ⚙️ Suprimentos: <strong>{runState.supplies}</strong>{' '}
+                Suprimentos: <strong>{runState.supplies}</strong>{' '}
                 <small>(+{seasonalIncomePreview}/est.)</small>
               </span>
               <span
                 className="conquest-crisis-chip"
-                style={{ borderColor: `${activeCrisis.accent}66` }}
                 title={activeCrisis.description}
               >
-                {activeCrisis.icon} {activeCrisis.name}
+                <span
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    background: activeCrisis.accent,
+                    display: 'inline-block',
+                    flexShrink: 0,
+                  }}
+                />
+                <span>{activeCrisis.name}</span>
               </span>
             </div>
 
@@ -1258,7 +1276,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   setShowDiplomacyModal(true);
                 }}
               >
-                🏛️ Conselho dos 6 Tronos
+                Conselho dos 6 Tronos
               </button>
 
               <button
@@ -1267,7 +1285,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 style={{ padding: '6px 14px', fontSize: '0.76rem' }}
                 onClick={handleEndSeason}
               >
-                ⏭️ Encerrar Estação {runState.season}
+                Encerrar Estação {runState.season} →
               </button>
 
               <button
@@ -1287,9 +1305,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
           {runState.pendingDefenseAlarm && (
             <div className="conquest-defense-alarm">
               <div className="cda-copy">
-                <span className="cda-kicker">🚨 ALARME DE INVASÃO NA FRONTEIRA!</span>
+                <span className="cda-kicker">ALARME DE INVASÃO NA FRONTEIRA</span>
                 <strong>
-                  {CONQUEST_FACTIONS[runState.pendingDefenseAlarm.attackerFactionId].icon}{' '}
                   {CONQUEST_FACTIONS[runState.pendingDefenseAlarm.attackerFactionId].name} está cercando{' '}
                   [{CONQUEST_PROVINCES_BY_ID[runState.pendingDefenseAlarm.toProvinceId]?.name}]!
                 </strong>
@@ -1303,14 +1320,14 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   className="aaa-btn aaa-btn-primary"
                   onClick={handleFightDefensiveSiege}
                 >
-                  ⚔️ Defender na Arena
+                  Defender na Arena
                 </button>
                 <button
                   type="button"
                   className="aaa-btn aaa-btn-secondary"
                   onClick={handleAutoResolveDefenseGarrison}
                 >
-                  🛡️ Delegar à Guarnição
+                  Delegar à Guarnição
                 </button>
               </div>
             </div>
@@ -1370,10 +1387,10 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                     className="aaa-dossier-stage-pill"
                     style={{ borderColor: selectedOwnerFaction.color, color: selectedOwnerFaction.color }}
                   >
-                    {selectedOwnerFaction.icon} {selectedOwnerFaction.shortName.toUpperCase()}
+                    {selectedOwnerFaction.shortName.toUpperCase()}
                     {selectedProvince.isCapital ? ' • CAPITAL REAL' : ''}
                   </span>
-                  <span className="aaa-domain-tag" style={{ borderColor: DOMAIN_META[selectedProvince.domain].color }}>
+                  <span className="aaa-domain-tag">
                     {selectedProvince.terrainLabel}
                   </span>
                 </div>
@@ -1390,8 +1407,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                     <span className="aaa-metric-lbl">TRIBUTO</span>
                     <span className="aaa-metric-val gold-text">
                       +{allIsolatedProvinceIds.has(selectedProvince.id)
-                        ? `${Math.floor(selectedProvince.supplyIncome * 0.5)}⚙️ ⚠️`
-                        : `${selectedProvince.supplyIncome}⚙️`}
+                        ? `${Math.floor(selectedProvince.supplyIncome * 0.5)} Supr. (-50%)`
+                        : `${selectedProvince.supplyIncome} Supr.`}
                     </span>
                   </div>
                   <div className="aaa-metric-box">
@@ -1403,15 +1420,15 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                           ? '#f87171'
                           : isSelectedPlayerOwned &&
                             playerSupplyStatus.hubConnectedIds.has(selectedProvince.id)
-                          ? '#fde047'
-                          : '#34d399',
+                          ? '#e5c97b'
+                          : '#e2e8f0',
                       }}
                     >
                       {allIsolatedProvinceIds.has(selectedProvince.id)
-                        ? '⚠️ Cortada'
+                        ? 'Cortada'
                         : isSelectedPlayerOwned &&
                           playerSupplyStatus.hubConnectedIds.has(selectedProvince.id)
-                        ? '⚡ Malha +5⚙️'
+                        ? 'Malha +5'
                         : '✓ Suprida'}
                     </span>
                   </div>
@@ -1430,7 +1447,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   <div className="aaa-metric-box">
                     <span className="aaa-metric-lbl">BASTIÃO</span>
                     <span className="aaa-metric-val">
-                      {selectedFortLvl > 0 ? `🛡️ Nv.${selectedFortLvl}` : 'Sem Muralha'}
+                      {selectedFortLvl > 0 ? `Nv.${selectedFortLvl}` : 'Sem Muralha'}
                     </span>
                   </div>
                 </div>
@@ -1445,11 +1462,10 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 {isSelectedPlayerOwned && (
                   <div className="conquest-buildings-panel">
                     <div className="conquest-buildings-header">
-                      <span>🏗️ INFRAESTRUTURA PROVINCIAL (5 OPÇÕES)</span>
+                      <span>INFRAESTRUTURA PROVINCIAL (5 OPÇÕES)</span>
                       {runState.buildings[selectedProvince.id] && (
                         <strong>
-                          {PROVINCE_BUILDINGS[runState.buildings[selectedProvince.id]].icon}{' '}
-                          {PROVINCE_BUILDINGS[runState.buildings[selectedProvince.id]].name}
+                          ✓ {PROVINCE_BUILDINGS[runState.buildings[selectedProvince.id]].name}
                         </strong>
                       )}
                     </div>
@@ -1467,10 +1483,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                             title={bDef.description}
                           >
                             <span className="cb-top">
-                              <span>
-                                {bDef.icon} {bDef.name}
-                              </span>
-                              <strong>{isBuilt ? '✓ Ativa' : `${bDef.costSupplies}⚙️`}</strong>
+                              <span>{bDef.name}</span>
+                              <strong>{isBuilt ? '✓ Ativa' : `${bDef.costSupplies} Supr.`}</strong>
                             </span>
                             <small>{bDef.shortBonus}</small>
                           </button>
@@ -1491,10 +1505,10 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                         onClick={() => handleLaunchOffensiveSiege(selectedProvince)}
                       >
                         {runState.hasSiegedThisSeason
-                          ? '⏳ Exército já marchou nesta Estação'
+                          ? 'Exército já marchou nesta Estação'
                           : isSelectedAttackable
-                          ? `⚔️ Cercar ${selectedProvince.isCapital ? 'Capital' : 'Província'}`
-                          : '🔒 Sem Fronteira Conectada'}
+                          ? `Cercar ${selectedProvince.isCapital ? 'Capital' : 'Província'} →`
+                          : 'Sem Fronteira Conectada'}
                       </button>
 
                       <button
@@ -1504,8 +1518,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                         onClick={() => handleSignTruce(selectedOwnerId)}
                       >
                         {(runState.truces[selectedOwnerId] ?? 0) > 0
-                          ? `🕊️ Trégua (${runState.truces[selectedOwnerId]} est.)`
-                          : `🕊️ Trégua (${TRUCE_DIPLOMACY_COST}⚙️)`}
+                          ? `Trégua (${runState.truces[selectedOwnerId]} est.)`
+                          : `Trégua (${TRUCE_DIPLOMACY_COST} Supr.)`}
                       </button>
                     </>
                   ) : (
@@ -1516,8 +1530,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                       onClick={() => handleFortifyProvince(selectedProvince)}
                     >
                       {selectedFortLvl >= 2
-                        ? '🛡️ Bastião Máximo (Nv.2)'
-                        : `🛡️ Erguer Bastião Nv.${selectedFortLvl + 1} (${BASTION_BUILD_COST}⚙️)`}
+                        ? 'Bastião Máximo (Nv.2)'
+                        : `Erguer Bastião Nv.${selectedFortLvl + 1} (${BASTION_BUILD_COST} Supr.)`}
                     </button>
                   )}
 
@@ -1534,7 +1548,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
 
                 {/* Live Continental War Chronicle */}
                 <div className="conquest-warlog-box">
-                  <div className="conquest-warlog-title">📜 CRÔNICA DE GUERRA CONTINENTAL</div>
+                  <div className="conquest-warlog-title">CRÔNICA DE GUERRA CONTINENTAL</div>
                   <div className="conquest-warlog-scroll">
                     {runState.warLog.map((entry, idx) => (
                       <div key={idx} className="conquest-warlog-item">
@@ -1564,7 +1578,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   DIPLOMACIA, COMÉRCIO & ESPIONAGEM CONTINENTAL
                 </span>
                 <h3 className="font-cinzel gold-gradient-text" style={{ margin: '2px 0 0', fontSize: '1.2rem' }}>
-                  🏛️ Conselho dos Seis Tronos • Suprimentos: {runState.supplies}⚙️
+                  Conselho dos Seis Tronos • Suprimentos: {runState.supplies}
                 </h3>
               </div>
               <button
@@ -1598,25 +1612,24 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                     <div
                       key={fid}
                       className="cdm-faction-row"
-                      style={{ borderColor: `${f.color}55` }}
+                      style={{ borderLeft: `3px solid ${f.color}` }}
                     >
                       <div className="cdm-faction-info">
                         <div className="cdm-faction-title-line">
-                          <span style={{ fontSize: '1.15rem' }}>{f.icon}</span>
-                          <strong className="font-cinzel" style={{ color: f.color }}>
+                          <strong className="font-cinzel" style={{ color: '#f8fafc' }}>
                             {f.name}
                           </strong>
                           <span className="cdm-prov-pill">{provCount} prov.</span>
                           {fid === leadingRivalFactionId && provCount > 0 && (
-                            <span className="cdm-rival-pill">👑 Maior Rival</span>
+                            <span className="cdm-rival-pill">Maior Rival</span>
                           )}
                         </div>
                         <div className="cdm-faction-sub">
                           {f.rulerName}
-                          {truceRem > 0 ? ` • 🕊️ Trégua (${truceRem} est.)` : ''}
-                          {hasTrade ? ' • ⚖️ Rota Ativa (+15⚙️/est.)' : ''}
+                          {truceRem > 0 ? ` • Trégua (${truceRem} est.)` : ''}
+                          {hasTrade ? ' • Rota Ativa (+15/est.)' : ''}
                           {coalitionTarget
-                            ? ` • 🎺 Coalizão vs ${CONQUEST_FACTIONS[coalitionTarget].shortName}`
+                            ? ` • Coalizão vs ${CONQUEST_FACTIONS[coalitionTarget].shortName}`
                             : ''}
                         </div>
                       </div>
@@ -1630,9 +1643,9 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                             className="aaa-btn aaa-btn-secondary"
                             disabled={hasTrade || runState.supplies < TRADE_PACT_COST}
                             onClick={() => handleSignTradePact(fid)}
-                            title="Gera +15⚙️ Suprimentos por estação enquanto ambos os reinos permanecerem em paz"
+                            title="Gera +15 Suprimentos por estação enquanto ambos os reinos permanecerem em paz"
                           >
-                            {hasTrade ? '⚖️ Comércio Ativo' : `⚖️ Rota (${TRADE_PACT_COST}⚙️)`}
+                            {hasTrade ? '✓ Comércio Ativo' : `Rota (${TRADE_PACT_COST})`}
                           </button>
                           <button
                             type="button"
@@ -1642,8 +1655,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                             title="Pacto de Não-Agressão por 2 Estações"
                           >
                             {truceRem > 0
-                              ? `🕊️ Trégua (${truceRem})`
-                              : `🕊️ Trégua (${TRUCE_DIPLOMACY_COST}⚙️)`}
+                              ? `Trégua (${truceRem})`
+                              : `Trégua (${TRUCE_DIPLOMACY_COST})`}
                           </button>
                           <button
                             type="button"
@@ -1655,8 +1668,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                             title="Direciona os exércitos deste Trono contra o maior rival continental na próxima estação"
                           >
                             {coalitionTarget
-                              ? '🎺 Em Marcha'
-                              : `🎺 Coalizão (${COALITION_COST}⚙️)`}
+                              ? '✓ Em Marcha'
+                              : `Coalizão (${COALITION_COST})`}
                           </button>
                           <button
                             type="button"
@@ -1665,7 +1678,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                             onClick={() => handleSabotageFactionBastion(fid)}
                             title="Reduz em -1 o nível de Bastião de uma província fronteiriça fortificada deste Trono"
                           >
-                            🗡️ Sabotar ({SABOTAGE_COST}⚙️)
+                            Sabotar ({SABOTAGE_COST})
                           </button>
                         </div>
                       )}

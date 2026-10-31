@@ -446,12 +446,12 @@ export function analyzeMatchupPair(
   // Determine Slot Stacking Rule for this specific opponent!
   const enemyAoECount = e.breathAndAoECards.length;
   let stackingRuleMode: 'spread_1x' | 'stack_3x' | 'selective_2x' = 'selective_2x';
-  let stackingRuleBadge = '⚖️ EMPILHAMENTO SELETIVO (MÁX. 2 UNIDADES / SLOT)';
+  let stackingRuleBadge = 'EMPILHAMENTO SELETIVO (MÁX. 2 UNIDADES / SLOT)';
   let stackingRuleDetail = '';
 
   if (enemyAoECount >= 6) {
     stackingRuleMode = 'spread_1x';
-    stackingRuleBadge = '⚠️ PROIBIDO EMPILHAR 3x: ESPALHE 1 UNIDADE POR COLUNA!';
+    stackingRuleBadge = 'EVITAR EMPILHAR 3× — ESPALHE 1 UNIDADE POR COLUNA';
     const aoeNames = e.breathAndAoECards
       .slice(0, 3)
       .map((c) => c.name)
@@ -459,7 +459,7 @@ export function analyzeMatchupPair(
     stackingRuleDetail = `O baralho inimigo possui alto poder de Dano em Área / Sopro / Atropelar (${enemyAoECount} cartas, incluindo ${aoeNames}). No sistema de Empilhamento 3x, ataques de Sopro e explosões atingem TODAS as cartas do mesmo slot simultaneamente! Portanto, espalhe suas tropas em 4 a 6 colunas separadas (1 unidade por slot) e jamais agrupe 3 unidades sem Escudo Divino.`;
   } else if (e.singleTargetKillCards.length >= 8 || e.counts.creature >= 50) {
     stackingRuleMode = 'stack_3x';
-    stackingRuleBadge = '🛡️ EMPILHAMENTO 3x RECOMENDADO (GUARDIÃO + 2 ATACANTES NO SLOT)';
+    stackingRuleBadge = 'EMPILHAMENTO 3× RECOMENDADO (GUARDIÃO + 2 ATACANTES NO SLOT)';
     const singleNames = e.singleTargetKillCards
       .slice(0, 3)
       .map((c) => c.name)
@@ -469,7 +469,7 @@ export function analyzeMatchupPair(
     }) e possui pouquíssimo dano em área (${enemyAoECount} fontes). Empilhe até 3 unidades na sua melhor coluna colocando 1 Guardião/Blindado na frente e 2 causadores de dano juntos: o inimigo só conseguirá atingir 1 carta por vez enquanto sua pilha inteira revida no turno seguinte!`;
   } else {
     stackingRuleMode = 'selective_2x';
-    stackingRuleBadge = '📐 FORMAÇÃO EM PARES (2x NA RETAGUARDA, 1x NA VANGUARDA)';
+    stackingRuleBadge = 'FORMAÇÃO EM PARES (2× NA RETAGUARDA • 1× NA VANGUARDA)';
     stackingRuleDetail = `Contra ${e.deck.name}, mantenha 1 bloqueador por coluna na Vanguarda para cobrir o campo e empilhe até 2 cartas (1 Relíquia + 1 Atirador/Suporte) na Retaguarda das colunas protegidas para ganhar +1 ATQ de Cobertura sem se expor a varreduras completas.`;
   }
 
@@ -1034,24 +1034,24 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
               <div className="aaa-kicker">PLANO DE JOGO & ESTRATÉGIA POR FASE</div>
               <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fde68a', marginBottom: '0.2rem' }}>
-                  🌅 Abertura (Turnos 1–3)
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.2rem' }}>
+                  I • Abertura (Turnos 1–3)
                 </div>
                 <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
                   {playerProfile.openingPlan}
                 </p>
               </div>
               <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#93c5fd', marginBottom: '0.2rem' }}>
-                  ⚔️ Meio de Jogo (Turnos 4–6)
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.2rem' }}>
+                  II • Meio de Jogo (Turnos 4–6)
                 </div>
                 <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
                   {playerProfile.midgamePlan}
                 </p>
               </div>
               <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#f87171', marginBottom: '0.2rem' }}>
-                  👑 Fim de Jogo & Condição de Vitória (Turno 7+)
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.2rem' }}>
+                  III • Fim de Jogo & Condição de Vitória (Turno 7+)
                 </div>
                 <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
                   {playerProfile.endgamePlan}
@@ -1063,16 +1063,16 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             <div style={{ marginTop: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
               <div className="aaa-kicker">DOUTRINA TÁTICA DE CANALIZAÇÃO & FALANGE</div>
               <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#c4b5fd', marginBottom: '0.2rem' }}>
-                  🔮 Canalização de Essência [C]
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e2e8f0', marginBottom: '0.2rem' }}>
+                  Canalização de Essência [C]
                 </div>
                 <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
                   {playerProfile.channelingDoctrine}
                 </p>
               </div>
               <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#86efac', marginBottom: '0.2rem' }}>
-                  🛡️ {playerProfile.stackingDoctrineTitle}
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e2e8f0', marginBottom: '0.2rem' }}>
+                  {playerProfile.stackingDoctrineTitle}
                 </div>
                 <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
                   {playerProfile.stackingDoctrineBody}
@@ -1087,11 +1087,11 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               <div className="tg-ai-oracle-box">
                 <div className="tg-ai-oracle-header">
                   <div>
-                    <div className="aaa-kicker" style={{ color: '#c4b5fd', marginBottom: '0.15rem' }}>
+                    <div className="aaa-kicker" style={{ color: '#94a3b8', marginBottom: '0.15rem' }}>
                       LIGA EVOLUCIONÁRIA ({AI_LEAGUE_SUMMARY.totalMatchesSimulated.toLocaleString('pt-BR')} DUELOS IA vs IA)
                     </div>
-                    <h3 className="font-cinzel" style={{ margin: 0, fontSize: '0.96rem', color: '#f3e8ff' }}>
-                      🧠 Sabedoria Empírica da IA (Extraída por Simulação)
+                    <h3 className="font-cinzel" style={{ margin: 0, fontSize: '0.96rem', color: '#f8fafc' }}>
+                      Sabedoria Empírica da IA (Extraída por Simulação)
                     </h3>
                   </div>
                   <span className="tg-ai-oracle-badge">
@@ -1107,15 +1107,15 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                     </span>
                   </div>
                   <div className="tg-ai-kpi-cell">
-                    <span className="tg-ai-kpi-label">Evolução (Base ➔ IA)</span>
-                    <span className="tg-ai-kpi-value" style={{ color: '#86efac' }}>
-                      {learnedAiProfile.baselineWinRate.toFixed(1)}% ➔ {learnedAiProfile.trainedWinRate.toFixed(1)}%
+                    <span className="tg-ai-kpi-label">Evolução (Base → IA)</span>
+                    <span className="tg-ai-kpi-value" style={{ color: '#e5c97b' }}>
+                      {learnedAiProfile.baselineWinRate.toFixed(1)}% → {learnedAiProfile.trainedWinRate.toFixed(1)}%
                     </span>
                   </div>
                   <div className="tg-ai-kpi-cell">
                     <span className="tg-ai-kpi-label">Curva Mulligan / Pacto</span>
                     <span className="tg-ai-kpi-value">
-                      ≤{learnedAiProfile.weights.mulliganCurveTarget.toFixed(1)}⚡ • ≥{learnedAiProfile.weights.bloodPactThresholdHp}❤️
+                      ≤{learnedAiProfile.weights.mulliganCurveTarget.toFixed(1)} Ess. • ≥{learnedAiProfile.weights.bloodPactThresholdHp} PV
                     </span>
                   </div>
                 </div>
@@ -1123,7 +1123,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 <div className="tg-ai-doctrine-grid">
                   <div className="tg-ai-doctrine-item">
                     <div className="tg-ai-doctrine-top">
-                      <span>⚔️ Pressão Direta vs Troca</span>
+                      <span>Pressão Direta vs Troca</span>
                       <strong>
                         {learnedAiProfile.weights.aggroFaceBias >= learnedAiProfile.weights.tradeValueBias
                           ? `Ofensiva (${learnedAiProfile.weights.aggroFaceBias.toFixed(2)}×)`
@@ -1153,7 +1153,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
                   <div className="tg-ai-doctrine-item">
                     <div className="tg-ai-doctrine-top">
-                      <span>🛡️ Falange 3× vs Dispersão 1×</span>
+                      <span>Falange 3× vs Dispersão 1×</span>
                       <strong>
                         {learnedAiProfile.weights.stackConsolidationBias >=
                         learnedAiProfile.weights.antiAoeSpreadBias
@@ -1185,8 +1185,8 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
                 {learnedAiProfile.mulliganKeepIds.length > 0 && (
                   <div style={{ marginBottom: '0.65rem' }}>
-                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fde68a', marginBottom: '0.32rem' }}>
-                      ✋ Melhores Cartas para Manter no Mulligan (Empírico)
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.32rem' }}>
+                      Melhores Cartas para Manter no Mulligan (Empírico)
                     </div>
                     <div className="tg-combo-cards-row">
                       {learnedAiProfile.mulliganKeepIds.slice(0, 4).map((cid) => {
@@ -1202,7 +1202,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                             <div>
                               <div className="tg-mini-card-name">{c.name}</div>
                               <div className="tg-mini-card-sub">
-                                {c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}
+                                Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}
                               </div>
                             </div>
                           </div>
@@ -1214,8 +1214,8 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
                 {learnedAiProfile.channelPriorityIds.length > 0 && (
                   <div style={{ marginBottom: '0.7rem' }}>
-                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#93c5fd', marginBottom: '0.32rem' }}>
-                      🔮 Canalizações Seguras nos Turnos 1–4 [C]
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#cbd5e1', marginBottom: '0.32rem' }}>
+                      Canalizações Seguras nos Turnos 1–4 [C]
                     </div>
                     <div className="tg-combo-cards-row">
                       {learnedAiProfile.channelPriorityIds.slice(0, 4).map((cid) => {
@@ -1231,7 +1231,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                             <div>
                               <div className="tg-mini-card-name">{c.name}</div>
                               <div className="tg-mini-card-sub">
-                                {c.cost}⚡ • Canalizar [C]
+                                Custo {c.cost} • Canalizar [C]
                               </div>
                             </div>
                           </div>
@@ -1243,8 +1243,8 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
                 {learnedAiProfile.discoveredCombos.length > 0 && (
                   <div>
-                    <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#86efac', marginBottom: '0.4rem' }}>
-                      🏆 Combos Campeões Descobertos na Liga IA vs IA
+                    <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.4rem' }}>
+                      Combos Campeões Descobertos na Liga IA vs IA
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       {learnedAiProfile.discoveredCombos.slice(0, 4).map((dc, idx) => {
@@ -1254,7 +1254,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                         return (
                           <div key={`${dc.cardAId}-${dc.cardBId}-${idx}`} className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.35rem' }}>
-                              <strong className="font-cinzel" style={{ fontSize: '0.8rem', color: '#fef08a' }}>
+                              <strong className="font-cinzel" style={{ fontSize: '0.8rem', color: '#f8fafc' }}>
                                 #{idx + 1} {cA.name} + {cB.name}
                               </strong>
                               <span className="tg-ai-combo-badge">
@@ -1276,7 +1276,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                                   <div>
                                     <div className="tg-mini-card-name">{c.name}</div>
                                     <div className="tg-mini-card-sub">
-                                      {c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}
+                                      Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}
                                     </div>
                                   </div>
                                 </div>
@@ -1296,7 +1296,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               {playerProfile.signatureCombos.map((combo, idx) => (
                 <div key={idx} className="tg-combo-card">
                   <div className="tg-combo-header">
-                    <h4 className="font-cinzel" style={{ color: '#e6c875', fontSize: '0.88rem', margin: 0 }}>
+                    <h4 className="font-cinzel" style={{ color: '#e5c97b', fontSize: '0.88rem', margin: 0 }}>
                       {combo.title}
                     </h4>
                   </div>
@@ -1314,7 +1314,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                         <div>
                           <div className="tg-mini-card-name">{c.name}</div>
                           <div className="tg-mini-card-sub">
-                            {c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}
+                            Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}
                           </div>
                         </div>
                       </div>
@@ -1356,8 +1356,8 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
               <div className="aaa-kicker">ESTRATÉGIA & TÁTICA ESPECÍFICA DO CONFRONTO 1×1</div>
               <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fde68a', marginBottom: '0.22rem' }}>
-                  🎯 Diretriz Tática Central
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.22rem' }}>
+                  Diretriz Tática Central
                 </div>
                 <p style={{ fontSize: '0.79rem', color: '#e2e8f0', margin: 0, lineHeight: 1.45 }}>
                   {activeMatchup.generalTactics}
@@ -1365,8 +1365,8 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               </div>
 
               <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#93c5fd', marginBottom: '0.22rem' }}>
-                  🔮 Mulligan & O Que Canalizar [C] neste 1×1
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e2e8f0', marginBottom: '0.22rem' }}>
+                  Mulligan & O Que Canalizar [C] neste 1×1
                 </div>
                 <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
                   {activeMatchup.mulliganAndChannelGuide}
@@ -1375,7 +1375,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
 
               <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
                 <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fca5a5', marginBottom: '0.22rem' }}>
-                  ⚠️ Turno Crítico de Ameaça Inimiga
+                  Turno Crítico de Ameaça Inimiga
                 </div>
                 <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
                   {activeMatchup.criticalThreatTurn}
@@ -1383,8 +1383,8 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               </div>
 
               <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#86efac', marginBottom: '0.22rem' }}>
-                  🏆 Rota de Vitória no 1×1
+                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.22rem' }}>
+                  Rota de Vitória no 1×1
                 </div>
                 <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
                   {activeMatchup.winConditionPath}
@@ -1410,15 +1410,15 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 >
                   <div className="tg-target-art">
                     {card.imagePath && <img src={card.imagePath} alt={card.name} />}
-                    <span className="tg-target-cost">{card.cost}⚡</span>
+                    <span className="tg-target-cost">{card.cost}</span>
                   </div>
                   <div className="tg-target-info">
                     <div className="tg-target-name-line">
-                      <strong className="font-cinzel" style={{ color: '#e6c875' }}>
+                      <strong className="font-cinzel" style={{ color: '#f8fafc' }}>
                         {card.name}
                       </strong>
                       <span className="tg-target-type">
-                        {DOMAIN_META[card.domain].icon} {CARD_TYPE_LABELS[card.type]}
+                        {DOMAIN_META[card.domain].shortName} • {CARD_TYPE_LABELS[card.type]}
                       </span>
                     </div>
                     <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '0.22rem 0 0', lineHeight: 1.38 }}>
@@ -1432,9 +1432,9 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               <div className="aaa-kicker">COMBOS EM DUELO (SEU GRIMÓRIO vs OPONENTE)</div>
               {playerProfile.signatureCombos.slice(0, 2).map((combo, idx) => (
-                <div key={`p-combo-${idx}`} className="tg-combo-card" style={{ padding: '0.6rem 0.75rem', borderColor: 'rgba(56, 189, 248, 0.35)' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#38bdf8' }}>
-                    ⚡ Seu Combo Chave #{idx + 1}: {combo.title}
+                <div key={`p-combo-${idx}`} className="tg-combo-card" style={{ padding: '0.6rem 0.75rem', borderLeft: '3px solid #d4af37' }}>
+                  <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b' }}>
+                    Seu Combo Chave #{idx + 1}: {combo.title}
                   </div>
                   <p style={{ fontSize: '0.76rem', color: '#cbd5e1', margin: '0.22rem 0 0.4rem', lineHeight: 1.4 }}>
                     {combo.explanation}
@@ -1445,7 +1445,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                         {c.imagePath && <img src={c.imagePath} alt={c.name} />}
                         <div>
                           <div className="tg-mini-card-name">{c.name}</div>
-                          <div className="tg-mini-card-sub">{c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}</div>
+                          <div className="tg-mini-card-sub">Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}</div>
                         </div>
                       </div>
                     ))}
@@ -1454,9 +1454,9 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               ))}
 
               {opponentProfile.signatureCombos.slice(0, 2).map((combo, idx) => (
-                <div key={`o-combo-${idx}`} className="tg-combo-card" style={{ padding: '0.6rem 0.75rem', borderColor: 'rgba(248, 113, 113, 0.35)' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#f87171' }}>
-                    🛡️ Combo Inimigo p/ Sabotar #{idx + 1}: {combo.title}
+                <div key={`o-combo-${idx}`} className="tg-combo-card" style={{ padding: '0.6rem 0.75rem', borderLeft: '3px solid rgba(248, 113, 113, 0.65)' }}>
+                  <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fca5a5' }}>
+                    Combo Inimigo p/ Sabotar #{idx + 1}: {combo.title}
                   </div>
                   <p style={{ fontSize: '0.76rem', color: '#cbd5e1', margin: '0.22rem 0 0.4rem', lineHeight: 1.4 }}>
                     {combo.explanation}
@@ -1467,7 +1467,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                         {c.imagePath && <img src={c.imagePath} alt={c.name} />}
                         <div>
                           <div className="tg-mini-card-name">{c.name}</div>
-                          <div className="tg-mini-card-sub">{c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}</div>
+                          <div className="tg-mini-card-sub">Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}</div>
                         </div>
                       </div>
                     ))}
@@ -1738,7 +1738,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
         >
           <div className="modal-sticky-close-bar">
             <span className="font-cinzel gold-gradient-text" style={{ fontSize: '0.78rem', fontWeight: 800 }}>
-              🔮 CONSELHEIRO TÁTICO DA PARTIDA
+              CONSELHEIRO TÁTICO DA PARTIDA
             </span>
             <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
               ✕ Fechar Conselheiro

@@ -11,6 +11,7 @@ import {
   formatCardDetailedRules,
   formatCardFaceDescription,
 } from '../utils/cardTextFormatter';
+import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
 import {
   BoardUnit,
   CardDefinition,
@@ -20,7 +21,7 @@ import {
   Rarity,
 } from '../types/game';
 
-export { formatCardDetailedRules, formatCardFaceDescription };
+export { formatCardDetailedRules, formatCardFaceDescription, resolvePrimaryBossDomain };
 
 export const DOMAIN_META: Record<
   Domain,
@@ -65,7 +66,7 @@ export const DOMAIN_META: Record<
     name: 'Éter Arcano',
     shortName: 'Neutro',
     icon: '◇',
-    color: '#94a3b8',
+    color: '#cbd5e1',
     badgeBg: 'rgba(148, 163, 184, 0.16)',
   },
 };
@@ -127,7 +128,7 @@ export const KEYWORD_ICONS: Record<Keyword, string> = {
   Guardião: '⛨',
   Voo: '▲',
   Alcance: '⌖',
-  Ímpeto: '⚡',
+  Ímpeto: '↯',
   Atropelar: '◈',
   'Toque Letal': '☠',
   'Escudo Divino': '✦',
@@ -510,7 +511,7 @@ export const CardView: React.FC<CardViewProps> = ({
               aria-label="Inspecionar detalhes da carta"
               title="Inspecionar detalhes da carta"
             >
-              🔍
+              ⊕
             </button>
           )}
         </div>
@@ -849,13 +850,13 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
                     ? `Limite máximo atingido na coleção (${craftInfo.ownedCopies}/${craftInfo.maxAllowed})`
                     : craftInfo.canCraft
                     ? `Forjar +1 cópia desta carta por ${craftInfo.cost} Estilhaços Astrais`
-                    : `Estilhaços insuficientes (${craftInfo.astralShards}/${craftInfo.cost} 💎)`
+                    : `Estilhaços insuficientes (${craftInfo.astralShards}/${craftInfo.cost})`
                 }
                 style={{ fontSize: '0.75rem', padding: '5px 12px' }}
               >
                 {craftInfo.ownedCopies >= craftInfo.maxAllowed
                   ? `✓ Coleção Completa (${craftInfo.ownedCopies}/${craftInfo.maxAllowed})`
-                  : `⚒️ Forjar Cópia (-${craftInfo.cost} 💎 • ${craftInfo.ownedCopies}/${craftInfo.maxAllowed})`}
+                  : `Forjar Cópia (-${craftInfo.cost} Estilhaços • ${craftInfo.ownedCopies}/${craftInfo.maxAllowed})`}
               </button>
             )}
             <button type="button" className="btn-fantasy" onClick={onClose}>
@@ -887,8 +888,8 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
                 }}
               >
                 Posição Recomendada:{' '}
-                <strong style={{ color: '#fde68a' }}>
-                  {card.preferredRow === 'vanguard' ? '🛡️ Vanguarda (Frente)' : '🏹 Retaguarda (Suporte)'}
+                <strong style={{ color: '#e5c97b' }}>
+                  {card.preferredRow === 'vanguard' ? 'Vanguarda (Frente)' : 'Retaguarda (Suporte)'}
                 </strong>
               </div>
             )}
@@ -901,14 +902,14 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
                 padding: '1rem',
                 borderRadius: '10px',
                 background: 'rgba(15, 23, 42, 0.78)',
-                border: '1px solid rgba(148, 163, 184, 0.25)',
+                border: '1px solid rgba(148, 163, 184, 0.22)',
               }}
             >
               <div
                 style={{
                   fontSize: '0.74rem',
                   textTransform: 'uppercase',
-                  color: '#f59e0b',
+                  color: '#d4af37',
                   fontWeight: 700,
                   marginBottom: '0.45rem',
                 }}
@@ -935,7 +936,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
                 <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                   {card.keywords.map((kw) => (
                     <div key={kw} style={{ fontSize: '0.78rem', color: '#cbd5e1' }}>
-                      <strong style={{ color: '#fde68a' }}>• {kw}:</strong> {KEYWORD_TOOLTIPS[kw]}
+                      <strong style={{ color: '#e5c97b' }}>• {kw}:</strong> {KEYWORD_TOOLTIPS[kw]}
                     </div>
                   ))}
                 </div>
@@ -946,15 +947,15 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
                   style={{
                     marginTop: '0.75rem',
                     paddingTop: '0.6rem',
-                    borderTop: '1px dashed rgba(245, 158, 11, 0.35)',
+                    borderTop: '1px dashed rgba(212, 175, 55, 0.32)',
                     fontSize: '0.82rem',
-                    color: '#fde68a',
+                    color: '#e5c97b',
                   }}
                 >
-                  <strong>🔥 Ascensão ({card.ascension.cost} Essência):</strong>{' '}
+                  <strong>Ascensão ({card.ascension.cost} Essência):</strong>{' '}
                   Evolui em campo para <em>{card.ascension.newName}</em> (
                   <strong>
-                    ⚔️ {card.ascension.newAtk} / 🛡️ {card.ascension.newArmor} / ❤️{' '}
+                    ATQ {card.ascension.newAtk} • ARM {card.ascension.newArmor} • PV{' '}
                     {card.ascension.newMaxHp}
                   </strong>
                   ).
@@ -967,8 +968,8 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
               style={{
                 padding: '0.85rem 1rem',
                 borderRadius: '8px',
-                background: 'rgba(30, 41, 59, 0.5)',
-                borderLeft: '3px solid #d4af37',
+                background: 'rgba(15, 23, 42, 0.65)',
+                borderLeft: '2px solid rgba(212, 175, 55, 0.5)',
                 fontStyle: 'italic',
                 fontSize: '0.86rem',
                 lineHeight: 1.45,
@@ -983,7 +984,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
               <div className="inspect-poem-bridge-card">
                 <div className="inspect-poem-bridge-header">
                   <span className="inspect-poem-kicker">
-                    📜 Cap. {primaryPoem.chapterCode} • {primaryPoem.node.yearLabel}
+                    Cap. {primaryPoem.chapterCode} • {primaryPoem.node.yearLabel}
                   </span>
                   <span className="inspect-poem-loc">
                     {primaryPoem.node.locationLabel}
@@ -1008,7 +1009,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
                       )
                     }
                   >
-                    📖 Ler no Grande Poema (Cap. {primaryPoem.chapterCode}) →
+                    Ler no Grande Poema (Cap. {primaryPoem.chapterCode}) →
                   </button>
                   {poemAppearances.length > 1 && (
                     <div className="inspect-poem-extra-chapters">
@@ -1034,7 +1035,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
               <div className="inspect-poem-bridge-card is-era-fallback">
                 <div className="inspect-poem-bridge-header">
                   <span className="inspect-poem-kicker">
-                    📜 {fallbackChronicle.eraTitle}
+                    {fallbackChronicle.eraTitle}
                   </span>
                   <span className="inspect-poem-loc">
                     {fallbackChronicle.yearLabel} • {fallbackChronicle.locationLabel}
@@ -1058,7 +1059,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
                       );
                     }}
                   >
-                    📖 Explorar Era no Grande Poema →
+                    Explorar Era no Grande Poema →
                   </button>
                 </div>
               </div>

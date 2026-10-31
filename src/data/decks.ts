@@ -3555,8 +3555,8 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
     "name": "Igniskar & Khorvath",
     "title": "Tiranos da Cratera Primordial",
     "domains": [
-      "green",
       "red",
+      "green",
       "gold"
     ],
     "avatarCardId": "green_67_tiranossauro_alfa",
@@ -3697,8 +3697,8 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
     "name": "Morgath, O Dragão da Chama Necrótica",
     "title": "Patriarca do Conclave da Quimera Abissal",
     "domains": [
-      "blue",
       "purple",
+      "blue",
       "green"
     ],
     "avatarCardId": "purple_100_dragao_necrotico",
@@ -3733,9 +3733,9 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
     "name": "Aegirion, Soberano das Fendas Abissais",
     "title": "Grão-Regente do Cataclismo Astral",
     "domains": [
-      "red",
       "blue",
-      "purple"
+      "purple",
+      "red"
     ],
     "avatarCardId": "blue_98_soberano_mares",
     "startingHp": 85,
@@ -3810,7 +3810,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "red",
       "blue"
     ],
-    "avatarCardId": "neutral_171_pactuario_elemental_matriz",
+    "avatarCardId": "purple_171_pactuario_elemental_abismo",
     "startingHp": 96,
     "passiveName": "Ressonância do Prisma Partido",
     "passiveDescription": "Inicia o duelo com +1 de Essência Máxima e fere o Soberano rival em 1 PV no início de cada rodada caso não haja Guardiões na defesa.",

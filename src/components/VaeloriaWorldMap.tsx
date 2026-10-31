@@ -6,9 +6,8 @@ import { playRealmEntryMotif, playSfx } from '../utils/soundEngine';
 import { setMusicState } from '../utils/musicEngine';
 import {
   VAELORIA_WORLD_MAP_IMAGE,
-  VAELORIA_MAP_TERRITORIES,
-  VAELORIA_SUB_LANDMARKS,
   VaeloriaStageMapNode,
+  resolvePrimaryBossDomain,
   resolveStageMapNode,
   resolveNearestTerritory,
 } from '../data/vaeloriaMapData';
@@ -126,7 +125,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   const weeklyRift = useMemo(() => getWeeklyFeaturedRift(), []);
   const weeklyRiftWorldCoords = useMemo(() => {
     const coordsByRift: Record<string, { x: number; y: number }> = {
-      astral_torrent: { x: 64.5, y: 14.5 },
+      astral_torrent: { x: 56.5, y: 11.2 },
       immortal_pantheon: { x: 82.5, y: 50.5 },
       eternal_cataclysm: { x: 46.5, y: 23.5 },
       glass_thrones: { x: 56.5, y: 27.5 },
@@ -141,7 +140,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
 
   const [mapScope, setMapScope] = useState<VaeloriaMapScope>('world');
   const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(false);
-  const [followPawn, setFollowPawn] = useState<boolean>(() => !isMobileViewport());
+  const [followPawn, setFollowPawn] = useState<boolean>(false);
   const [showMinimap, setShowMinimap] = useState<boolean>(() => !isMobileViewport());
   const [portalBanner, setPortalBanner] = useState<string | null>(null);
   const [fogEnabled, setFogEnabled] = useState<boolean>(() => getFogOfWarEnabled());
@@ -268,11 +267,12 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   const [marchTarget, setMarchTarget] = useState<{ x: number; y: number } | null>(null);
   const [facingLeft, setFacingLeft] = useState<boolean>(false);
 
-  // Camera Pan & Zoom (Desktop World Map starts at 1.75x exploratory scale!)
-  const [zoom, setZoom] = useState<number>(() => (isMobileViewport() ? 1 : 1.75));
+  // Camera Pan & Zoom (All maps open initially at 100% / 1.0x clean view)
+  const [zoom, setZoom] = useState<number>(1);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [showGeographyLabels, setShowGeographyLabels] = useState<boolean>(true);
   const [hoveredBossId, setHoveredBossId] = useState<string | null>(null);
+  const [clickedBossLabelId, setClickedBossLabelId] = useState<string | null>(null);
 
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -339,18 +339,6 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     [clampPan]
   );
 
-  // Initial camera alignment on mount so desktop starts centered on Sovereign at 1.75x
-  const didInitialCenterRef = useRef(false);
-  useEffect(() => {
-    if (didInitialCenterRef.current) return;
-    didInitialCenterRef.current = true;
-    if (!isMobileViewport() && zoom > 1.05) {
-      requestAnimationFrame(() => {
-        centerCameraAt(pawnPosRef.current.x, pawnPosRef.current.y, zoom);
-      });
-    }
-  }, [centerCameraAt, zoom]);
-
   // Keep camera smoothly following the Sovereign whenever `followPawn` is active & zoomed in
   useEffect(() => {
     if (!followPawn || zoom <= 1.02) return;
@@ -400,6 +388,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
       portalCooldownUntilRef.current = performance.now() + 1100;
       setMarchTarget(null);
       setMarchOrigin(null);
+      setClickedBossLabelId(null);
       if (arrivalOverride?.viaPortal) {
         playSfx('portal_cross');
       } else {
@@ -422,11 +411,8 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         setMapScope('world');
         pawnPosRef.current = { x: wx, y: wy };
         setPawnPos({ x: wx, y: wy });
-        const nextZoom = isMobileViewport() ? 1 : 1.75;
-        setZoom(nextZoom);
-        requestAnimationFrame(() => {
-          centerCameraAt(wx, wy, nextZoom);
-        });
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
         showPortalNotification('🌍 Visão Continental de Vaeloria');
         return;
       }
@@ -864,9 +850,11 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
 
     if (snapEntry) {
       lastSyncedBossIdRef.current = snapEntry.boss.id;
+      setClickedBossLabelId(snapEntry.boss.id);
       onSelectBoss(snapEntry.boss);
       startMarchTo(snapEntry.x, snapEntry.y);
     } else {
+      setClickedBossLabelId(null);
       startMarchTo(clickX, clickY);
     }
   };
@@ -881,6 +869,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     e.stopPropagation();
     const distFromPawn = Math.hypot(pawnPos.x - entry.x, pawnPos.y - entry.y);
     lastSyncedBossIdRef.current = entry.boss.id;
+    setClickedBossLabelId(entry.boss.id);
     onSelectBoss(entry.boss);
 
     if (distFromPawn <= 2.8 && selectedBossId === entry.boss.id) {
@@ -1260,30 +1249,6 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                     />
                   );
                 })}
-
-                {/* Highway Spur Lines leading to Walkable Border Portals */}
-                {activeRegionalDef.portals.map((ptl) => {
-                  const anchor =
-                    positionedBosses.reduce<PositionedBossEntry | null>((best, cur) => {
-                      if (!best) return cur;
-                      const dCur = Math.hypot(cur.x - ptl.x, cur.y - ptl.y);
-                      const dBest = Math.hypot(best.x - ptl.x, best.y - ptl.y);
-                      return dCur < dBest ? cur : best;
-                    }, null) ?? null;
-                  if (!anchor) return null;
-                  return (
-                    <line
-                      key={`spur-${ptl.id}`}
-                      x1={anchor.x * 16}
-                      y1={anchor.y * 9}
-                      x2={ptl.x * 16}
-                      y2={ptl.y * 9}
-                      stroke="rgba(250, 204, 21, 0.55)"
-                      strokeWidth="3"
-                      strokeDasharray="10 8"
-                    />
-                  );
-                })}
               </g>
             ) : (
               /* Continental Sequential Overland Roads */
@@ -1339,59 +1304,25 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               </g>
             )}
 
-            {/* Geography & Local Settlements Overlay (World Map Labels — Regional Landmarks are interactive DOM pins below!) */}
-            {showGeographyLabels && !activeRegionalDef && (
-              <g filter="url(#vwmTextShadow)">
-                {VAELORIA_SUB_LANDMARKS.map((lm) => (
-                  <text
-                    key={lm.id}
-                    x={lm.x * 16}
-                    y={lm.y * 9}
-                    textAnchor="middle"
-                    className="vwm-sublandmark-label"
-                  >
-                    ✦ {lm.name}
-                  </text>
-                ))}
-
-                {VAELORIA_MAP_TERRITORIES.map((reg) => (
-                  <g key={reg.id} transform={`translate(${reg.labelX * 16}, ${reg.labelY * 9})`}>
-                    <text
-                      x="0"
-                      y="-11"
-                      textAnchor="middle"
-                      className="vwm-region-cardinal"
-                      fill={reg.color}
-                    >
-                      {reg.cardinalLabel}
-                    </text>
-                    <text x="0" y="9" textAnchor="middle" className="vwm-region-title">
-                      {reg.name}
-                    </text>
-                  </g>
-                ))}
-              </g>
-            )}
-
             {/* Engraved Cartographic Compass Rose */}
             <g transform="translate(1515, 815)" opacity="0.88" filter="url(#vwmTextShadow)">
               <circle
                 cx="0"
                 cy="0"
                 r="42"
-                fill="rgba(7, 11, 20, 0.74)"
-                stroke="rgba(230, 200, 117, 0.55)"
-                strokeWidth="1.8"
+                fill="rgba(7, 11, 20, 0.78)"
+                stroke="rgba(212, 175, 55, 0.55)"
+                strokeWidth="1.6"
               />
-              <polygon points="0,-35 6,-7 0,-12 -6,-7" fill="#facc15" />
-              <polygon points="0,35 5,7 0,12 -5,7" fill="#10b981" />
-              <polygon points="-35,0 -7,-5 -12,0 -7,5" fill="#a855f7" />
-              <polygon points="35,0 7,-5 12,0 7,5" fill="#eab308" />
-              <circle cx="0" cy="0" r="4.5" fill="#fef08a" />
-              <text x="0" y="-44" textAnchor="middle" className="vwm-compass-letter" fill="#fde047">
+              <polygon points="0,-35 6,-7 0,-12 -6,-7" fill="#d4af37" />
+              <polygon points="0,35 5,7 0,12 -5,7" fill="#94a3b8" />
+              <polygon points="-35,0 -7,-5 -12,0 -7,5" fill="#94a3b8" />
+              <polygon points="35,0 7,-5 12,0 7,5" fill="#94a3b8" />
+              <circle cx="0" cy="0" r="4.2" fill="#e5c97b" />
+              <text x="0" y="-44" textAnchor="middle" className="vwm-compass-letter" fill="#fde68a">
                 N
               </text>
-              <text x="0" y="54" textAnchor="middle" className="vwm-compass-letter" fill="#6ee7b7">
+              <text x="0" y="54" textAnchor="middle" className="vwm-compass-letter" fill="#cbd5e1">
                 S
               </text>
             </g>
@@ -1405,6 +1336,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             eraFilter={eraFilter}
             showUnifiedSettlements={showGeographyLabels}
             highlightTarget={gazetteerHighlight}
+            inspectedNoteId={inspectedNote?.id ?? null}
             onInspectNote={setInspectedNote}
           />
 
@@ -1419,16 +1351,23 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               const rdef = VAELORIA_REGIONAL_MAPS[rid];
               const capId = CARDINAL_TO_CAPITAL_MAP[rid];
               const capDef = capId ? VAELORIA_REGIONAL_MAPS[capId] : null;
+              const edgeClass =
+                rdef.worldCenter.x < 16
+                  ? 'is-edge-left'
+                  : rdef.worldCenter.x > 84
+                    ? 'is-edge-right'
+                    : '';
+              const diveOffsetY =
+                rdef.tier === 'cardinal_realm' && rid !== 'matrix' ? 4.5 : 0;
               return (
                 <React.Fragment key={`dive-group-${rid}`}>
                   <button
                     type="button"
-                    className="vwm-realm-dive-chip"
+                    className={`vwm-realm-dive-chip ${edgeClass}`}
                     style={
                       {
                         left: `${rdef.worldCenter.x}%`,
-                        top: `${rdef.worldCenter.y + (rid === 'matrix' ? 8.5 : 6.5)}%`,
-                        borderColor: `${rdef.accentColor}99`,
+                        top: `${rdef.worldCenter.y + diveOffsetY}%`,
                         transform: `translate(-50%, -50%) scale(${pinCounterScale})`,
                       } as React.CSSProperties
                     }
@@ -1438,18 +1377,21 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                     }}
                     title={`Entrar no Mapa de ${rdef.name}`}
                   >
-                    <span>🔍</span>
-                    <strong>{rdef.shortName}</strong>
+                    <span
+                      className="vwm-dive-dot"
+                      style={{ background: rdef.accentColor }}
+                      aria-hidden="true"
+                    />
+                    <strong className="vwm-hover-pill-text">{rdef.shortName}</strong>
                   </button>
                   {capDef && zoom >= 1.9 && (
                     <button
                       type="button"
-                      className="vwm-realm-dive-chip is-capital-dive-chip"
+                      className={`vwm-realm-dive-chip is-capital-dive-chip ${edgeClass}`}
                       style={
                         {
                           left: `${rdef.worldCenter.x}%`,
-                          top: `${rdef.worldCenter.y + (rid === 'matrix' ? 12.2 : 10.2)}%`,
-                          borderColor: `${capDef.accentColor}cc`,
+                          top: `${rdef.worldCenter.y + (rid === 'matrix' ? 4.2 : 8.2)}%`,
                           transform: `translate(-50%, -50%) scale(${pinCounterScale})`,
                         } as React.CSSProperties
                       }
@@ -1459,8 +1401,12 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                       }}
                       title={`Mergulhar na 4ª Escala Urbana: ${capDef.name}`}
                     >
-                      <span>🏰</span>
-                      <strong>{capDef.shortName}</strong>
+                      <span
+                        className="vwm-dive-dot"
+                        style={{ background: capDef.accentColor }}
+                        aria-hidden="true"
+                      />
+                      <strong className="vwm-hover-pill-text">{capDef.shortName}</strong>
                     </button>
                   )}
                 </React.Fragment>
@@ -1475,7 +1421,9 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 <button
                   key={lm.id}
                   type="button"
-                  className={`vwm-landmark-node ${isExplored ? 'is-explored' : 'is-ready'}`}
+                  className={`vwm-landmark-node ${isExplored ? 'is-explored' : 'is-ready'} ${
+                    lm.x < 16 ? 'is-edge-left' : lm.x > 84 ? 'is-edge-right' : ''
+                  } ${lm.y > 84 ? 'is-edge-bottom' : ''}`}
                   style={
                     {
                       left: `${lm.x}%`,
@@ -1498,7 +1446,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 >
                   <span className="vwm-lm-icon">{LOCAL_LANDMARK_ICON[lm.kind] ?? '✦'}</span>
                   <span className="vwm-lm-status-dot">{isExplored ? '✓' : '✦'}</span>
-                  {showGeographyLabels && <span className="vwm-lm-label">{lm.name}</span>}
+                  <span className="vwm-lm-label">{lm.name}</span>
                 </button>
               );
             })}
@@ -1527,9 +1475,12 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                   }}
                   title={`Cruzar fronteira para ${targetDef.name} (${portal.sublabel})`}
                 >
-                  <span className="vwm-portal-icon">
-                    {portal.directionIcon} {targetDef.icon}
-                  </span>
+                  <span
+                    className="vwm-portal-dot"
+                    style={{ background: targetDef.accentColor }}
+                    aria-hidden="true"
+                  />
+                  <span className="vwm-portal-dir-badge">{portal.directionIcon}</span>
                   <span className="vwm-portal-texts">
                     <strong>{portal.label}</strong>
                     <small>{portal.sublabel}</small>
@@ -1555,13 +1506,13 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 playSfx('portal_cross');
                 onOpenWeeklyRift();
               }}
-              title={`Fenda Semanal em Destaque: ${weeklyRift.name} — ${weeklyRift.shortRule} (+${WEEKLY_RIFT_SHARDS_BONUS}💎 Estilhaços)`}
+              title={`Fenda Semanal em Destaque: ${weeklyRift.name} — ${weeklyRift.shortRule} (+${WEEKLY_RIFT_SHARDS_BONUS} Estilhaços)`}
             >
               <span className="vwm-rift-anomaly-ring" />
               <span className="vwm-rift-anomaly-core">{weeklyRift.icon}</span>
               <span className="vwm-rift-anomaly-tag">
                 <strong>Fenda: {weeklyRift.name}</strong>
-                <small>+{WEEKLY_RIFT_SHARDS_BONUS}💎 • Entrar</small>
+                <small>+{WEEKLY_RIFT_SHARDS_BONUS} Estilhaços • Entrar</small>
               </span>
             </button>
           )}
@@ -1574,7 +1525,8 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             const isNextTarget = boss.id === nextUnclearBossId;
             const isHovered = hoveredBossId === boss.id;
             const isDockedHere = dockedBossEntry?.boss.id === boss.id;
-            const domColor = DOMAIN_META[boss.domains[0] ?? 'neutral'].color;
+            const primaryDom = resolvePrimaryBossDomain(boss.domains);
+            const domColor = DOMAIN_META[primaryDom].color;
             const bossCard = CARDS_BY_ID[boss.avatarCardId];
             const isFinalWheel =
               boss.stage === 26 || boss.stage === 32 || (mode === 'expedition' && boss.stage === 9);
@@ -1605,22 +1557,17 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                   {bossCard?.imagePath ? (
                     <img src={bossCard.imagePath} alt={boss.name} draggable={false} />
                   ) : (
-                    <span>⚔️</span>
+                    <span>⚔</span>
                   )}
                 </span>
                 <span className="vwm-boss-stage-badge">
                   {isCleared ? `✓${boss.stage}` : boss.stage}
                 </span>
 
-                {/* In Regional Maps, show a clean landmark nameplate under every citadel */}
-                {activeRegionalDef && !isSelected && !isHovered && (
-                  <span className="vwm-regional-citadel-tag">{worldNode.landmarkName}</span>
-                )}
-
-                {!isDockedHere && (isSelected || isHovered) && (
+                {(isHovered || (!isDockedHere && clickedBossLabelId === boss.id)) && (
                   <span className="vwm-boss-tooltip">
                     <strong>{boss.name}</strong>
-                    <em>📍 {worldNode.landmarkName}</em>
+                    <em>{worldNode.landmarkName}</em>
                   </span>
                 )}
               </button>

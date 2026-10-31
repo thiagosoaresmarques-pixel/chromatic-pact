@@ -7,7 +7,7 @@ import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
 import { VICTORY_GOLD_REWARD } from '../utils/multiplayerEngine';
 import { VaeloriaWorldMap } from './VaeloriaWorldMap';
-import { resolveStageMapNode } from '../data/vaeloriaMapData';
+import { resolvePrimaryBossDomain, resolveStageMapNode } from '../data/vaeloriaMapData';
 import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
 
 export interface CampaignViewProps {
@@ -22,105 +22,6 @@ export interface CampaignViewProps {
   onRequireAccount?: () => void;
   onRequireDeckSetup?: () => void;
 }
-
-const FALLBACK_ACT_V_BOSSES: CampaignBoss[] = [
-  {
-    id: 'boss_stage_15_solar_forges',
-    stage: 15,
-    name: 'Vulcanus & Solaria, A Forja Solar',
-    title: 'Ato V • Regentes do Trono de Bronze e Fogo',
-    domains: ['red', 'gold', 'green'],
-    avatarCardId: 'gold_07_dragao_ouro',
-    startingHp: 75,
-    passiveName: 'Têmpera Piro-Solar',
-    passiveDescription:
-      'Suas Relíquias e Guardiões entram com proteção reforçada enquanto dragões varrem as fileiras.',
-    rewardGold: 780,
-    loreIntro:
-      'No Primeiro Trono Tripartido, o fogo primordial da cratera alimenta as bigornas celestiais da Ordem Solar.',
-    deckId: 'deck_dual_draconic_pact',
-  },
-  {
-    id: 'boss_stage_16_umbral_conclave',
-    stage: 16,
-    name: 'Nocturna & Vael, Conclave Umbral',
-    title: 'Ato V • Senhores do Eclipse Psíquico',
-    domains: ['blue', 'purple', 'gold'],
-    avatarCardId: 'purple_06_tirano_ocular',
-    startingHp: 78,
-    passiveName: 'Véu de Estase e Sombra',
-    passiveDescription:
-      'Combina armadilhas de Retaguarda, congelamento temporal e dreno constante de Essência.',
-    rewardGold: 820,
-    loreIntro:
-      'No Segundo Trono Tripartido, cada pensamento é vigiado pelos olhos abissais e pelas engrenagens do tempo.',
-    deckId: 'deck_dual_abyssal_storm',
-  },
-  {
-    id: 'boss_stage_17_primal_cataclysm',
-    stage: 17,
-    name: 'Gorgoroth, O Cataclismo Selvagem',
-    title: 'Ato V • Behemoth das Três Matas',
-    domains: ['green', 'red', 'purple'],
-    avatarCardId: 'green_09_hidra',
-    startingHp: 80,
-    passiveName: 'Rugido de Sangue e Espinhos',
-    passiveDescription:
-      'Inunda as 6 colunas com feras de Atropelar, Regeneração e Renascer da Cripta.',
-    rewardGold: 860,
-    loreIntro:
-      'A própria terra se parte quando a Hidra Ancestral desperta as raízes famintas do Subterrâneo.',
-    deckId: 'deck_green_wild',
-  },
-  {
-    id: 'boss_stage_18_celestial_inquisition',
-    stage: 18,
-    name: 'Seraphiel, Supremo Inquisidor Astral',
-    title: 'Ato V • Guardião das Dezesseis Relíquias',
-    domains: ['gold', 'blue', 'red'],
-    avatarCardId: 'gold_09_serafim_solar',
-    startingHp: 82,
-    passiveName: 'Julgamento das Estrelas',
-    passiveDescription:
-      'Comanda Serafins com Voo, Escudo Divino e uma linha inteira de Relíquias Imperiais.',
-    rewardGold: 900,
-    loreIntro:
-      'Acima do firmamento, o Tribunal Tripartido pronuncia sua sentença em chamas e relâmpagos dourados.',
-    deckId: 'deck_gold_bastion',
-  },
-  {
-    id: 'boss_stage_19_archlich_void',
-    stage: 19,
-    name: 'Morgath-Zul, Arqui-Lich das Eras',
-    title: 'Ato V • Devorador de Cronologias',
-    domains: ['purple', 'blue', 'green'],
-    avatarCardId: 'purple_07_lich',
-    startingHp: 85,
-    passiveName: 'Ampulheta da Não-Vida',
-    passiveDescription:
-      'Congela a Vanguarda, revive titãs da Cripta e pune qualquer tentativa de empilhamento descuidado.',
-    rewardGold: 950,
-    loreIntro:
-      'Penúltimo guardião dos Tronos Tripartidos, Morgath-Zul fundiu a necromancia ao próprio fluxo temporal.',
-    deckId: 'deck_purple_abyss',
-  },
-  {
-    id: 'boss_stage_20_omega_valkyra',
-    stage: 20,
-    name: 'Valkyra Ômega, A Soberana dos 30 Pactos',
-    title: 'Ato V • Deidade Absoluta do Pacto Cromático',
-    domains: ['red', 'blue', 'purple', 'green', 'gold'],
-    avatarCardId: 'neutral_10_valkyra_pentacromatica',
-    startingHp: 90,
-    passiveName: 'Onipotência Pentacromática',
-    passiveDescription:
-      'Domina as 5 Expansões de Domínio, comanda lendas de todos os elementos e exige domínio tático absoluto!',
-    rewardGold: 1500,
-    loreIntro:
-      'No ápice do Ato V, todos os Tronos Tripartidos curvam-se diante da forma final de Valkyra. Prove ser o verdadeiro Soberano Supremo!',
-    deckId: 'deck_spec_pentachromatic',
-  },
-];
 
 function getActInfoForStage(stage: number): { actLabel: string; actTitle: string } {
   if (stage <= 4) {
@@ -156,14 +57,10 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   onRequireAccount,
   onRequireDeckSetup,
 }) => {
-  const fullBossRoster: CampaignBoss[] = useMemo(() => {
-    if (CAMPAIGN_BOSSES.length >= 20) {
-      return [...CAMPAIGN_BOSSES].sort((a, b) => a.stage - b.stage);
-    }
-    const existingStages = new Set(CAMPAIGN_BOSSES.map((b) => b.stage));
-    const extras = FALLBACK_ACT_V_BOSSES.filter((fb) => !existingStages.has(fb.stage));
-    return [...CAMPAIGN_BOSSES, ...extras].sort((a, b) => a.stage - b.stage);
-  }, []);
+  const fullBossRoster: CampaignBoss[] = useMemo(
+    () => [...CAMPAIGN_BOSSES].sort((a, b) => a.stage - b.stage),
+    []
+  );
 
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
     customDecks[0]?.id ?? PREBUILT_DECKS[0]?.id ?? 'deck_red_inferno'
@@ -232,7 +129,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const activeBoss =
     fullBossRoster.find((b) => b.id === selectedBossId) ?? fullBossRoster[0];
   const activeBossCard = activeBoss ? CARDS_BY_ID[activeBoss.avatarCardId] : undefined;
-  const activePrimaryDomain = activeBoss?.domains[0] ?? 'neutral';
+  const activePrimaryDomain = resolvePrimaryBossDomain(activeBoss?.domains);
   const activeActInfo = activeBoss
     ? getActInfoForStage(activeBoss.stage)
     : { actLabel: 'ATO I', actTitle: '' };
@@ -271,8 +168,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               { id: 3, label: 'Ato III (9–12)' },
               { id: 4, label: 'Ato IV (13–14)' },
               { id: 5, label: 'Ato V (15–20)' },
-              { id: 6, label: '☸ Ato VI (21–26)' },
-              { id: 7, label: '💎 Ato VII (27–32)' },
+              { id: 6, label: 'Ato VI (21–26)' },
+              { id: 7, label: 'Ato VII (27–32)' },
             ] as const
           ).map((tab) => (
             <button
@@ -313,14 +210,14 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               className={`vwm-mode-switch-btn ${viewMode === 'map' ? 'is-active' : ''}`}
               onClick={() => setViewMode('map')}
             >
-              🗺️ Mapa de Vaeloria
+              Mapa de Vaeloria
             </button>
             <button
               type="button"
               className={`vwm-mode-switch-btn ${viewMode === 'list' ? 'is-active' : ''}`}
               onClick={() => setViewMode('list')}
             >
-              📜 Lista
+              Lista
             </button>
           </div>
 
@@ -373,7 +270,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               const isDefeated = defeatedBossIds.includes(boss.id);
               const isSelected = boss.id === activeBoss?.id;
               const avatar = CARDS_BY_ID[boss.avatarCardId];
-              const dom = boss.domains[0] ?? 'neutral';
+              const dom = resolvePrimaryBossDomain(boss.domains);
               const actInfo = getActInfoForStage(boss.stage);
               const nodeInfo = resolveStageMapNode('campaign', boss.id, boss.stage);
 
@@ -400,7 +297,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                       {isDefeated && <span className="aaa-boss-cleared-tag">✓</span>}
                     </div>
                     <div className="font-cinzel aaa-boss-row-name">{boss.name}</div>
-                    <div className="aaa-boss-row-geo">📍 {nodeInfo.landmarkName}</div>
+                    <div className="aaa-boss-row-geo">{nodeInfo.landmarkName}</div>
                   </div>
                   <div className="aaa-boss-row-stats">
                     <span>{boss.startingHp} PV</span>
@@ -440,19 +337,25 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   {activeActInfo.actLabel} • ESTÁGIO {activeBoss.stage}/{fullBossRoster.length}
                 </span>
                 <div className="aaa-dossier-domains">
-                  {activeBoss.domains.map((dom) => (
-                    <span
-                      key={dom}
-                      className="aaa-domain-tag"
-                      style={{ borderColor: DOMAIN_META[dom].color }}
-                    >
+                  {activeBoss.domains.length >= 5 ? (
+                    <span className="aaa-domain-tag">
                       <i
                         className="aaa-domain-dot"
-                        style={{ backgroundColor: DOMAIN_META[dom].color }}
+                        style={{ backgroundColor: '#d4af37' }}
                       />
-                      {DOMAIN_META[dom].shortName}
+                      Pentacromático • Matriz Axial
                     </span>
-                  ))}
+                  ) : (
+                    activeBoss.domains.map((dom) => (
+                      <span key={dom} className="aaa-domain-tag">
+                        <i
+                          className="aaa-domain-dot"
+                          style={{ backgroundColor: DOMAIN_META[dom].color }}
+                        />
+                        {DOMAIN_META[dom].shortName}
+                      </span>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -460,7 +363,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               <div className="aaa-dossier-subtitle">{activeBoss.title}</div>
               {activeMapNode && (
                 <div className="vwm-dossier-geo-badge">
-                  <span>📍 {activeMapNode.regionName}</span>
+                  <span>{activeMapNode.regionName}</span>
                   <span>•</span>
                   <strong>{activeMapNode.landmarkName}</strong>
                 </div>
@@ -500,7 +403,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   className="aaa-btn aaa-btn-primary aaa-btn-lg"
                   onClick={() => handleClickStartBoss(activeBoss)}
                 >
-                  ⚔️ Desafiar Soberano
+                  Desafiar Soberano
                 </button>
                 <button
                   type="button"

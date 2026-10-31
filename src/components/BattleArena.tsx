@@ -12,6 +12,7 @@ import {
 } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
+import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
 import {
   activateSimpleDomain,
   ascendUnit,
@@ -1686,7 +1687,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (gameState.domainExpansion) {
       activeDomain = gameState.domainExpansion.domain;
     } else if (campaignBoss && campaignBoss.domains.length > 0) {
-      activeDomain = campaignBoss.domains[0];
+      activeDomain = resolvePrimaryBossDomain(campaignBoss.domains);
     } else {
       const pTerrain = getBiomeTerrainInfo(gameState.player);
       activeDomain = pTerrain.domain;

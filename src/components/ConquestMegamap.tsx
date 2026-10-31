@@ -6,7 +6,6 @@ import { playRealmEntryMotif, playSfx } from '../utils/soundEngine';
 import { setMusicState } from '../utils/musicEngine';
 import {
   VAELORIA_WORLD_MAP_IMAGE,
-  VAELORIA_MAP_TERRITORIES,
 } from '../data/vaeloriaMapData';
 import {
   CONQUEST_FACTIONS,
@@ -161,7 +160,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
 
   const [mapScope, setMapScope] = useState<VaeloriaMapScope>('world');
   const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(false);
-  const [followPawn, setFollowPawn] = useState<boolean>(() => !isMobileViewport());
+  const [followPawn, setFollowPawn] = useState<boolean>(false);
   const [showMinimap, setShowMinimap] = useState<boolean>(() => !isMobileViewport());
   const [portalBanner, setPortalBanner] = useState<string | null>(null);
   const [fogEnabled, setFogEnabled] = useState<boolean>(() => getFogOfWarEnabled());
@@ -287,12 +286,13 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   const [marchTarget, setMarchTarget] = useState<{ x: number; y: number } | null>(null);
   const [facingLeft, setFacingLeft] = useState<boolean>(false);
 
-  const [zoom, setZoom] = useState<number>(() => (isMobileViewport() ? 1 : 1.75));
+  const [zoom, setZoom] = useState<number>(1);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [overlayMode, setOverlayMode] = useState<
     'political' | 'terrain' | 'economy' | 'leylines' | 'military'
   >('political');
   const [hoveredProvId, setHoveredProvId] = useState<string | null>(null);
+  const [clickedProvLabelId, setClickedProvLabelId] = useState<string | null>(null);
 
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLDivElement | null>(null);
@@ -415,6 +415,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
       if (nextScope === mapScopeRef.current && !arrivalOverride) return;
       portalCooldownUntilRef.current = performance.now() + 1100;
       setMarchTarget(null);
+      setClickedProvLabelId(null);
       if (arrivalOverride?.viaPortal) {
         playSfx('portal_cross');
       } else {
@@ -429,11 +430,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         setMapScope('world');
         pawnPosRef.current = { x: selProv.x, y: selProv.y };
         setPawnPos({ x: selProv.x, y: selProv.y });
-        const nextZ = isMobileViewport() ? 1 : 1.75;
-        setZoom(nextZ);
-        requestAnimationFrame(() => {
-          centerCameraAt(selProv.x, selProv.y, nextZ);
-        });
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
         setPortalBanner(
           `🌍 Megamapa Continental de Vaeloria (${CONQUEST_PROVINCES.length} Províncias)`
         );
@@ -495,7 +493,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     [handleSwitchMapScope]
   );
 
-  // Center camera on player's capital on initial mount
+  // Place player's army pawn on their capital on initial mount while keeping 100% (1.0x) zoom
   const didInitialFocusRef = useRef(false);
   useEffect(() => {
     if (didInitialFocusRef.current) return;
@@ -505,13 +503,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     if (cap) {
       setPawnPos({ x: cap.x, y: cap.y });
       pawnPosRef.current = { x: cap.x, y: cap.y };
-      if (!isMobileViewport()) {
-        requestAnimationFrame(() => {
-          focusCameraOnPercent(cap.x, cap.y, 1.75);
-        });
-      }
     }
-  }, [playerFactionId, focusCameraOnPercent]);
+  }, [playerFactionId]);
 
   // Sync Sovereign pawn when selectedProvinceId changes externally
   useEffect(() => {
@@ -816,6 +809,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     const rect = canvasRef.current.getBoundingClientRect();
     const clickX = ((e.clientX - rect.left) / rect.width) * 100;
     const clickY = ((e.clientY - rect.top) / rect.height) * 100;
+    setClickedProvLabelId(null);
     startMarchTo(clickX, clickY);
   };
 
@@ -830,6 +824,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     const { prov, x, y } = entry;
     const dist = Math.hypot(pawnPos.x - x, pawnPos.y - y);
     lastSelectedRef.current = prov.id;
+    setClickedProvLabelId(prov.id);
     onSelectProvince(prov);
 
     if (
@@ -1353,13 +1348,13 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                           ? 1
                           : activeRegionalDef
                             ? isSelected || isHovered
-                              ? 0.88
-                              : 0.65
+                              ? 0.48
+                              : 0.3
                             : isSelected || isHovered
-                              ? 1
+                              ? 0.52
                               : isPlayerOwned
-                                ? 0.92
-                                : 0.74
+                                ? 0.38
+                                : 0.28
                       }
                       stroke={
                         isSelected
@@ -1512,72 +1507,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                   />
                 );
               })}
-
-              {activeRegionalDef &&
-                activeRegionalDef.portals.map((ptl) => {
-                  const anchor = positionedProvinces.reduce<PositionedProvinceEntry | null>(
-                    (best, cur) => {
-                      if (!best) return cur;
-                      const dCur = Math.hypot(cur.x - ptl.x, cur.y - ptl.y);
-                      const dBest = Math.hypot(best.x - ptl.x, best.y - ptl.y);
-                      return dCur < dBest ? cur : best;
-                    },
-                    null
-                  );
-                  if (!anchor) return null;
-                  return (
-                    <line
-                      key={`cqm-spur-${ptl.id}`}
-                      x1={(anchor.x / 100) * CONQUEST_MAP_WIDTH}
-                      y1={(anchor.y / 100) * CONQUEST_MAP_HEIGHT}
-                      x2={(ptl.x / 100) * CONQUEST_MAP_WIDTH}
-                      y2={(ptl.y / 100) * CONQUEST_MAP_HEIGHT}
-                      stroke="rgba(250, 204, 21, 0.58)"
-                      strokeWidth="4"
-                      strokeDasharray="12 9"
-                    />
-                  );
-                })}
             </g>
-
-            {/* 4. World Map Macro Titles (LOD 1 & 2) */}
-            {!activeRegionalDef && lodLevel <= 2 && (
-              <g filter="url(#cqmTextHalo)" pointerEvents="none" opacity={lodLevel === 1 ? 0.95 : 0.55}>
-                {VAELORIA_MAP_TERRITORIES.map((reg) => (
-                  <g
-                    key={`macro-${reg.id}`}
-                    transform={`translate(${(reg.labelX / 100) * CONQUEST_MAP_WIDTH}, ${
-                      (reg.labelY / 100) * CONQUEST_MAP_HEIGHT
-                    })`}
-                  >
-                    <text
-                      x="0"
-                      y="-18"
-                      textAnchor="middle"
-                      fill={reg.color}
-                      fontSize="22"
-                      fontWeight="900"
-                      letterSpacing="5"
-                      fontFamily="Cinzel, serif"
-                    >
-                      {reg.cardinalLabel}
-                    </text>
-                    <text
-                      x="0"
-                      y="18"
-                      textAnchor="middle"
-                      fill="#fffbeb"
-                      fontSize="42"
-                      fontWeight="900"
-                      letterSpacing="6"
-                      fontFamily="Cinzel, serif"
-                    >
-                      {reg.name}
-                    </text>
-                  </g>
-                ))}
-              </g>
-            )}
 
             {/* 5. Local Micro-Settlements (162 Clickable Villages, Mines, Harbors, Shrines & Watchtowers!) */}
             {lodLevel >= 3 && atlasLayers.settlementsAndDistricts && (
@@ -1633,6 +1563,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                           fontSize={activeRegionalDef ? 22 : 13.5}
                           fontWeight="700"
                           fontFamily="Cinzel, serif"
+                          className="cqm-settlement-svg-label"
                         >
                           {ms.name}
                         </text>
@@ -1718,6 +1649,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             eraFilter={eraFilter}
             showUnifiedSettlements={false}
             highlightTarget={gazetteerHighlight}
+            inspectedNoteId={inspectedNote?.id ?? null}
             onInspectNote={setInspectedNote}
           />
 
@@ -1729,7 +1661,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 <button
                   key={lm.id}
                   type="button"
-                  className={`vwm-landmark-node ${isReady ? 'is-ready' : 'is-explored'}`}
+                  className={`vwm-landmark-node ${isReady ? 'is-ready' : 'is-explored'} ${
+                    lm.x < 16 ? 'is-edge-left' : lm.x > 84 ? 'is-edge-right' : ''
+                  } ${lm.y > 84 ? 'is-edge-bottom' : ''}`}
                   style={
                     {
                       left: `${lm.x}%`,
@@ -1783,9 +1717,12 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                   }}
                   title={`Marchar para ${targetDef.name} (${portal.sublabel})`}
                 >
-                  <span className="vwm-portal-icon">
-                    {portal.directionIcon} {targetDef.icon}
-                  </span>
+                  <span
+                    className="vwm-portal-dot"
+                    style={{ background: targetDef.accentColor }}
+                    aria-hidden="true"
+                  />
+                  <span className="vwm-portal-dir-badge">{portal.directionIcon}</span>
                   <span className="vwm-portal-texts">
                     <strong>{portal.label}</strong>
                     <small>{portal.sublabel}</small>
@@ -1807,6 +1744,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             const isUnderSiege = activeInvasion?.toProvinceId === prov.id;
             const isIsolated = Boolean(isolatedProvinceIds?.has(prov.id));
             const isDockedChallengeHere = canChallengeDocked && dockedProvince?.id === prov.id;
+            const showSubBadges = lodLevel >= 2 || isHovered || isSelected;
 
             const pinCounterScale =
               zoom > 1.6 ? Math.max(0.58, 1.15 / Math.sqrt(zoom)) : activeRegionalDef ? 1.12 : 1;
@@ -1837,8 +1775,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 onMouseLeave={() =>
                   setHoveredProvId((prev) => (prev === prov.id ? null : prev))
                 }
-                title={`${prov.name} (${ownerFaction.shortName}) • +${prov.supplyIncome}⚙️${
-                  isIsolated ? ' • ⚠️ Linha de Suprimento Cortada (-50%⚙️)' : ''
+                title={`${prov.name} (${ownerFaction.shortName}) • +${prov.supplyIncome} Suprimentos${
+                  isIsolated ? ' • Linha de Suprimento Cortada (-50%)' : ''
                 }`}
               >
                 <span className="cqm-pin-emblem">
@@ -1852,8 +1790,10 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                   {ownerFaction.icon}
                 </span>
 
-                {fortLvl > 0 && <span className="cqm-pin-fort-badge">🛡️{fortLvl}</span>}
-                {buildings[prov.id] && (
+                {showSubBadges && fortLvl > 0 && (
+                  <span className="cqm-pin-fort-badge">+{fortLvl}</span>
+                )}
+                {showSubBadges && buildings[prov.id] && (
                   <span
                     className="cqm-pin-bldg-badge"
                     title={PROVINCE_BUILDINGS[buildings[prov.id]].name}
@@ -1864,52 +1804,41 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 {isIsolated && (
                   <span
                     className="cqm-pin-truce-badge"
-                    title="Linha de Suprimento Cortada (-50%⚙️ & -4❤️)"
+                    title="Linha de Suprimento Cortada (-50% Suprimentos & -4 PV)"
                   >
-                    ⚠️
+                    !
                   </span>
                 )}
-                {!isIsolated && hasTruce && ownerId !== playerFactionId && (
+                {!isIsolated && showSubBadges && hasTruce && ownerId !== playerFactionId && (
                   <span className="cqm-pin-truce-badge" title="Trégua Diplomática Ativa">
-                    🕊️
+                    🕊
                   </span>
                 )}
 
-                {(prov.isCapital ||
-                  lodLevel >= 2 ||
-                  isSelected ||
-                  isHovered ||
-                  overlayMode !== 'political') && (
+                {(isHovered || clickedProvLabelId === prov.id) && (
                   <span className="cqm-prov-label">
                     <strong>{prov.name}</strong>
-                    {(lodLevel >= 3 ||
-                      isSelected ||
-                      isHovered ||
-                      overlayMode !== 'political') && (
-                      <em>
-                        {overlayMode === 'military'
-                          ? `❤️${20 + fortLvl * 4 + (prov.isCapital ? 8 : 0)} Guarnição${
-                              fortLvl > 0 ? ` • 🛡️Nv.${fortLvl}` : ''
-                            }${isAttackable ? ' • ⚔️ ALVO' : ''}`
-                          : overlayMode === 'leylines'
-                            ? `${REALM_WEATHER_PRESETS[entry.realm].icon} ${
-                                DOMAIN_META[prov.domain].shortName
-                              }${
-                                buildings[prov.id] === 'ley_sanctum'
-                                  ? ' • 🔮 Santuário'
-                                  : ''
+                    <em>
+                      {overlayMode === 'military'
+                        ? `Guarnição ${20 + fortLvl * 4 + (prov.isCapital ? 8 : 0)}${
+                            fortLvl > 0 ? ` • Fort. Nv.${fortLvl}` : ''
+                          }${isAttackable ? ' • ALVO' : ''}`
+                        : overlayMode === 'leylines'
+                          ? `${DOMAIN_META[prov.domain].shortName}${
+                              buildings[prov.id] === 'ley_sanctum'
+                                ? ' • Santuário'
+                                : ''
+                            }`
+                          : overlayMode === 'economy'
+                            ? `${
+                                isIsolated
+                                  ? `Isolada (+${Math.floor(prov.supplyIncome / 2)} Supr.)`
+                                  : `Suprida (+${prov.supplyIncome} Supr.)`
                               }`
-                            : overlayMode === 'economy'
-                              ? `${
-                                  isIsolated
-                                    ? `⚠️ Isolada (+${Math.floor(prov.supplyIncome / 2)}⚙️)`
-                                    : `✅ Suprida (+${prov.supplyIncome}⚙️)`
-                                }`
-                              : `${ownerFaction.shortName} • +${prov.supplyIncome}⚙️${
-                                  isAttackable ? ' • ⚔️ ALVO' : ''
-                                }`}
-                      </em>
-                    )}
+                            : `${ownerFaction.shortName} • +${prov.supplyIncome} Supr.${
+                                isAttackable ? ' • ALVO' : ''
+                              }`}
+                    </em>
                   </span>
                 )}
               </button>

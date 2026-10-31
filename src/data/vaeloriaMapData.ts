@@ -1,5 +1,17 @@
 import { Domain } from '../types/game';
 
+/**
+ * Resolve o domínio cromático primário visual/territorial de um Soberano.
+ * Soberanos Pentacromáticos (5 domínios) ou sem domínio resolvem sempre para `'neutral'`
+ * (Prata/Ouro Axial da Matriz), evitando que `domains[0] === 'red'` os pinte de vermelho.
+ */
+export function resolvePrimaryBossDomain(domains?: readonly Domain[]): Domain {
+  if (!domains || domains.length === 0 || domains.length >= 5) {
+    return 'neutral';
+  }
+  return domains[0];
+}
+
 export interface VaeloriaTerritoryRegion {
   id: string;
   domain: Domain;
@@ -71,10 +83,10 @@ export const VAELORIA_MAP_TERRITORIES: VaeloriaTerritoryRegion[] = [
     citadel: 'Caldeira Ancestral & Bigorna Partida',
     icon: '🔥',
     color: '#ef4444',
-    labelX: 51,
-    labelY: 34.5,
+    labelX: 48.5,
+    labelY: 28.5,
     anchorX: 51,
-    anchorY: 28,
+    anchorY: 27,
   },
   {
     id: 'territory_eclipse',
@@ -98,11 +110,11 @@ export const VAELORIA_MAP_TERRITORIES: VaeloriaTerritoryRegion[] = [
     subtitle: 'Torre dos Cinco Selos & Arena do Pacto',
     citadel: 'Torre dos Cinco Selos',
     icon: '☸',
-    color: '#e2e8f0',
+    color: '#cbd5e1',
     labelX: 50,
-    labelY: 62.5,
+    labelY: 45.2,
     anchorX: 50,
-    anchorY: 51,
+    anchorY: 48.5,
   },
   {
     id: 'territory_solaria',
@@ -130,25 +142,25 @@ export const VAELORIA_MAP_TERRITORIES: VaeloriaTerritoryRegion[] = [
     labelX: 50,
     labelY: 92,
     anchorX: 50,
-    anchorY: 78,
+    anchorY: 74,
   },
 ];
 
 export const VAELORIA_SUB_LANDMARKS: VaeloriaSubLandmark[] = [
-  { id: 'lm_dead_stars_sea', name: 'Mar das Estrelas Mortas', domain: 'blue', x: 14, y: 17 },
-  { id: 'lm_glass_spires', name: 'Agulhas de Safira', domain: 'blue', x: 74, y: 11 },
+  { id: 'lm_dead_stars_sea', name: 'Mar das Estrelas Mortas', domain: 'blue', x: 30.2, y: 16.5 },
+  { id: 'lm_glass_spires', name: 'Agulhas de Safira', domain: 'blue', x: 59.8, y: 10.2 },
   { id: 'lm_split_anvil', name: 'Bigorna Partida', domain: 'red', x: 51, y: 20.5 },
-  { id: 'lm_obsidian_cathedral', name: 'Catedral de Obsidiana', domain: 'purple', x: 29, y: 54.5 },
-  { id: 'lm_bone_marsh', name: 'Ossário da Costa', domain: 'purple', x: 21, y: 71 },
-  { id: 'lm_five_seals_tower', name: 'Arena do Pacto', domain: 'neutral', x: 50, y: 55.8 },
-  { id: 'lm_solar_mirrors', name: 'Espelhos Solares', domain: 'gold', x: 86, y: 36 },
-  { id: 'lm_dawn_ocean', name: 'Oceano da Alvorada', domain: 'gold', x: 90, y: 69 },
-  { id: 'lm_mother_tree', name: 'Árvore-Mãe', domain: 'green', x: 50, y: 67.5 },
-  { id: 'lm_fang_peninsula', name: 'Península das Presas', domain: 'green', x: 35, y: 89 },
+  { id: 'lm_obsidian_cathedral', name: 'Catedral de Obsidiana', domain: 'purple', x: 29.4, y: 50.8 },
+  { id: 'lm_bone_marsh', name: 'Ossário da Costa', domain: 'purple', x: 18.8, y: 63.5 },
+  { id: 'lm_five_seals_tower', name: 'Torre dos Cinco Selos', domain: 'neutral', x: 50, y: 48.5 },
+  { id: 'lm_solar_mirrors', name: 'Espelhos Solares', domain: 'gold', x: 80.8, y: 44 },
+  { id: 'lm_dawn_ocean', name: 'Costa da Alvorada', domain: 'gold', x: 81.5, y: 61.5 },
+  { id: 'lm_mother_tree', name: 'Árvore-Mãe', domain: 'green', x: 50.5, y: 74.5 },
+  { id: 'lm_fang_peninsula', name: 'Península das Presas', domain: 'green', x: 35, y: 83.5 },
 ];
 
 /**
- * COORDENADAS GEOGRÁFICAS CANÔNICAS DOS 26 ESTÁGIOS DA CAMPANHA
+ * COORDENADAS GEOGRÁFICAS CANÔNICAS DOS 32 ESTÁGIOS DA CAMPANHA
  * Posicionados exatamente sobre os marcos ilustrados do continente de Vaeloria.
  */
 export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
@@ -156,8 +168,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_1_goblin_king: {
     bossId: 'boss_stage_1_goblin_king',
     stage: 1,
-    x: 40,
-    y: 69.5,
+    x: 41.2,
+    y: 68.5,
     regionName: 'Veridia Setentrional',
     landmarkName: 'Matas Espinhosas do Norte',
     territoryDomain: 'green',
@@ -165,8 +177,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_2_storm_oracle: {
     bossId: 'boss_stage_2_storm_oracle',
     stage: 2,
-    x: 73,
-    y: 18,
+    x: 72.5,
+    y: 14.6,
     regionName: 'Arquipélago de Vórtex',
     landmarkName: 'Monólito Tempestuoso de Safira',
     territoryDomain: 'blue',
@@ -174,8 +186,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_3_solar_arbiter: {
     bossId: 'boss_stage_3_solar_arbiter',
     stage: 3,
-    x: 71,
-    y: 43.5,
+    x: 71.5,
+    y: 42.8,
     regionName: 'Solária Central',
     landmarkName: 'Grande Domo da Cidadela Solar',
     territoryDomain: 'gold',
@@ -183,11 +195,11 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_4_solar_wild: {
     bossId: 'boss_stage_4_solar_wild',
     stage: 4,
-    x: 74,
-    y: 56,
-    regionName: 'Fronteira Solária–Veridia',
-    landmarkName: 'Jardins Suspensos da Aurora Silvestre',
-    territoryDomain: 'gold',
+    x: 63.5,
+    y: 63.5,
+    regionName: 'Veridia Nordeste',
+    landmarkName: 'Terraços do Estuário de Jade & Aurora Silvestre',
+    territoryDomain: 'green',
   },
 
   // ATO II — Os Pactos Dualistas (5–8)
@@ -204,16 +216,16 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
     bossId: 'boss_stage_6_storm_dragon',
     stage: 6,
     x: 43.5,
-    y: 19,
-    regionName: 'Fronteira Pyros–Vórtex',
+    y: 22.5,
+    regionName: 'Crista Rúnica de Pyros',
     landmarkName: 'Observatório Piro-Rúnico',
     territoryDomain: 'red',
   },
   boss_stage_7_eternal_rot: {
     bossId: 'boss_stage_7_eternal_rot',
     stage: 7,
-    x: 29.5,
-    y: 68.5,
+    x: 28.5,
+    y: 66.5,
     regionName: 'Fronteira Eclipse–Veridia',
     landmarkName: 'Pântano Negro sob o Eclipse',
     territoryDomain: 'purple',
@@ -221,8 +233,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_8_iron_inquisition: {
     bossId: 'boss_stage_8_iron_inquisition',
     stage: 8,
-    x: 29,
-    y: 49.5,
+    x: 29.4,
+    y: 50.8,
     regionName: 'Vale do Eclipse',
     landmarkName: 'Catedral Gótica de Obsidiana',
     territoryDomain: 'purple',
@@ -241,7 +253,7 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_10_eternal_reliquary: {
     bossId: 'boss_stage_10_eternal_reliquary',
     stage: 10,
-    x: 76,
+    x: 75.5,
     y: 34.5,
     regionName: 'Alto Norte de Solária',
     landmarkName: 'Santuário do Relicário Eterno',
@@ -250,7 +262,7 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_11_blood_moon: {
     bossId: 'boss_stage_11_blood_moon',
     stage: 11,
-    x: 20.5,
+    x: 18.8,
     y: 63.5,
     regionName: 'Costa Sudoeste do Eclipse',
     landmarkName: 'Ossário Real da Lua Sangrenta',
@@ -259,8 +271,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_12_draconic_council: {
     bossId: 'boss_stage_12_draconic_council',
     stage: 12,
-    x: 65.5,
-    y: 34.5,
+    x: 64.2,
+    y: 33.8,
     regionName: 'Cordilheira Piro-Solar',
     landmarkName: 'Portões das Escamas Imperiais',
     territoryDomain: 'red',
@@ -279,8 +291,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_6_valkyra: {
     bossId: 'boss_stage_6_valkyra',
     stage: 14,
-    x: 45,
-    y: 44,
+    x: 44.8,
+    y: 43.8,
     regionName: 'Fronteira Cinzenta Noroeste',
     landmarkName: 'Monólito da Primeira Torre Cinzenta',
     territoryDomain: 'neutral',
@@ -290,10 +302,10 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_15_siege_battery: {
     bossId: 'boss_stage_15_siege_battery',
     stage: 15,
-    x: 60,
-    y: 31,
+    x: 60.5,
+    y: 30.8,
     regionName: 'Leste de Pyros',
-    landmarkName: 'Cratera Ardente da Bateria Astral',
+    landmarkName: 'Bastião da Caldeira Boreal',
     territoryDomain: 'red',
   },
   boss_stage_16_thousand_shields: {
@@ -308,35 +320,35 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_17_abyssal_chimera: {
     bossId: 'boss_stage_17_abyssal_chimera',
     stage: 17,
-    x: 36,
-    y: 13.5,
-    regionName: 'Ilhas Glaciais Ocidentais',
-    landmarkName: 'Pináculo de Gelo e Chama Necrótica',
+    x: 24.5,
+    y: 31,
+    regionName: 'Escarpa Boreal do Eclipse',
+    landmarkName: 'Pináculo da Quimera Necrótica',
     territoryDomain: 'purple',
   },
   boss_stage_18_crimson_sun: {
     bossId: 'boss_stage_18_crimson_sun',
     stage: 18,
-    x: 35.5,
-    y: 44.5,
-    regionName: 'Escarpa Crepuscular',
-    landmarkName: 'Corte do Sol Carmesim',
-    territoryDomain: 'gold',
+    x: 38,
+    y: 34.5,
+    regionName: 'Garganta Sudoeste de Pyros',
+    landmarkName: 'Bastião do Sol Carmesim',
+    territoryDomain: 'red',
   },
   boss_stage_19_astral_cataclysm: {
     bossId: 'boss_stage_19_astral_cataclysm',
     stage: 19,
-    x: 30.5,
-    y: 22,
-    regionName: 'Estreito Polar Ocidental',
-    landmarkName: 'Fossa das Estrelas Mortas',
+    x: 38.8,
+    y: 18.8,
+    regionName: 'Banquisa Polar Ocidental',
+    landmarkName: 'Promontório das Estrelas Mortas',
     territoryDomain: 'blue',
   },
   boss_stage_20_supreme_valkyra: {
     bossId: 'boss_stage_20_supreme_valkyra',
     stage: 20,
-    x: 55.5,
-    y: 44,
+    x: 55.8,
+    y: 43.8,
     regionName: 'Fronteira Cinzenta Nordeste',
     landmarkName: 'Monólito do Prisma Infinito',
     territoryDomain: 'neutral',
@@ -346,17 +358,17 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_21_crater_armada: {
     bossId: 'boss_stage_21_crater_armada',
     stage: 21,
-    x: 58,
-    y: 19.5,
-    regionName: 'Estreito Boreal Pyros–Vórtex',
-    landmarkName: 'Corredor Aéreo das Armadas',
+    x: 58.5,
+    y: 24,
+    regionName: 'Cordilheira Boreal de Pyros',
+    landmarkName: 'Poleiros da Armada da Cratera',
     territoryDomain: 'red',
   },
   boss_stage_22_eclipse_zenith_armada: {
     bossId: 'boss_stage_22_eclipse_zenith_armada',
     stage: 22,
-    x: 83.5,
-    y: 43,
+    x: 80.8,
+    y: 44,
     regionName: 'Falésias Orientais de Solária',
     landmarkName: 'Torres dos Espelhos do Zênite',
     territoryDomain: 'gold',
@@ -364,10 +376,10 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_23_refraction_triad: {
     bossId: 'boss_stage_23_refraction_triad',
     stage: 23,
-    x: 41,
-    y: 54.5,
-    regionName: 'Anel Ocidental do Prisma',
-    landmarkName: 'Cristal dos Arautos e Pactuários',
+    x: 34.5,
+    y: 52.5,
+    regionName: 'Escarpa Oriental do Eclipse',
+    landmarkName: 'Obelisco dos Arautos e Pactuários',
     territoryDomain: 'purple',
   },
   boss_stage_24_primal_volcanic_wheels: {
@@ -382,17 +394,17 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_25_celestial_funeral_wheels: {
     bossId: 'boss_stage_25_celestial_funeral_wheels',
     stage: 25,
-    x: 59,
-    y: 54.5,
-    regionName: 'Anel Oriental do Prisma',
-    landmarkName: 'Tribunal das Três Rodas',
+    x: 65.5,
+    y: 48.5,
+    regionName: 'Terraços Ocidentais de Solária',
+    landmarkName: 'Tribunal das Rodas Solares',
     territoryDomain: 'gold',
   },
   boss_stage_26_vaelkor_supreme_wheel: {
     bossId: 'boss_stage_26_vaelkor_supreme_wheel',
     stage: 26,
     x: 50,
-    y: 50.5,
+    y: 48.5,
     regionName: 'Umbigo Axial de Vaeloria',
     landmarkName: 'Torre dos Cinco Selos • Eixo da Roda Matriz',
     territoryDomain: 'neutral',
@@ -402,17 +414,17 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_27_underforge_colossus: {
     bossId: 'boss_stage_27_underforge_colossus',
     stage: 27,
-    x: 89.5,
-    y: 15,
-    regionName: 'Infraforja de Ignaroth',
+    x: 51.5,
+    y: 34.5,
+    regionName: 'Infraforja de Ignaroth (Sob Pyros)',
     landmarkName: 'Núcleo da Bigorna do Manto Magmático',
     territoryDomain: 'red',
   },
   boss_stage_28_astral_leviathan: {
     bossId: 'boss_stage_28_astral_leviathan',
     stage: 28,
-    x: 11.5,
-    y: 14,
+    x: 31,
+    y: 15.8,
     regionName: 'Ilhas das Estrelas Mortas',
     landmarkName: 'Olho Gravitacional do Meteoro Caído',
     territoryDomain: 'blue',
@@ -420,8 +432,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_29_drowned_patriarch: {
     bossId: 'boss_stage_29_drowned_patriarch',
     stage: 29,
-    x: 7.5,
-    y: 51,
+    x: 17.5,
+    y: 52.8,
     regionName: 'Fossa Submersa de Thalassor',
     landmarkName: 'Catedral Afogada de Coral Negro',
     territoryDomain: 'purple',
@@ -429,8 +441,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_30_amber_progenitor: {
     bossId: 'boss_stage_30_amber_progenitor',
     stage: 30,
-    x: 79,
-    y: 86,
+    x: 49.5,
+    y: 87.5,
     regionName: 'Raízes Abissais de Yggdrakon',
     landmarkName: 'Santuário do Coração de Âmbar Vivo',
     territoryDomain: 'green',
@@ -438,8 +450,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_31_zenith_seraph: {
     bossId: 'boss_stage_31_zenith_seraph',
     stage: 31,
-    x: 91,
-    y: 65,
+    x: 85.3,
+    y: 40.5,
     regionName: 'Bastilhas Celestes do Zênite',
     landmarkName: 'Trono Empíreo Acima das Nuvens',
     territoryDomain: 'gold',
@@ -447,8 +459,8 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
   boss_stage_32_fracture_architect: {
     bossId: 'boss_stage_32_fracture_architect',
     stage: 32,
-    x: 17,
-    y: 85,
+    x: 50,
+    y: 55.8,
     regionName: 'Cratera do Prisma Partido',
     landmarkName: 'Singularidade da Primeira Fratura',
     territoryDomain: 'neutral',
@@ -462,8 +474,8 @@ export const EXPEDITION_STAGE_MAP_NODES: Record<string, VaeloriaStageMapNode> = 
   exp_boss_1: {
     bossId: 'exp_boss_1',
     stage: 1,
-    x: 37,
-    y: 83,
+    x: 35,
+    y: 83.5,
     regionName: 'Península Sul de Veridia',
     landmarkName: 'Mata Petrificada do Limiar',
     territoryDomain: 'green',
@@ -471,8 +483,8 @@ export const EXPEDITION_STAGE_MAP_NODES: Record<string, VaeloriaStageMapNode> = 
   exp_boss_2: {
     bossId: 'exp_boss_2',
     stage: 2,
-    x: 73,
-    y: 18,
+    x: 72.5,
+    y: 14.6,
     regionName: 'Arquipélago de Vórtex',
     landmarkName: 'Monólito de Safira',
     territoryDomain: 'blue',
@@ -480,8 +492,8 @@ export const EXPEDITION_STAGE_MAP_NODES: Record<string, VaeloriaStageMapNode> = 
   exp_boss_3: {
     bossId: 'exp_boss_3',
     stage: 3,
-    x: 71,
-    y: 43.5,
+    x: 71.5,
+    y: 42.8,
     regionName: 'Solária Central',
     landmarkName: 'Forjas do Domo Solar',
     territoryDomain: 'gold',
@@ -489,8 +501,8 @@ export const EXPEDITION_STAGE_MAP_NODES: Record<string, VaeloriaStageMapNode> = 
   exp_boss_4: {
     bossId: 'exp_boss_4',
     stage: 4,
-    x: 29,
-    y: 49.5,
+    x: 29.4,
+    y: 50.8,
     regionName: 'Vale do Eclipse',
     landmarkName: 'Catedral dos Ecos Abissais',
     territoryDomain: 'purple',
@@ -516,8 +528,8 @@ export const EXPEDITION_STAGE_MAP_NODES: Record<string, VaeloriaStageMapNode> = 
   exp_boss_7_armada: {
     bossId: 'exp_boss_7_armada',
     stage: 7,
-    x: 51,
-    y: 25,
+    x: 58.5,
+    y: 24,
     regionName: 'Céus da Bigorna Partida',
     landmarkName: 'Esquadrões Alados da Fenda',
     territoryDomain: 'red',
@@ -525,17 +537,17 @@ export const EXPEDITION_STAGE_MAP_NODES: Record<string, VaeloriaStageMapNode> = 
   exp_boss_8_valkyra: {
     bossId: 'exp_boss_8_valkyra',
     stage: 8,
-    x: 50.5,
-    y: 74.5,
-    regionName: 'Santuário da Árvore-Mãe',
-    landmarkName: 'Convergência das Raízes e do Prisma',
-    territoryDomain: 'green',
+    x: 40.6,
+    y: 51,
+    regionName: 'Bastião Oeste da Matriz',
+    landmarkName: 'Santuário Axial de Valkyra',
+    territoryDomain: 'neutral',
   },
   exp_boss_9_vaelkor: {
     bossId: 'exp_boss_9_vaelkor',
     stage: 9,
     x: 50,
-    y: 50.5,
+    y: 48.5,
     regionName: 'Centro Axial de Vaeloria',
     landmarkName: 'Torre dos Cinco Selos • Eixo da Roda Matriz',
     territoryDomain: 'neutral',

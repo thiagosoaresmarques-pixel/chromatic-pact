@@ -1428,7 +1428,7 @@ export function getLandmarkEventDef(
           : realmDef.tier === 'deep_frontier'
             ? 'Selar Pacto da Fronteira Profunda'
             : 'Invocar Pacto Ancestral do Santuário',
-    icon: realmDef.tier === 'imperial_capital' ? '👑' : '💎',
+    icon: 'III',
     flavorOutcome:
       realmDef.tier === 'imperial_capital'
         ? 'A corte soberana da Cidadela concede Estilhaços Reais e convergência tática imediata para sua marcha.'
@@ -1436,20 +1436,30 @@ export function getLandmarkEventDef(
     buffKind: 'ancestral_pact',
   };
 
+  const cleanOutcomeText = (text: string): string =>
+    text
+      .replace(/\+1⚡/g, '+1')
+      .replace(/\+1🛡️\s*(?:de\s+(?:Armadura|proteção))?/gi, (m) =>
+        /armadura|proteção/i.test(m) ? m.replace('🛡️', '') : '+1 de Armadura'
+      )
+      .replace(/[⚡🛡️❤️🪙💎🃏⚙️]/g, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
   if (custom) {
     const choices: OverworldEventChoiceDef[] = [
       {
         id: 'choice_a',
-        title: custom.choiceATitle.trim(),
-        icon: custom.choiceAIcon,
-        flavorOutcome: custom.choiceAOutcome,
+        title: custom.choiceATitle.replace('ExumarJoias', 'Exumar Joias').trim(),
+        icon: 'I',
+        flavorOutcome: cleanOutcomeText(custom.choiceAOutcome),
         buffKind: custom.buffKind,
       },
       {
         id: 'choice_b',
         title: custom.choiceBTitle.trim(),
-        icon: custom.choiceBIcon,
-        flavorOutcome: custom.choiceBOutcome,
+        icon: 'II',
+        flavorOutcome: cleanOutcomeText(custom.choiceBOutcome),
         buffKind: custom.buffKind,
       },
     ];
@@ -1470,14 +1480,14 @@ export function getLandmarkEventDef(
     {
       id: 'choice_a',
       title: 'Recolher Tributos Locais',
-      icon: '🪙',
+      icon: 'I',
       flavorOutcome: 'Recursos estratégicos foram integrados à sua marcha.',
       buffKind: 'vitality',
     },
     {
       id: 'choice_b',
       title: 'Preparar Formação de Combate',
-      icon: '⚔️',
+      icon: 'II',
       flavorOutcome: 'Suas tropas marcham fortalecidas para o próximo embate.',
       buffKind: 'vitality',
     },
@@ -1533,8 +1543,8 @@ function buildFieldBuffFromKind(
       vanguardArmorBonus: 0,
       bonusOpeningDraw: 1,
       summaryLabel: isExpedition
-        ? '+1⚡ Essência, +1🃏 Compra & +4❤️ PV'
-        : '+1⚡ Essência, +1🃏 Compra & +2❤️ PV',
+        ? '+1 Essência • +1 Compra • +4 PV'
+        : '+1 Essência • +1 Compra • +2 PV',
     };
   }
   if (kind === 'essence') {
@@ -1545,7 +1555,7 @@ function buildFieldBuffFromKind(
       bonusHp: isExpedition ? 3 : 0,
       bonusOpeningEssence: 1,
       vanguardArmorBonus: 0,
-      summaryLabel: isExpedition ? '+1⚡ Essência Inicial & +3❤️ PV' : '+1⚡ Essência Inicial',
+      summaryLabel: isExpedition ? '+1 Essência Inicial • +3 PV' : '+1 Essência Inicial',
     };
   }
   if (kind === 'bastion') {
@@ -1557,8 +1567,8 @@ function buildFieldBuffFromKind(
       bonusOpeningEssence: 0,
       vanguardArmorBonus: 1,
       summaryLabel: isExpedition
-        ? '+1🛡️ Vanguarda & +3❤️ PV'
-        : '+1🛡️ Vanguarda & +2❤️ PV',
+        ? '+1 Armadura Vanguarda • +3 PV'
+        : '+1 Armadura Vanguarda • +2 PV',
     };
   }
   return {
@@ -1568,7 +1578,7 @@ function buildFieldBuffFromKind(
     bonusHp: isExpedition ? 7 : 5,
     bonusOpeningEssence: 0,
     vanguardArmorBonus: 0,
-    summaryLabel: isExpedition ? '+7❤️ PV Inicial' : '+5❤️ PV Inicial',
+    summaryLabel: isExpedition ? '+7 PV Inicial' : '+5 PV Inicial',
   };
 }
 
@@ -1582,7 +1592,7 @@ export function resolveLandmarkChoicePreview(
   if (mode === 'campaign') {
     if (choice.id === 'choice_a') {
       return {
-        rewardBadge: '+20 🪙 Ouro & Crônica Descoberta',
+        rewardBadge: '+20 Ouro • Crônica Descoberta',
         goldDelta: 20,
         suppliesDelta: 0,
         shardsDelta: 0,
@@ -1599,7 +1609,7 @@ export function resolveLandmarkChoicePreview(
         false
       );
       return {
-        rewardBadge: `+15 💎 Estilhaços & Pacto (${buff.summaryLabel})`,
+        rewardBadge: `+15 Estilhaços • Pacto (${buff.summaryLabel})`,
         goldDelta: 0,
         suppliesDelta: 0,
         shardsDelta: 15,
@@ -1615,7 +1625,7 @@ export function resolveLandmarkChoicePreview(
       false
     );
     return {
-      rewardBadge: `+10 🪙 Ouro & Bênção (${buff.summaryLabel})`,
+      rewardBadge: `+10 Ouro • Bênção (${buff.summaryLabel})`,
       goldDelta: 10,
       suppliesDelta: 0,
       shardsDelta: 0,
@@ -1629,8 +1639,8 @@ export function resolveLandmarkChoicePreview(
       const card = pickDeterministicDomainCard(eventDef.landmarkId, realmDef.domain, false);
       return {
         rewardBadge: card
-          ? `🃏 Recrutar [${card.name}] + 15 🪙 Ouro`
-          : '+25 🪙 Ouro da Expedição',
+          ? `Recrutar [${card.name}] • +15 Ouro`
+          : '+25 Ouro da Expedição',
         goldDelta: card ? 15 : 25,
         suppliesDelta: 0,
         shardsDelta: 0,
@@ -1649,8 +1659,8 @@ export function resolveLandmarkChoicePreview(
       );
       return {
         rewardBadge: card
-          ? `💎 Lenda [${card.name}] & Pacto (${buff.summaryLabel})`
-          : `💎 Pacto Ancestral (${buff.summaryLabel})`,
+          ? `Lenda [${card.name}] • Pacto (${buff.summaryLabel})`
+          : `Pacto Ancestral (${buff.summaryLabel})`,
         goldDelta: 0,
         suppliesDelta: 0,
         shardsDelta: 10,
@@ -1666,7 +1676,7 @@ export function resolveLandmarkChoicePreview(
       true
     );
     return {
-      rewardBadge: `✦ Bênção Roguelike (${buff.summaryLabel})`,
+      rewardBadge: `Bênção de Campo (${buff.summaryLabel})`,
       goldDelta: 0,
       suppliesDelta: 0,
       shardsDelta: 0,
@@ -1678,7 +1688,7 @@ export function resolveLandmarkChoicePreview(
   // mode === 'conquest'
   if (choice.id === 'choice_a') {
     return {
-      rewardBadge: '+35 ⚙️ Suprimentos Imperiais',
+      rewardBadge: '+35 Suprimentos Imperiais',
       goldDelta: 0,
       suppliesDelta: 35,
       shardsDelta: 0,
@@ -1695,7 +1705,7 @@ export function resolveLandmarkChoicePreview(
       false
     );
     return {
-      rewardBadge: `+25 ⚙️ Suprimentos, +4 💎 & Cerco (${buff.summaryLabel})`,
+      rewardBadge: `+25 Suprimentos • +4 Estilhaços • Cerco (${buff.summaryLabel})`,
       goldDelta: 0,
       suppliesDelta: 25,
       shardsDelta: 4,
@@ -1711,7 +1721,7 @@ export function resolveLandmarkChoicePreview(
     false
   );
   return {
-    rewardBadge: `+15 ⚙️ Suprimentos & Bônus de Cerco (${buff.summaryLabel})`,
+    rewardBadge: `+15 Suprimentos • Bônus de Cerco (${buff.summaryLabel})`,
     goldDelta: 0,
     suppliesDelta: 15,
     shardsDelta: 0,

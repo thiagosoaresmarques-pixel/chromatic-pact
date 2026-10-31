@@ -113,8 +113,8 @@ export interface AtlasLayerVisibility {
 export const DEFAULT_ATLAS_LAYER_VISIBILITY: AtlasLayerVisibility = {
   hydrographyAndRoutes: true,
   reliefAndToponyms: true,
-  leyLines: true,
-  livingTraffic: true,
+  leyLines: false,
+  livingTraffic: false,
   settlementsAndDistricts: true,
   historicalEras: false,
 };
@@ -170,7 +170,7 @@ export const VAELORIA_HISTORICAL_ERAS: VaeloriaHistoricalEraDef[] = [
     shortLabel: '1 D.F. • Fratura',
     title: 'A Grande Fratura do Prisma Primordial',
     cantoLabel: 'Canto I — A Gênese Partida',
-    accentColor: '#f472b6',
+    accentColor: '#cbd5e1',
     summary:
       'O Núcleo Uno estilhaça-se no centro continental, rasgando a Cratera Prismática e derramando os cinco rios elementais de Ley.',
   },
@@ -229,10 +229,10 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
       'Aqui a luz primordial partiu-se em cinco espectros irreconciliáveis, vitrificando a planície central.',
     domain: 'neutral',
     worldX: 50,
-    worldY: 54,
+    worldY: 55.8,
     regionalScope: 'prismatic_crater',
     regionalX: 50,
-    regionalY: 50,
+    regionalY: 56,
     nativeCardIds: ['neutral_167_arauto_prisma_matriz', 'neutral_173_general_roda_matriz', 'neutral_60_calice_infinito'],
   },
   {
@@ -246,11 +246,11 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     loreNote:
       'As costelas petrificadas ainda canalizam marés arcanas e servem de farol natural aos navegadores.',
     domain: 'blue',
-    worldX: 28,
-    worldY: 22,
+    worldX: 29.5,
+    worldY: 18.2,
     regionalScope: 'sea_of_storms',
-    regionalX: 37,
-    regionalY: 34,
+    regionalX: 40,
+    regionalY: 33,
     nativeCardIds: ['blue_07_kraken', 'blue_98_soberano_mares', 'blue_136_leviata_cronos'],
   },
   {
@@ -267,8 +267,8 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     worldX: 52,
     worldY: 79,
     regionalScope: 'deep_roots',
-    regionalX: 50,
-    regionalY: 56,
+    regionalX: 52,
+    regionalY: 65,
     nativeCardIds: ['green_50_avatar_gaia', 'green_108_semente_mundo', 'green_161_dragao_esmeralda_primordial'],
   },
   {
@@ -318,8 +318,8 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     loreNote:
       'Desde então, nenhum navio hostil ousa cruzar o horizonte leste sob o sol do meio-dia.',
     domain: 'gold',
-    worldX: 83,
-    worldY: 39,
+    worldX: 80.8,
+    worldY: 42.5,
     regionalScope: 'capital_solaria',
     regionalX: 71,
     regionalY: 35,
@@ -336,11 +336,11 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     loreNote:
       'O tempo próprio das marés foi retardado em torno do Pináculo Polar, tornando suas muralhas inexpugnáveis.',
     domain: 'blue',
-    worldX: 49,
-    worldY: 12,
+    worldX: 51.5,
+    worldY: 9.2,
     regionalScope: 'capital_vortex',
-    regionalX: 51,
-    regionalY: 44,
+    regionalX: 39.5,
+    regionalY: 48.0,
     nativeCardIds: ['blue_81_arconte_cronos', 'blue_125_astrolabio_infinito', 'blue_173_general_roda_gelo'],
   },
   {
@@ -354,8 +354,8 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     loreNote:
       'Ainda hoje carcaças douradas e escamas rubras repousam sobre os arcos suspensos acima das tempestades.',
     domain: 'red',
-    worldX: 66,
-    worldY: 28,
+    worldX: 63.5,
+    worldY: 27.5,
     regionalScope: 'boreal_skyway',
     regionalX: 61,
     regionalY: 45,
@@ -372,8 +372,8 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     loreNote:
       'Feitiços gravitacionais e necromancia marítima fundiram-se num vórtice perpétuo vigiado por dois faróis.',
     domain: 'blue',
-    worldX: 35,
-    worldY: 62,
+    worldX: 75,
+    worldY: 63,
     regionalScope: 'sea_of_storms',
     regionalX: 50,
     regionalY: 53,
@@ -393,8 +393,8 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     worldX: 64,
     worldY: 73,
     regionalScope: 'veridia',
-    regionalX: 78,
-    regionalY: 32,
+    regionalX: 76,
+    regionalY: 70,
     nativeCardIds: ['green_21_colosso_pantano', 'green_137_lorde_treant_espinhos', 'green_145_emboscada_cipos'],
   },
   {
@@ -409,10 +409,10 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
       'Cinco espadas foram cravadas no pedestal central da Torre, substituindo guerras de extinção pelo Rito da Arena.',
     domain: 'neutral',
     worldX: 50,
-    worldY: 50,
+    worldY: 48.5,
     regionalScope: 'capital_axial',
-    regionalX: 50,
-    regionalY: 45,
+    regionalX: 44,
+    regionalY: 43,
     nativeCardIds: ['neutral_10_valkyra_pentacromatica', 'neutral_155_chamado_armas_fronteira', 'neutral_166_protocolo_torre_axial'],
   },
   {
@@ -429,8 +429,8 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     worldX: 45,
     worldY: 47,
     regionalScope: 'matrix',
-    regionalX: 36,
-    regionalY: 50,
+    regionalX: 33,
+    regionalY: 55,
     nativeCardIds: ['neutral_01_mercenario_veterano', 'neutral_92_senhor_guerra_fronteira', 'neutral_117_elminster_sabio_cinzento'],
   },
   {
@@ -444,11 +444,11 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     loreNote:
       'Quando o Sétimo Selo trincou, correntes milenares cederam revelando cidades inteiras sob o manto de lava.',
     domain: 'red',
-    worldX: 88,
-    worldY: 14,
+    worldX: 50.0,
+    worldY: 35.5,
     regionalScope: 'underforge',
-    regionalX: 51,
-    regionalY: 48,
+    regionalX: 57,
+    regionalY: 36,
     nativeCardIds: ['red_157_dragao_tiamat_carmesim', 'red_173_general_roda_chama', 'red_118_tita_basalto'],
   },
   {
@@ -462,11 +462,11 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     loreNote:
       'Sinos submersos tocaram sob mil braças de pressão, convocando frotas fantasmas de volta à superfície.',
     domain: 'purple',
-    worldX: 8,
-    worldY: 51,
+    worldX: 17.0,
+    worldY: 54.0,
     regionalScope: 'sunken_abyss',
-    regionalX: 53,
-    regionalY: 52,
+    regionalX: 54,
+    regionalY: 48,
     nativeCardIds: ['purple_173_general_roda_abismo', 'purple_162_apocalipse_necrotico', 'purple_136_dragao_espectral_abismo'],
   },
   {
@@ -480,11 +480,11 @@ export const VAELORIA_HISTORICAL_BATTLEFIELDS: HistoricalBattlefieldSite[] = [
     loreNote:
       'Pontes de luz sólida reconectaram os píeres de Aethelgard ao arquipélago suspenso das nuvens altas.',
     domain: 'gold',
-    worldX: 90,
-    worldY: 68,
+    worldX: 84.5,
+    worldY: 46.5,
     regionalScope: 'sky_bastions',
-    regionalX: 55,
-    regionalY: 36,
+    regionalX: 29,
+    regionalY: 57,
     nativeCardIds: ['gold_173_general_roda_sol', 'gold_46_arcanjo_supremo', 'gold_136_dragao_platina_celeste'],
   },
 ];
@@ -501,7 +501,7 @@ export const VAELORIA_CARTOGRAPHIC_PATHS: CartographicPathFeature[] = [
     name: 'Grande Rio Esmeralda',
     kind: 'river',
     domain: 'green',
-    points: [[50, 58], [52, 66], [56, 74], [63, 82], [68, 91]],
+    points: [[54, 58], [58.5, 65], [62.5, 70], [58.5, 75], [62, 81], [63.5, 89]],
     minLod: 1,
     trafficKind: 'caravan',
     trafficLabel: 'Barcaças de Seiva',
@@ -518,7 +518,7 @@ export const VAELORIA_CARTOGRAPHIC_PATHS: CartographicPathFeature[] = [
     name: 'Rio Alabastro da Aurora',
     kind: 'river',
     domain: 'gold',
-    points: [[62, 42], [69, 49], [75, 56], [83, 64]],
+    points: [[67, 38], [72, 46], [75.5, 55], [78.8, 61.5]],
     minLod: 2,
     trafficKind: 'caravan',
     trafficLabel: 'Comboio Aurífero',
@@ -566,7 +566,7 @@ export const VAELORIA_CARTOGRAPHIC_PATHS: CartographicPathFeature[] = [
     name: 'Rota Marítima das Estrelas Mortas',
     kind: 'sea_lane',
     domain: 'blue',
-    points: [[14, 18], [11, 32], [12, 48], [16, 68], [28, 86]],
+    points: [[24, 18], [15, 32], [13, 48], [16, 68], [28, 86]],
     minLod: 1,
     trafficKind: 'galleon',
     trafficLabel: 'Esquadra Quebra-Gelo',
@@ -634,7 +634,7 @@ export const VAELORIA_CARTOGRAPHIC_PATHS: CartographicPathFeature[] = [
     name: 'Eixo Equatorial de Ley Cromática',
     kind: 'ley_conduit',
     domain: 'neutral',
-    points: [[8, 51], [27, 51], [50, 51], [75, 46], [90, 68]],
+    points: [[17.5, 52.8], [27, 50], [50, 48.5], [72.5, 43], [85.0, 41.5]],
     minLod: 1,
     trafficKind: 'ley_pulse',
     trafficLabel: 'Fluxo Equatorial de Ley',
@@ -653,7 +653,7 @@ export const VAELORIA_CARTOGRAPHIC_PATHS: CartographicPathFeature[] = [
     name: 'Rio da Seiva Luminescente',
     kind: 'river',
     domain: 'green',
-    points: [[50, 12], [48, 34], [52, 54], [42, 74], [34, 92]],
+    points: [[62, 26], [61, 56], [58, 68], [55, 82]],
     minLod: 1,
     trafficKind: 'caravan',
     trafficLabel: 'Canoas Reais de Jade',
@@ -670,7 +670,7 @@ export const VAELORIA_CARTOGRAPHIC_PATHS: CartographicPathFeature[] = [
     name: 'Braço Oriental do Delta de Jade',
     kind: 'river',
     domain: 'green',
-    points: [[52, 54], [66, 62], [79, 44], [88, 28]],
+    points: [[63, 40], [79, 45], [86, 54], [79, 64], [83, 86]],
     minLod: 2,
     trafficKind: 'caravan',
     trafficLabel: 'Balsa de Especiarias',
@@ -850,7 +850,7 @@ export const VAELORIA_CARTOGRAPHIC_PATHS: CartographicPathFeature[] = [
     name: 'Canal dos Quebra-Gelos de Safira',
     kind: 'sea_lane',
     domain: 'blue',
-    points: [[12, 82], [32, 66], [48, 54], [72, 70], [88, 84]],
+    points: [[10, 74], [28, 70], [34, 60], [40, 56]],
     minLod: 1,
     trafficKind: 'galleon',
     trafficLabel: 'Fragata Polar de Latão',
@@ -894,7 +894,7 @@ export const VAELORIA_CARTOGRAPHIC_PATHS: CartographicPathFeature[] = [
     elevationLabel: '-1.400 m • Manto Superior',
     climateLabel: 'Ar Fornalha & Enxofre',
     cantoRef: 'Canto VII — As Forjas Ocultas',
-    loreNote: ' Alimenta os martelos automáticos da Infraforja de Ignaroth com magma sob pressão.',
+    loreNote: 'Alimenta os martelos automáticos da Infraforja de Ignaroth com magma sob pressão.',
     nativeCardIds: ['red_131_forjador_magma_anao', 'red_165_bigorna_fogo_primordial', 'red_62_colosso_obsidiana'],
   },
   {
@@ -903,7 +903,7 @@ export const VAELORIA_CARTOGRAPHIC_PATHS: CartographicPathFeature[] = [
     name: 'Estreito dos Cometas Submersos',
     kind: 'sea_lane',
     domain: 'blue',
-    points: [[14, 74], [34, 54], [56, 38], [84, 26]],
+    points: [[28, 88], [39, 72], [58, 54], [70, 35], [88, 28]],
     minLod: 1,
     trafficKind: 'galleon',
     trafficLabel: 'Nau do Observatório',
@@ -1432,8 +1432,8 @@ export const VAELORIA_CARTOGRAPHIC_TOPONYMS: CartographicToponymFeature[] = [
     name: 'DELTA FLUVIAL DE JADE',
     kind: 'sea',
     domain: 'green',
-    x: 78,
-    y: 34,
+    x: 76,
+    y: 76,
     lod: 1,
     angleDeg: 10,
     elevationLabel: '15 m • Várzea Esmeralda',
@@ -1785,8 +1785,8 @@ export const VAELORIA_CARTOGRAPHIC_TOPONYMS: CartographicToponymFeature[] = [
     name: 'GRANDE LAGO DE ÂMBAR VIVO',
     kind: 'sea',
     domain: 'green',
-    x: 52,
-    y: 62,
+    x: 50,
+    y: 57,
     lod: 1,
     elevationLabel: '-920 m • Bacia Radicular',
     climateLabel: 'Luminescência Dourada-Verde',
@@ -2091,8 +2091,8 @@ export const VAELORIA_CARTOGRAPHIC_TOPONYMS: CartographicToponymFeature[] = [
     name: 'Cabo do Solstício Dourado',
     kind: 'peak',
     domain: 'gold',
-    x: 84,
-    y: 74,
+    x: 77.8,
+    y: 63.2,
     lod: 2,
     elevationLabel: '+420 m • Promontório Sudeste',
     climateLabel: 'Brisa Atlântica Clara',
@@ -2480,8 +2480,8 @@ export const VAELORIA_CARTOGRAPHIC_TOPONYMS: CartographicToponymFeature[] = [
     name: 'Grande Arco da Sentinela Alada',
     kind: 'bridge',
     domain: 'gold',
-    x: 28,
-    y: 34,
+    x: 31,
+    y: 30,
     lod: 2,
     elevationLabel: '+5.250 m • Borda Oeste',
     climateLabel: 'Vento Limpo',
@@ -2496,7 +2496,7 @@ export const VAELORIA_CARTOGRAPHIC_TOPONYMS: CartographicToponymFeature[] = [
     kind: 'peak',
     domain: 'neutral',
     x: 50,
-    y: 32,
+    y: 38,
     lod: 2,
     elevationLabel: '-480 m • Terraço Interno',
     climateLabel: 'Arcos Voltaicos Cromáticos',
@@ -2577,7 +2577,7 @@ export function getCartographicPathsForScope(
   const effectiveLod: 1 | 2 | 3 = zoom >= 2.05 ? 3 : zoom >= 1.35 ? 2 : 1;
   return VAELORIA_CARTOGRAPHIC_PATHS.filter((p) => {
     if (p.scope !== scope) return false;
-    if (p.minLod > effectiveLod && scope === 'world') return false;
+    if (p.minLod > effectiveLod) return false;
     if (p.kind === 'ley_conduit') return layers.leyLines;
     return layers.hydrographyAndRoutes;
   });
@@ -2591,12 +2591,14 @@ export function getCartographicToponymsForScope(
   if (!layers.reliefAndToponyms) return [];
   const isCapital = scope.startsWith('capital_');
   const maxLod: 1 | 2 | 3 | 4 = isCapital
-    ? 4
+    ? zoom >= 1.8
+      ? 4
+      : 2
     : zoom >= 2.85
       ? 4
       : zoom >= 2.05
         ? 3
-        : zoom >= 1.35
+        : zoom >= 1.45
           ? 2
           : 1;
   return VAELORIA_CARTOGRAPHIC_TOPONYMS.filter(

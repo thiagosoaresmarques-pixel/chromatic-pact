@@ -9,6 +9,11 @@ import {
   AI_LEARNED_PROFILES,
   DeckLearnedAiProfile,
 } from '../data/aiLearnedProfiles';
+import {
+  getTrainedMonocolorPrebuiltDecks,
+  MONOCOLOR_ARCHETYPE_MASTERY,
+  MonocolorArchetypeId,
+} from '../data/aiMonocolorMastery';
 import { CardView, CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 
@@ -595,7 +600,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
         cardIds: cd.cardIds,
       };
     });
-    return [...PREBUILT_DECKS, ...customConverted];
+    return [...getTrainedMonocolorPrebuiltDecks(5), ...PREBUILT_DECKS, ...customConverted];
   }, [customDecks]);
 
   const [selectedPlayerDeckId, setSelectedPlayerDeckId] = useState<string>(
@@ -653,6 +658,9 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
   );
 
   const learnedAiProfile = useMemo<DeckLearnedAiProfile | null>(() => {
+    const monoDirect =
+      MONOCOLOR_ARCHETYPE_MASTERY[playerProfile.deck.id as MonocolorArchetypeId]?.learnedProfile;
+    if (monoDirect) return monoDirect;
     const direct = AI_LEARNED_PROFILES[playerProfile.deck.id];
     if (direct) return direct;
 

@@ -5,6 +5,7 @@
 // ============================================================================
 
 import { BiomeRealmId, CampaignBoss, Domain } from '../types/game';
+import { resolveCampaignBossGraduatedSetup } from './aiMonocolorMastery';
 import {
   VAELORIA_REGIONAL_MAPS,
   VaeloriaMapScope,
@@ -18317,6 +18318,16 @@ export const GRAND_CAMPAIGN_NODES: GrandCampaignEncounterNode[] = [
     }
   }
 ];
+
+// Hydrate all 190 Grand Campaign encounters with their Tier-graduated 100-card Monocolor/Prismatic Grimoires & trained Archetype IDs
+for (const node of GRAND_CAMPAIGN_NODES) {
+  node.boss.difficultyTier = node.tier;
+  const graduated = resolveCampaignBossGraduatedSetup(node.boss);
+  node.boss.deckId = graduated.archetypeId;
+  node.boss.archetypeId = graduated.archetypeId;
+  node.boss.archetypeTitle = graduated.archetypeTitle;
+  node.boss.customDeckCardIds = graduated.cardIds;
+}
 
 export const GRAND_CAMPAIGN_NODES_BY_ID: Record<string, GrandCampaignEncounterNode> = Object.fromEntries(
   GRAND_CAMPAIGN_NODES.map((n) => [n.id, n])

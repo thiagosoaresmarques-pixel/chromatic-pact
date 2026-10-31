@@ -1,8 +1,18 @@
-import { BoardUnit, CardDefinition, Domain, GameState, RowType } from '../types/game';
+import { AiSkillTier, BoardUnit, CardDefinition, Domain, GameState, RowType } from '../types/game';
 import {
+  BASELINE_AI_PROFILE,
   DeckLearnedAiProfile,
+  DEFAULT_AI_WEIGHTS,
   resolveLearnedProfileForActor,
 } from '../data/aiLearnedProfiles';
+import {
+  AI_SKILL_TIER_SPECS,
+  resolveDomainValueMlpForActor,
+} from '../data/aiMonocolorMastery';
+import {
+  evaluateStateWithValueMlp,
+  SerializedValueMlp,
+} from './aiValueNetwork';
 import {
   activateSimpleDomain,
   ascendUnit,
@@ -18,6 +28,7 @@ import {
   canUseSimpleDomain,
   canUseSovereignPower,
   channelCard,
+  cloneGameState,
   endTurn,
   executeAttack,
   findUnitOnBoard,
@@ -39,6 +50,119 @@ import {
 export interface AiProfileOverrides {
   player?: DeckLearnedAiProfile;
   ai?: DeckLearnedAiProfile;
+  playerSkillTier?: AiSkillTier;
+  aiSkillTier?: AiSkillTier;
+  playerValueMlp?: SerializedValueMlp | null;
+  aiValueMlp?: SerializedValueMlp | null;
+  /** Skips multi-ply Beam Search during bulk deck-evolution rollouts while preserving MLP & profile logic */
+  fastRollout?: boolean;
+}
+
+const TIER1_NAIVE_PROFILE: DeckLearnedAiProfile = {
+  ...BASELINE_AI_PROFILE,
+  deckId: 'tier1_patrol_naive',
+  deckName: 'Patrulha Iniciante',
+  archetypeTag: 'Iniciante',
+  weights: {
+    ...DEFAULT_AI_WEIGHTS,
+    aggroFaceBias: 1.05,
+    tradeValueBias: 0.72,
+    guardianPriority: 0.75,
+    spellHoldPatience: 0.55,
+    synergyHoldBonus: 0,
+    ascensionEagerness: 0.65,
+    domainExpansionEagerness: 0.7,
+    sovPowerTempoBias: 0.5,
+    mulliganCurveTarget: 5,
+  },
+  mulliganKeepIds: [],
+  channelPriorityIds: [],
+  channelAvoidIds: [],
+  highImpactCardBoosts: {},
+  synergyPairs: [],
+  discoveredCombos: [],
+};
+
+export function resolveSkillTierForActor(
+  state: GameState,
+  actor: 'player' | 'ai',
+  overrides?: AiProfileOverrides
+): AiSkillTier {
+  const explicitOverride =
+    actor === 'player' ? overrides?.playerSkillTier : overrides?.aiSkillTier;
+  if (explicitOverride) return explicitOverride;
+
+  const stateTier = actor === 'player' ? state.playerSkillTier : state.aiSkillTier;
+  if (stateTier) return stateTier;
+
+  if (actor === 'ai' && state.bossId) {
+    const m = state.bossId.match(/_t([1-5])_/);
+    if (m) return Number(m[1]) as AiSkillTier;
+  }
+
+  return 3;
+}
+
+function getValueMlpForActor(
+  state: GameState,
+  actor: 'player' | 'ai',
+  overrides?: AiProfileOverrides
+): SerializedValueMlp | null {
+  const custom = actor === 'player' ? overrides?.playerValueMlp : overrides?.aiValueMlp;
+  if (custom !== undefined) return custom;
+  return resolveDomainValueMlpForActor(state, actor);
+}
+
+/**
+ * Prepares a fair lookahead clone where hidden topdeck order is rotated so Beam Search / Value MLP
+ * never peeks at exact upcoming card draws.
+ */
+function createFairLookaheadState(state: GameState, actor: 'player' | 'ai'): GameState {
+  const cloned = cloneGameState(state);
+  const deck = cloned[actor].deck;
+  if (deck.length > 2) {
+    // Rotate deck by half its length so draw effects in lookahead don't reveal real topdeck
+    const pivot = deck.length >> 1;
+    cloned[actor].deck = [...deck.slice(pivot), ...deck.slice(0, pivot)];
+  }
+  return cloned;
+}
+
+/**
+ * Softmax selection over candidate indices given raw heuristic scores (~0..120 scale).
+ * At temperature <= 0.01, strictly deterministic argmax.
+ */
+function selectIndexWithTemperature(scores: number[], temperature: number): number {
+  if (scores.length === 0) return -1;
+  if (scores.length === 1 || temperature <= 0.01) {
+    let bestIdx = 0;
+    for (let i = 1; i < scores.length; i++) {
+      if (scores[i] > scores[bestIdx]) bestIdx = i;
+    }
+    return bestIdx;
+  }
+
+  let maxScore = scores[0];
+  for (let i = 1; i < scores.length; i++) {
+    if (scores[i] > maxScore) maxScore = scores[i];
+  }
+
+  const scale = Math.max(1.5, temperature * 18);
+  const weights = new Float64Array(scores.length);
+  let sum = 0;
+  for (let i = 0; i < scores.length; i++) {
+    const w = Math.exp(Math.max(-25, (scores[i] - maxScore) / scale));
+    weights[i] = w;
+    sum += w;
+  }
+
+  if (sum <= 0) return 0;
+  let r = Math.random() * sum;
+  for (let i = 0; i < weights.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return i;
+  }
+  return weights.length - 1;
 }
 
 function getProfileForActor(
@@ -46,8 +170,25 @@ function getProfileForActor(
   actor: 'player' | 'ai',
   overrides?: AiProfileOverrides
 ): DeckLearnedAiProfile {
+  const skillTier = resolveSkillTierForActor(state, actor, overrides);
+  if (skillTier === 1 && !(actor === 'player' ? overrides?.player : overrides?.ai)) {
+    return TIER1_NAIVE_PROFILE;
+  }
   const custom = actor === 'player' ? overrides?.player : overrides?.ai;
-  return resolveLearnedProfileForActor(state, actor, custom);
+  const resolved = resolveLearnedProfileForActor(state, actor, custom);
+  if (skillTier === 2 && !custom) {
+    return {
+      ...resolved,
+      weights: {
+        ...resolved.weights,
+        synergyHoldBonus: 0,
+      },
+      highImpactCardBoosts: {},
+      synergyPairs: [],
+      discoveredCombos: [],
+    };
+  }
+  return resolved;
 }
 
 function getPartnerCardIds(profile: DeckLearnedAiProfile, cardId: string): string[] {
@@ -72,11 +213,37 @@ function getPartnerCardIds(profile: DeckLearnedAiProfile, cardId: string): strin
 export function chooseMulliganIndicesForActor(
   state: GameState,
   actor: 'player' | 'ai' = 'ai',
-  customProfile?: DeckLearnedAiProfile
+  customProfile?: DeckLearnedAiProfile,
+  skillTierOverride?: AiSkillTier
 ): number[] {
   const actorState = state[actor];
   const hand = actorState.hand;
   if (hand.length === 0) return [];
+
+  const skillTier =
+    skillTierOverride ??
+    (actor === 'player' ? state.playerSkillTier : state.aiSkillTier) ??
+    (actor === 'ai' && state.bossId?.match(/_t([1-5])_/)
+      ? (Number(state.bossId.match(/_t([1-5])_/)![1]) as AiSkillTier)
+      : 3);
+
+  // Tier 1 (Patrol Novice): Naive mulligan — only swaps 7+ cost cards
+  if (skillTier === 1 && !customProfile) {
+    const naiveSwaps: number[] = [];
+    for (let i = 0; i < hand.length; i++) {
+      if (hand[i].cost >= 7) naiveSwaps.push(i);
+    }
+    return naiveSwaps;
+  }
+
+  // Tier 2 (Regular Garrison): Basic curve mulligan — swaps 6+ cost cards without channel-fodder planning
+  if (skillTier === 2 && !customProfile) {
+    const basicSwaps: number[] = [];
+    for (let i = 0; i < hand.length; i++) {
+      if (hand[i].cost >= 6) basicSwaps.push(i);
+    }
+    return basicSwaps;
+  }
 
   const profile = resolveLearnedProfileForActor(state, actor, customProfile);
   const w = profile.weights;
@@ -954,8 +1121,84 @@ function chooseTacticalRowManeuver(
 }
 
 /**
- * Chooses the best attack target for a ready unit, factoring in combined multi-unit lethal
- * and learned aggro vs value-trade weights.
+ * Estimates the unblocked face damage `enemyActor` threatens on their upcoming turn
+ * (1-ply Anti-Lethal Minimax safety check for Tier V Sovereign Apex AI).
+ */
+function estimateEnemyCounterLethalDamage(
+  state: GameState,
+  actor: 'player' | 'ai'
+): number {
+  const enemyActor: 'player' | 'ai' = actor === 'player' ? 'ai' : 'player';
+  const mySide = state[actor];
+  const enemySide = state[enemyActor];
+
+  const myUnits = getAllBoardUnits(mySide).filter(
+    (u) => !u.isTrap && u.card.type === 'creature' && u.currentHp > 0
+  );
+  const enemyUnits = getAllBoardUnits(enemySide).filter(
+    (u) => !u.isTrap && u.card.type === 'creature' && u.currentHp > 0 && !u.isFrozen
+  );
+  if (enemyUnits.length === 0) return 0;
+
+  if (isSureHitActiveFor(state, enemyActor)) {
+    return enemyUnits.reduce((sum, u) => sum + Math.max(0, u.currentAtk), 0);
+  }
+
+  let guardianEhpPool = 0;
+  const colVanguardEhp = new Float64Array(mySide.vanguardStacks.length);
+  const colAirBlocker = new Uint8Array(mySide.vanguardStacks.length);
+
+  for (const u of myUnits) {
+    const ehp = u.currentHp + Math.max(0, u.currentArmor) + (u.hasDivineShield ? 3 : 0);
+    if (!u.isFrozen && u.keywords.includes('Guardião')) {
+      guardianEhpPool += ehp;
+    } else if (u.row === 'vanguard') {
+      colVanguardEhp[u.slotIndex] += ehp;
+    }
+    if (!u.isFrozen && (u.keywords.includes('Voo') || u.keywords.includes('Alcance'))) {
+      colAirBlocker[u.slotIndex] = 1;
+    }
+  }
+
+  let projectedFaceDmg = 0;
+  // Sort enemy attackers strongest-first to simulate optimal enemy breakthrough
+  const sortedEnemy = enemyUnits.slice().sort((a, b) => b.currentAtk - a.currentAtk);
+
+  for (const eu of sortedEnemy) {
+    const atk = Math.max(0, eu.currentAtk);
+    if (atk <= 0) continue;
+
+    if (guardianEhpPool > 0) {
+      if (eu.keywords.includes('Atropelar') && atk > guardianEhpPool) {
+        projectedFaceDmg += atk - guardianEhpPool;
+      }
+      guardianEhpPool = Math.max(0, guardianEhpPool - atk);
+      continue;
+    }
+
+    const col = eu.slotIndex;
+    const isFlying = eu.keywords.includes('Voo');
+    if (isFlying && !colAirBlocker[col]) {
+      projectedFaceDmg += atk;
+      continue;
+    }
+
+    if (colVanguardEhp[col] > 0) {
+      if (eu.keywords.includes('Atropelar') && atk > colVanguardEhp[col]) {
+        projectedFaceDmg += atk - colVanguardEhp[col];
+      }
+      colVanguardEhp[col] = Math.max(0, colVanguardEhp[col] - atk);
+    } else {
+      projectedFaceDmg += atk;
+    }
+  }
+
+  return projectedFaceDmg;
+}
+
+/**
+ * Chooses the best attack target for a ready unit, factoring in combined multi-unit lethal,
+ * learned aggro vs value-trade weights, Tier Softmax temperature, and Tier V Anti-Lethal check.
  */
 function chooseBestTargetForAttacker(
   state: GameState,
@@ -963,10 +1206,12 @@ function chooseBestTargetForAttacker(
   validTargets: string[],
   actor: 'player' | 'ai' = 'ai',
   profile?: DeckLearnedAiProfile,
-  hasCombinedLethal = false
+  hasCombinedLethal = false,
+  skillTier: AiSkillTier = 3
 ): string | null {
   if (validTargets.length === 0) return null;
 
+  const tierSpec = AI_SKILL_TIER_SPECS[skillTier];
   const resolvedProfile = profile ?? resolveLearnedProfileForActor(state, actor);
   const w = resolvedProfile.weights;
   const actorState = state[actor];
@@ -976,19 +1221,30 @@ function chooseBestTargetForAttacker(
 
   const canHitFace = validTargets.includes(enemySovId);
 
+  // Tier 2+ always spots exact lethal; Tier 1 may occasionally miss multi-unit lethal
   if (
     canHitFace &&
+    skillTier >= 2 &&
     (hasCombinedLethal || isSureHitActiveFor(state, actor) || enemyState.hp <= attacker.currentAtk)
   ) {
     return enemySovId;
   }
 
+  const projectedCounterDmg =
+    tierSpec.antiLethalLookahead && !hasCombinedLethal
+      ? estimateEnemyCounterLethalDamage(state, actor)
+      : 0;
+  // Trigger anti-lethal defensive trading strictly when enemy has true board lethal next turn
+  // AND enemy Sovereign isn't already on the brink of falling to burn/follow-up
+  const counterLethalDanger =
+    projectedCounterDmg >= actorState.hp && enemyState.hp > attacker.currentAtk + 5;
+
   const isRangedFreeHit =
     attacker.row === 'rearguard' && attacker.keywords.includes('Alcance');
   const hasLethalTouch = attacker.keywords.includes('Toque Letal');
 
-  let bestTarget = validTargets[0];
-  let bestScore = -9999;
+  const candidateIds: string[] = [];
+  const candidateScores: number[] = [];
 
   for (const targetId of validTargets) {
     if (targetId === enemySovId) {
@@ -999,10 +1255,11 @@ function chooseBestTargetForAttacker(
       if (attacker.keywords.includes('Dreno de Vida') && actorState.hp < actorState.maxHp) {
         faceScore += 12;
       }
-      if (faceScore > bestScore) {
-        bestScore = faceScore;
-        bestTarget = targetId;
+      if (counterLethalDanger && !attacker.keywords.includes('Dreno de Vida')) {
+        faceScore -= 130;
       }
+      candidateIds.push(targetId);
+      candidateScores.push(faceScore);
       continue;
     }
 
@@ -1041,32 +1298,254 @@ function chooseBestTargetForAttacker(
       } else {
         tradeScore += (defender.card.cost - attacker.card.cost) * 8;
       }
+      if (counterLethalDanger && defender.currentAtk >= 2) {
+        tradeScore += 65 + defender.currentAtk * 8;
+      }
     } else if (defender.hasDivineShield && attacker.currentAtk <= 3) {
       tradeScore += 24 * w.tradeValueBias;
+      if (counterLethalDanger && defender.currentAtk >= 3) {
+        tradeScore += 25;
+      }
     } else if (defender.card.type === 'relic') {
       tradeScore += (18 + dmgToDef * 5) * w.tradeValueBias;
     } else {
       tradeScore += dmgToDef * 3 * w.tradeValueBias;
-      if (!attackerSurvives) {
+      if (!attackerSurvives && skillTier >= 2) {
         tradeScore -= 30;
       }
     }
 
-    if (isRangedFreeHit) {
+    if (isRangedFreeHit && skillTier >= 2) {
       tradeScore += 15;
     }
 
-    if (tradeScore > bestScore) {
-      bestScore = tradeScore;
-      bestTarget = targetId;
+    candidateIds.push(targetId);
+    candidateScores.push(tradeScore);
+  }
+
+  const pickedIdx = selectIndexWithTemperature(candidateScores, tierSpec.temperature);
+  return pickedIdx >= 0 ? candidateIds[pickedIdx] : validTargets[0];
+}
+
+type MainPhaseCandidateAction =
+  | {
+      kind: 'play_card';
+      handIndex: number;
+      cardId: string;
+      cardName: string;
+      cardCost: number;
+      options: { row?: RowType; slotIndex?: number; targetId?: string; asTrap?: boolean };
+      heuristicScore: number;
+    }
+  | {
+      kind: 'ascend';
+      unitId: string;
+      unitName: string;
+      newName: string;
+      heuristicScore: number;
+    }
+  | {
+      kind: 'maneuver';
+      unitId: string;
+      heuristicScore: number;
+    }
+  | {
+      kind: 'sov_power';
+      powerName: string;
+      heuristicScore: number;
+    };
+
+function enumerateMainPhaseCandidates(
+  state: GameState,
+  actor: 'player' | 'ai',
+  profile: DeckLearnedAiProfile,
+  allowRowManeuver: boolean
+): MainPhaseCandidateAction[] {
+  const actorState = state[actor];
+  const w = profile.weights;
+  const actions: MainPhaseCandidateAction[] = [];
+  const seenHandCardIds = new Set<string>();
+
+  for (let i = 0; i < actorState.hand.length; i++) {
+    const card = actorState.hand[i];
+    if (seenHandCardIds.has(card.id)) continue;
+    if (!canPlayCard(state, actor, card).allowed) continue;
+
+    const evalResult = evaluateCardPlayValue(state, card, actor, profile);
+    if (!evalResult.shouldPlay) continue;
+    seenHandCardIds.add(card.id);
+    actions.push({
+      kind: 'play_card',
+      handIndex: i,
+      cardId: card.id,
+      cardName: card.name,
+      cardCost: card.cost,
+      options: {
+        row: evalResult.row,
+        slotIndex: evalResult.slotIndex,
+        targetId: evalResult.targetId,
+        asTrap: evalResult.asTrap,
+      },
+      heuristicScore: evalResult.score,
+    });
+  }
+
+  for (const unit of getAllBoardUnits(actorState)) {
+    if (canAscendUnit(state, actor, unit.instanceId)) {
+      actions.push({
+        kind: 'ascend',
+        unitId: unit.instanceId,
+        unitName: unit.card.name,
+        newName: unit.card.ascension?.newName ?? unit.card.name,
+        heuristicScore: 42 * w.ascensionEagerness,
+      });
     }
   }
 
-  return bestTarget;
+  if (allowRowManeuver) {
+    const maneuverId = chooseTacticalRowManeuver(state, actor);
+    if (maneuverId) {
+      actions.push({
+        kind: 'maneuver',
+        unitId: maneuverId,
+        heuristicScore: 22,
+      });
+    }
+  }
+
+  if (canUseSovereignPower(state, actor) && w.sovPowerTempoBias >= 0.55) {
+    const pwr = getSovereignPowerInfo(actorState);
+    actions.push({
+      kind: 'sov_power',
+      powerName: pwr.name,
+      heuristicScore: 18 * w.sovPowerTempoBias,
+    });
+  }
+
+  return actions;
+}
+
+function applyCandidateAction(
+  state: GameState,
+  actor: 'player' | 'ai',
+  action: MainPhaseCandidateAction
+): GameState {
+  switch (action.kind) {
+    case 'play_card':
+      return playCard(state, actor, action.handIndex, action.options);
+    case 'ascend':
+      return ascendUnit(state, actor, action.unitId);
+    case 'maneuver':
+      return moveUnitRow(state, actor, action.unitId);
+    case 'sov_power':
+      return useSovereignPower(state, actor);
+  }
 }
 
 /**
- * Executes a single tactical step for the specified actor ('player' or 'ai').
+ * Multi-step Turn Beam Search (Tier IV & V) over non-greedy Main Phase action orderings
+ * evaluated with the trained Domain Value MLP on fair deck-rotated lookahead states.
+ */
+function findBestMainPhaseActionViaBeamSearch(
+  state: GameState,
+  actor: 'player' | 'ai',
+  profile: DeckLearnedAiProfile,
+  mlp: SerializedValueMlp | null,
+  beamWidth: number,
+  beamDepth: number,
+  temperature: number
+): MainPhaseCandidateAction | null {
+  const fairRoot = createFairLookaheadState(state, actor);
+  const rootCandidates = enumerateMainPhaseCandidates(fairRoot, actor, profile, true);
+  if (rootCandidates.length === 0) return null;
+
+  const baseValue = evaluateStateWithValueMlp(fairRoot, actor, mlp);
+
+  interface BeamNode {
+    state: GameState;
+    rootAction: MainPhaseCandidateAction;
+    cumHeuristic: number;
+    score: number;
+  }
+
+  let beam: BeamNode[] = [];
+  for (const cand of rootCandidates) {
+    const nextS = applyCandidateAction(fairRoot, actor, cand);
+    if (nextS === fairRoot) continue;
+    const v = evaluateStateWithValueMlp(nextS, actor, mlp);
+    const score = (v - baseValue) * 115 + cand.heuristicScore * 0.45;
+    beam.push({
+      state: nextS,
+      rootAction: cand,
+      cumHeuristic: cand.heuristicScore,
+      score,
+    });
+  }
+
+  if (beam.length === 0) return null;
+  beam.sort((a, b) => b.score - a.score);
+  if (beam.length > beamWidth) beam = beam.slice(0, beamWidth);
+
+  for (let d = 1; d < beamDepth; d++) {
+    const nextBeam: BeamNode[] = [];
+    let anyExpanded = false;
+
+    for (const node of beam) {
+      if (node.state.phase === 'gameover') {
+        nextBeam.push(node);
+        continue;
+      }
+      const nextActions = enumerateMainPhaseCandidates(node.state, actor, profile, true);
+      if (nextActions.length === 0) {
+        nextBeam.push(node);
+        continue;
+      }
+
+      // Expand top 4 heuristic follow-ups per beam state to keep search ultra-fast (< 1ms)
+      nextActions.sort((a, b) => b.heuristicScore - a.heuristicScore);
+      const limit = Math.min(4, nextActions.length);
+      for (let k = 0; k < limit; k++) {
+        const act = nextActions[k];
+        const s2 = applyCandidateAction(node.state, actor, act);
+        if (s2 === node.state) continue;
+        anyExpanded = true;
+        const v2 = evaluateStateWithValueMlp(s2, actor, mlp);
+        const stepH = act.kind === 'maneuver' ? 4 : act.heuristicScore * 0.35;
+        const cumH = node.cumHeuristic + stepH * Math.pow(0.75, d);
+        const totalScore = (v2 - baseValue) * 140 + cumH * 0.42;
+        nextBeam.push({
+          state: s2,
+          rootAction: node.rootAction,
+          cumHeuristic: cumH,
+          score: totalScore,
+        });
+      }
+    }
+
+    if (!anyExpanded) break;
+    nextBeam.sort((a, b) => b.score - a.score);
+    beam = nextBeam.slice(0, beamWidth);
+  }
+
+  // Group best leaf score by distinct rootAction
+  const bestByRoot = new Map<MainPhaseCandidateAction, number>();
+  for (const b of beam) {
+    const prev = bestByRoot.get(b.rootAction);
+    if (prev === undefined || b.score > prev) {
+      bestByRoot.set(b.rootAction, b.score);
+    }
+  }
+
+  const rootList = Array.from(bestByRoot.keys());
+  const rootScores = rootList.map((r) => bestByRoot.get(r)!);
+  const chosenIdx = selectIndexWithTemperature(rootScores, temperature);
+  return chosenIdx >= 0 ? rootList[chosenIdx] : rootList[0];
+}
+
+/**
+ * Executes a single tactical step for the specified actor ('player' or 'ai'),
+ * scaling decision quality, Value MLP evaluation, Beam Search, and Anti-Lethal defense
+ * across Tiers I..V.
  */
 export function executeTurnStepForActor(
   state: GameState,
@@ -1085,7 +1564,10 @@ export function executeTurnStepForActor(
     return { nextState: state, done: true, actionSummary: 'Turno do oponente.' };
   }
 
+  const skillTier = resolveSkillTierForActor(state, actor, overrides);
+  const tierSpec = AI_SKILL_TIER_SPECS[skillTier];
   const profile = getProfileForActor(state, actor, overrides);
+  const valueMlp = tierSpec.useValueMlp ? getValueMlpForActor(state, actor, overrides) : null;
   const w = profile.weights;
   const actorState = state[actor];
   const enemyActor: 'player' | 'ai' = actor === 'player' ? 'ai' : 'player';
@@ -1093,19 +1575,24 @@ export function executeTurnStepForActor(
 
   // Step 1: Channel a card if not yet channeled this turn
   if (!actorState.hasChanneledThisTurn) {
-    const channelIdx = chooseBestCardToChannel(state, actor, profile);
-    if (channelIdx !== null) {
-      const card = actorState.hand[channelIdx];
-      const nextState = channelCard(state, actor, channelIdx);
-      return {
-        nextState,
-        done: false,
-        actionSummary: `${actorState.name} canalizou [${card.name}].`,
-      };
+    // Tier 1 occasionally skips channeling after reaching 6 Essence (~22% chance) like a careless novice
+    const skipChannelNovice =
+      skillTier === 1 && actorState.maxEssence >= 6 && Math.random() < 0.22;
+    if (!skipChannelNovice) {
+      const channelIdx = chooseBestCardToChannel(state, actor, profile);
+      if (channelIdx !== null) {
+        const card = actorState.hand[channelIdx];
+        const nextState = channelCard(state, actor, channelIdx);
+        return {
+          nextState,
+          done: false,
+          actionSummary: `${actorState.name} canalizou [${card.name}].`,
+        };
+      }
     }
   }
 
-  // Step 1b: Domain Expansion & Countermeasures
+  // Step 1b: Domain Expansion & Countermeasures (Tier 2+ uses Domain Expansion & Simple Domain; Tier 1 ignores Simple Domain/Sacrifice Break)
   const activeDom = state.domainExpansion;
   const enemyTotalReadyAtk = getAllBoardUnits(enemyState)
     .filter(
@@ -1115,7 +1602,7 @@ export function executeTurnStepForActor(
     .reduce((sum, u) => sum + Math.max(0, u.currentAtk), 0);
 
   if (activeDom && activeDom.owner === enemyActor && !activeDom.clashRival) {
-    if (canInvokeDomainExpansion(state, actor).allowed) {
+    if (skillTier >= 2 && canInvokeDomainExpansion(state, actor).allowed) {
       const nextState = invokeDomainExpansion(state, actor);
       if (nextState !== state) {
         return {
@@ -1125,6 +1612,7 @@ export function executeTurnStepForActor(
         };
       }
     } else if (
+      skillTier >= 2 &&
       (enemyTotalReadyAtk >= 5 || actorState.hp <= 20) &&
       canUseSimpleDomain(state, actor)
     ) {
@@ -1137,6 +1625,7 @@ export function executeTurnStepForActor(
         };
       }
     } else if (
+      skillTier >= 3 &&
       (enemyTotalReadyAtk >= actorState.hp ||
         (enemyTotalReadyAtk >= 7 && getTotalAvailableSacrificePool(state, actor) >= 22)) &&
       canBreakDomainExpansionWithSacrifice(state, actor)
@@ -1150,7 +1639,7 @@ export function executeTurnStepForActor(
         };
       }
     }
-  } else if (!activeDom && canInvokeDomainExpansion(state, actor).allowed) {
+  } else if (skillTier >= 2 && !activeDom && canInvokeDomainExpansion(state, actor).allowed) {
     const myCreatures = getAllBoardUnits(actorState).filter(
       (u) => !u.isTrap && u.card.type === 'creature'
     );
@@ -1168,8 +1657,11 @@ export function executeTurnStepForActor(
     }
   }
 
-  // Step 1c: Sovereign Blood Pact (-3 HP, +1 Essence) if it unlocks a decisive play
-  if (shouldTriggerBloodPact(state, actor, profile, enemyTotalReadyAtk)) {
+  // Step 1c: Sovereign Blood Pact (-3 HP, +1 Essence) — Tier 3+ only
+  if (
+    tierSpec.allowBloodPact &&
+    shouldTriggerBloodPact(state, actor, profile, enemyTotalReadyAtk)
+  ) {
     const nextState = bloodPactForEssence(state, actor);
     if (nextState !== state) {
       return {
@@ -1180,96 +1672,152 @@ export function executeTurnStepForActor(
     }
   }
 
-  // Step 2: Check if any unit on board can Ascend (eager before cards if ascensionEagerness >= 0.95)
-  if (w.ascensionEagerness >= 0.95) {
-    for (const unit of getAllBoardUnits(actorState)) {
-      if (canAscendUnit(state, actor, unit.instanceId)) {
-        const nextState = ascendUnit(state, actor, unit.instanceId);
-        const newName = unit.card.ascension?.newName ?? unit.card.name;
+  // Tier 4 & Tier 5 Multi-Step Turn Beam Search (when not in bulk fastRollout mode)
+  if (!overrides?.fastRollout && tierSpec.beamWidth > 1) {
+    const beamAction = findBestMainPhaseActionViaBeamSearch(
+      state,
+      actor,
+      profile,
+      valueMlp,
+      tierSpec.beamWidth,
+      tierSpec.beamDepth,
+      tierSpec.temperature
+    );
+    if (beamAction) {
+      const nextState = applyCandidateAction(state, actor, beamAction);
+      if (nextState !== state) {
+        const summary =
+          beamAction.kind === 'play_card'
+            ? `${actorState.name} jogou [${beamAction.cardName}] (-${beamAction.cardCost}⚡ → ${nextState[actor].currentEssence}/${nextState[actor].maxEssence}⚡).`
+            : beamAction.kind === 'ascend'
+              ? `${actorState.name} ascendeu [${beamAction.unitName}] para [${beamAction.newName}]!`
+              : beamAction.kind === 'maneuver'
+                ? `${actorState.name} reposicionou uma tropa taticamente!`
+                : `${actorState.name} ativou o Poder do Soberano [${beamAction.powerName}]!`;
         return {
           nextState,
-          done: false,
-          actionSummary: `${actorState.name} ascendeu [${unit.card.name}] para [${newName}]!`,
+          done: nextState.phase === 'gameover',
+          actionSummary: summary,
         };
       }
     }
-  }
+  } else {
+    // Tier 1..3 (or fastRollout): Single-step evaluation with optional 1-ply Value MLP delta + Softmax temperature
+    if (w.ascensionEagerness >= 0.95 && skillTier >= 2) {
+      for (const unit of getAllBoardUnits(actorState)) {
+        if (canAscendUnit(state, actor, unit.instanceId)) {
+          const nextState = ascendUnit(state, actor, unit.instanceId);
+          const newName = unit.card.ascension?.newName ?? unit.card.name;
+          return {
+            nextState,
+            done: false,
+            actionSummary: `${actorState.name} ascendeu [${unit.card.name}] para [${newName}]!`,
+          };
+        }
+      }
+    }
 
-  // Step 3: Play the highest-value affordable card from hand
-  let bestPlayIndex = -1;
-  let bestPlayScore = -999;
-  let bestPlayOptions:
-    | { row?: RowType; slotIndex?: number; targetId?: string; asTrap?: boolean }
-    | undefined;
+    const playCandidates: Array<{
+      index: number;
+      score: number;
+      options: { row?: RowType; slotIndex?: number; targetId?: string; asTrap?: boolean };
+    }> = [];
 
-  for (let i = 0; i < actorState.hand.length; i++) {
-    const card = actorState.hand[i];
-    const check = canPlayCard(state, actor, card);
-    if (!check.allowed) continue;
+    const fairLookahead = tierSpec.useValueMlp ? createFairLookaheadState(state, actor) : null;
+    const baseMlpVal =
+      fairLookahead && tierSpec.useValueMlp
+        ? evaluateStateWithValueMlp(fairLookahead, actor, valueMlp)
+        : 0;
 
-    const evalResult = evaluateCardPlayValue(state, card, actor, profile);
-    if (evalResult.shouldPlay && evalResult.score > bestPlayScore) {
-      bestPlayScore = evalResult.score;
-      bestPlayIndex = i;
-      bestPlayOptions = {
+    for (let i = 0; i < actorState.hand.length; i++) {
+      const card = actorState.hand[i];
+      const check = canPlayCard(state, actor, card);
+      if (!check.allowed) continue;
+
+      const evalResult = evaluateCardPlayValue(state, card, actor, profile);
+      if (!evalResult.shouldPlay) continue;
+
+      let combinedScore = evalResult.score;
+      const opts = {
         row: evalResult.row,
         slotIndex: evalResult.slotIndex,
         targetId: evalResult.targetId,
         asTrap: evalResult.asTrap,
       };
-    }
-  }
 
-  if (bestPlayIndex !== -1) {
-    const card = actorState.hand[bestPlayIndex];
-    const nextState = playCard(state, actor, bestPlayIndex, bestPlayOptions);
-    if (nextState !== state) {
-      return {
-        nextState,
-        done: nextState.phase === 'gameover',
-        actionSummary: `${actorState.name} jogou [${card.name}] (-${card.cost}⚡ → ${nextState[actor].currentEssence}/${nextState[actor].maxEssence}⚡).`,
-      };
-    }
-  }
+      if (fairLookahead && tierSpec.useValueMlp) {
+        const simAfter = playCard(fairLookahead, actor, i, opts);
+        if (simAfter !== fairLookahead) {
+          const afterVal = evaluateStateWithValueMlp(simAfter, actor, valueMlp);
+          combinedScore += (afterVal - baseMlpVal) * 85;
+        }
+      }
 
-  // Step 3a: Deferred Ascension if ascensionEagerness < 0.95
-  if (w.ascensionEagerness < 0.95) {
-    for (const unit of getAllBoardUnits(actorState)) {
-      if (canAscendUnit(state, actor, unit.instanceId)) {
-        const nextState = ascendUnit(state, actor, unit.instanceId);
-        const newName = unit.card.ascension?.newName ?? unit.card.name;
+      playCandidates.push({
+        index: i,
+        score: combinedScore,
+        options: opts,
+      });
+    }
+
+    if (playCandidates.length > 0) {
+      const chosenSlot = selectIndexWithTemperature(
+        playCandidates.map((c) => c.score),
+        tierSpec.temperature
+      );
+      const chosen = playCandidates[chosenSlot >= 0 ? chosenSlot : 0];
+      const card = actorState.hand[chosen.index];
+      const nextState = playCard(state, actor, chosen.index, chosen.options);
+      if (nextState !== state) {
         return {
           nextState,
-          done: false,
-          actionSummary: `${actorState.name} ascendeu [${unit.card.name}] para [${newName}]!`,
+          done: nextState.phase === 'gameover',
+          actionSummary: `${actorState.name} jogou [${card.name}] (-${card.cost}⚡ → ${nextState[actor].currentEssence}/${nextState[actor].maxEssence}⚡).`,
         };
       }
     }
-  }
 
-  // Step 3b: Free Tactical Row Maneuver (0⚡, 1x/turn)
-  const maneuverUnitId = chooseTacticalRowManeuver(state, actor);
-  if (maneuverUnitId) {
-    const nextState = moveUnitRow(state, actor, maneuverUnitId);
-    if (nextState !== state) {
-      return {
-        nextState,
-        done: false,
-        actionSummary: `${actorState.name} reposicionou uma tropa taticamente!`,
-      };
+    // Deferred Ascension
+    if (w.ascensionEagerness < 0.95 || skillTier === 1) {
+      for (const unit of getAllBoardUnits(actorState)) {
+        if (canAscendUnit(state, actor, unit.instanceId)) {
+          const nextState = ascendUnit(state, actor, unit.instanceId);
+          const newName = unit.card.ascension?.newName ?? unit.card.name;
+          return {
+            nextState,
+            done: false,
+            actionSummary: `${actorState.name} ascendeu [${unit.card.name}] para [${newName}]!`,
+          };
+        }
+      }
     }
-  }
 
-  // Step 3c: Use Sovereign Power if actor has leftover Essence
-  if (canUseSovereignPower(state, actor) && w.sovPowerTempoBias >= 0.55) {
-    const pwr = getSovereignPowerInfo(actorState);
-    const nextState = useSovereignPower(state, actor);
-    if (nextState !== state) {
-      return {
-        nextState,
-        done: nextState.phase === 'gameover',
-        actionSummary: `${actorState.name} ativou o Poder do Soberano [${pwr.name}]!`,
-      };
+    // Free Tactical Row Maneuver (Tier 2+ only)
+    if (tierSpec.allowRowManeuver) {
+      const maneuverUnitId = chooseTacticalRowManeuver(state, actor);
+      if (maneuverUnitId) {
+        const nextState = moveUnitRow(state, actor, maneuverUnitId);
+        if (nextState !== state) {
+          return {
+            nextState,
+            done: false,
+            actionSummary: `${actorState.name} reposicionou uma tropa taticamente!`,
+          };
+        }
+      }
+    }
+
+    // Sovereign Power
+    if (canUseSovereignPower(state, actor) && (skillTier >= 2 ? w.sovPowerTempoBias >= 0.55 : Math.random() < 0.4)) {
+      const pwr = getSovereignPowerInfo(actorState);
+      const nextState = useSovereignPower(state, actor);
+      if (nextState !== state) {
+        return {
+          nextState,
+          done: nextState.phase === 'gameover',
+          actionSummary: `${actorState.name} ativou o Poder do Soberano [${pwr.name}]!`,
+        };
+      }
     }
   }
 
@@ -1283,22 +1831,23 @@ export function executeTurnStepForActor(
     (u) => !u.isTrap && u.hasDivineShield
   );
 
-  // Check if combined ready units that can hit enemy Sovereign right now have lethal
   const totalReadyFaceDamage = readyUnits
     .filter((u) => getValidAttackTargets(state, u.instanceId).includes(enemySovId))
     .reduce((sum, u) => sum + Math.max(0, u.currentAtk), 0);
   const hasCombinedLethal = totalReadyFaceDamage >= enemyState.hp;
 
-  // Order attackers: Ranged first, small shield-breakers first when enemy has Divine Shield, otherwise heavy hitters
-  readyUnits.sort((a, b) => {
-    const aRanged = a.keywords.includes('Alcance') ? 1 : 0;
-    const bRanged = b.keywords.includes('Alcance') ? 1 : 0;
-    if (aRanged !== bRanged) return bRanged - aRanged;
-    if (enemyHasShieldedBlocker && !hasCombinedLethal) {
-      return a.currentAtk - b.currentAtk;
-    }
-    return b.currentAtk - a.currentAtk;
-  });
+  // Tier 2+ orders attackers smartly (Ranged first, small shield-breakers first vs Divine Shield); Tier 1 attacks in slot order
+  if (skillTier >= 2) {
+    readyUnits.sort((a, b) => {
+      const aRanged = a.keywords.includes('Alcance') ? 1 : 0;
+      const bRanged = b.keywords.includes('Alcance') ? 1 : 0;
+      if (aRanged !== bRanged) return bRanged - aRanged;
+      if (enemyHasShieldedBlocker && !hasCombinedLethal) {
+        return a.currentAtk - b.currentAtk;
+      }
+      return b.currentAtk - a.currentAtk;
+    });
+  }
 
   for (const attacker of readyUnits) {
     const validTargets = getValidAttackTargets(state, attacker.instanceId);
@@ -1308,7 +1857,8 @@ export function executeTurnStepForActor(
       validTargets,
       actor,
       profile,
-      hasCombinedLethal
+      hasCombinedLethal,
+      skillTier
     );
     if (chosenTarget) {
       const nextState = executeAttack(state, attacker.instanceId, chosenTarget);

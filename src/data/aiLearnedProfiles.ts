@@ -1,4 +1,5 @@
 import { CAMPAIGN_BOSSES, PREBUILT_DECKS } from './decks';
+import { MONOCOLOR_ARCHETYPE_MASTERY, MonocolorArchetypeId } from './aiMonocolorMastery';
 import { GameState } from '../types/game';
 
 /**
@@ -3763,8 +3764,14 @@ export function resolveLearnedProfileForActor(
   if (overrideProfile) return overrideProfile;
 
   const explicitDeckId = actor === 'player' ? state.playerDeckId : state.aiDeckId;
-  if (explicitDeckId && AI_LEARNED_PROFILES[explicitDeckId]) {
-    return AI_LEARNED_PROFILES[explicitDeckId];
+  if (explicitDeckId) {
+    const monoMastery = MONOCOLOR_ARCHETYPE_MASTERY[explicitDeckId as MonocolorArchetypeId];
+    if (monoMastery?.learnedProfile) {
+      return monoMastery.learnedProfile;
+    }
+    if (AI_LEARNED_PROFILES[explicitDeckId]) {
+      return AI_LEARNED_PROFILES[explicitDeckId];
+    }
   }
 
   if (actor === 'ai' && state.bossId) {

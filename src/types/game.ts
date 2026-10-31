@@ -302,6 +302,8 @@ export interface ConquestBattleModifiers {
   riftIcon?: string;
 }
 
+export type AiSkillTier = 1 | 2 | 3 | 4 | 5;
+
 export interface GameState {
   turn: number;
   activePlayer: 'player' | 'ai';
@@ -314,6 +316,8 @@ export interface GameState {
   bossId?: string;
   playerDeckId?: string;
   aiDeckId?: string;
+  aiSkillTier?: AiSkillTier;
+  playerSkillTier?: AiSkillTier;
   expeditionBlessingId?: string;
   conquestModifiers?: ConquestBattleModifiers | null;
   weather?: ArenaWeatherState | null;
@@ -352,6 +356,8 @@ export interface CampaignBoss {
   deckId: string;
   customDeckCardIds?: string[];
   difficultyTier?: 1 | 2 | 3 | 4 | 5;
+  archetypeId?: string;
+  archetypeTitle?: string;
   submapId?: BiomeRealmId;
   landmarkName?: string;
   encounterKind?: 'rare_garrison' | 'legendary_sovereign' | 'throne_apex';

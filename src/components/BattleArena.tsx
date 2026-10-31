@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
+  AiSkillTier,
   BoardUnit,
   CampaignBoss,
   CardDefinition,
@@ -12,6 +13,13 @@ import {
 } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
+import {
+  AI_SKILL_TIER_SPECS,
+  getTrainedMonocolorPrebuiltDecks,
+  MONOCOLOR_ARCHETYPE_MASTERY,
+  MonocolorArchetypeId,
+  resolveCampaignBossGraduatedSetup,
+} from '../data/aiMonocolorMastery';
 import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
 import {
   activateSimpleDomain,
@@ -417,6 +425,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       allowedPlayerDecks[0]?.id ??
       'deck_red_inferno'
   );
+  const [selectedAiSkillTier, setSelectedAiSkillTier] = useState<AiSkillTier>(
+    () => initialSavedSnapshot?.gameState?.aiSkillTier ?? 3
+  );
+  const allAvailableAiDecks = useMemo(() => {
+    const trainedMono = getTrainedMonocolorPrebuiltDecks(selectedAiSkillTier);
+    const seen = new Set(trainedMono.map((d) => d.id));
+    return [...trainedMono, ...PREBUILT_DECKS.filter((d) => !seen.has(d.id))];
+  }, [selectedAiSkillTier]);
   const [selectedAiDeckId, setSelectedAiDeckId] = useState<string>(
     () =>
       initialSavedSnapshot?.selectedAiDeckId ??
@@ -446,14 +462,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         ? campaignPlayerDeckIds
         : defaultPlayerDeck?.cardIds ?? MONOCHROMATIC_STARTER_DECKS[0]?.cardIds ?? [];
 
-    const bossDeckObj = campaignBoss
-      ? PREBUILT_DECKS.find((d) => d.id === campaignBoss.deckId) ?? PREBUILT_DECKS[1]
-      : PREBUILT_DECKS[1] ?? PREBUILT_DECKS[0];
+    const bossGraduatedSetup = campaignBoss
+      ? resolveCampaignBossGraduatedSetup(campaignBoss)
+      : null;
 
-    const bossDeckCardIds =
-      campaignBoss?.customDeckCardIds && campaignBoss.customDeckCardIds.length >= 30
+    const bossDeckObj = campaignBoss
+      ? allAvailableAiDecks.find((d) => d.id === (bossGraduatedSetup?.archetypeId ?? campaignBoss.deckId)) ??
+        PREBUILT_DECKS[1]
+      : allAvailableAiDecks.find((d) => d.id === selectedAiDeckId) ??
+        PREBUILT_DECKS[1] ??
+        PREBUILT_DECKS[0];
+
+    const bossDeckCardIds = campaignBoss
+      ? campaignBoss.customDeckCardIds && campaignBoss.customDeckCardIds.length >= 30
         ? campaignBoss.customDeckCardIds
-        : bossDeckObj?.cardIds ?? [];
+        : bossGraduatedSetup?.cardIds ?? bossDeckObj?.cardIds ?? []
+      : bossDeckObj?.cardIds ?? [];
 
     return createInitialGameState(
       resolveDeckCards(pDeckIds),
@@ -467,7 +491,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiStartingHp: campaignBoss.startingHp,
             bossId: campaignBoss.id,
             playerDeckId: defaultPlayerDeck?.id,
-            aiDeckId: campaignBoss.deckId,
+            aiDeckId: bossGraduatedSetup?.archetypeId ?? campaignBoss.deckId,
+            aiSkillTier: bossGraduatedSetup?.skillTier ?? campaignBoss.difficultyTier ?? 3,
             expeditionBlessingId: expeditionBlessingId ?? undefined,
             conquestModifiers: conquestModifiers ?? null,
           }
@@ -478,6 +503,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiAvatarCardId: bossDeckObj?.coverCardId,
             playerDeckId: defaultPlayerDeck?.id,
             aiDeckId: bossDeckObj?.id,
+            aiSkillTier: selectedAiSkillTier,
           }
     );
   });
@@ -909,13 +935,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         campaignPlayerDeckIds && campaignPlayerDeckIds.length >= 30
           ? campaignPlayerDeckIds
           : PREBUILT_DECKS[0]?.cardIds ?? [];
-      const bossDeck =
-        PREBUILT_DECKS.find((d) => d.id === campaignBoss.deckId) ?? PREBUILT_DECKS[0];
+      const bossSetup = resolveCampaignBossGraduatedSetup(campaignBoss);
+      const bossDeckCardIds =
+        campaignBoss.customDeckCardIds && campaignBoss.customDeckCardIds.length >= 30
+          ? campaignBoss.customDeckCardIds
+          : bossSetup.cardIds;
 
       setGameState(
         createInitialGameState(
           resolveDeckCards(pDeckIds),
-          resolveDeckCards(bossDeck?.cardIds ?? []),
+          resolveDeckCards(bossDeckCardIds),
           {
             playerName: 'Seu Soberano',
             aiName: campaignBoss.name,
@@ -924,7 +953,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiStartingHp: campaignBoss.startingHp,
             bossId: campaignBoss.id,
             playerDeckId: selectedPlayerDeckId,
-            aiDeckId: campaignBoss.deckId,
+            aiDeckId: bossSetup.archetypeId,
+            aiSkillTier: bossSetup.skillTier,
             expeditionBlessingId: expeditionBlessingId ?? undefined,
             conquestModifiers: conquestModifiers ?? null,
           }
@@ -1438,7 +1468,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setShowSacrificeBreakModal(false);
   }, [tacticalProblem?.id]);
 
-  const startNewQuickMatch = (pDeckId: string, aDeckId: string) => {
+  const startNewQuickMatch = (
+    pDeckId: string,
+    aDeckId: string,
+    explicitAiTier?: AiSkillTier
+  ) => {
     if (tacticalProblem) {
       restartCurrentProblem();
       return;
@@ -1448,12 +1482,63 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     } catch {
       // Ignore
     }
+
+    if (campaignBoss) {
+      const pDeckIds =
+        campaignPlayerDeckIds && campaignPlayerDeckIds.length >= 30
+          ? campaignPlayerDeckIds
+          : (allowedPlayerDecks.find((d) => d.id === pDeckId) ?? allowedPlayerDecks[0])?.cardIds ??
+            [];
+      const bossSetup = resolveCampaignBossGraduatedSetup(campaignBoss);
+      const bossDeckCardIds =
+        campaignBoss.customDeckCardIds && campaignBoss.customDeckCardIds.length >= 30
+          ? campaignBoss.customDeckCardIds
+          : bossSetup.cardIds;
+
+      const nextBossState = createInitialGameState(
+        resolveDeckCards(pDeckIds),
+        resolveDeckCards(bossDeckCardIds),
+        {
+          playerName: 'Seu Soberano',
+          aiName: campaignBoss.name,
+          aiTitle: campaignBoss.title,
+          aiAvatarCardId: campaignBoss.avatarCardId,
+          aiStartingHp: campaignBoss.startingHp,
+          bossId: campaignBoss.id,
+          playerDeckId: pDeckId,
+          aiDeckId: bossSetup.archetypeId,
+          aiSkillTier: bossSetup.skillTier,
+          expeditionBlessingId: expeditionBlessingId ?? undefined,
+          conquestModifiers: conquestModifiers ?? null,
+        }
+      );
+
+      setGameState(nextBossState);
+      setSelectedHandIndex(null);
+      setSelectedAttackerId(null);
+      setRewardClaimed(false);
+      setIsMulliganOpen(true);
+      setMulliganSwapIndices([]);
+      setMulliganTimeLeft(MULLIGAN_TIME_LIMIT_SECONDS);
+      setTurnTimeLeft(TURN_TIME_LIMIT_SECONDS);
+      playSfx('draw');
+      return;
+    }
+
+    const tierToUse = explicitAiTier ?? selectedAiSkillTier;
     const pDeck = allowedPlayerDecks.find((d) => d.id === pDeckId) ?? allowedPlayerDecks[0];
-    const aDeck = PREBUILT_DECKS.find((d) => d.id === aDeckId) ?? PREBUILT_DECKS[1] ?? PREBUILT_DECKS[0];
+    const monoMastery = MONOCOLOR_ARCHETYPE_MASTERY[aDeckId as MonocolorArchetypeId];
+    const aDeck =
+      allAvailableAiDecks.find((d) => d.id === aDeckId) ??
+      PREBUILT_DECKS.find((d) => d.id === aDeckId) ??
+      PREBUILT_DECKS[1] ??
+      PREBUILT_DECKS[0];
+    const aiCardIds =
+      monoMastery?.tierDecks?.[tierToUse]?.cardIds ?? aDeck?.cardIds ?? [];
 
     const nextState = createInitialGameState(
       resolveDeckCards(pDeck?.cardIds ?? []),
-      resolveDeckCards(aDeck?.cardIds ?? []),
+      resolveDeckCards(aiCardIds),
       {
         playerName: pDeck?.name ?? 'Seu Soberano',
         aiName: aDeck?.name ?? 'Arconte Rival',
@@ -1461,6 +1546,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         aiAvatarCardId: aDeck?.coverCardId,
         playerDeckId: pDeck?.id,
         aiDeckId: aDeck?.id,
+        aiSkillTier: tierToUse,
       }
     );
 
@@ -3938,6 +4024,34 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </div>
 
                   <span className="hud-pill-name">{gameState.ai.name}</span>
+                  {!onlineMatch && !tacticalProblem && (() => {
+                    const activeAiTier = gameState.aiSkillTier ?? 3;
+                    const tSpec = AI_SKILL_TIER_SPECS[activeAiTier];
+                    return (
+                      <span
+                        className="hud-pill-env-chip hide-on-mobile"
+                        style={{
+                          borderColor:
+                            activeAiTier >= 5
+                              ? 'rgba(250, 204, 21, 0.75)'
+                              : activeAiTier >= 4
+                                ? 'rgba(192, 132, 252, 0.65)'
+                                : 'rgba(148, 163, 184, 0.4)',
+                          color:
+                            activeAiTier >= 5
+                              ? '#fde047'
+                              : activeAiTier >= 4
+                                ? '#e9d5ff'
+                                : '#cbd5e1',
+                          fontSize: '0.64rem',
+                          fontWeight: 800,
+                        }}
+                        title={`${tSpec.shortLabel} (${tSpec.title}): ${tSpec.description}`}
+                      >
+                        🧠 T{tSpec.roman}
+                      </span>
+                    );
+                  })()}
                   <span className="hud-pill-stat hp">❤️ {gameState.ai.hp}</span>
                   <span className="hud-pill-stat mana">
                     ⚡ {gameState.ai.currentEssence}/{gameState.ai.maxEssence}
@@ -5738,7 +5852,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           <span>{getStepGuideText()}</span>
                         </div>
 
-                        {!campaignBoss && (
+                        {!campaignBoss && !onlineMatch && !tacticalProblem && (
                           <div className="awmt-decks-row">
                             <div className="awmt-deck-field">
                               <span className="awmt-deck-tag p1">VOCÊ</span>
@@ -5768,9 +5882,46 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 }}
                                 className="awmt-deck-select"
                               >
-                                {PREBUILT_DECKS.map((d) => (
-                                  <option key={d.id} value={d.id}>
-                                    {d.name}
+                                <optgroup label="Grimórios Monocolor Co-Evoluídos (IA)">
+                                  {allAvailableAiDecks
+                                    .filter((d) => d.id.startsWith('mono_'))
+                                    .map((d) => (
+                                      <option key={d.id} value={d.id}>
+                                        {d.name} ({d.domains[0]?.toUpperCase()})
+                                      </option>
+                                    ))}
+                                </optgroup>
+                                <optgroup label="Grimórios Clássicos de Vaeloria">
+                                  {PREBUILT_DECKS.map((d) => (
+                                    <option key={d.id} value={d.id}>
+                                      {d.name}
+                                    </option>
+                                  ))}
+                                </optgroup>
+                              </select>
+                            </div>
+
+                            <div className="awmt-deck-field">
+                              <span className="awmt-deck-tag p2" title="Escala tanto o Grimório Rival (Tier I..V) quanto a Rede Neural & Busca Tática da IA">
+                                GRAU IA
+                              </span>
+                              <select
+                                value={selectedAiSkillTier}
+                                onChange={(e) => {
+                                  const nextTier = Number(e.target.value) as AiSkillTier;
+                                  setSelectedAiSkillTier(nextTier);
+                                  startNewQuickMatch(
+                                    selectedPlayerDeckId,
+                                    selectedAiDeckId,
+                                    nextTier
+                                  );
+                                }}
+                                className="awmt-deck-select"
+                                title={AI_SKILL_TIER_SPECS[selectedAiSkillTier].description}
+                              >
+                                {([1, 2, 3, 4, 5] as AiSkillTier[]).map((t) => (
+                                  <option key={t} value={t}>
+                                    {AI_SKILL_TIER_SPECS[t].shortLabel} — {AI_SKILL_TIER_SPECS[t].title}
                                   </option>
                                 ))}
                               </select>

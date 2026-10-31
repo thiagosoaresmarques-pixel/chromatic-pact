@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { CampaignBoss, CardDefinition, Domain } from '../types/game';
+import { AiSkillTier, CampaignBoss, CardDefinition, Domain } from '../types/game';
 import { CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
+import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
 import { DOMAIN_META, CardInspectModal } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
@@ -507,6 +508,32 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   <strong>{activeGcNode?.landmarkName ?? activeBoss.landmarkName}</strong>
                 </div>
               )}
+
+              {(() => {
+                const bossTier = ((activeGcNode?.tier ?? activeBoss.difficultyTier ?? 1) as AiSkillTier);
+                const tSpec = AI_SKILL_TIER_SPECS[bossTier];
+                return (
+                  <div
+                    className="vwm-dossier-geo-badge"
+                    style={{
+                      marginTop: 4,
+                      borderColor: 'rgba(212, 175, 55, 0.35)',
+                      background: 'rgba(15, 23, 42, 0.72)',
+                    }}
+                    title={tSpec.description}
+                  >
+                    <span>🧠 {tSpec.shortLabel}</span>
+                    {activeBoss.archetypeTitle && (
+                      <>
+                        <span>•</span>
+                        <strong style={{ color: '#fde68a' }}>
+                          {activeBoss.archetypeTitle} (100 Cartas)
+                        </strong>
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
 
               {activeBoss.loreIntro && (
                 <blockquote className="aaa-dossier-quote">{activeBoss.loreIntro}</blockquote>

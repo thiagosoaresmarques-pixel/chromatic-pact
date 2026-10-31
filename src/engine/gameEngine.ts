@@ -1,5 +1,6 @@
 import {
   AffinityMap,
+  AiSkillTier,
   ArenaColumnRune,
   ArenaRuneType,
   ArenaWeatherState,
@@ -577,6 +578,8 @@ export function createInitialGameState(
     bossId?: string;
     playerDeckId?: string;
     aiDeckId?: string;
+    aiSkillTier?: AiSkillTier;
+    playerSkillTier?: AiSkillTier;
     expeditionBlessingId?: string;
     conquestModifiers?: ConquestBattleModifiers | null;
   }
@@ -702,6 +705,8 @@ export function createInitialGameState(
     bossId: options?.bossId,
     playerDeckId: options?.playerDeckId,
     aiDeckId: options?.aiDeckId,
+    aiSkillTier: options?.aiSkillTier,
+    playerSkillTier: options?.playerSkillTier,
     expeditionBlessingId: options?.expeditionBlessingId,
     conquestModifiers: cq,
     weather: null,

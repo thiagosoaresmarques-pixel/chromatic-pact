@@ -20,6 +20,8 @@ import {
 } from './data/epicPoemData';
 import { buildGeographicBattleModifiers } from './data/vaeloriaMultimapData';
 import { consumePendingOverworldBuff } from './data/vaeloriaOverworldEvents';
+import { applyEquippedRelicToModifiers } from './data/sovereignRelics';
+import type { DraftBattleOutcome, DraftRewardSummary } from './data/vaeloriaDraftData';
 import { CardInspectModal } from './components/CardView';
 import { HomeSimulatedDuelShowcase } from './components/HomeSimulatedDuelShowcase';
 
@@ -63,6 +65,9 @@ const AdminDashboardView = React.lazy(() =>
 const ProblemsView = React.lazy(() =>
   import('./components/ProblemsView').then((m) => ({ default: m.ProblemsView }))
 );
+const DraftCrucibleView = React.lazy(() =>
+  import('./components/DraftCrucibleView').then((m) => ({ default: m.DraftCrucibleView }))
+);
 import {
   adminSaveCloudProfile,
   ensureStarterDeckForUser,
@@ -95,6 +100,7 @@ export interface SovereignNotification {
 type ActiveTab =
   | 'home'
   | 'arena'
+  | 'draft'
   | 'problems'
   | 'multiplayer'
   | 'campaign'
@@ -143,6 +149,12 @@ const NAV_PILLARS: NavPillarDef[] = [
         icon: '⚔️',
         label: 'Arena Solo',
         shortDesc: 'Duelos rápidos contra os 30 Grimórios da IA',
+      },
+      {
+        tab: 'draft',
+        icon: '⚖️',
+        label: 'Crisol (Draft)',
+        shortDesc: 'Forje 40 cartas na hora e dispute até 7 vitórias',
       },
       {
         tab: 'multiplayer',
@@ -239,6 +251,7 @@ function resolvePillarForTab(tab: ActiveTab): NavPillarId | null {
     case 'home':
       return 'home';
     case 'arena':
+    case 'draft':
     case 'multiplayer':
     case 'problems':
       return 'battle';
@@ -274,6 +287,7 @@ interface SavedAppNavState {
   activeProblem: TacticalProblem | null;
   campaignPlayerDeckIds: string[] | null;
   isExpeditionBattle: boolean;
+  isDraftBattle?: boolean;
   expeditionBlessingId?: string | null;
   activeConquestContext?: ActiveConquestContext | null;
   activeGeoModifiers?: ConquestBattleModifiers | null;
@@ -297,6 +311,7 @@ function loadSavedAppNavState(): SavedAppNavState | null {
         ? parsed.campaignPlayerDeckIds
         : null,
       isExpeditionBattle: Boolean(parsed.isExpeditionBattle),
+      isDraftBattle: Boolean(parsed.isDraftBattle),
       expeditionBlessingId: parsed.expeditionBlessingId ?? null,
       activeConquestContext: parsed.activeConquestContext ?? null,
       activeGeoModifiers: parsed.activeGeoModifiers ?? null,
@@ -384,6 +399,10 @@ export const App: React.FC = () => {
   const [isExpeditionBattle, setIsExpeditionBattle] = useState<boolean>(
     () => initialNavState?.isExpeditionBattle ?? false
   );
+  const [isDraftBattle, setIsDraftBattle] = useState<boolean>(
+    () => Boolean(initialNavState?.isDraftBattle)
+  );
+  const [lastDraftOutcome, setLastDraftOutcome] = useState<DraftBattleOutcome | null>(null);
   const [expeditionBlessingId, setExpeditionBlessingId] = useState<string | null>(
     () => initialNavState?.expeditionBlessingId ?? null
   );
@@ -428,6 +447,7 @@ export const App: React.FC = () => {
         activeProblem,
         campaignPlayerDeckIds,
         isExpeditionBattle,
+        isDraftBattle,
         expeditionBlessingId,
         activeConquestContext,
         activeGeoModifiers,
@@ -443,6 +463,7 @@ export const App: React.FC = () => {
     activeProblem,
     campaignPlayerDeckIds,
     isExpeditionBattle,
+    isDraftBattle,
     expeditionBlessingId,
     activeConquestContext,
     activeGeoModifiers,
@@ -675,6 +696,7 @@ export const App: React.FC = () => {
     setActiveProblem(null);
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
+    setIsDraftBattle(false);
     setActiveConquestContext(null);
     setActiveGeoModifiers(null);
     if (!isGuest && customDecks.length === 0) {
@@ -693,6 +715,7 @@ export const App: React.FC = () => {
     setActiveCampaignBoss(null);
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
+    setIsDraftBattle(false);
     setActiveConquestContext(null);
     setActiveGeoModifiers(null);
     setActiveProblem(problem);
@@ -737,6 +760,7 @@ export const App: React.FC = () => {
       activeTab === 'campaign' ||
       activeTab === 'expedition' ||
       activeTab === 'conquest' ||
+      activeTab === 'draft' ||
       activeTab === 'problems'
     ) {
       setMusicState('tactical', 'purple');
@@ -757,15 +781,18 @@ export const App: React.FC = () => {
       // Ignore
     }
     const owBuff = consumePendingOverworldBuff('campaign');
-    const geoMods = buildGeographicBattleModifiers({
-      mode: 'campaign',
-      bossId: boss.id,
-      stage: boss.stage,
-      overworldBuff: owBuff,
-    });
+    const geoMods = applyEquippedRelicToModifiers(
+      buildGeographicBattleModifiers({
+        mode: 'campaign',
+        bossId: boss.id,
+        stage: boss.stage,
+        overworldBuff: owBuff,
+      })
+    );
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(false);
+    setIsDraftBattle(false);
     setExpeditionBlessingId(null);
     setActiveConquestContext(null);
     setActiveGeoModifiers(geoMods);
@@ -786,15 +813,18 @@ export const App: React.FC = () => {
       // Ignore
     }
     const owBuff = consumePendingOverworldBuff('expedition');
-    const geoMods = buildGeographicBattleModifiers({
-      mode: 'expedition',
-      bossId: boss.id,
-      stage: boss.stage,
-      overworldBuff: owBuff,
-    });
+    const geoMods = applyEquippedRelicToModifiers(
+      buildGeographicBattleModifiers({
+        mode: 'expedition',
+        bossId: boss.id,
+        stage: boss.stage,
+        overworldBuff: owBuff,
+      })
+    );
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(true);
+    setIsDraftBattle(false);
     setExpeditionBlessingId(blessingId ?? null);
     setActiveConquestContext(null);
     setActiveGeoModifiers(geoMods);
@@ -820,20 +850,58 @@ export const App: React.FC = () => {
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(false);
+    setIsDraftBattle(false);
     setExpeditionBlessingId(null);
     setActiveGeoModifiers(null);
     setActiveConquestContext({
       provinceId: params.provinceId,
       isDefensive: params.isDefensive,
       attackerFactionId: params.attackerFactionId,
-      modifiers: params.modifiers,
+      modifiers: applyEquippedRelicToModifiers(params.modifiers) ?? params.modifiers,
     });
     setActiveCampaignBoss(params.boss);
     setCampaignPlayerDeckIds(params.playerDeckCardIds);
     setActiveTab('arena');
   };
 
+  const handleStartDraftBattle = (
+    boss: CampaignBoss,
+    draftedDeckIds: string[],
+    modifiers: ConquestBattleModifiers | null
+  ) => {
+    trackAdsEvent('start_duel', { mode: 'draft_crucible', isGuest });
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+    setActiveOnlineMatch(null);
+    setActiveProblem(null);
+    setIsExpeditionBattle(false);
+    setIsDraftBattle(true);
+    setExpeditionBlessingId(null);
+    setActiveConquestContext(null);
+    setActiveGeoModifiers(applyEquippedRelicToModifiers(modifiers));
+    setActiveCampaignBoss(boss);
+    setCampaignPlayerDeckIds(draftedDeckIds);
+    setActiveTab('arena');
+  };
+
   const handleCampaignVictory = (boss: CampaignBoss) => {
+    if (isDraftBattle) {
+      setLastDraftOutcome({
+        outcomeId: `dr_win_${boss.id}_${Date.now()}`,
+        didWin: true,
+      });
+      if (!isGuest) {
+        const nextGold = gold + VICTORY_GOLD_REWARD;
+        updateCurrentUserProgression({
+          gold: nextGold,
+          arenaWins: arenaWins + 1,
+        });
+      }
+      return;
+    }
     if (isGuest) return;
     const nextGold = gold + VICTORY_GOLD_REWARD;
     if (activeConquestContext) {
@@ -877,6 +945,13 @@ export const App: React.FC = () => {
   };
 
   const handleCampaignDefeat = (boss: CampaignBoss) => {
+    if (isDraftBattle) {
+      setLastDraftOutcome({
+        outcomeId: `dr_loss_${boss.id}_${Date.now()}`,
+        didWin: false,
+      });
+      return;
+    }
     if (activeConquestContext) {
       setLastConquestOutcome({
         outcomeId: `cq_loss_${boss.id}_${Date.now()}`,
@@ -886,6 +961,32 @@ export const App: React.FC = () => {
         didWin: false,
       });
     }
+  };
+
+  const handleClaimDraftRewards = (reward: DraftRewardSummary) => {
+    if (isGuest) return;
+    const nextExtra = { ...(currentUser.extraUnlockedCards ?? {}) };
+    for (const cid of reward.bonusCardIds) {
+      nextExtra[cid] = (nextExtra[cid] ?? 0) + 1;
+    }
+    const nextGold = gold + reward.gold;
+    updateCurrentUserProgression({
+      gold: nextGold,
+      extraUnlockedCards: nextExtra,
+    });
+    const rewardCardNames = reward.bonusCardIds
+      .map((cid) => CARDS_BY_ID[cid]?.name)
+      .filter(Boolean)
+      .join(', ');
+    pushNotification({
+      kicker: 'CRISOL DOS CINCO SELOS',
+      title: `${reward.tierTitle} (+${reward.gold} Ouro)`,
+      message: rewardCardNames
+        ? `Cartas conquistadas no baú: ${rewardCardNames}.`
+        : `Recompensa creditada ao seu tesouro. Saldo atual: ${nextGold} Ouro.`,
+      actionLabel: 'Ver no Grimório',
+      actionTarget: 'deckbuilder',
+    });
   };
 
   const handleRewardGold = (amount: number) => {
@@ -1049,6 +1150,7 @@ export const App: React.FC = () => {
     if (activeTab === 'arena') {
       if (activeOnlineMatch) return 'multiplayer';
       if (activeProblem) return 'problems';
+      if (activeCampaignBoss && isDraftBattle) return 'draft';
       if (activeCampaignBoss && activeConquestContext) return 'conquest';
       if (activeCampaignBoss && isExpeditionBattle) return 'expedition';
       if (activeCampaignBoss) return 'campaign';
@@ -1060,6 +1162,7 @@ export const App: React.FC = () => {
     activeOnlineMatch,
     activeProblem,
     activeCampaignBoss,
+    isDraftBattle,
     activeConquestContext,
     isExpeditionBattle,
   ]);
@@ -1347,12 +1450,22 @@ export const App: React.FC = () => {
                   setActiveProblem(null);
                   setActiveTab('problems');
                 } else if (activeCampaignBoss) {
+                  const wasDraft = isDraftBattle;
                   const wasConquest = Boolean(activeConquestContext);
                   const wasExp = isExpeditionBattle;
                   setActiveCampaignBoss(null);
+                  setIsDraftBattle(false);
                   setIsExpeditionBattle(false);
                   setActiveConquestContext(null);
-                  setActiveTab(wasConquest ? 'conquest' : wasExp ? 'expedition' : 'campaign');
+                  setActiveTab(
+                    wasDraft
+                      ? 'draft'
+                      : wasConquest
+                      ? 'conquest'
+                      : wasExp
+                      ? 'expedition'
+                      : 'campaign'
+                  );
                 } else {
                   setActiveTab('home');
                 }
@@ -1631,6 +1744,7 @@ export const App: React.FC = () => {
         {!isGuest &&
           customDecks.length === 0 &&
           activeTab !== 'deckbuilder' &&
+          activeTab !== 'draft' &&
           activeTab !== 'arena' &&
           !isOnboardingCalloutHidden && (
             <div className="aaa-onboarding-shell">
@@ -1702,10 +1816,31 @@ export const App: React.FC = () => {
             onStartOnlineMatch={(room, role) => {
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
+              setIsDraftBattle(false);
               setActiveGeoModifiers(null);
               setActiveOnlineMatch({ room, role });
               setActiveTab('arena');
             }}
+          />
+        )}
+
+        {activeTab === 'draft' && (
+          <DraftCrucibleView
+            userId={currentUser.id}
+            gold={gold}
+            isGuest={isGuest}
+            defeatedBossCount={defeatedBossIds.length}
+            arenaWins={arenaWins}
+            lastDraftOutcome={lastDraftOutcome}
+            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onSpendEntryGold={(amount) => {
+              if (isGuest) return;
+              updateCurrentUserProgression({
+                gold: Math.max(0, gold - amount),
+              });
+            }}
+            onStartDraftBattle={handleStartDraftBattle}
+            onClaimDraftRewards={handleClaimDraftRewards}
           />
         )}
 
@@ -1740,18 +1875,29 @@ export const App: React.FC = () => {
               setActiveProblem(null);
               setActiveOnlineMatch(null);
               setIsExpeditionBattle(false);
+              setIsDraftBattle(false);
               setActiveConquestContext(null);
               setActiveGeoModifiers(null);
               setActiveTab('home');
             }}
             onExitCampaign={() => {
+              const wasDraft = isDraftBattle;
               const wasConquest = Boolean(activeConquestContext);
               const wasExp = isExpeditionBattle;
               setActiveCampaignBoss(null);
+              setIsDraftBattle(false);
               setIsExpeditionBattle(false);
               setActiveConquestContext(null);
               setActiveGeoModifiers(null);
-              setActiveTab(wasConquest ? 'conquest' : wasExp ? 'expedition' : 'campaign');
+              setActiveTab(
+                wasDraft
+                  ? 'draft'
+                  : wasConquest
+                  ? 'conquest'
+                  : wasExp
+                  ? 'expedition'
+                  : 'campaign'
+              );
             }}
             onRewardGold={handleRewardGold}
             onlineMatch={
@@ -1793,6 +1939,7 @@ export const App: React.FC = () => {
         {activeTab === 'campaign' && (
           <CampaignView
             defeatedBossIds={defeatedBossIds}
+            arenaWins={arenaWins}
             customDecks={customDecks}
             isGuest={isGuest}
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
@@ -1805,6 +1952,8 @@ export const App: React.FC = () => {
         {activeTab === 'expedition' && (
           <ExpeditionView
             isGuest={isGuest}
+            defeatedBossCount={defeatedBossIds.length}
+            arenaWins={arenaWins}
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onStartExpeditionBattle={handleStartExpeditionBattle}
             onSaveCustomDeck={handleSaveCustomDeck}
@@ -1817,6 +1966,8 @@ export const App: React.FC = () => {
           <ConquestView
             customDecks={customDecks}
             isGuest={isGuest}
+            defeatedBossCount={defeatedBossIds.length}
+            arenaWins={arenaWins}
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartConquestBattle={handleStartConquestBattle}
@@ -1835,6 +1986,7 @@ export const App: React.FC = () => {
               }
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
+              setIsDraftBattle(false);
               setQuickDuelDecks({ playerDeckId, aiDeckId: opponentDeckId });
               setActiveTab('arena');
             }}

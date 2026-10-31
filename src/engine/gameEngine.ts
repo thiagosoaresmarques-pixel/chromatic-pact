@@ -702,6 +702,25 @@ export function createInitialGameState(
       state.ai.hp = Math.max(1, state.ai.hp - cq.enemyOpeningDamage);
       addFeedback(state, 'ai-sovereign', `-${cq.enemyOpeningDamage}⚔️ Artilharia Imperial`, 'damage');
     }
+    const extraOpeningDraw =
+      (cq.overworldBuff?.bonusOpeningDraw ?? 0) + (cq.equippedRelic?.bonusOpeningDraw ?? 0);
+    if (extraOpeningDraw > 0) {
+      drawCardsForActor(state, 'player', extraOpeningDraw);
+      addFeedback(state, 'player-sovereign', `+${extraOpeningDraw}🃏 Abertura`, 'ess');
+    }
+    if (cq.equippedRelic?.bonusAffinityDomain) {
+      let targetDom: Domain = 'red';
+      if (cq.equippedRelic.bonusAffinityDomain === 'auto') {
+        const candidateDomains: Domain[] = ['red', 'blue', 'purple', 'green', 'gold'];
+        const sortedDoms = candidateDomains.sort(
+          (a, b) => (state.player.affinities[b] ?? 0) - (state.player.affinities[a] ?? 0)
+        );
+        targetDom = sortedDoms[0] ?? 'red';
+      } else {
+        targetDom = cq.equippedRelic.bonusAffinityDomain;
+      }
+      state.player.affinities[targetDom] = (state.player.affinities[targetDom] ?? 0) + 1;
+    }
     addLog(
       state,
       'system',

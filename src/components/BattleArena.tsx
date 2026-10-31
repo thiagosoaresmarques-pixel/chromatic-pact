@@ -3922,6 +3922,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     📚 {gameState.ai.deck.length} • 🪦 {gameState.ai.crypt.length}
                   </span>
 
+                  {gameState.conquestModifiers?.equippedRelic && (
+                    <span
+                      className="hud-pill-env-chip relic-chip"
+                      title={`Relíquia da Coroa — ${gameState.conquestModifiers.equippedRelic.name}: ${gameState.conquestModifiers.equippedRelic.shortBonus}`}
+                    >
+                      {gameState.conquestModifiers.equippedRelic.icon}{' '}
+                      <span className="hide-on-mobile">
+                        {gameState.conquestModifiers.equippedRelic.name}
+                      </span>
+                    </span>
+                  )}
+
                   {gameState.conquestModifiers?.landmarkLabel && (
                     <span
                       className="hud-pill-env-chip geo-loc hide-on-mobile"

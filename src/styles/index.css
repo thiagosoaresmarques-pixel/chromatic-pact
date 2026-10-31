@@ -19194,3 +19194,691 @@ input:focus-visible,
     white-space: nowrap;
   }
 }
+
+
+/* ==========================================================================
+   LAUNCH EXPANSION (ONDAS 1, 2 & 3):
+   1. Portable Codex (PWA Install, Save PC<->Mobile & Shareable Deck Codes)
+   2. Sovereign Crown Relics Selector & Modal (12 Relics)
+   3. Draft Crucible ("Crisol dos Cinco Selos" — 1 Sovereign + 20 Pair Picks + 7-Win Gauntlet)
+   ========================================================================== */
+
+/* --- 1. DeckBuilder Shareable Deck Code Row & Import Box --- */
+.db-deckcode-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.db-deckcode-import-box {
+  margin-top: 6px;
+  padding: 8px;
+  background: rgba(11, 15, 24, 0.94);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 6px;
+}
+
+/* --- 2. SovereignAccountModal Portable Save & PWA Panel --- */
+.portable-codex-panel {
+  margin-top: 0.85rem;
+  padding: 0.8rem 0.9rem;
+  background: linear-gradient(180deg, rgba(13, 18, 29, 0.96) 0%, rgba(9, 12, 20, 0.98) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.34);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.portable-codex-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.portable-codex-kicker {
+  font-family: var(--font-display);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  color: #e6c875;
+}
+
+.portable-codex-sub {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.portable-codex-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.portable-codex-restore-box {
+  margin-top: 4px;
+  padding: 8px;
+  background: rgba(8, 11, 18, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.portable-file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.portable-codex-msg {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 8px;
+  border-radius: 6px;
+}
+
+.portable-codex-msg.is-ok {
+  background: rgba(20, 83, 45, 0.38);
+  border: 1px solid rgba(74, 222, 128, 0.45);
+  color: #bbf7d0;
+}
+
+.portable-codex-msg.is-err {
+  background: rgba(127, 29, 29, 0.38);
+  border: 1px solid rgba(248, 113, 113, 0.48);
+  color: #fecaca;
+}
+
+/* --- 3. Sovereign Crown Relics Selector & Modal --- */
+.sovereign-relic-bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: linear-gradient(180deg, rgba(20, 26, 40, 0.96) 0%, rgba(12, 16, 26, 0.98) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.48);
+  border-radius: 8px;
+  color: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.16s ease, transform 0.14s ease, background 0.16s ease;
+  text-align: left;
+}
+
+.sovereign-relic-bar-btn:hover {
+  border-color: #facc15;
+  background: rgba(28, 36, 54, 0.98);
+  transform: translateY(-1px);
+}
+
+.srb-icon {
+  font-size: 1.05rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.srb-texts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.srb-texts strong {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fef08a;
+  white-space: nowrap;
+}
+
+.srb-texts small {
+  font-size: 0.62rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.srb-count-pill {
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.16);
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  color: #fde68a;
+  font-size: 0.6rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.sovereign-relics-modal {
+  width: min(940px, 95vw) !important;
+  max-height: 88dvh !important;
+  overflow-y: auto !important;
+  padding: 1.1rem 1.25rem !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: linear-gradient(180deg, #0d121d 0%, #070a11 100%) !important;
+  border: 1px solid rgba(212, 175, 55, 0.52) !important;
+  border-radius: 12px !important;
+}
+
+.sovereign-relics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+  gap: 0.65rem;
+}
+
+.sovereign-relic-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 0.85rem;
+  text-align: left;
+  background: #0e1421;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 9px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: border-color 0.16s ease, background 0.16s ease, transform 0.14s ease;
+}
+
+.sovereign-relic-card:hover:not(:disabled) {
+  background: #151d2f;
+  border-color: var(--relic-color, rgba(212, 175, 55, 0.65));
+  transform: translateY(-1px);
+}
+
+.sovereign-relic-card.is-equipped {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 22, 36, 0.96) 100%);
+  border-color: #facc15 !important;
+  box-shadow: 0 0 0 1px rgba(250, 204, 21, 0.35), 0 8px 20px rgba(0, 0, 0, 0.55);
+}
+
+.sovereign-relic-card.is-locked {
+  opacity: 0.56;
+  cursor: not-allowed;
+  background: #0a0e17;
+}
+
+.src-top {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.src-icon {
+  font-size: 1.35rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.src-titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.src-titles strong {
+  font-size: 0.8rem;
+  color: #f8fafc;
+}
+
+.src-titles small {
+  font-size: 0.64rem;
+  font-weight: 800;
+}
+
+.src-bonus {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fef08a;
+  background: rgba(212, 175, 55, 0.11);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 6px;
+  padding: 4px 7px;
+}
+
+.src-lore {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  line-height: 1.38;
+}
+
+.hud-pill-env-chip.relic-chip {
+  background: rgba(212, 175, 55, 0.18) !important;
+  border-color: rgba(250, 204, 21, 0.58) !important;
+  color: #fef08a !important;
+}
+
+/* --- 4. Draft Crucible ("Crisol dos Cinco Selos") --- */
+.draft-crucible-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.draft-lobby-card,
+.draft-stage-panel,
+.draft-gauntlet-panel {
+  background: linear-gradient(180deg, #0d121d 0%, #090d16 100%);
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  border-radius: 12px;
+  padding: 1.15rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+.draft-lobby-header,
+.draft-stage-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.draft-prize-tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.draft-tier-box {
+  background: #0f1523;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.draft-tier-box strong {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  color: #e2e8f0;
+}
+
+.draft-tier-box span {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.draft-tier-box.is-profit {
+  border-color: rgba(56, 189, 248, 0.42);
+  background: rgba(14, 28, 48, 0.75);
+}
+
+.draft-tier-box.is-profit strong {
+  color: #bae6fd;
+}
+
+.draft-tier-box.is-grand {
+  border-color: rgba(250, 204, 21, 0.68);
+  background: linear-gradient(180deg, rgba(45, 34, 10, 0.75) 0%, rgba(20, 16, 8, 0.9) 100%);
+}
+
+.draft-tier-box.is-grand strong {
+  color: #fef08a;
+}
+
+.draft-tier-box.is-grand span {
+  color: #fde68a;
+}
+
+.draft-lobby-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  padding-top: 0.25rem;
+}
+
+.draft-sovereign-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.draft-sovereign-option {
+  background: #0f1523;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 10px;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: center;
+  transition: border-color 0.16s ease, transform 0.15s ease;
+}
+
+.draft-sovereign-option:hover {
+  border-color: #facc15;
+  transform: translateY(-2px);
+}
+
+.draft-card-preview-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.draft-sov-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.draft-sov-meta p {
+  margin: 0;
+  font-size: 0.74rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.draft-curve-and-drawer {
+  background: #0a0e18;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.draft-mini-curve {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.65rem;
+  max-width: 360px;
+}
+
+.dmc-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.dmc-bar-track {
+  width: 100%;
+  height: 36px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.dmc-bar-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #facc15 0%, #9a7420 100%);
+  border-radius: 3px 3px 0 0;
+  transition: height 0.2s ease;
+}
+
+.dmc-col small {
+  font-size: 0.6rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.draft-deck-drawer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 165px;
+  overflow-y: auto;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.draft-drawer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: #111827;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.draft-drawer-chip:hover {
+  border-color: #facc15;
+}
+
+.ddc-cost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: rgba(2, 132, 199, 0.32);
+  color: #bae6fd;
+  font-size: 0.62rem;
+  font-weight: 900;
+}
+
+.draft-buckets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.draft-bucket-card {
+  background: #0f1523;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 10px;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  transition: border-color 0.16s ease, transform 0.14s ease;
+}
+
+.draft-bucket-card:hover {
+  border-color: rgba(212, 175, 55, 0.65);
+  transform: translateY(-2px);
+}
+
+.draft-bucket-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+  padding-bottom: 0.45rem;
+}
+
+.draft-bucket-title span {
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.draft-bucket-title small {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+.draft-bucket-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  justify-items: center;
+}
+
+.draft-bucket-slot {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.draft-record-track {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 0.9rem;
+  background: #0a0e18;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 9px;
+}
+
+.drt-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.drt-label {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #e2e8f0;
+}
+
+.drt-pips {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.drt-pip {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #141c2c;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.drt-pip.win.is-lit {
+  background: linear-gradient(180deg, #fde047 0%, #ca8a04 100%);
+  border-color: #fef08a;
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+}
+
+.drt-pip.loss.is-lit {
+  background: linear-gradient(180deg, #f87171 0%, #991b1b 100%);
+  border-color: #fecaca;
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.55);
+}
+
+.draft-matchup-card {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  background: #0f1523;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 10px;
+}
+
+.dmc-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.dmc-side h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #f8fafc;
+}
+
+.dmc-side p {
+  margin: 0;
+  font-size: 0.76rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.dmc-vs {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #e6c875;
+  padding: 0 0.5rem;
+}
+
+.draft-reward-cards-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  align-items: center;
+}
+
+.draft-reward-card-cell {
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.draft-reward-card-cell:hover {
+  transform: translateY(-3px);
+}
+
+@media (max-width: 1080px) {
+  .draft-buckets-grid,
+  .draft-sovereign-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .draft-prize-tiers-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .draft-lobby-card,
+  .draft-stage-panel,
+  .draft-gauntlet-panel {
+    padding: 0.85rem;
+  }
+
+  .draft-matchup-card {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    text-align: left;
+  }
+
+  .dmc-vs {
+    padding: 0;
+    font-size: 0.95rem;
+  }
+
+  .srb-texts small {
+    display: none;
+  }
+
+  .sovereign-relics-grid {
+    grid-template-columns: 1fr;
+  }
+}

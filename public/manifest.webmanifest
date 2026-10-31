@@ -1,0 +1,27 @@
+{
+  "name": "Chromatic Pact — Card Game Tático de Vaeloria",
+  "short_name": "Chromatic Pact",
+  "description": "Card game tático Dark Fantasy com 996 cartas únicas, Guerra Continental de 30 Províncias e Crisol Draft no universo de Vaeloria.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070a12",
+  "theme_color": "#090c12",
+  "lang": "pt-BR",
+  "categories": ["games", "strategy", "entertainment"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

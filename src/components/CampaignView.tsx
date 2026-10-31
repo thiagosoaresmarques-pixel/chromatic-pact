@@ -8,9 +8,11 @@ import { TacticalGuideView } from './TacticalGuideView';
 import { VICTORY_GOLD_REWARD } from '../utils/multiplayerEngine';
 import { VaeloriaWorldMap } from './VaeloriaWorldMap';
 import { resolveStageMapNode } from '../data/vaeloriaMapData';
+import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
 
 export interface CampaignViewProps {
   defeatedBossIds: string[];
+  arenaWins?: number;
   customDecks: CustomSavedDeck[];
   onStartBossBattle: (boss: CampaignBoss, playerDeckCardIds: string[]) => void;
   onRewardGold?: (amount: number, reason?: string) => void;
@@ -139,6 +141,7 @@ function getActInfoForStage(stage: number): { actLabel: string; actTitle: string
 
 export const CampaignView: React.FC<CampaignViewProps> = ({
   defeatedBossIds,
+  arenaWins = 0,
   customDecks,
   onStartBossBattle,
   onRewardGold,
@@ -289,6 +292,11 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <SovereignRelicSelectorBar
+            defeatedBossCount={defeatedBossIds.length}
+            arenaWins={arenaWins}
+          />
+
           <div className="vwm-mode-switch">
             <button
               type="button"

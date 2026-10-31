@@ -25,6 +25,17 @@ import {
   subscribeMultiplayerBus,
   updateSovereignAccountProfile,
 } from '../utils/multiplayerEngine';
+import {
+  downloadSovereignSaveFile,
+  exportSovereignSaveCode,
+  importSovereignSaveCode,
+} from '../utils/portableCodex';
+import {
+  getPwaInstallState,
+  PwaInstallState,
+  subscribePwaInstallState,
+  triggerPwaInstallPrompt,
+} from '../utils/pwaInstall';
 import { CustomSavedDeck } from './BattleArena';
 
 export type AccountModalTab = 'profile' | 'login' | 'create';
@@ -280,6 +291,59 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     currentUser.preferredDeckId || customDecks[0]?.id || ''
   );
   const [profileSavedMsg, setProfileSavedMsg] = useState<string | null>(null);
+
+  // PWA & Portable Codex Sync State (PC <-> Smartphone)
+  const [pwaState, setPwaState] = useState<PwaInstallState>(() => getPwaInstallState());
+  const [showPortableRestore, setShowPortableRestore] = useState<boolean>(false);
+  const [portableCodeInput, setPortableCodeInput] = useState<string>('');
+  const [portableFeedback, setPortableFeedback] = useState<{
+    kind: 'ok' | 'err';
+    text: string;
+  } | null>(null);
+
+  useEffect(() => subscribePwaInstallState(setPwaState), []);
+
+  const handleCopyPortableSave = () => {
+    if (isUnregistered) return;
+    const code = exportSovereignSaveCode(currentUser);
+    navigator.clipboard.writeText(code).catch(() => undefined);
+    playSfx('channel');
+    setPortableFeedback({
+      kind: 'ok',
+      text: '📋 Códice de Save copiado! Cole-o no seu smartphone ou outro navegador para sincronizar tudo.',
+    });
+  };
+
+  const handleRestorePortableSave = (rawCode: string) => {
+    const res = importSovereignSaveCode(rawCode);
+    if (!res.ok) {
+      setPortableFeedback({ kind: 'err', text: res.error });
+      return;
+    }
+    playSfx('victory');
+    setAccountsRoster(getSavedAccountsRoster());
+    onUserChange(res.profile);
+    setTab('profile');
+    setShowPortableRestore(false);
+    setPortableCodeInput('');
+    setPortableFeedback({
+      kind: 'ok',
+      text: `✓ Conta "${res.profile.username}" e ${res.restoredKeysCount} registros de progresso restaurados!`,
+    });
+  };
+
+  const handleUploadSaveFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        handleRestorePortableSave(reader.result);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
 
   // Sync edit state if currentUser changes
   useEffect(() => {
@@ -1199,6 +1263,101 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             </div>
           </form>
         )}
+
+        {/* PWA App Install + Portable Save Codex (PC <-> Smartphone Sync) */}
+        <div className="portable-codex-panel">
+          <div className="portable-codex-top">
+            <div>
+              <div className="portable-codex-kicker">
+                📲 APP EM TELA CHEIA & SINCRONIA PORTÁTIL (PC ↔ SMARTPHONE)
+              </div>
+              <div className="portable-codex-sub">
+                {pwaState.isStandalone
+                  ? '✓ Executando como Aplicativo Instalado em Tela Cheia.'
+                  : 'Transfira Ouro, coleção, Campanha, Conquista e Crisol entre dispositivos ou instale o jogo.'}
+              </div>
+            </div>
+
+            <div className="portable-codex-actions">
+              {pwaState.canInstall && (
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-primary"
+                  onClick={() => triggerPwaInstallPrompt()}
+                >
+                  📲 Instalar App
+                </button>
+              )}
+              {!isUnregistered && (
+                <>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary"
+                    onClick={handleCopyPortableSave}
+                    title="Copia o código completo de backup desta conta e campanhas locais"
+                  >
+                    📋 Copiar Save
+                  </button>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary"
+                    onClick={() => {
+                      downloadSovereignSaveFile(currentUser);
+                      setPortableFeedback({
+                        kind: 'ok',
+                        text: '💾 Arquivo .cpsave.txt baixado com sucesso!',
+                      });
+                    }}
+                    title="Baixa um arquivo .cpsave.txt para guardar ou enviar ao celular"
+                  >
+                    💾 Baixar .cpsave
+                  </button>
+                </>
+              )}
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-ghost"
+                onClick={() => setShowPortableRestore((v) => !v)}
+              >
+                📥 {showPortableRestore ? 'Fechar Restauração' : 'Importar Save'}
+              </button>
+            </div>
+          </div>
+
+          {showPortableRestore && (
+            <div className="portable-codex-restore-box">
+              <input
+                type="text"
+                className="myth-search-compact"
+                placeholder="Cole aqui seu código CPSAVE1-..."
+                value={portableCodeInput}
+                onChange={(e) => setPortableCodeInput(e.target.value)}
+              />
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-primary"
+                onClick={() => handleRestorePortableSave(portableCodeInput)}
+              >
+                Restaurar Código
+              </button>
+              <label className="aaa-btn aaa-btn-secondary portable-file-label">
+                📂 Abrir .cpsave
+                <input
+                  type="file"
+                  accept=".txt,.cpsave,.json"
+                  style={{ display: 'none' }}
+                  onChange={handleUploadSaveFile}
+                />
+              </label>
+            </div>
+          )}
+
+          {portableFeedback && (
+            <div className={`portable-codex-msg is-${portableFeedback.kind}`}>
+              {portableFeedback.text}
+            </div>
+          )}
+        </div>
 
         {onOpenAdminPanel && !isAdminProfile(currentUser) && (
           <div className="account-admin-footer-row">

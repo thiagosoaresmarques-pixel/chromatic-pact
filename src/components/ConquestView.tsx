@@ -30,6 +30,7 @@ import {
   RegionalLocalLandmark,
 } from '../data/vaeloriaMultimapData';
 import { consumePendingOverworldBuff } from '../data/vaeloriaOverworldEvents';
+import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
 
 const CONQUEST_STORAGE_KEY = 'chromatic_pact_conquest_v1';
 const BASTION_BUILD_COST = 65;
@@ -119,6 +120,8 @@ export interface ConquestViewProps {
   }) => void;
   onRewardGold: (amount: number, reason?: string) => void;
   lastConquestOutcome?: ConquestBattleOutcome | null;
+  defeatedBossCount?: number;
+  arenaWins?: number;
 }
 
 export const ConquestView: React.FC<ConquestViewProps> = ({
@@ -129,6 +132,8 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
   onStartConquestBattle,
   onRewardGold,
   lastConquestOutcome,
+  defeatedBossCount = 0,
+  arenaWins = 0,
 }) => {
   const [runState, setRunState] = useState<ConquestRunState>(() => {
     try {
@@ -1060,6 +1065,11 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <SovereignRelicSelectorBar
+                defeatedBossCount={defeatedBossCount}
+                arenaWins={arenaWins}
+              />
+
               {!isGuest && customDecks.length > 0 && (
                 <select
                   value={runState.selectedDeckId}

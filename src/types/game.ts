@@ -230,6 +230,7 @@ export interface OverworldFieldBuff {
   bonusHp: number;
   bonusOpeningEssence: number;
   vanguardArmorBonus: number;
+  bonusOpeningDraw?: number;
   summaryLabel: string;
 }
 
@@ -255,6 +256,15 @@ export interface ConquestBattleModifiers {
   initialWeather?: ArenaWeatherType;
   /** Bônus temporário obtido ao explorar um Marco Vivo no mapa antes da batalha */
   overworldBuff?: OverworldFieldBuff | null;
+  /** Relíquia da Coroa equipada pelo Soberano nesta partida */
+  equippedRelic?: {
+    id: string;
+    name: string;
+    icon: string;
+    shortBonus: string;
+    bonusOpeningDraw?: number;
+    bonusAffinityDomain?: Domain | 'auto';
+  } | null;
 }
 
 export interface GameState {

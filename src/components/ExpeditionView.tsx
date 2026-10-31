@@ -9,6 +9,7 @@ import { CustomSavedDeck } from './BattleArena';
 import { VaeloriaWorldMap } from './VaeloriaWorldMap';
 import { resolveStageMapNode } from '../data/vaeloriaMapData';
 import { clearExpeditionVisitedLandmarks } from '../data/vaeloriaOverworldEvents';
+import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
 
 export interface SovereignBlessing {
   id:
@@ -398,6 +399,8 @@ export interface ExpeditionViewProps {
   onSaveCustomDeck: (deck: CustomSavedDeck) => void;
   onRewardGold: (amount: number) => void;
   lastClearedExpeditionBossId?: string | null;
+  defeatedBossCount?: number;
+  arenaWins?: number;
   isGuest?: boolean;
   onRequireAccount?: () => void;
 }
@@ -407,6 +410,8 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
   onSaveCustomDeck,
   onRewardGold,
   lastClearedExpeditionBossId,
+  defeatedBossCount = 0,
+  arenaWins = 0,
   isGuest = false,
   onRequireAccount,
 }) => {
@@ -675,6 +680,11 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <SovereignRelicSelectorBar
+            defeatedBossCount={defeatedBossCount}
+            arenaWins={arenaWins}
+          />
+
           {(runState.phase === 'trail' || runState.phase === 'completed') && (
             <div className="vwm-mode-switch">
               <button

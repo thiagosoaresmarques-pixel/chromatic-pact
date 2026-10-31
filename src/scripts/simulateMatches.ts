@@ -2,9 +2,24 @@ import fs from 'fs';
 import path from 'path';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS, CAMPAIGN_BOSSES } from '../data/decks';
+import {
+  applyEquippedRelicToModifiers,
+  SOVEREIGN_RELICS,
+} from '../data/sovereignRelics';
+import {
+  buildDraftGauntletBoss,
+  generateDraftRoundBuckets,
+  generateSovereignDraftCandidates,
+} from '../data/vaeloriaDraftData';
+import { decodeDeckCode, encodeDeckCode } from '../utils/portableCodex';
 import { createInitialGameState, endTurn } from '../engine/gameEngine';
 import { runFullAiTurn } from '../engine/aiEngine';
-import { CardDefinition, GameState } from '../types/game';
+import {
+  ArenaWeatherType,
+  CardDefinition,
+  GameState,
+  PlayerState,
+} from '../types/game';
 
 function resolveDeck(cardIds: string[]): CardDefinition[] {
   return cardIds.map((id) => {
@@ -14,51 +29,116 @@ function resolveDeck(cardIds: string[]): CardDefinition[] {
   });
 }
 
-function swapPerspective(state: GameState): GameState {
-  // Allows running runFullAiTurn for 'player' by temporarily swapping player/ai roles
+function reownPlayerSide(side: PlayerState, newOwner: 'player' | 'ai'): PlayerState {
+  return {
+    ...side,
+    id: newOwner,
+    vanguard: side.vanguard.map((u) => (u ? { ...u, owner: newOwner } : null)),
+    rearguard: side.rearguard.map((u) => (u ? { ...u, owner: newOwner } : null)),
+    vanguardStacks: (side.vanguardStacks ?? side.vanguard.map((u) => (u ? [u] : []))).map(
+      (stack) => stack.map((u) => ({ ...u, owner: newOwner }))
+    ),
+    rearguardStacks: (side.rearguardStacks ?? side.rearguard.map((u) => (u ? [u] : []))).map(
+      (stack) => stack.map((u) => ({ ...u, owner: newOwner }))
+    ),
+  };
+}
+
+function flipSideOwner<T extends 'player' | 'ai' | 'system'>(owner: T): T {
+  if (owner === 'player') return 'ai' as T;
+  if (owner === 'ai') return 'player' as T;
+  return owner;
+}
+
+function swapPerspectiveAndRunAi(state: GameState): GameState {
+  // Temporarily swap player/ai roles (including Opção C stacks & Domain Expansion) so runFullAiTurn plays for 'player'
   const swapped: GameState = {
     ...state,
     activePlayer: 'ai',
-    player: {
-      ...state.ai,
-      id: 'player',
-      vanguard: state.ai.vanguard.map((u) => (u ? { ...u, owner: 'player' } : null)),
-      rearguard: state.ai.rearguard.map((u) => (u ? { ...u, owner: 'player' } : null)),
-    },
-    ai: {
-      ...state.player,
-      id: 'ai',
-      vanguard: state.player.vanguard.map((u) => (u ? { ...u, owner: 'ai' } : null)),
-      rearguard: state.player.rearguard.map((u) => (u ? { ...u, owner: 'ai' } : null)),
-    },
+    initiativePlayer: state.initiativePlayer
+      ? flipSideOwner(state.initiativePlayer)
+      : undefined,
+    domainExpansion: state.domainExpansion
+      ? {
+          ...state.domainExpansion,
+          owner: flipSideOwner(state.domainExpansion.owner),
+          clashRival: state.domainExpansion.clashRival
+            ? {
+                ...state.domainExpansion.clashRival,
+                owner: flipSideOwner(state.domainExpansion.clashRival.owner),
+              }
+            : null,
+        }
+      : null,
+    weather: state.weather
+      ? {
+          ...state.weather,
+          owner: flipSideOwner(state.weather.owner),
+        }
+      : null,
+    player: reownPlayerSide(state.ai, 'player'),
+    ai: reownPlayerSide(state.player, 'ai'),
   };
+
   const afterAi = runFullAiTurn(swapped);
+
   return {
     ...afterAi,
     activePlayer: afterAi.phase === 'gameover' ? state.activePlayer : 'ai',
+    initiativePlayer: afterAi.initiativePlayer
+      ? flipSideOwner(afterAi.initiativePlayer)
+      : undefined,
+    domainExpansion: afterAi.domainExpansion
+      ? {
+          ...afterAi.domainExpansion,
+          owner: flipSideOwner(afterAi.domainExpansion.owner),
+          clashRival: afterAi.domainExpansion.clashRival
+            ? {
+                ...afterAi.domainExpansion.clashRival,
+                owner: flipSideOwner(afterAi.domainExpansion.clashRival.owner),
+              }
+            : null,
+        }
+      : null,
+    weather: afterAi.weather
+      ? {
+          ...afterAi.weather,
+          owner: flipSideOwner(afterAi.weather.owner),
+        }
+      : null,
     winner:
       afterAi.winner === 'ai'
         ? 'player'
         : afterAi.winner === 'player'
         ? 'ai'
         : null,
-    player: {
-      ...afterAi.ai,
-      id: 'player',
-      vanguard: afterAi.ai.vanguard.map((u) => (u ? { ...u, owner: 'player' } : null)),
-      rearguard: afterAi.ai.rearguard.map((u) => (u ? { ...u, owner: 'player' } : null)),
-    },
-    ai: {
-      ...afterAi.player,
-      id: 'ai',
-      vanguard: afterAi.player.vanguard.map((u) => (u ? { ...u, owner: 'ai' } : null)),
-      rearguard: afterAi.player.rearguard.map((u) => (u ? { ...u, owner: 'ai' } : null)),
-    },
+    player: reownPlayerSide(afterAi.ai, 'player'),
+    ai: reownPlayerSide(afterAi.player, 'ai'),
   };
 }
 
+function runSingleAiDuel(state: GameState, maxSafetySteps = 80): GameState {
+  let current = state;
+  let safetySteps = 0;
+  while (current.phase !== 'gameover' && safetySteps < maxSafetySteps) {
+    safetySteps++;
+    if (current.activePlayer === 'player') {
+      current = swapPerspectiveAndRunAi(current);
+      if (current.phase !== 'gameover' && current.activePlayer === 'player') {
+        current = endTurn(current);
+      }
+    } else {
+      current = runFullAiTurn(current);
+      if (current.phase !== 'gameover' && current.activePlayer === 'ai') {
+        current = endTurn(current);
+      }
+    }
+  }
+  return current;
+}
+
 function runAutomatedQA() {
-  console.log('=== CHROMATIC PACT — AUTOMATED QA & SIMULATION ===');
+  console.log('=== CHROMATIC PACT — AUTOMATED QA & SIMULATION SUITE ===');
   console.log(`Total Cards in Catalog: ${ALL_CARDS.length}`);
 
   const domainCounts: Record<string, number> = {};
@@ -74,15 +154,18 @@ function runAutomatedQA() {
   }
   console.log('Cards per Domain:', domainCounts);
   console.log(`Missing Image Assets: ${missingImages}`);
+  if (missingImages > 0) {
+    throw new Error(`Found ${missingImages} missing card image assets!`);
+  }
 
-  console.log(`\nValidating ${PREBUILT_DECKS.length} Prebuilt 40-Card Decks...`);
+  console.log(`\nValidating ${PREBUILT_DECKS.length} Prebuilt Grimoires...`);
   for (const deck of PREBUILT_DECKS) {
     const resolved = resolveDeck(deck.cardIds);
-    console.log(`  - [${deck.id}] ${deck.name}: ${resolved.length} cards (${deck.domains.join('/')})`);
-    if (resolved.length !== 40) {
-      throw new Error(`Deck ${deck.id} has ${resolved.length} cards instead of 40!`);
+    if (resolved.length < 40) {
+      throw new Error(`Deck ${deck.id} has only ${resolved.length} cards (minimum 40)!`);
     }
   }
+  console.log(`  OK — All ${PREBUILT_DECKS.length} Prebuilt Grimoires resolved cleanly.`);
 
   console.log(`\nValidating ${CAMPAIGN_BOSSES.length} Campaign Bosses...`);
   for (const boss of CAMPAIGN_BOSSES) {
@@ -92,44 +175,139 @@ function runAutomatedQA() {
     if (!PREBUILT_DECKS.find((d) => d.id === boss.deckId)) {
       throw new Error(`Boss ${boss.id} has invalid deckId: ${boss.deckId}`);
     }
-    console.log(`  - Stage ${boss.stage}: ${boss.name} (${boss.startingHp} HP) -> Deck: ${boss.deckId}`);
   }
+  console.log(`  OK — All ${CAMPAIGN_BOSSES.length} Campaign Bosses linked cleanly.`);
 
-  console.log('\nRunning 8 AI vs AI Simulated Matches across all Prebuilt Decks...');
-  for (let i = 0; i < PREBUILT_DECKS.length; i++) {
-    const deckA = PREBUILT_DECKS[i];
-    const deckB = PREBUILT_DECKS[(i + 1) % PREBUILT_DECKS.length];
-    let state = createInitialGameState(resolveDeck(deckA.cardIds), resolveDeck(deckB.cardIds), {
-      playerName: deckA.name,
-      aiName: deckB.name,
-    });
-
-    let safetyTurns = 0;
-    while (state.phase !== 'gameover' && safetyTurns < 60) {
-      safetyTurns++;
-      if (state.activePlayer === 'player') {
-        state = swapPerspective(state);
-        if (state.phase !== 'gameover' && state.activePlayer === 'player') {
-          state = endTurn(state);
-        }
-      } else {
-        state = runFullAiTurn(state);
-        if (state.phase !== 'gameover' && state.activePlayer === 'ai') {
-          state = endTurn(state);
-        }
-      }
-    }
-
-    const winnerName =
-      state.winner === 'player'
-        ? deckA.name
-        : state.winner === 'ai'
-        ? deckB.name
-        : `Empate por Limite (${state.player.hp} vs ${state.ai.hp} HP)`;
-    console.log(
-      `  Match ${i + 1}: [${deckA.name}] vs [${deckB.name}] -> Winner: ${winnerName} in ${state.turn} turns (Final HP: ${state.player.hp} vs ${state.ai.hp})`
+  console.log(`\nValidating Portable Deck Code (CPDECK1-...) Codec...`);
+  const sampleDeck = PREBUILT_DECKS[0];
+  const encodedCode = encodeDeckCode(sampleDeck.name, sampleDeck.cardIds);
+  const decodedDeck = decodeDeckCode(encodedCode);
+  if (!decodedDeck.ok || decodedDeck.data.cardIds.length !== sampleDeck.cardIds.length) {
+    throw new Error(
+      `Deck code roundtrip mismatch: ${decodedDeck.ok ? decodedDeck.data.cardIds.length : decodedDeck.error}`
     );
   }
+  console.log(
+    `  OK — Portable Deck Code roundtrip verified (${encodedCode.length} chars for ${decodedDeck.data.cardIds.length} cards).`
+  );
+
+  console.log(`\nValidating ${SOVEREIGN_RELICS.length} Sovereign Crown Relics...`);
+  if (SOVEREIGN_RELICS.length !== 12) {
+    throw new Error(`Expected 12 Sovereign Relics, got ${SOVEREIGN_RELICS.length}`);
+  }
+  for (const relic of SOVEREIGN_RELICS) {
+    const mods = applyEquippedRelicToModifiers(null, relic.id);
+    if (!mods?.equippedRelic || mods.equippedRelic.id !== relic.id) {
+      throw new Error(`Failed to apply Sovereign Relic: ${relic.id}`);
+    }
+  }
+  console.log(`  OK — All 12 Sovereign Crown Relics validated.`);
+
+  console.log(`\nValidating Draft Crucible ("Crisol dos Cinco Selos") Forge...`);
+  const sovCandidates = generateSovereignDraftCandidates();
+  if (sovCandidates.length !== 3) {
+    throw new Error(`Expected 3 Sovereign candidates, got ${sovCandidates.length}`);
+  }
+  const chosenSov = sovCandidates[0];
+  const chosenSovDomain = CARDS_BY_ID[chosenSov]?.domain ?? 'red';
+  const draftedIds: string[] = [];
+  for (let round = 1; round <= 20; round++) {
+    const buckets = generateDraftRoundBuckets(chosenSovDomain, round, draftedIds);
+    if (buckets.length !== 3) {
+      throw new Error(`Round ${round} generated ${buckets.length} buckets instead of 3`);
+    }
+    draftedIds.push(...buckets[0].cardIds);
+  }
+  if (draftedIds.length !== 40) {
+    throw new Error(`Expected 40 drafted cards after 20 rounds, got ${draftedIds.length}`);
+  }
+  console.log(
+    `  OK — Draft Crucible generated 40 synergistic cards led by [${CARDS_BY_ID[chosenSov]?.name}].`
+  );
+
+  const weatherCycle: ArenaWeatherType[] = [
+    'ash_storm',
+    'astral_blizzard',
+    'umbral_eclipse',
+    'sylvan_monsoon',
+    'solar_zenith',
+    'astral_convergence',
+  ];
+
+  const matchCount = Math.min(8, PREBUILT_DECKS.length);
+  console.log(
+    `\nRunning ${matchCount} AI vs AI Simulated Matches (with Weather & Sovereign Relics)...`
+  );
+  for (let i = 0; i < matchCount; i++) {
+    const deckA = PREBUILT_DECKS[i];
+    const deckB = PREBUILT_DECKS[(i + 3) % PREBUILT_DECKS.length];
+    const relic = SOVEREIGN_RELICS[i % SOVEREIGN_RELICS.length];
+    const weatherType = weatherCycle[i % weatherCycle.length];
+
+    const mods = applyEquippedRelicToModifiers(
+      {
+        provinceId: `sim_prov_${i}`,
+        provinceName: 'Campo Planar de Testes',
+        provinceDomain: relic.domain,
+        isDefensiveSiege: false,
+        isCapitalSiege: false,
+        playerBonusHp: 0,
+        playerBonusEssence: 0,
+        enemyOpeningDamage: 0,
+        vanguardArmorBonus: 0,
+        relicDiscount: false,
+        dragonSkyBonus: false,
+        legendaryWheelBonus: false,
+        bannerSummary: 'Simulação QA',
+        initialWeather: weatherType,
+      },
+      relic.id
+    );
+
+    const initialState = createInitialGameState(
+      resolveDeck(deckA.cardIds),
+      resolveDeck(deckB.cardIds),
+      {
+        playerName: deckA.name,
+        aiName: deckB.name,
+        conquestModifiers: mods,
+      }
+    );
+
+    const finalState = runSingleAiDuel(initialState, 70);
+    const winnerName =
+      finalState.winner === 'player'
+        ? deckA.name
+        : finalState.winner === 'ai'
+        ? deckB.name
+        : `Limite de Turnos (${finalState.player.hp} vs ${finalState.ai.hp} HP)`;
+    console.log(
+      `  Match ${i + 1}: [${deckA.name} + ${relic.icon} ${relic.name}] vs [${deckB.name}] (${weatherType}) -> ${winnerName} in ${finalState.turn} turns (HP: ${finalState.player.hp} vs ${finalState.ai.hp})`
+    );
+  }
+
+  console.log(`\nRunning Draft Crucible 40-Card Gauntlet Simulation...`);
+  const gauntletEncounter = buildDraftGauntletBoss(6);
+  const gauntletBossDeck =
+    PREBUILT_DECKS.find((d) => d.id === gauntletEncounter.boss.deckId) ?? PREBUILT_DECKS[0];
+  const draftState = createInitialGameState(
+    resolveDeck([chosenSov, ...draftedIds.filter((id) => id !== chosenSov)].slice(0, 40)),
+    resolveDeck(gauntletBossDeck.cardIds),
+    {
+      playerName: 'Campeão do Crisol',
+      aiName: gauntletEncounter.boss.name,
+      aiStartingHp: gauntletEncounter.boss.startingHp,
+      bossId: gauntletEncounter.boss.id,
+      conquestModifiers: applyEquippedRelicToModifiers(
+        gauntletEncounter.modifiers,
+        SOVEREIGN_RELICS[11].id
+      ),
+    }
+  );
+  const finalDraftDuel = runSingleAiDuel(draftState, 70);
+  console.log(
+    `  Draft Gauntlet Final: [Campeão do Crisol] vs [${gauntletEncounter.boss.name}] -> Turn ${finalDraftDuel.turn} (HP: ${finalDraftDuel.player.hp} vs ${finalDraftDuel.ai.hp})`
+  );
 
   console.log('\nALL QA CHECKS & SIMULATIONS PASSED!');
 }

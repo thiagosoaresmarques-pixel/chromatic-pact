@@ -9,7 +9,7 @@
     "preview": "node ./node_modules/vite/bin/vite.js preview",
     "simulate": "node ./node_modules/tsx/dist/cli.mjs src/scripts/simulateMatches.ts",
     "train:ai": "node ./node_modules/tsx/dist/cli.mjs src/scripts/trainAiLeague.ts",
-    "train:mono": "node ./node_modules/tsx/dist/cli.mjs src/scripts/trainMonocolorEvolution.ts"
+    "train:mono": "node --import tsx src/scripts/trainMonocolorEvolution.ts"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

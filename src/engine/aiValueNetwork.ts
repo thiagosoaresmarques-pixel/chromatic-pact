@@ -517,6 +517,7 @@ export function trainValueMlpWithAdam(
     learningRate?: number;
     weightDecay?: number;
     seed?: number;
+    warmStartMlp?: SerializedValueMlp | null;
   }
 ): SerializedValueMlp {
   const epochs = options?.epochs ?? 24;
@@ -525,8 +526,15 @@ export function trainValueMlpWithAdam(
   const weightDecay = options?.weightDecay ?? 0.00015;
   const seed = options?.seed ?? 20261031;
 
-  const mlp = createUntrainedValueMlp(domain, seed);
-  if (samples.length === 0) return mlp;
+  const warm = options?.warmStartMlp;
+  const mlp =
+    warm &&
+    warm.w1.length === VALUE_MLP_H1_DIM * VALUE_MLP_INPUT_DIM &&
+    warm.w2.length === VALUE_MLP_H2_DIM * VALUE_MLP_H1_DIM &&
+    warm.w3.length === VALUE_MLP_H2_DIM
+      ? warm
+      : createUntrainedValueMlp(domain, seed);
+  if (samples.length === 0) return { ...mlp, domain };
 
   const w1 = Float64Array.from(mlp.w1);
   const b1 = Float64Array.from(mlp.b1);

@@ -396,15 +396,27 @@ function chooseBestCardToChannel(
   };
 
   const cardCountsById: Record<string, number> = {};
+  const coloredList: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
   for (const c of aiState.hand) {
     cardCountsById[c.id] = (cardCountsById[c.id] ?? 0) + 1;
     if (c.domain !== 'neutral') {
-      const currentAff = aiState.affinities[c.domain] + aiState.affinities.neutral;
+      let otherColored = 0;
+      for (const od of coloredList) {
+        if (od !== c.domain) otherColored += aiState.affinities[od] ?? 0;
+      }
+      const currentAff = (aiState.affinities[c.domain] ?? 0) + Math.ceil(otherColored * 0.65);
       if (currentAff < c.affinityReq) {
         domainNeed[c.domain] += (c.affinityReq - currentAff) * 2 + 1;
       }
     }
   }
+  const maxColoredDomainNeed = Math.max(
+    domainNeed.red,
+    domainNeed.blue,
+    domainNeed.purple,
+    domainNeed.green,
+    domainNeed.gold
+  );
 
   const coloredPactAffinity =
     (aiState.affinities.red ?? 0) +
@@ -438,6 +450,9 @@ function chooseBestCardToChannel(
 
     if (card.domain !== 'neutral') {
       score += Math.min(26, domainNeed[card.domain] * 10);
+    } else if (coloredPactAffinity > 0 && maxColoredDomainNeed > 0) {
+      // Neutral card acts as wildcard Affinity fixer for whichever colored Pact domain needs it most
+      score += Math.min(24, maxColoredDomainNeed * 9);
     } else if (coloredPactAffinity === 0 && totalPactAffinity < 6) {
       // Pure Neutral Sovereign advances Axial Affinity toward Matriz Horológica do Ponto Zero (6/6)
       score += Math.round(14 * w.domainExpansionEagerness);

@@ -10,9 +10,12 @@ import {
   DeckLearnedAiProfile,
 } from '../data/aiLearnedProfiles';
 import {
+  BICOLOR_ARCHETYPE_MASTERY,
+  getTrainedBicolorPrebuiltDecks,
   getTrainedMonocolorPrebuiltDecks,
   MONOCOLOR_ARCHETYPE_MASTERY,
   MonocolorArchetypeId,
+  resolveBicolorArchetypeForDeckId,
 } from '../data/aiMonocolorMastery';
 import { CardView, CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
@@ -604,7 +607,12 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
         cardIds: cd.cardIds,
       };
     });
-    return [...getTrainedMonocolorPrebuiltDecks(5), ...PREBUILT_DECKS, ...customConverted];
+    return [
+      ...getTrainedMonocolorPrebuiltDecks(5),
+      ...getTrainedBicolorPrebuiltDecks(5),
+      ...PREBUILT_DECKS,
+      ...customConverted,
+    ];
   }, [customDecks]);
 
   const [selectedPlayerDeckId, setSelectedPlayerDeckId] = useState<string>(
@@ -665,14 +673,23 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
     const monoDirect =
       MONOCOLOR_ARCHETYPE_MASTERY[playerProfile.deck.id as MonocolorArchetypeId]?.learnedProfile;
     if (monoDirect) return monoDirect;
+    const biId = resolveBicolorArchetypeForDeckId(playerProfile.deck.id);
+    if (biId && BICOLOR_ARCHETYPE_MASTERY[biId]?.learnedProfile) {
+      return BICOLOR_ARCHETYPE_MASTERY[biId].learnedProfile;
+    }
     const direct = AI_LEARNED_PROFILES[playerProfile.deck.id];
     if (direct) return direct;
 
     // Match custom player decks to their closest trained official grimoire by unique card overlap
     const idSet = new Set(playerProfile.deck.cardIds);
+    const referenceDecks = [
+      ...getTrainedMonocolorPrebuiltDecks(5),
+      ...getTrainedBicolorPrebuiltDecks(5),
+      ...PREBUILT_DECKS,
+    ];
     let bestId: string | null = null;
     let bestOverlap = 0;
-    for (const d of PREBUILT_DECKS) {
+    for (const d of referenceDecks) {
       let overlap = 0;
       const seen = new Set<string>();
       for (const cid of d.cardIds) {
@@ -686,8 +703,25 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
         bestId = d.id;
       }
     }
-    return bestId ? AI_LEARNED_PROFILES[bestId] ?? null : null;
+    if (!bestId) return null;
+    const monoMatch = MONOCOLOR_ARCHETYPE_MASTERY[bestId as MonocolorArchetypeId];
+    if (monoMatch?.learnedProfile) {
+      return monoMatch.learnedProfile;
+    }
+    const bestBiId = resolveBicolorArchetypeForDeckId(bestId);
+    const biMatch = bestBiId ? BICOLOR_ARCHETYPE_MASTERY[bestBiId] : undefined;
+    if (biMatch?.learnedProfile) {
+      return biMatch.learnedProfile;
+    }
+    return AI_LEARNED_PROFILES[bestId] ?? null;
   }, [playerProfile]);
+
+  const activeBicolorMastery = useMemo(() => {
+    const biId = resolveBicolorArchetypeForDeckId(playerProfile.deck.id);
+    return biId ? BICOLOR_ARCHETYPE_MASTERY[biId] ?? null : null;
+  }, [playerProfile]);
+
+  const fmtAiPct = (val: number) => (Math.abs(val) <= 1.5 ? val * 100 : val).toFixed(1);
 
   const allMatchupsList = useMemo(() => {
     return allDecks
@@ -1121,7 +1155,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                   <div className="tg-ai-kpi-cell">
                     <span className="tg-ai-kpi-label">Evolução (Base → IA)</span>
                     <span className="tg-ai-kpi-value" style={{ color: '#e5c97b' }}>
-                      {learnedAiProfile.baselineWinRate.toFixed(1)}% → {learnedAiProfile.trainedWinRate.toFixed(1)}%
+                      {fmtAiPct(learnedAiProfile.baselineWinRate)}% → {fmtAiPct(learnedAiProfile.trainedWinRate)}%
                     </span>
                   </div>
                   <div className="tg-ai-kpi-cell">
@@ -1270,8 +1304,56 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                                 #{idx + 1} {cA.name} + {cB.name}
                               </strong>
                               <span className="tg-ai-combo-badge">
-                                {dc.coPlayWinRate.toFixed(1)}% WR ({dc.liftOverBaseline >= 0 ? '+' : ''}
-                                {dc.liftOverBaseline.toFixed(1)}% Lift • n={dc.sampleCount})
+                                {fmtAiPct(dc.coPlayWinRate)}% WR ({dc.liftOverBaseline >= 0 ? '+' : ''}
+                                {fmtAiPct(dc.liftOverBaseline)}% Lift • n={dc.sampleCount})
+                              </span>
+                            </div>
+                            <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '0 0 0.42rem', lineHeight: 1.4 }}>
+                              {dc.synergyNote}
+                            </p>
+                            <div className="tg-combo-cards-row">
+                              {[cA, cB].map((c) => (
+                                <div
+                                  key={c.id}
+                                  className="tg-mini-card-pill"
+                                  onClick={() => setInspectCard(c)}
+                                >
+                                  {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                                  <div>
+                                    <div className="tg-mini-card-name">{c.name}</div>
+                                    <div className="tg-mini-card-sub">
+                                      Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {activeBicolorMastery && activeBicolorMastery.crossDomainCombos.length > 0 && (
+                  <div style={{ marginTop: '0.75rem' }}>
+                    <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#38bdf8', marginBottom: '0.4rem' }}>
+                      Sinergias Inter-Domínio Bicolores (WR vs Monocolor Tier V: {fmtAiPct(activeBicolorMastery.vsMonocolorWinRate)}%)
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {activeBicolorMastery.crossDomainCombos.slice(0, 4).map((dc, idx) => {
+                        const cA = CARDS_BY_ID[dc.cardAId];
+                        const cB = CARDS_BY_ID[dc.cardBId];
+                        if (!cA || !cB) return null;
+                        return (
+                          <div key={`cross-${dc.cardAId}-${dc.cardBId}-${idx}`} className="tg-combo-card" style={{ padding: '0.65rem 0.8rem', borderColor: 'rgba(56, 189, 248, 0.3)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.35rem' }}>
+                              <strong className="font-cinzel" style={{ fontSize: '0.8rem', color: '#f8fafc' }}>
+                                {DOMAIN_META[cA.domain].icon}+{DOMAIN_META[cB.domain].icon} {cA.name} + {cB.name}
+                              </strong>
+                              <span className="tg-ai-combo-badge">
+                                {fmtAiPct(dc.coPlayWinRate)}% WR ({dc.liftOverBaseline >= 0 ? '+' : ''}
+                                {fmtAiPct(dc.liftOverBaseline)}% Lift • n={dc.sampleCount})
                               </span>
                             </div>
                             <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '0 0 0.42rem', lineHeight: 1.4 }}>

@@ -16,8 +16,16 @@ import {
   MonocolorArchetypeId,
   MonocolorArchetypeMastery,
 } from './aiMonocolorMasteryData';
+import {
+  BICOLOR_ARCHETYPE_MASTERY,
+  BICOLOR_VALUE_NETWORKS,
+  BicolorArchetypeId,
+  resolveBicolorArchetypeForDeckId,
+  resolveBicolorArchetypeForDomains,
+} from './aiBicolorMastery';
 
 export * from './aiMonocolorMasteryData';
+export * from './aiBicolorMastery';
 
 const COPY_CAP_BY_RARITY: Record<Rarity, number> = {
   common: 3,
@@ -487,19 +495,46 @@ function buildFallbackOrMulticolorTierDeck(
   return deck;
 }
 
+function inferClassicStageSkillTier(stage: number): AiSkillTier {
+  if (stage <= 3) return 2;
+  if (stage <= 8) return 3;
+  if (stage <= 18) return 4;
+  return 5;
+}
+
 /**
  * Resolves the exact 100-card graduated grimoire (Tier I..V), archetype ID, title, and AI skill tier
- * for any CampaignBoss in Vaeloria.
+ * for any CampaignBoss in Vaeloria (Monocolor, Bicolor, or Multicolor/Prismatic).
  */
 export function resolveCampaignBossGraduatedSetup(boss: CampaignBoss): {
   cardIds: string[];
-  archetypeId: MonocolorArchetypeId;
+  archetypeId: MonocolorArchetypeId | BicolorArchetypeId;
   archetypeTitle: string;
   skillTier: AiSkillTier;
 } {
-  const skillTier: AiSkillTier = (boss.difficultyTier ?? 3) as AiSkillTier;
+  const skillTier: AiSkillTier = (
+    boss.difficultyTier ?? inferClassicStageSkillTier(boss.stage)
+  ) as AiSkillTier;
   const signatureIds = [boss.avatarCardId];
   if (boss.companionCardId) signatureIds.push(boss.companionCardId);
+
+  if (boss.domains.length === 2) {
+    const biArchId =
+      resolveBicolorArchetypeForDomains(boss.domains) ??
+      resolveBicolorArchetypeForDeckId(boss.deckId);
+    if (biArchId) {
+      const biMastery = BICOLOR_ARCHETYPE_MASTERY[biArchId];
+      const biTierDeck = biMastery?.tierDecks?.[skillTier] ?? biMastery?.tierDecks?.[5];
+      if (biMastery && biTierDeck && biTierDeck.cardIds.length === DECK_SIZE) {
+        return {
+          cardIds: injectSignatureCardsInto100Deck(biTierDeck.cardIds, signatureIds),
+          archetypeId: biArchId,
+          archetypeTitle: biMastery.name,
+          skillTier,
+        };
+      }
+    }
+  }
 
   if (boss.domains.length > 1) {
     return {
@@ -533,7 +568,7 @@ export function resolveCampaignBossGraduatedSetup(boss: CampaignBoss): {
 }
 
 /**
- * Resolves the primary trained Domain Value MLP for `actor` in `O(1)`.
+ * Resolves the primary trained Domain or Bicolor Value MLP for `actor` in `O(1)`.
  */
 export function resolveDomainValueMlpForActor(
   state: GameState,
@@ -543,6 +578,11 @@ export function resolveDomainValueMlpForActor(
   const deckId = actor === 'player' ? state.playerDeckId : state.aiDeckId;
 
   if (deckId) {
+    const biArchId = resolveBicolorArchetypeForDeckId(deckId);
+    if (biArchId && BICOLOR_VALUE_NETWORKS[biArchId]) {
+      return BICOLOR_VALUE_NETWORKS[biArchId] ?? null;
+    }
+
     const mastery = MONOCOLOR_ARCHETYPE_MASTERY[deckId as MonocolorArchetypeId];
     if (mastery && DOMAIN_VALUE_NETWORKS[mastery.domain]) {
       return DOMAIN_VALUE_NETWORKS[mastery.domain] ?? null;
@@ -555,18 +595,29 @@ export function resolveDomainValueMlpForActor(
     if (deckId.includes('neutral')) return DOMAIN_VALUE_NETWORKS.neutral ?? null;
   }
 
-  // Fallback: inspect actor's highest starting/current domain affinity
+  // Fallback: inspect actor's active domain affinities (supports custom Bicolor & Monocolor decks)
   const domains: Domain[] = ['green', 'red', 'blue', 'purple', 'gold'];
-  let bestDom: Domain = 'neutral';
-  let bestAff = 0;
-  for (const d of domains) {
-    const v = side.affinities[d] ?? 0;
-    if (v > bestAff) {
-      bestAff = v;
-      bestDom = d;
+  const activeColored = domains
+    .map((d) => ({ domain: d, val: side.affinities[d] ?? 0 }))
+    .filter((x) => x.val > 0)
+    .sort((a, b) => b.val - a.val);
+
+  if (activeColored.length === 2) {
+    const biFallback = resolveBicolorArchetypeForDomains([
+      activeColored[0].domain,
+      activeColored[1].domain,
+    ]);
+    if (biFallback && BICOLOR_VALUE_NETWORKS[biFallback]) {
+      return BICOLOR_VALUE_NETWORKS[biFallback] ?? null;
+    }
+  } else if (activeColored.length === 1 && (side.affinities.neutral ?? 0) >= 2) {
+    const axialFallback = resolveBicolorArchetypeForDomains([activeColored[0].domain, 'neutral']);
+    if (axialFallback && BICOLOR_VALUE_NETWORKS[axialFallback]) {
+      return BICOLOR_VALUE_NETWORKS[axialFallback] ?? null;
     }
   }
 
+  const bestDom: Domain = activeColored[0]?.domain ?? 'neutral';
   return DOMAIN_VALUE_NETWORKS[bestDom] ?? DOMAIN_VALUE_NETWORKS.neutral ?? null;
 }
 

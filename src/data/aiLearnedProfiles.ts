@@ -1,5 +1,11 @@
 import { CAMPAIGN_BOSSES, PREBUILT_DECKS } from './decks';
-import { MONOCOLOR_ARCHETYPE_MASTERY, MonocolorArchetypeId } from './aiMonocolorMastery';
+import {
+  BICOLOR_ARCHETYPE_MASTERY,
+  MONOCOLOR_ARCHETYPE_MASTERY,
+  MonocolorArchetypeId,
+  resolveBicolorArchetypeForDeckId,
+  resolveBicolorArchetypeForDomains,
+} from './aiMonocolorMastery';
 import { GameState } from '../types/game';
 
 /**
@@ -3765,6 +3771,10 @@ export function resolveLearnedProfileForActor(
 
   const explicitDeckId = actor === 'player' ? state.playerDeckId : state.aiDeckId;
   if (explicitDeckId) {
+    const biId = resolveBicolorArchetypeForDeckId(explicitDeckId);
+    if (biId && BICOLOR_ARCHETYPE_MASTERY[biId]?.learnedProfile) {
+      return BICOLOR_ARCHETYPE_MASTERY[biId].learnedProfile;
+    }
     const monoMastery = MONOCOLOR_ARCHETYPE_MASTERY[explicitDeckId as MonocolorArchetypeId];
     if (monoMastery?.learnedProfile) {
       return monoMastery.learnedProfile;
@@ -3776,8 +3786,18 @@ export function resolveLearnedProfileForActor(
 
   if (actor === 'ai' && state.bossId) {
     const boss = CAMPAIGN_BOSSES.find((b) => b.id === state.bossId);
-    if (boss && AI_LEARNED_PROFILES[boss.deckId]) {
-      return AI_LEARNED_PROFILES[boss.deckId];
+    if (boss) {
+      if (boss.domains.length === 2) {
+        const biBossId =
+          resolveBicolorArchetypeForDomains(boss.domains) ??
+          resolveBicolorArchetypeForDeckId(boss.deckId);
+        if (biBossId && BICOLOR_ARCHETYPE_MASTERY[biBossId]?.learnedProfile) {
+          return BICOLOR_ARCHETYPE_MASTERY[biBossId].learnedProfile;
+        }
+      }
+      if (AI_LEARNED_PROFILES[boss.deckId]) {
+        return AI_LEARNED_PROFILES[boss.deckId];
+      }
     }
   }
 

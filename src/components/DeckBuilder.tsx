@@ -2,7 +2,10 @@ import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { CardDefinition, CardType, Domain, Keyword, Rarity } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS, MAX_COPIES_BY_RARITY, MAX_LEGENDARIES_PER_DECK } from '../data/decks';
-import { getTrainedMonocolorPrebuiltDecks } from '../data/aiMonocolorMastery';
+import {
+  getTrainedBicolorPrebuiltDecks,
+  getTrainedMonocolorPrebuiltDecks,
+} from '../data/aiMonocolorMastery';
 import {
   CardView,
   CardInspectModal,
@@ -1153,7 +1156,11 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       setTimeout(() => setSaveBanner(null), 3500);
       return;
     }
-    const allTemplates = [...getTrainedMonocolorPrebuiltDecks(5), ...PREBUILT_DECKS];
+    const allTemplates = [
+      ...getTrainedMonocolorPrebuiltDecks(5),
+      ...getTrainedBicolorPrebuiltDecks(5),
+      ...PREBUILT_DECKS,
+    ];
     const found = allTemplates.find((d) => d.id === prebuiltId);
     if (!found) return;
     setActiveGuideDeckId(prebuiltId);
@@ -1770,10 +1777,17 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               }}
             >
               <option value="" disabled>
-                Carregar Modelo de Grimório (16 Monocolor IA + {PREBUILT_DECKS.length} Clássicos)...
+                Carregar Modelo de Grimório (16 Monocolor IA + 15 Bicolor IA + {PREBUILT_DECKS.length} Clássicos)...
               </option>
               <optgroup label="Grimórios Monocolor Co-Evoluídos (IA Campeã)">
                 {getTrainedMonocolorPrebuiltDecks(5).map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Grimórios Bicolores Co-Evoluídos (15 Pactos IA)">
+                {getTrainedBicolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}
                   </option>

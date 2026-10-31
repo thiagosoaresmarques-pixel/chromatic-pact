@@ -15,9 +15,12 @@ import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import {
   AI_SKILL_TIER_SPECS,
+  BICOLOR_ARCHETYPE_MASTERY,
+  getTrainedBicolorPrebuiltDecks,
   getTrainedMonocolorPrebuiltDecks,
   MONOCOLOR_ARCHETYPE_MASTERY,
   MonocolorArchetypeId,
+  resolveBicolorArchetypeForDeckId,
   resolveCampaignBossGraduatedSetup,
 } from '../data/aiMonocolorMastery';
 import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
@@ -430,8 +433,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   );
   const allAvailableAiDecks = useMemo(() => {
     const trainedMono = getTrainedMonocolorPrebuiltDecks(selectedAiSkillTier);
-    const seen = new Set(trainedMono.map((d) => d.id));
-    return [...trainedMono, ...PREBUILT_DECKS.filter((d) => !seen.has(d.id))];
+    const trainedBi = getTrainedBicolorPrebuiltDecks(selectedAiSkillTier);
+    const seen = new Set([
+      ...trainedMono.map((d) => d.id),
+      ...trainedBi.map((d) => d.id),
+    ]);
+    return [
+      ...trainedMono,
+      ...trainedBi,
+      ...PREBUILT_DECKS.filter((d) => !seen.has(d.id)),
+    ];
   }, [selectedAiSkillTier]);
   const [selectedAiDeckId, setSelectedAiDeckId] = useState<string>(
     () =>
@@ -1528,13 +1539,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     const tierToUse = explicitAiTier ?? selectedAiSkillTier;
     const pDeck = allowedPlayerDecks.find((d) => d.id === pDeckId) ?? allowedPlayerDecks[0];
     const monoMastery = MONOCOLOR_ARCHETYPE_MASTERY[aDeckId as MonocolorArchetypeId];
+    const biArchId = resolveBicolorArchetypeForDeckId(aDeckId);
+    const biMastery = biArchId ? BICOLOR_ARCHETYPE_MASTERY[biArchId] : undefined;
     const aDeck =
       allAvailableAiDecks.find((d) => d.id === aDeckId) ??
       PREBUILT_DECKS.find((d) => d.id === aDeckId) ??
       PREBUILT_DECKS[1] ??
       PREBUILT_DECKS[0];
     const aiCardIds =
-      monoMastery?.tierDecks?.[tierToUse]?.cardIds ?? aDeck?.cardIds ?? [];
+      monoMastery?.tierDecks?.[tierToUse]?.cardIds ??
+      biMastery?.tierDecks?.[tierToUse]?.cardIds ??
+      aDeck?.cardIds ??
+      [];
 
     const nextState = createInitialGameState(
       resolveDeckCards(pDeck?.cardIds ?? []),

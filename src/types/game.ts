@@ -232,10 +232,24 @@ export interface ArenaColumnRune {
   color: Domain;
 }
 
+export type BiomeRealmId =
+  | 'veridia'
+  | 'eclipse'
+  | 'matrix'
+  | 'solaria'
+  | 'pyros'
+  | 'vortex'
+  | 'underforge'
+  | 'astral_isles'
+  | 'sunken_abyss'
+  | 'deep_roots'
+  | 'sky_bastions'
+  | 'prismatic_crater';
+
 export interface OverworldFieldBuff {
   id: string;
   sourceLandmarkName: string;
-  realm: 'veridia' | 'eclipse' | 'matrix' | 'solaria' | 'pyros' | 'vortex';
+  realm: BiomeRealmId;
   bonusHp: number;
   bonusOpeningEssence: number;
   vanguardArmorBonus: number;
@@ -257,8 +271,8 @@ export interface ConquestBattleModifiers {
   dragonSkyBonus: boolean;
   legendaryWheelBonus: boolean;
   bannerSummary: string;
-  /** Reino geográfico onde a batalha está ocorrendo (Campanha, Expedição ou Conquista) */
-  biomeRealm?: 'veridia' | 'eclipse' | 'matrix' | 'solaria' | 'pyros' | 'vortex';
+  /** Reino ou Fronteira geográfica onde a batalha está ocorrendo (Campanha, Expedição ou Conquista) */
+  biomeRealm?: BiomeRealmId;
   /** Marco geográfico local exibido na arena */
   landmarkLabel?: string;
   /** Clima regional inicial aplicado ao campo de batalha */
@@ -290,6 +304,8 @@ export interface GameState {
   winner: 'player' | 'ai' | null;
   winReason: string;
   bossId?: string;
+  playerDeckId?: string;
+  aiDeckId?: string;
   expeditionBlessingId?: string;
   conquestModifiers?: ConquestBattleModifiers | null;
   weather?: ArenaWeatherState | null;

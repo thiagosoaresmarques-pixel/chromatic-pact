@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { TACTICAL_PROBLEMS, TacticalProblem } from '../data/problems';
+import { CAMPAIGN_BOSSES } from '../data/decks';
 import { loadDraftRunState } from '../data/vaeloriaDraftData';
 import { getWeeklyFeaturedRift } from '../data/fractureRiftsData';
 import {
@@ -156,7 +157,7 @@ export const SovereignRoyalCommandStrip: React.FC<SovereignRoyalCommandStripProp
           )}
           {collapsed && (
             <span className="rcs-collapsed-meta hide-on-mobile">
-              Missões {completedQuestsCount}/3 • Campanha {defeatedBossCount}/26 •{' '}
+              Missões {completedQuestsCount}/3 • Campanha {defeatedBossCount}/{CAMPAIGN_BOSSES.length} •{' '}
               {savedRunsSummary.weeklyRift.icon} Fenda: {savedRunsSummary.weeklyRift.name}
             </span>
           )}
@@ -217,7 +218,7 @@ export const SovereignRoyalCommandStrip: React.FC<SovereignRoyalCommandStripProp
                 onClick={() => onNavigate('campaign')}
               >
                 <span>🏰 Campanha</span>
-                <strong>{defeatedBossCount}/26</strong>
+                <strong>{defeatedBossCount}/{CAMPAIGN_BOSSES.length}</strong>
               </button>
 
               <button

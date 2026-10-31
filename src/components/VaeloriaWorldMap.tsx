@@ -13,15 +13,18 @@ import {
   resolveNearestTerritory,
 } from '../data/vaeloriaMapData';
 import {
+  VAELORIA_CARDINAL_REALMS,
+  VAELORIA_DEEP_FRONTIERS,
   VAELORIA_REALM_ORDER,
   VAELORIA_REGIONAL_MAPS,
   VaeloriaMapScope,
   VaeloriaRealmId,
   RegionalBorderPortal,
   RegionalLocalLandmark,
-  mapTerritoryIdToRealmId,
+  resolveNearestRealmFromWorldCoords,
   resolveStageRegionalPlacement,
 } from '../data/vaeloriaMultimapData';
+import { getWeeklyFeaturedRift, WEEKLY_RIFT_SHARDS_BONUS } from '../data/fractureRiftsData';
 import {
   getFogOfWarEnabled,
   getLandmarkEventDef,
@@ -50,7 +53,9 @@ export interface VaeloriaWorldMapProps {
   onSelectBoss: (boss: CampaignBoss) => void;
   onChallengeBoss: (boss: CampaignBoss) => void;
   onRewardGold?: (amount: number, reason?: string) => void;
+  onRewardShards?: (amount: number, reason?: string) => void;
   onGrantExpeditionCard?: (card: CardDefinition) => void;
+  onOpenWeeklyRift?: () => void;
 }
 
 interface PositionedBossEntry {
@@ -92,9 +97,23 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   onSelectBoss,
   onChallengeBoss,
   onRewardGold,
+  onRewardShards,
   onGrantExpeditionCard,
+  onOpenWeeklyRift,
 }) => {
   const completeRoster = allBosses && allBosses.length > 0 ? allBosses : bosses;
+  const weeklyRift = useMemo(() => getWeeklyFeaturedRift(), []);
+  const weeklyRiftWorldCoords = useMemo(() => {
+    const coordsByRift: Record<string, { x: number; y: number }> = {
+      astral_torrent: { x: 64.5, y: 14.5 },
+      immortal_pantheon: { x: 82.5, y: 50.5 },
+      eternal_cataclysm: { x: 46.5, y: 23.5 },
+      glass_thrones: { x: 56.5, y: 27.5 },
+      living_forge: { x: 69.5, y: 38.5 },
+      black_sun_night: { x: 25.5, y: 45.5 },
+    };
+    return coordsByRift[weeklyRift.id] ?? { x: 48.5, y: 53.5 };
+  }, [weeklyRift.id]);
 
   const isMobileViewport = () =>
     typeof window !== 'undefined' && window.innerWidth <= 768;
@@ -141,14 +160,10 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   }, [completeRoster, mode]);
 
   const realmBossCounts = useMemo(() => {
-    const counts: Record<VaeloriaRealmId, { total: number; cleared: number }> = {
-      veridia: { total: 0, cleared: 0 },
-      eclipse: { total: 0, cleared: 0 },
-      matrix: { total: 0, cleared: 0 },
-      solaria: { total: 0, cleared: 0 },
-      pyros: { total: 0, cleared: 0 },
-      vortex: { total: 0, cleared: 0 },
-    };
+    const counts = {} as Record<VaeloriaRealmId, { total: number; cleared: number }>;
+    for (const rid of VAELORIA_REALM_ORDER) {
+      counts[rid] = { total: 0, cleared: 0 };
+    }
     for (const item of enrichedAllBosses) {
       counts[item.realm].total += 1;
       if (clearedBossIds.includes(item.boss.id)) {
@@ -595,7 +610,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
 
   const activeRegionalDef = mapScope !== 'world' ? VAELORIA_REGIONAL_MAPS[mapScope] : null;
   const inferredRealmFromWorld: VaeloriaRealmId =
-    mapScope !== 'world' ? mapScope : mapTerritoryIdToRealmId(currentWorldTerritory.id);
+    mapScope !== 'world' ? mapScope : resolveNearestRealmFromWorldCoords(pawnPos.x, pawnPos.y);
 
   const dockedBossEntry = useMemo(() => {
     let best: PositionedBossEntry | null = null;
@@ -816,8 +831,8 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         isTheaterFullscreen ? 'is-theater-fullscreen' : ''
       } ${mapScope !== 'world' ? 'is-regional-scope' : ''}`}
     >
-      {/* 1. 7-MAP INTERCONNECTED MULTIMAP ATLAS BAR */}
-      <div className="vwm-multimap-atlas-bar" role="tablist" aria-label="Atlas Multimapa de Vaeloria">
+      {/* 1. 13-MAP TRI-SCALE INTERCONNECTED MULTIMAP ATLAS BAR */}
+      <div className="vwm-multimap-atlas-bar" role="tablist" aria-label="Atlas Multimapa de Vaeloria (13 Mapas)">
         <button
           type="button"
           className={`vwm-atlas-pill is-world-pill ${mapScope === 'world' ? 'is-active' : ''}`}
@@ -830,7 +845,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
           </small>
         </button>
 
-        {VAELORIA_REALM_ORDER.map((rid) => {
+        {VAELORIA_CARDINAL_REALMS.map((rid) => {
           const rdef = VAELORIA_REGIONAL_MAPS[rid];
           const stat = realmBossCounts[rid];
           const isCurrent = mapScope === rid;
@@ -846,6 +861,36 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               }
               onClick={() => handleSwitchMapScope(rid)}
               title={`Abrir Mapa Regional de ${rdef.name}`}
+            >
+              <span>{rdef.icon}</span>
+              <strong>{rdef.shortName}</strong>
+              <small>
+                {stat.cleared}/{stat.total}
+              </small>
+            </button>
+          );
+        })}
+
+        <span className="vwm-atlas-divider" aria-hidden="true">
+          ✦ FRONTEIRAS
+        </span>
+
+        {VAELORIA_DEEP_FRONTIERS.map((rid) => {
+          const rdef = VAELORIA_REGIONAL_MAPS[rid];
+          const stat = realmBossCounts[rid];
+          const isCurrent = mapScope === rid;
+          return (
+            <button
+              key={rid}
+              type="button"
+              className={`vwm-atlas-pill is-frontier-pill ${isCurrent ? 'is-active' : ''}`}
+              style={
+                {
+                  '--realm-accent': rdef.accentColor,
+                } as React.CSSProperties
+              }
+              onClick={() => handleSwitchMapScope(rid)}
+              title={`Abrir Fronteira Profunda: ${rdef.name}`}
             >
               <span>{rdef.icon}</span>
               <strong>{rdef.shortName}</strong>
@@ -1393,6 +1438,34 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               );
             })}
 
+          {/* Live Weekly Fracture Rift Anomaly Marker on Continental World Map */}
+          {mapScope === 'world' && mode === 'campaign' && onOpenWeeklyRift && (
+            <button
+              type="button"
+              className="vwm-rift-anomaly-pin"
+              style={
+                {
+                  left: `${weeklyRiftWorldCoords.x}%`,
+                  top: `${weeklyRiftWorldCoords.y}%`,
+                  '--rift-accent': weeklyRift.accent,
+                } as React.CSSProperties
+              }
+              onClick={(e) => {
+                e.stopPropagation();
+                playSfx('portal_cross');
+                onOpenWeeklyRift();
+              }}
+              title={`Fenda Semanal em Destaque: ${weeklyRift.name} — ${weeklyRift.shortRule} (+${WEEKLY_RIFT_SHARDS_BONUS}💎 Estilhaços)`}
+            >
+              <span className="vwm-rift-anomaly-ring" />
+              <span className="vwm-rift-anomaly-core">{weeklyRift.icon}</span>
+              <span className="vwm-rift-anomaly-tag">
+                <strong>Fenda: {weeklyRift.name}</strong>
+                <small>+{WEEKLY_RIFT_SHARDS_BONUS}💎 • Entrar</small>
+              </span>
+            </button>
+          )}
+
           {/* Boss Citadel Pins */}
           {positionedBosses.map((entry) => {
             const { boss, worldNode, x, y } = entry;
@@ -1403,7 +1476,8 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             const isDockedHere = dockedBossEntry?.boss.id === boss.id;
             const domColor = DOMAIN_META[boss.domains[0] ?? 'neutral'].color;
             const bossCard = CARDS_BY_ID[boss.avatarCardId];
-            const isFinalWheel = boss.stage === 26 || (mode === 'expedition' && boss.stage === 9);
+            const isFinalWheel =
+              boss.stage === 26 || boss.stage === 32 || (mode === 'expedition' && boss.stage === 9);
 
             return (
               <button
@@ -1520,8 +1594,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                   centerCameraAt(mx, my, zoom);
                 }
               } else {
-                const nearestTerr = resolveNearestTerritory(mx, my);
-                handleSwitchMapScope(mapTerritoryIdToRealmId(nearestTerr.id));
+                handleSwitchMapScope(resolveNearestRealmFromWorldCoords(mx, my));
               }
             }}
             title="Minimapa Continental de Vaeloria — Clique para saltar para qualquer Reino"
@@ -1650,14 +1723,14 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         <span>
           {mapScope === 'world' ? (
             <>
-              🧭 <strong>Multimapa (7 Mapas)</strong>: Clique em qualquer <strong>Reino acima</strong> ou em{' '}
-              <strong>🔍 Mapa do Reino</strong> para abrir o mapa regional com <strong>Marcos Vivos Exploráveis</strong> •{' '}
+              🧭 <strong>Atlas Tri-Escala (13 Mapas)</strong>: Clique em qualquer <strong>Reino ou Fronteira acima</strong> ou em{' '}
+              <strong>🔍 Entrar</strong> para explorar <strong>72 Marcos Vivos</strong> •{' '}
               <strong>WASD</strong> / Clique para marchar
             </>
           ) : (
             <>
-              🧭 Clique nos <strong>✦ Marcos Regionais</strong> para eventos, espólios e bênçãos • Marche até os{' '}
-              <strong>Portais de Fronteira</strong> nas bordas para cruzar entre Reinos •{' '}
+              🧭 Clique nos <strong>✦ Marcos Regionais</strong> (com <strong>💎 Pacto Ancestral</strong>) • Marche até os{' '}
+              <strong>Portais de Fronteira</strong> para cruzar entre Reinos e Submundos •{' '}
               <strong>🌍 Continente</strong> retorna à visão global
             </>
           )}
@@ -1686,6 +1759,12 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
               onRewardGold?.(
                 preview.goldDelta,
                 `Descoberta em ${activeLandmarkModal.landmark.name}`
+              );
+            }
+            if (preview.shardsDelta > 0) {
+              onRewardShards?.(
+                preview.shardsDelta,
+                `Pacto Ancestral em ${activeLandmarkModal.landmark.name}`
               );
             }
             if (preview.recruitedCard) {

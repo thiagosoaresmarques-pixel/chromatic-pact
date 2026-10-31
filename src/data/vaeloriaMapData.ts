@@ -397,6 +397,62 @@ export const CAMPAIGN_BOSS_MAP_NODES: Record<string, VaeloriaStageMapNode> = {
     landmarkName: 'Torre dos Cinco Selos • Eixo da Roda Matriz',
     territoryDomain: 'neutral',
   },
+
+  // ATO VII — Os Tronos Além do Véu (Fronteiras Profundas 27–32)
+  boss_stage_27_underforge_colossus: {
+    bossId: 'boss_stage_27_underforge_colossus',
+    stage: 27,
+    x: 89.5,
+    y: 15,
+    regionName: 'Infraforja de Ignaroth',
+    landmarkName: 'Núcleo da Bigorna do Manto Magmático',
+    territoryDomain: 'red',
+  },
+  boss_stage_28_astral_leviathan: {
+    bossId: 'boss_stage_28_astral_leviathan',
+    stage: 28,
+    x: 11.5,
+    y: 14,
+    regionName: 'Ilhas das Estrelas Mortas',
+    landmarkName: 'Olho Gravitacional do Meteoro Caído',
+    territoryDomain: 'blue',
+  },
+  boss_stage_29_drowned_patriarch: {
+    bossId: 'boss_stage_29_drowned_patriarch',
+    stage: 29,
+    x: 7.5,
+    y: 51,
+    regionName: 'Fossa Submersa de Thalassor',
+    landmarkName: 'Catedral Afogada de Coral Negro',
+    territoryDomain: 'purple',
+  },
+  boss_stage_30_amber_progenitor: {
+    bossId: 'boss_stage_30_amber_progenitor',
+    stage: 30,
+    x: 79,
+    y: 86,
+    regionName: 'Raízes Abissais de Yggdrakon',
+    landmarkName: 'Santuário do Coração de Âmbar Vivo',
+    territoryDomain: 'green',
+  },
+  boss_stage_31_zenith_seraph: {
+    bossId: 'boss_stage_31_zenith_seraph',
+    stage: 31,
+    x: 91,
+    y: 65,
+    regionName: 'Bastilhas Celestes do Zênite',
+    landmarkName: 'Trono Empíreo Acima das Nuvens',
+    territoryDomain: 'gold',
+  },
+  boss_stage_32_fracture_architect: {
+    bossId: 'boss_stage_32_fracture_architect',
+    stage: 32,
+    x: 17,
+    y: 85,
+    regionName: 'Cratera do Prisma Partido',
+    landmarkName: 'Singularidade da Primeira Fratura',
+    territoryDomain: 'neutral',
+  },
 };
 
 /**

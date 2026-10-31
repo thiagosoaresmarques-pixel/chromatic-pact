@@ -575,6 +575,8 @@ export function createInitialGameState(
     aiStartingHp?: number;
     playerStartingHp?: number;
     bossId?: string;
+    playerDeckId?: string;
+    aiDeckId?: string;
     expeditionBlessingId?: string;
     conquestModifiers?: ConquestBattleModifiers | null;
   }
@@ -598,7 +600,11 @@ export function createInitialGameState(
     (cq?.playerBonusEssence ?? 0) +
     riftBonusEssence;
   const aiBonusEssence =
-    (options?.bossId === 'boss_stage_23_refraction_triad' ? 1 : 0) + riftBonusEssence;
+    (options?.bossId === 'boss_stage_23_refraction_triad' ||
+    options?.bossId === 'boss_stage_28_astral_leviathan' ||
+    options?.bossId === 'boss_stage_32_fracture_architect'
+      ? 1
+      : 0) + riftBonusEssence;
 
   const aiStartingAffinities = createStartingAffinitiesForDeck(aiDeck);
   if (
@@ -611,6 +617,10 @@ export function createInitialGameState(
   ) {
     for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
       aiStartingAffinities[dom] = Math.max(aiStartingAffinities[dom], 2);
+    }
+  } else if (options?.bossId === 'boss_stage_32_fracture_architect') {
+    for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
+      aiStartingAffinities[dom] = Math.max(aiStartingAffinities[dom], 3);
     }
   }
 
@@ -677,6 +687,8 @@ export function createInitialGameState(
     winner: null,
     winReason: '',
     bossId: options?.bossId,
+    playerDeckId: options?.playerDeckId,
+    aiDeckId: options?.aiDeckId,
     expeditionBlessingId: options?.expeditionBlessingId,
     conquestModifiers: cq,
     weather: null,
@@ -3368,6 +3380,39 @@ export function playCard(
         unit.currentArmor += 1;
         unit.regeneration += 1;
         addFeedback(next, unit.instanceId, '☸ +1🛡️/+1❤️ Roda Prismática', 'shield');
+      } else if (next.bossId === 'boss_stage_27_underforge_colossus') {
+        unit.currentAtk += 1;
+        unit.currentArmor += 1;
+        addFeedback(next, unit.instanceId, '+1⚔️/+1🛡️ Infraforja', 'buff');
+      } else if (next.bossId === 'boss_stage_29_drowned_patriarch') {
+        unit.regeneration += 1;
+        if (card.rarity === 'legendary' && !unit.keywords.includes('Renascer')) {
+          unit.keywords.push('Renascer');
+          addFeedback(next, unit.instanceId, '🌊 Renascer Hadal', 'buff');
+        } else {
+          addFeedback(next, unit.instanceId, '+1❤️ Pressão Hadal', 'heal');
+        }
+      } else if (next.bossId === 'boss_stage_30_amber_progenitor') {
+        unit.maxHp += 2;
+        unit.currentHp += 2;
+        unit.regeneration += 1;
+        addFeedback(next, unit.instanceId, '+2❤️/+1🌿 Âmbar Vivo', 'heal');
+      } else if (next.bossId === 'boss_stage_31_zenith_seraph') {
+        if (!unit.hasDivineShield) {
+          unit.hasDivineShield = true;
+          addFeedback(next, unit.instanceId, '✨ Égide do Zênite', 'shield');
+        } else {
+          unit.currentArmor += 2;
+          addFeedback(next, unit.instanceId, '+2🛡️ Égide do Zênite', 'shield');
+        }
+        if (unit.keywords.includes('Voo')) {
+          unit.currentAtk += 1;
+        }
+      } else if (next.bossId === 'boss_stage_32_fracture_architect') {
+        unit.currentAtk += 1;
+        unit.currentArmor += 1;
+        unit.regeneration += 1;
+        addFeedback(next, unit.instanceId, '💎 +1⚔️/+1🛡️/+1❤️ Fratura', 'buff');
       }
     }
 
@@ -5597,6 +5642,34 @@ function applyBossStartOfRoundPassives(next: GameState): void {
       aiUnits[0].currentAtk += 1;
       addFeedback(next, aiUnits[0].instanceId, '+1⚔️ Giro dos Oito Raios', 'buff');
     }
+  } else if (next.bossId === 'boss_stage_27_underforge_colossus') {
+    if (next.turn % 2 === 1) {
+      next.player.hp = Math.max(0, next.player.hp - 1);
+      addFeedback(next, 'player-sovereign', '-1🔥 Escória do Manto', 'damage');
+    }
+  } else if (next.bossId === 'boss_stage_28_astral_leviathan') {
+    const playerUnits = getAllBoardUnits(next.player).filter(
+      (u) => !u.isTrap && !u.isFrozen && u.card.type === 'creature'
+    );
+    if (playerUnits.length > 0) {
+      const target = playerUnits[next.turn % playerUnits.length];
+      target.isFrozen = true;
+      addFeedback(next, target.instanceId, '❄️ Zero Astral', 'freeze');
+    }
+  } else if (next.bossId === 'boss_stage_29_drowned_patriarch') {
+    if (next.turn % 2 === 0) {
+      next.player.hp = Math.max(0, next.player.hp - 2);
+      next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
+      addFeedback(next, 'player-sovereign', '-2🌊 Maré Abissal', 'damage');
+    }
+  } else if (next.bossId === 'boss_stage_30_amber_progenitor') {
+    next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 2);
+    addFeedback(next, 'ai-sovereign', '+2🌿 Seiva Subterrânea', 'heal');
+  } else if (next.bossId === 'boss_stage_32_fracture_architect') {
+    next.player.hp = Math.max(0, next.player.hp - 1);
+    next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
+    addFeedback(next, 'player-sovereign', '-1💎 Singularidade', 'damage');
+    addFeedback(next, 'ai-sovereign', '+1💎 Singularidade', 'heal');
   }
 
   checkWinCondition(next);

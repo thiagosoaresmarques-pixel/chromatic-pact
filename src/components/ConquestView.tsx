@@ -19,10 +19,13 @@ import {
   CONQUEST_PROVINCES_BY_ID,
   ConquestFactionId,
   ConquestProvinceDef,
+  PROVINCE_BUILDING_ORDER,
   PROVINCE_BUILDINGS,
   ProvinceBuildingType,
   buildConquestBattleModifiers,
   buildConquestBossForProvince,
+  computeEmpireSupplyStatus,
+  computeSkyDockProjectedTargets,
 } from '../data/vaeloriaConquestData';
 import {
   PROVINCE_REGIONAL_COORDS,
@@ -119,6 +122,7 @@ export interface ConquestViewProps {
     attackerFactionId?: ConquestFactionId;
   }) => void;
   onRewardGold: (amount: number, reason?: string) => void;
+  onRewardShards?: (amount: number, reason?: string) => void;
   lastConquestOutcome?: ConquestBattleOutcome | null;
   defeatedBossCount?: number;
   arenaWins?: number;
@@ -131,6 +135,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
   onRequireDeckSetup,
   onStartConquestBattle,
   onRewardGold,
+  onRewardShards,
   lastConquestOutcome,
   defeatedBossCount = 0,
   arenaWins = 0,
@@ -141,9 +146,18 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<ConquestRunState>;
         if (parsed && parsed.provinceOwners && parsed.playerFactionId) {
+          const fresh = createFreshConquestState(parsed.playerFactionId, parsed.selectedDeckId ?? '');
           return {
-            ...createFreshConquestState(parsed.playerFactionId, parsed.selectedDeckId ?? ''),
+            ...fresh,
             ...parsed,
+            provinceOwners: {
+              ...fresh.provinceOwners,
+              ...parsed.provinceOwners,
+            },
+            fortifications: {
+              ...fresh.fortifications,
+              ...(parsed.fortifications ?? {}),
+            },
             buildings: parsed.buildings ?? {},
             tradePacts: parsed.tradePacts ?? {},
             coalitionByFaction: parsed.coalitionByFaction ?? {},
@@ -211,13 +225,18 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
         }
       } else {
         if (lastConquestOutcome.didWin) {
-          const oldOwner = CONQUEST_FACTIONS[prev.provinceOwners[prov.id]];
+          const oldOwner = CONQUEST_FACTIONS[prev.provinceOwners[prov.id] ?? prov.initialOwner];
           nextOwners[prov.id] = prev.playerFactionId;
           nextForts[prov.id] = Math.max(0, (nextForts[prov.id] ?? 0) - 1);
-          const spoils = prov.isCapital ? 90 : 45;
+          const spoils = prov.isCapital ? 90 : prov.frontierGroup ? 60 : 45;
           nextSupplies += spoils;
+          if (prov.frontierGroup) {
+            onRewardShards?.(4, `Conquista da Fronteira Profunda: ${prov.name}`);
+          }
           nextLog.unshift(
-            `⚔️ Estação ${prev.season}: Conquistamos [${prov.name}] de ${oldOwner.icon} ${oldOwner.shortName}! (+${spoils}⚙️ Espólios)`
+            `⚔️ Estação ${prev.season}: Conquistamos [${prov.name}] de ${oldOwner.icon} ${oldOwner.shortName}! (+${spoils}⚙️ Espólios${
+              prov.frontierGroup ? ' & +4💎' : ''
+            })`
           );
         } else {
           nextLog.unshift(
@@ -227,26 +246,30 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       }
 
       // Check Imperial Milestones (Hegemony & Total Domination)
-      const ownedList = CONQUEST_PROVINCES.filter((p) => nextOwners[p.id] === prev.playerFactionId);
+      const ownedList = CONQUEST_PROVINCES.filter(
+        (p) => (nextOwners[p.id] ?? p.initialOwner) === prev.playerFactionId
+      );
       const ownedCapitals = ownedList.filter((p) => p.isCapital).length;
       const holdsAxial = nextOwners['prov_matrix_five_seals'] === prev.playerFactionId;
 
       let nextHegemony = prev.hegemonyClaimed;
       let nextDomination = prev.dominationClaimed;
 
-      if (!nextHegemony && holdsAxial && ownedCapitals >= 3 && ownedList.length >= 16) {
+      if (!nextHegemony && holdsAxial && ownedCapitals >= 3 && ownedList.length >= 22) {
         nextHegemony = true;
-        onRewardGold(150, 'Hegemonia Axial na Conquista de Vaeloria');
+        onRewardGold(180, 'Hegemonia Axial na Conquista de Vaeloria');
+        onRewardShards?.(15, 'Hegemonia Axial proclamada');
         nextLog.unshift(
-          `👑 HEGEMONIA AXIAL ALCANÇADA! Você controla a Torre dos Cinco Selos, ${ownedCapitals} Capitais e ${ownedList.length} Províncias (+150 Ouro)!`
+          `👑 HEGEMONIA AXIAL ALCANÇADA! Você controla a Torre dos Cinco Selos, ${ownedCapitals} Capitais e ${ownedList.length} Províncias (+180 Ouro & +15💎)!`
         );
       }
 
       if (!nextDomination && ownedList.length >= CONQUEST_PROVINCES.length) {
         nextDomination = true;
-        onRewardGold(300, 'Dominação Absoluta de Vaeloria (30/30 Províncias)');
+        onRewardGold(450, `Dominação Absoluta de Vaeloria (${CONQUEST_PROVINCES.length}/${CONQUEST_PROVINCES.length} Províncias)`);
+        onRewardShards?.(40, 'Unificação Suprema das 48 Províncias de Vaeloria');
         nextLog.unshift(
-          `🌍 UNIFICAÇÃO SUPREMA! Todas as 30 províncias de Vaeloria curvaram-se ao seu estandarte (+300 Ouro)!`
+          `🌍 UNIFICAÇÃO SUPREMA! Todas as ${CONQUEST_PROVINCES.length} províncias de Vaeloria (Superfície e Fronteiras Profundas) curvaram-se ao seu estandarte (+450 Ouro & +40💎)!`
         );
       }
 
@@ -275,42 +298,82 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
   const ownedProvinceIds = useMemo(
     () =>
       CONQUEST_PROVINCES.filter(
-        (p) => runState.provinceOwners[p.id] === runState.playerFactionId
+        (p) => (runState.provinceOwners[p.id] ?? p.initialOwner) === runState.playerFactionId
       ).map((p) => p.id),
     [runState.provinceOwners, runState.playerFactionId]
   );
 
+  const playerSupplyStatus = useMemo(
+    () =>
+      computeEmpireSupplyStatus(
+        runState.playerFactionId,
+        runState.provinceOwners,
+        runState.buildings
+      ),
+    [runState.playerFactionId, runState.provinceOwners, runState.buildings]
+  );
+
+  const allIsolatedProvinceIds = useMemo(() => {
+    const combined = new Set<string>();
+    for (const fid of CONQUEST_FACTION_ORDER) {
+      const st = computeEmpireSupplyStatus(
+        fid,
+        runState.provinceOwners,
+        fid === runState.playerFactionId ? runState.buildings : {}
+      );
+      for (const pid of st.isolatedIds) {
+        combined.add(pid);
+      }
+    }
+    return combined;
+  }, [runState.provinceOwners, runState.playerFactionId, runState.buildings]);
+
   const ownedCapitalsCount = useMemo(
     () =>
       CONQUEST_PROVINCES.filter(
-        (p) => p.isCapital && runState.provinceOwners[p.id] === runState.playerFactionId
+        (p) =>
+          p.isCapital &&
+          (runState.provinceOwners[p.id] ?? p.initialOwner) === runState.playerFactionId
       ).length,
     [runState.provinceOwners, runState.playerFactionId]
   );
 
-  // Compute all enemy provinces adjacent to at least one player-owned province (respecting active Truces)
+  // Compute all enemy provinces adjacent to at least one player-owned province (or projected via Sky Corridor / Sky Dock)
   const attackableProvinceIds = useMemo(() => {
     const set = new Set<string>();
     const ownedSet = new Set(ownedProvinceIds);
-    const hasSkyCorridor = ownedSet.has('prov_pyros_sky_corridor');
+    const hasSkyCorridor =
+      ownedSet.has('prov_pyros_sky_corridor') || ownedSet.has('prov_sky_armada_docks');
+    const skyDockTargets = computeSkyDockProjectedTargets(ownedProvinceIds, runState.buildings);
 
     for (const pid of ownedProvinceIds) {
       const p = CONQUEST_PROVINCES_BY_ID[pid];
       if (!p) continue;
       for (const nid of p.neighbors) {
         if (ownedSet.has(nid)) continue;
-        const ownerFaction = runState.provinceOwners[nid];
-        if ((runState.truces[ownerFaction] ?? 0) > 0) continue;
+        const dst = CONQUEST_PROVINCES_BY_ID[nid];
+        const ownerFaction = dst ? runState.provinceOwners[nid] ?? dst.initialOwner : undefined;
+        if (!ownerFaction || (runState.truces[ownerFaction] ?? 0) > 0) continue;
         set.add(nid);
       }
     }
 
-    // Special Geographic Power: holding Corredor Aéreo das Armadas opens air-assault on coastal/ring provinces!
+    for (const projectedId of skyDockTargets) {
+      if (ownedSet.has(projectedId)) continue;
+      const dst = CONQUEST_PROVINCES_BY_ID[projectedId];
+      if (!dst) continue;
+      const ownerFaction = runState.provinceOwners[projectedId] ?? dst.initialOwner;
+      if ((runState.truces[ownerFaction] ?? 0) <= 0) {
+        set.add(projectedId);
+      }
+    }
+
+    // Special Geographic Power: holding Corredor Aéreo das Armadas or Docas das Naus-Dragão opens air-assault on coastal/skyway provinces!
     if (hasSkyCorridor) {
       for (const p of CONQUEST_PROVINCES) {
         if (ownedSet.has(p.id)) continue;
         if (p.terrainKind === 'port' || p.terrainKind === 'skyway') {
-          const ownerFaction = runState.provinceOwners[p.id];
+          const ownerFaction = runState.provinceOwners[p.id] ?? p.initialOwner;
           if ((runState.truces[ownerFaction] ?? 0) <= 0) {
             set.add(p.id);
           }
@@ -319,16 +382,24 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
     }
 
     return set;
-  }, [ownedProvinceIds, runState.provinceOwners, runState.truces]);
+  }, [ownedProvinceIds, runState.provinceOwners, runState.truces, runState.buildings]);
 
   const seasonalIncomePreview = useMemo(() => {
     let sum = 0;
     for (const pid of ownedProvinceIds) {
       const p = CONQUEST_PROVINCES_BY_ID[pid];
       if (!p) continue;
-      sum += p.supplyIncome;
+      const isIsolated = playerSupplyStatus.isolatedIds.has(pid);
+      const baseInc = isIsolated ? Math.floor(p.supplyIncome * 0.5) : p.supplyIncome;
+      sum += baseInc;
+      if (!isIsolated && playerSupplyStatus.hubConnectedIds.has(pid)) {
+        sum += 5;
+      }
       if (runState.buildings[pid] === 'market') {
         sum += p.terrainKind === 'port' || p.initialOwner === 'matrix' ? 25 : 18;
+      }
+      if (runState.buildings[pid] === 'ley_sanctum' && p.frontierGroup) {
+        sum += 10;
       }
       if (activeCrisis.effectType === 'open_seas' && p.terrainKind === 'port') {
         sum += 15;
@@ -336,17 +407,38 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       if (activeCrisis.effectType === 'axial_judgment' && p.initialOwner === 'matrix') {
         sum += 20;
       }
+      if (activeCrisis.effectType === 'underforge_eruption' && p.terrainKind === 'forge') {
+        sum += 20;
+      }
+      if (
+        activeCrisis.effectType === 'blood_moon_tide' &&
+        (p.frontierGroup === 'sunken_abyss' || p.terrainKind === 'marsh')
+      ) {
+        sum += 15;
+      }
+      if (
+        activeCrisis.effectType === 'zenith_tradewinds' &&
+        (runState.buildings[pid] === 'sky_dock' || p.terrainKind === 'skyway')
+      ) {
+        sum += 18;
+      }
+      if (activeCrisis.effectType === 'prismatic_convergence' && p.frontierGroup) {
+        sum += 15;
+      }
     }
     for (const fid of CONQUEST_FACTION_ORDER) {
       if (fid === runState.playerFactionId) continue;
       if (runState.tradePacts[fid]) {
-        const stillAlive = CONQUEST_PROVINCES.some((p) => runState.provinceOwners[p.id] === fid);
+        const stillAlive = CONQUEST_PROVINCES.some(
+          (p) => (runState.provinceOwners[p.id] ?? p.initialOwner) === fid
+        );
         if (stillAlive) sum += 15;
       }
     }
     return sum;
   }, [
     ownedProvinceIds,
+    playerSupplyStatus,
     runState.buildings,
     runState.tradePacts,
     runState.provinceOwners,
@@ -429,8 +521,15 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       }));
     }
     const fortLvl = runState.fortifications[prov.id] ?? 0;
-    const boss = buildConquestBossForProvince(prov, defenderFactionId, fortLvl, runState.season);
-    const regRealm = PROVINCE_REGIONAL_COORDS[prov.id]?.realm ?? prov.initialOwner;
+    const isTargetIsolated = allIsolatedProvinceIds.has(prov.id);
+    const boss = buildConquestBossForProvince(
+      prov,
+      defenderFactionId,
+      fortLvl,
+      runState.season,
+      isTargetIsolated
+    );
+    const regRealm = PROVINCE_REGIONAL_COORDS[prov.id]?.realm ?? prov.frontierGroup ?? prov.initialOwner;
     const owBuff = consumePendingOverworldBuff('conquest');
     const modifiers = buildConquestBattleModifiers({
       targetProvince: prov,
@@ -438,6 +537,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       fortifications: runState.fortifications,
       buildings: runState.buildings,
       isDefensiveSiege: false,
+      isTargetIsolated,
       activeCrisis,
       biomeRealm: regRealm,
       initialWeather: REALM_WEATHER_PRESETS[regRealm].type,
@@ -470,14 +570,16 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
     boss.name = `Força Invasora de ${CONQUEST_FACTIONS[alarm.attackerFactionId].shortName}`;
     boss.title = `Cerco contra ${prov.name}`;
 
-    const regRealm = PROVINCE_REGIONAL_COORDS[prov.id]?.realm ?? prov.initialOwner;
+    const regRealm = PROVINCE_REGIONAL_COORDS[prov.id]?.realm ?? prov.frontierGroup ?? prov.initialOwner;
     const owBuff = consumePendingOverworldBuff('conquest');
+    const isTargetIsolated = playerSupplyStatus.isolatedIds.has(prov.id);
     const modifiers = buildConquestBattleModifiers({
       targetProvince: prov,
       ownedProvinceIds,
       fortifications: runState.fortifications,
       buildings: runState.buildings,
       isDefensiveSiege: true,
+      isTargetIsolated,
       activeCrisis,
       biomeRealm: regRealm,
       initialWeather: REALM_WEATHER_PRESETS[regRealm].type,
@@ -727,8 +829,12 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
   const handleExploreConquestLandmark = (
     landmark: RegionalLocalLandmark,
     suppliesDelta: number,
-    fieldBuff: OverworldFieldBuff | null
+    fieldBuff: OverworldFieldBuff | null,
+    shardsDelta = 0
   ) => {
+    if (shardsDelta > 0) {
+      onRewardShards?.(shardsDelta, `Pacto Ancestral em ${landmark.name}`);
+    }
     setRunState((prev) => ({
       ...prev,
       supplies: prev.supplies + suppliesDelta,
@@ -739,7 +845,9 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       warLog: [
         `🧭 Estação ${prev.season}: Marco [${landmark.name}] explorado (${
           suppliesDelta > 0 ? `+${suppliesDelta}⚙️` : ''
-        }${fieldBuff ? ` ${fieldBuff.summaryLabel}` : ''}).`,
+        }${shardsDelta > 0 ? ` +${shardsDelta}💎` : ''}${
+          fieldBuff ? ` ${fieldBuff.summaryLabel}` : ''
+        }).`,
         ...prev.warLog,
       ].slice(0, 28),
     }));
@@ -785,16 +893,44 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
       const nextForts = { ...prev.fortifications };
       const nextLog = [...prev.warLog];
 
-      // 1. Collect Seasonal Supply Income (Provinces + Markets + Trade Pacts)
+      // 1. Collect Seasonal Supply Income (Provinces + Supply Lines BFS + Buildings + Crises + Trade Pacts)
+      const seasonalSupply = computeEmpireSupplyStatus(
+        prev.playerFactionId,
+        nextOwners,
+        prev.buildings
+      );
       let income = 0;
       for (const p of CONQUEST_PROVINCES) {
-        if (nextOwners[p.id] === prev.playerFactionId) {
-          income += p.supplyIncome;
+        if ((nextOwners[p.id] ?? p.initialOwner) === prev.playerFactionId) {
+          const isIso = seasonalSupply.isolatedIds.has(p.id);
+          income += isIso ? Math.floor(p.supplyIncome * 0.5) : p.supplyIncome;
+          if (!isIso && seasonalSupply.hubConnectedIds.has(p.id)) {
+            income += 5;
+          }
           if (prev.buildings[p.id] === 'market') {
             income += p.terrainKind === 'port' || p.initialOwner === 'matrix' ? 25 : 18;
           }
+          if (prev.buildings[p.id] === 'ley_sanctum' && p.frontierGroup) {
+            income += 10;
+          }
           if (activeCrisis.effectType === 'open_seas' && p.terrainKind === 'port') income += 15;
           if (activeCrisis.effectType === 'axial_judgment' && p.initialOwner === 'matrix') income += 20;
+          if (activeCrisis.effectType === 'underforge_eruption' && p.terrainKind === 'forge') income += 20;
+          if (
+            activeCrisis.effectType === 'blood_moon_tide' &&
+            (p.frontierGroup === 'sunken_abyss' || p.terrainKind === 'marsh')
+          ) {
+            income += 15;
+          }
+          if (
+            activeCrisis.effectType === 'zenith_tradewinds' &&
+            (prev.buildings[p.id] === 'sky_dock' || p.terrainKind === 'skyway')
+          ) {
+            income += 18;
+          }
+          if (activeCrisis.effectType === 'prismatic_convergence' && p.frontierGroup) {
+            income += 15;
+          }
         }
       }
       const nextTradePacts = { ...prev.tradePacts };
@@ -944,13 +1080,16 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
         <div className="conquest-setup-shell">
           <div className="conquest-setup-header">
             <div>
-              <span className="vwm-territory-kicker">GUERRA CONTINENTAL • 30 PROVÍNCIAS • 6 TRONOS</span>
+              <span className="vwm-territory-kicker">
+                GUERRA CONTINENTAL 2.0 • {CONQUEST_PROVINCES.length} PROVÍNCIAS • 13 MAPAS • LINHAS DE SUPRIMENTO
+              </span>
               <h2 className="font-cinzel gold-gradient-text" style={{ margin: '2px 0 4px', fontSize: '1.35rem' }}>
                 Escolha o Trono que Unificará Vaeloria
               </h2>
               <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>
-                Lidere um dos 6 Reinos em nosso Megamapa Geopolítico com Zoom em 3 Níveis. Conquiste a{' '}
-                <strong>Torre dos Cinco Selos</strong> e <strong>3 Capitais</strong> para proclamar Hegemonia (+150 Ouro) ou domine todas as 30 províncias (+300 Ouro)!
+                Lidere um dos 6 Impérios através da Superfície e das 6 Fronteiras Profundas. Conquiste a{' '}
+                <strong>Torre dos Cinco Selos</strong>, <strong>3 Capitais</strong> e <strong>22 Províncias</strong> para proclamar Hegemonia (+180 Ouro & +15💎) ou unifique todas as{' '}
+                <strong>{CONQUEST_PROVINCES.length} províncias</strong> (+450 Ouro & +40💎)!
               </p>
             </div>
 
@@ -1046,10 +1185,33 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 ⏳ Estação <strong>{runState.season}</strong>
               </span>
               <span className="conquest-stat-chip">
-                🏰 Províncias: <strong>{ownedProvinceIds.length}/30</strong>
+                🏰 Províncias: <strong>{ownedProvinceIds.length}/{CONQUEST_PROVINCES.length}</strong>
               </span>
               <span className="conquest-stat-chip">
                 👑 Capitais: <strong>{ownedCapitalsCount}/6</strong>
+              </span>
+              <span
+                className="conquest-stat-chip"
+                title={
+                  playerSupplyStatus.isolatedIds.size > 0
+                    ? 'Províncias sem linha conectada a uma Capital ou Porto Mercante sofrem -50%⚙️ de renda e -4❤️ na defesa!'
+                    : 'Todas as suas províncias possuem Linha de Suprimento ativa!'
+                }
+              >
+                {playerSupplyStatus.isolatedIds.size > 0 ? (
+                  <>
+                    ⚠️ Isoladas: <strong style={{ color: '#f87171' }}>{playerSupplyStatus.isolatedIds.size}</strong>
+                  </>
+                ) : (
+                  <>
+                    📦 Logística:{' '}
+                    <strong style={{ color: '#34d399' }}>
+                      {playerSupplyStatus.hubConnectedIds.size > 0
+                        ? `Malha +5⚙️ (${playerSupplyStatus.suppliedIds.size})`
+                        : `100% Suprida`}
+                    </strong>
+                  </>
+                )}
               </span>
               <span className="conquest-stat-chip gold">
                 ⚙️ Suprimentos: <strong>{runState.supplies}</strong>{' '}
@@ -1170,6 +1332,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
               landmarkCooldowns={runState.landmarkCooldowns}
               selectedProvinceId={selectedProvince.id}
               attackableProvinceIds={attackableProvinceIds}
+              isolatedProvinceIds={allIsolatedProvinceIds}
               activeInvasion={runState.pendingDefenseAlarm}
               sovereignAvatarCardId={deckMeta.avatarId}
               hasActedThisSeason={runState.hasSiegedThisSeason}
@@ -1225,12 +1388,43 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 <div className="aaa-dossier-metrics">
                   <div className="aaa-metric-box">
                     <span className="aaa-metric-lbl">TRIBUTO</span>
-                    <span className="aaa-metric-val gold-text">+{selectedProvince.supplyIncome}⚙️</span>
+                    <span className="aaa-metric-val gold-text">
+                      +{allIsolatedProvinceIds.has(selectedProvince.id)
+                        ? `${Math.floor(selectedProvince.supplyIncome * 0.5)}⚙️ ⚠️`
+                        : `${selectedProvince.supplyIncome}⚙️`}
+                    </span>
+                  </div>
+                  <div className="aaa-metric-box">
+                    <span className="aaa-metric-lbl">LOGÍSTICA</span>
+                    <span
+                      className="aaa-metric-val"
+                      style={{
+                        color: allIsolatedProvinceIds.has(selectedProvince.id)
+                          ? '#f87171'
+                          : isSelectedPlayerOwned &&
+                            playerSupplyStatus.hubConnectedIds.has(selectedProvince.id)
+                          ? '#fde047'
+                          : '#34d399',
+                      }}
+                    >
+                      {allIsolatedProvinceIds.has(selectedProvince.id)
+                        ? '⚠️ Cortada'
+                        : isSelectedPlayerOwned &&
+                          playerSupplyStatus.hubConnectedIds.has(selectedProvince.id)
+                        ? '⚡ Malha +5⚙️'
+                        : '✓ Suprida'}
+                    </span>
                   </div>
                   <div className="aaa-metric-box">
                     <span className="aaa-metric-lbl">GUARNIÇÃO</span>
                     <span className="aaa-metric-val">
-                      {selectedProvince.baseGarrisonHp + selectedFortLvl * 8} PV
+                      {Math.max(
+                        30,
+                        selectedProvince.baseGarrisonHp +
+                          selectedFortLvl * 8 -
+                          (allIsolatedProvinceIds.has(selectedProvince.id) ? 4 : 0)
+                      )}{' '}
+                      PV
                     </span>
                   </div>
                   <div className="aaa-metric-box">
@@ -1251,7 +1445,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 {isSelectedPlayerOwned && (
                   <div className="conquest-buildings-panel">
                     <div className="conquest-buildings-header">
-                      <span>🏗️ INFRAESTRUTURA PROVINCIAL</span>
+                      <span>🏗️ INFRAESTRUTURA PROVINCIAL (5 OPÇÕES)</span>
                       {runState.buildings[selectedProvince.id] && (
                         <strong>
                           {PROVINCE_BUILDINGS[runState.buildings[selectedProvince.id]].icon}{' '}
@@ -1260,7 +1454,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                       )}
                     </div>
                     <div className="conquest-buildings-grid">
-                      {(['forge', 'market', 'astral_tower'] as const).map((bKey) => {
+                      {PROVINCE_BUILDING_ORDER.map((bKey) => {
                         const bDef = PROVINCE_BUILDINGS[bKey];
                         const isBuilt = runState.buildings[selectedProvince.id] === bKey;
                         return (

@@ -20783,3 +20783,210 @@ input:focus-visible,
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================================
+   ONDAS 1–3: ATLAS TRI-ESCALA (13 MAPAS), LOGÍSTICA BFS, MARCOS 3ª ESCOLHA
+   & FENDA SEMANAL NO MAPA CONTINENTAL
+   ========================================================================= */
+
+.vwm-atlas-divider {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #f472b6;
+  background: rgba(244, 114, 182, 0.1);
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.vwm-atlas-pill.is-frontier-pill {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--realm-accent, #f472b6) 45%, rgba(148, 163, 184, 0.3));
+  background: linear-gradient(180deg, rgba(16, 18, 32, 0.94) 0%, rgba(9, 11, 20, 0.98) 100%);
+}
+
+.vwm-atlas-pill.is-frontier-pill.is-active {
+  border-style: solid;
+  border-color: var(--realm-accent, #f472b6);
+  box-shadow: 0 0 0 1px var(--realm-accent, #f472b6), 0 4px 14px rgba(0, 0, 0, 0.55);
+}
+
+/* Pulsing Weekly Fracture Rift Anomaly Marker on Continental Map */
+.vwm-rift-anomaly-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 19;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px 4px 5px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 25% 50%, rgba(88, 28, 135, 0.92), rgba(10, 12, 24, 0.96));
+  border: 1.5px solid var(--rift-accent, #c084fc);
+  color: #f8fafc;
+  cursor: pointer;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--rift-accent, #c084fc) 55%, transparent),
+    0 6px 16px rgba(0, 0, 0, 0.72);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.vwm-rift-anomaly-pin:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+  z-index: 30;
+}
+
+.vwm-rift-anomaly-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 999px;
+  border: 1.5px dashed var(--rift-accent, #c084fc);
+  opacity: 0.75;
+  animation: vwmRiftPulse 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes vwmRiftPulse {
+  0%, 100% {
+    transform: scale(0.98);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.95;
+  }
+}
+
+.vwm-rift-anomaly-core {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid var(--rift-accent, #c084fc);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.vwm-rift-anomaly-tag {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.1;
+}
+
+.vwm-rift-anomaly-tag strong {
+  font-size: 0.62rem;
+  color: #fef08a;
+  white-space: nowrap;
+}
+
+.vwm-rift-anomaly-tag small {
+  font-size: 0.55rem;
+  color: #e9d5ff;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Isolated Conquest Province Pin Warning */
+.cqm-prov-pin.is-isolated .cqm-prov-medallion {
+  box-shadow: 0 0 0 2px #ef4444, 0 0 12px rgba(239, 68, 68, 0.65);
+}
+
+.cqm-prov-isolated-badge {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #7f1d1d;
+  border: 1px solid #fca5a5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.58rem;
+  z-index: 4;
+}
+
+/* 3-Choice Ancestral Pact Grid in OverworldEventModal */
+.ow-event-choices-grid.has-three-choices {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ow-event-choice-card.is-ancestral-choice {
+  border-color: rgba(244, 114, 182, 0.52);
+  background: linear-gradient(180deg, rgba(46, 16, 60, 0.58) 0%, rgba(15, 20, 34, 0.96) 100%);
+}
+
+.ow-event-choice-card.is-ancestral-choice:hover {
+  border-color: #f472b6;
+  box-shadow: 0 0 18px rgba(244, 114, 182, 0.28);
+}
+
+/* 13-Map Gallery inside MythologyAtlasView */
+.myth-atlas-gallery-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.myth-atlas-preview-frame {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.65);
+  aspect-ratio: 16 / 9;
+  background: #060911;
+}
+
+.myth-atlas-preview-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.myth-atlas-info-card {
+  background: rgba(11, 16, 28, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 10px;
+  padding: 0.95rem 1.05rem;
+}
+
+/* 6 Deep Frontier BattleArena Biome Atmospheres */
+.arena-fullscreen-stage.biome-realm-underforge {
+  background: radial-gradient(ellipse at 50% 15%, rgba(234, 88, 12, 0.22), transparent 65%), #090607;
+}
+.arena-fullscreen-stage.biome-realm-astral_isles {
+  background: radial-gradient(ellipse at 50% 15%, rgba(6, 182, 212, 0.2), transparent 65%), #050913;
+}
+.arena-fullscreen-stage.biome-realm-sunken_abyss {
+  background: radial-gradient(ellipse at 50% 15%, rgba(147, 51, 234, 0.22), transparent 65%), #05060f;
+}
+.arena-fullscreen-stage.biome-realm-deep_roots {
+  background: radial-gradient(ellipse at 50% 15%, rgba(16, 185, 129, 0.2), transparent 65%), #050c09;
+}
+.arena-fullscreen-stage.biome-realm-sky_bastions {
+  background: radial-gradient(ellipse at 50% 15%, rgba(250, 204, 21, 0.2), transparent 65%), #090b14;
+}
+.arena-fullscreen-stage.biome-realm-prismatic_crater {
+  background: radial-gradient(ellipse at 50% 15%, rgba(244, 114, 182, 0.22), transparent 65%), #090612;
+}
+
+@media (max-width: 960px) {
+  .ow-event-choices-grid.has-three-choices {
+    grid-template-columns: 1fr;
+  }
+
+  .myth-atlas-gallery-body {
+    grid-template-columns: 1fr;
+  }
+}

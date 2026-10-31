@@ -1,5 +1,6 @@
 import {
   ArenaWeatherType,
+  BiomeRealmId,
   CampaignBoss,
   ConquestBattleModifiers,
   Domain,
@@ -8,7 +9,20 @@ import {
 
 export type ConquestFactionId = 'vortex' | 'pyros' | 'eclipse' | 'matrix' | 'solaria' | 'veridia';
 
-export type ProvinceBuildingType = 'forge' | 'market' | 'astral_tower';
+export type DeepFrontierGroupId =
+  | 'underforge'
+  | 'astral_isles'
+  | 'sunken_abyss'
+  | 'deep_roots'
+  | 'sky_bastions'
+  | 'prismatic_crater';
+
+export type ProvinceBuildingType =
+  | 'forge'
+  | 'market'
+  | 'astral_tower'
+  | 'sky_dock'
+  | 'ley_sanctum';
 
 export interface ProvinceBuildingDef {
   id: ProvinceBuildingType;
@@ -18,6 +32,14 @@ export interface ProvinceBuildingDef {
   shortBonus: string;
   description: string;
 }
+
+export const PROVINCE_BUILDING_ORDER: ProvinceBuildingType[] = [
+  'forge',
+  'market',
+  'astral_tower',
+  'sky_dock',
+  'ley_sanctum',
+];
 
 export const PROVINCE_BUILDINGS: Record<ProvinceBuildingType, ProvinceBuildingDef> = {
   forge: {
@@ -36,7 +58,7 @@ export const PROVINCE_BUILDINGS: Record<ProvinceBuildingType, ProvinceBuildingDe
     costSupplies: 45,
     shortBonus: '+18⚙️/est. (+25⚙️ Porto/Axial)',
     description:
-      'Gera +18⚙️ Suprimentos extras por estação (+25⚙️ se erguido num Porto ou na Fronteira Cinzenta).',
+      'Gera +18⚙️ Suprimentos extras por estação (+25⚙️ num Porto ou na Fronteira Cinzenta) e atua como entreposto de suprimento costeiro.',
   },
   astral_tower: {
     id: 'astral_tower',
@@ -46,6 +68,24 @@ export const PROVINCE_BUILDINGS: Record<ProvinceBuildingType, ProvinceBuildingDe
     shortBonus: '+3❤️ Cerco Vizinho & +1🛡️ Defesa',
     description:
       'Amplia a visão da fronteira, concede +3❤️ PV em cercos vizinhos e +1🛡️ Armadura na Vanguarda em defesas locais.',
+  },
+  sky_dock: {
+    id: 'sky_dock',
+    name: 'Doca de Projeção',
+    icon: '⛵',
+    costSupplies: 60,
+    shortBonus: 'Ponte Aérea (2 saltos) & Voo +1⚔️',
+    description:
+      'Conecta linhas de suprimento e habilita cercos anfíbios/aéreos contra Portos ou Rotas Celestes a até 2 províncias de distância, além de conceder Voo/Armadas +1⚔️ localmente.',
+  },
+  ley_sanctum: {
+    id: 'ley_sanctum',
+    name: 'Santuário de Ley',
+    icon: '🔮',
+    costSupplies: 60,
+    shortBonus: '+1⚡ Essência Local & +3💎/conquista',
+    description:
+      'Canaliza linhas de ley profundas: concede +1⚡ Essência Inicial em cercos locais/vizinhos e refina +10⚙️ extras em Fronteiras Profundas.',
   },
 };
 
@@ -95,6 +135,7 @@ export interface ConquestProvinceDef {
   x: number;
   y: number;
   isCapital?: boolean;
+  frontierGroup?: DeepFrontierGroupId;
   terrainKind: ProvinceTerrainKind;
   terrainLabel: string;
   neighbors: string[];
@@ -117,7 +158,15 @@ export interface ConquestCrisisDef {
   icon: string;
   accent: string;
   description: string;
-  effectType: 'open_seas' | 'dragon_skyways' | 'polar_winter' | 'axial_judgment';
+  effectType:
+    | 'open_seas'
+    | 'dragon_skyways'
+    | 'polar_winter'
+    | 'axial_judgment'
+    | 'underforge_eruption'
+    | 'blood_moon_tide'
+    | 'zenith_tradewinds'
+    | 'prismatic_convergence';
 }
 
 export const CONQUEST_MAP_WIDTH = 3200;
@@ -270,6 +319,38 @@ export const CONQUEST_CRISES: ConquestCrisisDef[] = [
     description: 'Províncias da Fronteira Cinzenta geram +20⚙️ Suprimentos extras e +4❤️ PV nos Cercos.',
     effectType: 'axial_judgment',
   },
+  {
+    id: 'crisis_underforge_eruption',
+    name: 'Erupção da Infraforja de Ignaroth',
+    icon: '⚒️',
+    accent: '#f97316',
+    description: 'Províncias de Forja geram +20⚙️ Suprimentos extras e causam +2⚔️ de dano de abertura nos Cercos.',
+    effectType: 'underforge_eruption',
+  },
+  {
+    id: 'crisis_blood_moon_tide',
+    name: 'Maré da Lua Sangrenta Abissal',
+    icon: '🦑',
+    accent: '#c084fc',
+    description: 'A Fossa Submersa e os Pântanos drenam -3❤️ do comandante rival na abertura e rendem +15⚙️.',
+    effectType: 'blood_moon_tide',
+  },
+  {
+    id: 'crisis_zenith_tradewinds',
+    name: 'Ventos Alísios das Bastilhas Celestes',
+    icon: '🌤️',
+    accent: '#facc15',
+    description: 'Docas de Projeção e Rotas Celestes concedem +1🛡️ Armadura na Vanguarda e +18⚙️ Suprimentos.',
+    effectType: 'zenith_tradewinds',
+  },
+  {
+    id: 'crisis_prismatic_convergence',
+    name: 'Convergência da Cratera Prismática',
+    icon: '💎',
+    accent: '#f472b6',
+    description: 'Todas as 18 Províncias de Fronteira Profunda rendem +15⚙️ extras e +1⚡ Essência Inicial nos Cercos.',
+    effectType: 'prismatic_convergence',
+  },
 ];
 
 /**
@@ -319,7 +400,12 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
     y: 13.5,
     terrainKind: 'glacier',
     terrainLabel: 'Arquipélago Ártico',
-    neighbors: ['prov_vortex_polar_spire', 'prov_vortex_dead_stars', 'prov_pyros_runic_ridge'],
+    neighbors: [
+      'prov_vortex_polar_spire',
+      'prov_vortex_dead_stars',
+      'prov_pyros_runic_ridge',
+      'prov_astral_chronos_beacon',
+    ],
     supplyIncome: 40,
     strategicBonusTitle: 'Vigia das Geleiras',
     strategicBonusDesc: 'Fortifica a rota marítima setentrional e abastece frotas polares.',
@@ -349,6 +435,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_pyros_runic_ridge',
       'prov_pyros_west_caldera',
       'prov_eclipse_abyssal_gorge',
+      'prov_astral_maelstrom_eye',
     ],
     supplyIncome: 55,
     strategicBonusTitle: 'Porto das Estrelas (+55⚙️)',
@@ -407,6 +494,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_vortex_glass_spires',
       'prov_pyros_sky_corridor',
       'prov_solaria_eternal_reliquary',
+      'prov_underforge_basalt_crucible',
     ],
     supplyIncome: 55,
     strategicBonusTitle: 'Rota do Mar da Alvorada (+55⚙️)',
@@ -442,6 +530,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_pyros_east_crater',
       'prov_matrix_nw_monolith',
       'prov_matrix_ne_prism',
+      'prov_underforge_dragon_anvil',
     ],
     supplyIncome: 85,
     strategicBonusTitle: 'Selo da Bigorna: Relíquias -1⚡',
@@ -537,6 +626,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_vortex_sapphire_monolith',
       'prov_pyros_split_anvil',
       'prov_pyros_east_crater',
+      'prov_underforge_slag_cataracts',
     ],
     supplyIncome: 50,
     strategicBonusTitle: 'Ninho Alado: Voo & Armadas +1⚔️',
@@ -632,6 +722,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_pyros_west_caldera',
       'prov_eclipse_twilight_scarp',
       'prov_eclipse_obsidian_cathedral',
+      'prov_abyss_ghostfire_harbor',
     ],
     supplyIncome: 40,
     strategicBonusTitle: 'Emboscada do Cânion',
@@ -688,7 +779,11 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
     y: 63.5,
     terrainKind: 'port',
     terrainLabel: 'Porto Necrópole',
-    neighbors: ['prov_eclipse_obsidian_cathedral', 'prov_eclipse_black_marsh'],
+    neighbors: [
+      'prov_eclipse_obsidian_cathedral',
+      'prov_eclipse_black_marsh',
+      'prov_abyss_drowned_basilica',
+    ],
     supplyIncome: 55,
     strategicBonusTitle: 'Frota Fantasma (+55⚙️)',
     strategicBonusDesc: 'Gera tributos marítimos pesados no litoral ocidental.',
@@ -754,6 +849,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_matrix_east_tribunal',
       'prov_veridia_thorn_woods',
       'prov_veridia_mother_tree',
+      'prov_crater_shattered_core',
     ],
     supplyIncome: 95,
     strategicBonusTitle: 'Selo Axial: Lendas +1🛡️/+1♻️',
@@ -852,6 +948,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_veridia_thorn_woods',
       'prov_matrix_five_seals',
       'prov_matrix_nw_monolith',
+      'prov_crater_sapphire_fault',
     ],
     supplyIncome: 50,
     strategicBonusTitle: 'Muralha do Anel Oeste (+50⚙️)',
@@ -1009,6 +1106,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_solaria_eternal_reliquary',
       'prov_solaria_great_dome',
       'prov_solaria_hanging_gardens',
+      'prov_sky_alabaster_citadel',
     ],
     supplyIncome: 55,
     strategicBonusTitle: 'Feixe dos Espelhos (+2 Dano Abertura)',
@@ -1039,6 +1137,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_solaria_zenith_mirrors',
       'prov_matrix_east_tribunal',
       'prov_veridia_jade_delta',
+      'prov_sky_mirror_cathedral',
     ],
     supplyIncome: 50,
     strategicBonusTitle: 'Aquedutos Dourados (+2❤️ PV)',
@@ -1074,6 +1173,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_veridia_jade_delta',
       'prov_veridia_fang_peninsula',
       'prov_veridia_emerald_canopy',
+      'prov_roots_amber_heart',
     ],
     supplyIncome: 85,
     strategicBonusTitle: 'Selo Primevo: +6❤️ PV do Soberano',
@@ -1166,6 +1266,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_veridia_thorn_woods',
       'prov_veridia_mother_tree',
       'prov_veridia_emerald_canopy',
+      'prov_crater_solar_monoliths',
     ],
     supplyIncome: 50,
     strategicBonusTitle: 'Feras Costeiras (+50⚙️)',
@@ -1195,6 +1296,7 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
       'prov_veridia_mother_tree',
       'prov_veridia_jade_delta',
       'prov_veridia_fang_peninsula',
+      'prov_roots_spore_sanctuary',
     ],
     supplyIncome: 45,
     strategicBonusTitle: 'Reserva Vital (+2❤️ PV)',
@@ -1208,6 +1310,560 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
     microSettlements: [
       { name: 'Santuário Esmeralda', dx: 1.9, dy: 1.3, kind: 'shrine' },
       { name: 'Mina de Âmbar Vivo', dx: -2.1, dy: -1.1, kind: 'mine' },
+    ],
+  },
+
+  // ===================== 7. INFRAFORJA MAGMÁTICA (FRONTEIRA DE PYROS) =====================
+  {
+    id: 'prov_underforge_dragon_anvil',
+    name: 'Bigorna Abissal de Ignaroth',
+    regionLabel: 'Infraforja Central • Enclave Subterrâneo',
+    initialOwner: 'pyros',
+    domain: 'red',
+    frontierGroup: 'underforge',
+    x: 89.5,
+    y: 19,
+    terrainKind: 'forge',
+    terrainLabel: 'Fornalha Abissal',
+    neighbors: [
+      'prov_pyros_split_anvil',
+      'prov_underforge_slag_cataracts',
+      'prov_underforge_basalt_crucible',
+    ],
+    supplyIncome: 65,
+    strategicBonusTitle: 'Fogo Tectônico (+2 Dano Abertura)',
+    strategicBonusDesc: 'Martelos colossais causam +2 de dano inicial contra o comandante rival nos Cercos.',
+    garrisonCommander: 'Ignaroth, Titã da Infraforja',
+    garrisonTitle: 'Forjador das Correntes Abissais',
+    garrisonAvatarCardId: 'red_173_general_roda_chama',
+    garrisonDeckId: 'deck_tri_primal_volcano',
+    baseGarrisonHp: 64,
+    loreSnippet: 'No ventre da terra sob Pyros, rios de magma puro batem contra a bigorna de um deus adormecido.',
+    microSettlements: [
+      { name: 'Bigorna Dracônica', dx: -1.4, dy: -1.1, kind: 'mine' },
+      { name: 'Forte das Correntes', dx: 1.5, dy: 1.0, kind: 'watchtower' },
+    ],
+  },
+  {
+    id: 'prov_underforge_slag_cataracts',
+    name: 'Cataratas de Escória Rubra',
+    regionLabel: 'Infraforja Noroeste • Túneis Boreais',
+    initialOwner: 'pyros',
+    domain: 'red',
+    frontierGroup: 'underforge',
+    x: 85.5,
+    y: 10.5,
+    terrainKind: 'forge',
+    terrainLabel: 'Catarata Magmática',
+    neighbors: [
+      'prov_pyros_sky_corridor',
+      'prov_underforge_dragon_anvil',
+      'prov_underforge_basalt_crucible',
+      'prov_astral_chronos_beacon',
+    ],
+    supplyIncome: 55,
+    strategicBonusTitle: 'Ligas de Escória (+55⚙️)',
+    strategicBonusDesc: 'Fornalhas de fundição contínua abastecem os arsenais imperiais.',
+    garrisonCommander: 'Ferreiro-Mor Kharzan',
+    garrisonTitle: 'Mestre das Cataratas Ardentes',
+    garrisonAvatarCardId: 'red_08_dragao_vermelho',
+    garrisonDeckId: 'deck_red_inferno',
+    baseGarrisonHp: 56,
+    loreSnippet: 'Quedas verticais de ferro incandescente iluminam galerias escavadas em basalto negro.',
+    microSettlements: [
+      { name: 'Duto de Escória', dx: -1.2, dy: 1.0, kind: 'mine' },
+      { name: 'Vila das Chaminés', dx: 1.3, dy: -0.9, kind: 'village' },
+    ],
+  },
+  {
+    id: 'prov_underforge_basalt_crucible',
+    name: 'Crisol das Chaminés Térmicas',
+    regionLabel: 'Infraforja Oriental • Conduto Celeste',
+    initialOwner: 'pyros',
+    domain: 'red',
+    frontierGroup: 'underforge',
+    x: 94,
+    y: 12.5,
+    terrainKind: 'skyway',
+    terrainLabel: 'Chaminé Térmica',
+    neighbors: [
+      'prov_vortex_sapphire_monolith',
+      'prov_underforge_dragon_anvil',
+      'prov_underforge_slag_cataracts',
+      'prov_sky_mirror_cathedral',
+    ],
+    supplyIncome: 55,
+    strategicBonusTitle: 'Corrente Térmica (Voo +1⚔️)',
+    strategicBonusDesc: 'Jatos ascendentes impulsionam Armadas e unidades aladas em direção aos céus.',
+    garrisonCommander: 'Comodoro Pyrax',
+    garrisonTitle: 'Vigia das Colunas de Vapor',
+    garrisonAvatarCardId: 'red_172_armada_draconica_chama',
+    garrisonDeckId: 'deck_squad_siege_battery',
+    baseGarrisonHp: 56,
+    loreSnippet: 'Dirigíveis de guerra sobem pelas chaminés vulcânicas direto rumo às nuvens orientais.',
+    microSettlements: [
+      { name: 'Doca Térmica', dx: -1.1, dy: 1.1, kind: 'harbor' },
+      { name: 'Torre de Basalto', dx: 1.1, dy: -1.0, kind: 'watchtower' },
+    ],
+  },
+
+  // ===================== 8. ARQUIPÉLAGO ASTRAL (FRONTEIRA DE VÓRTEX) =====================
+  {
+    id: 'prov_astral_maelstrom_eye',
+    name: 'Olho do Turbilhão Astral',
+    regionLabel: 'Ilhas Astrais Sul • Vórtice de Chronos',
+    initialOwner: 'vortex',
+    domain: 'blue',
+    frontierGroup: 'astral_isles',
+    x: 11.5,
+    y: 18.5,
+    terrainKind: 'sanctuary',
+    terrainLabel: 'Vórtice Horológico',
+    neighbors: [
+      'prov_vortex_dead_stars',
+      'prov_astral_chronos_beacon',
+      'prov_astral_starwreck_reef',
+    ],
+    supplyIncome: 65,
+    strategicBonusTitle: 'Fluxo Astral (+1⚡ se c/ Santuário)',
+    strategicBonusDesc: 'Redemoinho arcano que amplifica reservas de Essência e vigia os mares do norte.',
+    garrisonCommander: 'Arconte-Mor Thalassar',
+    garrisonTitle: 'Guardião do Turbilhão Estelar',
+    garrisonAvatarCardId: 'blue_80_senhor_tempo',
+    garrisonDeckId: 'deck_spec_chronomancer',
+    baseGarrisonHp: 64,
+    loreSnippet: 'Águas luminescentes giram em torno de anéis de latão suspensos sobre o abismo.',
+    microSettlements: [
+      { name: 'Anel do Turbilhão', dx: -1.3, dy: -1.0, kind: 'shrine' },
+      { name: 'Cais Boreal', dx: 1.4, dy: 1.0, kind: 'harbor' },
+    ],
+  },
+  {
+    id: 'prov_astral_chronos_beacon',
+    name: 'Farol das Esferas Mortas',
+    regionLabel: 'Ilhas Astrais Nordeste • Rota Boreal',
+    initialOwner: 'vortex',
+    domain: 'blue',
+    frontierGroup: 'astral_isles',
+    x: 16,
+    y: 10.5,
+    terrainKind: 'glacier',
+    terrainLabel: 'Farol Horológico',
+    neighbors: [
+      'prov_vortex_west_isles',
+      'prov_astral_maelstrom_eye',
+      'prov_astral_starwreck_reef',
+      'prov_underforge_slag_cataracts',
+    ],
+    supplyIncome: 55,
+    strategicBonusTitle: 'Lente Estelar (+2❤️ PV nos Cercos)',
+    strategicBonusDesc: 'Previsões astrolábicas antecipam emboscadas e somam +2❤️ PV ao seu Soberano.',
+    garrisonCommander: 'Vigília Astrolábica',
+    garrisonTitle: 'Sentinelas do Polo Oculto',
+    garrisonAvatarCardId: 'blue_173_general_roda_gelo',
+    garrisonDeckId: 'deck_blue_tempest',
+    baseGarrisonHp: 56,
+    loreSnippet: 'Pêndulos gigantes batem o compasso das marés astrais no topo de ilhas congeladas.',
+    microSettlements: [
+      { name: 'Torre do Pêndulo', dx: 1.2, dy: -0.9, kind: 'watchtower' },
+      { name: 'Vila das Esferas', dx: -1.3, dy: 1.1, kind: 'village' },
+    ],
+  },
+  {
+    id: 'prov_astral_starwreck_reef',
+    name: 'Recife dos Galeões de Cristal',
+    regionLabel: 'Ilhas Astrais Oeste • Mar Profundo',
+    initialOwner: 'vortex',
+    domain: 'blue',
+    frontierGroup: 'astral_isles',
+    x: 7.5,
+    y: 11,
+    terrainKind: 'port',
+    terrainLabel: 'Recife & Naufrágios',
+    neighbors: [
+      'prov_astral_maelstrom_eye',
+      'prov_astral_chronos_beacon',
+      'prov_abyss_ghostfire_harbor',
+    ],
+    supplyIncome: 60,
+    strategicBonusTitle: 'Espólios Estelares (+60⚙️)',
+    strategicBonusDesc: 'Cascos cristalizados de antigas frotas fornecem cristais rúnicos de alto valor.',
+    garrisonCommander: 'Capitão-Espectro Vaelis',
+    garrisonTitle: 'Corsário do Gelo Negro',
+    garrisonAvatarCardId: 'blue_172_armada_draconica_gelo',
+    garrisonDeckId: 'deck_dual_abyssal_storm',
+    baseGarrisonHp: 56,
+    loreSnippet: 'Mastros cobertos de geada azul apontam para auroras que nunca se apagam.',
+    microSettlements: [
+      { name: 'Baía dos Cascos', dx: -1.2, dy: 1.1, kind: 'harbor' },
+      { name: 'Mina de Meteorito', dx: 1.3, dy: -1.0, kind: 'mine' },
+    ],
+  },
+
+  // ===================== 9. FOSSA SUBMERSA (FRONTEIRA DO ECLIPSE) =====================
+  {
+    id: 'prov_abyss_drowned_basilica',
+    name: 'Basílica da Catedral Afogada',
+    regionLabel: 'Fossa Submersa Central • Trono Abissal',
+    initialOwner: 'eclipse',
+    domain: 'purple',
+    frontierGroup: 'sunken_abyss',
+    x: 7.5,
+    y: 51,
+    terrainKind: 'citadel',
+    terrainLabel: 'Catedral Submersa',
+    neighbors: [
+      'prov_eclipse_blood_ossuary',
+      'prov_abyss_ghostfire_harbor',
+      'prov_abyss_leviathan_ribs',
+    ],
+    supplyIncome: 65,
+    strategicBonusTitle: 'Sino Submerso (+2 Dano Abertura)',
+    strategicBonusDesc: 'Badaladas abissais drenam +2❤️ do comandante inimigo na abertura dos Cercos.',
+    garrisonCommander: 'Patriarca Afogado Malphas',
+    garrisonTitle: 'Senhor das Águas Negras',
+    garrisonAvatarCardId: 'purple_173_general_roda_abismo',
+    garrisonDeckId: 'deck_tri_blood_moon',
+    baseGarrisonHp: 64,
+    loreSnippet: 'Uma catedral inteira de obsidiana respira dentro de um redemoinho aberto no oceano.',
+    microSettlements: [
+      { name: 'Altar da Maré', dx: -1.1, dy: -1.2, kind: 'shrine' },
+      { name: 'Torre da Lanterna', dx: 1.2, dy: 1.2, kind: 'watchtower' },
+    ],
+  },
+  {
+    id: 'prov_abyss_ghostfire_harbor',
+    name: 'Porto dos Navios de Fogo-Fátuo',
+    regionLabel: 'Fossa Submersa Norte',
+    initialOwner: 'eclipse',
+    domain: 'purple',
+    frontierGroup: 'sunken_abyss',
+    x: 7.5,
+    y: 40,
+    terrainKind: 'port',
+    terrainLabel: 'Porto Fantasma',
+    neighbors: [
+      'prov_eclipse_abyssal_gorge',
+      'prov_astral_starwreck_reef',
+      'prov_abyss_drowned_basilica',
+    ],
+    supplyIncome: 60,
+    strategicBonusTitle: 'Comboios Fantasmas (+60⚙️)',
+    strategicBonusDesc: 'Galeões espectrais cruzam a neblina trazendo tributos intocados por bloqueios.',
+    garrisonCommander: 'Almirante Noctis',
+    garrisonTitle: 'Timoneiro da Chama Verde',
+    garrisonAvatarCardId: 'purple_172_armada_draconica_abismo',
+    garrisonDeckId: 'deck_purple_abyss',
+    baseGarrisonHp: 56,
+    loreSnippet: 'Chamas esverdeadas ardem sobre a água gelada guiando frotas silenciosas.',
+    microSettlements: [
+      { name: 'Doca Espectral', dx: -1.2, dy: 1.0, kind: 'harbor' },
+      { name: 'Farol Carmesim', dx: 1.3, dy: -1.1, kind: 'watchtower' },
+    ],
+  },
+  {
+    id: 'prov_abyss_leviathan_ribs',
+    name: 'Arcada de Costelas de Leviatã',
+    regionLabel: 'Fossa Submersa Sul',
+    initialOwner: 'eclipse',
+    domain: 'purple',
+    frontierGroup: 'sunken_abyss',
+    x: 8,
+    y: 61.5,
+    terrainKind: 'marsh',
+    terrainLabel: 'Recife de Ossos',
+    neighbors: [
+      'prov_abyss_drowned_basilica',
+      'prov_crater_sapphire_fault',
+    ],
+    supplyIncome: 55,
+    strategicBonusTitle: 'Carapaça Abissal (+2❤️ PV)',
+    strategicBonusDesc: 'Elixires extraídos de corais sanguíneos fortalecem o Soberano em +2❤️ PV.',
+    garrisonCommander: 'Sacerdotisa Morwen',
+    garrisonTitle: 'Voz dos Leviatãs Mortos',
+    garrisonAvatarCardId: 'purple_07_lich',
+    garrisonDeckId: 'deck_dual_eternal_rot',
+    baseGarrisonHp: 56,
+    loreSnippet: 'Pontes talhadas em ossos titânicos ligam recifes iluminados por corais rubros.',
+    microSettlements: [
+      { name: 'Ponte de Marfim', dx: 1.2, dy: -1.0, kind: 'shrine' },
+      { name: 'Vila dos Mergulhadores', dx: -1.1, dy: 1.2, kind: 'village' },
+    ],
+  },
+
+  // ===================== 10. RAÍZES ABISSAIS (FRONTEIRA DE VERIDIA) =====================
+  {
+    id: 'prov_roots_amber_heart',
+    name: 'Coração do Lago de Âmbar Vivo',
+    regionLabel: 'Raízes Profundas Central • Santuário Subterrâneo',
+    initialOwner: 'veridia',
+    domain: 'green',
+    frontierGroup: 'deep_roots',
+    x: 79,
+    y: 85.5,
+    terrainKind: 'sanctuary',
+    terrainLabel: 'Lago de Seiva Primeva',
+    neighbors: [
+      'prov_veridia_mother_tree',
+      'prov_roots_spore_sanctuary',
+      'prov_roots_ironwood_bastion',
+    ],
+    supplyIncome: 65,
+    strategicBonusTitle: 'Âmbar Imortal (+4❤️ PV nos Cercos)',
+    strategicBonusDesc: 'A seiva pura do subsolo concede +4❤️ PV adicionais ao seu Soberano.',
+    garrisonCommander: 'Progenitor Mycelor',
+    garrisonTitle: 'Guardião do Lago Dourado',
+    garrisonAvatarCardId: 'green_173_general_roda_selva',
+    garrisonDeckId: 'deck_tri_primal_titans',
+    baseGarrisonHp: 66,
+    loreSnippet: 'No lago dourado sob a Árvore-Mãe dormem memórias de eras anteriores aos tronos.',
+    microSettlements: [
+      { name: 'Cais de Âmbar', dx: -1.3, dy: 1.0, kind: 'harbor' },
+      { name: 'Altar da Seiva', dx: 1.4, dy: -1.0, kind: 'shrine' },
+    ],
+  },
+  {
+    id: 'prov_roots_spore_sanctuary',
+    name: 'Bosque dos Fungos Luminescentes',
+    regionLabel: 'Raízes Profundas Oeste',
+    initialOwner: 'veridia',
+    domain: 'green',
+    frontierGroup: 'deep_roots',
+    x: 70.5,
+    y: 86.5,
+    terrainKind: 'forest',
+    terrainLabel: 'Floresta Bioluminescente',
+    neighbors: [
+      'prov_veridia_emerald_canopy',
+      'prov_roots_amber_heart',
+      'prov_crater_solar_monoliths',
+    ],
+    supplyIncome: 55,
+    strategicBonusTitle: 'Colheita Luminescente (+55⚙️)',
+    strategicBonusDesc: 'Esporos medicinais e madeira-ferro abastecem longas campanhas subterrâneas.',
+    garrisonCommander: 'Xamã Lykos dos Esporos',
+    garrisonTitle: 'Pastor da Noite Verde',
+    garrisonAvatarCardId: 'green_09_hidra',
+    garrisonDeckId: 'deck_dual_wild_evolution',
+    baseGarrisonHp: 56,
+    loreSnippet: 'Cogumelos altos como torres banham rios esmeraldas num luar azulado eterno.',
+    microSettlements: [
+      { name: 'Aldeia Biolume', dx: -1.2, dy: 0.9, kind: 'village' },
+      { name: 'Ruína de Jade', dx: 1.2, dy: -1.1, kind: 'shrine' },
+    ],
+  },
+  {
+    id: 'prov_roots_ironwood_bastion',
+    name: 'Fortaleza Suspensa de Cipó-Ferro',
+    regionLabel: 'Raízes Profundas Leste',
+    initialOwner: 'veridia',
+    domain: 'green',
+    frontierGroup: 'deep_roots',
+    x: 85.5,
+    y: 91.5,
+    terrainKind: 'citadel',
+    terrainLabel: 'Bastião de Raízes',
+    neighbors: [
+      'prov_roots_amber_heart',
+      'prov_sky_armada_docks',
+    ],
+    supplyIncome: 55,
+    strategicBonusTitle: 'Casca Inquebrável (+1🛡️ Vanguarda)',
+    strategicBonusDesc: 'Escudos trançados em cipó-ferro reforçam sua linha de frente (+2❤️ PV).',
+    garrisonCommander: 'Guardiã Thornia',
+    garrisonTitle: 'Senhora das Pontes Suspensas',
+    garrisonAvatarCardId: 'green_172_armada_draconica_selva',
+    garrisonDeckId: 'deck_dual_primal_fury',
+    baseGarrisonHp: 58,
+    loreSnippet: 'Cidadelas inteiras pendem de raízes arqueadas sobre abismos iluminados por vagalumes.',
+    microSettlements: [
+      { name: 'Forte Cipó-Ferro', dx: -1.3, dy: -0.9, kind: 'watchtower' },
+      { name: 'Platô Totêmico', dx: 1.2, dy: 0.9, kind: 'mine' },
+    ],
+  },
+
+  // ===================== 11. BASTILHAS CELESTES (FRONTEIRA DE SOLÁRIA) =====================
+  {
+    id: 'prov_sky_mirror_cathedral',
+    name: 'Catedral Flutuante dos Espelhos',
+    regionLabel: 'Bastilhas Celestes Central • Zênite',
+    initialOwner: 'solaria',
+    domain: 'gold',
+    frontierGroup: 'sky_bastions',
+    x: 91.5,
+    y: 63.5,
+    terrainKind: 'skyway',
+    terrainLabel: 'Ilha-Catedral Celeste',
+    neighbors: [
+      'prov_solaria_hanging_gardens',
+      'prov_sky_alabaster_citadel',
+      'prov_sky_armada_docks',
+      'prov_underforge_basalt_crucible',
+    ],
+    supplyIncome: 65,
+    strategicBonusTitle: 'Raio do Zênite (+2 Dano Abertura)',
+    strategicBonusDesc: 'Prismas celestes disparam +2 de dano solar contra o comandante rival nos Cercos.',
+    garrisonCommander: 'Arcanjo-Regente Solarius',
+    garrisonTitle: 'Vigia Supremo das Nuvens',
+    garrisonAvatarCardId: 'gold_173_general_roda_sol',
+    garrisonDeckId: 'deck_tri_celestial_scales',
+    baseGarrisonHp: 64,
+    loreSnippet: 'Acima de todas as tempestades, vitrais dourados refletem o sol eterno sobre Vaeloria.',
+    microSettlements: [
+      { name: 'Domo Celeste', dx: -1.2, dy: -0.9, kind: 'shrine' },
+      { name: 'Ponte de Luz', dx: 1.3, dy: 1.0, kind: 'watchtower' },
+    ],
+  },
+  {
+    id: 'prov_sky_alabaster_citadel',
+    name: 'Bastião Suspenso de Alabastro',
+    regionLabel: 'Bastilhas Celestes Oeste',
+    initialOwner: 'solaria',
+    domain: 'gold',
+    frontierGroup: 'sky_bastions',
+    x: 86,
+    y: 70.5,
+    terrainKind: 'citadel',
+    terrainLabel: 'Bastião Flutuante',
+    neighbors: [
+      'prov_solaria_zenith_mirrors',
+      'prov_sky_mirror_cathedral',
+      'prov_sky_armada_docks',
+    ],
+    supplyIncome: 55,
+    strategicBonusTitle: 'Guarda Alada (+2❤️ PV)',
+    strategicBonusDesc: 'Falanges celestes reforçam a escolta pessoal do Soberano em +2❤️ PV.',
+    garrisonCommander: 'Marechal Valerius',
+    garrisonTitle: 'Escudo do Horizonte Leste',
+    garrisonAvatarCardId: 'gold_09_serafim_solar',
+    garrisonDeckId: 'deck_gold_bastion',
+    baseGarrisonHp: 58,
+    loreSnippet: 'Ilhas de mármore branco ancoradas por correntes rúnicas vigiam a costa de Solária.',
+    microSettlements: [
+      { name: 'Torre Alabastro', dx: -1.1, dy: -1.0, kind: 'watchtower' },
+      { name: 'Vila das Nuvens', dx: 1.2, dy: 1.0, kind: 'village' },
+    ],
+  },
+  {
+    id: 'prov_sky_armada_docks',
+    name: 'Docas Imperiais das Naus-Dragão',
+    regionLabel: 'Bastilhas Celestes Sudeste',
+    initialOwner: 'solaria',
+    domain: 'gold',
+    frontierGroup: 'sky_bastions',
+    x: 94.5,
+    y: 72.5,
+    terrainKind: 'port',
+    terrainLabel: 'Porto Celeste',
+    neighbors: [
+      'prov_sky_mirror_cathedral',
+      'prov_sky_alabaster_citadel',
+      'prov_roots_ironwood_bastion',
+    ],
+    supplyIncome: 60,
+    strategicBonusTitle: 'Frota do Céu (+60⚙️ & Voo +1⚔️)',
+    strategicBonusDesc: 'Estaleiros aéreos aumentam a produção imperial e concedem Voo/Armadas +1⚔️.',
+    garrisonCommander: 'Almirante Aurelia',
+    garrisonTitle: 'Senhora das Naus Solares',
+    garrisonAvatarCardId: 'gold_172_armada_draconica_sol',
+    garrisonDeckId: 'deck_squad_eclipse_zenith',
+    baseGarrisonHp: 56,
+    loreSnippet: 'Veleiros voadores de velas douradas partem daqui para patrulhar dois oceanos.',
+    microSettlements: [
+      { name: 'Estaleiro Solar', dx: -1.2, dy: 0.9, kind: 'harbor' },
+      { name: 'Farol das Nuvens', dx: 1.0, dy: -1.1, kind: 'watchtower' },
+    ],
+  },
+
+  // ===================== 12. CRATERA PRISMÁTICA (FRONTEIRA DA MATRIZ) =====================
+  {
+    id: 'prov_crater_shattered_core',
+    name: 'Núcleo Pentacromático Partido',
+    regionLabel: 'Cratera Prismática Central • Eixo Profundo',
+    initialOwner: 'matrix',
+    domain: 'neutral',
+    frontierGroup: 'prismatic_crater',
+    x: 16.5,
+    y: 84.5,
+    terrainKind: 'sanctuary',
+    terrainLabel: 'Núcleo da Fratura',
+    neighbors: [
+      'prov_matrix_five_seals',
+      'prov_crater_sapphire_fault',
+      'prov_crater_solar_monoliths',
+    ],
+    supplyIncome: 75,
+    strategicBonusTitle: 'Coração Prismático (+1⚡ Essência)',
+    strategicBonusDesc: 'Controlar o Núcleo Partido concede +1⚡ Essência Inicial em todos os Cercos!',
+    garrisonCommander: 'Arquiteto da Fratura Primordial',
+    garrisonTitle: 'Eco Supremo dos Cinco Domínios',
+    garrisonAvatarCardId: 'neutral_173_general_roda_matriz',
+    garrisonDeckId: 'deck_penta_valkyra_pact',
+    baseGarrisonHp: 70,
+    loreSnippet: 'Onde o primeiro Pacto Cromático rachou o mundo, cinco rios de luz pura convergem.',
+    microSettlements: [
+      { name: 'Santuário do Prisma', dx: 0, dy: -1.2, kind: 'shrine' },
+      { name: 'Mina de Estilhaços', dx: 1.4, dy: 1.1, kind: 'mine' },
+    ],
+  },
+  {
+    id: 'prov_crater_sapphire_fault',
+    name: 'Falha de Ley Ocidental',
+    regionLabel: 'Cratera Prismática Noroeste',
+    initialOwner: 'matrix',
+    domain: 'neutral',
+    frontierGroup: 'prismatic_crater',
+    x: 10,
+    y: 79.5,
+    terrainKind: 'mountain_pass',
+    terrainLabel: 'Passarela de Cristal',
+    neighbors: [
+      'prov_matrix_west_ring',
+      'prov_abyss_leviathan_ribs',
+      'prov_crater_shattered_core',
+    ],
+    supplyIncome: 55,
+    strategicBonusTitle: 'Refração Ocidental (+55⚙️)',
+    strategicBonusDesc: 'Cristais de ley canalizam energia pura para as forjas e torres do império.',
+    garrisonCommander: 'Sentinela Kaelith do Véu',
+    garrisonTitle: 'Guardiã da Passarela Safira',
+    garrisonAvatarCardId: 'neutral_10_valkyra_pentacromatica',
+    garrisonDeckId: 'deck_tri_refraction_triad',
+    baseGarrisonHp: 58,
+    loreSnippet: 'Pontes de pedra suspensas cruzam torrentes de energia azul e violeta.',
+    microSettlements: [
+      { name: 'Arco Safira', dx: -1.2, dy: -0.9, kind: 'watchtower' },
+      { name: 'Tenda dos Cartógrafos', dx: 1.2, dy: 1.0, kind: 'village' },
+    ],
+  },
+  {
+    id: 'prov_crater_solar_monoliths',
+    name: 'Anel dos Monólitos Partidos',
+    regionLabel: 'Cratera Prismática Sudeste',
+    initialOwner: 'matrix',
+    domain: 'neutral',
+    frontierGroup: 'prismatic_crater',
+    x: 23.5,
+    y: 90.5,
+    terrainKind: 'citadel',
+    terrainLabel: 'Coliseu Planar',
+    neighbors: [
+      'prov_veridia_fang_peninsula',
+      'prov_roots_spore_sanctuary',
+      'prov_crater_shattered_core',
+    ],
+    supplyIncome: 60,
+    strategicBonusTitle: 'Bastião dos Oito Raios (Lendas +1🛡️)',
+    strategicBonusDesc: 'Ressonância planar concede +1🛡️/1♻️ a Lendas e Generais da Roda nos Cercos.',
+    garrisonCommander: 'Árbitro-Mor Zael',
+    garrisonTitle: 'Custódio dos Oito Raios',
+    garrisonAvatarCardId: 'neutral_173_general_roda_matriz',
+    garrisonDeckId: 'deck_squad_thousand_shields',
+    baseGarrisonHp: 60,
+    loreSnippet: 'Colunas partidas flutuam em gravidade suspensa ao redor da fenda primordial.',
+    microSettlements: [
+      { name: 'Bastião Planar', dx: 1.2, dy: -1.0, kind: 'watchtower' },
+      { name: 'Altar dos Raios', dx: -1.3, dy: 0.9, kind: 'shrine' },
     ],
   },
 ];
@@ -1272,6 +1928,64 @@ const POLAR_ARCHIPELAGO_SILHOUETTE_PCT: Point2D[] = [
   { x: 22.5, y: 25.5 },
   { x: 22, y: 17.5 },
 ];
+
+// Silhuetas independentes e sem sobreposição para os 6 enclaves de Fronteira Profunda no Mapa-Múndi
+const FRONTIER_SILHOUETTES_PCT: Record<DeepFrontierGroupId, Point2D[]> = {
+  astral_isles: [
+    { x: 3.2, y: 6.0 },
+    { x: 12.5, y: 4.8 },
+    { x: 20.2, y: 7.2 },
+    { x: 20.4, y: 15.8 },
+    { x: 17.2, y: 22.8 },
+    { x: 7.5, y: 22.5 },
+    { x: 2.8, y: 14.5 },
+  ],
+  underforge: [
+    { x: 81.2, y: 6.5 },
+    { x: 90.5, y: 5.0 },
+    { x: 97.4, y: 8.5 },
+    { x: 97.6, y: 18.5 },
+    { x: 92.8, y: 23.2 },
+    { x: 83.2, y: 22.6 },
+    { x: 80.8, y: 14.2 },
+  ],
+  sunken_abyss: [
+    { x: 2.2, y: 35.5 },
+    { x: 9.8, y: 34.8 },
+    { x: 13.0, y: 41.5 },
+    { x: 12.8, y: 58.5 },
+    { x: 10.6, y: 66.2 },
+    { x: 3.4, y: 65.5 },
+    { x: 1.8, y: 50.0 },
+  ],
+  sky_bastions: [
+    { x: 87.8, y: 58.8 },
+    { x: 96.8, y: 59.5 },
+    { x: 98.2, y: 68.5 },
+    { x: 97.2, y: 77.2 },
+    { x: 88.0, y: 77.5 },
+    { x: 81.8, y: 73.5 },
+    { x: 82.4, y: 65.5 },
+  ],
+  deep_roots: [
+    { x: 69.5, y: 80.5 },
+    { x: 82.5, y: 80.2 },
+    { x: 90.2, y: 84.5 },
+    { x: 89.8, y: 95.2 },
+    { x: 74.0, y: 95.6 },
+    { x: 65.2, y: 91.5 },
+    { x: 66.4, y: 84.5 },
+  ],
+  prismatic_crater: [
+    { x: 4.8, y: 74.2 },
+    { x: 17.5, y: 74.0 },
+    { x: 25.0, y: 82.8 },
+    { x: 29.4, y: 91.2 },
+    { x: 27.2, y: 95.6 },
+    { x: 7.5, y: 95.4 },
+    { x: 4.2, y: 85.0 },
+  ],
+};
 
 function clipPolygonHalfPlane(
   poly: Point2D[],
@@ -1380,23 +2094,42 @@ export function getConquestMapGeometries(): {
 
   const mainBase = scalePoly(MAIN_CONTINENT_SILHOUETTE_PCT);
   const polarBase = scalePoly(POLAR_ARCHIPELAGO_SILHOUETTE_PCT);
+  const frontierBases: Record<DeepFrontierGroupId, Point2D[]> = {
+    astral_isles: scalePoly(FRONTIER_SILHOUETTES_PCT.astral_isles),
+    underforge: scalePoly(FRONTIER_SILHOUETTES_PCT.underforge),
+    sunken_abyss: scalePoly(FRONTIER_SILHOUETTES_PCT.sunken_abyss),
+    sky_bastions: scalePoly(FRONTIER_SILHOUETTES_PCT.sky_bastions),
+    deep_roots: scalePoly(FRONTIER_SILHOUETTES_PCT.deep_roots),
+    prismatic_crater: scalePoly(FRONTIER_SILHOUETTES_PCT.prismatic_crater),
+  };
 
-  const seeds = CONQUEST_PROVINCES.map((p) => ({
-    prov: p,
-    sx: (p.x / 100) * CONQUEST_MAP_WIDTH,
-    sy: (p.y / 100) * CONQUEST_MAP_HEIGHT,
-    isPolar: p.initialOwner === 'vortex',
-  }));
+  const seeds = CONQUEST_PROVINCES.map((p) => {
+    const clipGroup = p.frontierGroup
+      ? `frontier:${p.frontierGroup}`
+      : p.initialOwner === 'vortex'
+      ? 'polar'
+      : 'continent';
+    return {
+      prov: p,
+      sx: (p.x / 100) * CONQUEST_MAP_WIDTH,
+      sy: (p.y / 100) * CONQUEST_MAP_HEIGHT,
+      clipGroup,
+    };
+  });
 
   const rawPolys: Record<string, Point2D[]> = {};
 
   for (const s of seeds) {
-    // Polar islands clip against the polar silhouette + polar rivals; continental provinces clip against main continent + continental rivals
-    let cell = (s.isPolar ? polarBase : mainBase).map((pt) => ({ ...pt }));
+    const basePoly = s.prov.frontierGroup
+      ? frontierBases[s.prov.frontierGroup]
+      : s.clipGroup === 'polar'
+      ? polarBase
+      : mainBase;
+    let cell = basePoly.map((pt) => ({ ...pt }));
 
     for (const other of seeds) {
       if (other.prov.id === s.prov.id) continue;
-      if (other.isPolar !== s.isPolar) continue;
+      if (other.clipGroup !== s.clipGroup) continue;
       const midX = (s.sx + other.sx) / 2;
       const midY = (s.sy + other.sy) / 2;
       const nx = other.sx - s.sx;
@@ -1577,9 +2310,161 @@ export function getRegionalConquestGeometries(
   return cachedRegionalGeometries[cacheKey];
 }
 
+// ============================================================================
+// LOGÍSTICA REAL & LINHAS DE SUPRIMENTO (BFS DE ABASTECIMENTO E PROJEÇÃO AÉREA)
+// ============================================================================
+
+export interface EmpireSupplyStatus {
+  suppliedIds: Set<string>;
+  isolatedIds: Set<string>;
+  hubConnectedIds: Set<string>;
+  supplySourceIds: Set<string>;
+  connectedCapitalsCount: number;
+}
+
+/**
+ * Retorna os alvos de Porto/Rota Celeste alcançáveis em até 2 saltos a partir de províncias com Doca de Projeção (`sky_dock`).
+ */
+export function computeSkyDockProjectedTargets(
+  ownedProvinceIds: Iterable<string>,
+  buildings: Record<string, ProvinceBuildingType> = {}
+): Set<string> {
+  const ownedSet = new Set(ownedProvinceIds);
+  const projected = new Set<string>();
+  for (const pid of ownedSet) {
+    if (buildings[pid] !== 'sky_dock') continue;
+    const src = CONQUEST_PROVINCES_BY_ID[pid];
+    if (!src) continue;
+    for (const hop1 of src.neighbors) {
+      const p1 = CONQUEST_PROVINCES_BY_ID[hop1];
+      if (!p1) continue;
+      if (p1.terrainKind === 'port' || p1.terrainKind === 'skyway') {
+        projected.add(p1.id);
+      }
+      for (const hop2 of p1.neighbors) {
+        if (hop2 === pid) continue;
+        const p2 = CONQUEST_PROVINCES_BY_ID[hop2];
+        if (!p2) continue;
+        if (p2.terrainKind === 'port' || p2.terrainKind === 'skyway') {
+          projected.add(p2.id);
+        }
+      }
+    }
+  }
+  return projected;
+}
+
+/**
+ * Calcula via BFS as Linhas de Suprimento do império:
+ * - Fontes de Suprimento: Capitais conquistadas + Portos/Rotas Celestes com Mercado (`market`) ou Doca (`sky_dock`).
+ * - Províncias sem rota contínua até uma Fonte ficam ISOLADAS (`-50%⚙️` renda e `-4❤️` na defesa).
+ * - Províncias conectadas simultaneamente a `2+` Capitais na mesma malha recebem `+5⚙️` de bônus logístico!
+ */
+export function computeEmpireSupplyStatus(
+  factionId: ConquestFactionId,
+  provinceOwners: Record<string, ConquestFactionId>,
+  buildings: Record<string, ProvinceBuildingType> = {}
+): EmpireSupplyStatus {
+  const ownedIds = CONQUEST_PROVINCES.filter(
+    (p) => (provinceOwners[p.id] ?? p.initialOwner) === factionId
+  ).map((p) => p.id);
+  const ownedSet = new Set(ownedIds);
+
+  const supplySourceIds = new Set<string>();
+  let ownedCaps = 0;
+  for (const pid of ownedIds) {
+    const p = CONQUEST_PROVINCES_BY_ID[pid];
+    if (!p) continue;
+    if (p.isCapital) {
+      supplySourceIds.add(pid);
+      ownedCaps += 1;
+    } else if (
+      (p.terrainKind === 'port' || p.terrainKind === 'skyway') &&
+      (buildings[pid] === 'market' || buildings[pid] === 'sky_dock')
+    ) {
+      supplySourceIds.add(pid);
+    }
+  }
+
+  // Adjacency within owned empire (including 2-hop aerial/naval bridge from sky_dock!)
+  const skyBridges = computeSkyDockProjectedTargets(ownedSet, buildings);
+  const adj = new Map<string, Set<string>>();
+  for (const pid of ownedIds) {
+    adj.set(pid, new Set());
+  }
+  for (const pid of ownedIds) {
+    const p = CONQUEST_PROVINCES_BY_ID[pid];
+    if (!p) continue;
+    for (const nid of p.neighbors) {
+      if (ownedSet.has(nid)) {
+        adj.get(pid)!.add(nid);
+        adj.get(nid)!.add(pid);
+      }
+    }
+    if (buildings[pid] === 'sky_dock') {
+      for (const bridgedId of skyBridges) {
+        if (ownedSet.has(bridgedId) && bridgedId !== pid) {
+          adj.get(pid)!.add(bridgedId);
+          adj.get(bridgedId)!.add(pid);
+        }
+      }
+    }
+  }
+
+  const suppliedIds = new Set<string>();
+  const hubConnectedIds = new Set<string>();
+  const visited = new Set<string>();
+
+  for (const startId of ownedIds) {
+    if (visited.has(startId)) continue;
+    const comp: string[] = [];
+    const queue = [startId];
+    visited.add(startId);
+    let compSources = 0;
+    let compCapitals = 0;
+
+    while (queue.length > 0) {
+      const cur = queue.shift()!;
+      comp.push(cur);
+      if (supplySourceIds.has(cur)) compSources += 1;
+      if (CONQUEST_PROVINCES_BY_ID[cur]?.isCapital) compCapitals += 1;
+      for (const nxt of adj.get(cur) ?? []) {
+        if (!visited.has(nxt)) {
+          visited.add(nxt);
+          queue.push(nxt);
+        }
+      }
+    }
+
+    if (compSources > 0) {
+      for (const cid of comp) {
+        suppliedIds.add(cid);
+        if (compCapitals >= 2) {
+          hubConnectedIds.add(cid);
+        }
+      }
+    }
+  }
+
+  const isolatedIds = new Set<string>();
+  for (const pid of ownedIds) {
+    if (!suppliedIds.has(pid)) {
+      isolatedIds.add(pid);
+    }
+  }
+
+  return {
+    suppliedIds,
+    isolatedIds,
+    hubConnectedIds,
+    supplySourceIds,
+    connectedCapitalsCount: ownedCaps,
+  };
+}
+
 /**
  * Calcula todos os modificadores reais de combate para um Cerco (ofensivo ou defensivo)
- * com base nas províncias atualmente controladas pelo império do jogador, Bastiões e Crise!
+ * com base nas províncias atualmente controladas pelo império do jogador, Bastiões, Linhas de Suprimento e Crise!
  */
 export function buildConquestBattleModifiers(params: {
   targetProvince: ConquestProvinceDef;
@@ -1587,8 +2472,9 @@ export function buildConquestBattleModifiers(params: {
   fortifications: Record<string, number>;
   buildings?: Record<string, ProvinceBuildingType>;
   isDefensiveSiege: boolean;
+  isTargetIsolated?: boolean;
   activeCrisis: ConquestCrisisDef;
-  biomeRealm?: ConquestFactionId;
+  biomeRealm?: BiomeRealmId;
   initialWeather?: ArenaWeatherType;
   overworldBuff?: OverworldFieldBuff | null;
 }): ConquestBattleModifiers {
@@ -1598,6 +2484,7 @@ export function buildConquestBattleModifiers(params: {
     fortifications,
     buildings = {},
     isDefensiveSiege,
+    isTargetIsolated = false,
     activeCrisis,
     biomeRealm,
     initialWeather,
@@ -1639,16 +2526,37 @@ export function buildConquestBattleModifiers(params: {
     perks.push('☸ Selo Axial');
   }
 
-  // Secondary strategic provinces
+  // Secondary Surface & Deep Frontier strategic provinces
   if (ownedProvinceIds.includes('prov_pyros_west_caldera')) enemyOpeningDamage += 1;
   if (ownedProvinceIds.includes('prov_pyros_east_crater')) enemyOpeningDamage += 1;
   if (ownedProvinceIds.includes('prov_solaria_zenith_mirrors')) enemyOpeningDamage += 2;
-  if (ownedProvinceIds.includes('prov_pyros_sky_corridor')) dragonSkyBonus = true;
+  if (ownedProvinceIds.includes('prov_underforge_dragon_anvil')) enemyOpeningDamage += 2;
+  if (ownedProvinceIds.includes('prov_abyss_drowned_basilica')) enemyOpeningDamage += 2;
+  if (ownedProvinceIds.includes('prov_sky_mirror_cathedral')) enemyOpeningDamage += 2;
+  if (
+    ownedProvinceIds.includes('prov_pyros_sky_corridor') ||
+    ownedProvinceIds.includes('prov_underforge_basalt_crucible') ||
+    ownedProvinceIds.includes('prov_sky_armada_docks')
+  ) {
+    dragonSkyBonus = true;
+  }
+  if (ownedProvinceIds.includes('prov_crater_shattered_core')) {
+    playerBonusEssence += 1;
+    perks.push('+1⚡ Núcleo Prismático');
+  }
+  if (ownedProvinceIds.includes('prov_crater_solar_monoliths')) {
+    legendaryWheelBonus = true;
+  }
   if (ownedProvinceIds.includes('prov_eclipse_black_marsh')) playerBonusHp += 2;
   if (ownedProvinceIds.includes('prov_solaria_hanging_gardens')) playerBonusHp += 2;
   if (ownedProvinceIds.includes('prov_veridia_emerald_canopy')) playerBonusHp += 2;
+  if (ownedProvinceIds.includes('prov_astral_chronos_beacon')) playerBonusHp += 2;
+  if (ownedProvinceIds.includes('prov_abyss_leviathan_ribs')) playerBonusHp += 2;
+  if (ownedProvinceIds.includes('prov_roots_amber_heart')) playerBonusHp += 4;
+  if (ownedProvinceIds.includes('prov_roots_ironwood_bastion')) playerBonusHp += 2;
+  if (ownedProvinceIds.includes('prov_sky_alabaster_citadel')) playerBonusHp += 2;
 
-  // 2. Defensive Bastion Fortification Bonus
+  // 2. Defensive Bastion Fortification Bonus & Supply Line Isolation
   if (isDefensiveSiege) {
     const fortLvl = fortifications[targetProvince.id] ?? 0;
     if (fortLvl > 0) {
@@ -1660,9 +2568,16 @@ export function buildConquestBattleModifiers(params: {
       playerBonusHp += 5;
       perks.push('❄️ Inverno Polar (+5❤️)');
     }
+    if (isTargetIsolated) {
+      playerBonusHp -= 4;
+      perks.push('⚠️ Linha Cortada (-4❤️)');
+    }
+  } else if (isTargetIsolated) {
+    enemyOpeningDamage += 4;
+    perks.push('✂️ Bolsão Cercado (+4⚔️ abertura)');
   }
 
-  // 3. Provincial Buildings (Forjas & Torres Astrais)
+  // 3. Provincial Buildings (Forjas, Torres Astrais, Docas de Projeção & Santuários de Ley)
   const ownedSet = new Set(ownedProvinceIds);
   let ownedForgeCount = 0;
   for (const pid of ownedProvinceIds) {
@@ -1686,7 +2601,23 @@ export function buildConquestBattleModifiers(params: {
     perks.push('🔭 Torre Astral Vizinha (+3❤️)');
   }
 
-  // 4. Overworld Exploration Buff (from 36 Regional Landmarks)
+  const hasLocalSkyDock =
+    (isDefensiveSiege && buildings[targetProvince.id] === 'sky_dock') ||
+    targetProvince.neighbors.some((nid) => ownedSet.has(nid) && buildings[nid] === 'sky_dock');
+  if (hasLocalSkyDock) {
+    dragonSkyBonus = true;
+    perks.push('⛵ Doca de Projeção (Voo +1⚔️)');
+  }
+
+  const hasLocalLeySanctum =
+    (isDefensiveSiege && buildings[targetProvince.id] === 'ley_sanctum') ||
+    targetProvince.neighbors.some((nid) => ownedSet.has(nid) && buildings[nid] === 'ley_sanctum');
+  if (hasLocalLeySanctum) {
+    playerBonusEssence += 1;
+    perks.push('🔮 Santuário de Ley (+1⚡)');
+  }
+
+  // 4. Overworld Exploration Buff (from 72 Regional Landmarks)
   if (overworldBuff) {
     playerBonusHp += overworldBuff.bonusHp;
     playerBonusEssence += overworldBuff.bonusOpeningEssence;
@@ -1694,7 +2625,7 @@ export function buildConquestBattleModifiers(params: {
     perks.push(`✦ ${overworldBuff.sourceLandmarkName} (${overworldBuff.summaryLabel})`);
   }
 
-  // 5. Continental Crisis Modifiers
+  // 5. Continental Crisis Modifiers (8 Seasonal Crises)
   if (activeCrisis.effectType === 'dragon_skyways') {
     dragonSkyBonus = true;
     perks.push('🐉 Revoada (+1⚔️ Voo/Armadas)');
@@ -1705,6 +2636,31 @@ export function buildConquestBattleModifiers(params: {
   ) {
     playerBonusHp += 4;
     perks.push('☸ Ressonância Axial (+4❤️)');
+  }
+  if (activeCrisis.effectType === 'underforge_eruption') {
+    enemyOpeningDamage += 2;
+    perks.push('⚒️ Erupção de Ignaroth (+2⚔️ abertura)');
+  }
+  if (activeCrisis.effectType === 'blood_moon_tide') {
+    enemyOpeningDamage += 3;
+    perks.push('🦑 Maré Sangrenta (+3⚔️ abertura)');
+  }
+  if (
+    activeCrisis.effectType === 'zenith_tradewinds' &&
+    ownedProvinceIds.some(
+      (id) =>
+        buildings[id] === 'sky_dock' || CONQUEST_PROVINCES_BY_ID[id]?.terrainKind === 'skyway'
+    )
+  ) {
+    vanguardArmorBonus += 1;
+    perks.push('🌤️ Ventos do Zênite (+1🛡️)');
+  }
+  if (
+    activeCrisis.effectType === 'prismatic_convergence' &&
+    ownedProvinceIds.some((id) => Boolean(CONQUEST_PROVINCES_BY_ID[id]?.frontierGroup))
+  ) {
+    playerBonusEssence += 1;
+    perks.push('💎 Convergência Prismática (+1⚡)');
   }
 
   return {
@@ -1726,7 +2682,7 @@ export function buildConquestBattleModifiers(params: {
         : isDefensiveSiege
         ? 'Defesa de Fronteira em andamento!'
         : 'Assalto Continental em andamento!',
-    biomeRealm: biomeRealm ?? targetProvince.initialOwner,
+    biomeRealm: biomeRealm ?? targetProvince.frontierGroup ?? targetProvince.initialOwner,
     landmarkLabel: `${targetProvince.regionLabel} • ${targetProvince.name}`,
     initialWeather,
     overworldBuff: overworldBuff ?? null,
@@ -1737,12 +2693,14 @@ export function buildConquestBossForProvince(
   province: ConquestProvinceDef,
   ownerFactionId: ConquestFactionId,
   fortificationLevel: number,
-  season: number
+  season: number,
+  isIsolated = false
 ): CampaignBoss {
   const faction = CONQUEST_FACTIONS[ownerFactionId];
-  const seasonScale = Math.min(18, Math.floor((season - 1) * 1.5));
+  const seasonScale = Math.min(20, Math.floor((season - 1) * 1.5));
   const fortBonusHp = fortificationLevel * 8;
-  const totalHp = province.baseGarrisonHp + fortBonusHp + seasonScale;
+  const isolationPenalty = isIsolated ? -4 : 0;
+  const totalHp = Math.max(30, province.baseGarrisonHp + fortBonusHp + seasonScale + isolationPenalty);
 
   return {
     id: `conquest_${province.id}_s${season}`,
@@ -1750,13 +2708,13 @@ export function buildConquestBossForProvince(
     name: province.isCapital ? faction.rulerName : province.garrisonCommander,
     title: `${faction.icon} ${faction.shortName} • ${province.name}${
       fortificationLevel > 0 ? ` (Bastião Nv.${fortificationLevel})` : ''
-    }`,
+    }${isIsolated ? ' • ⚠️ Isolada' : ''}`,
     domains: [faction.domain, province.domain],
     avatarCardId: province.isCapital ? faction.avatarCardId : province.garrisonAvatarCardId,
     startingHp: totalHp,
     passiveName: province.isCapital ? faction.imperialDoctrineName : province.strategicBonusTitle,
     passiveDescription: province.strategicBonusDesc,
-    rewardGold: 10,
+    rewardGold: province.frontierGroup ? 15 : 10,
     loreIntro: province.loreSnippet,
     deckId: province.isCapital ? faction.defaultDeckId : province.garrisonDeckId,
   };

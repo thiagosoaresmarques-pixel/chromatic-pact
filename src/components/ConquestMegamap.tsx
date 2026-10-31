@@ -6,7 +6,6 @@ import { setMusicState } from '../utils/musicEngine';
 import {
   VAELORIA_WORLD_MAP_IMAGE,
   VAELORIA_MAP_TERRITORIES,
-  resolveNearestTerritory,
 } from '../data/vaeloriaMapData';
 import {
   CONQUEST_FACTIONS,
@@ -25,11 +24,13 @@ import {
   PROVINCE_REGIONAL_COORDS,
   RegionalBorderPortal,
   RegionalLocalLandmark,
+  VAELORIA_CARDINAL_REALMS,
+  VAELORIA_DEEP_FRONTIERS,
   VAELORIA_REALM_ORDER,
   VAELORIA_REGIONAL_MAPS,
   VaeloriaMapScope,
   VaeloriaRealmId,
-  mapTerritoryIdToRealmId,
+  resolveNearestRealmFromWorldCoords,
 } from '../data/vaeloriaMultimapData';
 import {
   getFogOfWarEnabled,
@@ -58,6 +59,7 @@ export interface ConquestMegamapProps {
   landmarkCooldowns?: Record<string, number>;
   selectedProvinceId: string;
   attackableProvinceIds: Set<string>;
+  isolatedProvinceIds?: Set<string>;
   activeInvasion?: ActiveInvasionVector | null;
   sovereignAvatarCardId?: string;
   hasActedThisSeason: boolean;
@@ -68,7 +70,8 @@ export interface ConquestMegamapProps {
   onExploreLandmarkReward?: (
     landmark: RegionalLocalLandmark,
     suppliesDelta: number,
-    fieldBuff: OverworldFieldBuff | null
+    fieldBuff: OverworldFieldBuff | null,
+    shardsDelta?: number
   ) => void;
 }
 
@@ -120,6 +123,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   landmarkCooldowns = {},
   selectedProvinceId,
   attackableProvinceIds,
+  isolatedProvinceIds,
   activeInvasion,
   sovereignAvatarCardId,
   hasActedThisSeason,
@@ -172,14 +176,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   }, []);
 
   const realmProvinceStats = useMemo(() => {
-    const stats: Record<VaeloriaRealmId, { total: number; owned: number }> = {
-      veridia: { total: 0, owned: 0 },
-      eclipse: { total: 0, owned: 0 },
-      matrix: { total: 0, owned: 0 },
-      solaria: { total: 0, owned: 0 },
-      pyros: { total: 0, owned: 0 },
-      vortex: { total: 0, owned: 0 },
-    };
+    const stats = Object.fromEntries(
+      VAELORIA_REALM_ORDER.map((rid) => [rid, { total: 0, owned: 0 }])
+    ) as Record<VaeloriaRealmId, { total: number; owned: number }>;
     for (const item of enrichedAllProvinces) {
       stats[item.realm].total += 1;
       const owner = provinceOwners[item.prov.id] ?? item.prov.initialOwner;
@@ -612,6 +611,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         const isPolarCrossing =
           (entry.prov.initialOwner === 'vortex') !==
             (nb.prov.initialOwner === 'vortex') ||
+          Boolean(entry.prov.frontierGroup) ||
+          Boolean(nb.prov.frontierGroup) ||
           entry.prov.terrainKind === 'skyway' ||
           nb.prov.terrainKind === 'skyway';
         links.push({ a: entry, b: nb, isNavalOrSky: isPolarCrossing });
@@ -810,7 +811,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         isTheaterFullscreen ? 'is-theater-fullscreen' : ''
       } ${mapScope !== 'world' ? 'is-regional-scope' : ''}`}
     >
-      {/* 1. 7-MAP INTERCONNECTED GEOPOLITICAL MULTIMAP BAR */}
+      {/* 1. 13-MAP INTERCONNECTED GEOPOLITICAL MULTIMAP BAR */}
       <div className="vwm-multimap-atlas-bar" role="tablist" aria-label="Atlas Geopolítico de Vaeloria">
         <button
           type="button"
@@ -819,10 +820,12 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         >
           <span>🌍</span>
           <strong>Continente</strong>
-          <small>{ownedTotalCount}/30</small>
+          <small>
+            {ownedTotalCount}/{CONQUEST_PROVINCES.length}
+          </small>
         </button>
 
-        {VAELORIA_REALM_ORDER.map((rid) => {
+        {VAELORIA_CARDINAL_REALMS.map((rid) => {
           const rdef = VAELORIA_REGIONAL_MAPS[rid];
           const st = realmProvinceStats[rid];
           const isCurrent = mapScope === rid;
@@ -843,6 +846,32 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             </button>
           );
         })}
+
+        <span className="vwm-atlas-divider" aria-hidden="true">
+          ✦ FRONTEIRAS
+        </span>
+
+        {VAELORIA_DEEP_FRONTIERS.map((rid) => {
+          const rdef = VAELORIA_REGIONAL_MAPS[rid];
+          const st = realmProvinceStats[rid];
+          const isCurrent = mapScope === rid;
+          return (
+            <button
+              key={rid}
+              type="button"
+              className={`vwm-atlas-pill is-frontier-pill ${isCurrent ? 'is-active' : ''}`}
+              style={{ '--realm-accent': rdef.accentColor } as React.CSSProperties}
+              onClick={() => handleSwitchMapScope(rid)}
+              title={`Abrir Fronteira Profunda: ${rdef.name}`}
+            >
+              <span>{rdef.icon}</span>
+              <strong>{rdef.shortName}</strong>
+              <small>
+                {st.owned}/{st.total}
+              </small>
+            </button>
+          );
+        })}
       </div>
 
       {/* 2. Top Megamap Telemetry & Multi-LOD Controls */}
@@ -850,11 +879,13 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         <div className="cqm-lod-group">
           <span className={`cqm-lod-pill lod-${lodLevel}`}>
             {activeRegionalDef
-              ? `${activeRegionalDef.icon} ${activeRegionalDef.shortName.toUpperCase()} • MAPA REGIONAL`
+              ? `${activeRegionalDef.icon} ${activeRegionalDef.shortName.toUpperCase()} • ${
+                  activeRegionalDef.tier === 'deep_frontier' ? 'FRONTEIRA PROFUNDA' : 'MAPA REGIONAL'
+                }`
               : lodLevel === 1
               ? '🔭 LOD 1 • IMPÉRIOS'
               : lodLevel === 2
-              ? '🗺️ LOD 2 • PROVÍNCIAS (30)'
+              ? `🗺️ LOD 2 • PROVÍNCIAS (${CONQUEST_PROVINCES.length})`
               : '🔍 LOD 3 • TÁTICO LOCAL'}
           </span>
 
@@ -900,9 +931,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               type="button"
               className="vwm-tool-btn is-highlight-action"
               onClick={() => handleSwitchMapScope('world')}
-              title="Retornar ao Megamapa Continental de 30 Províncias"
+              title={`Retornar ao Megamapa Continental de ${CONQUEST_PROVINCES.length} Províncias`}
             >
-              🌍 30 Províncias
+              🌍 {CONQUEST_PROVINCES.length} Províncias
             </button>
           )}
 
@@ -1545,6 +1576,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             const isHovered = prov.id === hoveredProvId;
             const isAttackable = !hasActedThisSeason && attackableProvinceIds.has(prov.id);
             const isUnderSiege = activeInvasion?.toProvinceId === prov.id;
+            const isIsolated = Boolean(isolatedProvinceIds?.has(prov.id));
             const isDockedChallengeHere = canChallengeDocked && dockedProvince?.id === prov.id;
 
             const pinCounterScale =
@@ -1559,6 +1591,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 } ${isAttackable ? 'is-attackable' : ''} ${
                   ownerId === playerFactionId ? 'is-player-owned' : ''
                 } ${isUnderSiege ? 'is-under-siege' : ''} ${
+                  isIsolated ? 'is-isolated' : ''
+                } ${
                   y > 82 && !isDockedChallengeHere ? 'is-near-bottom' : ''
                 } ${x < 14 ? 'is-near-left' : x > 86 ? 'is-near-right' : ''}`}
                 style={
@@ -1574,7 +1608,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 onMouseLeave={() =>
                   setHoveredProvId((prev) => (prev === prov.id ? null : prev))
                 }
-                title={`${prov.name} (${ownerFaction.shortName}) • +${prov.supplyIncome}⚙️`}
+                title={`${prov.name} (${ownerFaction.shortName}) • +${prov.supplyIncome}⚙️${
+                  isIsolated ? ' • ⚠️ Linha de Suprimento Cortada (-50%⚙️)' : ''
+                }`}
               >
                 <span className="cqm-pin-emblem">
                   {prov.isCapital ? '👑' : TERRAIN_KIND_ICON[prov.terrainKind] ?? ownerFaction.icon}
@@ -1596,7 +1632,15 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                     {PROVINCE_BUILDINGS[buildings[prov.id]].icon}
                   </span>
                 )}
-                {hasTruce && ownerId !== playerFactionId && (
+                {isIsolated && (
+                  <span
+                    className="cqm-pin-truce-badge"
+                    title="Linha de Suprimento Cortada (-50%⚙️ & -4❤️)"
+                  >
+                    ⚠️
+                  </span>
+                )}
+                {!isIsolated && hasTruce && ownerId !== playerFactionId && (
                   <span className="cqm-pin-truce-badge" title="Trégua Diplomática Ativa">
                     🕊️
                   </span>
@@ -1691,8 +1735,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 startMarchTo(mx, my);
                 if (zoom > 1.05) centerCameraAt(mx, my, zoom);
               } else {
-                const nearestTerr = resolveNearestTerritory(mx, my);
-                handleSwitchMapScope(mapTerritoryIdToRealmId(nearestTerr.id));
+                handleSwitchMapScope(resolveNearestRealmFromWorldCoords(mx, my));
               }
             }}
             title="Minimapa Geopolítico — Clique para saltar para qualquer Reino"
@@ -1811,13 +1854,13 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         <span>
           {mapScope === 'world' ? (
             <>
-              🧭 <strong>Multimapa (7 Mapas)</strong>: Selecione qualquer <strong>Reino acima</strong> para o mapa regional com{' '}
-              <strong>✦ Marcos Vivos</strong> • Roda do mouse para <strong>Zoom LOD (1x–3.8x)</strong> • Clique numa província rival vizinha para <strong>Cercar</strong>
+              🧭 <strong>Atlas Tri-Escala (13 Mapas)</strong>: Selecione qualquer <strong>Reino ou Fronteira</strong> acima •{' '}
+              <strong>Zoom LOD (1x–3.8x)</strong> • Vigie suas <strong>Linhas de Suprimento</strong> e cerque províncias vizinhas!
             </>
           ) : (
             <>
               🧭 Clique nos <strong>✦ Marcos Regionais</strong> (+Suprimentos⚙️ ou Bônus de Cerco) • Marche até os{' '}
-              <strong>Portais de Fronteira</strong> para invadir Reinos vizinhos • <strong>🌍 Continente</strong> retorna às 30 províncias
+              <strong>Portais de Fronteira</strong> para cruzar Reinos e Fronteiras Profundas • <strong>🌍 Continente</strong> retorna às {CONQUEST_PROVINCES.length} províncias
             </>
           )}
         </span>
@@ -1851,7 +1894,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             onExploreLandmarkReward?.(
               activeLandmarkModal.landmark,
               preview.suppliesDelta,
-              preview.fieldBuff
+              preview.fieldBuff,
+              preview.shardsDelta
             );
             setPortalBanner(
               `✦ ${activeLandmarkModal.landmark.name}: ${preview.rewardBadge}`

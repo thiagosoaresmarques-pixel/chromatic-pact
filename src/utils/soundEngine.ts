@@ -403,11 +403,24 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType): void {
 
 /**
  * Assinatura Sonora Ambiental Regional (Web Audio API):
- * Dispara um motivo acústico distinto para cada um dos 6 Reinos de Vaeloria
+ * Dispara um motivo acústico distinto para cada um dos 12 Reinos e Fronteiras de Vaeloria
  * ao entrar em seu Mapa Regional ou cruzar um Portal de Fronteira.
  */
 export function playRealmEntryMotif(
-  realm: 'veridia' | 'eclipse' | 'matrix' | 'solaria' | 'pyros' | 'vortex' | 'world'
+  realm:
+    | 'veridia'
+    | 'eclipse'
+    | 'matrix'
+    | 'solaria'
+    | 'pyros'
+    | 'vortex'
+    | 'underforge'
+    | 'astral_isles'
+    | 'sunken_abyss'
+    | 'deep_roots'
+    | 'sky_bastions'
+    | 'prismatic_crater'
+    | 'world'
 ): void {
   if (muted) return;
   const ctx = getAudioContext();
@@ -457,6 +470,54 @@ export function playRealmEntryMotif(
         const seals = [261.63, 329.63, 392.0, 493.88, 587.33];
         seals.forEach((f, idx) => {
           playTone(ctx, f, f, 0.34, 'sine', 0.065, idx * 0.045);
+        });
+        break;
+      }
+      case 'underforge': {
+        // Subterranean magmatic rumble + heavy double forge hammer
+        playNoiseBurst(ctx, 0.36, 240, 0.15, 0);
+        playTone(ctx, 73.42, 49.0, 0.56, 'sawtooth', 0.13, 0);
+        playTone(ctx, 440.0, 434.0, 0.32, 'triangle', 0.09, 0.05);
+        playTone(ctx, 587.33, 580.0, 0.36, 'triangle', 0.09, 0.19);
+        break;
+      }
+      case 'astral_isles': {
+        // Shimmering dead-star celesta arpeggio
+        const stars = [783.99, 987.77, 1174.66, 1567.98];
+        stars.forEach((f, idx) => {
+          playTone(ctx, f, f * 1.01, 0.34, 'sine', 0.07, idx * 0.06);
+        });
+        playNoiseBurst(ctx, 0.28, 3600, 0.04, 0.04);
+        break;
+      }
+      case 'sunken_abyss': {
+        // Deep oceanic trench pulse + haunted minor sixth
+        playNoiseBurst(ctx, 0.4, 310, 0.09, 0);
+        playTone(ctx, 110.0, 98.0, 0.65, 'sine', 0.14, 0);
+        playTone(ctx, 261.63, 246.94, 0.52, 'triangle', 0.08, 0.12);
+        break;
+      }
+      case 'deep_roots': {
+        // Sub-surface ironwood drum + bioluminescent spore harmonic
+        playTone(ctx, 130.81, 98.0, 0.42, 'sine', 0.12, 0);
+        playTone(ctx, 392.0, 440.0, 0.44, 'triangle', 0.08, 0.09);
+        playTone(ctx, 587.33, 783.99, 0.42, 'sine', 0.07, 0.18);
+        break;
+      }
+      case 'sky_bastions': {
+        // High celestial wind + ascending golden octave
+        playNoiseBurst(ctx, 0.32, 2200, 0.05, 0);
+        playTone(ctx, 392.0, 392.0, 0.38, 'triangle', 0.09, 0.02);
+        playTone(ctx, 587.33, 587.33, 0.42, 'triangle', 0.09, 0.1);
+        playTone(ctx, 783.99, 783.99, 0.5, 'sine', 0.085, 0.18);
+        break;
+      }
+      case 'prismatic_crater': {
+        // Shattered core resonance + pentachromatic overtone shimmer
+        playNoiseBurst(ctx, 0.24, 1800, 0.08, 0);
+        const rays = [220.0, 293.66, 369.99, 493.88, 659.25, 880.0];
+        rays.forEach((f, idx) => {
+          playTone(ctx, f * 0.99, f, 0.38, 'triangle', 0.065, idx * 0.04);
         });
         break;
       }

@@ -9,6 +9,15 @@ import {
   PARALLEL_EPIC_POEM_CANTOS,
   PARALLEL_CANTOS_BY_PARENT_ID,
 } from '../data/epicPoemData';
+import { VAELORIA_WORLD_MAP_IMAGE } from '../data/vaeloriaMapData';
+import {
+  REALM_WEATHER_PRESETS,
+  VAELORIA_CARDINAL_REALMS,
+  VAELORIA_DEEP_FRONTIERS,
+  VAELORIA_REGIONAL_MAPS,
+  VaeloriaMapScope,
+} from '../data/vaeloriaMultimapData';
+import { CONQUEST_PROVINCES } from '../data/vaeloriaConquestData';
 
 interface MythologyAtlasViewProps {
   onInspectCard: (card: CardDefinition) => void;
@@ -213,6 +222,8 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeScrollCantoId, setActiveScrollCantoId] = useState<string>('canto_1_vigilia');
   const [isCompassOpen, setIsCompassOpen] = useState<boolean>(false);
+  const [compassSubMode, setCompassSubMode] = useState<'compass' | 'gallery13'>('gallery13');
+  const [selectedAtlasScope, setSelectedAtlasScope] = useState<VaeloriaMapScope>('world');
   const [selectedCompassDomain, setSelectedCompassDomain] = useState<Domain>('neutral');
   const [highlightedNodeId, setHighlightedNodeId] = useState<string | null>(null);
   const [readingProgress, setReadingProgress] = useState<PoemReadingProgress>(() =>
@@ -758,9 +769,9 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
               type="button"
               className={`myth-compass-toggle-btn ${isCompassOpen ? 'active' : ''}`}
               onClick={() => setIsCompassOpen((prev) => !prev)}
-              title="Abrir Rosa dos Ventos e Mapa Canônico de Vaeloria"
+              title="Abrir Galeria dos 13 Mapas e Rosa dos Ventos de Vaeloria"
             >
-              🧭 Rosa dos Ventos
+              🗺️ Atlas (13 Mapas)
             </button>
 
             <div
@@ -796,26 +807,181 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
           ROSA DOS VENTOS INTERATIVA & GEOGRAFIA CANÔNICA DE VAELORIA
       ===================================================================== */}
       {isCompassOpen && (
-        <section className="vaeloria-compass-panel" aria-label="Rosa dos Ventos de Vaeloria">
+        <section className="vaeloria-compass-panel" aria-label="Atlas Cartográfico e Rosa dos Ventos de Vaeloria">
           <div className="vaeloria-compass-inner">
             <div className="vaeloria-compass-header">
               <div>
                 <span className="vaeloria-compass-kicker">
-                  CARTOGRAFIA OFICIAL PÓS-FRATURA (1 D.F. — 1.240 D.F.)
+                  CARTOGRAFIA OFICIAL TRI-ESCALA • 13 MAPAS ILUSTRADOS & 72 MARCOS
                 </span>
                 <h3 className="font-cinzel gold-gradient-text vaeloria-compass-title">
-                  Rosa dos Ventos & Os Seis Territórios de Vaeloria
+                  {compassSubMode === 'gallery13'
+                    ? 'Galeria Cartográfica de Vaeloria (Continente, 6 Reinos & 6 Fronteiras Profundas)'
+                    : 'Rosa dos Ventos & Os Seis Territórios de Vaeloria'}
                 </h3>
               </div>
-              <button
-                type="button"
-                className="myth-compass-close-btn"
-                onClick={() => setIsCompassOpen(false)}
-              >
-                ✕ Recolher Mapa
-              </button>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className={`myth-compass-toggle-btn ${compassSubMode === 'gallery13' ? 'active' : ''}`}
+                  onClick={() => setCompassSubMode('gallery13')}
+                >
+                  🗺️ 13 Mapas Ilustrados
+                </button>
+                <button
+                  type="button"
+                  className={`myth-compass-toggle-btn ${compassSubMode === 'compass' ? 'active' : ''}`}
+                  onClick={() => setCompassSubMode('compass')}
+                >
+                  🧭 Rosa dos Ventos
+                </button>
+                <button
+                  type="button"
+                  className="myth-compass-close-btn"
+                  onClick={() => setIsCompassOpen(false)}
+                >
+                  ✕ Recolher
+                </button>
+              </div>
             </div>
 
+            {compassSubMode === 'gallery13' ? (
+              <div className="myth-atlas-gallery-shell">
+                <div className="vwm-multimap-atlas-bar" style={{ marginBottom: '0.85rem' }}>
+                  <button
+                    type="button"
+                    className={`vwm-atlas-pill is-world-pill ${
+                      selectedAtlasScope === 'world' ? 'is-active' : ''
+                    }`}
+                    onClick={() => setSelectedAtlasScope('world')}
+                  >
+                    <span>🌍</span>
+                    <strong>Continente</strong>
+                    <small>48 Prov.</small>
+                  </button>
+
+                  {VAELORIA_CARDINAL_REALMS.map((rid) => {
+                    const rdef = VAELORIA_REGIONAL_MAPS[rid];
+                    return (
+                      <button
+                        key={rid}
+                        type="button"
+                        className={`vwm-atlas-pill ${selectedAtlasScope === rid ? 'is-active' : ''}`}
+                        style={{ '--realm-accent': rdef.accentColor } as React.CSSProperties}
+                        onClick={() => setSelectedAtlasScope(rid)}
+                      >
+                        <span>{rdef.icon}</span>
+                        <strong>{rdef.shortName}</strong>
+                        <small>6 Marcos</small>
+                      </button>
+                    );
+                  })}
+
+                  <span className="vwm-atlas-divider">✦ FRONTEIRAS</span>
+
+                  {VAELORIA_DEEP_FRONTIERS.map((rid) => {
+                    const rdef = VAELORIA_REGIONAL_MAPS[rid];
+                    return (
+                      <button
+                        key={rid}
+                        type="button"
+                        className={`vwm-atlas-pill is-frontier-pill ${
+                          selectedAtlasScope === rid ? 'is-active' : ''
+                        }`}
+                        style={{ '--realm-accent': rdef.accentColor } as React.CSSProperties}
+                        onClick={() => setSelectedAtlasScope(rid)}
+                      >
+                        <span>{rdef.icon}</span>
+                        <strong>{rdef.shortName}</strong>
+                        <small>Submundo</small>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {(() => {
+                  const reg =
+                    selectedAtlasScope !== 'world'
+                      ? VAELORIA_REGIONAL_MAPS[selectedAtlasScope]
+                      : null;
+                  const provCount = reg
+                    ? CONQUEST_PROVINCES.filter((p) =>
+                        p.frontierGroup
+                          ? p.frontierGroup === reg.id
+                          : !p.frontierGroup && p.initialOwner === reg.factionId
+                      ).length
+                    : CONQUEST_PROVINCES.length;
+                  return (
+                    <div className="myth-atlas-gallery-body">
+                      <div className="myth-atlas-preview-frame">
+                        <img
+                          src={reg ? reg.imagePath : VAELORIA_WORLD_MAP_IMAGE}
+                          alt={reg ? reg.name : 'Mapa Continental de Vaeloria'}
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="myth-atlas-info-card">
+                        <span
+                          className="vaeloria-compass-kicker"
+                          style={{ color: reg ? reg.accentColor : '#facc15' }}
+                        >
+                          {reg ? reg.cardinalTitle : 'ATLAS CONTINENTAL • 12 REGIÕES INTERCONECTADAS'}
+                        </span>
+                        <h4 className="font-cinzel" style={{ margin: '0.25rem 0 0.4rem', fontSize: '1.15rem', color: '#f8fafc' }}>
+                          {reg ? `${reg.icon} ${reg.name}` : '🌍 Continente de Vaeloria & Enclaves Abissais'}
+                        </h4>
+                        <p style={{ margin: '0 0 0.75rem', fontSize: '0.84rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+                          {reg
+                            ? `${reg.subtitle}. Conectado por ${reg.portals.length} portais de travessia direta e pontuado por ${reg.localLandmarks.length} marcos narrativos exploráveis.`
+                            : 'Visão macro-estratégica reunindo os 6 Reinos Cardeais da superfície e os 6 Enclaves das Fronteiras Profundas (Infraforja, Ilhas Astrais, Fossa Submersa, Raízes Profundas, Bastilhas Celestes e Cratera Prismática).'}
+                        </p>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.75rem' }}>
+                          <span className="conquest-stat-chip">
+                            🏰 Províncias: <strong>{provCount}</strong>
+                          </span>
+                          <span className="conquest-stat-chip">
+                            📍 Marcos Vivos: <strong>{reg ? reg.localLandmarks.length : 72}</strong>
+                          </span>
+                          {reg && (
+                            <span className="conquest-stat-chip">
+                              🌩️ Clima:{' '}
+                              <strong>
+                                {REALM_WEATHER_PRESETS[reg.id].icon}{' '}
+                                {REALM_WEATHER_PRESETS[reg.id].name}
+                              </strong>
+                            </span>
+                          )}
+                        </div>
+                        {reg && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                            <strong style={{ fontSize: '0.74rem', color: '#94a3b8', letterSpacing: '0.06em' }}>
+                              MARCOS CARTOGRÁFICOS DESTA REGIÃO:
+                            </strong>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                              {reg.localLandmarks.map((lm) => (
+                                <span
+                                  key={lm.id}
+                                  style={{
+                                    padding: '3px 8px',
+                                    borderRadius: 6,
+                                    fontSize: '0.73rem',
+                                    background: 'rgba(15, 23, 42, 0.85)',
+                                    border: `1px solid ${reg.accentColor}44`,
+                                    color: '#e2e8f0',
+                                  }}
+                                >
+                                  ✦ {lm.name}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            ) : (
             <div className="vaeloria-compass-layout">
               {/* Grade Cardeal Interativa */}
               <div className="vaeloria-compass-grid">
@@ -915,6 +1081,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
                 </div>
               </div>
             </div>
+            )}
           </div>
         </section>
       )}

@@ -13,9 +13,17 @@ export type VaeloriaRealmId =
   | 'matrix'
   | 'solaria'
   | 'pyros'
-  | 'vortex';
+  | 'vortex'
+  | 'underforge'
+  | 'astral_isles'
+  | 'sunken_abyss'
+  | 'deep_roots'
+  | 'sky_bastions'
+  | 'prismatic_crater';
 
 export type VaeloriaMapScope = 'world' | VaeloriaRealmId;
+
+export type VaeloriaRealmTier = 'cardinal_realm' | 'deep_frontier';
 
 export interface RegionalBorderPortal {
   id: string;
@@ -41,6 +49,8 @@ export interface RegionalLocalLandmark {
 
 export interface VaeloriaRegionalMapDef {
   id: VaeloriaRealmId;
+  tier: VaeloriaRealmTier;
+  parentRealmId?: VaeloriaRealmId;
   factionId: ConquestFactionId;
   domain: Domain;
   name: string;
@@ -58,7 +68,7 @@ export interface VaeloriaRegionalMapDef {
   localLandmarks: RegionalLocalLandmark[];
 }
 
-export const VAELORIA_REALM_ORDER: VaeloriaRealmId[] = [
+export const VAELORIA_CARDINAL_REALMS: VaeloriaRealmId[] = [
   'veridia',
   'eclipse',
   'matrix',
@@ -67,9 +77,24 @@ export const VAELORIA_REALM_ORDER: VaeloriaRealmId[] = [
   'vortex',
 ];
 
+export const VAELORIA_DEEP_FRONTIERS: VaeloriaRealmId[] = [
+  'underforge',
+  'astral_isles',
+  'sunken_abyss',
+  'deep_roots',
+  'sky_bastions',
+  'prismatic_crater',
+];
+
+export const VAELORIA_REALM_ORDER: VaeloriaRealmId[] = [
+  ...VAELORIA_CARDINAL_REALMS,
+  ...VAELORIA_DEEP_FRONTIERS,
+];
+
 export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMapDef> = {
   veridia: {
     id: 'veridia',
+    tier: 'cardinal_realm',
     factionId: 'veridia',
     domain: 'green',
     name: 'Veridia — O Sul Selvagem',
@@ -115,6 +140,17 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
         arrivalX: 20,
         arrivalY: 82,
       },
+      {
+        id: 'portal_veridia_to_deep_roots',
+        targetRealm: 'deep_roots',
+        label: 'Descida Espiral → Raízes Profundas',
+        sublabel: 'Túnel da Árvore-Mãe',
+        directionIcon: '🕳️',
+        x: 54,
+        y: 88,
+        arrivalX: 49,
+        arrivalY: 23,
+      },
     ],
     localLandmarks: [
       { id: 'lm_veridia_1', name: 'Aldeia da Seiva Antiga', kind: 'town', x: 42, y: 40 },
@@ -128,6 +164,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
 
   eclipse: {
     id: 'eclipse',
+    tier: 'cardinal_realm',
     factionId: 'eclipse',
     domain: 'purple',
     name: 'Vale do Eclipse — Oeste Profundo',
@@ -184,6 +221,17 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
         arrivalX: 16,
         arrivalY: 22,
       },
+      {
+        id: 'portal_eclipse_to_sunken_abyss',
+        targetRealm: 'sunken_abyss',
+        label: 'Escadaria Abissal → Fossa Submersa',
+        sublabel: 'Falésia da Catedral Afogada',
+        directionIcon: '🌊',
+        x: 10,
+        y: 46,
+        arrivalX: 82,
+        arrivalY: 36,
+      },
     ],
     localLandmarks: [
       { id: 'lm_eclipse_1', name: 'Necrópole dos Sinos Mudos', kind: 'ruin', x: 38, y: 36 },
@@ -197,6 +245,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
 
   matrix: {
     id: 'matrix',
+    tier: 'cardinal_realm',
     factionId: 'matrix',
     domain: 'neutral',
     name: 'Fronteira Cinzenta — Centro Axial',
@@ -253,6 +302,17 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
         arrivalX: 14,
         arrivalY: 50,
       },
+      {
+        id: 'portal_matrix_to_prismatic_crater',
+        targetRealm: 'prismatic_crater',
+        label: 'Fenda dos Selos → Cratera Prismática',
+        sublabel: 'Descida Planar sob a Torre Axial',
+        directionIcon: '💎',
+        x: 50,
+        y: 59,
+        arrivalX: 50,
+        arrivalY: 16,
+      },
     ],
     localLandmarks: [
       { id: 'lm_matrix_1', name: 'Coliseu Externo dos Selos', kind: 'fort', x: 50, y: 68 },
@@ -266,6 +326,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
 
   solaria: {
     id: 'solaria',
+    tier: 'cardinal_realm',
     factionId: 'solaria',
     domain: 'gold',
     name: 'Solária — O Leste Alto',
@@ -322,6 +383,17 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
         arrivalX: 83,
         arrivalY: 23,
       },
+      {
+        id: 'portal_solaria_to_sky_bastions',
+        targetRealm: 'sky_bastions',
+        label: 'Ponte de Luz → Bastilhas Celestes',
+        sublabel: 'Ascensão às Ilhas do Zênite',
+        directionIcon: '🌤️',
+        x: 88,
+        y: 56,
+        arrivalX: 28,
+        arrivalY: 62,
+      },
     ],
     localLandmarks: [
       { id: 'lm_solaria_1', name: 'Aqueduto Imperial de Alabastro', kind: 'pass', x: 36, y: 60 },
@@ -335,6 +407,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
 
   pyros: {
     id: 'pyros',
+    tier: 'cardinal_realm',
     factionId: 'pyros',
     domain: 'red',
     name: 'Pyros — O Norte Vulcânico',
@@ -391,6 +464,17 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
         arrivalX: 16,
         arrivalY: 20,
       },
+      {
+        id: 'portal_pyros_to_underforge',
+        targetRealm: 'underforge',
+        label: 'Abismo Rúnico → Infraforja',
+        sublabel: 'Descida às Fornalhas de Ignaroth',
+        directionIcon: '⚒️',
+        x: 68,
+        y: 43,
+        arrivalX: 72,
+        arrivalY: 24,
+      },
     ],
     localLandmarks: [
       { id: 'lm_pyros_1', name: 'Ponte de Ferro sobre o Rio de Lava', kind: 'pass', x: 37, y: 48 },
@@ -404,6 +488,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
 
   vortex: {
     id: 'vortex',
+    tier: 'cardinal_realm',
     factionId: 'vortex',
     domain: 'blue',
     name: 'Vórtex — Polos Setentrionais',
@@ -449,6 +534,17 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
         arrivalX: 66,
         arrivalY: 15,
       },
+      {
+        id: 'portal_vortex_to_astral_isles',
+        targetRealm: 'astral_isles',
+        label: 'Estreito Astral → Ilhas Astrais',
+        sublabel: 'Rota das Estrelas Mortas',
+        directionIcon: '🌌',
+        x: 11,
+        y: 22,
+        arrivalX: 56,
+        arrivalY: 80,
+      },
     ],
     localLandmarks: [
       { id: 'lm_vortex_1', name: 'Ponte de Gelo Eterno', kind: 'pass', x: 64, y: 36 },
@@ -457,6 +553,370 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
       { id: 'lm_vortex_4', name: 'Santuário da Aurora Astral', kind: 'shrine', x: 38, y: 37 },
       { id: 'lm_vortex_5', name: 'Forte da Geada Negra', kind: 'fort', x: 40, y: 69 },
       { id: 'lm_vortex_6', name: 'Naufrágio da Primeira Armada', kind: 'ruin', x: 16, y: 49 },
+    ],
+  },
+
+  // =========================================================================
+  // AS 6 NOVAS FRONTEIRAS PROFUNDAS, SUBTERRÂNEAS, MARÍTIMAS & CELESTES
+  // =========================================================================
+
+  underforge: {
+    id: 'underforge',
+    tier: 'deep_frontier',
+    parentRealmId: 'pyros',
+    factionId: 'pyros',
+    domain: 'red',
+    name: 'Infraforja Magmática de Ignaroth',
+    shortName: 'Infraforja',
+    cardinalTitle: 'FRONTEIRA SUBTERRÂNEA • INFRAFORJA DE IGNAROTH',
+    subtitle: 'Bigorna Abissal, Cataratas de Escória & Crisol de Basalto',
+    icon: '⚒️',
+    accentColor: '#f97316',
+    imagePath: '/assets/map/vaeloria_frontier_underforge.jpg',
+    worldBounds: { x: 81, y: 5, w: 16.5, h: 18.5 },
+    worldCenter: { x: 89.5, y: 14 },
+    portals: [
+      {
+        id: 'portal_underforge_to_pyros',
+        targetRealm: 'pyros',
+        label: 'Escadaria Rúnica → Superfície de Pyros',
+        sublabel: 'Ascensão à Grande Bigorna Partida',
+        directionIcon: '⬆️',
+        x: 74,
+        y: 21,
+        arrivalX: 66,
+        arrivalY: 45,
+      },
+      {
+        id: 'portal_underforge_to_prismatic_crater',
+        targetRealm: 'prismatic_crater',
+        label: 'Túnel Tectônico → Cratera Prismática',
+        sublabel: 'Conduto de Magma e Cristal',
+        directionIcon: '↙️',
+        x: 11,
+        y: 82,
+        arrivalX: 28,
+        arrivalY: 22,
+      },
+      {
+        id: 'portal_underforge_to_sky_bastions',
+        targetRealm: 'sky_bastions',
+        label: 'Chaminé Térmica → Bastilhas Celestes',
+        sublabel: 'Corrente Ascendente das Armadas',
+        directionIcon: '↘️',
+        x: 89,
+        y: 78,
+        arrivalX: 80,
+        arrivalY: 26,
+      },
+    ],
+    localLandmarks: [
+      { id: 'lm_underforge_1', name: 'Fornalhas de Escamas Eternas', kind: 'town', x: 35, y: 38 },
+      { id: 'lm_underforge_2', name: 'Ponte das Correntes Rubras', kind: 'pass', x: 24, y: 77 },
+      { id: 'lm_underforge_3', name: 'Docas de Escória Incandescente', kind: 'port', x: 40, y: 74 },
+      { id: 'lm_underforge_4', name: 'Santuário do Coração de Ignaroth', kind: 'shrine', x: 54, y: 29 },
+      { id: 'lm_underforge_5', name: 'Bastião da Catarata de Magma', kind: 'fort', x: 66, y: 42 },
+      { id: 'lm_underforge_6', name: 'Tumba dos Primeiros Ferreiros', kind: 'ruin', x: 16, y: 32 },
+    ],
+  },
+
+  astral_isles: {
+    id: 'astral_isles',
+    tier: 'deep_frontier',
+    parentRealmId: 'vortex',
+    factionId: 'vortex',
+    domain: 'blue',
+    name: 'Arquipélago Astral das Estrelas Mortas',
+    shortName: 'Ilhas Astrais',
+    cardinalTitle: 'FRONTEIRA MARÍTIMA POLAR • ARQUIPÉLAGO ASTRAL',
+    subtitle: 'Turbilhão de Chronos, Faróis de Latão & Recifes Estelares',
+    icon: '🌌',
+    accentColor: '#06b6d4',
+    imagePath: '/assets/map/vaeloria_frontier_astral_isles.jpg',
+    worldBounds: { x: 3, y: 5, w: 17.5, h: 18 },
+    worldCenter: { x: 11.5, y: 14 },
+    portals: [
+      {
+        id: 'portal_astral_to_vortex',
+        targetRealm: 'vortex',
+        label: 'Porto do Estreito → Vórtex Polar',
+        sublabel: 'Retorno ao Pináculo de Chronos',
+        directionIcon: '↘️',
+        x: 56,
+        y: 84,
+        arrivalX: 15,
+        arrivalY: 25,
+      },
+      {
+        id: 'portal_astral_to_sunken_abyss',
+        targetRealm: 'sunken_abyss',
+        label: 'Abismo Oceânico → Fossa Submersa',
+        sublabel: 'Mergulho pelas Águas Negras',
+        directionIcon: '⬇️',
+        x: 11,
+        y: 78,
+        arrivalX: 20,
+        arrivalY: 18,
+      },
+      {
+        id: 'portal_astral_to_sky_bastions',
+        targetRealm: 'sky_bastions',
+        label: 'Ponte Boreal → Bastilhas Celestes',
+        sublabel: 'Arco de Luz Estelar',
+        directionIcon: '➡️',
+        x: 90,
+        y: 26,
+        arrivalX: 38,
+        arrivalY: 22,
+      },
+    ],
+    localLandmarks: [
+      { id: 'lm_astral_isles_1', name: 'Farol Horológico do Norte', kind: 'fort', x: 51, y: 20 },
+      { id: 'lm_astral_isles_2', name: 'Passarela de Luz Estelar', kind: 'pass', x: 63, y: 46 },
+      { id: 'lm_astral_isles_3', name: 'Recife dos Galeões Cristalizados', kind: 'ruin', x: 17, y: 68 },
+      { id: 'lm_astral_isles_4', name: 'Planetário das Esferas Mortas', kind: 'shrine', x: 78, y: 24 },
+      { id: 'lm_astral_isles_5', name: 'Ancoradouro de Safira Boreal', kind: 'port', x: 44, y: 68 },
+      { id: 'lm_astral_isles_6', name: 'Observatório Ocidental de Latão', kind: 'town', x: 14, y: 38 },
+    ],
+  },
+
+  sunken_abyss: {
+    id: 'sunken_abyss',
+    tier: 'deep_frontier',
+    parentRealmId: 'eclipse',
+    factionId: 'eclipse',
+    domain: 'purple',
+    name: 'Fossa Submersa da Catedral Afogada',
+    shortName: 'Fossa Abissal',
+    cardinalTitle: 'FRONTEIRA ABISSAL OCIDENTAL • FOSSA SUBMERSA',
+    subtitle: 'Basílica Afogada, Arcos de Leviatã & Porto de Fogo-Fátuo',
+    icon: '🦑',
+    accentColor: '#c084fc',
+    imagePath: '/assets/map/vaeloria_frontier_sunken_abyss.jpg',
+    worldBounds: { x: 2, y: 35, w: 11.2, h: 31 },
+    worldCenter: { x: 7.5, y: 50.5 },
+    portals: [
+      {
+        id: 'portal_abyss_to_eclipse',
+        targetRealm: 'eclipse',
+        label: 'Escadaria da Falésia → Vale do Eclipse',
+        sublabel: 'Subida para a Costa do Ossário',
+        directionIcon: '➡️',
+        x: 86,
+        y: 36,
+        arrivalX: 14,
+        arrivalY: 46,
+      },
+      {
+        id: 'portal_abyss_to_astral_isles',
+        targetRealm: 'astral_isles',
+        label: 'Corrente Polar → Ilhas Astrais',
+        sublabel: 'Rota dos Naufrágios Fantasmas',
+        directionIcon: '⬆️',
+        x: 16,
+        y: 14,
+        arrivalX: 16,
+        arrivalY: 74,
+      },
+      {
+        id: 'portal_abyss_to_deep_roots',
+        targetRealm: 'deep_roots',
+        label: 'Sifão Subterrâneo → Raízes Profundas',
+        sublabel: 'Rio Oculto sob o Continente',
+        directionIcon: '↘️',
+        x: 78,
+        y: 86,
+        arrivalX: 16,
+        arrivalY: 78,
+      },
+    ],
+    localLandmarks: [
+      { id: 'lm_sunken_abyss_1', name: 'Porto dos Navios de Fogo-Fátuo', kind: 'port', x: 20, y: 24 },
+      { id: 'lm_sunken_abyss_2', name: 'Arcada de Costelas de Leviatã', kind: 'pass', x: 55, y: 22 },
+      { id: 'lm_sunken_abyss_3', name: 'Jardins de Coral Sanguíneo', kind: 'shrine', x: 26, y: 68 },
+      { id: 'lm_sunken_abyss_4', name: 'Atalaia da Lanterna Carmesim', kind: 'fort', x: 28, y: 42 },
+      { id: 'lm_sunken_abyss_5', name: 'Claustro dos Sinos Submersos', kind: 'ruin', x: 44, y: 64 },
+      { id: 'lm_sunken_abyss_6', name: 'Entreposto dos Mergulhadores Umbrais', kind: 'town', x: 55, y: 82 },
+    ],
+  },
+
+  deep_roots: {
+    id: 'deep_roots',
+    tier: 'deep_frontier',
+    parentRealmId: 'veridia',
+    factionId: 'veridia',
+    domain: 'green',
+    name: 'Raízes Abissais da Árvore-Mãe',
+    shortName: 'Raízes Profundas',
+    cardinalTitle: 'FRONTEIRA SUBTERRÂNEA DO SUL • RAÍZES ABISSAIS',
+    subtitle: 'Lago de Âmbar Vivo, Fortaleza de Cipó-Ferro & Bosques Bioluminescentes',
+    icon: '🍄',
+    accentColor: '#34d399',
+    imagePath: '/assets/map/vaeloria_frontier_deep_roots.jpg',
+    worldBounds: { x: 65, y: 80.5, w: 25, h: 15 },
+    worldCenter: { x: 78, y: 88 },
+    portals: [
+      {
+        id: 'portal_roots_to_veridia',
+        targetRealm: 'veridia',
+        label: 'Portal Espiral → Superfície de Veridia',
+        sublabel: 'Subida pelo Tronco da Árvore-Mãe',
+        directionIcon: '⬆️',
+        x: 49,
+        y: 19,
+        arrivalX: 54,
+        arrivalY: 82,
+      },
+      {
+        id: 'portal_roots_to_prismatic_crater',
+        targetRealm: 'prismatic_crater',
+        label: 'Veio Cristalino → Cratera Prismática',
+        sublabel: 'Raízes que Tocam o Núcleo Axial',
+        directionIcon: '⬅️',
+        x: 11,
+        y: 44,
+        arrivalX: 84,
+        arrivalY: 68,
+      },
+      {
+        id: 'portal_roots_to_sunken_abyss',
+        targetRealm: 'sunken_abyss',
+        label: 'Rio Esmeralda Oculto → Fossa Abissal',
+        sublabel: 'Passagem Aquática Subterrânea',
+        directionIcon: '↙️',
+        x: 14,
+        y: 84,
+        arrivalX: 74,
+        arrivalY: 82,
+      },
+    ],
+    localLandmarks: [
+      { id: 'lm_deep_roots_1', name: 'Templo de Jade Engolido pelas Raízes', kind: 'ruin', x: 22, y: 28 },
+      { id: 'lm_deep_roots_2', name: 'Bosque dos Fungos Luminescentes', kind: 'shrine', x: 28, y: 78 },
+      { id: 'lm_deep_roots_3', name: 'Pontes Suspensas da Seiva Dourada', kind: 'pass', x: 62, y: 44 },
+      { id: 'lm_deep_roots_4', name: 'Aldeia dos Guardiões de Esporos', kind: 'town', x: 38, y: 46 },
+      { id: 'lm_deep_roots_5', name: 'Platô da Ossada Primordial', kind: 'fort', x: 84, y: 40 },
+      { id: 'lm_deep_roots_6', name: 'Cais do Lago de Âmbar Líquido', kind: 'port', x: 56, y: 68 },
+    ],
+  },
+
+  sky_bastions: {
+    id: 'sky_bastions',
+    tier: 'deep_frontier',
+    parentRealmId: 'solaria',
+    factionId: 'solaria',
+    domain: 'gold',
+    name: 'Bastilhas Celestes do Zênite',
+    shortName: 'Bastilhas Celestes',
+    cardinalTitle: 'FRONTEIRA CELESTE ORIENTAL • BASTILHAS DO ZÊNITE',
+    subtitle: 'Catedral dos Espelhos, Ilhas Flutuantes & Docas das Armadas',
+    icon: '🌤️',
+    accentColor: '#facc15',
+    imagePath: '/assets/map/vaeloria_frontier_sky_bastions.jpg',
+    worldBounds: { x: 81.5, y: 59, w: 16.5, h: 18.5 },
+    worldCenter: { x: 90, y: 68.5 },
+    portals: [
+      {
+        id: 'portal_sky_to_solaria',
+        targetRealm: 'solaria',
+        label: 'Escadaria Dourada → Solária',
+        sublabel: 'Descida ao Grande Domo Solar',
+        directionIcon: '↙️',
+        x: 26,
+        y: 62,
+        arrivalX: 83,
+        arrivalY: 56,
+      },
+      {
+        id: 'portal_sky_to_underforge',
+        targetRealm: 'underforge',
+        label: 'Rota das Armadas → Infraforja',
+        sublabel: 'Mergulho pelas Colunas Térmicas',
+        directionIcon: '↖️',
+        x: 82,
+        y: 22,
+        arrivalX: 84,
+        arrivalY: 74,
+      },
+      {
+        id: 'portal_sky_to_astral_isles',
+        targetRealm: 'astral_isles',
+        label: 'Corrente Boreal → Ilhas Astrais',
+        sublabel: 'Voo sobre o Mar Setentrional',
+        directionIcon: '⬆️',
+        x: 38,
+        y: 18,
+        arrivalX: 84,
+        arrivalY: 28,
+      },
+    ],
+    localLandmarks: [
+      { id: 'lm_sky_bastions_1', name: 'Santuário da Aurora Suspensa', kind: 'shrine', x: 39, y: 24 },
+      { id: 'lm_sky_bastions_2', name: 'Arcos de Luz Dourada', kind: 'pass', x: 40, y: 46 },
+      { id: 'lm_sky_bastions_3', name: 'Docas Imperiais das Naus-Dragão', kind: 'port', x: 76, y: 66 },
+      { id: 'lm_sky_bastions_4', name: 'Torre Heliográfica Oriental', kind: 'fort', x: 78, y: 34 },
+      { id: 'lm_sky_bastions_5', name: 'Vila Flutuante dos Artífices Solares', kind: 'town', x: 58, y: 58 },
+      { id: 'lm_sky_bastions_6', name: 'Ruínas do Primeiro Trono Alado', kind: 'ruin', x: 18, y: 48 },
+    ],
+  },
+
+  prismatic_crater: {
+    id: 'prismatic_crater',
+    tier: 'deep_frontier',
+    parentRealmId: 'matrix',
+    factionId: 'matrix',
+    domain: 'neutral',
+    name: 'Cratera da Fratura Prismática',
+    shortName: 'Cratera Prismática',
+    cardinalTitle: 'FRONTEIRA PLANAR AXIAL • CRATERA DA FRATURA',
+    subtitle: 'Núcleo Pentacromático, Monólitos Partidos & Fenda Primordial',
+    icon: '💎',
+    accentColor: '#f472b6',
+    imagePath: '/assets/map/vaeloria_frontier_prismatic_crater.jpg',
+    worldBounds: { x: 4.5, y: 74, w: 25.5, h: 21.5 },
+    worldCenter: { x: 17, y: 85 },
+    portals: [
+      {
+        id: 'portal_crater_to_matrix',
+        targetRealm: 'matrix',
+        label: 'Escadaria Axial → Torre dos Cinco Selos',
+        sublabel: 'Retorno à Fronteira Cinzenta',
+        directionIcon: '⬆️',
+        x: 50,
+        y: 12,
+        arrivalX: 50,
+        arrivalY: 56,
+      },
+      {
+        id: 'portal_crater_to_underforge',
+        targetRealm: 'underforge',
+        label: 'Falha Rubra → Infraforja',
+        sublabel: 'Fenda Magmática Noroeste',
+        directionIcon: '↖️',
+        x: 24,
+        y: 20,
+        arrivalX: 16,
+        arrivalY: 78,
+      },
+      {
+        id: 'portal_crater_to_deep_roots',
+        targetRealm: 'deep_roots',
+        label: 'Túnel Esmeralda → Raízes Profundas',
+        sublabel: 'Galeria Sudeste da Árvore-Mãe',
+        directionIcon: '↘️',
+        x: 86,
+        y: 72,
+        arrivalX: 16,
+        arrivalY: 44,
+      },
+    ],
+    localLandmarks: [
+      { id: 'lm_prismatic_crater_1', name: 'Monólito Carmesim da Refração', kind: 'shrine', x: 30, y: 26 },
+      { id: 'lm_prismatic_crater_2', name: 'Monólito Ametista do Véu', kind: 'ruin', x: 72, y: 26 },
+      { id: 'lm_prismatic_crater_3', name: 'Passarela Ocidental de Ley Safira', kind: 'pass', x: 16, y: 48 },
+      { id: 'lm_prismatic_crater_4', name: 'Passarela Oriental de Ley Solar', kind: 'pass', x: 84, y: 48 },
+      { id: 'lm_prismatic_crater_5', name: 'Acampamento dos Cartógrafos da Fenda', kind: 'town', x: 35, y: 69 },
+      { id: 'lm_prismatic_crater_6', name: 'Bastião dos Oito Raios Partidos', kind: 'fort', x: 65, y: 69 },
     ],
   },
 };
@@ -515,11 +975,19 @@ export const STAGE_REGIONAL_COORDS: Record<
   boss_stage_25_celestial_funeral_wheels: { realm: 'matrix', rx: 84, ry: 73 },
   boss_stage_26_vaelkor_supreme_wheel: { realm: 'matrix', rx: 50, ry: 50 },
   exp_boss_9_vaelkor: { realm: 'matrix', rx: 50, ry: 50 },
+
+  // === ATO VII: OS TRONOS ALÉM DO VÉU (6 FRONTEIRAS PROFUNDAS) ===
+  boss_stage_27_underforge_colossus: { realm: 'underforge', rx: 51, ry: 48 },
+  boss_stage_28_astral_leviathan: { realm: 'astral_isles', rx: 31, ry: 49 },
+  boss_stage_29_drowned_patriarch: { realm: 'sunken_abyss', rx: 53, ry: 52 },
+  boss_stage_30_amber_progenitor: { realm: 'deep_roots', rx: 50, ry: 56 },
+  boss_stage_31_zenith_seraph: { realm: 'sky_bastions', rx: 55, ry: 36 },
+  boss_stage_32_fracture_architect: { realm: 'prismatic_crater', rx: 50, ry: 50 },
 };
 
 /**
- * Coordenadas calibradas sobre as 6 artes cartográficas regionais (16:9)
- * para as 30 Províncias da Conquista Continental (5 províncias amplas por Reino)!
+ * Coordenadas calibradas sobre as 12 artes cartográficas regionais e de fronteira (16:9)
+ * para as 48 Províncias da Conquista Continental (5 por Reino Cardinal + 3 por Fronteira Profunda)!
  */
 export const PROVINCE_REGIONAL_COORDS: Record<
   string,
@@ -566,6 +1034,36 @@ export const PROVINCE_REGIONAL_COORDS: Record<
   prov_veridia_jade_delta: { realm: 'veridia', rx: 83, ry: 26 },
   prov_veridia_fang_peninsula: { realm: 'veridia', rx: 22, ry: 72 },
   prov_veridia_emerald_canopy: { realm: 'veridia', rx: 69, ry: 77 },
+
+  // 7. Infraforja Magmática (Fronteira Subterrânea de Pyros)
+  prov_underforge_dragon_anvil: { realm: 'underforge', rx: 51, ry: 48 },
+  prov_underforge_slag_cataracts: { realm: 'underforge', rx: 22, ry: 54 },
+  prov_underforge_basalt_crucible: { realm: 'underforge', rx: 76, ry: 56 },
+
+  // 8. Arquipélago Astral (Fronteira Marítima de Vórtex)
+  prov_astral_maelstrom_eye: { realm: 'astral_isles', rx: 31, ry: 49 },
+  prov_astral_chronos_beacon: { realm: 'astral_isles', rx: 56, ry: 23 },
+  prov_astral_starwreck_reef: { realm: 'astral_isles', rx: 74, ry: 52 },
+
+  // 9. Fossa Submersa (Fronteira Abissal do Eclipse)
+  prov_abyss_drowned_basilica: { realm: 'sunken_abyss', rx: 53, ry: 52 },
+  prov_abyss_ghostfire_harbor: { realm: 'sunken_abyss', rx: 22, ry: 28 },
+  prov_abyss_leviathan_ribs: { realm: 'sunken_abyss', rx: 68, ry: 68 },
+
+  // 10. Raízes Abissais (Fronteira Subterrânea de Veridia)
+  prov_roots_amber_heart: { realm: 'deep_roots', rx: 50, ry: 56 },
+  prov_roots_spore_sanctuary: { realm: 'deep_roots', rx: 24, ry: 64 },
+  prov_roots_ironwood_bastion: { realm: 'deep_roots', rx: 74, ry: 45 },
+
+  // 11. Bastilhas Celestes (Fronteira Aérea de Solária)
+  prov_sky_mirror_cathedral: { realm: 'sky_bastions', rx: 55, ry: 36 },
+  prov_sky_alabaster_citadel: { realm: 'sky_bastions', rx: 22, ry: 34 },
+  prov_sky_armada_docks: { realm: 'sky_bastions', rx: 80, ry: 60 },
+
+  // 12. Cratera Prismática (Fronteira Planar da Matriz)
+  prov_crater_shattered_core: { realm: 'prismatic_crater', rx: 50, ry: 50 },
+  prov_crater_sapphire_fault: { realm: 'prismatic_crater', rx: 24, ry: 46 },
+  prov_crater_solar_monoliths: { realm: 'prismatic_crater', rx: 76, ry: 46 },
 };
 
 export function mapTerritoryIdToRealmId(territoryId: string): VaeloriaRealmId {
@@ -575,6 +1073,27 @@ export function mapTerritoryIdToRealmId(territoryId: string): VaeloriaRealmId {
   if (territoryId === 'territory_solaria') return 'solaria';
   if (territoryId === 'territory_veridia') return 'veridia';
   return 'matrix';
+}
+
+export function resolveNearestRealmFromWorldCoords(wx: number, wy: number): VaeloriaRealmId {
+  // Check if coordinates fall inside one of the 6 Deep Frontier outer enclaves first
+  for (const fid of VAELORIA_DEEP_FRONTIERS) {
+    const b = VAELORIA_REGIONAL_MAPS[fid].worldBounds;
+    if (wx >= b.x && wx <= b.x + b.w && wy >= b.y && wy <= b.y + b.h) {
+      return fid;
+    }
+  }
+  let bestRealm: VaeloriaRealmId = 'matrix';
+  let bestDist = Infinity;
+  for (const rid of VAELORIA_REALM_ORDER) {
+    const c = VAELORIA_REGIONAL_MAPS[rid].worldCenter;
+    const d = Math.hypot(wx - c.x, wy - c.y);
+    if (d < bestDist) {
+      bestDist = d;
+      bestRealm = rid;
+    }
+  }
+  return bestRealm;
 }
 
 export function resolveStageRegionalPlacement(
@@ -652,6 +1171,48 @@ export const REALM_WEATHER_PRESETS: Record<
     icon: '☸',
     shortDesc: 'Centro Axial: convergência planar concede +1⚡ Essência extra na abertura.',
   },
+  underforge: {
+    type: 'ash_storm',
+    domain: 'red',
+    name: 'Fornalha Tectônica de Ignaroth',
+    icon: '⚒️',
+    shortDesc: 'Infraforja Profunda: vapores magmáticos concedem +1⚔️ ATQ às tropas em campo.',
+  },
+  astral_isles: {
+    type: 'astral_blizzard',
+    domain: 'blue',
+    name: 'Turbilhão das Estrelas Mortas',
+    icon: '🌌',
+    shortDesc: 'Arquipélago Astral: maré horológica reduz -1⚔️ do maior inimigo e acelera runas.',
+  },
+  sunken_abyss: {
+    type: 'umbral_eclipse',
+    domain: 'purple',
+    name: 'Pressão da Basílica Afogada',
+    icon: '🦑',
+    shortDesc: 'Fossa Abissal: águas negras drenam vitalidade na abertura das rodadas.',
+  },
+  deep_roots: {
+    type: 'sylvan_monsoon',
+    domain: 'green',
+    name: 'Esporos de Âmbar Vivo',
+    icon: '🍄',
+    shortDesc: 'Raízes Profundas: névoa bioluminescente regenera +1❤️ nas criaturas em campo.',
+  },
+  sky_bastions: {
+    type: 'solar_zenith',
+    domain: 'gold',
+    name: 'Coroa Solar Acima das Nuvens',
+    icon: '🌤️',
+    shortDesc: 'Bastilhas Celestes: luz pura concede +1🛡️ Armadura na Vanguarda e +1❤️ ao Soberano.',
+  },
+  prismatic_crater: {
+    type: 'astral_convergence',
+    domain: 'neutral',
+    name: 'Tormenta Pentacromática da Fratura',
+    icon: '💎',
+    shortDesc: 'Cratera Prismática: o núcleo partido irradia +1⚡ Essência extra na abertura.',
+  },
 };
 
 /**
@@ -683,7 +1244,7 @@ export function buildGeographicBattleModifiers(params: {
     provinceName: worldNode.landmarkName,
     provinceDomain: realmDef.domain,
     isDefensiveSiege: false,
-    isCapitalSiege: stage === 26 || (mode === 'expedition' && stage === 9),
+    isCapitalSiege: stage === 26 || stage === 32 || (mode === 'expedition' && stage === 9),
     playerBonusHp: buffHp,
     playerBonusEssence: buffEss,
     enemyOpeningDamage: 0,

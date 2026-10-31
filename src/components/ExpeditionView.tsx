@@ -398,6 +398,7 @@ export interface ExpeditionViewProps {
   ) => void;
   onSaveCustomDeck: (deck: CustomSavedDeck) => void;
   onRewardGold: (amount: number) => void;
+  onRewardShards?: (amount: number, reason?: string) => void;
   lastClearedExpeditionBossId?: string | null;
   defeatedBossCount?: number;
   arenaWins?: number;
@@ -409,6 +410,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
   onStartExpeditionBattle,
   onSaveCustomDeck,
   onRewardGold,
+  onRewardShards,
   lastClearedExpeditionBossId,
   defeatedBossCount = 0,
   arenaWins = 0,
@@ -938,6 +940,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   onStartExpeditionBattle(boss, runState.deckCardIds, runState.blessingId)
                 }
                 onRewardGold={(amt) => onRewardGold(amt)}
+                onRewardShards={onRewardShards}
                 onGrantExpeditionCard={(recruited) => {
                   setRunState((prev) => {
                     const nextDeck = [...prev.deckCardIds];

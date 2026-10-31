@@ -1114,6 +1114,21 @@ export const App: React.FC = () => {
     });
   };
 
+  const handleRewardShards = (amount: number, reason?: string) => {
+    if (isGuest || amount <= 0) return;
+    const nextShards = astralShards + amount;
+    updateCurrentUserProgression((prev) => ({
+      astralShards: (prev.astralShards ?? 0) + amount,
+    }));
+    pushNotification({
+      kicker: 'ESTILHAÇOS ASTRAIS DESCOBERTOS',
+      title: reason ? `${reason} (+${amount} 💎)` : `+${amount} 💎 Estilhaços Astrais`,
+      message: `Saldo Astral: ${nextShards} 💎 para Forjar Cartas diretamente no Grimório.`,
+      actionLabel: 'Abrir Forja no Grimório',
+      actionTarget: 'deckbuilder',
+    });
+  };
+
   const handleClaimQuestGold = (amount: number, questTitle: string) => {
     if (isGuest) return;
     const nextGold = gold + amount;
@@ -2211,6 +2226,8 @@ export const App: React.FC = () => {
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartBossBattle={handleStartBossBattle}
             onRewardGold={handleRewardGold}
+            onRewardShards={handleRewardShards}
+            onOpenWeeklyRift={() => handleSelectSubTab('rifts')}
           />
         )}
 
@@ -2223,6 +2240,7 @@ export const App: React.FC = () => {
             onStartExpeditionBattle={handleStartExpeditionBattle}
             onSaveCustomDeck={handleSaveCustomDeck}
             onRewardGold={handleRewardGold}
+            onRewardShards={handleRewardShards}
             lastClearedExpeditionBossId={lastClearedExpeditionBossId}
           />
         )}
@@ -2237,6 +2255,7 @@ export const App: React.FC = () => {
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartConquestBattle={handleStartConquestBattle}
             onRewardGold={handleRewardGold}
+            onRewardShards={handleRewardShards}
             lastConquestOutcome={lastConquestOutcome}
           />
         )}

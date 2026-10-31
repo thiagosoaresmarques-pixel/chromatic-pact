@@ -90,12 +90,18 @@ export const OverworldEventModal: React.FC<OverworldEventModalProps> = ({
             </button>
           </div>
         ) : (
-          <div className="ow-event-choices-grid">
+          <div
+            className={`ow-event-choices-grid ${
+              choicePreviews.length >= 3 ? 'has-three-choices' : ''
+            }`}
+          >
             {choicePreviews.map(({ choice, preview }) => (
               <button
                 key={choice.id}
                 type="button"
-                className="ow-event-choice-card"
+                className={`ow-event-choice-card ${
+                  choice.id === 'choice_c' ? 'is-ancestral-choice' : ''
+                }`}
                 onClick={() => {
                   playSfx('landmark_discover');
                   onSelectChoice(choice, preview);

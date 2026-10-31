@@ -9,11 +9,11 @@ import {
 export type OverworldExplorationMode = 'campaign' | 'expedition' | 'conquest';
 
 export interface OverworldEventChoiceDef {
-  id: 'choice_a' | 'choice_b';
+  id: 'choice_a' | 'choice_b' | 'choice_c';
   title: string;
   icon: string;
   flavorOutcome: string;
-  buffKind: 'vitality' | 'essence' | 'bastion';
+  buffKind: 'vitality' | 'essence' | 'bastion' | 'ancestral_pact';
 }
 
 export interface OverworldLandmarkEventDef {
@@ -22,13 +22,14 @@ export interface OverworldLandmarkEventDef {
   title: string;
   kicker: string;
   loreParagraph: string;
-  choices: [OverworldEventChoiceDef, OverworldEventChoiceDef];
+  choices: OverworldEventChoiceDef[];
 }
 
 export interface ResolvedOverworldChoicePreview {
   rewardBadge: string;
   goldDelta: number;
   suppliesDelta: number;
+  shardsDelta: number;
   recruitedCard: CardDefinition | null;
   fieldBuff: OverworldFieldBuff | null;
 }
@@ -463,6 +464,414 @@ const LANDMARK_CUSTOM_LORE: Record<
     choiceBOutcome: 'A resiliência dos antigos navegadores concede PV adicional ao Soberano.',
     buffKind: 'vitality',
   },
+
+  // === INFRAFORJA MAGMÁTICA DE IGNAROTH ===
+  lm_underforge_1: {
+    kicker: 'FUNDIÇÃO ABISSAL • INFRAFORJA',
+    lore: 'Martelos ciclópicos cravam escamas de dragão incandescente sobre bigornas alimentadas pelo manto planetário.',
+    choiceATitle: 'Arrematar Lingotes de Escama-Fogo',
+    choiceAIcon: '⚒️',
+    choiceAOutcome: 'Lotes de metal primordial abastecem generosamente os cofres da sua campanha.',
+    choiceBTitle: 'Temperar Escudos na Escória Rubra',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Armaduras incandescentes protegem sua Vanguarda logo na abertura.',
+    buffKind: 'bastion',
+  },
+  lm_underforge_2: {
+    kicker: 'TRAVESSIA MAGMÁTICA • INFRAFORJA',
+    lore: 'Elos de ferro do tamanho de torres cruzam o cânion de lava onde patrulhas de Ignaroth cobram tributo de sangue e aço.',
+    choiceATitle: 'Confiscar Pedágio das Correntes',
+    choiceAIcon: '⛓️',
+    choiceAOutcome: 'Cofres de pedágio subterrâneo passam para sua intendência.',
+    choiceBTitle: 'Marchar em Formação Blindada',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'A disciplina sobre o abismo endurece sua primeira fileira.',
+    buffKind: 'bastion',
+  },
+  lm_underforge_3: {
+    kicker: 'PORTO DE LAVA • INFRAFORJA',
+    lore: 'Barcaças de basalto rúnico navegam sobre rios de rocha fundida transportando cristais piroclásticos.',
+    choiceATitle: 'Fretar Barcaça de Basalto',
+    choiceAIcon: '🚢',
+    choiceAOutcome: 'Mercadorias ígneas rendem lucro imediato e suprimentos pesados.',
+    choiceBTitle: 'Drenar Fornalha da Barcaça',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'O núcleo térmico concede +1⚡ de Essência extra na abertura.',
+    buffKind: 'essence',
+  },
+  lm_underforge_4: {
+    kicker: 'SANTUÁRIO DO MANTO • INFRAFORJA',
+    lore: 'No altar suspenso sobre o núcleo rubro, pulsa uma brasa que arde desde antes da divisão dos cinco domínios.',
+    choiceATitle: 'Colher Gemas do Núcleo',
+    choiceAIcon: '💎',
+    choiceAOutcome: 'Diamantes vulcânicos puros enriquecem sua reserva real.',
+    choiceBTitle: 'Comungar com o Coração de Ignaroth',
+    choiceBIcon: '🔥',
+    choiceBOutcome: 'Chama ancestral percorre suas veias, ampliando sua Essência inicial.',
+    buffKind: 'essence',
+  },
+  lm_underforge_5: {
+    kicker: 'FORTALEZA SUBTERRÂNEA • INFRAFORJA',
+    lore: 'Comportas de bronze negro represam uma catarata inteira de magma para defender a cidadela interna.',
+    choiceATitle: 'Esvaziar Arsenal da Represa',
+    choiceAIcon: '⚙️',
+    choiceAOutcome: 'Munições de cerco e provisões reforçam sua coluna.',
+    choiceBTitle: 'Erguer Barricadas de Basalto',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Sua Vanguarda ganha blindagem extra para o próximo confronto.',
+    buffKind: 'bastion',
+  },
+  lm_underforge_6: {
+    kicker: 'MAUSOLÉU TITÂNICO • INFRAFORJA',
+    lore: 'Sarcófagos de ferro meteórico guardam os artífices primordiais que moldaram as primeiras Relíquias Reais.',
+    choiceATitle: 'Resgatar Martelos Ancestrais',
+    choiceAIcon: '🔨',
+    choiceAOutcome: 'Relíquias de forja raras elevam seu patrimônio militar.',
+    choiceBTitle: 'Invocar Vigor dos Artífices',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'A bênção dos mestres ferreiros amplia a vitalidade do Soberano.',
+    buffKind: 'vitality',
+  },
+
+  // === ARQUIPÉLAGO ASTRAL DAS ESTRELAS MORTAS ===
+  lm_astral_isles_1: {
+    kicker: 'ATALAIA CRONOLÓGICA • ILHAS ASTRAIS',
+    lore: 'Um farol de latão gira no sentido anti-horário, projetando luz safira sobre escolhos onde o tempo corre mais devagar.',
+    choiceATitle: 'Recolher Lentes de Safira',
+    choiceAIcon: '🔭',
+    choiceAOutcome: 'Instrumentos náuticos raros enriquecem sua expedição.',
+    choiceBTitle: 'Ancorar Escudos no Feixe Temporal',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Camadas de gelo temporal protegem sua Vanguarda.',
+    buffKind: 'bastion',
+  },
+  lm_astral_isles_2: {
+    kicker: 'PONTE DE CONSTELAÇÕES • ILHAS ASTRAIS',
+    lore: 'Fragmentos sólidos de luz estelar ligam duas ilhas flutuantes sobre o mar polar.',
+    choiceATitle: 'Coletar Poeira Estelar Condensada',
+    choiceAIcon: '✨',
+    choiceAOutcome: 'Pó astral reluzente rende alto valor entre arcanistas.',
+    choiceBTitle: 'Absorver Centelha da Passarela',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'A travessia carrega +1⚡ de Essência extra para sua mão inicial.',
+    buffKind: 'essence',
+  },
+  lm_astral_isles_3: {
+    kicker: 'NAUFRÁGIOS ASTRAIS • ILHAS ASTRAIS',
+    lore: 'Galeões inteiros permanecem encapsulados em cristal translúcido após a queda de uma estrela morta.',
+    choiceATitle: 'Escavar Cofres Cristalizados',
+    choiceAIcon: '💎',
+    choiceAOutcome: 'Tesouros navais preservados por séculos passam ao seu domínio.',
+    choiceBTitle: 'Libertar Eco dos Navegadores',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'A memória imortal da frota fortalece o sangue do Soberano.',
+    buffKind: 'vitality',
+  },
+  lm_astral_isles_4: {
+    kicker: 'PLANETÁRIO CAÍDO • ILHAS ASTRAIS',
+    lore: 'Sete esferas metálicas orbitam silenciosamente uma cratera inundada de éter líquido.',
+    choiceATitle: 'Extrair Astrolábios das Esferas',
+    choiceAIcon: '🪐',
+    choiceAOutcome: 'Mecanismos celestes valiosos abastecem seu tesouro.',
+    choiceBTitle: 'Alinhar as Sete Órbitas',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'A conjunção planetária concede +1⚡ de Essência na abertura.',
+    buffKind: 'essence',
+  },
+  lm_astral_isles_5: {
+    kicker: 'PORTO BOREAL • ILHAS ASTRAIS',
+    lore: 'Corsários astrais e exploradores polares negociam cartas náuticas no último porto antes do horizonte sem fim.',
+    choiceATitle: 'Taxar Frotas Exploradoras',
+    choiceAIcon: '⚓',
+    choiceAOutcome: 'Tributos portuários reforçam imediatamente suas reservas.',
+    choiceBTitle: 'Contratar Timoneiros de Safira',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'Provisões árticas de elite ampliam seus Pontos de Vida iniciais.',
+    buffKind: 'vitality',
+  },
+  lm_astral_isles_6: {
+    kicker: 'VILA DOS ASTRÔNOMOS • ILHAS ASTRAIS',
+    lore: 'Cúpulas de cobre aquecidas por cristais azuis abrigam escribas que catalogam meteoros e fendas.',
+    choiceATitle: 'Comerciar Pergaminhos Celestes',
+    choiceAIcon: '📜',
+    choiceAOutcome: 'Mapas raros são convertidos em ouro e suprimentos.',
+    choiceBTitle: 'Estudar Geometria Defensiva',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Barreiras rúnicas fortalecem a armadura da sua Vanguarda.',
+    buffKind: 'bastion',
+  },
+
+  // === FOSSA SUBMERSA DA CATEDRAL AFOGADA ===
+  lm_sunken_abyss_1: {
+    kicker: 'ANCORADOURO ESPECTRAL • FOSSA ABISSAL',
+    lore: 'Chamas verdes flutuam sobre a água negra onde submersíveis de osso e bronze atracam em silêncio.',
+    choiceATitle: 'Tomar Carga das Galeras Negras',
+    choiceAIcon: '⚓',
+    choiceAOutcome: 'Pérolas negras e moedas abissais reforçam seu cofre.',
+    choiceBTitle: 'Guiar-se pelo Fogo-Fátuo',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'As lanternas espectrais concedem +1⚡ de Essência inicial.',
+    buffKind: 'essence',
+  },
+  lm_sunken_abyss_2: {
+    kicker: 'DESFILADEIRO HADAL • FOSSA ABISSAL',
+    lore: 'O esqueleto de um Leviatã da Primeira Era forma um túnel natural contra a pressão esmagadora do oceano profundo.',
+    choiceATitle: 'Serrar Marfim Abissal',
+    choiceAIcon: '🦴',
+    choiceAOutcome: 'Placas ósseas raras rendem excelente espólio de guerra.',
+    choiceBTitle: 'Revestir Tropas em Quitina Hadal',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Sua Vanguarda recebe +1🛡️ de Armadura contra impactos.',
+    buffKind: 'bastion',
+  },
+  lm_sunken_abyss_3: {
+    kicker: 'ALTAR BIOLUMINESCENTE • FOSSA ABISSAL',
+    lore: 'Recifes de coral carmesim pulsam como veias vivas ao redor de um cálice submerso.',
+    choiceATitle: 'Colher Pérolas Sanguíneas',
+    choiceAIcon: '🩸',
+    choiceAOutcome: 'Gemas orgânicas raras ampliam sua riqueza.',
+    choiceBTitle: 'Sorver Essência do Recife Vivo',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'Vitalidade abissal eleva os Pontos de Vida do Soberano.',
+    buffKind: 'vitality',
+  },
+  lm_sunken_abyss_4: {
+    kicker: 'BASTIÃO ABISSAL • FOSSA ABISSAL',
+    lore: 'Uma torre hermética de pedra negra vigia as correntes profundas com arpões rúnicos.',
+    choiceATitle: 'Requisitar Cofre da Atalaia',
+    choiceAIcon: '🏰',
+    choiceAOutcome: 'Suprimentos selados em cera negra passam ao seu exército.',
+    choiceBTitle: 'Postura de Pressão Profunda',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Sua primeira linha entra em combate com blindagem reforçada.',
+    buffKind: 'bastion',
+  },
+  lm_sunken_abyss_5: {
+    kicker: 'RUÍNA AFOGADA • FOSSA ABISSAL',
+    lore: 'Quando as correntes marinhas cruzam o claustro submerso, sinos de bronze tocam debaixo d’água.',
+    choiceATitle: 'Recuperar Relíquias do Claustro',
+    choiceAIcon: '🔔',
+    choiceAOutcome: 'Artefatos sacros submersos enriquecem sua caravana.',
+    choiceBTitle: 'Ressoar com o Cântico Submerso',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'A vibração mística desperta +1⚡ de Essência na abertura.',
+    buffKind: 'essence',
+  },
+  lm_sunken_abyss_6: {
+    kicker: 'ENTREPOSTO ABISSAL • FOSSA ABISSAL',
+    lore: 'Sob domos de vidro encantado, mercadores umbrais negociam relíquias resgatadas das fossas oceânicas.',
+    choiceATitle: 'Cobrar Taxa do Domo Submerso',
+    choiceAIcon: '🪙',
+    choiceAOutcome: 'O comércio das profundezas abastece seus cofres.',
+    choiceBTitle: 'Adquirir Tônicos de Pressão',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'Elixires raros ampliam a reserva vital do Soberano.',
+    buffKind: 'vitality',
+  },
+
+  // === RAÍZES ABISSAIS DA ÁRVORE-MÃE ===
+  lm_deep_roots_1: {
+    kicker: 'RUÍNA ENGOLIDA • RAÍZES PROFUNDAS',
+    lore: 'Raízes do tamanho de muralhas abraçam um zigurate de jade onde repousam ídolos primevos.',
+    choiceATitle: 'Extrair Ídolos de Jade Vivo',
+    choiceAIcon: '🐍',
+    choiceAOutcome: 'Esculturas ancestrais rendem valioso espólio.',
+    choiceBTitle: 'Despertar Guardiões de Pedra-Musgo',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Casca pétrea envolve sua Vanguarda no próximo duelo.',
+    buffKind: 'bastion',
+  },
+  lm_deep_roots_2: {
+    kicker: 'SANTUÁRIO MICELIAL • RAÍZES PROFUNDAS',
+    lore: 'Cogumelos gigantes iluminam a caverna em tons esmeralda e azul, liberando esporos de pura memória ancestral.',
+    choiceATitle: 'Destilar Esporos Luminosos',
+    choiceAIcon: '🍄',
+    choiceAOutcome: 'Alquimistas pagam alto pelos extratos bioluminescentes.',
+    choiceBTitle: 'Inalar Névoa da Memória Viva',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'Sua mente desperta +1⚡ de Essência extra para o combate.',
+    buffKind: 'essence',
+  },
+  lm_deep_roots_3: {
+    kicker: 'PONTE DE ÂMBAR • RAÍZES PROFUNDAS',
+    lore: 'Fios espessos de resina dourada solidificada formam pontes translúcidas sobre rios subterrâneos.',
+    choiceATitle: 'Cortar Blocos de Âmbar Real',
+    choiceAIcon: '🟠',
+    choiceAOutcome: 'Resina milenar abastece sua economia de guerra.',
+    choiceBTitle: 'Revestir Escudos em Resina Elástica',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Armadura orgânica protege sua linha de frente.',
+    buffKind: 'bastion',
+  },
+  lm_deep_roots_4: {
+    kicker: 'COMUNA SUBTERRÂNEA • RAÍZES PROFUNDAS',
+    lore: 'Druidas cegos do subsolo cultivam ervas imortais irrigadas pelas veias diretas da Árvore-Mãe.',
+    choiceATitle: 'Trocar Sementes Raras',
+    choiceAIcon: '🌱',
+    choiceAOutcome: 'Bolsas de sementes sagradas fortalecem suas finanças.',
+    choiceBTitle: 'Banquete de Raízes Imortais',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'A refeição sagrada concede vigor extra ao Soberano.',
+    buffKind: 'vitality',
+  },
+  lm_deep_roots_5: {
+    kicker: 'PLATÔ FÓSSIL • RAÍZES PROFUNDAS',
+    lore: 'Crânios de titãs pré-históricos formam uma fortaleza natural vigiada por patrulhas silvestres.',
+    choiceATitle: 'Recolher Presas Primordiais',
+    choiceAIcon: '🦖',
+    choiceAOutcome: 'Troféus colossais enriquecem sua marcha.',
+    choiceBTitle: ' Postura do Behemoth Subterrâneo',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Sua Vanguarda entra em campo blindada como rocha.',
+    buffKind: 'bastion',
+  },
+  lm_deep_roots_6: {
+    kicker: 'PORTO SUBTERRÂNEO • RAÍZES PROFUNDAS',
+    lore: 'Canoas entalhadas em casca gigante cruzam um lago cálido de âmbar e seiva dourada.',
+    choiceATitle: 'Embarcar Tonéis de Seiva Pura',
+    choiceAIcon: '🛶',
+    choiceAOutcome: 'Carregamentos valiosos reforçam seus suprimentos.',
+    choiceBTitle: 'Ungir Tropas no Lago Dourado',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'O banho de âmbar amplia os Pontos de Vida iniciais.',
+    buffKind: 'vitality',
+  },
+
+  // === BASTILHAS CELESTES DO ZÊNITE ===
+  lm_sky_bastions_1: {
+    kicker: 'TEMPLO DAS NUVENS • BASTILHAS CELESTES',
+    lore: ' Suspenso por cristais gravitacionais, o altar recebe a luz solar antes de qualquer ponto do continente.',
+    choiceATitle: 'Recolher Oferendas Celestes',
+    choiceAIcon: '☀️',
+    choiceAOutcome: 'Ouro puro consagrado pelos serafins reforça seus cofres.',
+    choiceBTitle: 'Comungar com o Primeiro Raio',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'Luz empírea concede +1⚡ de Essência inicial.',
+    buffKind: 'essence',
+  },
+  lm_sky_bastions_2: {
+    kicker: 'VIADUTO EÓLICO • BASTILHAS CELESTES',
+    lore: 'Arcos de luz sólida conectam bastiões flutuantes varridos por correntes ascendentes.',
+    choiceATitle: 'Coletar Cristais de Sustentação',
+    choiceAIcon: '🌤️',
+    choiceAOutcome: 'Pedras gravitacionais rendem alto valor estratégico.',
+    choiceBTitle: 'Formação de Escudos Alados',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Sua Vanguarda ganha proteção extra nas alturas.',
+    buffKind: 'bastion',
+  },
+  lm_sky_bastions_3: {
+    kicker: 'DOCA CELESTE • BASTILHAS CELESTES',
+    lore: 'Naus-dragão de velas solares reabastecem antes de patrulhar os seis reinos lá embaixo.',
+    choiceATitle: 'Requisitar Suprimentos da Frota',
+    choiceAIcon: '⛵',
+    choiceAOutcome: 'Caixas de provisões reais passam ao seu estandarte.',
+    choiceBTitle: 'Embarcar Artilheiros do Zênite',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'A escolta aérea fortalece a vitalidade inicial do Soberano.',
+    buffKind: 'vitality',
+  },
+  lm_sky_bastions_4: {
+    kicker: 'TORRE DE ESPELHOS • BASTILHAS CELESTES',
+    lore: 'Espelhos parabólicos de bronze polido comunicam ordens instantâneas através das nuvens.',
+    choiceATitle: 'Desmontar Espelhos Reserva',
+    choiceAIcon: '🔆',
+    choiceAOutcome: 'Lentes imperiais enriquecem sua campanha.',
+    choiceBTitle: 'Focalizar Escudo Heliográfico',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Feixes protetores blindam sua primeira fileira.',
+    buffKind: 'bastion',
+  },
+  lm_sky_bastions_5: {
+    kicker: 'OFICINA FLUTUANTE • BASTILHAS CELESTES',
+    lore: 'Artífices celestes tecem penas metálicas e engrenagens solares em planadores de guerra.',
+    choiceATitle: 'Negociar Peças de Precisão',
+    choiceAIcon: '⚙️',
+    choiceAOutcome: 'Artefatos mecânicos geram excelente receita.',
+    choiceBTitle: 'Carregar Acumulador Solar',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'Energia armazenada concede +1⚡ de Essência na abertura.',
+    buffKind: 'essence',
+  },
+  lm_sky_bastions_6: {
+    kicker: 'ACROPOLE ANTIGA • BASTILHAS CELESTES',
+    lore: 'Colunas partidas de mármore flutuam em órbita lenta ao redor do primeiro trono erguido nos céus.',
+    choiceATitle: 'Recuperar Coroas Antigas',
+    choiceAIcon: '👑',
+    choiceAOutcome: 'Insígnias celestes somam-se ao seu tesouro.',
+    choiceBTitle: 'Jurar Sob o Céu Eterno',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'A majestade ancestral eleva seus Pontos de Vida iniciais.',
+    buffKind: 'vitality',
+  },
+
+  // === CRATERA DA FRATURA PRISMÁTICA ===
+  lm_prismatic_crater_1: {
+    kicker: 'PILAR DE REFRAÇÃO • CRATERA PRISMÁTICA',
+    lore: 'Um monólito carmesim vibra em ressonância direta com a energia bruta liberada na Primeira Fratura.',
+    choiceATitle: 'Extrair Estilhaços Rubros',
+    choiceAIcon: '💎',
+    choiceAOutcome: 'Cristais de alta pureza fortalecem seu cofre.',
+    choiceBTitle: 'Canalizar Pulso da Fratura',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'O monólito concede +1⚡ de Essência extra na abertura.',
+    buffKind: 'essence',
+  },
+  lm_prismatic_crater_2: {
+    kicker: 'RUÍNA DO VÉU • CRATERA PRISMÁTICA',
+    lore: 'Fendas ametistas revelam vislumbres de linhas temporais alternativas ao redor das pedras partidas.',
+    choiceATitle: 'Recolher Relíquias Paradoxais',
+    choiceAIcon: '🔮',
+    choiceAOutcome: 'Artefatos de outras eras rendem grande fortuna.',
+    choiceBTitle: 'Absorver Vigor Transplanar',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'Energia além do véu amplia o PV inicial do Soberano.',
+    buffKind: 'vitality',
+  },
+  lm_prismatic_crater_3: {
+    kicker: 'LINHA DE LEY OCIDENTAL • CRATERA PRISMÁTICA',
+    lore: 'Uma ponte natural de quartzo azul conduz sobre o abismo furta-cor do núcleo planetário.',
+    choiceATitle: 'Colher Quartzo de Ley',
+    choiceAIcon: '💠',
+    choiceAOutcome: 'Cristais condutores abastecem sua intendência.',
+    choiceBTitle: 'Cristalizar Escudos de Vanguarda',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Barreira prismática concede +1🛡️ à linha de frente.',
+    buffKind: 'bastion',
+  },
+  lm_prismatic_crater_4: {
+    kicker: 'LINHA DE LEY ORIENTAL • CRATERA PRISMÁTICA',
+    lore: 'Raios dourados ascendem do fundo da cratera, iluminando degraus suspensos no vazio.',
+    choiceATitle: 'Capturar Filamentos Áureos',
+    choiceAIcon: '✨',
+    choiceAOutcome: 'Fios de luz condensada enriquecem sua marcha.',
+    choiceBTitle: 'Sintonizar Reserva Pentacromática',
+    choiceBIcon: '⚡',
+    choiceBOutcome: 'Você inicia o próximo duelo com +1⚡ de Essência adicional.',
+    buffKind: 'essence',
+  },
+  lm_prismatic_crater_5: {
+    kicker: 'EXPEDIÇÃO AXIAL • CRATERA PRISMÁTICA',
+    lore: 'Sábios e cartógrafos dos seis reinos mantêm tendas blindadas na borda interna da cratera.',
+    choiceATitle: 'Adquirir Relatórios da Cratera',
+    choiceAIcon: '🗺️',
+    choiceAOutcome: 'Dados estratégicos e suprimentos reforçam sua campanha.',
+    choiceBTitle: 'Receber Tônicos Anti-Radiação Planar',
+    choiceBIcon: '❤️',
+    choiceBOutcome: 'Preparo alquímico eleva a vitalidade do Soberano.',
+    buffKind: 'vitality',
+  },
+  lm_prismatic_crater_6: {
+    kicker: 'FORTALEZA DOS OITO RAIOS • CRATERA PRISMÁTICA',
+    lore: 'Ergue-se sobre uma engrenagem colossal partida da Roda Matriz, guardando a descida final rumo a Aetherion.',
+    choiceATitle: 'Abrir Arsenal dos Oito Raios',
+    choiceAIcon: '☸',
+    choiceAOutcome: 'Suprimentos lendários passam ao seu comando.',
+    choiceBTitle: 'Blindagem da Roda Matriz',
+    choiceBIcon: '🛡️',
+    choiceBOutcome: 'Sua Vanguarda recebe proteção ancestral superior.',
+    buffKind: 'bastion',
+  },
 };
 
 export function getLandmarkEventDef(
@@ -471,31 +880,69 @@ export function getLandmarkEventDef(
 ): OverworldLandmarkEventDef {
   const custom = LANDMARK_CUSTOM_LORE[landmark.id];
   const realmDef = VAELORIA_REGIONAL_MAPS[realm];
+  const offersAncestralPact =
+    realmDef.tier === 'deep_frontier' || landmark.kind === 'shrine' || landmark.kind === 'ruin';
+
+  const ancestralChoice: OverworldEventChoiceDef = {
+    id: 'choice_c',
+    title:
+      realmDef.tier === 'deep_frontier'
+        ? 'Selar Pacto da Fronteira Profunda'
+        : 'Invocar Pacto Ancestral do Santuário',
+    icon: '💎',
+    flavorOutcome:
+      'Você toca o veio profundo de Ley e reivindica Estilhaços Astrais junto a uma convergência tática de abertura.',
+    buffKind: 'ancestral_pact',
+  };
 
   if (custom) {
+    const choices: OverworldEventChoiceDef[] = [
+      {
+        id: 'choice_a',
+        title: custom.choiceATitle.trim(),
+        icon: custom.choiceAIcon,
+        flavorOutcome: custom.choiceAOutcome,
+        buffKind: custom.buffKind,
+      },
+      {
+        id: 'choice_b',
+        title: custom.choiceBTitle.trim(),
+        icon: custom.choiceBIcon,
+        flavorOutcome: custom.choiceBOutcome,
+        buffKind: custom.buffKind,
+      },
+    ];
+    if (offersAncestralPact) {
+      choices.push(ancestralChoice);
+    }
     return {
       landmarkId: landmark.id,
       realm,
       title: landmark.name,
       kicker: custom.kicker,
-      loreParagraph: custom.lore,
-      choices: [
-        {
-          id: 'choice_a',
-          title: custom.choiceATitle,
-          icon: custom.choiceAIcon,
-          flavorOutcome: custom.choiceAOutcome,
-          buffKind: custom.buffKind,
-        },
-        {
-          id: 'choice_b',
-          title: custom.choiceBTitle,
-          icon: custom.choiceBIcon,
-          flavorOutcome: custom.choiceBOutcome,
-          buffKind: custom.buffKind,
-        },
-      ],
+      loreParagraph: custom.lore.trim(),
+      choices,
     };
+  }
+
+  const fallbackChoices: OverworldEventChoiceDef[] = [
+    {
+      id: 'choice_a',
+      title: 'Recolher Tributos Locais',
+      icon: '🪙',
+      flavorOutcome: 'Recursos estratégicos foram integrados à sua marcha.',
+      buffKind: 'vitality',
+    },
+    {
+      id: 'choice_b',
+      title: 'Preparar Formação de Combate',
+      icon: '⚔️',
+      flavorOutcome: 'Suas tropas marcham fortalecidas para o próximo embate.',
+      buffKind: 'vitality',
+    },
+  ];
+  if (offersAncestralPact) {
+    fallbackChoices.push(ancestralChoice);
   }
 
   return {
@@ -504,34 +951,24 @@ export function getLandmarkEventDef(
     title: landmark.name,
     kicker: `MARCO REGIONAL • ${realmDef.shortName.toUpperCase()}`,
     loreParagraph: `Sua comitiva alcança ${landmark.name}, um ponto estratégico nas terras de ${realmDef.shortName}.`,
-    choices: [
-      {
-        id: 'choice_a',
-        title: 'Recolher Tributos Locais',
-        icon: '🪙',
-        flavorOutcome: 'Recursos estratégicos foram integrados à sua marcha.',
-        buffKind: 'vitality',
-      },
-      {
-        id: 'choice_b',
-        title: 'Preparar Formação de Combate',
-        icon: '⚔️',
-        flavorOutcome: 'Suas tropas marcham fortalecidas para o próximo embate.',
-        buffKind: 'vitality',
-      },
-    ],
+    choices: fallbackChoices,
   };
 }
 
-function pickDeterministicDomainCard(landmarkId: string, domain: Domain): CardDefinition | null {
-  const pool = ALL_CARDS.filter(
-    (c) =>
-      (c.domain === domain || (domain === 'neutral' && c.rarity === 'legendary')) &&
-      (c.rarity === 'rare' || c.rarity === 'legendary')
-  );
+function pickDeterministicDomainCard(
+  landmarkId: string,
+  domain: Domain,
+  legendaryOnly = false
+): CardDefinition | null {
+  const pool = ALL_CARDS.filter((c) => {
+    const matchesDomain =
+      c.domain === domain || (domain === 'neutral' && c.rarity === 'legendary');
+    if (!matchesDomain) return false;
+    return legendaryOnly ? c.rarity === 'legendary' : c.rarity === 'rare' || c.rarity === 'legendary';
+  });
   const safePool = pool.length > 0 ? pool : ALL_CARDS;
   if (safePool.length === 0) return null;
-  let hash = 0;
+  let hash = legendaryOnly ? 7919 : 0;
   for (let i = 0; i < landmarkId.length; i++) {
     hash = (hash * 31 + landmarkId.charCodeAt(i)) >>> 0;
   }
@@ -542,9 +979,23 @@ function buildFieldBuffFromKind(
   landmarkId: string,
   landmarkName: string,
   realm: VaeloriaRealmId,
-  kind: 'vitality' | 'essence' | 'bastion',
+  kind: 'vitality' | 'essence' | 'bastion' | 'ancestral_pact',
   isExpedition = false
 ): OverworldFieldBuff {
+  if (kind === 'ancestral_pact') {
+    return {
+      id: `buff_${landmarkId}_${Date.now()}`,
+      sourceLandmarkName: landmarkName,
+      realm,
+      bonusHp: isExpedition ? 4 : 2,
+      bonusOpeningEssence: 1,
+      vanguardArmorBonus: 0,
+      bonusOpeningDraw: 1,
+      summaryLabel: isExpedition
+        ? '+1⚡ Essência, +1🃏 Compra & +4❤️ PV'
+        : '+1⚡ Essência, +1🃏 Compra & +2❤️ PV',
+    };
+  }
   if (kind === 'essence') {
     return {
       id: `buff_${landmarkId}_${Date.now()}`,
@@ -593,8 +1044,26 @@ export function resolveLandmarkChoicePreview(
         rewardBadge: '+20 🪙 Ouro & Crônica Descoberta',
         goldDelta: 20,
         suppliesDelta: 0,
+        shardsDelta: 0,
         recruitedCard: null,
         fieldBuff: null,
+      };
+    }
+    if (choice.id === 'choice_c') {
+      const buff = buildFieldBuffFromKind(
+        eventDef.landmarkId,
+        eventDef.title,
+        eventDef.realm,
+        'ancestral_pact',
+        false
+      );
+      return {
+        rewardBadge: `+15 💎 Estilhaços & Pacto (${buff.summaryLabel})`,
+        goldDelta: 0,
+        suppliesDelta: 0,
+        shardsDelta: 15,
+        recruitedCard: null,
+        fieldBuff: buff,
       };
     }
     const buff = buildFieldBuffFromKind(
@@ -608,6 +1077,7 @@ export function resolveLandmarkChoicePreview(
       rewardBadge: `+10 🪙 Ouro & Bênção (${buff.summaryLabel})`,
       goldDelta: 10,
       suppliesDelta: 0,
+      shardsDelta: 0,
       recruitedCard: null,
       fieldBuff: buff,
     };
@@ -615,15 +1085,36 @@ export function resolveLandmarkChoicePreview(
 
   if (mode === 'expedition') {
     if (choice.id === 'choice_a') {
-      const card = pickDeterministicDomainCard(eventDef.landmarkId, realmDef.domain);
+      const card = pickDeterministicDomainCard(eventDef.landmarkId, realmDef.domain, false);
       return {
         rewardBadge: card
           ? `🃏 Recrutar [${card.name}] + 15 🪙 Ouro`
           : '+25 🪙 Ouro da Expedição',
         goldDelta: card ? 15 : 25,
         suppliesDelta: 0,
+        shardsDelta: 0,
         recruitedCard: card,
         fieldBuff: null,
+      };
+    }
+    if (choice.id === 'choice_c') {
+      const card = pickDeterministicDomainCard(eventDef.landmarkId, realmDef.domain, true);
+      const buff = buildFieldBuffFromKind(
+        eventDef.landmarkId,
+        eventDef.title,
+        eventDef.realm,
+        'ancestral_pact',
+        true
+      );
+      return {
+        rewardBadge: card
+          ? `💎 Lenda [${card.name}] & Pacto (${buff.summaryLabel})`
+          : `💎 Pacto Ancestral (${buff.summaryLabel})`,
+        goldDelta: 0,
+        suppliesDelta: 0,
+        shardsDelta: 10,
+        recruitedCard: card,
+        fieldBuff: buff,
       };
     }
     const buff = buildFieldBuffFromKind(
@@ -637,6 +1128,7 @@ export function resolveLandmarkChoicePreview(
       rewardBadge: `✦ Bênção Roguelike (${buff.summaryLabel})`,
       goldDelta: 0,
       suppliesDelta: 0,
+      shardsDelta: 0,
       recruitedCard: null,
       fieldBuff: buff,
     };
@@ -648,8 +1140,26 @@ export function resolveLandmarkChoicePreview(
       rewardBadge: '+35 ⚙️ Suprimentos Imperiais',
       goldDelta: 0,
       suppliesDelta: 35,
+      shardsDelta: 0,
       recruitedCard: null,
       fieldBuff: null,
+    };
+  }
+  if (choice.id === 'choice_c') {
+    const buff = buildFieldBuffFromKind(
+      eventDef.landmarkId,
+      eventDef.title,
+      eventDef.realm,
+      'ancestral_pact',
+      false
+    );
+    return {
+      rewardBadge: `+25 ⚙️ Suprimentos, +4 💎 & Cerco (${buff.summaryLabel})`,
+      goldDelta: 0,
+      suppliesDelta: 25,
+      shardsDelta: 4,
+      recruitedCard: null,
+      fieldBuff: buff,
     };
   }
   const buff = buildFieldBuffFromKind(
@@ -663,6 +1173,7 @@ export function resolveLandmarkChoicePreview(
     rewardBadge: `+15 ⚙️ Suprimentos & Bônus de Cerco (${buff.summaryLabel})`,
     goldDelta: 0,
     suppliesDelta: 15,
+    shardsDelta: 0,
     recruitedCard: null,
     fieldBuff: buff,
   };

@@ -16,6 +16,8 @@ export interface CampaignViewProps {
   customDecks: CustomSavedDeck[];
   onStartBossBattle: (boss: CampaignBoss, playerDeckCardIds: string[]) => void;
   onRewardGold?: (amount: number, reason?: string) => void;
+  onRewardShards?: (amount: number, reason?: string) => void;
+  onOpenWeeklyRift?: () => void;
   isGuest?: boolean;
   onRequireAccount?: () => void;
   onRequireDeckSetup?: () => void;
@@ -136,7 +138,10 @@ function getActInfoForStage(stage: number): { actLabel: string; actTitle: string
   if (stage <= 20) {
     return { actLabel: 'ATO V', actTitle: 'Os Tronos Tripartidos (Estágios 15–20)' };
   }
-  return { actLabel: 'ATO VI', actTitle: 'As Armadas e o Julgamento das Rodas (Estágios 21–26)' };
+  if (stage <= 26) {
+    return { actLabel: 'ATO VI', actTitle: 'As Armadas e o Julgamento das Rodas (Estágios 21–26)' };
+  }
+  return { actLabel: 'ATO VII', actTitle: 'Os Tronos Além do Véu • Fronteiras Profundas (Estágios 27–32)' };
 }
 
 export const CampaignView: React.FC<CampaignViewProps> = ({
@@ -145,6 +150,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   customDecks,
   onStartBossBattle,
   onRewardGold,
+  onRewardShards,
+  onOpenWeeklyRift,
   isGuest = false,
   onRequireAccount,
   onRequireDeckSetup,
@@ -164,7 +171,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const [selectedBossId, setSelectedBossId] = useState<string>(
     fullBossRoster[0]?.id ?? 'boss_1'
   );
-  const [actFilter, setActFilter] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6>('all');
+  const [actFilter, setActFilter] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7>('all');
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
   const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(false);
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
@@ -217,7 +224,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
       if (actFilter === 3) return b.stage >= 9 && b.stage <= 12;
       if (actFilter === 4) return b.stage >= 13 && b.stage <= 14;
       if (actFilter === 5) return b.stage >= 15 && b.stage <= 20;
-      return b.stage >= 21 && b.stage <= 26;
+      if (actFilter === 6) return b.stage >= 21 && b.stage <= 26;
+      return b.stage >= 27 && b.stage <= 32;
     });
   }, [fullBossRoster, actFilter]);
 
@@ -264,6 +272,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               { id: 4, label: 'Ato IV (13–14)' },
               { id: 5, label: 'Ato V (15–20)' },
               { id: 6, label: '☸ Ato VI (21–26)' },
+              { id: 7, label: '💎 Ato VII (27–32)' },
             ] as const
           ).map((tab) => (
             <button
@@ -279,7 +288,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                     if (tab.id === 3) return b.stage >= 9 && b.stage <= 12;
                     if (tab.id === 4) return b.stage >= 13 && b.stage <= 14;
                     if (tab.id === 5) return b.stage >= 15 && b.stage <= 20;
-                    return b.stage >= 21 && b.stage <= 26;
+                    if (tab.id === 6) return b.stage >= 21 && b.stage <= 26;
+                    return b.stage >= 27 && b.stage <= 32;
                   });
                   if (firstInAct) setSelectedBossId(firstInAct.id);
                 }
@@ -354,6 +364,8 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             onSelectBoss={(boss) => setSelectedBossId(boss.id)}
             onChallengeBoss={handleClickStartBoss}
             onRewardGold={onRewardGold}
+            onRewardShards={onRewardShards}
+            onOpenWeeklyRift={onOpenWeeklyRift}
           />
         ) : (
           <aside className="aaa-boss-roster">

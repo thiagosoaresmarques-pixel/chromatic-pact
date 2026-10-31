@@ -3872,5 +3872,115 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
     "rewardGold": 3000,
     "loreIntro": "Forjado na Fronteira Cinzenta antes da divisão dos tronos, Vaelkor gira a Roda Matriz de Oito Raios para julgar se você é digno de governar Vaeloria!",
     "deckId": "deck_penta_valkyra_pact"
+  },
+  {
+    "id": "boss_stage_27_underforge_colossus",
+    "stage": 27,
+    "name": "Ignaroth, O Colosso da Infraforja",
+    "title": "Ato VII • Forjador Primordial do Manto Magmático",
+    "domains": [
+      "red",
+      "green",
+      "gold"
+    ],
+    "avatarCardId": "red_119_soberano_piroclasma",
+    "startingHp": 110,
+    "passiveName": "Fornalha do Manto",
+    "passiveDescription": "Suas criaturas entram com +1 ATQ e +1 Armadura temperada em magma, e em rodadas ímpares o calor abissal queima o Soberano rival em 1 PV!",
+    "rewardGold": 3200,
+    "loreIntro": "Abaixo das raízes vulcânicas de Pyros, onde oceanos de magma alimentam as bigornas titânicas da Primeira Era, Ignaroth desperta para fundir coroas e exércitos em escória incandescente.",
+    "deckId": "deck_tri_primordial_forge"
+  },
+  {
+    "id": "boss_stage_28_astral_leviathan",
+    "stage": 28,
+    "name": "Astralyx, Leviatã das Estrelas Mortas",
+    "title": "Ato VII • Devorador das Constelações Caídas",
+    "domains": [
+      "blue",
+      "red",
+      "purple"
+    ],
+    "avatarCardId": "blue_117_arconte_astral",
+    "startingHp": 113,
+    "passiveName": "Gravidade Estelar",
+    "passiveDescription": "Inicia com +1 de Essência Máxima e no início de cada rodada congela 1 criatura rival aleatória sob o zero absoluto do vácuo astral!",
+    "rewardGold": 3450,
+    "loreIntro": "No arquipélago suspenso onde meteoritos e astros extintos repousam sobre o mar polar, Astralyx curva o espaço-tempo e silencia frotas inteiras sob tormentas de antimatéria.",
+    "deckId": "deck_tri_arcane_cataclysm"
+  },
+  {
+    "id": "boss_stage_29_drowned_patriarch",
+    "stage": 29,
+    "name": "Thalassor, Patriarca da Fossa Abissal",
+    "title": "Ato VII • Senhor dos Tronos Afogados e da Maré Negra",
+    "domains": [
+      "purple",
+      "blue",
+      "green"
+    ],
+    "avatarCardId": "blue_95_leviata_abissal",
+    "startingHp": 116,
+    "passiveName": "Pressão Hadal",
+    "passiveDescription": "Suas criaturas entram com +1 Regeneração (Lendas ganham Renascer) e em rodadas pares a maré abissal drena 2 PV do Soberano rival!",
+    "rewardGold": 3700,
+    "loreIntro": "Dez mil braças abaixo da Costa do Eclipse, catedrais submersas de coral negro ecoam o cântico de Thalassor — onde nenhum raio de sol jamais tocou as águas.",
+    "deckId": "deck_tri_abyssal_chimera"
+  },
+  {
+    "id": "boss_stage_30_amber_progenitor",
+    "stage": 30,
+    "name": "Yggdrakon, Progenitor do Âmbar Eterno",
+    "title": "Ato VII • Guardião do Coração Subterrâneo do Mundo",
+    "domains": [
+      "green",
+      "gold",
+      "blue"
+    ],
+    "avatarCardId": "green_142_patriarca_selva_eterna",
+    "startingHp": 119,
+    "passiveName": "Seiva do Mundo Subterrâneo",
+    "passiveDescription": "Suas criaturas entram com +2 PV Máximo e +1 Regeneração, e no início de cada rodada as raízes primordiais restauram +2 PV ao Soberano!",
+    "rewardGold": 3950,
+    "loreIntro": "Nas cavernas colossais sob a Árvore-Mãe de Veridia, rios de seiva dourada nutrem Yggdrakon desde antes do nascimento dos mortais.",
+    "deckId": "deck_tri_eternal_horizon"
+  },
+  {
+    "id": "boss_stage_31_zenith_seraph",
+    "stage": 31,
+    "name": "Solarius-Prime, Serafim Supremo do Zênite",
+    "title": "Ato VII • Regente das Cidadelas Acima das Nuvens",
+    "domains": [
+      "gold",
+      "green",
+      "blue"
+    ],
+    "avatarCardId": "gold_100_dragao_imperial_ouro",
+    "startingHp": 122,
+    "passiveName": "Égide Estratosférica",
+    "passiveDescription": "Suas criaturas entram com Escudo Divino (ou +2 Armadura adicional) e unidades com Voo recebem +1 ATQ imediato nas alturas do Zênite!",
+    "rewardGold": 4200,
+    "loreIntro": "Acima das tempestades de Solária flutuam as Bastilhas Celestes de mármore branco e ouro vivo, guardadas pelo Serafim que jamais desceu à terra.",
+    "deckId": "deck_tri_celestial_scales"
+  },
+  {
+    "id": "boss_stage_32_fracture_architect",
+    "stage": 32,
+    "name": "Aetherion, O Arquiteto da Primeira Fratura",
+    "title": "Ato VII • Entidade Primordial Além dos Cinco Selos",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "green",
+      "gold"
+    ],
+    "avatarCardId": "neutral_167_arauto_prisma_matriz",
+    "startingHp": 125,
+    "passiveName": "Singularidade da Fratura",
+    "passiveDescription": "Inicia com as 5 Afinidades em nível 3 e +1 Essência Máxima; suas criaturas entram com +1 ATQ, +1 Armadura e +1 Regeneração, enquanto o núcleo prismático drena 1 PV rival e restaura 1 PV por rodada!",
+    "rewardGold": 4500,
+    "loreIntro": "No fundo da Cratera do Prisma Partido, além da Torre dos Cinco Selos, repousa a consciência que dividiu a luz primordial nas cinco cores. Vencer Aetherion é transcender o próprio Pacto Cromático!",
+    "deckId": "deck_penta_valkyra_pact"
   }
 ];

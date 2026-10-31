@@ -586,7 +586,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   });
   const [arenaShake, setArenaShake] = useState<'light' | 'heavy' | null>(null);
   const [domainExitAnim, setDomainExitAnim] = useState<{
-    domain: Exclude<Domain, 'neutral'>;
+    domain: Domain;
     name: string;
     icon: string;
     mode: 'expire' | 'shatter' | 'wheel_shatter';
@@ -2608,8 +2608,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   };
 
   const renderAffinityCounters = (affinities: Record<Domain, number>) => {
-    const domains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
-    const activeList = domains.filter((dom) => (affinities[dom] ?? 0) > 0);
+    const coloredDomains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
+    const activeColored = coloredDomains.filter((dom) => (affinities[dom] ?? 0) > 0);
+    const activeList: Domain[] =
+      activeColored.length > 0
+        ? activeColored
+        : (affinities.neutral ?? 0) > 0
+        ? ['neutral']
+        : [];
     if (activeList.length === 0) {
       return <span className="affinity-empty-tag">Sem afinidade ativa</span>;
     }
@@ -3341,9 +3347,41 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 {spectacleFx.kind === 'ascend'
                   ? '🔥★'
                   : spectacleFx.kind === 'sovereign'
-                  ? '👑⚡'
+                  ? spectacleFx.domain === 'neutral'
+                    ? '⚙️⛩️'
+                    : '👑⚡'
                   : DOMAIN_META[spectacleFx.domain]?.icon ?? '✨'}
               </span>
+            </div>
+          )}
+
+          {/* Bespoke Axial Horological Astrolabe & Interlocking Gears Cutscene (Neutral Sovereign / Domain Expansion) */}
+          {spectacleFx.kind === 'sovereign' && spectacleFx.domain === 'neutral' && (
+            <div className="axial-matrix-domain-cutscene" aria-hidden="true">
+              <div className="axial-zero-point-flash" />
+              <div className="axial-astrolabe-stage">
+                <svg viewBox="0 0 260 260" className="axial-astrolabe-svg outer-gear-wheel">
+                  <circle cx="130" cy="130" r="112" fill="none" stroke="currentColor" strokeWidth="3.5" />
+                  <circle cx="130" cy="130" r="98" fill="none" stroke="currentColor" strokeWidth="1.8" strokeDasharray="6 4" />
+                  {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
+                    <g key={deg} transform={`rotate(${deg} 130 130)`}>
+                      <rect x="125" y="10" width="10" height="11" rx="1.5" fill="currentColor" />
+                      <line x1="130" y1="22" x2="130" y2="34" stroke="currentColor" strokeWidth="2.4" />
+                    </g>
+                  ))}
+                </svg>
+                <svg viewBox="0 0 260 260" className="axial-astrolabe-svg inner-compass-wheel">
+                  <circle cx="130" cy="130" r="72" fill="none" stroke="currentColor" strokeWidth="2.6" />
+                  <polygon
+                    points="130,58 148,112 202,130 148,148 130,202 112,148 58,130 112,112"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  />
+                  <circle cx="130" cy="130" r="26" fill="none" stroke="currentColor" strokeWidth="3.2" />
+                  <circle cx="130" cy="130" r="8" fill="currentColor" />
+                </svg>
+              </div>
             </div>
           )}
 
@@ -4365,6 +4403,30 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       <div
                         className={`tabletop-domain-flow-fx domain-${gameState.domainExpansion.domain}`}
                       />
+                      {gameState.domainExpansion.domain === 'neutral' && (
+                        <div className="tabletop-axial-horology-overlay" aria-hidden="true">
+                          <svg viewBox="0 0 400 400" className="tabletop-axial-gear-ring slow-cw">
+                            <circle cx="200" cy="200" r="168" fill="none" stroke="currentColor" strokeWidth="1.6" strokeDasharray="10 6" />
+                            <circle cx="200" cy="200" r="150" fill="none" stroke="currentColor" strokeWidth="1.1" />
+                            {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
+                              <g key={deg} transform={`rotate(${deg} 200 200)`}>
+                                <rect x="196" y="24" width="8" height="9" rx="1" fill="currentColor" />
+                                <line x1="200" y1="34" x2="200" y2="50" stroke="currentColor" strokeWidth="1.4" />
+                              </g>
+                            ))}
+                          </svg>
+                          <svg viewBox="0 0 400 400" className="tabletop-axial-gear-ring slow-ccw">
+                            <circle cx="200" cy="200" r="116" fill="none" stroke="currentColor" strokeWidth="1.3" />
+                            <polygon
+                              points="200,84 224,176 316,200 224,224 200,316 176,224 84,200 176,176"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="1.1"
+                            />
+                            <circle cx="200" cy="200" r="38" fill="none" stroke="currentColor" strokeWidth="1.6" strokeDasharray="5 4" />
+                          </svg>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -4374,8 +4436,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     const rival = exp.clashRival!;
                     const topDom = exp.owner === 'ai' ? exp : rival;
                     const bottomDom = exp.owner === 'player' ? exp : rival;
-                    const topColor = DOMAIN_META[topDom.domain]?.color || '#38bdf8';
-                    const bottomColor = DOMAIN_META[bottomDom.domain]?.color || '#ef4444';
+                    const topColor =
+                      topDom.domain === 'neutral'
+                        ? '#e2e8f0'
+                        : DOMAIN_META[topDom.domain]?.color || '#38bdf8';
+                    const bottomColor =
+                      bottomDom.domain === 'neutral'
+                        ? '#e2e8f0'
+                        : DOMAIN_META[bottomDom.domain]?.color || '#ef4444';
                     return (
                       <div
                         key={`domain-clash-${topDom.domain}-${bottomDom.domain}`}

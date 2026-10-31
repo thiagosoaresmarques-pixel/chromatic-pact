@@ -2374,6 +2374,13 @@ html, body, #root {
   border-color: #fde047;
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.95), 0 0 38px rgba(250, 204, 21, 0.95);
 }
+.spectacle-herald-banner.domain-neutral {
+  border-color: #e2e8f0;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.95),
+    0 0 34px rgba(203, 213, 225, 0.85),
+    inset 0 0 18px rgba(241, 245, 249, 0.22);
+}
 
 @keyframes heraldBannerSlide {
   0% {
@@ -2595,6 +2602,10 @@ html, body, #root {
 .spectacle-target-burst.kind-ascend .arcane-mandala-ring {
   border-color: #fef08a;
   color: #f59e0b;
+}
+.spectacle-target-burst.domain-neutral .arcane-mandala-ring {
+  border-color: #f8fafc;
+  color: #cbd5e1;
 }
 
 @keyframes spinMandala {
@@ -8955,6 +8966,11 @@ html, body, #root {
   border-color: #fef9c3;
   box-shadow: 0 0 8px rgba(250, 204, 21, 0.8);
 }
+.hud-domain-pip.is-filled.domain-neutral {
+  background: linear-gradient(90deg, #94a3b8, #f8fafc);
+  border-color: #ffffff;
+  box-shadow: 0 0 9px rgba(226, 232, 240, 0.85);
+}
 
 /* Embossed Domain Sanctuary Card inside Drawer */
 .hud-sanctuary-card {
@@ -8987,6 +9003,10 @@ html, body, #root {
 .hud-sanctuary-card.domain-gold {
   background: linear-gradient(135deg, rgba(113, 63, 18, 0.55) 0%, rgba(15, 23, 42, 0.92) 100%);
   border-color: rgba(250, 204, 21, 0.5);
+}
+.hud-sanctuary-card.domain-neutral {
+  background: linear-gradient(135deg, rgba(51, 65, 85, 0.68) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border-color: rgba(226, 232, 240, 0.55);
 }
 
 .hud-sanctuary-card.is-ready {
@@ -9633,6 +9653,28 @@ html, body, #root {
   background-image: url('/tabletops/tabletop_domain_gold.jpg');
 }
 
+.tabletop-domain-takeover-img.domain-neutral,
+.tabletop-domain-clash-half.domain-neutral,
+.tabletop-domain-expire-layer.domain-neutral,
+.domain-shatter-shard.domain-neutral {
+  background-image: url('/tabletops/tabletop_domain_neutral.jpg');
+}
+
+.tabletop-domain-takeover-img.domain-neutral::after {
+  border-color: rgba(248, 250, 252, 0.98);
+  box-shadow:
+    0 0 34px rgba(226, 232, 240, 0.95),
+    0 0 60px rgba(148, 163, 184, 0.75),
+    inset 0 0 24px rgba(255, 255, 255, 0.92);
+}
+
+.tabletop-domain-expire-layer.domain-neutral .domain-expire-retract-ring {
+  border-color: rgba(241, 245, 249, 0.92);
+  box-shadow:
+    0 0 28px rgba(203, 213, 225, 0.85),
+    inset 0 0 28px rgba(226, 232, 240, 0.7);
+}
+
 /* Subtle organic ambient aura overlay when Domain Expansion is active */
 .tabletop-domain-flow-fx {
   position: absolute;
@@ -9698,6 +9740,154 @@ html, body, #root {
     rgba(254, 240, 138, 0.3) 100%
   );
   animation: domainAmbientBreathe 5s ease-in-out infinite alternate;
+}
+
+.tabletop-domain-flow-fx.domain-neutral {
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(226, 232, 240, 0.04) 24%,
+    transparent 52%,
+    rgba(203, 213, 225, 0.22) 84%,
+    rgba(248, 250, 252, 0.34) 100%
+  );
+  animation: domainAmbientBreathe 4.2s ease-in-out infinite alternate;
+}
+
+/* Bespoke Ambient Rotating Horological Astrolabe on Active Neutral Domain Tabletop */
+.tabletop-axial-horology-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+  mix-blend-mode: screen;
+}
+
+.tabletop-axial-gear-ring {
+  position: absolute;
+  width: min(68vmin, 560px);
+  height: min(68vmin, 560px);
+  color: rgba(226, 232, 240, 0.24);
+  filter: drop-shadow(0 0 10px rgba(248, 250, 252, 0.28));
+}
+
+.tabletop-axial-gear-ring.slow-cw {
+  animation: spinHorologyClockwise 54s linear infinite;
+}
+
+.tabletop-axial-gear-ring.slow-ccw {
+  animation: spinHorologyCounter 38s linear infinite;
+  color: rgba(241, 245, 249, 0.2);
+}
+
+/* Bespoke Cinematic Cutscene when Invoking Matriz Horológica do Ponto Zero */
+.axial-matrix-domain-cutscene {
+  position: fixed;
+  inset: 0;
+  z-index: 215;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+  animation: axialCutsceneFade 0.96s cubic-bezier(0.18, 0.88, 0.32, 1) forwards;
+}
+
+.axial-zero-point-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(203, 213, 225, 0.2) 32%,
+    rgba(15, 23, 42, 0.08) 62%,
+    transparent 85%
+  );
+  animation: shatterFlashPulse 0.62s ease-out forwards;
+}
+
+.axial-astrolabe-stage {
+  position: relative;
+  width: min(56vmin, 420px);
+  height: min(56vmin, 420px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: axialAstrolabePop 0.96s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.axial-astrolabe-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: #f8fafc;
+  filter:
+    drop-shadow(0 0 18px rgba(226, 232, 240, 0.92))
+    drop-shadow(0 0 38px rgba(148, 163, 184, 0.72));
+}
+
+.axial-astrolabe-svg.outer-gear-wheel {
+  animation: spinHorologyClockwise 3.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.axial-astrolabe-svg.inner-compass-wheel {
+  color: #e2e8f0;
+  animation: spinHorologyCounter 2.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes spinHorologyClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinHorologyCounter {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes axialAstrolabePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.32);
+  }
+  26% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  75% {
+    opacity: 0.92;
+    transform: scale(1.16);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.38);
+  }
+}
+
+@keyframes axialCutsceneFade {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .tabletop-center-frontier-seam {

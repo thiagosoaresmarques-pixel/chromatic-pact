@@ -859,7 +859,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
 
   const [arenaShake, setArenaShake] = useState<'light' | 'heavy' | null>(null);
   const [domainExitAnim, setDomainExitAnim] = useState<{
-    domain: Exclude<Domain, 'neutral'>;
+    domain: Domain;
     name: string;
     icon: string;
     mode: 'expire' | 'shatter';
@@ -1488,8 +1488,14 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
   };
 
   const renderAffinityCounters = (affinities: Record<Domain, number>) => {
-    const domains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
-    const activeList = domains.filter((dom) => (affinities[dom] ?? 0) > 0);
+    const coloredDomains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
+    const activeColored = coloredDomains.filter((dom) => (affinities[dom] ?? 0) > 0);
+    const activeList: Domain[] =
+      activeColored.length > 0
+        ? activeColored
+        : (affinities.neutral ?? 0) > 0
+        ? ['neutral']
+        : [];
     if (activeList.length === 0) {
       return <span className="affinity-empty-tag">Sem afinidade ativa</span>;
     }

@@ -362,12 +362,19 @@ function chooseBestCardToChannel(
 
   const enemyActor: 'player' | 'ai' = actor === 'player' ? 'ai' : 'player';
   const enemyState = state[enemyActor];
+  const enemyColoredAffinitySum =
+    (enemyState.affinities.red ?? 0) +
+    (enemyState.affinities.blue ?? 0) +
+    (enemyState.affinities.purple ?? 0) +
+    (enemyState.affinities.green ?? 0) +
+    (enemyState.affinities.gold ?? 0);
   const maxEnemyDomainAffinity = Math.max(
     enemyState.affinities.red ?? 0,
     enemyState.affinities.blue ?? 0,
     enemyState.affinities.purple ?? 0,
     enemyState.affinities.green ?? 0,
-    enemyState.affinities.gold ?? 0
+    enemyState.affinities.gold ?? 0,
+    enemyColoredAffinitySum === 0 ? enemyState.affinities.neutral ?? 0 : 0
   );
   const enemyDomainThreatImminent =
     maxEnemyDomainAffinity >= 4 ||
@@ -399,12 +406,14 @@ function chooseBestCardToChannel(
     }
   }
 
-  const totalPactAffinity =
+  const coloredPactAffinity =
     (aiState.affinities.red ?? 0) +
     (aiState.affinities.blue ?? 0) +
     (aiState.affinities.purple ?? 0) +
     (aiState.affinities.green ?? 0) +
     (aiState.affinities.gold ?? 0);
+  const totalPactAffinity =
+    coloredPactAffinity > 0 ? coloredPactAffinity : aiState.affinities.neutral ?? 0;
   const expansionDeficitBonus =
     totalPactAffinity < 6 ? Math.round(24 * w.domainExpansionEagerness) : 8;
 
@@ -429,6 +438,9 @@ function chooseBestCardToChannel(
 
     if (card.domain !== 'neutral') {
       score += Math.min(26, domainNeed[card.domain] * 10);
+    } else if (coloredPactAffinity === 0 && totalPactAffinity < 6) {
+      // Pure Neutral Sovereign advances Axial Affinity toward Matriz Horológica do Ponto Zero (6/6)
+      score += Math.round(14 * w.domainExpansionEagerness);
     }
 
     // Empirical learned channel guidance

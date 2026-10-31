@@ -613,6 +613,7 @@ export function createInitialGameState(
       : 0) + riftBonusEssence;
 
   const aiStartingAffinities = createStartingAffinitiesForDeck(aiDeck);
+  const aiHasColoredCards = aiDeck.some((c) => c.domain !== 'neutral');
   if (
     options?.bossId === 'boss_stage_6_valkyra' ||
     options?.bossId === 'boss_stage_14_valkyra_eternal' ||
@@ -620,18 +621,27 @@ export function createInitialGameState(
     options?.bossId === 'boss_stage_26_vaelkor_supreme_wheel' ||
     options?.bossId === 'exp_boss_8_valkyra' ||
     options?.bossId === 'exp_boss_9_vaelkor' ||
-    (options?.bossId?.startsWith('gc_neutral_t4_') ?? false)
+    ((options?.bossId?.startsWith('gc_neutral_t4_') ?? false) && aiHasColoredCards)
   ) {
     for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
       aiStartingAffinities[dom] = Math.max(aiStartingAffinities[dom], 2);
     }
   } else if (
     options?.bossId === 'boss_stage_32_fracture_architect' ||
-    (options?.bossId?.startsWith('gc_neutral_t5_') ?? false)
+    ((options?.bossId?.startsWith('gc_neutral_t5_') ?? false) && aiHasColoredCards)
   ) {
     for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
       aiStartingAffinities[dom] = Math.max(aiStartingAffinities[dom], 3);
     }
+  } else if (
+    ((options?.bossId?.startsWith('gc_neutral_t4_') ?? false) ||
+      (options?.bossId?.startsWith('gc_neutral_t5_') ?? false)) &&
+    !aiHasColoredCards
+  ) {
+    aiStartingAffinities.neutral = Math.max(
+      aiStartingAffinities.neutral,
+      isGrandTier5 ? 3 : 2
+    );
   } else if (isGrandTier4 || isGrandTier5) {
     for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
       if (options?.bossId?.startsWith(`gc_${dom}_`)) {
@@ -835,6 +845,29 @@ export function mulliganCards(
   return next;
 }
 
+export function isPureNeutralActor(actorState: PlayerState): boolean {
+  const coloredTotal =
+    (actorState.affinities.red ?? 0) +
+    (actorState.affinities.blue ?? 0) +
+    (actorState.affinities.purple ?? 0) +
+    (actorState.affinities.green ?? 0) +
+    (actorState.affinities.gold ?? 0);
+  if (coloredTotal > 0) return false;
+  for (const c of actorState.hand) {
+    if (c.domain !== 'neutral') return false;
+  }
+  for (const c of actorState.deck) {
+    if (c.domain !== 'neutral') return false;
+  }
+  for (const c of actorState.channeledCards) {
+    if (c.domain !== 'neutral') return false;
+  }
+  for (const c of actorState.crypt) {
+    if (c.domain !== 'neutral') return false;
+  }
+  return true;
+}
+
 function pickMostNeededColoredDomain(actorState: PlayerState): Domain {
   const coloredDomains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
   const deficitScore: Record<Exclude<Domain, 'neutral'>, number> = {
@@ -897,15 +930,25 @@ export function channelCard(
   actorState.hasChanneledThisTurn = true;
 
   if (card.domain === 'neutral') {
+    const pureNeutral = isPureNeutralActor(actorState);
     actorState.affinities.neutral += 1;
-    const bonusDomain = pickMostNeededColoredDomain(actorState);
-    actorState.affinities[bonusDomain] += 1;
-    addLog(
-      next,
-      actor,
-      'channel',
-      `${actorState.name} reciclou [${card.name}] no Altar (+1 Afinidade e comprou 1 carta | Essência: ${actorState.currentEssence}/${actorState.maxEssence}⚡).`
-    );
+    if (pureNeutral) {
+      addLog(
+        next,
+        actor,
+        'channel',
+        `${actorState.name} reciclou [${card.name}] no Altar (+1 Afinidade AXIAL e comprou 1 carta | Essência: ${actorState.currentEssence}/${actorState.maxEssence}⚡).`
+      );
+    } else {
+      const bonusDomain = pickMostNeededColoredDomain(actorState);
+      actorState.affinities[bonusDomain] += 1;
+      addLog(
+        next,
+        actor,
+        'channel',
+        `${actorState.name} reciclou [${card.name}] no Altar (+1 Afinidade e comprou 1 carta | Essência: ${actorState.currentEssence}/${actorState.maxEssence}⚡).`
+      );
+    }
   } else {
     actorState.affinities[card.domain] += 1;
     addLog(
@@ -1117,14 +1160,14 @@ export function recalculateFormationBonuses(state: GameState): void {
 
 export function isDomainTerrainAwakened(
   _actorState: PlayerState,
-  _domain: Exclude<Domain, 'neutral'>
+  _domain: Domain
 ): boolean {
   // Terrenos Despertos (3+ Afinidade) foram substituídos exclusivamente pela Expansão de Domínio (6+ Afinidade).
   return false;
 }
 
 export interface TerrainStatusInfo {
-  domain: Exclude<Domain, 'neutral'>;
+  domain: Domain;
   isAwakened: boolean;
   currentAffinity: number;
   icon: string;
@@ -1135,12 +1178,14 @@ export interface TerrainStatusInfo {
 
 export function getTerrainInfoForDomain(
   actorState: PlayerState,
-  domain: Exclude<Domain, 'neutral'>
+  domain: Domain
 ): TerrainStatusInfo {
   const primary = getPrimarySovereignDomain(actorState);
   const currentAffinity =
-    (actorState.affinities[domain] ?? 0) +
-    (domain === primary ? actorState.affinities.neutral ?? 0 : 0);
+    domain === 'neutral'
+      ? actorState.affinities.neutral ?? 0
+      : (actorState.affinities[domain] ?? 0) +
+        (domain === primary ? actorState.affinities.neutral ?? 0 : 0);
   const isAwakened = isDomainTerrainAwakened(actorState, domain);
 
   switch (domain) {
@@ -1194,12 +1239,25 @@ export function getTerrainInfoForDomain(
         shortBadge: '+1⚔️/+1❤️ p/ Feitiço',
         bonusDesc: 'Lançar um Feitiço concede +1⚔️/+1❤️ a um aliado em campo (3+ Afinidade 🔵)',
       };
+    case 'neutral':
+      return {
+        domain: 'neutral',
+        isAwakened,
+        currentAffinity,
+        icon: '⚙️',
+        bonusTitle: 'Eixo Horológico',
+        shortBadge: 'Calibragem Axial',
+        bonusDesc: 'Sintonia com a Matriz Horológica do Ponto Zero (6+ Afinidade ⚙️)',
+      };
   }
 }
 
 export function getAllTerrainStatuses(actorState: PlayerState): TerrainStatusInfo[] {
-  const domains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
   const primary = getPrimarySovereignDomain(actorState);
+  if (primary === 'neutral') {
+    return [getTerrainInfoForDomain(actorState, 'neutral')];
+  }
+  const domains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
   const active = domains
     .filter((d) => (actorState.affinities[d] ?? 0) > 0 || d === primary)
     .map((d) => getTerrainInfoForDomain(actorState, d));
@@ -1235,8 +1293,8 @@ export const SIMPLE_DOMAIN_COST = 2;
 export const DOMAIN_BREAK_SACRIFICE_HP = 10;
 export const DOMAIN_CONCENTRATION_BREAK_DMG = 8;
 
-export function getDomainExpansionSpec(domain: Exclude<Domain, 'neutral'>): {
-  domain: Exclude<Domain, 'neutral'>;
+export function getDomainExpansionSpec(domain: Domain): {
+  domain: Domain;
   name: string;
   subtitle: string;
   icon: string;
@@ -1293,13 +1351,25 @@ export function getDomainExpansionSpec(domain: Exclude<Domain, 'neutral'>): {
         potencyDesc: unifiedPotency,
         sureHitDesc: unifiedSureHit,
       };
+    case 'neutral':
+      return {
+        domain: 'neutral',
+        name: 'Matriz Horológica do Ponto Zero',
+        subtitle: 'Expansão de Domínio Axial',
+        icon: '⛩️⚙️',
+        potencyDesc: unifiedPotency,
+        sureHitDesc: unifiedSureHit,
+      };
   }
 }
 
 export function getEffectiveDomainAffinity(
   actorState: PlayerState,
-  domain: Exclude<Domain, 'neutral'>
+  domain: Domain
 ): number {
+  if (domain === 'neutral') {
+    return isPureNeutralActor(actorState) ? actorState.affinities.neutral ?? 0 : 0;
+  }
   const primary = getPrimarySovereignDomain(actorState);
   const raw = actorState.affinities[domain] ?? 0;
   if (domain !== primary) {
@@ -1314,11 +1384,14 @@ export function getEffectiveDomainAffinity(
 }
 
 export function getBestExpandableDomain(actorState: PlayerState): {
-  domain: Exclude<Domain, 'neutral'>;
+  domain: Domain;
   affinity: number;
 } {
+  if (isPureNeutralActor(actorState)) {
+    return { domain: 'neutral', affinity: actorState.affinities.neutral ?? 0 };
+  }
   const domains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
-  let bestDomain: Exclude<Domain, 'neutral'> = getPrimarySovereignDomain(actorState);
+  let bestDomain: Domain = getPrimarySovereignDomain(actorState);
   let bestAff = getEffectiveDomainAffinity(actorState, bestDomain);
 
   for (const d of domains) {
@@ -1345,7 +1418,7 @@ export function isSureHitActiveFor(state: GameState, actor: 'player' | 'ai'): bo
 export function canInvokeDomainExpansion(
   state: GameState,
   actor: 'player' | 'ai'
-): { allowed: boolean; reason?: string; domain: Exclude<Domain, 'neutral'>; affinity: number } {
+): { allowed: boolean; reason?: string; domain: Domain; affinity: number } {
   const actorState = state[actor];
   const { domain, affinity } = getBestExpandableDomain(actorState);
 
@@ -1393,7 +1466,7 @@ export function canInvokeDomainExpansion(
 export function applyDomainExpansionPulseEffects(
   _state: GameState,
   _actor: 'player' | 'ai',
-  _domain: Exclude<Domain, 'neutral'>
+  _domain: Domain
 ): void {
   // Pulso Elemental desativado: a Expansão de Domínio concede exclusivamente +1/+1, Ímpeto e Acerto Garantido!
   return;
@@ -2015,7 +2088,10 @@ export function moveUnitRow(
 /**
  * M4 — Poder Ativo do Soberano (Custo 2⚡, 1x por turno), determinado pelo Domínio principal do Soberano.
  */
-export function getPrimarySovereignDomain(actorState: PlayerState): Exclude<Domain, 'neutral'> {
+export function getPrimarySovereignDomain(actorState: PlayerState): Domain {
+  if (isPureNeutralActor(actorState)) {
+    return 'neutral';
+  }
   const domains: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
   let best: Exclude<Domain, 'neutral'> = 'red';
   let bestVal = -1;
@@ -2029,7 +2105,7 @@ export function getPrimarySovereignDomain(actorState: PlayerState): Exclude<Doma
 }
 
 export function getSovereignPowerInfo(actorState: PlayerState): {
-  domain: Exclude<Domain, 'neutral'>;
+  domain: Domain;
   name: string;
   cost: number;
   icon: string;
@@ -2076,6 +2152,14 @@ export function getSovereignPowerInfo(actorState: PlayerState): {
         cost: 2,
         icon: '☀️',
         shortDesc: 'Concede +1🛡️ Armadura e +2❤️ Vida ao aliado mais ferido (ou cura +3❤️ no seu Soberano).',
+      };
+    case 'neutral':
+      return {
+        domain: 'neutral',
+        name: 'Pulso da Matriz',
+        cost: 2,
+        icon: '⚙️',
+        shortDesc: 'Causa 2⚙️ a um inimigo (ou ao Soberano rival) e concede +1🛡️ Armadura e +1❤️ Vida ao seu maior aliado (ou cura +2❤️ no Soberano).',
       };
   }
 }
@@ -2195,6 +2279,47 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
         actorState.hp = Math.min(actorState.maxHp, actorState.hp + 3);
         addFeedback(next, `${actor}-sovereign`, '+3❤️ Égide Imperial', 'heal');
         addLog(next, actor, 'spell', `Poder do Soberano [${info.name}] restaurou +3❤️ de ${actorState.name}!`);
+      }
+      break;
+    }
+    case 'neutral': {
+      const enemies = getAllBoardUnits(enemyState).filter(
+        (u) => !u.isTrap && u.card.type === 'creature'
+      );
+      if (enemies.length > 0) {
+        enemies.sort((a, b) => a.currentHp - b.currentHp || b.currentAtk - a.currentAtk);
+        const target = enemies[0];
+        dealEffectDamageToUnit(next, target, 2, info.name);
+        addLog(
+          next,
+          actor,
+          'spell',
+          `Poder do Soberano [${info.name}] descarregou 2⚙️ do Ponto Zero em [${target.card.name}]!`
+        );
+      } else {
+        enemyState.hp = Math.max(0, enemyState.hp - 2);
+        registerSovereignDamageForDomainConcentration(next, enemyActor, 2);
+        addFeedback(next, `${enemyActor}-sovereign`, '-2⚙️ Pulso da Matriz', 'damage');
+        addLog(
+          next,
+          actor,
+          'spell',
+          `Poder do Soberano [${info.name}] atingiu ${enemyState.name} em 2⚙️!`
+        );
+      }
+      const allies = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap
+      );
+      if (allies.length > 0) {
+        allies.sort((a, b) => b.currentAtk - a.currentAtk || b.currentHp - a.currentHp);
+        const ally = allies[0];
+        ally.currentArmor += 1;
+        ally.maxHp += 1;
+        ally.currentHp += 1;
+        addFeedback(next, ally.instanceId, '+1🛡️/+1❤️ Calibrado!', 'shield');
+      } else {
+        actorState.hp = Math.min(actorState.maxHp, actorState.hp + 2);
+        addFeedback(next, `${actor}-sovereign`, '+2❤️ Estase Axial', 'heal');
       }
       break;
     }

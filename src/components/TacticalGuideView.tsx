@@ -79,12 +79,13 @@ export interface MatchupGuideAnalysis {
   winConditionPath: string;
 }
 
-const DOMAIN_EXPANSION_NAMES: Record<Exclude<Domain, 'neutral'>, string> = {
+const DOMAIN_EXPANSION_NAMES: Record<Domain, string> = {
   red: 'Caldeira do Sol Carmesim (6/6 Afinidade + 3⚡: santuário vulcânico, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
   blue: 'Vazio Infinito de Cronos (6/6 Afinidade + 3⚡: santuário glacial e tempestade astral, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
   purple: 'Santuário Malevolente das Almas (6/6 Afinidade + 3⚡: necrópole gótica e névoa necrótica, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
   green: 'Mar de Árvores Primordial (6/6 Afinidade + 3⚡: floresta primordial com raízes vivas, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
   gold: 'Tribunal da Sentença Dourada (6/6 Afinidade + 3⚡: santuário imperial solar, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
+  neutral: 'Matriz Horológica do Ponto Zero (6/6 Afinidade Axial + 3⚡: santuário de engrenagens astrais e ferro meteórico, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
 };
 
 export function buildDeckTacticalProfile(deck: PrebuiltDeck): DeckTacticalProfile {
@@ -233,8 +234,11 @@ export function buildDeckTacticalProfile(deck: PrebuiltDeck): DeckTacticalProfil
     }
   }
 
-  const domainExpansionText = deck.domains
-    .filter((d): d is Exclude<Domain, 'neutral'> => d !== 'neutral')
+  const effectiveDomainsForExpansion: Domain[] =
+    deck.domains.some((d) => d !== 'neutral')
+      ? deck.domains.filter((d) => d !== 'neutral')
+      : ['neutral'];
+  const domainExpansionText = effectiveDomainsForExpansion
     .map((d) => DOMAIN_EXPANSION_NAMES[d])
     .join(' | ');
 

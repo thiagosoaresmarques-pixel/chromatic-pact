@@ -131,7 +131,7 @@ export type RoundSubPhase = 'deploy' | 'combat_plan';
 
 export interface DomainExpansionState {
   owner: 'player' | 'ai';
-  domain: Exclude<Domain, 'neutral'>;
+  domain: Domain;
   name: string;
   subtitle: string;
   icon: string;
@@ -142,7 +142,7 @@ export interface DomainExpansionState {
   simpleDomainProtectedActor: 'player' | 'ai' | null;
   clashRival?: {
     owner: 'player' | 'ai';
-    domain: Exclude<Domain, 'neutral'>;
+    domain: Domain;
     name: string;
     icon: string;
   } | null;

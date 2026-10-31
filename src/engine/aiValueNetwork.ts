@@ -181,6 +181,11 @@ function collectSideBoardMetrics(side: PlayerState): {
 
 function getPeakDomainAffinity(side: PlayerState): number {
   const a = side.affinities;
+  const coloredSum =
+    (a.red ?? 0) + (a.blue ?? 0) + (a.purple ?? 0) + (a.green ?? 0) + (a.gold ?? 0);
+  if (coloredSum === 0 && (a.neutral ?? 0) > 0) {
+    return a.neutral ?? 0;
+  }
   return Math.max(a.red ?? 0, a.blue ?? 0, a.purple ?? 0, a.green ?? 0, a.gold ?? 0);
 }
 

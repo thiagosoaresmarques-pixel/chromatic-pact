@@ -1608,6 +1608,14 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 archetype: 'Guardiões, Escudo Divino, Armadura pesada e Cidadela de Relíquias na Retaguarda.',
                 cardId: 'gold_09_serafim_solar',
               },
+              {
+                domain: 'neutral' as Domain,
+                sovereignPower: 'Pulso da Matriz (2 de Essência): Causa 2 de dano a um inimigo (ou ao Soberano rival) e concede +1 ARM e +1 de Vida ao seu maior aliado (ou restaura 2 de Vida ao Soberano).',
+                domainExpansion:
+                  'Matriz Horológica do Ponto Zero: Grimórios Axiais puros alcançam 6/6 de Afinidade Axial e concedem +1/+1, Ímpeto e Acerto Garantido por 3 rodadas.',
+                archetype: 'Constructos de ferro meteórico, Guildas da Cidade Franca, Relíquias universais e coringas de Afinidade para grimórios mistos.',
+                cardId: 'neutral_173_general_roda_matriz',
+              },
             ] as const
           ).map((d) => {
             const meta = DOMAIN_META[d.domain];

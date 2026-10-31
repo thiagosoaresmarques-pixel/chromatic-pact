@@ -1570,7 +1570,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
             [
               {
                 domain: 'red' as Domain,
-                sovereignPower: 'Chama Soberana (2 de Essência): Causa 2 de dano a um inimigo e 1 ao Soberano rival (ou 3 ao Soberano se o campo estiver vazio).',
+                sovereignPower: 'Chama Soberana (2 de Essência): Causa 2 de dano a uma criatura inimiga e 1 ao Soberano rival (ou 3 ao Soberano se vazio).',
                 domainExpansion:
                   'Caldeira do Sol Carmesim: Suas criaturas ganham +1/+1, Ímpeto e Acerto Garantido direto no Soberano rival.',
                 archetype: 'Agressão explosiva, Ímpeto, Fúria Crescente, Dragões de Sopro e dano direto.',
@@ -1586,7 +1586,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               },
               {
                 domain: 'blue' as Domain,
-                sovereignPower: 'Pulso Rúnico (2 de Essência): Congela um inimigo causando 2 de dano e concede +1/+1 a um aliado (ou compra 1 carta).',
+                sovereignPower: 'Pulso Rúnico (2 de Essência): Congela um inimigo causando 2 de dano (ou 2 ao Soberano rival) e concede +1 de Vida a um aliado (ou compra 1 carta se vazio).',
                 domainExpansion:
                   'Vazio Infinito de Cronos: Suas criaturas ganham +1/+1, Ímpeto e Acerto Garantido direto no Soberano rival.',
                 archetype: 'Controle glacial, compra de cartas, Voo, Alcance e Reações de contra-ataque.',
@@ -1602,7 +1602,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               },
               {
                 domain: 'gold' as Domain,
-                sovereignPower: 'Baluarte Imperial (2 de Essência): Concede +1 ARM e +2 de Vida ao aliado mais ferido (ou restaura 3 de Vida ao Soberano).',
+                sovereignPower: 'Baluarte Imperial (2 de Essência): Concede +1 ATQ, +1 ARM e +1 de Vida ao aliado mais ferido (ou restaura 3 de Vida ao Soberano).',
                 domainExpansion:
                   'Tribunal da Sentença Dourada: Suas criaturas ganham +1/+1, Ímpeto e Acerto Garantido direto no Soberano rival.',
                 archetype: 'Guardiões, Escudo Divino, Armadura pesada e Cidadela de Relíquias na Retaguarda.',
@@ -1610,7 +1610,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               },
               {
                 domain: 'neutral' as Domain,
-                sovereignPower: 'Pulso da Matriz (2 de Essência): Causa 2 de dano a um inimigo (ou ao Soberano rival) e concede +1 ARM e +1 de Vida ao seu maior aliado (ou restaura 2 de Vida ao Soberano).',
+                sovereignPower: 'Pulso da Matriz (2 de Essência): Causa 2 de dano a uma criatura inimiga (ou ao Soberano rival) e concede +1 ARM e +1 de Vida ao seu maior aliado (ou restaura 3 de Vida ao Soberano).',
                 domainExpansion:
                   'Matriz Horológica do Ponto Zero: Grimórios Axiais puros alcançam 6/6 de Afinidade Axial e concedem +1/+1, Ímpeto e Acerto Garantido por 3 rodadas.',
                 archetype: 'Constructos de ferro meteórico, Guildas da Cidade Franca, Relíquias universais e coringas de Afinidade para grimórios mistos.',

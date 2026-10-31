@@ -1062,8 +1062,8 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     strategySummary:
       'Opera com Constructos blindados, artilharia de Alcance, Pulso da Matriz (2⚡) e a Expansão de Domínio Matriz Horológica do Ponto Zero (6/6 Afinidade Axial).',
     tacticalIdentity: 'midrange',
-    targetAvgCost: 3.2,
-    minEarlyDrops: 30,
+    targetAvgCost: 3.6,
+    minEarlyDrops: 26,
     minCreatures: 70,
     maxRelics: 8,
     seedWeights: {
@@ -1073,7 +1073,7 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
       relicPriority: 1.05,
       guardianPriority: 1.18,
       domainExpansionEagerness: 1.30,
-      sovPowerTempoBias: 1.10,
+      sovPowerTempoBias: 1.12,
       mulliganCurveTarget: 2.9,
     },
   },
@@ -1258,9 +1258,17 @@ function computeArchetypeSynergyAffinity(
       ) {
         s += 4.6;
       }
+      if (card.type === 'creature' && card.rarity === 'legendary' && card.atk >= 6) s += 3.5;
       if (effs.has('break_domain_expansion')) s += 6.0;
-      if (effs.has('destroy_enemy') || effs.has('damage_single_enemy') || effs.has('draw_cards'))
+      if (
+        effs.has('destroy_enemy') ||
+        effs.has('buff_all_allies') ||
+        effs.has('shield_all_allies') ||
+        effs.has('damage_single_enemy') ||
+        effs.has('draw_cards')
+      ) {
         s += 2.8;
+      }
       if (card.type === 'relic' && card.effects.length > 0) s += 1.5;
       break;
   }

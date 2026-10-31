@@ -48,8 +48,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 1,
     "affinityReq": 1,
     "atk": 2,
-    "armor": 0,
-    "hp": 1,
+    "armor": 1,
+    "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
       "Pele Incandescente"
@@ -62,7 +62,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Último Suspiro: Causa 1 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Pele Incandescente. Último Suspiro: Causa 1 de dano a todos os inimigos na Vanguarda.",
+    "description": "Pele Incandescente. Armadura 1. Último Suspiro: Causa 1 de dano a todos os inimigos na Vanguarda.",
     "flavorText": "Seu riso crepita como carvão seco prestes a explodir.",
     "imagePath": "/assets/cards/red_02_magmin.png",
     "aiArtPrompt": "Dark fantasy TCG art, mischievous small magma elemental creature with cracked lava skin laughing amidst fire sparks, obsidian background, high detail."
@@ -103,27 +103,29 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 3,
     "affinityReq": 1,
-    "atk": 3,
+    "atk": 4,
     "armor": 1,
-    "hp": 4,
+    "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
+      "Voo",
       "Fúria Crescente"
     ],
-    "breathDamage": 1,
+    "breathDamage": 2,
     "ascension": {
-      "cost": 4,
+      "cost": 3,
       "newName": "Soberano Meio-Dragão Ascendido",
       "newAtk": 7,
       "newArmor": 2,
-      "newMaxHp": 7,
+      "newMaxHp": 8,
       "addedKeywords": [
         "Voo",
-        "Atropelar"
+        "Atropelar",
+        "Ímpeto"
       ]
     },
     "effects": [],
-    "description": "Fúria Crescente. Sopro 1. Ascensão (4): Desperta asas dracônicas (7/7, Armadura 2, Voo, Atropelar).",
+    "description": "Voo, Fúria Crescente. Armadura 1. Sopro 2. Ascensão (3): Desperta asas dracônicas (7/8, Armadura 2, Voo, Atropelar, Ímpeto).",
     "flavorText": "O juramento de escama e sangue transforma o aço mortal em garra primordial.",
     "imagePath": "/assets/cards/red_04_meio_dragao.png",
     "aiArtPrompt": "Dark fantasy TCG art, red half-dragon warrior in ornate blackened plate armor wielding a flaming greatsword, draconic horns and tail, epic lighting."
@@ -243,7 +245,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Dragão • Lendário",
     "rarity": "legendary",
-    "cost": 8,
+    "cost": 7,
     "affinityReq": 3,
     "atk": 7,
     "armor": 1,
@@ -254,16 +256,16 @@ export const ALL_CARDS: CardDefinition[] = [
       "Atropelar",
       "Fúria Crescente"
     ],
-    "breathDamage": 3,
+    "breathDamage": 2,
     "effects": [
       {
         "trigger": "on_enter",
         "type": "damage_enemy_row",
-        "value": 2,
+        "value": 3,
         "description": "Ao Entrar: Incinera a Vanguarda inimiga com 3 de dano."
       }
     ],
-    "description": "Voo, Atropelar, Fúria Crescente. Sopro 3. Ao Entrar: Causa 3 de dano a toda a Vanguarda inimiga.",
+    "description": "Voo, Atropelar, Fúria Crescente. Armadura 1. Sopro 2. Ao Entrar: Causa 3 de dano a toda a Vanguarda inimiga.",
     "flavorText": "Ele não reclama coroas de reis; ele reclama o ouro derretido sobre seus ossos.",
     "imagePath": "/assets/cards/red_08_dragao_vermelho.png",
     "aiArtPrompt": "Dark fantasy TCG art, colossal ancient red dragon perched on a mountain of melted gold and skulls, breathing a torrent of white-hot fire, masterpiece."
@@ -377,21 +379,22 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 2,
     "affinityReq": 1,
     "atk": 3,
-    "armor": 0,
-    "hp": 2,
+    "armor": 1,
+    "hp": 3,
     "preferredRow": "rearguard",
     "keywords": [
-      "Voo"
+      "Voo",
+      "Ímpeto"
     ],
     "effects": [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 1,
-        "description": "Ao Entrar: Cospe lava causando 1 de dano a um inimigo."
+        "value": 2,
+        "description": "Ao Entrar: Cospe lava causando 2 de dano a um inimigo."
       }
     ],
-    "description": "Voo. Ao Entrar: Causa 1 de dano a um inimigo.",
+    "description": "Voo, Ímpeto. Armadura 1. Ao Entrar: Causa 2 de dano a um inimigo.",
     "flavorText": "Gotejando rocha fundida por onde voa, incendeia estandartes e escudos.",
     "imagePath": "/assets/cards/red_12_mephit_magma.png",
     "aiArtPrompt": "Dark fantasy TCG art, winged magma imp dripping molten lava from its claws, flying over volcanic vents."
@@ -504,11 +507,10 @@ export const ALL_CARDS: CardDefinition[] = [
     "preferredRow": "vanguard",
     "keywords": [
       "Ímpeto",
-      "Fúria Crescente",
-      "Atropelar"
+      "Fúria Crescente"
     ],
     "effects": [],
-    "description": "Fúria Crescente, Atropelar. Ganha +1 ATQ sempre que sobrevive a dano.",
+    "description": "Ímpeto, Fúria Crescente. Ganha +1 ATQ sempre que sobrevive a dano.",
     "flavorText": "Feridas apenas alimentam a fornalha em seu peito.",
     "imagePath": "/assets/cards/red_16_orc_saqueador.png",
     "aiArtPrompt": "Dark fantasy TCG art, savage tusked berserker warrior swinging a massive jagged greataxe, battle scars glowing with rage."
@@ -741,15 +743,22 @@ export const ALL_CARDS: CardDefinition[] = [
     "affinityReq": 2,
     "atk": 5,
     "armor": 1,
-    "hp": 6,
+    "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
       "Voo",
-      "Ímpeto"
+      "Atropelar"
     ],
-    "breathDamage": 1,
-    "effects": [],
-    "description": "Voo, Ímpeto. Armadura 1. Sopro 1. Ataca imediatamente dos céus.",
+    "breathDamage": 2,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Ao Entrar: Varre a Vanguarda inimiga com 1 de dano."
+      }
+    ],
+    "description": "Voo, Atropelar. Armadura 1. Sopro 2. Ao Entrar: Causa 1 de dano à Vanguarda inimiga.",
     "flavorText": "Rápido como uma faísca e implacável como um deslizamento de rochas.",
     "imagePath": "/assets/cards/red_24_dragao_cobre.png",
     "aiArtPrompt": "Dark fantasy TCG art, gleaming copper dragon with horned brow diving from red canyon cliffs, sparks and acid mist."
@@ -1804,8 +1813,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 3,
     "affinityReq": 1,
-    "atk": 3,
-    "armor": 0,
+    "atk": 4,
+    "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
@@ -1814,13 +1823,19 @@ export const ALL_CARDS: CardDefinition[] = [
     "breathDamage": 1,
     "effects": [
       {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao Entrar: Uivo glacial congela um inimigo."
+      },
+      {
         "trigger": "on_attack",
         "type": "freeze_enemy",
         "value": 1,
         "description": "Ao Atacar: Congela um inimigo."
       }
     ],
-    "description": "Ímpeto. Sopro 1. Ao Atacar: Uivo glacial congela uma unidade inimiga.",
+    "description": "Ímpeto. Armadura 1. Sopro 1. Ao Entrar e Ao Atacar: Uivo glacial congela uma unidade inimiga.",
     "flavorText": "Sua pelagem é a própria nevasca; seu hálito, o fim do outono.",
     "imagePath": "/assets/cards/blue_18_lobo_invernal.png",
     "aiArtPrompt": "Dark fantasy TCG art, giant white winter wolf exhaling a cone of blue frost in a blizzard."
@@ -1836,15 +1851,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 4,
     "affinityReq": 2,
-    "atk": 4,
-    "armor": 1,
+    "atk": 5,
+    "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião",
       "Atropelar"
     ],
-    "regeneration": 1,
+    "regeneration": 2,
     "effects": [
       {
         "trigger": "on_enter",
@@ -1853,7 +1868,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Olhar Gelado congela 1 inimigo."
       }
     ],
-    "description": "Guardião, Atropelar. Armadura 1, Regeneração 1. Ao Entrar: Congela 1 inimigo.",
+    "description": "Guardião, Atropelar. Armadura 2, Regeneração 2. Ao Entrar: Congela 1 inimigo.",
     "flavorText": "O vento uiva seu nome nas passagens onde ninguém jamais retornou.",
     "imagePath": "/assets/cards/blue_19_yeti.png",
     "aiArtPrompt": "Dark fantasy TCG art,hulking white-furred yeti with curved horns and glowing icy blue eyes roaring in a snowstorm."
@@ -2560,15 +2575,14 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Criatura • Humanoide • Inquisidor Umbral",
     "rarity": "uncommon",
-    "cost": 3,
+    "cost": 4,
     "affinityReq": 2,
-    "atk": 5,
+    "atk": 4,
     "armor": 0,
-    "hp": 5,
+    "hp": 4,
     "preferredRow": "rearguard",
     "keywords": [
-      "Alcance",
-      "Dreno de Vida"
+      "Alcance"
     ],
     "corruptionCost": 1,
     "effects": [
@@ -2709,15 +2723,14 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Demônio • Lendário",
     "rarity": "legendary",
-    "cost": 5,
+    "cost": 6,
     "affinityReq": 2,
     "atk": 6,
-    "armor": 2,
+    "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
     "keywords": [
       "Voo",
-      "Ímpeto",
       "Atropelar",
       "Pele Incandescente"
     ],
@@ -2729,7 +2742,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Tempestade Abissal causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Corrupção +2. Voo, Atropelar, Pele Incandescente. Último Suspiro: Explode causando 4 de dano a todas as unidades.",
+    "description": "Voo, Atropelar, Pele Incandescente. Armadura 1. Ao Entrar: Causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Armado com o chicote de relâmpago negro e a lâmina da decapitação.",
     "imagePath": "/assets/cards/purple_08_lorde_abissal.png",
     "aiArtPrompt": "Dark fantasy TCG art, towering winged abyssal demon lord wielding a lightning whip and dark flaming greatsword."
@@ -2873,9 +2886,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 1,
     "affinityReq": 1,
-    "atk": 3,
-    "armor": 1,
-    "hp": 3,
+    "atk": 2,
+    "armor": 0,
+    "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião",
@@ -3795,11 +3808,11 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Criatura • Fera • Espírito Silvestre",
     "rarity": "uncommon",
-    "cost": 2,
+    "cost": 3,
     "affinityReq": 1,
-    "atk": 5,
-    "armor": 1,
-    "hp": 4,
+    "atk": 3,
+    "armor": 0,
+    "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
       "Ímpeto",
@@ -3808,13 +3821,13 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
+        "type": "buff_target_ally",
         "value": 1,
         "secondaryValue": 1,
-        "description": "Ao Entrar: Concede +1/+1 aos aliados."
+        "description": "Ao Entrar: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Ímpeto, Escudo Divino. Ao Entrar: Concede +1/+1 aos aliados.",
+    "description": "Ímpeto, Escudo Divino. Ao Entrar: Concede +1/+1 a um aliado.",
     "flavorText": "Onde a bruma esmeralda toca a relva, a lâmina inimiga encontra apenas o vento.",
     "imagePath": "/assets/cards/green_04_pantera_miragem.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Spectral Mist Lynx, a sleek four-legged forest lynx predator with dark emerald fur, glowing jade runes on its shoulders, sharp tufted ears, and twin ethereal green mist tails, strictly four legs, no tentacles."
@@ -4260,7 +4273,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Metamorfo • Guardião",
     "rarity": "rare",
-    "cost": 4,
+    "cost": 3,
     "affinityReq": 2,
     "atk": 4,
     "armor": 1,
@@ -4269,17 +4282,23 @@ export const ALL_CARDS: CardDefinition[] = [
     "keywords": [
       "Guardião"
     ],
-    "regeneration": 1,
+    "regeneration": 2,
     "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao Entrar: Cura 3 de VIDA do seu Soberano."
+      },
       {
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao Entrar: Concede +1/+1 a um aliado."
+        "secondaryValue": 2,
+        "description": "Ao Entrar: Concede +1 ATQ e +2 VIDA a um aliado."
       }
     ],
-    "description": "Guardião. Armadura 1, Regeneração 1. Ao Entrar: Concede +1/+1 a um aliado.",
+    "description": "Guardião. Armadura 1, Regeneração 2. Ao Entrar: Cura 3 de VIDA no Soberano e concede +1/+2 a um aliado.",
     "flavorText": "Manso como o rio no verão; avassalador como a avalanche no inverno.",
     "imagePath": "/assets/cards/green_19_guardiao_ursino.png",
     "aiArtPrompt": "Dark fantasy TCG art, massive werebear warrior wielding a notched greataxe standing guard in a snowy pine forest."
@@ -4650,11 +4669,11 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Fera • Aracnídeo",
     "rarity": "uncommon",
-    "cost": 3,
+    "cost": 4,
     "affinityReq": 1,
-    "atk": 5,
+    "atk": 4,
     "armor": 1,
-    "hp": 6,
+    "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião",
@@ -4664,14 +4683,8 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 2,
-        "description": "Ao Entrar: Ferrão venenoso causa 2 de dano a um inimigo."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
         "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
+        "description": "Ao Entrar: Ferrão venenoso causa 1 de dano a um inimigo."
       }
     ],
     "description": "Guardião, Toque Letal. Armadura 1. Ao Entrar: Golpeia com o ferrão causando 1 de dano a um inimigo.",
@@ -4688,14 +4701,13 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Fera • Primata",
     "rarity": "rare",
-    "cost": 4,
+    "cost": 5,
     "affinityReq": 2,
-    "atk": 6,
+    "atk": 5,
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
     "keywords": [
-      "Ímpeto",
       "Atropelar",
       "Fúria Crescente"
     ],
@@ -4708,7 +4720,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Rugido Alfa concede +1/+1 aos aliados."
       }
     ],
-    "description": "Ímpeto, Atropelar, Fúria Crescente. Armadura 1. Ao Entrar: Concede +1 ATQ e +1 VIDA a todos os aliados.",
+    "description": "Atropelar, Fúria Crescente. Armadura 1. Ao Entrar: Concede +1 ATQ e +1 VIDA a todos os aliados.",
     "flavorText": "Quando ele bate no peito, até os dragões pensam duas vezes antes de pousar.",
     "imagePath": "/assets/cards/green_32_gorila_alfa.png",
     "aiArtPrompt": "Dark fantasy TCG creature art, colossal silverback war-ape roaring atop jungle ruins, glowing primal runes on its shoulders."
@@ -5182,7 +5194,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "spell",
     "subtype": "Feitiço • Bênção",
     "rarity": "rare",
-    "cost": 4,
+    "cost": 3,
     "affinityReq": 2,
     "atk": 0,
     "armor": 0,
@@ -5198,12 +5210,19 @@ export const ALL_CARDS: CardDefinition[] = [
       },
       {
         "trigger": "on_enter",
-        "type": "heal_all_allies",
-        "value": 2,
-        "description": "Cura 2 de VIDA de todos os aliados."
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Concede +1 ATQ e +2 VIDA a todos os aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
       }
     ],
-    "description": "Feitiço: Concede Escudo Divino e restaura 2 de VIDA de todas as suas unidades em campo.",
+    "description": "Feitiço: Concede Escudo Divino, +1 ATQ e +2 de VIDA a todas as suas unidades aliadas, e compra 1 carta.",
     "flavorText": "Nenhum golpe profano atravessa o decreto da luz.",
     "imagePath": "/assets/cards/gold_10_egide_radiante.png",
     "aiArtPrompt": "Dark fantasy TCG spell art, muscular winged celestial raising a greatsword to project golden domes of light over allies."
@@ -6106,8 +6125,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 3,
     "affinityReq": 0,
     "atk": 3,
-    "armor": 0,
-    "hp": 2,
+    "armor": 1,
+    "hp": 3,
     "preferredRow": "rearguard",
     "keywords": [
       "Alcance",
@@ -6115,7 +6134,7 @@ export const ALL_CARDS: CardDefinition[] = [
       "Toque Letal"
     ],
     "effects": [],
-    "description": "Sem requisito de Afinidade. Alcance, Ímpeto, Toque Letal. Elimina qualquer alvo desprotegido.",
+    "description": "Sem requisito de Afinidade. Alcance, Ímpeto, Toque Letal. Armadura 1.",
     "flavorText": "Veneno de wyvern na ponta da besta; silêncio no contrato.",
     "imagePath": "/assets/cards/neutral_02_assassino_guilda.png",
     "aiArtPrompt": "Dark fantasy TCG art, hooded guild assassin perched on a rooftop aiming a poisoned hand crossbow."
@@ -6907,7 +6926,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 3,
     "affinityReq": 1,
     "atk": 4,
-    "armor": 0,
+    "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
@@ -6926,11 +6945,19 @@ export const ALL_CARDS: CardDefinition[] = [
         "Atropelar"
       ]
     },
-    "effects": [],
-    "description": "Voo, Ímpeto. Ascensão (4): Torna-se Lorde-Dracônico da Lança Solar (7/7, ARM 1, Atropelar).",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao Entrar: Concede +1⚡ Essência neste turno."
+      }
+    ],
+    "description": "Voo, Ímpeto. Armadura 1. Sopro 1. Ao Entrar: Concede +1⚡ Essência. Ascensão (4): Lorde-Dracônico da Lança Solar.",
     "flavorText": "Apenas aqueles que sobrevivem ao sopro do draco têm o direito de empunhar suas rédeas.",
     "imagePath": "/assets/cards/red_42_cavaleiro_draconico.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), fierce dragon knight in crimson dragonscale armor riding a winged red war-drake, leveling a blazing lance."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), fierce dragon knight in crimson dragonscale armor riding a winged red war-drake, leveling a blazing lance.",
+    "breathDamage": 1
   },
   {
     "id": "red_43_quimera_vulcanica",
@@ -6943,9 +6970,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 4,
     "affinityReq": 2,
-    "atk": 5,
-    "armor": 0,
-    "hp": 5,
+    "atk": 4,
+    "armor": 1,
+    "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
       "Voo",
@@ -6956,11 +6983,11 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_enemy_row",
-        "value": 1,
-        "description": "Ao Entrar: Queima a fileira inimiga em 1 de dano."
+        "value": 2,
+        "description": "Ao Entrar: Queima a fileira inimiga em 2 de dano."
       }
     ],
-    "description": "Voo, Fúria Crescente. Sopro 1: Queima a fileira inimiga em 1 ao entrar.",
+    "description": "Voo, Fúria Crescente. Armadura 1. Sopro 1. Ao Entrar: Queima a fileira inimiga em 2 de dano.",
     "flavorText": "Três gargantas, três rugidos e uma única sentença de cinzas.",
     "imagePath": "/assets/cards/red_43_quimera_vulcanica.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), three-headed volcanic chimera with flaming lion mane, obsidian goat horns, and red dragon head breathing fire."
@@ -7474,9 +7501,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 3,
+    "atk": 2,
     "armor": 1,
-    "hp": 4,
+    "hp": 3,
     "preferredRow": "rearguard",
     "keywords": [
       "Alcance"
@@ -7499,15 +7526,9 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "freeze_enemy",
         "value": 1,
         "description": "Ao Entrar: Congela um inimigo."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Alcance. Ao Entrar: Congela um inimigo. Ascensão (4): Desperta como Soberana Naga do Dilúvio (6/7, ARM 1, Escudo Divino, Renascer).",
+    "description": "Alcance. Armadura 1. Ao Entrar: Congela um inimigo. Ascensão (4): Desperta como Soberana Naga do Dilúvio (6/7, ARM 1, Escudo Divino, Renascer).",
     "flavorText": "Seus olhos leem o curso dos rios e o destino dos reis.",
     "imagePath": "/assets/cards/blue_40_naga_guardia.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), majestic sapphire-scaled guardian naga oracle wearing a golden tiara and holding a swirling water orb."
@@ -9001,9 +9022,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 4,
     "affinityReq": 2,
-    "atk": 3,
+    "atk": 4,
     "armor": 1,
-    "hp": 5,
+    "hp": 6,
     "preferredRow": "rearguard",
     "keywords": [
       "Guardião"
@@ -9012,21 +9033,22 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "turn_end",
         "type": "heal_all_allies",
-        "value": 1,
-        "description": "Fim do Turno: Nutre o enxame curando 1 de VIDA nos aliados."
+        "value": 2,
+        "description": "Fim do Turno: Nutre o enxame curando 2 de VIDA nos aliados."
       },
       {
         "trigger": "on_enter",
         "type": "summon_token",
         "value": 2,
         "secondaryValue": 2,
-        "description": "Ao Entrar: Invoca um Soldado Quitinosa (2/2)."
+        "description": "Ao Entrar: Invoca um Soldado Quitinoso (2/2)."
       }
     ],
-    "description": "Guardião. Armadura 1. Ao Entrar: Invoca uma cria (2/2). Fim do Turno: Cura 1 de VIDA em todos os aliados.",
+    "description": "Guardião. Armadura 1, Regeneração 2. Ao Entrar: Invoca uma cria (2/2). Fim do Turno: Cura 2 de VIDA em todos os aliados.",
     "flavorText": "Enquanto a Matriarca respirar, o formigueiro jamais ficará sem soldados.",
     "imagePath": "/assets/cards/green_48_rainha_formiga.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), giant chitinous amber-green insectoid queen with glowing mandibles and crystalline abdomen."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), giant chitinous amber-green insectoid queen with glowing mandibles and crystalline abdomen.",
+    "regeneration": 2
   },
   {
     "id": "green_49_dragao_esmeralda",
@@ -9258,12 +9280,13 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 1,
     "affinityReq": 1,
-    "atk": 1,
+    "atk": 2,
     "armor": 1,
     "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
-      "Guardião"
+      "Guardião",
+      "Escudo Divino"
     ],
     "ascension": {
       "cost": 4,
@@ -9278,7 +9301,7 @@ export const ALL_CARDS: CardDefinition[] = [
       ]
     },
     "effects": [],
-    "description": "Guardião. Armadura 1. Ascensão (4): Sagra-se Grão-Paladino da Luz Invicta (5/7, ARM 2, Escudo Divino, Voo).",
+    "description": "Guardião, Escudo Divino. Armadura 1. Ascensão (4): Sagra-se Grão-Paladino da Luz Invicta (5/7, ARM 2, Escudo Divino, Voo).",
     "flavorText": "O escudo que hoje pesa no braço amanhã refletirá o próprio sol.",
     "imagePath": "/assets/cards/gold_37_escudeiro_solar.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), determined young sun squire in polished white-and-gold plate holding a radiant lion-crest tower shield."
@@ -10230,9 +10253,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 1,
     "affinityReq": 1,
-    "atk": 1,
+    "atk": 2,
     "armor": 0,
-    "hp": 2,
+    "hp": 3,
     "preferredRow": "rearguard",
     "keywords": [
       "Voo"
@@ -10240,12 +10263,18 @@ export const ALL_CARDS: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao Entrar: Aviva a forja concedendo +1⚡ Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 1,
         "description": "Ao Entrar: Sopra fagulhas causando 1 de dano a um inimigo."
       }
     ],
-    "description": "Voo. Ao Entrar: Causa 1 de dano a um inimigo.",
+    "description": "Voo. Ao Entrar: Concede +1⚡ Essência neste turno e causa 1 de dano a um inimigo.",
     "flavorText": "Onde há fumaça na forja, há meia dúzia deles assoprando o carvão.",
     "imagePath": "/assets/cards/red_55_diabrete_forja.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), mischievous winged smoke-and-ember imp blowing a jet of sparks from puffed cheeks, glowing coal eyes, soot-darkened leathery wings."
@@ -10480,8 +10509,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "rare",
     "cost": 5,
     "affinityReq": 2,
-    "atk": 6,
-    "armor": 0,
+    "atk": 5,
+    "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
@@ -10490,7 +10519,7 @@ export const ALL_CARDS: CardDefinition[] = [
     ],
     "breathDamage": 1,
     "effects": [],
-    "description": "Voo, Ímpeto. Sopro 1: Varre a fileira inimiga com brasas antes de atacar.",
+    "description": "Voo, Ímpeto. Armadura 1. Sopro 1. Mergulha das nuvens de cinza sobre a linha inimiga.",
     "flavorText": "Mais veloz que os grandes dragões e duas vezes mais faminta.",
     "imagePath": "/assets/cards/red_63_wyvern_imperial.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), fierce crimson imperial wyvern diving with outstretched leathery wings, barbed venomous fiery tail stinger, and burning jaws."
@@ -10939,9 +10968,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 4,
+    "atk": 2,
     "armor": 0,
-    "hp": 5,
+    "hp": 3,
     "preferredRow": "rearguard",
     "keywords": [
       "Alcance"
@@ -10952,12 +10981,6 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "freeze_enemy",
         "value": 1,
         "description": "Ao Entrar: Prende e Congela 1 inimigo."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
       }
     ],
     "description": "Alcance. Ao Entrar: Congela 1 inimigo.",
@@ -11618,11 +11641,11 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Anão Sombrio • Guerreiro",
     "rarity": "uncommon",
-    "cost": 2,
+    "cost": 3,
     "affinityReq": 1,
-    "atk": 4,
-    "armor": 2,
-    "hp": 5,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião",
@@ -11640,7 +11663,7 @@ export const ALL_CARDS: CardDefinition[] = [
       ]
     },
     "effects": [],
-    "description": "Blindagem subterrânea (3/1/4). Ascensão (4⚡): Colosso Psíquico (6/2/6, Guardião, Atropelar).",
+    "description": "Guardião, Dreno de Vida. Armadura 1. Ascensão (4⚡): Colosso Psíquico (6/2/6, Guardião, Atropelar).",
     "flavorText": "Alimentado pela dor e pela psique aprisionada em sua couraça de ferro negro.",
     "imagePath": "/assets/cards/purple_59_duergar_despota.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ashen-skinned subterranean dwarf despot encased in dark iron steam-powered exo-armor glowing with violet psychic flames."
@@ -12667,9 +12690,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 2,
+    "atk": 3,
     "armor": 1,
-    "hp": 3,
+    "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião"
@@ -12685,8 +12708,16 @@ export const ALL_CARDS: CardDefinition[] = [
         "Escudo Divino"
       ]
     },
-    "effects": [],
-    "description": "Guardião. Ascensão (4⚡): Centurião Imortal (4/2/6, Guardião, Escudo Divino).",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +1/+1 a um aliado."
+      }
+    ],
+    "description": "Guardião. Armadura 1. Ao Entrar: Concede +1/+1 a um aliado. Ascensão (4⚡): Centurião Imortal.",
     "flavorText": "Escudo com escudo, lança com lança: a falange é uma muralha que caminha.",
     "imagePath": "/assets/cards/gold_56_lanceiro_falange.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), disciplined golden phalanx halberdier in gleaming sun-plate armor holding a tower shield and radiant halberd."
@@ -13713,9 +13744,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 3,
-    "armor": 1,
-    "hp": 4,
+    "atk": 2,
+    "armor": 0,
+    "hp": 3,
     "preferredRow": "rearguard",
     "keywords": [
       "Alcance"
@@ -13732,12 +13763,6 @@ export const ALL_CARDS: CardDefinition[] = [
       ]
     },
     "effects": [
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao Entrar: Pesquisa ancestral compra 1 carta."
-      },
       {
         "trigger": "on_attack",
         "type": "draw_cards",
@@ -14692,15 +14717,21 @@ export const ALL_CARDS: CardDefinition[] = [
     "affinityReq": 1,
     "atk": 0,
     "armor": 1,
-    "hp": 4,
+    "hp": 5,
     "preferredRow": "rearguard",
     "keywords": [],
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "heal_sovereign",
-        "value": 2,
-        "description": "Ao Entrar: Cura 2 de VIDA do seu Soberano."
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Ao Entrar: Concede Escudo Divino aos aliados."
       },
       {
         "trigger": "turn_start",
@@ -14710,7 +14741,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Ao Entrar: Cura 2 no Soberano. Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Ao Entrar: Compra 1 carta e concede Escudo Divino aos aliados. Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Forjado em ouro real, suas engrenagens marcam o compasso da vitória.",
     "imagePath": "/assets/cards/gold_87_relogio_bolso_real.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), open ornate royal gold pocket-watch with glowing celestial gears and a heavy gold chain."
@@ -15081,9 +15112,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "rare",
     "cost": 4,
     "affinityReq": 2,
-    "atk": 6,
+    "atk": 4,
     "armor": 0,
-    "hp": 6,
+    "hp": 4,
     "preferredRow": "rearguard",
     "keywords": [
       "Voo",
@@ -15618,18 +15649,20 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 4,
     "affinityReq": 2,
     "atk": 5,
-    "armor": 0,
-    "hp": 4,
+    "armor": 1,
+    "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
       "Voo",
-      "Ímpeto"
+      "Ímpeto",
+      "Atropelar"
     ],
     "effects": [],
-    "description": "Voo, Ímpeto. Cai do céu como um meteoro no turno em que é invocado.",
+    "description": "Voo, Ímpeto, Atropelar. Armadura 1. Sopro 2: Cai do céu como um meteoro incendiando a fileira inimiga.",
     "flavorText": "Olhe para cima: aquela estrela cadente tem garras e dentes.",
     "imagePath": "/assets/cards/red_79_draco_meteoro.png",
-    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), sleek crimson meteor-drake diving headfirst wrapped in a blazing cone of atmospheric re-entry fire."
+    "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), sleek crimson meteor-drake diving headfirst wrapped in a blazing cone of atmospheric re-entry fire.",
+    "breathDamage": 2
   },
   {
     "id": "red_80_gigante_caldeira",
@@ -16879,7 +16912,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "affinityReq": 1,
     "atk": 2,
     "armor": 0,
-    "hp": 1,
+    "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
       "Ímpeto",
@@ -16933,9 +16966,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 2,
+    "atk": 3,
     "armor": 0,
-    "hp": 2,
+    "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
       "Ímpeto"
@@ -16944,11 +16977,11 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_attack",
         "type": "damage_enemy_sovereign",
-        "value": 1,
-        "description": "Ao Atacar: Espalha fagulhas que causam 1 de dano ao Soberano inimigo."
+        "value": 2,
+        "description": "Ao Atacar: Espalha fagulhas que causam 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Ímpeto. Ao Atacar: Causa 1 de dano ao Soberano inimigo.",
+    "description": "Ímpeto. Ao Atacar: Causa 2 de dano ao Soberano inimigo.",
     "flavorText": "Seu latido soa como o estalar de lenha seca na fornalha.",
     "imagePath": "/assets/cards/red_93_caocao_cinzas.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), ferocious ash-and-cinder hound with cracked volcanic hide, glowing orange ribs, and flaming jaws leaping forward."
@@ -16962,11 +16995,11 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Criatura • Guerreiro • Dracônico",
     "rarity": "uncommon",
-    "cost": 2,
+    "cost": 3,
     "affinityReq": 1,
-    "atk": 4,
+    "atk": 3,
     "armor": 1,
-    "hp": 4,
+    "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
       "Fúria Crescente",
@@ -16993,7 +17026,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Causa 2 de dano a um inimigo."
       }
     ],
-    "description": "Fúria Crescente, Ímpeto. Ao Entrar: Causa 2 de dano a um inimigo. Ascensão (3): Senhor da Guerra Escama-Rubra (7/6, ARM 1, Atropelar, Voo).",
+    "description": "Fúria Crescente, Ímpeto. Armadura 1. Ao Entrar: Causa 2 de dano a um inimigo. Ascensão (3): Senhor da Guerra Escama-Rubra (7/6, ARM 1, Atropelar, Voo).",
     "flavorText": "Cada cicatriz em seu peito ferve com o sangue dos primeiros dragões.",
     "imagePath": "/assets/cards/red_94_berserker_draconico.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), muscular crimson draconic champion berserker dual-wielding jagged volcanic greataxes with burning aura and draconic horns."
@@ -20222,7 +20255,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "affinityReq": 1,
     "atk": 2,
     "armor": 0,
-    "hp": 1,
+    "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
       "Ímpeto"
@@ -20231,11 +20264,11 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_enemy_sovereign",
-        "value": 1,
-        "description": "Ao Entrar: Causa 1 de dano ao Soberano inimigo."
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Ímpeto. Ao Entrar: Causa 1 de dano ao Soberano inimigo.",
+    "description": "Ímpeto. Ao Entrar: Causa 2 de dano ao Soberano inimigo.",
     "flavorText": "Nascido das fagulhas que saltam da bigorna do tirano.",
     "imagePath": "/assets/cards/red_109_diabrete_fornalha.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), fiery furnace imp with glowing molten horns and ember wings hurling a spark of lava."
@@ -20290,8 +20323,15 @@ export const ALL_CARDS: CardDefinition[] = [
       "Ímpeto",
       "Fúria Crescente"
     ],
-    "effects": [],
-    "description": "Ímpeto, Fúria Crescente. Salta das fendas de lava diretamente sobre a presa.",
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Ao Atacar: Causa 1 de dano ao Soberano inimigo."
+      }
+    ],
+    "description": "Ímpeto, Fúria Crescente. Ao Atacar: Causa 1 de dano ao Soberano inimigo.",
     "flavorText": "Seus passos deixam pegadas de vidro derretido na rocha.",
     "imagePath": "/assets/cards/red_111_predador_piroclastico.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), sleek pyroclastic lava panther with cracked obsidian hide and blazing orange mane leaping forward."
@@ -20371,15 +20411,23 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 4,
     "affinityReq": 2,
     "atk": 4,
-    "armor": 1,
-    "hp": 4,
+    "armor": 2,
+    "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
-      "Voo"
+      "Voo",
+      "Guardião"
     ],
-    "breathDamage": 1,
-    "effects": [],
-    "description": "Voo. Armadura 1. Sopro 1: Varre a fileira inimiga com brasas antes de atacar.",
+    "breathDamage": 2,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao Entrar: Concede +1⚡ Essência neste turno."
+      }
+    ],
+    "description": "Voo, Guardião. Armadura 2. Sopro 2. Ao Entrar: Concede +1⚡ Essência neste turno.",
     "flavorText": "Suas escamas são feitas de ferro fundido resfriado às pressas.",
     "imagePath": "/assets/cards/red_114_draco_escoria.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), winged volcanic slag drake with molten armor plates exhaling a jet of bright orange fire."
@@ -20809,9 +20857,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 1,
     "affinityReq": 1,
-    "atk": 3,
+    "atk": 2,
     "armor": 0,
-    "hp": 3,
+    "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
       "Voo"
@@ -20822,12 +20870,6 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "freeze_enemy",
         "value": 1,
         "description": "Ao Entrar: Paralisa e Congela 1 inimigo."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
       }
     ],
     "description": "Voo. Ao Entrar: Descarrega um choque glacial que Congela 1 unidade inimiga.",
@@ -20846,9 +20888,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 3,
+    "atk": 2,
     "armor": 0,
-    "hp": 4,
+    "hp": 3,
     "preferredRow": "rearguard",
     "keywords": [
       "Alcance"
@@ -20859,12 +20901,6 @@ export const ALL_CARDS: CardDefinition[] = [
         "type": "freeze_enemy",
         "value": 1,
         "description": "Ao Entrar: Congela 1 inimigo."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
       }
     ],
     "description": "Alcance. Ao Entrar: Tece correntes de gelo rúnico que Congelam 1 unidade inimiga.",
@@ -21986,22 +22022,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 1,
     "affinityReq": 1,
-    "atk": 3,
-    "armor": 1,
-    "hp": 3,
+    "atk": 2,
+    "armor": 0,
+    "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
       "Ímpeto"
     ],
-    "effects": [
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
-      }
-    ],
-    "description": "Ímpeto. Ao Entrar: Compra 1 carta.",
+    "effects": [],
+    "description": "Ímpeto. Embosca inimigos expostos entre os espinheiros de Veridia.",
     "flavorText": "Mais veloz que uma flecha disparada entre os galhos.",
     "imagePath": "/assets/cards/green_109_lince_espinhos.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), agile thorn-furred forest lynx with emerald eyes and wooden briar claws pouncing forward."
@@ -22017,24 +22046,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 4,
+    "atk": 3,
     "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
-      "Ímpeto",
+      "Guardião",
       "Atropelar"
     ],
-    "effects": [
-      {
-        "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao Entrar: Concede +1/+1 aos aliados."
-      }
-    ],
-    "description": "Atropelar. Armadura 1. Ao Entrar: Concede +1/+1 a todos os aliados.",
+    "effects": [],
+    "description": "Guardião, Atropelar. Armadura 1. Couraça mineral que resiste às investidas da Vanguarda.",
     "flavorText": "Ele não desvia de árvores nem de escudeiros.",
     "imagePath": "/assets/cards/green_110_javali_couraca_pedra.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), charging stone-hide war boar with mossy granite armor plates and curved ivory tusks."
@@ -22050,29 +22071,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 3,
-    "armor": 1,
-    "hp": 4,
+    "atk": 2,
+    "armor": 0,
+    "hp": 3,
     "preferredRow": "rearguard",
     "keywords": [
       "Alcance",
       "Toque Letal"
     ],
-    "effects": [
-      {
-        "trigger": "on_enter",
-        "type": "freeze_enemy",
-        "value": 1,
-        "description": "Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao Entrar: Compra 1 carta."
-      }
-    ],
-    "description": "Alcance • Toque Letal. Ao Entrar: Congela (imobiliza por 1 turno) 1 unidade inimiga. Ao Entrar: Compra 1 carta.",
+    "effects": [],
+    "description": "Alcance • Toque Letal. Dispara flechas embebidas em seiva letal do alto do dossel.",
     "flavorText": "Do alto das copas, um único disparo basta.",
     "imagePath": "/assets/cards/green_111_arqueira_dossel.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), emerald canopy wood-elf archer drawing a living yew bow with a glowing venom-tipped arrow."
@@ -22628,7 +22636,7 @@ export const ALL_CARDS: CardDefinition[] = [
       "Guardião"
     ],
     "effects": [],
-    "description": "Guardião. Armadura 2. Esculpido em mármore imperial com veios de ouro puro.",
+    "description": "Guardião. Armadura 2. Colosso de mármore consagrado que ancora a Vanguarda imperial.",
     "flavorText": "As estátuas do palácio descem de seus pedestais quando o trono chama.",
     "imagePath": "/assets/cards/gold_112_golem_marmore_real.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), royal white marble and kintsugi gold golem sentinel wielding a massive gilded halberd."
@@ -23166,16 +23174,23 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 2,
+    "atk": 3,
     "armor": 0,
-    "hp": 2,
+    "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
-      "Ímpeto",
-      "Fúria Crescente"
+      "Ímpeto"
     ],
-    "effects": [],
-    "description": "Ímpeto, Fúria Crescente. Três mandíbulas famintas por brasas e aço.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Uivo das Cinzas concede +1/+1 a um aliado."
+      }
+    ],
+    "description": "Ímpeto. Ao Entrar: Uivo das Cinzas concede +1/+1 a um aliado.",
     "flavorText": "Cada cabeça fareja um medo diferente na linha inimiga.",
     "imagePath": "/assets/cards/red_129_cao_cinzas_alfa.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Three-headed Ash-Hound Alpha pack leader with molten lava drool."
@@ -23191,16 +23206,23 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 3,
     "affinityReq": 1,
-    "atk": 3,
-    "armor": 0,
-    "hp": 3,
+    "atk": 4,
+    "armor": 1,
+    "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
       "Ímpeto",
       "Atropelar"
     ],
-    "effects": [],
-    "description": "Ímpeto, Atropelar. Sua lança espiral perfura escudos e atravessa a Vanguarda.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano ao Soberano inimigo."
+      }
+    ],
+    "description": "Ímpeto, Atropelar. Armadura 1. Ao Entrar: Causa 2 de dano ao Soberano inimigo.",
     "flavorText": "Forjada no coração do vulcão, sua ponta nunca esfria.",
     "imagePath": "/assets/cards/red_130_lanceiro_cratera.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Armored Crater Dragon-Lancer charging with a spinning molten drill-spear."
@@ -24416,15 +24438,14 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 1,
     "affinityReq": 1,
     "atk": 2,
-    "armor": 1,
-    "hp": 3,
+    "armor": 0,
+    "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
-      "Ímpeto",
       "Toque Letal"
     ],
     "effects": [],
-    "description": "Toque Mortífero. Qualquer dano que causar em combate destrói a criatura inimiga.",
+    "description": "Toque Letal. Qualquer dano que causar em combate destrói a criatura inimiga.",
     "flavorText": "Feito de ossos afiados e rancor antigo.",
     "imagePath": "/assets/cards/purple_127_rastejador_ossario.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Spidery Ossuary Bone-Crawler construct with six scythe-limbs."
@@ -24471,17 +24492,16 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "uncommon",
     "cost": 2,
     "affinityReq": 1,
-    "atk": 3,
-    "armor": 1,
-    "hp": 4,
+    "atk": 2,
+    "armor": 0,
+    "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
       "Voo",
-      "Ímpeto",
       "Dreno de Vida"
     ],
     "effects": [],
-    "description": "Voo, Furtividade. Atravessa paredes e armaduras arrastando grilhões espectrais.",
+    "description": "Voo, Dreno de Vida. Atravessa paredes e armaduras arrastando grilhões espectrais.",
     "flavorText": "O tilintar de suas correntes anuncia que a noite chegou.",
     "imagePath": "/assets/cards/purple_129_espectro_correntes.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Floating Chain-Wraith Phantom dragging glowing purple soul-shackles."
@@ -26048,12 +26068,19 @@ export const ALL_CARDS: CardDefinition[] = [
       },
       {
         "trigger": "on_enter",
-        "type": "heal_sovereign",
-        "value": 2,
-        "description": "Cura 2 de VIDA do seu Soberano."
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Concede +1/+1 a todos os aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 3,
+        "description": "Causa 3 de dano ao atacante."
       }
     ],
-    "description": "Gatilho: Aliado Atacado. Concede Escudo Divino aos aliados e cura 2 de VIDA no seu Soberano.",
+    "description": "Gatilho: Aliado Atacado. Concede Escudo Divino e +1/+1 aos aliados, e causa 3 de dano a um inimigo.",
     "flavorText": "Asas de ouro se abrem no exato instante do golpe fatal.",
     "imagePath": "/assets/cards/gold_141_intervencao_angelical.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Winged golden angelic aegis shield materializing in a burst of feathers."
@@ -26071,7 +26098,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "affinityReq": 1,
     "atk": 0,
     "armor": 1,
-    "hp": 4,
+    "hp": 5,
     "preferredRow": "rearguard",
     "keywords": [],
     "effects": [
@@ -26082,13 +26109,20 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Cura 3 de VIDA do seu Soberano."
       },
       {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao Entrar: Compra 1 carta."
+      },
+      {
         "trigger": "turn_start",
-        "type": "heal_sovereign",
-        "value": 2,
-        "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Início do Turno: Concede +1/+1 a todos os aliados."
       }
     ],
-    "description": "Ao Entrar: Cura 3 de VIDA no Soberano. Início do Turno: Cura 2 de VIDA no Soberano.",
+    "description": "Ao Entrar: Cura 3 de VIDA no Soberano e compra 1 carta. Início do Turno: Concede +1/+1 a todos os aliados.",
     "flavorText": "Transborda com a luz líquida da primeira manhã do mundo.",
     "imagePath": "/assets/cards/gold_142_calice_alvorada_real.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Royal Chalice of the Golden Dawn overflowing with liquid sunlight."
@@ -27093,13 +27127,13 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 6,
     "affinityReq": 3,
     "atk": 6,
-    "armor": 1,
+    "armor": 2,
     "hp": 7,
     "preferredRow": "vanguard",
     "keywords": [
       "Voo",
-      "Ímpeto",
-      "Alcance"
+      "Alcance",
+      "Guardião"
     ],
     "effects": [
       {
@@ -27115,7 +27149,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Congela 1 unidade inimiga."
       }
     ],
-    "description": "Armadura 1. Ao Entrar: Seus ciclones devolvem uma unidade inimiga para a mão do dono e congelam outra.",
+    "description": "Voo, Alcance, Guardião. Armadura 2. Ao Entrar: Devolve uma unidade inimiga para a mão do dono e congela outra.",
     "flavorText": "Respira furacões e exala o silêncio gelado das grandes altitudes.",
     "imagePath": "/assets/cards/blue_153_leviata_fenda_abissal.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Glacial Trench Leviathan sea-serpent covered in glowing blue ice spikes."
@@ -27721,16 +27755,15 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "creature",
     "subtype": "Criatura • Morto-Vivo • Campeão",
     "rarity": "uncommon",
-    "cost": 4,
+    "cost": 5,
     "affinityReq": 2,
     "atk": 4,
-    "armor": 2,
-    "hp": 5,
+    "armor": 1,
+    "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião",
-      "Renascer",
-      "Toque Letal"
+      "Renascer"
     ],
     "effects": [
       {
@@ -27740,7 +27773,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Último Suspiro: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Armadura 2. Último Suspiro: Causa 2 de dano ao Soberano inimigo. General morto-vivo em armadura gótica negra.",
+    "description": "Guardião, Renascer. Armadura 1. Último Suspiro: Causa 2 de dano ao Soberano inimigo.",
     "flavorText": "Mesmo após a queda de seu império, sua montante negra continua cumprindo a ordem de execução.",
     "imagePath": "/assets/cards/purple_152_abominacao_carne_negra.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Flesh and Shadow Abomination stitched undead colossus with glowing purple runes."
@@ -27898,31 +27931,24 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "legendary",
     "cost": 8,
     "affinityReq": 3,
-    "atk": 8,
-    "armor": 2,
-    "hp": 9,
+    "atk": 7,
+    "armor": 1,
+    "hp": 8,
     "preferredRow": "vanguard",
     "keywords": [
       "Renascer",
-      "Alcance",
-      "Dreno de Vida"
+      "Alcance"
     ],
-    "breathDamage": 3,
+    "breathDamage": 2,
     "effects": [
       {
         "trigger": "on_enter",
         "type": "destroy_enemy",
         "value": 1,
         "description": "Ao Entrar: Destrói 1 unidade inimiga."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "revive_from_crypt",
-        "value": 1,
-        "description": "Ao Entrar: Revive 1 aliado da Cripta."
       }
     ],
-    "description": "Sopro de Morte 3. Armadura 2. Ao Entrar: Destrói 1 inimigo e reanima 1 criatura da sua Cripta.",
+    "description": "Renascer, Alcance. Sopro de Morte 2. Armadura 1. Ao Entrar: Destrói 1 unidade inimiga.",
     "flavorText": "Três coroas antigas, três vozes em uníssono comandando a marcha dos imortais.",
     "imagePath": "/assets/cards/purple_157_dragao_sombra_abissal.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Nyxarion Sovereign Abyssal Shadow Dragon breathing necrotic violet flames."
@@ -28989,15 +29015,23 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 3,
     "affinityReq": 2,
     "atk": 3,
-    "armor": 2,
+    "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião",
       "Escudo Divino"
     ],
-    "effects": [],
-    "description": "Armadura 2. Colosso de mármore branco e ouro que projeta uma barreira hexagonal impenetrável.",
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +1/+1 a um aliado."
+      }
+    ],
+    "description": "Guardião, Escudo Divino. Armadura 1. Ao Entrar: Concede +1/+1 a um aliado.",
     "flavorText": "Ergue uma abóbada de luz dourada onde nenhuma flecha ou maldição consegue penetrar.",
     "imagePath": "/assets/cards/gold_151_cavaleiro_grifo_imperial.png",
     "aiArtPrompt": "2D dark fantasy video game character sticker, dark fantasy graphic novel cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), Imperial Griffon Knight in golden barding charging through the clouds."
@@ -29599,9 +29633,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 2,
     "affinityReq": 0,
-    "atk": 2,
+    "atk": 3,
     "armor": 1,
-    "hp": 3,
+    "hp": 4,
     "preferredRow": "rearguard",
     "keywords": [
       "Escudo Divino"
@@ -29610,11 +29644,11 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 1,
-        "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Escudo Divino. Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
+    "description": "Escudo Divino. Armadura 1. Ao Entrar: Causa 2 de dano a uma unidade inimiga.",
     "flavorText": "Nenhuma seta atravessa a geometria perfeita.",
     "imagePath": "/assets/cards/neutral_63_abjurador_errante.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Armored battle abjurer mage projecting a hexagonal silver-grey runic barrier shield from an iron staff."
@@ -29909,20 +29943,22 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 2,
     "affinityReq": 0,
-    "atk": 2,
+    "atk": 3,
     "armor": 1,
-    "hp": 3,
+    "hp": 4,
     "preferredRow": "vanguard",
-    "keywords": [],
+    "keywords": [
+      "Guardião"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 1,
-        "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
+    "description": "Guardião. Armadura 1. Ao Entrar: Causa 2 de dano a uma unidade inimiga.",
     "flavorText": "Toda rocha tem uma veia fraca; toda armadura também.",
     "imagePath": "/assets/cards/neutral_73_mineiro_svirfneblin.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Deep gnome deep-cavern gnome sapper sapper in chainmail hurling a smoking alchemical blasting charge and wielding a war pick."
@@ -30126,10 +30162,11 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 2,
     "affinityReq": 0,
     "atk": 3,
-    "armor": 0,
-    "hp": 2,
+    "armor": 1,
+    "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
+      "Voo",
       "Ímpeto"
     ],
     "effects": [
@@ -30140,7 +30177,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Ímpeto. Ao Entrar: Compra 1 carta.",
+    "description": "Voo, Ímpeto. Armadura 1. Ao Entrar: Compra 1 carta.",
     "flavorText": "Mais rápido que um cavalo e mais silencioso que um lobo.",
     "imagePath": "/assets/cards/neutral_80_dragonete_emboscada.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Lean predatory ambush drake sprinting low with flared neck frills and razor claws."
@@ -30156,12 +30193,13 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "common",
     "cost": 1,
     "affinityReq": 0,
-    "atk": 1,
+    "atk": 2,
     "armor": 1,
-    "hp": 2,
+    "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
-      "Guardião"
+      "Guardião",
+      "Ímpeto"
     ],
     "effects": [
       {
@@ -30171,7 +30209,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo."
       }
     ],
-    "description": "Guardião. Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo.",
+    "description": "Guardião, Ímpeto. Armadura 1. Ao Atacar: Causa 1 de dano diretamente ao Soberano inimigo.",
     "flavorText": "Um giro da chave no peito vale por um dia de batalha.",
     "imagePath": "/assets/cards/neutral_81_operario_relojoeiro.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Brass and blackened iron clockwork soldier with a large winding key in its back swinging a gear-axe."
@@ -30248,11 +30286,12 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 1,
     "affinityReq": 0,
     "atk": 2,
-    "armor": 0,
-    "hp": 2,
+    "armor": 1,
+    "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
-      "Guardião"
+      "Guardião",
+      "Ímpeto"
     ],
     "effects": [
       {
@@ -30262,7 +30301,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Causa 1 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Guardião. Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
+    "description": "Guardião, Ímpeto. Armadura 1. Ao Entrar: Causa 1 de dano a uma unidade inimiga.",
     "flavorText": "Dorme sobre os sacos de ouro com um olho aberto.",
     "imagePath": "/assets/cards/neutral_84_cao_guerra_encouracado.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Fierce armored war mastiff wearing spiked iron barding and snarling mid-leap."
@@ -30529,8 +30568,8 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 3,
     "affinityReq": 0,
     "atk": 4,
-    "armor": 0,
-    "hp": 3,
+    "armor": 1,
+    "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
       "Ímpeto",
@@ -30544,7 +30583,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Atacar: Compra 1 carta."
       }
     ],
-    "description": "Ímpeto • Toque Letal. Ao Atacar: Compra 1 carta.",
+    "description": "Ímpeto • Toque Letal. Armadura 1. Ao Atacar: Compra 1 carta.",
     "flavorText": "Trancas existem apenas para manter os honestos do lado de fora.",
     "imagePath": "/assets/cards/neutral_93_ladrao_mestre_mascara.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Master thief assassin in sleek dark leather armor leaping with twin poisoned kris daggers and grappling hook."
@@ -30936,24 +30975,25 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "rare",
     "cost": 4,
     "affinityReq": 0,
-    "atk": 5,
+    "atk": 4,
     "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
     "keywords": [
       "Voo",
-      "Ímpeto"
+      "Ímpeto",
+      "Escudo Divino"
     ],
     "effects": [
       {
         "trigger": "on_enter",
         "type": "buff_target_ally",
-        "value": 2,
-        "secondaryValue": 2,
-        "description": "Ao Entrar: Concede +2 ATQ e +2 VIDA a um aliado."
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +1/+1 a um aliado."
       }
     ],
-    "description": "Voo • Ímpeto. Ao Entrar: Concede +2 ATQ e +2 VIDA a um aliado.",
+    "description": "Voo • Ímpeto • Escudo Divino. Armadura 1. Ao Entrar: Concede +1/+1 a um aliado.",
     "flavorText": "Quando ouvir o zumbido de suas engrenagens, sua cabeça já rolou.",
     "imagePath": "/assets/cards/neutral_106_reen_assassino_relojoeiro.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Lethal winged clockwork assassin Reen construct with spinning razor-blade arms diving from above."
@@ -31153,9 +31193,9 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "rare",
     "cost": 5,
     "affinityReq": 0,
-    "atk": 5,
+    "atk": 6,
     "armor": 2,
-    "hp": 6,
+    "hp": 7,
     "preferredRow": "vanguard",
     "keywords": [
       "Guardião",
@@ -31165,11 +31205,11 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 3,
-        "description": "Ao Entrar: Causa 3 de dano a uma unidade inimiga."
+        "value": 4,
+        "description": "Ao Entrar: Causa 4 de dano a uma unidade inimiga."
       }
     ],
-    "description": "Guardião • Alcance. Ao Entrar: Causa 3 de dano a uma unidade inimiga.",
+    "description": "Guardião • Alcance. Armadura 2. Ao Entrar: Causa 4 de dano a uma unidade inimiga.",
     "flavorText": "Cada rocha arremessada carrega o peso de uma montanha.",
     "imagePath": "/assets/cards/neutral_113_gigante_pedra_entalhador.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Towering Stone Giant carved with runic reliefs hurling a massive chiseled granite obelisk."
@@ -31185,11 +31225,14 @@ export const ALL_CARDS: CardDefinition[] = [
     "rarity": "rare",
     "cost": 3,
     "affinityReq": 0,
-    "atk": 2,
+    "atk": 3,
     "armor": 1,
-    "hp": 4,
+    "hp": 5,
     "preferredRow": "rearguard",
-    "keywords": [],
+    "keywords": [
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -31198,7 +31241,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Compra 2 cartas."
       }
     ],
-    "description": "Ao Entrar: Compra 2 cartas.",
+    "description": "Guardião, Escudo Divino. Armadura 1. Ao Entrar: Compra 2 cartas.",
     "flavorText": "Quando o céu pega fogo, até inimigos mortais assinam o mesmo pergaminho.",
     "imagePath": "/assets/cards/neutral_114_emissario_conselho_aguas.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Noble council emissary in fur-trimmed velvet coat holding a royal wax-sealed treaty scroll and rapier."
@@ -31829,7 +31872,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "cost": 2,
     "affinityReq": 0,
     "atk": 0,
-    "armor": 0,
+    "armor": 1,
     "hp": 5,
     "preferredRow": "rearguard",
     "keywords": [],
@@ -31843,12 +31886,12 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "buff_target_ally",
-        "value": 0,
-        "description": "Ao Entrar: Concede +3 VIDA a um aliado.",
-        "secondaryValue": 3
+        "value": 1,
+        "secondaryValue": 3,
+        "description": "Ao Entrar: Concede +1 ATQ e +3 VIDA a um aliado."
       }
     ],
-    "description": "Ao Entrar: Compra 1 carta. Ao Entrar: Concede +3 VIDA a um aliado.",
+    "description": "Armadura 1. Ao Entrar: Compra 1 carta e concede +1 ATQ e +3 VIDA a um aliado.",
     "flavorText": "O portador pode fechar os olhos; o escudo nunca dorme.",
     "imagePath": "/assets/cards/neutral_133_escudo_sentinela_olho.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy steel heater shield embossed with a wide-open glowing silver eye in the center boss."
@@ -32508,7 +32551,7 @@ export const ALL_CARDS: CardDefinition[] = [
     "type": "spell",
     "subtype": "Feitiço • Alquimia",
     "rarity": "rare",
-    "cost": 3,
+    "cost": 4,
     "affinityReq": 0,
     "atk": 0,
     "armor": 0,
@@ -32525,12 +32568,12 @@ export const ALL_CARDS: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "buff_all_allies",
-        "value": 0,
-        "description": "Concede +2 VIDA a todos os aliados.",
-        "secondaryValue": 2
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Concede +1 ATQ e +2 VIDA a todos os aliados."
       }
     ],
-    "description": "Concede Escudo Divino a todas as unidades aliadas. Concede +2 VIDA a todos os aliados.",
+    "description": "Concede Escudo Divino, +1 ATQ e +2 VIDA a todas as unidades aliadas.",
     "flavorText": "Por três minutos, flechas ricocheteiam na pele nua.",
     "imagePath": "/assets/cards/neutral_154_elixir_pedra_ferro.png",
     "aiArtPrompt": "2D Dark Fantasy gothic dark fantasy heavy black ink cel-shaded art style, bold black ink outlines, sharp geometric cel-shading, isolated full-body subject centered on a pure solid flat white background (#FFFFFF), gunmetal steel, antique silver, obsidian, and weathered brass palette, Heavy iron-stoppered crystal potion bottle glowing with liquid metallic adamantine silver."

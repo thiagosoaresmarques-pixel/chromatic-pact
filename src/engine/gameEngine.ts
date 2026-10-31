@@ -2119,7 +2119,7 @@ export function getSovereignPowerInfo(actorState: PlayerState): {
         name: 'Chama Soberana',
         cost: 2,
         icon: '🔥',
-        shortDesc: 'Causa 2🔥 a um inimigo e 1🔥 ao Soberano rival (ou 3🔥 ao Soberano se o campo estiver vazio).',
+        shortDesc: 'Causa 2🔥 a uma criatura inimiga e 1🔥 ao Soberano rival (ou 3🔥 ao Soberano se vazio).',
       };
     case 'blue':
       return {
@@ -2127,7 +2127,7 @@ export function getSovereignPowerInfo(actorState: PlayerState): {
         name: 'Pulso Rúnico',
         cost: 2,
         icon: '❄️',
-        shortDesc: 'Congela um inimigo e causa 2❄️ a ele (ou ao Soberano rival) + concede +1⚔️/+1❤️ a um aliado (ou compra 1 carta).',
+        shortDesc: 'Congela um inimigo e causa 2❄️ a ele (ou 2❄️ ao Soberano rival) + concede +1❤️ Vida a um aliado (ou compra 1 carta se vazio).',
       };
     case 'purple':
       return {
@@ -2151,7 +2151,7 @@ export function getSovereignPowerInfo(actorState: PlayerState): {
         name: 'Baluarte Imperial',
         cost: 2,
         icon: '☀️',
-        shortDesc: 'Concede +1🛡️ Armadura e +2❤️ Vida ao aliado mais ferido (ou cura +3❤️ no seu Soberano).',
+        shortDesc: 'Concede +1⚔️ ATQ, +1🛡️ Armadura e +1❤️ Vida ao aliado mais ferido (ou cura +3❤️ no seu Soberano).',
       };
     case 'neutral':
       return {
@@ -2159,7 +2159,7 @@ export function getSovereignPowerInfo(actorState: PlayerState): {
         name: 'Pulso da Matriz',
         cost: 2,
         icon: '⚙️',
-        shortDesc: 'Causa 2⚙️ a um inimigo (ou ao Soberano rival) e concede +1🛡️ Armadura e +1❤️ Vida ao seu maior aliado (ou cura +2❤️ no Soberano).',
+        shortDesc: 'Causa 2⚙️ a uma criatura inimiga (ou ao Soberano rival) e concede +1🛡️ Armadura e +1❤️ Vida ao seu maior aliado (ou cura +3❤️ no Soberano).',
       };
   }
 }
@@ -2184,7 +2184,13 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
 
   switch (info.domain) {
     case 'red': {
-      const enemies = getAllBoardUnits(enemyState).filter((u) => !u.isTrap);
+      const enemyCreatures = getAllBoardUnits(enemyState).filter(
+        (u) => !u.isTrap && u.card.type === 'creature'
+      );
+      const enemies =
+        enemyCreatures.length > 0
+          ? enemyCreatures
+          : getAllBoardUnits(enemyState).filter((u) => !u.isTrap);
       if (enemies.length > 0) {
         enemies.sort((a, b) => a.currentHp - b.currentHp || b.currentAtk - a.currentAtk);
         const target = enemies[0];
@@ -2218,10 +2224,9 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
       const allies = getAllBoardUnits(actorState).filter((u) => u.card.type === 'creature' && !u.isTrap);
       if (allies.length > 0) {
         allies.sort((a, b) => b.currentAtk - a.currentAtk);
-        allies[0].currentAtk += 1;
         allies[0].maxHp += 1;
         allies[0].currentHp += 1;
-        addFeedback(next, allies[0].instanceId, '+1⚔️/+1❤️ Pulso Rúnico', 'buff');
+        addFeedback(next, allies[0].instanceId, '+1❤️ Pulso Rúnico', 'buff');
       } else {
         drawCardsForActor(next, actor, 1);
       }
@@ -2270,11 +2275,12 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
       if (allies.length > 0) {
         allies.sort((a, b) => (a.currentHp / a.maxHp) - (b.currentHp / b.maxHp));
         const ally = allies[0];
+        ally.currentAtk += 1;
         ally.currentArmor += 1;
         ally.maxHp += 1;
-        ally.currentHp = Math.min(ally.maxHp, ally.currentHp + 2);
-        addFeedback(next, ally.instanceId, '+1🛡️/+2❤️ Baluarte!', 'shield');
-        addLog(next, actor, 'spell', `Poder do Soberano [${info.name}] blindou [${ally.card.name}] (+1 ARM / +2 VID)!`);
+        ally.currentHp = Math.min(ally.maxHp, ally.currentHp + 1);
+        addFeedback(next, ally.instanceId, '+1⚔️/+1🛡️/+1❤️ Baluarte!', 'shield');
+        addLog(next, actor, 'spell', `Poder do Soberano [${info.name}] blindou [${ally.card.name}] (+1 ATQ / +1 ARM / +1 VID)!`);
       } else {
         actorState.hp = Math.min(actorState.maxHp, actorState.hp + 3);
         addFeedback(next, `${actor}-sovereign`, '+3❤️ Égide Imperial', 'heal');
@@ -2316,10 +2322,10 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
         ally.currentArmor += 1;
         ally.maxHp += 1;
         ally.currentHp += 1;
-        addFeedback(next, ally.instanceId, '+1🛡️/+1❤️ Calibrado!', 'shield');
+        addFeedback(next, ally.instanceId, '+1🛡️ / +1❤️ Calibrado!', 'shield');
       } else {
-        actorState.hp = Math.min(actorState.maxHp, actorState.hp + 2);
-        addFeedback(next, `${actor}-sovereign`, '+2❤️ Estase Axial', 'heal');
+        actorState.hp = Math.min(actorState.maxHp, actorState.hp + 3);
+        addFeedback(next, `${actor}-sovereign`, '+3❤️ Estase Axial', 'heal');
       }
       break;
     }

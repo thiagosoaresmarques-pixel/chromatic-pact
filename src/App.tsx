@@ -1,5 +1,5 @@
 import React, { Suspense, useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { CampaignBoss, CardDefinition, ConquestBattleModifiers } from './types/game';
+import { CampaignBoss, CardDefinition, ConquestBattleModifiers, RiftMutatorId } from './types/game';
 import { ALL_CARDS, CARDS_BY_ID } from './data/cards';
 import { getSharedAudioContext, isMuted, toggleMute } from './utils/soundEngine';
 import {
@@ -22,8 +22,23 @@ import { buildGeographicBattleModifiers } from './data/vaeloriaMultimapData';
 import { consumePendingOverworldBuff } from './data/vaeloriaOverworldEvents';
 import { applyEquippedRelicToModifiers } from './data/sovereignRelics';
 import type { DraftBattleOutcome, DraftRewardSummary } from './data/vaeloriaDraftData';
+import {
+  buildRiftBattleEncounter,
+  FRACTURE_RIFTS_BY_ID,
+  recordRiftVictory,
+  STANDARD_RIFT_WIN_GOLD,
+  WEEKLY_RIFT_GOLD_BONUS,
+  WEEKLY_RIFT_SHARDS_BONUS,
+} from './data/fractureRiftsData';
+import {
+  craftSingleCardCopy,
+  resolvePackDuplicatesWithShards,
+  salvageAllExcessDuplicates,
+} from './utils/craftingEngine';
+import { recordDailyQuestEvent } from './utils/dailyQuestsEngine';
 import { CardInspectModal } from './components/CardView';
 import { HomeSimulatedDuelShowcase } from './components/HomeSimulatedDuelShowcase';
+import { SovereignRoyalCommandStrip } from './components/SovereignRoyalCommandStrip';
 
 // Lazy-loaded heavy modules for instant initial load & modular chunking (Onda 5)
 const BattleArena = React.lazy(() =>
@@ -68,6 +83,9 @@ const ProblemsView = React.lazy(() =>
 const DraftCrucibleView = React.lazy(() =>
   import('./components/DraftCrucibleView').then((m) => ({ default: m.DraftCrucibleView }))
 );
+const FractureRiftsView = React.lazy(() =>
+  import('./components/FractureRiftsView').then((m) => ({ default: m.FractureRiftsView }))
+);
 import {
   adminSaveCloudProfile,
   ensureStarterDeckForUser,
@@ -101,6 +119,7 @@ type ActiveTab =
   | 'home'
   | 'arena'
   | 'draft'
+  | 'rifts'
   | 'problems'
   | 'multiplayer'
   | 'campaign'
@@ -155,6 +174,12 @@ const NAV_PILLARS: NavPillarDef[] = [
         icon: '⚖️',
         label: 'Crisol (Draft)',
         shortDesc: 'Forje 40 cartas na hora e dispute até 7 vitórias',
+      },
+      {
+        tab: 'rifts',
+        icon: '🌀',
+        label: 'Fendas',
+        shortDesc: 'Eventos com mutadores de regra e bônus semanal',
       },
       {
         tab: 'multiplayer',
@@ -252,6 +277,7 @@ function resolvePillarForTab(tab: ActiveTab): NavPillarId | null {
       return 'home';
     case 'arena':
     case 'draft':
+    case 'rifts':
     case 'multiplayer':
     case 'problems':
       return 'battle';
@@ -288,6 +314,7 @@ interface SavedAppNavState {
   campaignPlayerDeckIds: string[] | null;
   isExpeditionBattle: boolean;
   isDraftBattle?: boolean;
+  activeRiftId?: RiftMutatorId | null;
   expeditionBlessingId?: string | null;
   activeConquestContext?: ActiveConquestContext | null;
   activeGeoModifiers?: ConquestBattleModifiers | null;
@@ -312,6 +339,7 @@ function loadSavedAppNavState(): SavedAppNavState | null {
         : null,
       isExpeditionBattle: Boolean(parsed.isExpeditionBattle),
       isDraftBattle: Boolean(parsed.isDraftBattle),
+      activeRiftId: parsed.activeRiftId ?? null,
       expeditionBlessingId: parsed.expeditionBlessingId ?? null,
       activeConquestContext: parsed.activeConquestContext ?? null,
       activeGeoModifiers: parsed.activeGeoModifiers ?? null,
@@ -356,6 +384,7 @@ export const App: React.FC = () => {
 
   // Per-account economy & progression (Guests always remain at 0 Gold and 0 customDecks)
   const gold = isGuest ? 0 : currentUser.gold ?? 0;
+  const astralShards = isGuest ? 0 : currentUser.astralShards ?? 0;
   const customDecks: CustomSavedDeck[] = useMemo(
     () => (isGuest ? [] : currentUser.customDecks ?? []),
     [isGuest, currentUser.customDecks]
@@ -366,14 +395,17 @@ export const App: React.FC = () => {
   );
   const arenaWins = isGuest ? 0 : currentUser.arenaWins ?? 0;
 
+  const baseStarterCardIds: string[] = useMemo(() => {
+    if (isGuest) return [];
+    return currentUser.starterDeckCardIds && currentUser.starterDeckCardIds.length > 0
+      ? currentUser.starterDeckCardIds
+      : customDecks[0]?.cardIds ?? [];
+  }, [isGuest, currentUser.starterDeckCardIds, customDecks]);
+
   const unlockedCardIds: Record<string, number> = useMemo(() => {
     if (isGuest) return {};
-    const baseCardIds =
-      currentUser.starterDeckCardIds && currentUser.starterDeckCardIds.length > 0
-        ? currentUser.starterDeckCardIds
-        : customDecks[0]?.cardIds ?? [];
     const merged: Record<string, number> = {};
-    for (const cid of baseCardIds) {
+    for (const cid of baseStarterCardIds) {
       merged[cid] = (merged[cid] ?? 0) + 1;
     }
     const extra = currentUser.extraUnlockedCards ?? {};
@@ -383,7 +415,12 @@ export const App: React.FC = () => {
       }
     }
     return merged;
-  }, [isGuest, currentUser.starterDeckCardIds, customDecks, currentUser.extraUnlockedCards]);
+  }, [isGuest, baseStarterCardIds, currentUser.extraUnlockedCards]);
+
+  const salvageableInfo = useMemo(() => {
+    if (isGuest) return { totalShardsEarned: 0, cardsSalvagedCount: 0, cleanedExtraUnlocked: {} };
+    return salvageAllExcessDuplicates(baseStarterCardIds, currentUser.extraUnlockedCards ?? {});
+  }, [isGuest, baseStarterCardIds, currentUser.extraUnlockedCards]);
 
   // Active Campaign / Expedition / Tactical Problem Match State (Restored across page reloads)
   const [activeCampaignBoss, setActiveCampaignBoss] = useState<CampaignBoss | null>(
@@ -401,6 +438,9 @@ export const App: React.FC = () => {
   );
   const [isDraftBattle, setIsDraftBattle] = useState<boolean>(
     () => Boolean(initialNavState?.isDraftBattle)
+  );
+  const [activeRiftId, setActiveRiftId] = useState<RiftMutatorId | null>(
+    () => initialNavState?.activeRiftId ?? null
   );
   const [lastDraftOutcome, setLastDraftOutcome] = useState<DraftBattleOutcome | null>(null);
   const [expeditionBlessingId, setExpeditionBlessingId] = useState<string | null>(
@@ -448,6 +488,7 @@ export const App: React.FC = () => {
         campaignPlayerDeckIds,
         isExpeditionBattle,
         isDraftBattle,
+        activeRiftId,
         expeditionBlessingId,
         activeConquestContext,
         activeGeoModifiers,
@@ -464,6 +505,7 @@ export const App: React.FC = () => {
     campaignPlayerDeckIds,
     isExpeditionBattle,
     isDraftBattle,
+    activeRiftId,
     expeditionBlessingId,
     activeConquestContext,
     activeGeoModifiers,
@@ -680,14 +722,22 @@ export const App: React.FC = () => {
     [notifications]
   );
 
-  const updateCurrentUserProgression = (patch: Partial<SovereignUserProfile>) => {
-    if (isUnregisteredProfile(currentUser)) return;
-    const updated: SovereignUserProfile = {
-      ...currentUser,
-      ...patch,
-    };
-    setActiveTabUserProfile(updated);
-    setCurrentUser(updated);
+  const updateCurrentUserProgression = (
+    patchOrUpdater:
+      | Partial<SovereignUserProfile>
+      | ((prev: SovereignUserProfile) => Partial<SovereignUserProfile>)
+  ) => {
+    setCurrentUser((prev) => {
+      if (isUnregisteredProfile(prev)) return prev;
+      const patch =
+        typeof patchOrUpdater === 'function' ? patchOrUpdater(prev) : patchOrUpdater;
+      const updated: SovereignUserProfile = {
+        ...prev,
+        ...patch,
+      };
+      setActiveTabUserProfile(updated);
+      return updated;
+    });
   };
 
   const handleOpenArenaSolo = () => {
@@ -697,6 +747,7 @@ export const App: React.FC = () => {
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(false);
+    setActiveRiftId(null);
     setActiveConquestContext(null);
     setActiveGeoModifiers(null);
     if (!isGuest && customDecks.length === 0) {
@@ -716,6 +767,7 @@ export const App: React.FC = () => {
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(false);
+    setActiveRiftId(null);
     setActiveConquestContext(null);
     setActiveGeoModifiers(null);
     setActiveProblem(problem);
@@ -761,6 +813,7 @@ export const App: React.FC = () => {
       activeTab === 'expedition' ||
       activeTab === 'conquest' ||
       activeTab === 'draft' ||
+      activeTab === 'rifts' ||
       activeTab === 'problems'
     ) {
       setMusicState('tactical', 'purple');
@@ -793,6 +846,7 @@ export const App: React.FC = () => {
     setActiveProblem(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(false);
+    setActiveRiftId(null);
     setExpeditionBlessingId(null);
     setActiveConquestContext(null);
     setActiveGeoModifiers(geoMods);
@@ -825,6 +879,7 @@ export const App: React.FC = () => {
     setActiveProblem(null);
     setIsExpeditionBattle(true);
     setIsDraftBattle(false);
+    setActiveRiftId(null);
     setExpeditionBlessingId(blessingId ?? null);
     setActiveConquestContext(null);
     setActiveGeoModifiers(geoMods);
@@ -851,6 +906,7 @@ export const App: React.FC = () => {
     setActiveProblem(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(false);
+    setActiveRiftId(null);
     setExpeditionBlessingId(null);
     setActiveGeoModifiers(null);
     setActiveConquestContext({
@@ -879,6 +935,7 @@ export const App: React.FC = () => {
     setActiveProblem(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(true);
+    setActiveRiftId(null);
     setExpeditionBlessingId(null);
     setActiveConquestContext(null);
     setActiveGeoModifiers(applyEquippedRelicToModifiers(modifiers));
@@ -887,18 +944,64 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
+  const handleStartRiftBattle = (riftId: RiftMutatorId, playerDeckCardIds: string[]) => {
+    trackAdsEvent('start_duel', { mode: 'fracture_rift', riftId, isGuest });
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+    const { boss, modifiers } = buildRiftBattleEncounter(riftId);
+    setActiveOnlineMatch(null);
+    setActiveProblem(null);
+    setIsExpeditionBattle(false);
+    setIsDraftBattle(false);
+    setActiveRiftId(riftId);
+    setExpeditionBlessingId(null);
+    setActiveConquestContext(null);
+    setActiveGeoModifiers(applyEquippedRelicToModifiers(modifiers));
+    setActiveCampaignBoss(boss);
+    setCampaignPlayerDeckIds(playerDeckCardIds);
+    setActiveTab('arena');
+  };
+
   const handleCampaignVictory = (boss: CampaignBoss) => {
+    if (activeRiftId) {
+      const { awardedWeeklyBonus } = recordRiftVictory(activeRiftId);
+      const riftDef = FRACTURE_RIFTS_BY_ID[activeRiftId];
+      const goldEarned =
+        STANDARD_RIFT_WIN_GOLD + (awardedWeeklyBonus ? WEEKLY_RIFT_GOLD_BONUS : 0);
+      const shardsEarned = awardedWeeklyBonus ? WEEKLY_RIFT_SHARDS_BONUS : 0;
+
+      if (!isGuest) {
+        updateCurrentUserProgression((prev) => ({
+          gold: (prev.gold ?? 0) + goldEarned,
+          astralShards: (prev.astralShards ?? 0) + shardsEarned,
+          arenaWins: (prev.arenaWins ?? 0) + 1,
+        }));
+        pushNotification({
+          kicker: 'FENDA DA FRATURA EXPURGADA',
+          title: `${riftDef ? `${riftDef.icon} ${riftDef.name}` : boss.name} Subjugada!`,
+          message: awardedWeeklyBonus
+            ? `Bônus Semanal conquistado: +${goldEarned} Ouro e +${shardsEarned} 💎 Estilhaços Astrais!`
+            : `Vitória em Fenda: +${goldEarned} Ouro creditados ao seu tesouro.`,
+          actionLabel: shardsEarned > 0 ? 'Forjar Cartas' : 'Abrir Relicário',
+          actionTarget: shardsEarned > 0 ? 'deckbuilder' : 'packs',
+        });
+      }
+      return;
+    }
+
     if (isDraftBattle) {
       setLastDraftOutcome({
         outcomeId: `dr_win_${boss.id}_${Date.now()}`,
         didWin: true,
       });
       if (!isGuest) {
-        const nextGold = gold + VICTORY_GOLD_REWARD;
-        updateCurrentUserProgression({
-          gold: nextGold,
-          arenaWins: arenaWins + 1,
-        });
+        updateCurrentUserProgression((prev) => ({
+          gold: (prev.gold ?? 0) + VICTORY_GOLD_REWARD,
+          arenaWins: (prev.arenaWins ?? 0) + 1,
+        }));
       }
       return;
     }
@@ -912,35 +1015,38 @@ export const App: React.FC = () => {
         attackerFactionId: activeConquestContext.attackerFactionId,
         didWin: true,
       });
-      updateCurrentUserProgression({
-        gold: nextGold,
-        arenaWins: arenaWins + 1,
-      });
+      updateCurrentUserProgression((prev) => ({
+        gold: (prev.gold ?? 0) + VICTORY_GOLD_REWARD,
+        arenaWins: (prev.arenaWins ?? 0) + 1,
+      }));
     } else if (isExpeditionBattle) {
       setLastClearedExpeditionBossId(boss.id);
-      updateCurrentUserProgression({
-        gold: nextGold,
-        arenaWins: arenaWins + 1,
-      });
+      updateCurrentUserProgression((prev) => ({
+        gold: (prev.gold ?? 0) + VICTORY_GOLD_REWARD,
+        arenaWins: (prev.arenaWins ?? 0) + 1,
+      }));
     } else {
-      const nextBosses = defeatedBossIds.includes(boss.id)
-        ? defeatedBossIds
-        : [...defeatedBossIds, boss.id];
-      updateCurrentUserProgression({
-        gold: nextGold,
-        arenaWins: arenaWins + 1,
-        defeatedBossIds: nextBosses,
+      updateCurrentUserProgression((prev) => {
+        const prevBosses = prev.defeatedBossIds ?? [];
+        const nextBosses = prevBosses.includes(boss.id)
+          ? prevBosses
+          : [...prevBosses, boss.id];
+        return {
+          gold: (prev.gold ?? 0) + VICTORY_GOLD_REWARD,
+          arenaWins: (prev.arenaWins ?? 0) + 1,
+          defeatedBossIds: nextBosses,
+        };
       });
     }
     pushNotification({
       kicker: 'TRIUNFO EM COMBATE',
       title: `Vitória sobre ${boss.name}! (+${VICTORY_GOLD_REWARD} Ouro)`,
       message:
-        nextGold >= 80
-          ? `Seu saldo chegou a ${nextGold} Ouro — você já pode abrir um pacote no Relicário!`
+        nextGold >= 30
+          ? `Seu saldo chegou a ${nextGold} Ouro — você já pode abrir um pacote no Relicário (30 Ouro)!`
           : `Recompensa creditada. Saldo atual: ${nextGold} Ouro.`,
-      actionLabel: nextGold >= 80 ? 'Abrir Relicário' : undefined,
-      actionTarget: nextGold >= 80 ? 'packs' : undefined,
+      actionLabel: nextGold >= 30 ? 'Abrir Relicário' : undefined,
+      actionTarget: nextGold >= 30 ? 'packs' : undefined,
     });
   };
 
@@ -989,47 +1095,145 @@ export const App: React.FC = () => {
     });
   };
 
-  const handleRewardGold = (amount: number) => {
+  const handleRewardGold = (amount: number, reason?: string) => {
     if (isGuest) return;
     const nextGold = gold + amount;
-    updateCurrentUserProgression({
-      gold: nextGold,
-      arenaWins: arenaWins + 1,
-    });
+    updateCurrentUserProgression((prev) => ({
+      gold: (prev.gold ?? 0) + amount,
+      arenaWins: (prev.arenaWins ?? 0) + 1,
+    }));
     pushNotification({
       kicker: 'ESPÓLIOS DE BATALHA',
-      title: `+${amount} Ouro Conquistado`,
+      title: reason ? `${reason} (+${amount} Ouro)` : `+${amount} Ouro Conquistado`,
       message:
-        nextGold >= 80
-          ? `Saldo: ${nextGold} Ouro — suficiente para romper um Selo no Relicário!`
+        nextGold >= 30
+          ? `Saldo: ${nextGold} Ouro — suficiente para romper um Selo no Relicário (30 Ouro)!`
           : `Saldo atualizado: ${nextGold} Ouro.`,
-      actionLabel: nextGold >= 80 ? 'Abrir Relicário' : undefined,
-      actionTarget: nextGold >= 80 ? 'packs' : undefined,
+      actionLabel: nextGold >= 30 ? 'Abrir Relicário' : undefined,
+      actionTarget: nextGold >= 30 ? 'packs' : undefined,
+    });
+  };
+
+  const handleClaimQuestGold = (amount: number, questTitle: string) => {
+    if (isGuest) return;
+    const nextGold = gold + amount;
+    updateCurrentUserProgression((prev) => ({
+      gold: (prev.gold ?? 0) + amount,
+    }));
+    pushNotification({
+      kicker: 'DECRETO REAL CONCLUÍDO',
+      title: `${questTitle} (+${amount} Ouro)`,
+      message: `Recompensa diária creditada! Saldo atual: ${nextGold} Ouro.`,
+      actionLabel: nextGold >= 30 ? 'Abrir Relicário' : undefined,
+      actionTarget: nextGold >= 30 ? 'packs' : undefined,
     });
   };
 
   const handleOpenPack = (packCost: number, drawnCards: CardDefinition[]) => {
-    if (isGuest) return;
+    if (isGuest) return [];
     trackAdsEvent('open_pack', { packCost, cardsCount: drawnCards.length });
-    const nextExtra = { ...(currentUser.extraUnlockedCards ?? {}) };
-    for (const c of drawnCards) {
-      nextExtra[c.id] = (nextExtra[c.id] ?? 0) + 1;
-    }
-    updateCurrentUserProgression({
-      gold: Math.max(0, gold - packCost),
-      extraUnlockedCards: nextExtra,
-    });
+    recordDailyQuestEvent('pack_or_deck_action', 1);
+
+    const { nextExtraUnlocked, shardsEarned, cardOutcomes } = resolvePackDuplicatesWithShards(
+      unlockedCardIds,
+      currentUser.extraUnlockedCards ?? {},
+      drawnCards
+    );
+
+    updateCurrentUserProgression((prev) => ({
+      gold: Math.max(0, (prev.gold ?? 0) - packCost),
+      extraUnlockedCards: nextExtraUnlocked,
+      astralShards: (prev.astralShards ?? 0) + shardsEarned,
+    }));
+
+    const newOrAddedCount = cardOutcomes.filter((o) => o.status !== 'duplicate_shards').length;
     pushNotification(
       {
         kicker: 'RELICÁRIO ASTRAL',
-        title: `+${drawnCards.length} Novas Cartas na Coleção`,
-        message: `Cartas integradas ao seu acervo: ${drawnCards.map((c) => c.name).join(', ')}.`,
+        title:
+          shardsEarned > 0
+            ? `+${newOrAddedCount} Cartas & +${shardsEarned} 💎 Estilhaços`
+            : `+${drawnCards.length} Novas Cartas na Coleção`,
+        message:
+          shardsEarned > 0
+            ? `Excedentes transmutados automaticamente em +${shardsEarned} 💎 Estilhaços Astrais para Forja!`
+            : `Cartas integradas ao seu acervo: ${drawnCards.map((c) => c.name).join(', ')}.`,
         actionLabel: 'Ver no Grimório',
         actionTarget: 'deckbuilder',
       },
       false
     );
+
+    return cardOutcomes;
   };
+
+  const handleSalvageExcessDuplicates = () => {
+    if (isGuest || salvageableInfo.totalShardsEarned <= 0) return;
+    const earned = salvageableInfo.totalShardsEarned;
+    const count = salvageableInfo.cardsSalvagedCount;
+    const cleaned = salvageableInfo.cleanedExtraUnlocked;
+
+    updateCurrentUserProgression((prev) => ({
+      extraUnlockedCards: cleaned,
+      astralShards: (prev.astralShards ?? 0) + earned,
+    }));
+
+    pushNotification({
+      kicker: 'FORJA DE ESTILHAÇOS ASTRAIS',
+      title: `💎 +${earned} Estilhaços Astrais Transmutados!`,
+      message: `${count} cópia(s) excedente(s) acima do limite útil foram convertidas sem afetar seus Grimórios.`,
+      actionLabel: 'Forjar Cartas',
+      actionTarget: 'deckbuilder',
+    });
+  };
+
+  const handleCraftCard = (card: CardDefinition) => {
+    if (isGuest) return;
+    const owned = unlockedCardIds[card.id] ?? 0;
+    const res = craftSingleCardCopy(
+      card,
+      owned,
+      currentUser.extraUnlockedCards ?? {},
+      astralShards
+    );
+    if (!res.ok) return;
+
+    recordDailyQuestEvent('pack_or_deck_action', 1);
+    updateCurrentUserProgression((prev) => ({
+      extraUnlockedCards: res.nextExtraUnlocked,
+      astralShards: res.nextAstralShards,
+    }));
+
+    pushNotification({
+      kicker: 'FORJA ASTRAL CONCLUÍDA',
+      title: `⚒️ [${card.name}] Forjada! (-${res.costPaid} 💎)`,
+      message: `Nova cópia integrada ao seu acervo! Saldo restante: ${res.nextAstralShards} 💎 Estilhaços.`,
+    });
+  };
+
+  const handleMatchConcluded = useCallback(
+    ({ didWin, usedDeckId }: { didWin: boolean; usedDeckId: string | null }) => {
+      if (isGuest || isDraftBattle) return;
+      updateCurrentUserProgression((prev) => {
+        const decks = prev.customDecks ?? [];
+        if (decks.length === 0) return {};
+        const targetId =
+          usedDeckId && decks.some((d) => d.id === usedDeckId) ? usedDeckId : decks[0].id;
+        return {
+          customDecks: decks.map((d) =>
+            d.id === targetId
+              ? {
+                  ...d,
+                  wins: (d.wins ?? 0) + (didWin ? 1 : 0),
+                  losses: (d.losses ?? 0) + (didWin ? 0 : 1),
+                }
+              : d
+          ),
+        };
+      });
+    },
+    [isGuest, isDraftBattle]
+  );
 
   const handleSaveCustomDeck = (
     deck: CustomSavedDeck,
@@ -1037,6 +1241,7 @@ export const App: React.FC = () => {
   ) => {
     if (isGuest) return;
     trackAdsEvent('save_deck', { deckName: deck.name, cardsCount: deck.cardIds.length });
+    recordDailyQuestEvent('pack_or_deck_action', 1);
     const isFirst = customDecks.length === 0;
     const isReplacingBase = Boolean(options?.replaceBaseGrimoire && !isFirst);
     if (isReplacingBase && gold < GRIMOIRE_REPLACEMENT_GOLD_COST) {
@@ -1046,7 +1251,11 @@ export const App: React.FC = () => {
     const nextDecks = isReplacingBase
       ? [deck]
       : exists
-      ? customDecks.map((d) => (d.id === deck.id ? deck : d))
+      ? customDecks.map((d) =>
+          d.id === deck.id
+            ? { ...deck, wins: d.wins ?? deck.wins, losses: d.losses ?? deck.losses }
+            : d
+        )
       : [...customDecks, deck];
     const hasStarterCollection =
       currentUser.starterDeckCardIds && currentUser.starterDeckCardIds.length > 0;
@@ -1150,6 +1359,7 @@ export const App: React.FC = () => {
     if (activeTab === 'arena') {
       if (activeOnlineMatch) return 'multiplayer';
       if (activeProblem) return 'problems';
+      if (activeCampaignBoss && activeRiftId) return 'rifts';
       if (activeCampaignBoss && isDraftBattle) return 'draft';
       if (activeCampaignBoss && activeConquestContext) return 'conquest';
       if (activeCampaignBoss && isExpeditionBattle) return 'expedition';
@@ -1162,6 +1372,7 @@ export const App: React.FC = () => {
     activeOnlineMatch,
     activeProblem,
     activeCampaignBoss,
+    activeRiftId,
     isDraftBattle,
     activeConquestContext,
     isExpeditionBattle,
@@ -1450,15 +1661,19 @@ export const App: React.FC = () => {
                   setActiveProblem(null);
                   setActiveTab('problems');
                 } else if (activeCampaignBoss) {
+                  const wasRift = Boolean(activeRiftId);
                   const wasDraft = isDraftBattle;
                   const wasConquest = Boolean(activeConquestContext);
                   const wasExp = isExpeditionBattle;
                   setActiveCampaignBoss(null);
+                  setActiveRiftId(null);
                   setIsDraftBattle(false);
                   setIsExpeditionBattle(false);
                   setActiveConquestContext(null);
                   setActiveTab(
-                    wasDraft
+                    wasRift
+                      ? 'rifts'
+                      : wasDraft
                       ? 'draft'
                       : wasConquest
                       ? 'conquest'
@@ -1526,6 +1741,18 @@ export const App: React.FC = () => {
               <span className="hide-on-mobile nav-gold-word"> OURO</span>
             </span>
           </div>
+
+          {!isGuest && (
+            <div
+              className="gold-pill astral-shards-pill hide-on-mobile"
+              onClick={() => setActiveTab('deckbuilder')}
+              style={{ cursor: 'pointer' }}
+              title={`Estilhaços Astrais: ${astralShards.toLocaleString('pt-BR')} 💎 — Clique para Forjar Cartas no Grimório`}
+            >
+              <span>💎</span>
+              <span className="nav-gold-amount">{astralShards.toLocaleString('pt-BR')}</span>
+            </div>
+          )}
 
           {/* Sovereign Notification Center (Bell + Unread Counter + Popover) */}
           <div className="nav-notif-wrapper">
@@ -1782,6 +2009,25 @@ export const App: React.FC = () => {
 
         {activeTab === 'home' && (
           <div className="aaa-page-shell aaa-home-lobby-shell">
+            {/* Collapsible Royal Command Strip (1-Click Resume + Daily Quests + Crown Relics) */}
+            <SovereignRoyalCommandStrip
+              isGuest={isGuest}
+              username={currentUser.username}
+              gold={gold}
+              astralShards={astralShards}
+              defeatedBossCount={defeatedBossIds.length}
+              arenaWins={arenaWins}
+              onNavigate={(dest) => handleSelectSubTab(dest)}
+              onStartDailyProblem={handleStartProblem}
+              onClaimQuestGold={handleClaimQuestGold}
+              onOpenAccountModal={() =>
+                setAccountModalState({
+                  open: true,
+                  tab: isGuest ? 'create' : 'profile',
+                })
+              }
+            />
+
             {/* Authentic BattleArena Combat Table Showcase */}
             <div className="aaa-home-showcase-hero">
               <HomeSimulatedDuelShowcase
@@ -1817,6 +2063,7 @@ export const App: React.FC = () => {
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
               setIsDraftBattle(false);
+              setActiveRiftId(null);
               setActiveGeoModifiers(null);
               setActiveOnlineMatch({ room, role });
               setActiveTab('arena');
@@ -1835,12 +2082,24 @@ export const App: React.FC = () => {
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onSpendEntryGold={(amount) => {
               if (isGuest) return;
-              updateCurrentUserProgression({
-                gold: Math.max(0, gold - amount),
-              });
+              updateCurrentUserProgression((prev) => ({
+                gold: Math.max(0, (prev.gold ?? 0) - amount),
+              }));
             }}
             onStartDraftBattle={handleStartDraftBattle}
             onClaimDraftRewards={handleClaimDraftRewards}
+          />
+        )}
+
+        {activeTab === 'rifts' && (
+          <FractureRiftsView
+            customDecks={customDecks}
+            isGuest={isGuest}
+            defeatedBossCount={defeatedBossIds.length}
+            arenaWins={arenaWins}
+            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireDeckSetup={() => setActiveTab('deckbuilder')}
+            onStartRiftBattle={handleStartRiftBattle}
           />
         )}
 
@@ -1876,21 +2135,26 @@ export const App: React.FC = () => {
               setActiveOnlineMatch(null);
               setIsExpeditionBattle(false);
               setIsDraftBattle(false);
+              setActiveRiftId(null);
               setActiveConquestContext(null);
               setActiveGeoModifiers(null);
               setActiveTab('home');
             }}
             onExitCampaign={() => {
+              const wasRift = Boolean(activeRiftId);
               const wasDraft = isDraftBattle;
               const wasConquest = Boolean(activeConquestContext);
               const wasExp = isExpeditionBattle;
               setActiveCampaignBoss(null);
+              setActiveRiftId(null);
               setIsDraftBattle(false);
               setIsExpeditionBattle(false);
               setActiveConquestContext(null);
               setActiveGeoModifiers(null);
               setActiveTab(
-                wasDraft
+                wasRift
+                  ? 'rifts'
+                  : wasDraft
                   ? 'draft'
                   : wasConquest
                   ? 'conquest'
@@ -1900,6 +2164,7 @@ export const App: React.FC = () => {
               );
             }}
             onRewardGold={handleRewardGold}
+            onMatchConcluded={handleMatchConcluded}
             onlineMatch={
               activeOnlineMatch
                 ? {
@@ -1987,6 +2252,7 @@ export const App: React.FC = () => {
               setActiveCampaignBoss(null);
               setIsExpeditionBattle(false);
               setIsDraftBattle(false);
+              setActiveRiftId(null);
               setQuickDuelDecks({ playerDeckId, aiDeckId: opponentDeckId });
               setActiveTab('arena');
             }}
@@ -1998,23 +2264,30 @@ export const App: React.FC = () => {
             unlockedCardIds={unlockedCardIds}
             customDecks={customDecks}
             gold={gold}
+            astralShards={astralShards}
+            salvageableInfo={salvageableInfo}
             isGuest={isGuest}
             username={currentUser.username}
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onSaveCustomDeck={handleSaveCustomDeck}
             onDeleteCustomDeck={handleDeleteCustomDeck}
+            onCraftCard={handleCraftCard}
+            onSalvageDuplicates={handleSalvageExcessDuplicates}
           />
         )}
 
         {activeTab === 'packs' && (
           <PackOpener
             gold={gold}
+            astralShards={astralShards}
+            salvageableInfo={salvageableInfo}
             unlockedCardIds={unlockedCardIds}
             isGuest={isGuest}
             hasCustomDeck={!isGuest && customDecks.length > 0}
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onOpenPack={handleOpenPack}
+            onSalvageDuplicates={handleSalvageExcessDuplicates}
           />
         )}
 

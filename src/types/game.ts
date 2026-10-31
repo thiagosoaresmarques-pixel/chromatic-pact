@@ -120,6 +120,7 @@ export interface BoardUnit {
   stance?: 'attack' | 'defend';
   plannedTargetId?: string | null;
   bastionArmorBonus?: number;
+  riftArmorBonus?: number;
   isConcealedDeploy?: boolean;
   isTrap?: boolean;
 }
@@ -202,6 +203,14 @@ export type ArenaWeatherType =
   | 'solar_zenith'
   | 'astral_convergence';
 
+export type RiftMutatorId =
+  | 'astral_torrent'
+  | 'immortal_pantheon'
+  | 'eternal_cataclysm'
+  | 'glass_thrones'
+  | 'living_forge'
+  | 'black_sun_night';
+
 export interface ArenaWeatherState {
   type: ArenaWeatherType;
   domain: Domain;
@@ -265,6 +274,10 @@ export interface ConquestBattleModifiers {
     bonusOpeningDraw?: number;
     bonusAffinityDomain?: Domain | 'auto';
   } | null;
+  /** Mutador de Fenda da Fratura ativo para ambos os Soberanos */
+  riftMutator?: RiftMutatorId;
+  riftName?: string;
+  riftIcon?: string;
 }
 
 export interface GameState {

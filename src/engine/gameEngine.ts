@@ -586,11 +586,19 @@ export function createInitialGameState(
   const aiHand = buildBalancedOpeningHand(shuffledAiDeck);
 
   const cq = options?.conquestModifiers ?? null;
-  const playerMaxHp = (options?.playerStartingHp ?? STARTING_SOVEREIGN_HP) + (cq?.playerBonusHp ?? 0);
-  const aiMaxHp = options?.aiStartingHp ?? STARTING_SOVEREIGN_HP;
+  const rift = cq?.riftMutator;
+  const basePlayerHp =
+    rift === 'glass_thrones' ? 20 : options?.playerStartingHp ?? STARTING_SOVEREIGN_HP;
+  const baseAiHp = rift === 'glass_thrones' ? 20 : options?.aiStartingHp ?? STARTING_SOVEREIGN_HP;
+  const playerMaxHp = basePlayerHp + (cq?.playerBonusHp ?? 0);
+  const aiMaxHp = baseAiHp;
+  const riftBonusEssence = rift === 'astral_torrent' ? 3 : 0;
   const playerBonusEssence =
-    (options?.expeditionBlessingId === 'arcane_conclave' ? 1 : 0) + (cq?.playerBonusEssence ?? 0);
-  const aiBonusEssence = options?.bossId === 'boss_stage_23_refraction_triad' ? 1 : 0;
+    (options?.expeditionBlessingId === 'arcane_conclave' ? 1 : 0) +
+    (cq?.playerBonusEssence ?? 0) +
+    riftBonusEssence;
+  const aiBonusEssence =
+    (options?.bossId === 'boss_stage_23_refraction_triad' ? 1 : 0) + riftBonusEssence;
 
   const aiStartingAffinities = createStartingAffinitiesForDeck(aiDeck);
   if (
@@ -696,7 +704,11 @@ export function createInitialGameState(
         solar_zenith: 'gold',
         astral_convergence: 'neutral',
       };
-      state.weather = buildWeatherForDomain(domainByWeather[cq.initialWeather], 'system', 2);
+      state.weather = buildWeatherForDomain(
+        domainByWeather[cq.initialWeather],
+        'system',
+        cq.riftMutator === 'eternal_cataclysm' ? 99 : 2
+      );
     }
     if (cq.enemyOpeningDamage > 0) {
       state.ai.hp = Math.max(1, state.ai.hp - cq.enemyOpeningDamage);
@@ -942,6 +954,10 @@ export function recalculateFormationBonuses(state: GameState): void {
         u.currentArmor = Math.max(0, u.currentArmor - u.bastionArmorBonus);
         u.bastionArmorBonus = 0;
       }
+      if (u.riftArmorBonus) {
+        u.currentArmor = Math.max(0, u.currentArmor - u.riftArmorBonus);
+        u.riftArmorBonus = 0;
+      }
       u.isInvading = false;
     }
 
@@ -1048,6 +1064,20 @@ export function recalculateFormationBonuses(state: GameState): void {
           if (rUnit.card.type === 'creature' && !rUnit.isTrap) {
             rUnit.formationAtkBonus = 1;
             rUnit.currentAtk += 1;
+          }
+        }
+      }
+
+      if (state.conquestModifiers?.riftMutator === 'living_forge') {
+        const hasColumnRelic =
+          rStack.some((u) => u.card.type === 'relic') ||
+          getSlotUnits(pState, 'vanguard', i).some((u) => u.card.type === 'relic');
+        if (hasColumnRelic) {
+          for (const colUnit of [...getSlotUnits(pState, 'vanguard', i), ...rStack]) {
+            if (colUnit.card.type === 'creature' && !colUnit.isTrap) {
+              colUnit.riftArmorBonus = 1;
+              colUnit.currentArmor += 1;
+            }
           }
         }
       }
@@ -2150,14 +2180,22 @@ export function getEffectiveCardCost(
   actor: 'player' | 'ai',
   card: CardDefinition
 ): number {
+  let cost = card.cost;
   if (
     actor === 'player' &&
     card.type === 'relic' &&
     (state.expeditionBlessingId === 'forge_crown' || state.conquestModifiers?.relicDiscount)
   ) {
-    return Math.max(0, card.cost - 1);
+    cost -= 1;
   }
-  return card.cost;
+  const rift = state.conquestModifiers?.riftMutator;
+  if (rift === 'immortal_pantheon' && card.rarity === 'legendary') {
+    cost = Math.max(1, cost - 2);
+  }
+  if (rift === 'living_forge' && card.type === 'relic') {
+    cost = Math.max(0, cost - 2);
+  }
+  return Math.max(0, cost);
 }
 
 export function canPlayCard(
@@ -3259,6 +3297,29 @@ export function playCard(
     }
 
     const unit = createBoardUnit(card, actor, slot.row, slot.slotIndex, corruptionAtkBonus);
+
+    // Fracture Rift Mutators on Creature Deploy (symmetric for both player and AI)
+    const activeRift = next.conquestModifiers?.riftMutator;
+    if (activeRift && card.type === 'creature') {
+      if (activeRift === 'immortal_pantheon' && card.rarity === 'legendary') {
+        unit.currentAtk += 1;
+        unit.maxHp += 1;
+        unit.currentHp += 1;
+        addFeedback(next, unit.instanceId, '+1⚔️/+1❤️ Panteão Imortal', 'buff');
+      } else if (activeRift === 'glass_thrones') {
+        unit.currentAtk += 2;
+        unit.hasSummoningSickness = false;
+        if (!unit.keywords.includes('Ímpeto')) {
+          unit.keywords.push('Ímpeto');
+        }
+        addFeedback(next, unit.instanceId, '+2⚔️ ⚡ Trono de Vidro', 'buff');
+      } else if (activeRift === 'black_sun_night') {
+        if (!unit.keywords.includes('Renascer')) {
+          unit.keywords.push('Renascer');
+        }
+        addFeedback(next, unit.instanceId, '💀 Renascer Planar', 'buff');
+      }
+    }
 
     // Campaign & Expedition Boss Passives on AI Creature Summon
     if (actor === 'ai' && card.type === 'creature' && next.bossId) {
@@ -5232,8 +5293,18 @@ export function resolveCombatPhaseAndAdvanceRound(
   next.roundSubPhase = 'deploy';
   next.initiativePlayer = (next.initiativePlayer ?? 'player') === 'player' ? 'ai' : 'player';
 
-  // Weather countdown
-  if (next.weather) {
+  // Weather countdown (or Eternal Cataclysm Rift rotation)
+  if (next.conquestModifiers?.riftMutator === 'eternal_cataclysm') {
+    const weatherDomains: Domain[] = ['red', 'blue', 'purple', 'green', 'gold', 'neutral'];
+    const nextDom = weatherDomains[(next.turn - 1) % weatherDomains.length];
+    next.weather = buildWeatherForDomain(nextDom, 'system', 99);
+    addLog(
+      next,
+      'system',
+      'turn',
+      `🌪️ CATACLISMO MUTANTE: A Fenda transmutou o Clima Planar para [${next.weather.icon} ${next.weather.name}]!`
+    );
+  } else if (next.weather) {
     next.weather.turnsRemaining -= 1;
     if (next.weather.turnsRemaining <= 0) {
       addLog(
@@ -5290,8 +5361,11 @@ export function resolveCombatPhaseAndAdvanceRound(
     }
     actorState.hasUsedSimpleDomainThisTurn = false;
 
-    if (actorState.maxEssence < MAX_ESSENCE_CAP) {
-      actorState.maxEssence += 1;
+    const isAstralTorrent = next.conquestModifiers?.riftMutator === 'astral_torrent';
+    const effectiveEssCap = isAstralTorrent ? 12 : MAX_ESSENCE_CAP;
+    const essGainPerRound = isAstralTorrent ? 2 : 1;
+    if (actorState.maxEssence < effectiveEssCap) {
+      actorState.maxEssence = Math.min(effectiveEssCap, actorState.maxEssence + essGainPerRound);
     }
     const autoDomain = pickMostNeededColoredDomain(actorState);
     actorState.affinities[autoDomain] += 1;
@@ -5389,7 +5463,7 @@ export function resolveCombatPhaseAndAdvanceRound(
       }
     }
 
-    drawCardsForActor(next, actor, 1);
+    drawCardsForActor(next, actor, next.conquestModifiers?.riftMutator === 'astral_torrent' ? 2 : 1);
   }
 
   // Campaign & Expedition Boss Start-of-Round Passives

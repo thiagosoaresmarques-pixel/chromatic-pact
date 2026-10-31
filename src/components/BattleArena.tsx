@@ -88,6 +88,7 @@ import {
   recordDailyProblemAttemptResult,
   recordDailyQuestEvent,
 } from '../utils/dailyQuestsEngine';
+import { computeMatchDossier } from '../utils/matchStatsTracker';
 
 const ARENA_COACHMARK_STEPS = [
   {
@@ -144,6 +145,8 @@ export interface CustomSavedDeck {
   id: string;
   name: string;
   cardIds: string[];
+  wins?: number;
+  losses?: number;
 }
 
 export interface BattleArenaProps {
@@ -163,6 +166,7 @@ export interface BattleArenaProps {
   onExitArena?: () => void;
   onExitCampaign?: () => void;
   onRewardGold?: (amount: number, reason: string) => void;
+  onMatchConcluded?: (info: { didWin: boolean; usedDeckId: string | null }) => void;
   onlineMatch?: {
     room: MultiplayerRoom;
     role: 'host' | 'guest';
@@ -349,6 +353,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onExitArena,
   onExitCampaign,
   onRewardGold,
+  onMatchConcluded,
   onlineMatch,
 }) => {
   const handleExitBattle = () => {
@@ -1748,6 +1753,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         } else if (campaignBoss && onCampaignDefeat) {
           onCampaignDefeat(campaignBoss);
         }
+      }
+
+      if (!tacticalProblem && onMatchConcluded) {
+        onMatchConcluded({
+          didWin: gameState.winner === 'player',
+          usedDeckId: campaignBoss ? null : selectedPlayerDeckId,
+        });
       }
 
       const timer = window.setTimeout(() => {
@@ -3930,6 +3942,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       {gameState.conquestModifiers.equippedRelic.icon}{' '}
                       <span className="hide-on-mobile">
                         {gameState.conquestModifiers.equippedRelic.name}
+                      </span>
+                    </span>
+                  )}
+
+                  {gameState.conquestModifiers?.riftMutator && (
+                    <span
+                      className="hud-pill-env-chip rift-chip"
+                      title={gameState.conquestModifiers.bannerSummary ?? 'Mutador de Fenda Ativo'}
+                    >
+                      {gameState.conquestModifiers.riftIcon ?? '🌀'}{' '}
+                      <span className="hide-on-mobile">
+                        {gameState.conquestModifiers.riftName ?? 'Fenda'}
                       </span>
                     </span>
                   )}
@@ -6289,9 +6313,42 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             >
               {gameState.winner === 'player' ? 'VITÓRIA DO SOBERANO' : 'DERROTA NA BATALHA'}
             </h2>
-            <p style={{ color: '#cbd5e1', fontSize: '0.92rem', marginBottom: '1.2rem' }}>
+            <p style={{ color: '#cbd5e1', fontSize: '0.92rem', marginBottom: '0.95rem' }}>
               {gameState.winReason}
             </p>
+
+            {/* Post-Match Tactical Dossier & MVP Card Spotlight */}
+            {!tacticalProblem && (() => {
+              const dossier = computeMatchDossier(gameState);
+              return (
+                <div className="gameover-mvp-dossier">
+                  <div className="gmd-mvp-row">
+                    {dossier.mvpCard.imagePath && (
+                      <img
+                        src={dossier.mvpCard.imagePath}
+                        alt={dossier.mvpCard.name}
+                        className="gmd-mvp-thumb"
+                      />
+                    )}
+                    <div className="gmd-mvp-copy">
+                      <span className="gmd-mvp-kicker">{dossier.mvpKicker}</span>
+                      <strong className="font-cinzel gmd-mvp-name">
+                        {dossier.mvpCard.name}
+                      </strong>
+                      <small className="gmd-mvp-reason">{dossier.mvpReason}</small>
+                    </div>
+                  </div>
+                  <div className="gmd-metrics-strip">
+                    <span>⏱️ {dossier.turnsPlayed} Turnos</span>
+                    <span>⚔️ {dossier.playerUnitsSummoned} Invocações</span>
+                    <span>✨ {dossier.playerSpellsAndReactions} Magias</span>
+                    <span>
+                      ❤️ {dossier.playerFinalHp} vs {dossier.aiFinalHp} PV
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
 
             {gameState.winner === 'player' && (
               <div

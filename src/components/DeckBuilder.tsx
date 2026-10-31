@@ -17,6 +17,8 @@ import {
   MONOCHROMATIC_STARTER_DECKS,
 } from '../utils/multiplayerEngine';
 import { decodeDeckCode, encodeDeckCode } from '../utils/portableCodex';
+import { canCraftCard, CRAFT_COST_BY_RARITY } from '../utils/craftingEngine';
+import { playSfx } from '../utils/soundEngine';
 
 export interface SynergyPackageDef {
   id: string;
@@ -121,6 +123,10 @@ export interface DeckBuilderProps {
   unlockedCardIds: Record<string, number>;
   customDecks: CustomSavedDeck[];
   gold?: number;
+  astralShards?: number;
+  onCraftCard?: (card: CardDefinition) => void;
+  salvageableInfo?: { totalShardsEarned: number; cardsSalvagedCount: number };
+  onSalvageDuplicates?: () => void;
   onSaveCustomDeck: (deck: CustomSavedDeck, options?: { replaceBaseGrimoire?: boolean }) => void;
   onDeleteCustomDeck: (deckId: string) => void;
   isGuest?: boolean;
@@ -135,19 +141,36 @@ interface GalleryCardCellProps {
   ownedCopies: number;
   isGuest?: boolean;
   canAdd: boolean;
+  craftCost?: number;
+  canAffordCraft?: boolean;
+  onCraft?: (card: CardDefinition) => void;
   onAdd: (card: CardDefinition) => void;
   onRemove: (cardId: string) => void;
   onInspect: (card: CardDefinition) => void;
 }
 
 const GalleryCardCell = React.memo<GalleryCardCellProps>(
-  ({ card, countInDeck, maxAllowed, ownedCopies, isGuest, canAdd, onAdd, onRemove, onInspect }) => {
+  ({
+    card,
+    countInDeck,
+    maxAllowed,
+    ownedCopies,
+    isGuest,
+    canAdd,
+    craftCost,
+    canAffordCraft,
+    onCraft,
+    onAdd,
+    onRemove,
+    onInspect,
+  }) => {
     const isLockedForUser = !isGuest && ownedCopies <= 0;
     const effectiveMax = isGuest ? maxAllowed : Math.min(maxAllowed, ownedCopies);
+    const showCraftBtn = !isGuest && Boolean(onCraft) && ownedCopies < maxAllowed;
     return (
       <div
         className="db-card-cell"
-        style={isLockedForUser ? { opacity: 0.45, filter: 'grayscale(0.65)' } : undefined}
+        style={isLockedForUser ? { opacity: 0.56, filter: 'grayscale(0.55)' } : undefined}
       >
         <CardView
           card={card}
@@ -169,7 +192,7 @@ const GalleryCardCell = React.memo<GalleryCardCellProps>(
             className="db-step-pips"
             title={
               isLockedForUser
-                ? 'Carta bloqueada — obtenha no Relicário'
+                ? 'Carta bloqueada — forje com Estilhaços Astrais ou obtenha no Relicário'
                 : `No Deck: ${countInDeck}/${effectiveMax} (Limite da Raridade: ${maxAllowed}×)`
             }
           >
@@ -194,6 +217,24 @@ const GalleryCardCell = React.memo<GalleryCardCellProps>(
             +
           </button>
         </div>
+        {showCraftBtn && craftCost !== undefined && (
+          <button
+            type="button"
+            className={`db-craft-mini-btn ${canAffordCraft ? 'can-afford' : ''}`}
+            disabled={!canAffordCraft}
+            onClick={() => {
+              playSfx('ascend');
+              onCraft?.(card);
+            }}
+            title={
+              canAffordCraft
+                ? `Forjar +1 cópia de ${card.name} por ${craftCost} Estilhaços Astrais`
+                : `Estilhaços insuficientes para forjar (${craftCost} 💎 necessários)`
+            }
+          >
+            ⚒️ Forjar ({craftCost} 💎)
+          </button>
+        )}
       </div>
     );
   }
@@ -206,6 +247,10 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   unlockedCardIds,
   customDecks,
   gold = 0,
+  astralShards = 0,
+  onCraftCard,
+  salvageableInfo,
+  onSalvageDuplicates,
   onSaveCustomDeck,
   onDeleteCustomDeck,
   isGuest = false,
@@ -229,6 +274,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const [costFilter, setCostFilter] = useState<number | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [onlyUnlocked, setOnlyUnlocked] = useState<boolean>(false);
+  const [onlyMissingCopies, setOnlyMissingCopies] = useState<boolean>(false);
   const [synergyFilterId, setSynergyFilterId] = useState<string | 'all' | 'recommended'>('all');
   const [showSynergyPanel, setShowSynergyPanel] = useState<boolean>(false);
   const [isMobileDeckListOpen, setIsMobileDeckListOpen] = useState<boolean>(false);
@@ -577,6 +623,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       if (onlyUnlocked && (unlockedCardIds[card.id] ?? 0) <= 0) {
         return false;
       }
+      if (onlyMissingCopies && (unlockedCardIds[card.id] ?? 0) >= MAX_COPIES_BY_RARITY[card.rarity]) {
+        return false;
+      }
       if (synergyFilterId === 'recommended' && !deckAnalysis.recommendedCardIds.has(card.id)) {
         return false;
       }
@@ -603,6 +652,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     rarityFilter,
     costFilter,
     onlyUnlocked,
+    onlyMissingCopies,
     unlockedCardIds,
     searchQuery,
     synergyFilterId,
@@ -908,6 +958,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     rarityFilter !== 'all' ||
     costFilter !== 'all' ||
     onlyUnlocked ||
+    onlyMissingCopies ||
     searchQuery.trim() !== '' ||
     synergyFilterId !== 'all';
 
@@ -917,6 +968,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     setRarityFilter('all');
     setCostFilter('all');
     setOnlyUnlocked(false);
+    setOnlyMissingCopies(false);
     setSearchQuery('');
     setSynergyFilterId('all');
   };
@@ -1013,13 +1065,51 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             <input
               type="checkbox"
               checked={onlyUnlocked}
-              onChange={(e) => setOnlyUnlocked(e.target.checked)}
+              onChange={(e) => {
+                setOnlyUnlocked(e.target.checked);
+                if (e.target.checked) setOnlyMissingCopies(false);
+              }}
             />
             <span>Coleção</span>
           </label>
 
+          {!isGuest && (
+            <label className="db-collection-toggle" title="Exibir cartas que ainda faltam cópias para forjar com Estilhaços Astrais">
+              <input
+                type="checkbox"
+                checked={onlyMissingCopies}
+                onChange={(e) => {
+                  setOnlyMissingCopies(e.target.checked);
+                  if (e.target.checked) setOnlyUnlocked(false);
+                }}
+              />
+              <span>⚒️ Forjáveis</span>
+            </label>
+          )}
+
           {/* Sleek Analytics Drawer Toggle + Count */}
           <div className="db-toolbar-right">
+            {!isGuest && (
+              <span
+                className="astral-shards-pill"
+                title="Estilhaços Astrais disponíveis para forjar cartas específicas"
+              >
+                💎 <strong>{astralShards.toLocaleString('pt-BR')}</strong>
+              </span>
+            )}
+            {!isGuest && salvageableInfo && salvageableInfo.totalShardsEarned > 0 && onSalvageDuplicates && (
+              <button
+                type="button"
+                className="db-analytics-toggle-btn is-open"
+                onClick={() => {
+                  playSfx('ascend');
+                  onSalvageDuplicates();
+                }}
+                title={`Transmutar ${salvageableInfo.cardsSalvagedCount} cópias excedentes em +${salvageableInfo.totalShardsEarned} Estilhaços Astrais`}
+              >
+                <span>💎 +{salvageableInfo.totalShardsEarned}</span>
+              </button>
+            )}
             <span className="db-results-count">{filteredCards.length}</span>
             {hasActiveFilters && (
               <button
@@ -1206,6 +1296,8 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 deckAnalysis.legendaryCount >= MAX_LEGENDARIES_PER_DECK;
               const canAdd =
                 countInDeck < effectiveMax && !legCapReached && deckCardIds.length < 100;
+              const craftCost = CRAFT_COST_BY_RARITY[card.rarity];
+              const canAffordCraft = !hasFreeCatalogSelection && ownedCopies < maxAllowed && astralShards >= craftCost;
 
               return (
                 <GalleryCardCell
@@ -1216,6 +1308,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                   ownedCopies={ownedCopies}
                   isGuest={hasFreeCatalogSelection}
                   canAdd={canAdd}
+                  craftCost={craftCost}
+                  canAffordCraft={canAffordCraft}
+                  onCraft={onCraftCard}
                   onAdd={handleAddCardToDeck}
                   onRemove={handleRemoveCardFromDeck}
                   onInspect={setInspectCard}
@@ -1326,26 +1421,42 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
           {customDecks.length > 0 && (
             <div className="db-saved-decks-row">
-              {customDecks.map((cd) => (
-                <div key={cd.id} className="db-saved-deck-chip">
-                  <button
-                    type="button"
-                    className="db-saved-load-btn"
-                    onClick={() => handleLoadCustom(cd)}
-                  >
-                    {cd.name}
-                  </button>
-                  {customDecks.length > 1 && (
+              {customDecks.map((cd) => {
+                const w = cd.wins ?? 0;
+                const l = cd.losses ?? 0;
+                const totalGames = w + l;
+                const wrPct = totalGames > 0 ? Math.round((w / totalGames) * 100) : null;
+                return (
+                  <div key={cd.id} className="db-saved-deck-chip">
                     <button
                       type="button"
-                      className="db-saved-del-btn"
-                      onClick={() => onDeleteCustomDeck(cd.id)}
+                      className="db-saved-load-btn"
+                      onClick={() => handleLoadCustom(cd)}
+                      title={
+                        totalGames > 0
+                          ? `${cd.name} — Histórico: ${w} Vitórias / ${l} Derrotas (${wrPct}% WR)`
+                          : cd.name
+                      }
                     >
-                      ✕
+                      <span>{cd.name}</span>
+                      {totalGames > 0 && (
+                        <small className="db-deck-wr-badge">
+                          {w}V•{l}D ({wrPct}%)
+                        </small>
+                      )}
                     </button>
-                  )}
-                </div>
-              ))}
+                    {customDecks.length > 1 && (
+                      <button
+                        type="button"
+                        className="db-saved-del-btn"
+                        onClick={() => onDeleteCustomDeck(cd.id)}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -1731,7 +1842,29 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
       {/* CARD INSPECT MODAL */}
       {inspectCard && (
-        <CardInspectModal card={inspectCard} onClose={() => setInspectCard(null)} />
+        <CardInspectModal
+          card={inspectCard}
+          onClose={() => setInspectCard(null)}
+          craftInfo={
+            !isGuest && onCraftCard
+              ? (() => {
+                  const owned = unlockedCardIds[inspectCard.id] ?? 0;
+                  const check = canCraftCard(inspectCard, owned, astralShards);
+                  return {
+                    ownedCopies: owned,
+                    maxAllowed: check.maxAllowed,
+                    cost: check.cost,
+                    astralShards,
+                    canCraft: check.canCraft,
+                    onCraft: (c) => {
+                      playSfx('ascend');
+                      onCraftCard(c);
+                    },
+                  };
+                })()
+              : null
+          }
+        />
       )}
     </div>
   );

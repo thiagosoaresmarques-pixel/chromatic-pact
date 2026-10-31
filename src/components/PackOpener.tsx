@@ -3,11 +3,15 @@ import { CardDefinition, Domain } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { playSfx } from '../utils/soundEngine';
 import { CardView, CardInspectModal, RARITY_LABELS } from './CardView';
+import { PackCardResolution } from '../utils/craftingEngine';
 
 export interface PackOpenerProps {
   gold: number;
+  astralShards?: number;
   unlockedCardIds: Record<string, number>;
-  onOpenPack: (packCost: number, cards: CardDefinition[]) => void;
+  onOpenPack: (packCost: number, cards: CardDefinition[]) => PackCardResolution[] | void;
+  salvageableInfo?: { totalShardsEarned: number; cardsSalvagedCount: number };
+  onSalvageDuplicates?: () => void;
   isGuest?: boolean;
   hasCustomDeck?: boolean;
   onRequireAccount?: () => void;
@@ -123,13 +127,17 @@ function generateBoosterCards(domainFilter: Domain | 'all'): CardDefinition[] {
 
 export const PackOpener: React.FC<PackOpenerProps> = ({
   gold,
+  astralShards = 0,
   unlockedCardIds,
   onOpenPack,
+  salvageableInfo,
+  onSalvageDuplicates,
   isGuest = false,
   onRequireAccount,
 }) => {
   const [selectedPackId, setSelectedPackId] = useState<string>('pack_all');
   const [currentPackCards, setCurrentPackCards] = useState<CardDefinition[]>([]);
+  const [currentPackOutcomes, setCurrentPackOutcomes] = useState<PackCardResolution[]>([]);
   const [revealedIndices, setRevealedIndices] = useState<number[]>([]);
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
 
@@ -167,7 +175,8 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
     const drawn = generateBoosterCards(selectedPack.domain);
     setCurrentPackCards(drawn);
     setRevealedIndices([]);
-    onOpenPack(selectedPack.cost, drawn);
+    const outcomes = onOpenPack(selectedPack.cost, drawn);
+    setCurrentPackOutcomes(Array.isArray(outcomes) ? outcomes : []);
     playSfx('pack_open');
   };
 
@@ -206,6 +215,25 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
           <span>INCOMUNS <strong>{collectionStats.byRarity.uncommon}</strong></span>
           <span>RARAS <strong>{collectionStats.byRarity.rare}</strong></span>
           <span>LENDÁRIAS <strong className="gold-text">{collectionStats.byRarity.legendary}</strong></span>
+          {!isGuest && (
+            <span className="astral-shards-pill" title="Estilhaços Astrais usados para forjar qualquer carta específica no Grimório">
+              💎 ESTILHAÇOS <strong>{astralShards.toLocaleString('pt-BR')}</strong>
+            </span>
+          )}
+          {!isGuest && salvageableInfo && salvageableInfo.totalShardsEarned > 0 && onSalvageDuplicates && (
+            <button
+              type="button"
+              className="btn-fantasy btn-fantasy-primary"
+              style={{ padding: '3px 10px', fontSize: '0.7rem' }}
+              onClick={() => {
+                playSfx('ascend');
+                onSalvageDuplicates();
+              }}
+              title={`Transmutar ${salvageableInfo.cardsSalvagedCount} cópias acima do limite de deck em Estilhaços Astrais`}
+            >
+              💎 Transmutar {salvageableInfo.cardsSalvagedCount} Excedentes (+{salvageableInfo.totalShardsEarned} 💎)
+            </button>
+          )}
         </div>
         <div className="aaa-progress-track">
           <div className="aaa-progress-fill" style={{ width: `${pct}%` }} />
@@ -273,7 +301,8 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
           <div className="aaa-pack-cards-row">
             {currentPackCards.map((card, idx) => {
               const isRevealed = revealedIndices.includes(idx);
-              const totalOwned = unlockedCardIds[card.id] ?? 1;
+              const outcome = currentPackOutcomes[idx];
+              const totalOwned = outcome?.resultingOwned ?? unlockedCardIds[card.id] ?? 1;
 
               return (
                 <div key={`${card.id}-pack-${idx}`} className="aaa-revealed-slot">
@@ -292,7 +321,15 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
                   ) : (
                     <div className="aaa-revealed-card-wrap">
                       <CardView card={card} mode="gallery" onInspect={setInspectCard} />
-                      <span className="aaa-owned-tag">Na Coleção: {totalOwned}x</span>
+                      {outcome?.status === 'duplicate_shards' ? (
+                        <span className="aaa-owned-tag is-shards">
+                          💎 +{outcome.shardsGranted} Estilhaços (Excedente)
+                        </span>
+                      ) : outcome?.status === 'new' ? (
+                        <span className="aaa-owned-tag is-new">✨ NOVA NA COLEÇÃO!</span>
+                      ) : (
+                        <span className="aaa-owned-tag">Na Coleção: {totalOwned}x</span>
+                      )}
                     </div>
                   )}
                 </div>

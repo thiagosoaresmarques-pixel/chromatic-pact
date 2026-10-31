@@ -12,6 +12,17 @@ import {
   generateSovereignDraftCandidates,
 } from '../data/vaeloriaDraftData';
 import { decodeDeckCode, encodeDeckCode } from '../utils/portableCodex';
+import {
+  craftSingleCardCopy,
+  resolvePackDuplicatesWithShards,
+  salvageAllExcessDuplicates,
+} from '../utils/craftingEngine';
+import {
+  buildRiftBattleEncounter,
+  FRACTURE_RIFTS,
+  getWeeklyFeaturedRift,
+} from '../data/fractureRiftsData';
+import { computeMatchDossier } from '../utils/matchStatsTracker';
 import { createInitialGameState, endTurn } from '../engine/gameEngine';
 import { runFullAiTurn } from '../engine/aiEngine';
 import {
@@ -308,6 +319,70 @@ function runAutomatedQA() {
   console.log(
     `  Draft Gauntlet Final: [Campeão do Crisol] vs [${gauntletEncounter.boss.name}] -> Turn ${finalDraftDuel.turn} (HP: ${finalDraftDuel.player.hp} vs ${finalDraftDuel.ai.hp})`
   );
+
+  console.log(`\nValidating Astral Shards Forge & Duplicate Salvage Engine...`);
+  const legendarySample = ALL_CARDS.find((c) => c.rarity === 'legendary')!;
+  const commonSample = ALL_CARDS.find((c) => c.rarity === 'common')!;
+  const packResolution = resolvePackDuplicatesWithShards(
+    { [legendarySample.id]: 1, [commonSample.id]: 2 },
+    {},
+    [legendarySample, commonSample, commonSample]
+  );
+  if (packResolution.shardsEarned !== 125) {
+    throw new Error(
+      `Expected 125 Astral Shards from 1 excess Legendary (120) + 1 excess Common (5), got ${packResolution.shardsEarned}`
+    );
+  }
+  const craftAttempt = craftSingleCardCopy(legendarySample, 0, {}, 500);
+  if (!craftAttempt.ok || craftAttempt.nextAstralShards !== 140) {
+    throw new Error(`Expected crafting Legendary to cost 360 shards and leave 140`);
+  }
+  const salvageRes = salvageAllExcessDuplicates([legendarySample.id], { [legendarySample.id]: 2 });
+  if (salvageRes.totalShardsEarned !== 240 || salvageRes.cardsSalvagedCount !== 2) {
+    throw new Error(`Expected salvaging 2 excess legendaries to yield 240 shards`);
+  }
+  console.log(
+    `  OK — Astral Shards Forge verified (+125 shards on pack duplicates, -360 craft Legendary, +240 salvage).`
+  );
+
+  console.log(
+    `\nRunning 6 Fracture Rift Mutator Simulations (Weekly Featured: ${getWeeklyFeaturedRift().name})...`
+  );
+  for (let rIdx = 0; rIdx < FRACTURE_RIFTS.length; rIdx++) {
+    const rift = FRACTURE_RIFTS[rIdx];
+    const { boss, modifiers } = buildRiftBattleEncounter(rift.id);
+    const challengerDeck =
+      PREBUILT_DECKS.find((d) => d.id === boss.deckId) ?? PREBUILT_DECKS[0];
+    const playerDeck = PREBUILT_DECKS[(rIdx + 2) % PREBUILT_DECKS.length];
+
+    const riftInitialState = createInitialGameState(
+      resolveDeck(playerDeck.cardIds),
+      resolveDeck(challengerDeck.cardIds),
+      {
+        playerName: playerDeck.name,
+        aiName: boss.name,
+        aiStartingHp: boss.startingHp,
+        bossId: boss.id,
+        conquestModifiers: modifiers,
+      }
+    );
+
+    if (rift.id === 'glass_thrones' && (riftInitialState.player.hp !== 20 || riftInitialState.ai.hp !== 20)) {
+      throw new Error(`Glass Thrones failed to enforce 20 HP on both Sovereigns`);
+    }
+    if (rift.id === 'astral_torrent' && riftInitialState.player.maxEssence !== 6) {
+      throw new Error(`Astral Torrent failed to start at 6 maxEssence`);
+    }
+
+    const riftFinal = runSingleAiDuel(riftInitialState, 65);
+    const dossier = computeMatchDossier(riftFinal);
+    if (!dossier.mvpCard || !dossier.mvpCard.name) {
+      throw new Error(`Post-match dossier failed to select MVP card for rift ${rift.id}`);
+    }
+    console.log(
+      `  Rift ${rIdx + 1}/${FRACTURE_RIFTS.length} [${rift.icon} ${rift.name}]: Turn ${riftFinal.turn} (HP: ${riftFinal.player.hp} vs ${riftFinal.ai.hp}) | MVP: [${dossier.mvpCard.name}]`
+    );
+  }
 
   console.log('\nALL QA CHECKS & SIMULATIONS PASSED!');
 }

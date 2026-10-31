@@ -736,12 +736,26 @@ export const CardView: React.FC<CardViewProps> = ({
   );
 };
 
+export interface CardInspectCraftInfo {
+  ownedCopies: number;
+  maxAllowed: number;
+  cost: number;
+  astralShards: number;
+  canCraft: boolean;
+  onCraft: (card: CardDefinition) => void;
+}
+
 export interface CardInspectModalProps {
   card: CardDefinition;
   onClose: () => void;
+  craftInfo?: CardInspectCraftInfo | null;
 }
 
-export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card: rawCard, onClose }) => {
+export const CardInspectModal: React.FC<CardInspectModalProps> = ({
+  card: rawCard,
+  onClose,
+  craftInfo,
+}) => {
   const card = CARDS_BY_ID[rawCard.id] ?? rawCard;
   const domainInfo = DOMAIN_META[card.domain] || DOMAIN_META.neutral;
   const poemAppearances = EPIC_POEM_APPEARANCES_BY_CARD_ID[card.id] ?? [];
@@ -820,12 +834,34 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({ card: rawCar
             </h2>
             <p style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
               {domainInfo.icon} {domainInfo.name} • {CARD_TYPE_LABELS[card.type]} ({card.subtype}) •{' '}
-              {RARITY_LABELS[card.rarity]}
+              { RARITY_LABELS[card.rarity] }
             </p>
           </div>
-          <button type="button" className="btn-fantasy" onClick={onClose}>
-            ✕ Fechar
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {craftInfo && (
+              <button
+                type="button"
+                className="btn-fantasy btn-fantasy-primary"
+                disabled={!craftInfo.canCraft}
+                onClick={() => craftInfo.onCraft(card)}
+                title={
+                  craftInfo.ownedCopies >= craftInfo.maxAllowed
+                    ? `Limite máximo atingido na coleção (${craftInfo.ownedCopies}/${craftInfo.maxAllowed})`
+                    : craftInfo.canCraft
+                    ? `Forjar +1 cópia desta carta por ${craftInfo.cost} Estilhaços Astrais`
+                    : `Estilhaços insuficientes (${craftInfo.astralShards}/${craftInfo.cost} 💎)`
+                }
+                style={{ fontSize: '0.75rem', padding: '5px 12px' }}
+              >
+                {craftInfo.ownedCopies >= craftInfo.maxAllowed
+                  ? `✓ Coleção Completa (${craftInfo.ownedCopies}/${craftInfo.maxAllowed})`
+                  : `⚒️ Forjar Cópia (-${craftInfo.cost} 💎 • ${craftInfo.ownedCopies}/${craftInfo.maxAllowed})`}
+              </button>
+            )}
+            <button type="button" className="btn-fantasy" onClick={onClose}>
+              ✕ Fechar
+            </button>
+          </div>
         </div>
 
         <div

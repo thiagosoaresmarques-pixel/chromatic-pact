@@ -17,6 +17,8 @@ export interface SovereignSavedDeck {
   domain?: Domain;
   cardIds: string[];
   updatedAt?: number;
+  wins?: number;
+  losses?: number;
 }
 
 /**
@@ -115,6 +117,7 @@ export interface SovereignUserProfile {
   pvpLosses: number;
   preferredDeckId: string;
   gold?: number;
+  astralShards?: number;
   customDecks?: SovereignSavedDeck[];
   starterDeckCardIds?: string[];
   extraUnlockedCards?: Record<string, number>;

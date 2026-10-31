@@ -176,7 +176,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
   });
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [bannerToast, setBannerToast] = useState<string | null>(null);
-  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(false);
+  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(true);
   const [showDiplomacyModal, setShowDiplomacyModal] = useState<boolean>(false);
 
   useEffect(() => {
@@ -1355,20 +1355,35 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
               hasActedThisSeason={runState.hasSiegedThisSeason}
               isDossierCollapsed={isDossierCollapsed}
               onToggleDossier={() => setIsDossierCollapsed((v) => !v)}
+              onOpenDossier={() => setIsDossierCollapsed(false)}
               onSelectProvince={(prov) => setSelectedProvinceId(prov.id)}
               onLaunchSiege={handleLaunchOffensiveSiege}
               onExploreLandmarkReward={handleExploreConquestLandmark}
             />
 
-            {/* Right Sidebar: Selected Province Tactical Dossier + Empire War Log */}
+            {/* Floating Overlay Drawer: Selected Province Tactical Dossier + Empire War Log */}
+            {!isDossierCollapsed && (
             <section
-              className="aaa-boss-dossier conquest-dossier"
+              className="aaa-boss-dossier conquest-dossier is-floating-map-drawer"
               style={
                 {
                   '--boss-accent': selectedOwnerFaction.color,
                 } as React.CSSProperties
               }
             >
+              <div className="aaa-floating-drawer-topbar">
+                <span className="aaa-floating-drawer-kicker">
+                  SALA DE GUERRA • {selectedProvince.name.toUpperCase()}
+                </span>
+                <button
+                  type="button"
+                  className="aaa-floating-drawer-close"
+                  onClick={() => setIsDossierCollapsed(true)}
+                  title="Fechar Sala de Guerra"
+                >
+                  ✕
+                </button>
+              </div>
               <div className="aaa-dossier-visual">
                 {selectedCommanderCard?.imagePath && (
                   <img
@@ -1559,6 +1574,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 </div>
               </div>
             </section>
+            )}
           </div>
         </>
       )}

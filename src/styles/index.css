@@ -22392,3 +22392,559 @@ input:focus-visible,
     display: none;
   }
 }
+
+
+/* ============================================================================
+   ONDA 6: GRANDE CAMPANHA GEOGRÁFICA (190 CONFRONTOS / 276 CARTAS),
+   ZOOM FIXO 100%, ENCAIXE 100% NA TELA E ZERO POLUIÇÃO VISUAL NOS MAPAS
+   ============================================================================ */
+
+/* 1. Encaixe 100% em Qualquer Tela (Zero Scrollbars, Zero Recorte em Todos os 21 Mapas) */
+.app-shell:has(.is-widescreen-map-page) {
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.app-shell:has(.is-widescreen-map-page) > main {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.app-shell:has(.is-widescreen-map-page) .section-subnav-shell {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  margin-bottom: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.app-shell:has(.is-widescreen-map-page) .aaa-onboarding-shell {
+  display: none !important;
+}
+
+.aaa-page-shell.is-widescreen-map-page {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  width: min(99.4vw, 1920px) !important;
+  max-width: 1920px !important;
+  margin: 0 auto !important;
+  padding: 3px 8px !important;
+  gap: 4px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.is-widescreen-map-page .aaa-campaign-toolbar,
+.is-widescreen-map-page .conquest-top-bar {
+  padding: 4px 10px !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.is-widescreen-map-page .aaa-toolbar-title {
+  font-size: 0.92rem !important;
+}
+
+.aaa-campaign-workspace.is-map-mode {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.aaa-campaign-workspace.is-map-mode > .vaeloria-world-map-shell,
+.aaa-campaign-workspace.is-map-mode > .conquest-megamap-shell {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 4px 8px !important;
+  gap: 3px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.is-widescreen-map-page .multiscale-atlas-nav {
+  padding: 2px 6px !important;
+  gap: 2px !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.is-widescreen-map-page .multiscale-realm-strip {
+  gap: 3px !important;
+  padding-bottom: 1px !important;
+}
+
+.is-widescreen-map-page .multiscale-realm-chip {
+  padding: 2px 6px !important;
+  font-size: 0.58rem !important;
+}
+
+.is-widescreen-map-page .multiscale-breadcrumb-strip {
+  display: none !important;
+}
+
+.is-widescreen-map-page .vwm-hud-top,
+.is-widescreen-map-page .cqm-toolbar {
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+}
+
+.is-widescreen-map-page .vwm-territory-pill {
+  padding: 3px 9px !important;
+}
+
+.vwm-stage-fit-box {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  container-type: size;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+.vwm-stage-fit-box > .vwm-viewport {
+  width: min(100cqw, calc(100cqh * 16 / 9)) !important;
+  height: min(100cqh, calc(100cqw * 9 / 16)) !important;
+  aspect-ratio: 16 / 9 !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  margin: 0 auto !important;
+  cursor: default !important;
+}
+
+.vwm-terrain-img {
+  object-fit: fill !important;
+}
+
+.myth-atlas-preview-frame {
+  width: auto !important;
+  max-width: 100% !important;
+  max-height: calc(100dvh - 210px) !important;
+  aspect-ratio: 16 / 9 !important;
+  margin: 0 auto !important;
+}
+
+.myth-atlas-preview-frame > img {
+  object-fit: fill !important;
+}
+
+.vwm-fixed-zoom-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #0b101c;
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  color: #cbd5e1;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  user-select: none;
+}
+
+/* 2. Gaveta Flutuante Recolhível Sobria (Dossiê / Sala de Guerra sobre o Mapa) */
+.aaa-boss-dossier.is-floating-map-drawer {
+  position: absolute !important;
+  top: 6px !important;
+  right: 6px !important;
+  bottom: 6px !important;
+  width: min(372px, calc(100% - 12px)) !important;
+  max-height: calc(100% - 12px) !important;
+  overflow-y: auto !important;
+  z-index: 65 !important;
+  background: rgba(11, 16, 28, 0.97) !important;
+  border: 1px solid rgba(212, 175, 55, 0.38) !important;
+  border-radius: 10px !important;
+  box-shadow: -14px 0 38px rgba(0, 0, 0, 0.94) !important;
+  padding: 0.72rem 0.85rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.55rem !important;
+}
+
+.aaa-floating-drawer-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-bottom: 0.42rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  flex-shrink: 0;
+}
+
+.aaa-floating-drawer-kicker {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #d4af37;
+}
+
+.aaa-floating-drawer-close {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: #0f1624;
+  color: #e2e8f0;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.14s ease, border-color 0.14s ease;
+}
+
+.aaa-floating-drawer-close:hover {
+  background: #182235;
+  border-color: rgba(212, 175, 55, 0.55);
+  color: #fef08a;
+}
+
+/* Retrato Duplo para Guarnições de Criaturas Raras */
+.aaa-dossier-visual.is-duo-visual {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+  padding: 6px !important;
+}
+
+.aaa-dossier-visual.is-duo-visual .aaa-dossier-art {
+  width: 100% !important;
+  height: 118px !important;
+  object-fit: cover !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(212, 175, 55, 0.32) !important;
+}
+
+/* Chips de Cartas Raras/Lendárias Desbloqueáveis ao Vencer o Confronto */
+.aaa-dossier-reward-cards-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: #0f1624;
+  border: 1px solid rgba(212, 175, 55, 0.26);
+}
+
+.aaa-dossier-reward-kicker {
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #d4af37;
+}
+
+.aaa-dossier-reward-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.aaa-reward-card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 4px;
+  border-radius: 6px;
+  background: #0b101c;
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  color: #f8fafc;
+  font-size: 0.66rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+
+.aaa-reward-card-chip:hover {
+  background: #141d30;
+  border-color: rgba(212, 175, 55, 0.62);
+}
+
+.aaa-reward-card-chip.is-owned {
+  border-color: rgba(52, 211, 153, 0.45);
+  color: #a7f3d0;
+}
+
+.aaa-reward-card-chip img {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+/* KPIs e Seletor da Bandeira Cromática do Soberano na Barra Superior */
+.aaa-campaign-kpi-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.aaa-campaign-kpi-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #0f1624;
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  color: #cbd5e1;
+  font-size: 0.68rem;
+}
+
+.aaa-campaign-kpi-pill strong {
+  color: #f8fafc;
+  font-family: var(--font-display);
+}
+
+.aaa-sovereign-banner-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: #0f1624;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  font-size: 0.66rem;
+  color: #cbd5e1;
+}
+
+.aaa-sovereign-banner-picker select {
+  background: #0b101c;
+  color: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.66rem;
+  font-family: var(--font-display);
+  cursor: pointer;
+}
+
+/* 3. Zero Poluição Visual: Caixas de Texto Ocultas por Padrão (Visíveis Apenas no Hover/Foco) */
+.vwm-sovereign-pawn {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+.vwm-pawn-challenge-pill {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(4px);
+  background: #0b101c !important;
+  border: 1px solid rgba(212, 175, 55, 0.62) !important;
+  color: #fef08a !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.95) !important;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+}
+
+.vwm-sovereign-pawn:hover .vwm-pawn-challenge-pill,
+.vwm-sovereign-pawn:focus-within .vwm-pawn-challenge-pill {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.cqm-prov-label {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.cqm-prov-pin:hover .cqm-prov-label,
+.cqm-prov-pin:focus-visible .cqm-prov-label {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* 4. Hubs dos 20 Sub-Mapas no Mapa Continental ('world') */
+.vwm-world-submap-hub {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  background: #0b101c;
+  border: 2px solid var(--hub-accent, #d4af37);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.92);
+  cursor: pointer;
+  z-index: 18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.vwm-world-submap-hub:hover,
+.vwm-world-submap-hub:focus-visible {
+  transform: translate(-50%, -50%) scale(1.18);
+  z-index: 36;
+  border-color: #fef08a;
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.96),
+    0 0 14px rgba(212, 175, 55, 0.55);
+}
+
+.vwm-world-submap-hub.is-conquered {
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.14),
+    0 4px 14px rgba(0, 0, 0, 0.94),
+    0 0 14px var(--hub-accent, #10b981);
+}
+
+.vwm-world-submap-hub.is-locked {
+  opacity: 0.52;
+  filter: grayscale(0.75);
+  border-color: rgba(100, 116, 139, 0.58);
+}
+
+.vwm-world-hub-glyph {
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.vwm-world-hub-count {
+  position: absolute;
+  bottom: -6px;
+  right: -8px;
+  padding: 0 4px;
+  height: 14px;
+  border-radius: 999px;
+  background: #090d16;
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  color: #e2e8f0;
+  font-family: var(--font-display);
+  font-size: 0.48rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.vwm-world-submap-hub .vwm-boss-tooltip {
+  display: none;
+}
+
+.vwm-world-submap-hub:hover .vwm-boss-tooltip,
+.vwm-world-submap-hub:focus-visible .vwm-boss-tooltip {
+  display: flex;
+}
+
+/* 5. Transformação Cromática de Sub-Mapa 100% Dominado + Bloqueio Geográfico de Nós */
+.vwm-submap-conquered-tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.vwm-submap-conquered-tint::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--sov-hex, #d4af37);
+  opacity: 0.32;
+  mix-blend-mode: color;
+}
+
+.vwm-submap-conquered-tint::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow:
+    inset 0 0 36px var(--sov-tint, rgba(212, 175, 55, 0.25)),
+    inset 0 0 0 2px var(--sov-border, rgba(212, 175, 55, 0.65));
+}
+
+.vwm-submap-conquered-seal {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 29;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: rgba(11, 16, 28, 0.9);
+  border: 1px solid var(--sov-border, rgba(212, 175, 55, 0.55));
+  color: #f8fafc;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.88);
+}
+
+.vwm-boss-node.is-locked-node {
+  opacity: 0.5;
+  filter: grayscale(0.75);
+  border-color: rgba(100, 116, 139, 0.55) !important;
+}
+
+.vwm-boss-node.is-rare-garrison {
+  width: 28px;
+  height: 28px;
+}
+
+.vwm-portal-gate.is-locked-portal {
+  opacity: 0.48;
+  filter: grayscale(0.75);
+}
+
+.multiscale-realm-chip.is-locked-scope {
+  opacity: 0.5;
+  filter: grayscale(0.65);
+}
+
+.multiscale-realm-chip.is-conquered-scope {
+  font-weight: 800;
+}
+
+.vwm-lock-toast {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 55;
+  padding: 5px 14px;
+  border-radius: 7px;
+  background: rgba(11, 16, 28, 0.96);
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  color: #fef08a;
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.94);
+  pointer-events: none;
+  white-space: nowrap;
+}

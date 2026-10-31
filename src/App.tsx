@@ -839,6 +839,9 @@ export const App: React.FC = () => {
         mode: 'campaign',
         bossId: boss.id,
         stage: boss.stage,
+        submapId: boss.submapId,
+        landmarkName: boss.landmarkName,
+        isThroneSiege: boss.encounterKind === 'throne_apex',
         overworldBuff: owBuff,
       })
     );
@@ -1026,17 +1029,60 @@ export const App: React.FC = () => {
         arenaWins: (prev.arenaWins ?? 0) + 1,
       }));
     } else {
+      const wasAlreadyDefeated = defeatedBossIds.includes(boss.id);
+      const goldGranted = wasAlreadyDefeated
+        ? VICTORY_GOLD_REWARD
+        : Math.max(VICTORY_GOLD_REWARD, boss.rewardGold ?? VICTORY_GOLD_REWARD);
+      const shardsGranted = wasAlreadyDefeated ? 0 : boss.rewardShards ?? 0;
+      const conqueredCardIds = !wasAlreadyDefeated ? boss.rewardCardIds ?? [] : [];
+
       updateCurrentUserProgression((prev) => {
         const prevBosses = prev.defeatedBossIds ?? [];
         const nextBosses = prevBosses.includes(boss.id)
           ? prevBosses
           : [...prevBosses, boss.id];
+        const nextExtra = { ...(prev.extraUnlockedCards ?? {}) };
+        for (const cid of conqueredCardIds) {
+          if (CARDS_BY_ID[cid]) {
+            nextExtra[cid] = (nextExtra[cid] ?? 0) + 1;
+          }
+        }
         return {
-          gold: (prev.gold ?? 0) + VICTORY_GOLD_REWARD,
+          gold: (prev.gold ?? 0) + goldGranted,
+          astralShards: (prev.astralShards ?? 0) + shardsGranted,
           arenaWins: (prev.arenaWins ?? 0) + 1,
           defeatedBossIds: nextBosses,
+          extraUnlockedCards: nextExtra,
         };
       });
+
+      const unlockedNames = conqueredCardIds
+        .map((cid) => CARDS_BY_ID[cid]?.name)
+        .filter(Boolean)
+        .join(', ');
+      const updatedGold = gold + goldGranted;
+      pushNotification({
+        kicker: unlockedNames ? 'TERRITÓRIO PACIFICADO & ESPÓLIOS' : 'TRIUNFO EM COMBATE',
+        title: `Vitória sobre ${boss.name}! (+${goldGranted} Ouro${
+          shardsGranted > 0 ? ` • +${shardsGranted} Estilhaços` : ''
+        })`,
+        message: unlockedNames
+          ? `Cartas conquistadas para o seu Grimório: ${unlockedNames}.`
+          : updatedGold >= 30
+          ? `Seu saldo chegou a ${updatedGold} Ouro — você já pode abrir um pacote no Relicário (30 Ouro)!`
+          : `Recompensa creditada. Saldo atual: ${updatedGold} Ouro.`,
+        actionLabel: unlockedNames
+          ? 'Abrir Grimório'
+          : updatedGold >= 30
+          ? 'Abrir Relicário'
+          : undefined,
+        actionTarget: unlockedNames
+          ? 'deckbuilder'
+          : updatedGold >= 30
+          ? 'packs'
+          : undefined,
+      });
+      return;
     }
     pushNotification({
       kicker: 'TRIUNFO EM COMBATE',

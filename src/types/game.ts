@@ -341,10 +341,18 @@ export interface CampaignBoss {
   title: string;
   domains: Domain[];
   avatarCardId: string;
+  companionCardId?: string;
   startingHp: number;
   passiveName: string;
   passiveDescription: string;
   rewardGold: number;
+  rewardShards?: number;
+  rewardCardIds?: string[];
   loreIntro: string;
   deckId: string;
+  customDeckCardIds?: string[];
+  difficultyTier?: 1 | 2 | 3 | 4 | 5;
+  submapId?: BiomeRealmId;
+  landmarkName?: string;
+  encounterKind?: 'rare_garrison' | 'legendary_sovereign' | 'throne_apex';
 }

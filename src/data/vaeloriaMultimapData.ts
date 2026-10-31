@@ -2359,13 +2359,18 @@ export function buildGeographicBattleModifiers(params: {
   mode: 'campaign' | 'expedition';
   bossId: string;
   stage: number;
+  submapId?: VaeloriaRealmId;
+  landmarkName?: string;
+  isThroneSiege?: boolean;
   overworldBuff?: OverworldFieldBuff | null;
 }): ConquestBattleModifiers {
-  const { mode, bossId, stage, overworldBuff } = params;
+  const { mode, bossId, stage, submapId, landmarkName, isThroneSiege, overworldBuff } = params;
   const worldNode = resolveStageMapNode(mode, bossId, stage);
   const regPlacement = resolveStageRegionalPlacement(mode, bossId, stage);
-  const realmDef = VAELORIA_REGIONAL_MAPS[regPlacement.realm];
-  const weatherPreset = REALM_WEATHER_PRESETS[regPlacement.realm];
+  const resolvedRealm: VaeloriaRealmId = submapId ?? regPlacement.realm;
+  const resolvedLandmark = landmarkName ?? worldNode.landmarkName;
+  const realmDef = VAELORIA_REGIONAL_MAPS[resolvedRealm];
+  const weatherPreset = REALM_WEATHER_PRESETS[resolvedRealm];
 
   const buffHp = overworldBuff?.bonusHp ?? 0;
   const buffEss = overworldBuff?.bonusOpeningEssence ?? 0;
@@ -2377,11 +2382,13 @@ export function buildGeographicBattleModifiers(params: {
   }
 
   return {
-    provinceId: `geo_${regPlacement.realm}_${bossId}`,
-    provinceName: worldNode.landmarkName,
+    provinceId: `geo_${resolvedRealm}_${bossId}`,
+    provinceName: resolvedLandmark,
     provinceDomain: realmDef.domain,
     isDefensiveSiege: false,
-    isCapitalSiege: stage === 26 || stage === 32 || (mode === 'expedition' && stage === 9),
+    isCapitalSiege: Boolean(
+      isThroneSiege || stage === 26 || stage === 32 || (mode === 'expedition' && stage === 9)
+    ),
     playerBonusHp: buffHp,
     playerBonusEssence: buffEss,
     enemyOpeningDamage: 0,
@@ -2390,8 +2397,8 @@ export function buildGeographicBattleModifiers(params: {
     dragonSkyBonus: false,
     legendaryWheelBonus: false,
     bannerSummary: summaryParts.join(' • '),
-    biomeRealm: regPlacement.realm,
-    landmarkLabel: `${realmDef.shortName} • ${worldNode.landmarkName}`,
+    biomeRealm: resolvedRealm,
+    landmarkLabel: `${realmDef.shortName} • ${resolvedLandmark}`,
     initialWeather: weatherPreset.type,
     overworldBuff: overworldBuff ?? null,
   };

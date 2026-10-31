@@ -259,7 +259,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
   const handleSelectGazetteerInMythology = useCallback(
     (entry: VaeloriaGazetteerEntry) => {
       setSelectedAtlasScope(entry.scope);
-      setAtlasZoom(Math.max(1.25, Math.min(3.5, entry.recommendedZoom)));
+      setAtlasZoom(1);
       setGazetteerHighlight({
         scope: entry.scope,
         x: entry.x,
@@ -938,23 +938,9 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
                   </div>
 
                   <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <div className="aaa-pill-tabs" title="Ajustar zoom e densidade de topônimos (100% / LOD 1 a LOD 4)">
-                      {[
-                        { z: 1.0, label: '100% (1x)' },
-                        { z: 1.65, label: 'LOD 2' },
-                        { z: 2.35, label: 'LOD 3' },
-                        { z: 3.1, label: 'LOD 4' },
-                      ].map((opt) => (
-                        <button
-                          key={opt.label}
-                          type="button"
-                          className={`aaa-pill-tab ${Math.abs(atlasZoom - opt.z) < 0.28 ? 'is-active' : ''}`}
-                          onClick={() => setAtlasZoom(opt.z)}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
+                    <span className="vwm-fixed-zoom-pill" title="Zoom fixado em 100% para nitidez máxima">
+                      Zoom 100%
+                    </span>
 
                     <AtlasLayerAndSearchHud
                       layers={atlasLayers}

@@ -111,11 +111,11 @@ export interface AtlasLayerVisibility {
 }
 
 export const DEFAULT_ATLAS_LAYER_VISIBILITY: AtlasLayerVisibility = {
-  hydrographyAndRoutes: true,
-  reliefAndToponyms: true,
+  hydrographyAndRoutes: false,
+  reliefAndToponyms: false,
   leyLines: false,
   livingTraffic: false,
-  settlementsAndDistricts: true,
+  settlementsAndDistricts: false,
   historicalEras: false,
 };
 

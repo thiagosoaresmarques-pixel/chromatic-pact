@@ -47,7 +47,6 @@ import {
   AtlasLayerAndSearchHud,
   CartographerInspectorCard,
   CartographicHtmlPinsLayer,
-  CartographicScaleRuler,
   CartographicSvgLayer,
   GazetteerHighlightTarget,
   MultiScaleScopeNavigator,
@@ -85,6 +84,7 @@ export interface ConquestMegamapProps {
   hasActedThisSeason: boolean;
   isDossierCollapsed?: boolean;
   onToggleDossier?: () => void;
+  onOpenDossier?: () => void;
   onSelectProvince: (province: ConquestProvinceDef) => void;
   onLaunchSiege: (province: ConquestProvinceDef) => void;
   onExploreLandmarkReward?: (
@@ -147,21 +147,19 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   activeInvasion,
   sovereignAvatarCardId,
   hasActedThisSeason,
-  isDossierCollapsed = false,
+  isDossierCollapsed = true,
   onToggleDossier,
+  onOpenDossier,
   onSelectProvince,
   onLaunchSiege,
   onExploreLandmarkReward,
 }) => {
-  const isMobileViewport = () =>
-    typeof window !== 'undefined' && window.innerWidth <= 768;
-
   const worldGeometries = useMemo(() => getConquestMapGeometries(), []);
 
   const [mapScope, setMapScope] = useState<VaeloriaMapScope>('world');
   const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(false);
   const [followPawn, setFollowPawn] = useState<boolean>(false);
-  const [showMinimap, setShowMinimap] = useState<boolean>(() => !isMobileViewport());
+  const [showMinimap, setShowMinimap] = useState<boolean>(false);
   const [portalBanner, setPortalBanner] = useState<string | null>(null);
   const [fogEnabled, setFogEnabled] = useState<boolean>(() => getFogOfWarEnabled());
   const [pendingBuff, setPendingBuff] = useState<OverworldFieldBuff | null>(() =>
@@ -362,25 +360,19 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   );
 
   const applyZoom = useCallback(
-    (rawZoom: number) => {
-      const nextZoom = Math.max(1, Math.min(4.5, Number(rawZoom.toFixed(2))));
-      setZoom(nextZoom);
-      if (followPawn && nextZoom > 1.02) {
-        centerCameraAt(pawnPosRef.current.x, pawnPosRef.current.y, nextZoom);
-      } else {
-        setPan((prev) => clampPan(prev, nextZoom));
-      }
+    (_rawZoom: number) => {
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
     },
-    [clampPan, followPawn, centerCameraAt]
+    []
   );
 
   const focusCameraOnPercent = useCallback(
-    (pctX: number, pctY: number, minTargetZoom = 1.8) => {
-      const targetZoom = Math.max(zoom, minTargetZoom);
-      setZoom(targetZoom);
-      centerCameraAt(pctX, pctY, targetZoom);
+    (_pctX: number, _pctY: number, _minTargetZoom = 1) => {
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
     },
-    [zoom, centerCameraAt]
+    []
   );
 
   useEffect(() => {
@@ -813,10 +805,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     startMarchTo(clickX, clickY);
   };
 
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const delta = e.deltaY < 0 ? 0.24 : -0.24;
-    applyZoom(zoom + delta);
+  const handleWheel = (_e: React.WheelEvent<HTMLDivElement>) => {
+    // Zoom strictly locked at 100% (1.0x)
   };
 
   const handleActivateProvince = (e: React.MouseEvent, entry: PositionedProvinceEntry) => {
@@ -826,6 +816,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     lastSelectedRef.current = prov.id;
     setClickedProvLabelId(prov.id);
     onSelectProvince(prov);
+    onOpenDossier?.();
 
     if (
       dist <= 2.8 &&
@@ -891,26 +882,15 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
           onSelectProvince(p);
         }
       }
-      const targetZoom = Math.max(1.25, Math.min(4.5, entry.recommendedZoom));
       if (entry.scope !== mapScopeRef.current) {
         handleSwitchMapScope(entry.scope, {
           x: entry.x,
           y: entry.y,
-          banner: `🔎 ${entry.name}`,
+          banner: entry.name,
         });
-        window.setTimeout(() => {
-          setFollowPawn(false);
-          setZoom(targetZoom);
-          centerCameraAt(entry.x, entry.y, targetZoom);
-        }, 40);
       } else {
-        setFollowPawn(false);
         startMarchTo(entry.x, entry.y, true);
-        setZoom(targetZoom);
-        requestAnimationFrame(() => {
-          centerCameraAt(entry.x, entry.y, targetZoom);
-        });
-        setPortalBanner(`🔎 ${entry.name}`);
+        setPortalBanner(entry.name);
       }
     },
     [onSelectProvince, handleSwitchMapScope, centerCameraAt, startMarchTo]
@@ -1053,23 +1033,6 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
 
           <button
             type="button"
-            className={`vwm-tool-btn ${followPawn ? 'is-active' : ''}`}
-            onClick={() => {
-              const next = !followPawn;
-              setFollowPawn(next);
-              if (next) {
-                const tz = Math.max(zoom, mapScope === 'world' ? 1.75 : 1.35);
-                setZoom(tz);
-                centerCameraAt(pawnPos.x, pawnPos.y, tz);
-              }
-            }}
-            title="Câmera exploratória que acompanha o Exército"
-          >
-            🎥 Seguir
-          </button>
-
-          <button
-            type="button"
             className={`vwm-tool-btn ${fogEnabled ? 'is-active' : ''}`}
             onClick={() => {
               const next = !fogEnabled;
@@ -1078,51 +1041,25 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             }}
             title="Ativar ou dissipar a Névoa de Guerra suave sobre impérios distantes"
           >
-            🌫️ Névoa
+            Névoa
           </button>
 
-          <button
-            type="button"
-            className="vwm-tool-btn"
-            onClick={() => {
-              setFollowPawn(false);
-              applyZoom(1);
-            }}
-            title="Enquadramento 100%"
-          >
-            1x
-          </button>
-          <button
-            type="button"
-            className="vwm-tool-btn"
-            onClick={() => applyZoom(zoom - 0.3)}
-            disabled={zoom <= 1.01}
-          >
-            −
-          </button>
-          <span className="cqm-zoom-pct">{Math.round(zoom * 100)}%</span>
-          <button
-            type="button"
-            className="vwm-tool-btn"
-            onClick={() => applyZoom(zoom + 0.3)}
-            disabled={zoom >= 4.49}
-            title="Aproximar câmera até 450% (LOD 4)"
-          >
-            +
-          </button>
+          <span className="vwm-fixed-zoom-pill" title="Zoom fixado em 100% para nitidez máxima">
+            100%
+          </span>
 
-          {onToggleDossier && !isTheaterFullscreen && (
+          {onToggleDossier && (
             <button
               type="button"
-              className={`vwm-tool-btn hide-on-mobile ${isDossierCollapsed ? 'is-active' : ''}`}
+              className={`vwm-tool-btn ${!isDossierCollapsed ? 'is-active' : ''}`}
               onClick={onToggleDossier}
               title={
                 isDossierCollapsed
-                  ? 'Mostrar Sala de Guerra lateral'
-                  : 'Ocultar Sala de Guerra lateral para expandir o Mapa'
+                  ? 'Abrir Sala de Guerra da província selecionada'
+                  : 'Fechar Sala de Guerra'
               }
             >
-              {isDossierCollapsed ? '📋 Sala de Guerra' : '↔️ Expandir'}
+              {isDossierCollapsed ? 'Sala de Guerra' : '✕ Sala de Guerra'}
             </button>
           )}
 
@@ -1141,10 +1078,11 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         </div>
       </div>
 
-      {/* 3. Interactive 16:9 Deep-Zoom Giant Megamap Viewport */}
+      {/* 3. Strict 100% Fit-On-Screen 16:9 Stage Box */}
+      <div className="vwm-stage-fit-box">
       <div
         ref={viewportRef}
-        className={`vwm-viewport cqm-viewport lod-${lodLevel} ${zoom > 1.01 ? 'is-zoomed' : ''}`}
+        className={`vwm-viewport cqm-viewport lod-${lodLevel}`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
@@ -1969,73 +1907,6 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
           </button>
         )}
 
-        {/* On-Screen Directional March Pad */}
-        <div
-          className="vwm-dpad"
-          onPointerUp={() => {
-            dpadDirRef.current = { dx: 0, dy: 0 };
-          }}
-          onPointerLeave={() => {
-            dpadDirRef.current = { dx: 0, dy: 0 };
-          }}
-        >
-          <button
-            type="button"
-            className="vwm-dpad-btn up"
-            onPointerDown={(e) => {
-              e.stopPropagation();
-              dpadDirRef.current = { dx: 0, dy: -1 };
-            }}
-          >
-            ▲
-          </button>
-          <button
-            type="button"
-            className="vwm-dpad-btn left"
-            onPointerDown={(e) => {
-              e.stopPropagation();
-              dpadDirRef.current = { dx: -1, dy: 0 };
-            }}
-          >
-            ◀
-          </button>
-          <button
-            type="button"
-            className="vwm-dpad-btn center"
-            onClick={(e) => {
-              e.stopPropagation();
-              setFollowPawn(true);
-              focusCameraOnPercent(pawnPos.x, pawnPos.y, mapScope === 'world' ? 1.9 : 1.35);
-            }}
-            title="Centralizar câmera no Exército"
-          >
-            {playerFaction.icon}
-          </button>
-          <button
-            type="button"
-            className="vwm-dpad-btn right"
-            onPointerDown={(e) => {
-              e.stopPropagation();
-              dpadDirRef.current = { dx: 1, dy: 0 };
-            }}
-          >
-            ▶
-          </button>
-          <button
-            type="button"
-            className="vwm-dpad-btn down"
-            onPointerDown={(e) => {
-              e.stopPropagation();
-              dpadDirRef.current = { dx: 0, dy: 1 };
-            }}
-          >
-            ▼
-          </button>
-        </div>
-
-        {/* Dynamic Cartographic Scale Ruler (Leagues / Meters) */}
-        <CartographicScaleRuler scope={mapScope} zoom={zoom} />
-
         {/* "📖 Caderno do Cartógrafo Real" Inspector Drawer */}
         <CartographerInspectorCard
           note={inspectedNote}
@@ -2043,23 +1914,6 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
           onNavigateScope={(s) => handleSwitchMapScope(s)}
         />
       </div>
-
-      <div className="vwm-footer-hint">
-        <span>
-          {mapScope === 'world' ? (
-            <>
-              🧭 <strong>Atlas Geopolítico Quadri-Escala (21 Mapas • {CONQUEST_PROVINCES.length} Províncias)</strong>:{' '}
-              Alterne entre as <strong>5 Lentes Estratégicas</strong> • Clique em vilas, rios ou montanhas para abrir o{' '}
-              <strong>📖 Caderno do Cartógrafo</strong> • Zoom profundo até <strong>4.5x</strong>
-            </>
-          ) : (
-            <>
-              🧭 Clique nos <strong>✦ 120 Marcos Regionais</strong> (+Suprimentos⚙️),{' '}
-              <strong>🏰 36 Distritos Imperiais</strong> ou <strong>🏘️ 162 Assentamentos</strong> •{' '}
-              <strong>🌍 {CONQUEST_PROVINCES.length} Províncias</strong> retorna à visão continental
-            </>
-          )}
-        </span>
       </div>
 
       {activeLandmarkModal && (

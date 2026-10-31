@@ -110,6 +110,10 @@ export interface MultiScaleScopeNavigatorProps {
   onSelectScope: (scope: VaeloriaMapScope) => void;
   worldBadge?: string | number;
   countByRealm?: Partial<Record<VaeloriaRealmId, string | number>>;
+  lockedRealms?: Set<VaeloriaRealmId>;
+  conqueredRealms?: Set<VaeloriaRealmId>;
+  sovereignAccentHex?: string;
+  onBlockedScopeSelect?: (scope: VaeloriaRealmId) => void;
   variant?: 'overworld' | 'conquest';
 }
 
@@ -120,6 +124,10 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
       onSelectScope,
       worldBadge,
       countByRealm,
+      lockedRealms,
+      conqueredRealms,
+      sovereignAccentHex,
+      onBlockedScopeSelect,
       variant = 'overworld',
     }) => {
       const derivedTier: VaeloriaRealmTier =
@@ -151,6 +159,9 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
       const linkedCapitalDef = linkedCapitalId
         ? VAELORIA_REGIONAL_MAPS[linkedCapitalId]
         : null;
+      const isLinkedCapitalLocked = linkedCapitalDef
+        ? Boolean(lockedRealms?.has(linkedCapitalDef.id))
+        : false;
 
       const parentRealmId =
         mapScope !== 'world'
@@ -159,6 +170,14 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
       const parentRealmDef = parentRealmId
         ? VAELORIA_REGIONAL_MAPS[parentRealmId]
         : null;
+
+      const triggerScopeSelect = (target: VaeloriaMapScope) => {
+        if (target !== 'world' && lockedRealms?.has(target)) {
+          onBlockedScopeSelect?.(target);
+          return;
+        }
+        onSelectScope(target);
+      };
 
       return (
         <div
@@ -206,7 +225,7 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
                     : ''
               }`}
               onClick={() => setManualTierTab('deep_frontier')}
-              title="3ª Escala: As 6 Fronteiras Profundas (Ato VII)"
+              title="3ª Escala: As 6 Fronteiras Profundas"
             >
               6 Fronteiras
             </button>
@@ -251,7 +270,7 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
                     className={`multiscale-crumb-btn ${
                       crumb.scope === mapScope ? 'current' : ''
                     }`}
-                    onClick={() => onSelectScope(crumb.scope)}
+                    onClick={() => triggerScopeSelect(crumb.scope)}
                     title={crumb.tierLabel}
                   >
                     <span>{crumb.label}</span>
@@ -262,11 +281,19 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
               {linkedCapitalDef && (
                 <button
                   type="button"
-                  className="multiscale-capital-dive-btn"
-                  onClick={() => onSelectScope(linkedCapitalDef.id)}
-                  title={`Mergulhar na 4ª Escala Urbana: ${linkedCapitalDef.name}`}
+                  className={`multiscale-capital-dive-btn ${
+                    isLinkedCapitalLocked ? 'is-locked-scope' : ''
+                  }`}
+                  onClick={() => triggerScopeSelect(linkedCapitalDef.id)}
+                  title={
+                    isLinkedCapitalLocked
+                      ? `Capital bloqueada — avance pelas estradas de ${VAELORIA_REGIONAL_MAPS[mapScope as VaeloriaRealmId]?.shortName ?? 'fronteira'} para abrir passagem`
+                      : `Mergulhar na 4ª Escala Urbana: ${linkedCapitalDef.name}`
+                  }
                 >
-                  Entrar em {linkedCapitalDef.shortName}
+                  {isLinkedCapitalLocked
+                    ? `🔒 ${linkedCapitalDef.shortName}`
+                    : `Entrar em ${linkedCapitalDef.shortName}`}
                 </button>
               )}
 
@@ -276,7 +303,7 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
                   <button
                     type="button"
                     className="multiscale-capital-dive-btn multiscale-capital-exit-btn"
-                    onClick={() => onSelectScope(parentRealmDef.id)}
+                    onClick={() => triggerScopeSelect(parentRealmDef.id)}
                     title={`Retornar à 2ª Escala Regional: ${parentRealmDef.name}`}
                   >
                     ↩ Reino: {parentRealmDef.shortName}
@@ -290,23 +317,48 @@ export const MultiScaleScopeNavigator: React.FC<MultiScaleScopeNavigatorProps> =
               const r = VAELORIA_REGIONAL_MAPS[rid];
               const badge = countByRealm?.[rid];
               const isSelected = mapScope === rid;
+              const isLocked = Boolean(lockedRealms?.has(rid));
+              const isConquered = Boolean(conqueredRealms?.has(rid));
+              const dotColor =
+                isConquered && sovereignAccentHex ? sovereignAccentHex : r.accentColor;
               return (
                 <button
                   key={rid}
                   type="button"
-                  className={`multiscale-realm-chip ${isSelected ? 'active' : ''}`}
+                  className={`multiscale-realm-chip ${isSelected ? 'active' : ''} ${
+                    isLocked ? 'is-locked-scope' : ''
+                  } ${isConquered ? 'is-conquered-scope' : ''}`}
+                  style={
+                    isConquered && sovereignAccentHex
+                      ? ({
+                          borderColor: `${sovereignAccentHex}88`,
+                        } as React.CSSProperties)
+                      : undefined
+                  }
                   onClick={() => {
+                    if (isLocked) {
+                      onBlockedScopeSelect?.(rid);
+                      return;
+                    }
                     setManualTierTab(r.tier);
                     onSelectScope(rid);
                   }}
-                  title={`${r.name} — ${r.subtitle}`}
+                  title={
+                    isLocked
+                      ? `${r.name} (Bloqueado — conquiste a rota anterior na Campanha)`
+                      : isConquered
+                        ? `${r.name} — Território 100% Unificado sob seu Estandarte!`
+                        : `${r.name} — ${r.subtitle}`
+                  }
                 >
                   <span
                     className="multiscale-realm-dot"
-                    style={{ background: r.accentColor }}
+                    style={{ background: dotColor }}
                     aria-hidden="true"
                   />
-                  <span className="multiscale-realm-name">{r.shortName}</span>
+                  <span className="multiscale-realm-name">
+                    {isLocked ? `🔒 ${r.shortName}` : isConquered ? `✓ ${r.shortName}` : r.shortName}
+                  </span>
                   {badge !== undefined && (
                     <span className="multiscale-chip-badge">{badge}</span>
                   )}
@@ -812,8 +864,7 @@ export const CartographicHtmlPinsLayer: React.FC<CartographicHtmlPinsLayerProps>
           return [];
         }
         if (scope.startsWith('capital_')) return [];
-        if (scope === 'world' && zoom < 1.65) return [];
-        if (scope !== 'world' && zoom < 1.08) return [];
+        if (scope === 'world') return [];
 
         const pins: Array<{
           key: string;
@@ -824,29 +875,22 @@ export const CartographicHtmlPinsLayer: React.FC<CartographicHtmlPinsLayerProps>
           note: CartographicInspectionNote;
         }> = [];
 
-        const secondaryMap =
-          scope !== 'world' ? SCOPE_PROVINCE_PROJECTIONS[scope] : undefined;
+        const secondaryMap = SCOPE_PROVINCE_PROJECTIONS[scope];
 
         for (const prov of CONQUEST_PROVINCES) {
           let px: number | null = null;
           let py: number | null = null;
           let spreadFactor = 1.0;
 
-          if (scope === 'world') {
-            px = prov.x;
-            py = prov.y;
-            spreadFactor = 0.85;
-          } else {
-            const direct = PROVINCE_REGIONAL_COORDS[prov.id];
-            if (direct && direct.realm === scope) {
-              px = direct.rx;
-              py = direct.ry;
-              spreadFactor = 2.2;
-            } else if (secondaryMap?.[prov.id]) {
-              px = secondaryMap[prov.id].rx;
-              py = secondaryMap[prov.id].ry;
-              spreadFactor = 1.8;
-            }
+          const direct = PROVINCE_REGIONAL_COORDS[prov.id];
+          if (direct && direct.realm === scope) {
+            px = direct.rx;
+            py = direct.ry;
+            spreadFactor = 2.2;
+          } else if (secondaryMap?.[prov.id]) {
+            px = secondaryMap[prov.id].rx;
+            py = secondaryMap[prov.id].ry;
+            spreadFactor = 1.8;
           }
 
           if (px === null || py === null) continue;
@@ -1205,7 +1249,6 @@ export const CartographicScaleRuler: React.FC<{
     >
       <span className="carto-scale-tier">{meta.tierBadge}</span>
       <span className="carto-scale-bar">{meta.rulerText}</span>
-      <span className="carto-scale-zoom">{zoom.toFixed(1)}x</span>
     </div>
   );
 });

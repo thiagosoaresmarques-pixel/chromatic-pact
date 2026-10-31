@@ -450,9 +450,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       ? PREBUILT_DECKS.find((d) => d.id === campaignBoss.deckId) ?? PREBUILT_DECKS[1]
       : PREBUILT_DECKS[1] ?? PREBUILT_DECKS[0];
 
+    const bossDeckCardIds =
+      campaignBoss?.customDeckCardIds && campaignBoss.customDeckCardIds.length >= 30
+        ? campaignBoss.customDeckCardIds
+        : bossDeckObj?.cardIds ?? [];
+
     return createInitialGameState(
       resolveDeckCards(pDeckIds),
-      resolveDeckCards(bossDeckObj?.cardIds ?? []),
+      resolveDeckCards(bossDeckCardIds),
       campaignBoss
         ? {
             playerName: 'Seu Soberano',

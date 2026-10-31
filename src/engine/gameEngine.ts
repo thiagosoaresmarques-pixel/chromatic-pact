@@ -599,10 +599,13 @@ export function createInitialGameState(
     (options?.expeditionBlessingId === 'arcane_conclave' ? 1 : 0) +
     (cq?.playerBonusEssence ?? 0) +
     riftBonusEssence;
+  const isGrandTier5 = Boolean(options?.bossId && options.bossId.includes('_t5_'));
+  const isGrandTier4 = Boolean(options?.bossId && options.bossId.includes('_t4_'));
   const aiBonusEssence =
     (options?.bossId === 'boss_stage_23_refraction_triad' ||
     options?.bossId === 'boss_stage_28_astral_leviathan' ||
-    options?.bossId === 'boss_stage_32_fracture_architect'
+    options?.bossId === 'boss_stage_32_fracture_architect' ||
+    isGrandTier5
       ? 1
       : 0) + riftBonusEssence;
 
@@ -613,14 +616,24 @@ export function createInitialGameState(
     options?.bossId === 'boss_stage_20_supreme_valkyra' ||
     options?.bossId === 'boss_stage_26_vaelkor_supreme_wheel' ||
     options?.bossId === 'exp_boss_8_valkyra' ||
-    options?.bossId === 'exp_boss_9_vaelkor'
+    options?.bossId === 'exp_boss_9_vaelkor' ||
+    (options?.bossId?.startsWith('gc_neutral_t4_') ?? false)
   ) {
     for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
       aiStartingAffinities[dom] = Math.max(aiStartingAffinities[dom], 2);
     }
-  } else if (options?.bossId === 'boss_stage_32_fracture_architect') {
+  } else if (
+    options?.bossId === 'boss_stage_32_fracture_architect' ||
+    (options?.bossId?.startsWith('gc_neutral_t5_') ?? false)
+  ) {
     for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
       aiStartingAffinities[dom] = Math.max(aiStartingAffinities[dom], 3);
+    }
+  } else if (isGrandTier4 || isGrandTier5) {
+    for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
+      if (options?.bossId?.startsWith(`gc_${dom}_`)) {
+        aiStartingAffinities[dom] = Math.max(aiStartingAffinities[dom], isGrandTier5 ? 3 : 2);
+      }
     }
   }
 
@@ -3413,6 +3426,47 @@ export function playCard(
         unit.currentArmor += 1;
         unit.regeneration += 1;
         addFeedback(next, unit.instanceId, '💎 +1⚔️/+1🛡️/+1❤️ Fratura', 'buff');
+      } else if (next.bossId.startsWith('gc_')) {
+        const isT3 = next.bossId.includes('_t3_');
+        const isT4 = next.bossId.includes('_t4_');
+        const isT5 = next.bossId.includes('_t5_');
+        if (isT3 || isT4 || isT5) {
+          if (next.bossId.startsWith('gc_red_')) {
+            unit.currentAtk += 1;
+            if (isT5) unit.currentArmor += 1;
+            addFeedback(next, unit.instanceId, isT5 ? '+1 ATQ/+1 Armadura Trono Rubro' : '+1 ATQ Fornalha', 'buff');
+          } else if (next.bossId.startsWith('gc_blue_')) {
+            unit.currentArmor += 1;
+            addFeedback(next, unit.instanceId, '+1 Armadura Safira', 'shield');
+          } else if (next.bossId.startsWith('gc_purple_')) {
+            unit.regeneration += 1;
+            if (isT5 && card.rarity === 'legendary' && !unit.keywords.includes('Renascer')) {
+              unit.keywords.push('Renascer');
+            }
+            addFeedback(next, unit.instanceId, '+1 Regen Umbral', 'heal');
+          } else if (next.bossId.startsWith('gc_green_')) {
+            const hpGain = isT5 ? 2 : 1;
+            unit.maxHp += hpGain;
+            unit.currentHp += hpGain;
+            if (isT4 || isT5) unit.regeneration += 1;
+            addFeedback(next, unit.instanceId, `+${hpGain} PV Seiva Ancestral`, 'heal');
+          } else if (next.bossId.startsWith('gc_gold_')) {
+            if (isT5 && !unit.hasDivineShield) {
+              unit.hasDivineShield = true;
+              addFeedback(next, unit.instanceId, 'Égide Solar', 'shield');
+            } else {
+              unit.currentArmor += 1;
+              addFeedback(next, unit.instanceId, '+1 Armadura Alvorada', 'shield');
+            }
+          } else if (next.bossId.startsWith('gc_neutral_')) {
+            unit.currentArmor += 1;
+            if (isT5) {
+              unit.currentAtk += 1;
+              unit.regeneration += 1;
+            }
+            addFeedback(next, unit.instanceId, isT5 ? '+1/+1/+1 Trono Axial' : '+1 Armadura Axial', 'shield');
+          }
+        }
       }
     }
 
@@ -5670,6 +5724,39 @@ function applyBossStartOfRoundPassives(next: GameState): void {
     next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
     addFeedback(next, 'player-sovereign', '-1💎 Singularidade', 'damage');
     addFeedback(next, 'ai-sovereign', '+1💎 Singularidade', 'heal');
+  } else if (next.bossId.startsWith('gc_') && (next.bossId.includes('_t4_') || next.bossId.includes('_t5_'))) {
+    const isT5 = next.bossId.includes('_t5_');
+    if (next.bossId.startsWith('gc_blue_') && next.turn % 2 === 0) {
+      const playerUnits = getAllBoardUnits(next.player).filter(
+        (u) => !u.isTrap && !u.isFrozen && u.card.type === 'creature'
+      );
+      if (playerUnits.length > 0) {
+        const picked = playerUnits[next.turn % playerUnits.length];
+        picked.isFrozen = true;
+        addFeedback(next, picked.instanceId, 'Zero Polar', 'freeze');
+      }
+      if (isT5) {
+        next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
+      }
+    } else if (next.bossId.startsWith('gc_red_') && isT5 && next.turn % 2 === 0) {
+      next.player.hp = Math.max(0, next.player.hp - 1);
+      addFeedback(next, 'player-sovereign', '-1 Calor da Caldeira', 'damage');
+    } else if (next.bossId.startsWith('gc_purple_') && isT5 && next.turn % 2 === 0) {
+      next.player.hp = Math.max(0, next.player.hp - 1);
+      next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
+      addFeedback(next, 'player-sovereign', '-1 Eclipse Eterno', 'damage');
+    } else if (next.bossId.startsWith('gc_green_') && isT5) {
+      next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
+      addFeedback(next, 'ai-sovereign', '+1 Seiva da Árvore-Mãe', 'heal');
+    } else if (next.bossId.startsWith('gc_gold_') && isT5 && next.turn % 2 === 0) {
+      next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 2);
+      addFeedback(next, 'ai-sovereign', '+2 Zênite de Aethelgard', 'heal');
+    } else if (next.bossId.startsWith('gc_neutral_') && isT5) {
+      next.player.hp = Math.max(0, next.player.hp - 1);
+      next.ai.hp = Math.min(next.ai.maxHp, next.ai.hp + 1);
+      addFeedback(next, 'player-sovereign', '-1 Convergência Axial', 'damage');
+      addFeedback(next, 'ai-sovereign', '+1 Convergência Axial', 'heal');
+    }
   }
 
   checkWinCondition(next);

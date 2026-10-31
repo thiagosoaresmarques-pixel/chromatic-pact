@@ -31,6 +31,7 @@ import {
   VAELORIA_REGIONAL_MAPS,
   STAGE_REGIONAL_COORDS,
   PROVINCE_REGIONAL_COORDS,
+  buildGeographicBattleModifiers,
 } from '../data/vaeloriaMultimapData';
 import {
   VAELORIA_CARTOGRAPHIC_PATHS,
@@ -41,6 +42,13 @@ import {
   VAELORIA_CAPITAL_DISTRICTS,
   getVaeloriaGazetteerIndex,
 } from '../data/vaeloriaCapitalDistricts';
+import {
+  GRAND_CAMPAIGN_BOSSES,
+  GRAND_CAMPAIGN_NODES,
+  GRAND_CAMPAIGN_SUBMAP_GRAPHS,
+  computeUnlockedCampaignSubmaps,
+  computeSubmapReachability,
+} from '../data/vaeloriaGrandCampaign';
 import {
   VAELORIA_WORLD_MAP_IMAGE,
   resolveStageMapNode,
@@ -586,7 +594,106 @@ function runAutomatedQA() {
     );
   }
 
-  console.log('\nALL 5-WAVE QA CHECKS & SIMULATIONS PASSED!');
+  console.log(`\nValidating Wave 6 Grand Campaign (190 Encounters / 276 Rare+Legendary / BFS Road March)...`);
+
+  if (GRAND_CAMPAIGN_BOSSES.length !== 190 || GRAND_CAMPAIGN_NODES.length !== 190) {
+    throw new Error(
+      `Expected 190 Grand Campaign encounters, got bosses=${GRAND_CAMPAIGN_BOSSES.length}, nodes=${GRAND_CAMPAIGN_NODES.length}`
+    );
+  }
+
+  const allRareAndLegendaryCreatures = ALL_CARDS.filter(
+    (c) => c.type === 'creature' && (c.rarity === 'rare' || c.rarity === 'legendary')
+  );
+  const featuredCreatureSet = new Set<string>();
+  for (const boss of GRAND_CAMPAIGN_BOSSES) {
+    if (!boss.customDeckCardIds || boss.customDeckCardIds.length !== 40) {
+      throw new Error(
+        `Grand Campaign boss ${boss.id} must have a 40-card customDeckCardIds, got ${boss.customDeckCardIds?.length}`
+      );
+    }
+    const rdef = boss.submapId ? VAELORIA_REGIONAL_MAPS[boss.submapId] : undefined;
+    if (!rdef) {
+      throw new Error(`Grand Campaign boss ${boss.id} has invalid submapId ${boss.submapId}`);
+    }
+    const commanderIds = [boss.avatarCardId, ...(boss.companionCardId ? [boss.companionCardId] : [])];
+    for (const cid of commanderIds) {
+      const card = CARDS_BY_ID[cid];
+      if (!card) throw new Error(`Missing commander creature ${cid} on boss ${boss.id}`);
+      if (card.domain !== rdef.domain) {
+        throw new Error(
+          `Domain mismatch on ${boss.id}: creature ${cid} (${card.domain}) placed in submap ${rdef.id} (${rdef.domain})`
+        );
+      }
+      featuredCreatureSet.add(cid);
+    }
+    for (const rcid of boss.rewardCardIds ?? []) {
+      if (!CARDS_BY_ID[rcid]) {
+        throw new Error(`Missing reward card ${rcid} on boss ${boss.id}`);
+      }
+    }
+  }
+  if (featuredCreatureSet.size !== allRareAndLegendaryCreatures.length) {
+    throw new Error(
+      `Expected all ${allRareAndLegendaryCreatures.length} Rare+Legendary creatures featured, got ${featuredCreatureSet.size}`
+    );
+  }
+
+  // Verify full 190/190 step-by-step road conquest from every starting Sovereign color
+  const startingColors = ['green', 'red', 'blue', 'purple', 'gold'] as const;
+  for (const startDom of startingColors) {
+    const cleared = new Set<string>();
+    let progressed = true;
+    while (progressed) {
+      progressed = false;
+      const clearedArr = Array.from(cleared);
+      const unlockedMaps = computeUnlockedCampaignSubmaps(clearedArr, startDom);
+      for (const rid of unlockedMaps) {
+        const reach = computeSubmapReachability(rid, clearedArr);
+        for (const nid of reach.accessibleNodeIds) {
+          if (!cleared.has(nid)) {
+            cleared.add(nid);
+            progressed = true;
+          }
+        }
+      }
+    }
+    if (cleared.size !== 190) {
+      throw new Error(
+        `Starting from ${startDom}, only ${cleared.size}/190 encounters were reachable via planar road progression!`
+      );
+    }
+  }
+
+  // Simulate a Tier 5 Apex Throne Duel (Gorgonoth in capital_axial) with custom 40-card deck + geographic modifier
+  const apexBoss =
+    GRAND_CAMPAIGN_BOSSES[GRAND_CAMPAIGN_BOSSES.length - 1];
+  const apexState = createInitialGameState(
+    resolveDeck(PREBUILT_DECKS[0].cardIds),
+    resolveDeck(apexBoss.customDeckCardIds!),
+    {
+      playerName: PREBUILT_DECKS[0].name,
+      aiName: apexBoss.name,
+      aiStartingHp: apexBoss.startingHp,
+      bossId: apexBoss.id,
+      playerDeckId: PREBUILT_DECKS[0].id,
+      aiDeckId: apexBoss.deckId,
+      conquestModifiers: buildGeographicBattleModifiers({
+        mode: 'campaign',
+        bossId: apexBoss.id,
+        stage: apexBoss.stage,
+        submapId: apexBoss.submapId ?? 'capital_axial',
+        landmarkName: apexBoss.landmarkName,
+        isThroneSiege: true,
+      }),
+    }
+  );
+  const apexFinal = runSingleAiDuel(apexState, 70);
+  console.log(
+    `  OK — Grand Campaign verified: 190 encounters (${Object.keys(GRAND_CAMPAIGN_SUBMAP_GRAPHS).length} submaps), ${featuredCreatureSet.size}/${allRareAndLegendaryCreatures.length} Rare+Legendary creatures (0 domain mismatches), 190/190 BFS from all 5 colors | Apex Duel [${apexBoss.name}] Turn ${apexFinal.turn}.`
+  );
+
+  console.log('\nALL 6-WAVE QA CHECKS & SIMULATIONS PASSED!');
 }
 
 runAutomatedQA();

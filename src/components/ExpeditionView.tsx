@@ -644,7 +644,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
     [currentBoss.id, currentBoss.stage]
   );
 
-  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(false);
+  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(true);
   const isExpeditionMapActive =
     (runState.phase === 'trail' || runState.phase === 'completed') && trailViewMode === 'map';
 
@@ -935,6 +935,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 sovereignLabel={activeBlessing ? `Peregrino (${activeBlessing.name})` : 'Peregrino da Expedição'}
                 isDossierCollapsed={isDossierCollapsed}
                 onToggleDossier={() => setIsDossierCollapsed((v) => !v)}
+                onOpenDossier={() => setIsDossierCollapsed(false)}
                 onSelectBoss={(boss) =>
                   setRunState((prev) => ({ ...prev, currentStage: boss.stage }))
                 }
@@ -1010,14 +1011,29 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
               </aside>
             )}
 
+            {!(trailViewMode === 'map' && isDossierCollapsed) && (
             <section
-              className="aaa-boss-dossier"
+              className={`aaa-boss-dossier ${trailViewMode === 'map' ? 'is-floating-map-drawer' : ''}`}
               style={
                 {
                   '--boss-accent': DOMAIN_META[resolvePrimaryBossDomain(currentBoss.domains)].color,
                 } as React.CSSProperties
               }
             >
+              {trailViewMode === 'map' && (
+                <div className="aaa-floating-drawer-topbar">
+                  <span className="aaa-floating-drawer-kicker">
+                    ETAPA {currentBoss.stage}/{TOTAL_EXPEDITION_STAGES}
+                  </span>
+                  <button
+                    type="button"
+                    className="aaa-floating-drawer-close"
+                    onClick={() => setIsDossierCollapsed(true)}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
               {CARDS_BY_ID[currentBoss.avatarCardId]?.imagePath && (
                 <div className="aaa-dossier-visual">
                   <img
@@ -1131,6 +1147,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                 </div>
               </div>
             </section>
+            )}
           </div>
         </div>
       )}

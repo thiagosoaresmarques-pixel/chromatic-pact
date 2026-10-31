@@ -1,14 +1,23 @@
-import React, { useState, useMemo } from 'react';
-import { CampaignBoss, CardDefinition } from '../types/game';
+import React, { useState, useMemo, useEffect } from 'react';
+import { CampaignBoss, CardDefinition, Domain } from '../types/game';
 import { CARDS_BY_ID } from '../data/cards';
-import { CAMPAIGN_BOSSES, PREBUILT_DECKS } from '../data/decks';
+import { PREBUILT_DECKS } from '../data/decks';
 import { DOMAIN_META, CardInspectModal } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
-import { VICTORY_GOLD_REWARD } from '../utils/multiplayerEngine';
 import { VaeloriaWorldMap } from './VaeloriaWorldMap';
-import { resolvePrimaryBossDomain, resolveStageMapNode } from '../data/vaeloriaMapData';
+import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
+import { VAELORIA_REALM_ORDER, VAELORIA_REGIONAL_MAPS } from '../data/vaeloriaMultimapData';
 import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
+import {
+  GRAND_CAMPAIGN_BOSSES,
+  GRAND_CAMPAIGN_NODES_BY_ID,
+  SOVEREIGN_BANNER_PALETTE,
+  STARTING_REALM_BY_SOVEREIGN_DOMAIN,
+  SovereignBannerDomain,
+  computeSubmapReachability,
+  computeUnlockedCampaignSubmaps,
+} from '../data/vaeloriaGrandCampaign';
 
 export interface CampaignViewProps {
   defeatedBossIds: string[];
@@ -23,27 +32,40 @@ export interface CampaignViewProps {
   onRequireDeckSetup?: () => void;
 }
 
-function getActInfoForStage(stage: number): { actLabel: string; actTitle: string } {
-  if (stage <= 4) {
-    return { actLabel: 'ATO I', actTitle: 'As Fronteiras Despertas (Estágios 1–4)' };
+const BANNER_STORAGE_KEY = 'chromatic_pact_campaign_banner_v1';
+
+function inferDeckSovereignDomain(cardIds: string[]): SovereignBannerDomain {
+  const counts: Record<SovereignBannerDomain, number> = {
+    green: 0,
+    red: 0,
+    blue: 0,
+    purple: 0,
+    gold: 0,
+  };
+  for (const id of cardIds) {
+    const dom = CARDS_BY_ID[id]?.domain;
+    if (dom && dom !== 'neutral') {
+      counts[dom] += 1;
+    }
   }
-  if (stage <= 8) {
-    return { actLabel: 'ATO II', actTitle: 'Os Pactos Dualistas (Estágios 5–8)' };
+  let best: SovereignBannerDomain = 'green';
+  let bestCount = -1;
+  for (const dom of ['green', 'red', 'blue', 'purple', 'gold'] as SovereignBannerDomain[]) {
+    if (counts[dom] > bestCount) {
+      bestCount = counts[dom];
+      best = dom;
+    }
   }
-  if (stage <= 12) {
-    return { actLabel: 'ATO III', actTitle: 'Os Tronos Ancestrais (Estágios 9–12)' };
-  }
-  if (stage <= 14) {
-    return { actLabel: 'ATO IV', actTitle: 'A Convergência do Tempo (Estágios 13–14)' };
-  }
-  if (stage <= 20) {
-    return { actLabel: 'ATO V', actTitle: 'Os Tronos Tripartidos (Estágios 15–20)' };
-  }
-  if (stage <= 26) {
-    return { actLabel: 'ATO VI', actTitle: 'As Armadas e o Julgamento das Rodas (Estágios 21–26)' };
-  }
-  return { actLabel: 'ATO VII', actTitle: 'Os Tronos Além do Véu • Fronteiras Profundas (Estágios 27–32)' };
+  return best;
 }
+
+const TIER_ROMAN: Record<number, string> = {
+  1: 'TIER I • FRONTEIRA',
+  2: 'TIER II • VANGUARDA',
+  3: 'TIER III • BASTIÃO',
+  4: 'TIER IV • ALTO TRONO',
+  5: 'TIER V • SOBERANO ÁPICE',
+};
 
 export const CampaignView: React.FC<CampaignViewProps> = ({
   defeatedBossIds,
@@ -58,21 +80,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   onRequireDeckSetup,
 }) => {
   const fullBossRoster: CampaignBoss[] = useMemo(
-    () => [...CAMPAIGN_BOSSES].sort((a, b) => a.stage - b.stage),
+    () => [...GRAND_CAMPAIGN_BOSSES].sort((a, b) => a.stage - b.stage),
     []
   );
 
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
-    customDecks[0]?.id ?? PREBUILT_DECKS[0]?.id ?? 'deck_red_inferno'
+    customDecks[0]?.id ?? PREBUILT_DECKS[0]?.id ?? 'deck_green_wild'
   );
-  const [selectedBossId, setSelectedBossId] = useState<string>(
-    fullBossRoster[0]?.id ?? 'boss_1'
-  );
-  const [actFilter, setActFilter] = useState<'all' | 1 | 2 | 3 | 4 | 5 | 6 | 7>('all');
-  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
-  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(false);
-  const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
-  const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
 
   const getSelectedDeckCardIds = (): string[] => {
     const custom = customDecks.find((cd) => cd.id === selectedDeckId) ?? customDecks[0];
@@ -80,6 +94,83 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     const prebuilt = PREBUILT_DECKS.find((d) => d.id === selectedDeckId);
     if (prebuilt) return prebuilt.cardIds;
     return PREBUILT_DECKS[0]?.cardIds ?? [];
+  };
+
+  const [sovereignDomain, setSovereignDomain] = useState<SovereignBannerDomain>(() => {
+    try {
+      const saved = localStorage.getItem(BANNER_STORAGE_KEY);
+      if (
+        saved === 'green' ||
+        saved === 'red' ||
+        saved === 'blue' ||
+        saved === 'purple' ||
+        saved === 'gold'
+      ) {
+        return saved;
+      }
+    } catch {
+      // ignore
+    }
+    const initialCards =
+      customDecks[0]?.cardIds ?? PREBUILT_DECKS[0]?.cardIds ?? [];
+    return inferDeckSovereignDomain(initialCards);
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(BANNER_STORAGE_KEY, sovereignDomain);
+    } catch {
+      // ignore
+    }
+  }, [sovereignDomain]);
+
+  const startingRealm = STARTING_REALM_BY_SOVEREIGN_DOMAIN[sovereignDomain];
+
+  const [selectedBossId, setSelectedBossId] = useState<string>(() => {
+    const firstInStartRealm = fullBossRoster.find(
+      (b) => GRAND_CAMPAIGN_NODES_BY_ID[b.id]?.submapId === startingRealm
+    );
+    return firstInStartRealm?.id ?? fullBossRoster[0]?.id ?? '';
+  });
+
+  const [domainFilter, setDomainFilter] = useState<'all' | Domain>('all');
+  const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
+  // Collapsed by default in Map mode so 100% of every map fits unobstructed on screen!
+  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(true);
+  const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
+  const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
+
+  const defeatedSet = useMemo(() => new Set(defeatedBossIds), [defeatedBossIds]);
+
+  const grandClearedIds = useMemo(
+    () => fullBossRoster.filter((b) => defeatedSet.has(b.id)).map((b) => b.id),
+    [fullBossRoster, defeatedSet]
+  );
+
+  const unlockedSubmaps = useMemo(
+    () => computeUnlockedCampaignSubmaps(defeatedBossIds, sovereignDomain),
+    [defeatedBossIds, sovereignDomain]
+  );
+
+  const reachBySubmap = useMemo(() => {
+    const map = {} as Record<string, ReturnType<typeof computeSubmapReachability>>;
+    for (const rid of VAELORIA_REALM_ORDER) {
+      map[rid] = computeSubmapReachability(rid, defeatedBossIds);
+    }
+    return map;
+  }, [defeatedBossIds]);
+
+  const conqueredSubmapsCount = useMemo(
+    () =>
+      VAELORIA_REALM_ORDER.filter((rid) => reachBySubmap[rid]?.isSubmapConquered).length,
+    [reachBySubmap]
+  );
+
+  const isBossAccessibleOnRoad = (bossId: string): boolean => {
+    const gcn = GRAND_CAMPAIGN_NODES_BY_ID[bossId];
+    if (!gcn) return true;
+    if (!unlockedSubmaps.has(gcn.submapId)) return false;
+    return Boolean(reachBySubmap[gcn.submapId]?.accessibleNodeIds.has(bossId));
   };
 
   const selectedDeckMeta = useMemo(() => {
@@ -102,6 +193,9 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   }, [customDecks, selectedDeckId]);
 
   const handleClickStartBoss = (boss: CampaignBoss) => {
+    if (!isBossAccessibleOnRoad(boss.id)) {
+      return;
+    }
     if (isGuest) {
       onRequireAccount?.();
       return;
@@ -114,93 +208,85 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   };
 
   const filteredRoster = useMemo(() => {
-    if (actFilter === 'all') return fullBossRoster;
-    return fullBossRoster.filter((b) => {
-      if (actFilter === 1) return b.stage >= 1 && b.stage <= 4;
-      if (actFilter === 2) return b.stage >= 5 && b.stage <= 8;
-      if (actFilter === 3) return b.stage >= 9 && b.stage <= 12;
-      if (actFilter === 4) return b.stage >= 13 && b.stage <= 14;
-      if (actFilter === 5) return b.stage >= 15 && b.stage <= 20;
-      if (actFilter === 6) return b.stage >= 21 && b.stage <= 26;
-      return b.stage >= 27 && b.stage <= 32;
-    });
-  }, [fullBossRoster, actFilter]);
+    if (domainFilter === 'all') return fullBossRoster;
+    return fullBossRoster.filter((b) => resolvePrimaryBossDomain(b.domains) === domainFilter);
+  }, [fullBossRoster, domainFilter]);
 
   const activeBoss =
     fullBossRoster.find((b) => b.id === selectedBossId) ?? fullBossRoster[0];
+  const activeGcNode = activeBoss ? GRAND_CAMPAIGN_NODES_BY_ID[activeBoss.id] : undefined;
   const activeBossCard = activeBoss ? CARDS_BY_ID[activeBoss.avatarCardId] : undefined;
+  const companionBossCard =
+    activeBoss?.companionCardId ? CARDS_BY_ID[activeBoss.companionCardId] : undefined;
   const activePrimaryDomain = resolvePrimaryBossDomain(activeBoss?.domains);
-  const activeActInfo = activeBoss
-    ? getActInfoForStage(activeBoss.stage)
-    : { actLabel: 'ATO I', actTitle: '' };
-  const activeMapNode = activeBoss
-    ? resolveStageMapNode('campaign', activeBoss.id, activeBoss.stage)
+  const activeSubmapDef = activeGcNode
+    ? VAELORIA_REGIONAL_MAPS[activeGcNode.submapId]
     : null;
+  const isActiveAccessible = activeBoss ? isBossAccessibleOnRoad(activeBoss.id) : false;
+  const isActiveDefeated = activeBoss ? defeatedSet.has(activeBoss.id) : false;
 
   const pct = Math.min(
     100,
-    Math.round((defeatedBossIds.length / Math.max(1, fullBossRoster.length)) * 100)
+    Math.round((grandClearedIds.length / Math.max(1, fullBossRoster.length)) * 100)
   );
+  const bannerMeta = SOVEREIGN_BANNER_PALETTE[sovereignDomain];
 
   return (
     <div className={`aaa-page-shell ${viewMode === 'map' ? 'is-widescreen-map-page' : ''}`}>
-      {/* Single Compact Toolbar: Act Tabs + Map/List Toggle + Progress + Deck Picker */}
-      <div
-        className="aaa-campaign-toolbar"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.65rem',
-          flexWrap: 'wrap',
-          padding: '8px 12px',
-          background: '#0b0f17',
-          border: '1px solid rgba(148, 163, 184, 0.18)',
-          borderRadius: 8,
-        }}
-      >
-        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-          {(
-            [
-              { id: 'all', label: `Todos (${defeatedBossIds.length}/${fullBossRoster.length})` },
-              { id: 1, label: 'Ato I (1–4)' },
-              { id: 2, label: 'Ato II (5–8)' },
-              { id: 3, label: 'Ato III (9–12)' },
-              { id: 4, label: 'Ato IV (13–14)' },
-              { id: 5, label: 'Ato V (15–20)' },
-              { id: 6, label: 'Ato VI (21–26)' },
-              { id: 7, label: 'Ato VII (27–32)' },
-            ] as const
-          ).map((tab) => (
-            <button
-              key={String(tab.id)}
-              type="button"
-              className={`nav-tab-btn ${actFilter === tab.id ? 'active' : ''}`}
-              onClick={() => {
-                setActFilter(tab.id);
-                if (tab.id !== 'all') {
-                  const firstInAct = fullBossRoster.find((b) => {
-                    if (tab.id === 1) return b.stage >= 1 && b.stage <= 4;
-                    if (tab.id === 2) return b.stage >= 5 && b.stage <= 8;
-                    if (tab.id === 3) return b.stage >= 9 && b.stage <= 12;
-                    if (tab.id === 4) return b.stage >= 13 && b.stage <= 14;
-                    if (tab.id === 5) return b.stage >= 15 && b.stage <= 20;
-                    if (tab.id === 6) return b.stage >= 21 && b.stage <= 26;
-                    return b.stage >= 27 && b.stage <= 32;
-                  });
-                  if (firstInAct) setSelectedBossId(firstInAct.id);
-                }
-              }}
-              style={{ padding: '0.32rem 0.75rem', fontSize: '0.72rem' }}
+      {/* Ultra-Slim Single-Row Campaign Command Bar */}
+      <div className="aaa-campaign-toolbar">
+        <div className="aaa-campaign-toolbar-left">
+          <span className="aaa-campaign-kpi-pill">
+            Confrontos: <strong>{grandClearedIds.length}/{fullBossRoster.length}</strong> ({pct}%)
+          </span>
+          <span
+            className="aaa-campaign-kpi-pill"
+            style={{ borderColor: bannerMeta.borderRgba }}
+          >
+            Sub-mapas Unificados: <strong>{conqueredSubmapsCount}/20</strong>
+          </span>
+
+          {viewMode === 'list' && (
+            <select
+              value={domainFilter}
+              onChange={(e) => setDomainFilter(e.target.value as 'all' | Domain)}
+              className="aaa-select aaa-toolbar-deck-select"
+              aria-label="Filtrar domínio na lista"
             >
-              {tab.label}
-            </button>
-          ))}
+              <option value="all">Todos os Domínios ({fullBossRoster.length})</option>
+              <option value="green">Veridia • Esmeralda</option>
+              <option value="red">Pyros • Rubro</option>
+              <option value="blue">Vórtex • Safira</option>
+              <option value="purple">Eclipse • Obsidiana</option>
+              <option value="gold">Solária • Alvorada</option>
+              <option value="neutral">Matriz Axial • Neutro</option>
+            </select>
+          )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div className="aaa-campaign-toolbar-right">
+          <label className="aaa-sovereign-banner-picker" title="Cor do Estandarte Soberano (converte sub-mapas 100% vencidos para sua cor)">
+            <span
+              className="aaa-sovereign-banner-dot"
+              style={{ background: bannerMeta.hex }}
+            />
+            <select
+              value={sovereignDomain}
+              onChange={(e) =>
+                setSovereignDomain(e.target.value as SovereignBannerDomain)
+              }
+              className="aaa-select aaa-banner-select"
+            >
+              <option value="green">Estandarte: Veridia (Verde)</option>
+              <option value="red">Estandarte: Pyros (Vermelho)</option>
+              <option value="blue">Estandarte: Vórtex (Azul)</option>
+              <option value="purple">Estandarte: Eclipse (Roxo)</option>
+              <option value="gold">Estandarte: Solária (Dourado)</option>
+            </select>
+          </label>
+
           <SovereignRelicSelectorBar
-            defeatedBossCount={defeatedBossIds.length}
+            defeatedBossCount={grandClearedIds.length}
             arenaWins={arenaWins}
           />
 
@@ -210,12 +296,15 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               className={`vwm-mode-switch-btn ${viewMode === 'map' ? 'is-active' : ''}`}
               onClick={() => setViewMode('map')}
             >
-              Mapa de Vaeloria
+              Mapa
             </button>
             <button
               type="button"
               className={`vwm-mode-switch-btn ${viewMode === 'list' ? 'is-active' : ''}`}
-              onClick={() => setViewMode('list')}
+              onClick={() => {
+                setViewMode('list');
+                setIsDossierCollapsed(false);
+              }}
             >
               Lista
             </button>
@@ -224,9 +313,15 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           {!isGuest && customDecks.length > 0 && (
             <select
               value={selectedDeckId}
-              onChange={(e) => setSelectedDeckId(e.target.value)}
+              onChange={(e) => {
+                const nextId = e.target.value;
+                setSelectedDeckId(nextId);
+                const chosen = customDecks.find((d) => d.id === nextId);
+                if (chosen) {
+                  setSovereignDomain(inferDeckSovereignDomain(chosen.cardIds));
+                }
+              }}
               className="aaa-select aaa-toolbar-deck-select"
-              style={{ padding: '4px 10px', fontSize: '0.75rem' }}
             >
               {customDecks.map((cd) => (
                 <option key={cd.id} value={cd.id}>
@@ -235,13 +330,10 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               ))}
             </select>
           )}
-          <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e6c875' }}>
-            {pct}% Concluído
-          </span>
         </div>
       </div>
 
-      {/* Master-Detail Split Layout (Traversable Continent Map OR Stage Roster List) */}
+      {/* Main Workspace: Full-Screen 16:9 Map Stage + Floating Collapsible Dossier Drawer */}
       <div
         className={`aaa-campaign-workspace ${viewMode === 'map' ? 'is-map-mode' : ''} ${
           viewMode === 'map' && isDossierCollapsed ? 'is-dossier-collapsed' : ''
@@ -250,14 +342,16 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         {viewMode === 'map' ? (
           <VaeloriaWorldMap
             mode="campaign"
-            bosses={filteredRoster}
+            bosses={fullBossRoster}
             allBosses={fullBossRoster}
             selectedBossId={activeBoss?.id ?? ''}
-            clearedBossIds={defeatedBossIds}
+            clearedBossIds={grandClearedIds}
+            sovereignDomain={sovereignDomain}
             sovereignAvatarCardId={selectedDeckMeta.avatarCardId}
             sovereignLabel={selectedDeckMeta.label}
             isDossierCollapsed={isDossierCollapsed}
             onToggleDossier={() => setIsDossierCollapsed((v) => !v)}
+            onOpenDossier={() => setIsDossierCollapsed(false)}
             onSelectBoss={(boss) => setSelectedBossId(boss.id)}
             onChallengeBoss={handleClickStartBoss}
             onRewardGold={onRewardGold}
@@ -267,12 +361,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         ) : (
           <aside className="aaa-boss-roster">
             {filteredRoster.map((boss) => {
-              const isDefeated = defeatedBossIds.includes(boss.id);
+              const isDefeated = defeatedSet.has(boss.id);
+              const isAccessible = isBossAccessibleOnRoad(boss.id);
               const isSelected = boss.id === activeBoss?.id;
               const avatar = CARDS_BY_ID[boss.avatarCardId];
               const dom = resolvePrimaryBossDomain(boss.domains);
-              const actInfo = getActInfoForStage(boss.stage);
-              const nodeInfo = resolveStageMapNode('campaign', boss.id, boss.stage);
+              const gcn = GRAND_CAMPAIGN_NODES_BY_ID[boss.id];
+              const rdef = gcn ? VAELORIA_REGIONAL_MAPS[gcn.submapId] : null;
 
               return (
                 <div
@@ -280,7 +375,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   onClick={() => setSelectedBossId(boss.id)}
                   className={`aaa-boss-row ${isSelected ? 'is-selected' : ''} ${
                     isDefeated ? 'is-defeated' : ''
-                  }`}
+                  } ${!isAccessible ? 'is-locked-boss-row' : ''}`}
                 >
                   <div
                     className="aaa-boss-row-accent"
@@ -292,16 +387,23 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   <div className="aaa-boss-row-info">
                     <div className="aaa-boss-row-top">
                       <span className="aaa-boss-stage-num">
-                        {actInfo.actLabel} • #{boss.stage}
+                        TIER {gcn?.tier ?? boss.difficultyTier ?? 1} • #{boss.stage}
                       </span>
-                      {isDefeated && <span className="aaa-boss-cleared-tag">✓</span>}
+                      {isDefeated ? (
+                        <span className="aaa-boss-cleared-tag">✓</span>
+                      ) : !isAccessible ? (
+                        <span className="aaa-boss-locked-tag">🔒</span>
+                      ) : null}
                     </div>
                     <div className="font-cinzel aaa-boss-row-name">{boss.name}</div>
-                    <div className="aaa-boss-row-geo">{nodeInfo.landmarkName}</div>
+                    <div className="aaa-boss-row-geo">
+                      {rdef ? `${rdef.shortName} • ` : ''}
+                      {gcn?.landmarkName ?? boss.landmarkName ?? ''}
+                    </div>
                   </div>
                   <div className="aaa-boss-row-stats">
                     <span>{boss.startingHp} PV</span>
-                    <span className="gold-text">+{VICTORY_GOLD_REWARD}</span>
+                    <span className="gold-text">+{boss.rewardGold}</span>
                   </div>
                 </div>
               );
@@ -309,23 +411,49 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
           </aside>
         )}
 
-        {/* Right Column: Selected Boss Cinematic Dossier */}
-        {activeBoss && (
+        {/* Boss Dossier (Floating Overlay Drawer in Map Mode; Right Panel in List Mode) */}
+        {activeBoss && !(viewMode === 'map' && isDossierCollapsed) && (
           <section
-            className="aaa-boss-dossier"
+            className={`aaa-boss-dossier ${viewMode === 'map' ? 'is-floating-map-drawer' : ''}`}
             style={
               {
-                '--boss-accent': DOMAIN_META[activePrimaryDomain].color,
+                '--boss-accent': '#d4af37',
               } as React.CSSProperties
             }
           >
-            <div className="aaa-dossier-visual">
+            {viewMode === 'map' && (
+              <div className="aaa-floating-drawer-topbar">
+                <span className="aaa-floating-drawer-kicker">
+                  DOSSIÊ DE CONFRONTO #{activeBoss.stage}/{fullBossRoster.length}
+                </span>
+                <button
+                  type="button"
+                  className="aaa-floating-drawer-close"
+                  onClick={() => setIsDossierCollapsed(true)}
+                  title="Fechar Dossiê"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            <div className={`aaa-dossier-visual ${companionBossCard ? 'is-duo-visual' : ''}`}>
               {activeBossCard?.imagePath && (
                 <img
                   src={activeBossCard.imagePath}
                   alt={activeBoss.name}
                   className="aaa-dossier-portrait"
                   onClick={() => setInspectCard(activeBossCard)}
+                  title={`Inspecionar ${activeBossCard.name}`}
+                />
+              )}
+              {companionBossCard?.imagePath && (
+                <img
+                  src={companionBossCard.imagePath}
+                  alt={companionBossCard.name}
+                  className="aaa-dossier-portrait"
+                  onClick={() => setInspectCard(companionBossCard)}
+                  title={`Inspecionar ${companionBossCard.name}`}
                 />
               )}
               <div className="aaa-dossier-vignette" />
@@ -334,38 +462,25 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             <div className="aaa-dossier-content">
               <div className="aaa-dossier-meta-row">
                 <span className="aaa-dossier-stage-pill">
-                  {activeActInfo.actLabel} • ESTÁGIO {activeBoss.stage}/{fullBossRoster.length}
+                  {TIER_ROMAN[activeGcNode?.tier ?? activeBoss.difficultyTier ?? 1]}
                 </span>
-                <div className="aaa-dossier-domains">
-                  {activeBoss.domains.length >= 5 ? (
-                    <span className="aaa-domain-tag">
-                      <i
-                        className="aaa-domain-dot"
-                        style={{ backgroundColor: '#d4af37' }}
-                      />
-                      Pentacromático • Matriz Axial
-                    </span>
-                  ) : (
-                    activeBoss.domains.map((dom) => (
-                      <span key={dom} className="aaa-domain-tag">
-                        <i
-                          className="aaa-domain-dot"
-                          style={{ backgroundColor: DOMAIN_META[dom].color }}
-                        />
-                        {DOMAIN_META[dom].shortName}
-                      </span>
-                    ))
-                  )}
-                </div>
+                <span className="aaa-domain-tag">
+                  <i
+                    className="aaa-domain-dot"
+                    style={{ backgroundColor: DOMAIN_META[activePrimaryDomain].color }}
+                  />
+                  {DOMAIN_META[activePrimaryDomain].shortName}
+                </span>
               </div>
 
               <h2 className="font-cinzel aaa-dossier-title">{activeBoss.name}</h2>
               <div className="aaa-dossier-subtitle">{activeBoss.title}</div>
-              {activeMapNode && (
+
+              {activeSubmapDef && (
                 <div className="vwm-dossier-geo-badge">
-                  <span>{activeMapNode.regionName}</span>
+                  <span>{activeSubmapDef.shortName}</span>
                   <span>•</span>
-                  <strong>{activeMapNode.landmarkName}</strong>
+                  <strong>{activeGcNode?.landmarkName ?? activeBoss.landmarkName}</strong>
                 </div>
               )}
 
@@ -379,16 +494,50 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   <span className="aaa-metric-val">{activeBoss.startingHp} PV</span>
                 </div>
                 <div className="aaa-metric-box">
-                  <span className="aaa-metric-lbl">RECOMPENSA</span>
-                  <span className="aaa-metric-val gold-text">+{VICTORY_GOLD_REWARD} OURO</span>
+                  <span className="aaa-metric-lbl">ESPÓLIO</span>
+                  <span className="aaa-metric-val gold-text">
+                    +{activeBoss.rewardGold} Ouro
+                    {activeBoss.rewardShards ? ` • +${activeBoss.rewardShards} Est.` : ''}
+                  </span>
                 </div>
                 <div className="aaa-metric-box">
-                  <span className="aaa-metric-lbl">STATUS</span>
+                  <span className="aaa-metric-lbl">ESTRADA</span>
                   <span className="aaa-metric-val">
-                    {defeatedBossIds.includes(activeBoss.id) ? '✓ CONCLUÍDO' : 'PENDENTE'}
+                    {isActiveDefeated
+                      ? '✓ VENCIDO'
+                      : isActiveAccessible
+                        ? 'ACESSÍVEL'
+                        : '🔒 BLOQUEADO'}
                   </span>
                 </div>
               </div>
+
+              {activeBoss.rewardCardIds && activeBoss.rewardCardIds.length > 0 && (
+                <div className="aaa-dossier-passive-panel">
+                  <div className="aaa-passive-kicker">
+                    CARTA(S) LIBERADA(S) AO VENCER
+                  </div>
+                  <div className="aaa-dossier-reward-cards-row">
+                    {activeBoss.rewardCardIds.map((cid) => {
+                      const rc = CARDS_BY_ID[cid];
+                      if (!rc) return null;
+                      return (
+                        <button
+                          key={cid}
+                          type="button"
+                          className="aaa-reward-card-chip"
+                          onClick={() => setInspectCard(rc)}
+                          title="Clique para inspecionar a carta"
+                        >
+                          <span>
+                            {rc.rarity === 'legendary' ? '♛' : '◈'} {rc.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               <div className="aaa-dossier-passive-panel">
                 <div className="aaa-passive-kicker">
@@ -397,13 +546,18 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 <p className="aaa-passive-desc">{activeBoss.passiveDescription}</p>
               </div>
 
-              <div className="aaa-dossier-actions" style={{ flexWrap: 'wrap', gap: '0.65rem' }}>
+              <div className="aaa-dossier-actions">
                 <button
                   type="button"
                   className="aaa-btn aaa-btn-primary aaa-btn-lg"
+                  disabled={!isActiveAccessible}
                   onClick={() => handleClickStartBoss(activeBoss)}
                 >
-                  Desafiar Soberano
+                  {!isActiveAccessible
+                    ? '🔒 Bloqueado pela Estrada Anterior'
+                    : isActiveDefeated
+                      ? 'Reenfrentar Soberano'
+                      : 'Desafiar Soberano'}
                 </button>
                 <button
                   type="button"
@@ -418,7 +572,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                     className="aaa-btn aaa-btn-ghost"
                     onClick={() => setInspectCard(activeBossCard)}
                   >
-                    Carta-Chefe
+                    Carta
                   </button>
                 )}
               </div>

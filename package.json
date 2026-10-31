@@ -7,7 +7,8 @@
     "dev": "node ./node_modules/vite/bin/vite.js",
     "build": "node ./node_modules/typescript/bin/tsc -b && node ./node_modules/vite/bin/vite.js build",
     "preview": "node ./node_modules/vite/bin/vite.js preview",
-    "simulate": "node ./node_modules/tsx/dist/cli.mjs src/scripts/simulateMatches.ts"
+    "simulate": "node ./node_modules/tsx/dist/cli.mjs src/scripts/simulateMatches.ts",
+    "train:ai": "node ./node_modules/tsx/dist/cli.mjs src/scripts/trainAiLeague.ts"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

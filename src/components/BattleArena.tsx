@@ -53,7 +53,7 @@ import {
   previewAttackOutcome,
   useSovereignPower,
 } from '../engine/gameEngine';
-import { executeAiTurnStep } from '../engine/aiEngine';
+import { executeAiMulligan, executeAiTurnStep } from '../engine/aiEngine';
 import { playSfx } from '../utils/soundEngine';
 import { MusicIntensityStage, setMusicState } from '../utils/musicEngine';
 import {
@@ -460,6 +460,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiAvatarCardId: campaignBoss.avatarCardId,
             aiStartingHp: campaignBoss.startingHp,
             bossId: campaignBoss.id,
+            playerDeckId: defaultPlayerDeck?.id,
+            aiDeckId: campaignBoss.deckId,
             expeditionBlessingId: expeditionBlessingId ?? undefined,
             conquestModifiers: conquestModifiers ?? null,
           }
@@ -468,6 +470,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiName: bossDeckObj?.name ?? 'Arconte Rival',
             aiTitle: bossDeckObj?.subtitle ?? 'Mestre do Domínio',
             aiAvatarCardId: bossDeckObj?.coverCardId,
+            playerDeckId: defaultPlayerDeck?.id,
+            aiDeckId: bossDeckObj?.id,
           }
     );
   });
@@ -913,6 +917,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiAvatarCardId: campaignBoss.avatarCardId,
             aiStartingHp: campaignBoss.startingHp,
             bossId: campaignBoss.id,
+            playerDeckId: selectedPlayerDeckId,
+            aiDeckId: campaignBoss.deckId,
             expeditionBlessingId: expeditionBlessingId ?? undefined,
             conquestModifiers: conquestModifiers ?? null,
           }
@@ -1114,7 +1120,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         actorId: onlineMatch.currentUser.id,
       });
     } else {
-      setGameState(next);
+      const nextWithAiMulligan = executeAiMulligan(next, 'ai');
+      setGameState(nextWithAiMulligan);
     }
     setIsMulliganOpen(false);
     setMulliganSwapIndices([]);
@@ -1446,6 +1453,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         aiName: aDeck?.name ?? 'Arconte Rival',
         aiTitle: aDeck?.subtitle ?? 'Soberano Oponente',
         aiAvatarCardId: aDeck?.coverCardId,
+        playerDeckId: pDeck?.id,
+        aiDeckId: aDeck?.id,
       }
     );
 

@@ -4,6 +4,11 @@ import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS, CAMPAIGN_BOSSES } from '../data/decks';
 import { DECK_TACTICAL_PROFILES, EMPIRICAL_WIN_RATES, getMatchupGuide } from '../data/tacticalGuide';
 import { TACTICAL_COMBOS_COMPENDIUM, ComboColorTier } from '../data/combosCompendium';
+import {
+  AI_LEAGUE_SUMMARY,
+  AI_LEARNED_PROFILES,
+  DeckLearnedAiProfile,
+} from '../data/aiLearnedProfiles';
 import { CardView, CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 
@@ -647,6 +652,31 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
     [playerProfile, opponentProfile]
   );
 
+  const learnedAiProfile = useMemo<DeckLearnedAiProfile | null>(() => {
+    const direct = AI_LEARNED_PROFILES[playerProfile.deck.id];
+    if (direct) return direct;
+
+    // Match custom player decks to their closest trained official grimoire by unique card overlap
+    const idSet = new Set(playerProfile.deck.cardIds);
+    let bestId: string | null = null;
+    let bestOverlap = 0;
+    for (const d of PREBUILT_DECKS) {
+      let overlap = 0;
+      const seen = new Set<string>();
+      for (const cid of d.cardIds) {
+        if (!seen.has(cid) && idSet.has(cid)) {
+          seen.add(cid);
+          overlap += 1;
+        }
+      }
+      if (overlap > bestOverlap) {
+        bestOverlap = overlap;
+        bestId = d.id;
+      }
+    }
+    return bestId ? AI_LEARNED_PROFILES[bestId] ?? null : null;
+  }, [playerProfile]);
+
   const allMatchupsList = useMemo(() => {
     return allDecks
       .filter((d) => d.id !== playerProfile.deck.id)
@@ -1051,8 +1081,216 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             </div>
           </div>
 
-          {/* Right Column: Signature Combos & Synergies */}
+          {/* Right Column: Empirical AI Wisdom + Signature Combos & Synergies */}
           <div className="tg-panel">
+            {learnedAiProfile && (
+              <div className="tg-ai-oracle-box">
+                <div className="tg-ai-oracle-header">
+                  <div>
+                    <div className="aaa-kicker" style={{ color: '#c4b5fd', marginBottom: '0.15rem' }}>
+                      LIGA EVOLUCIONÁRIA ({AI_LEAGUE_SUMMARY.totalMatchesSimulated.toLocaleString('pt-BR')} DUELOS IA vs IA)
+                    </div>
+                    <h3 className="font-cinzel" style={{ margin: 0, fontSize: '0.96rem', color: '#f3e8ff' }}>
+                      🧠 Sabedoria Empírica da IA (Extraída por Simulação)
+                    </h3>
+                  </div>
+                  <span className="tg-ai-oracle-badge">
+                    {learnedAiProfile.generationsTrained} Gerações Evoluídas
+                  </span>
+                </div>
+
+                <div className="tg-ai-kpi-strip">
+                  <div className="tg-ai-kpi-cell">
+                    <span className="tg-ai-kpi-label">Amostra do Grimório</span>
+                    <span className="tg-ai-kpi-value">
+                      {learnedAiProfile.matchesSimulated.toLocaleString('pt-BR')} Partidas
+                    </span>
+                  </div>
+                  <div className="tg-ai-kpi-cell">
+                    <span className="tg-ai-kpi-label">Evolução (Base ➔ IA)</span>
+                    <span className="tg-ai-kpi-value" style={{ color: '#86efac' }}>
+                      {learnedAiProfile.baselineWinRate.toFixed(1)}% ➔ {learnedAiProfile.trainedWinRate.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="tg-ai-kpi-cell">
+                    <span className="tg-ai-kpi-label">Curva Mulligan / Pacto</span>
+                    <span className="tg-ai-kpi-value">
+                      ≤{learnedAiProfile.weights.mulliganCurveTarget.toFixed(1)}⚡ • ≥{learnedAiProfile.weights.bloodPactThresholdHp}❤️
+                    </span>
+                  </div>
+                </div>
+
+                <div className="tg-ai-doctrine-grid">
+                  <div className="tg-ai-doctrine-item">
+                    <div className="tg-ai-doctrine-top">
+                      <span>⚔️ Pressão Direta vs Troca</span>
+                      <strong>
+                        {learnedAiProfile.weights.aggroFaceBias >= learnedAiProfile.weights.tradeValueBias
+                          ? `Ofensiva (${learnedAiProfile.weights.aggroFaceBias.toFixed(2)}×)`
+                          : `Controle (${learnedAiProfile.weights.tradeValueBias.toFixed(2)}×)`}
+                      </strong>
+                    </div>
+                    <div className="tg-ai-doctrine-bar">
+                      <div
+                        className="tg-ai-doctrine-fill"
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            Math.max(
+                              18,
+                              Math.round(
+                                (learnedAiProfile.weights.aggroFaceBias /
+                                  (learnedAiProfile.weights.aggroFaceBias +
+                                    learnedAiProfile.weights.tradeValueBias)) *
+                                  100
+                              )
+                            )
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="tg-ai-doctrine-item">
+                    <div className="tg-ai-doctrine-top">
+                      <span>🛡️ Falange 3× vs Dispersão 1×</span>
+                      <strong>
+                        {learnedAiProfile.weights.stackConsolidationBias >=
+                        learnedAiProfile.weights.antiAoeSpreadBias
+                          ? `Empilhar (${learnedAiProfile.weights.stackConsolidationBias.toFixed(2)}×)`
+                          : `Dispersar (${learnedAiProfile.weights.antiAoeSpreadBias.toFixed(2)}×)`}
+                      </strong>
+                    </div>
+                    <div className="tg-ai-doctrine-bar">
+                      <div
+                        className="tg-ai-doctrine-fill"
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            Math.max(
+                              18,
+                              Math.round(
+                                (learnedAiProfile.weights.stackConsolidationBias /
+                                  (learnedAiProfile.weights.stackConsolidationBias +
+                                    learnedAiProfile.weights.antiAoeSpreadBias)) *
+                                  100
+                              )
+                            )
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {learnedAiProfile.mulliganKeepIds.length > 0 && (
+                  <div style={{ marginBottom: '0.65rem' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fde68a', marginBottom: '0.32rem' }}>
+                      ✋ Melhores Cartas para Manter no Mulligan (Empírico)
+                    </div>
+                    <div className="tg-combo-cards-row">
+                      {learnedAiProfile.mulliganKeepIds.slice(0, 4).map((cid) => {
+                        const c = CARDS_BY_ID[cid];
+                        if (!c) return null;
+                        return (
+                          <div
+                            key={cid}
+                            className="tg-mini-card-pill"
+                            onClick={() => setInspectCard(c)}
+                          >
+                            {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                            <div>
+                              <div className="tg-mini-card-name">{c.name}</div>
+                              <div className="tg-mini-card-sub">
+                                {c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {learnedAiProfile.channelPriorityIds.length > 0 && (
+                  <div style={{ marginBottom: '0.7rem' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#93c5fd', marginBottom: '0.32rem' }}>
+                      🔮 Canalizações Seguras nos Turnos 1–4 [C]
+                    </div>
+                    <div className="tg-combo-cards-row">
+                      {learnedAiProfile.channelPriorityIds.slice(0, 4).map((cid) => {
+                        const c = CARDS_BY_ID[cid];
+                        if (!c) return null;
+                        return (
+                          <div
+                            key={cid}
+                            className="tg-mini-card-pill"
+                            onClick={() => setInspectCard(c)}
+                          >
+                            {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                            <div>
+                              <div className="tg-mini-card-name">{c.name}</div>
+                              <div className="tg-mini-card-sub">
+                                {c.cost}⚡ • Canalizar [C]
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {learnedAiProfile.discoveredCombos.length > 0 && (
+                  <div>
+                    <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#86efac', marginBottom: '0.4rem' }}>
+                      🏆 Combos Campeões Descobertos na Liga IA vs IA
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {learnedAiProfile.discoveredCombos.slice(0, 4).map((dc, idx) => {
+                        const cA = CARDS_BY_ID[dc.cardAId];
+                        const cB = CARDS_BY_ID[dc.cardBId];
+                        if (!cA || !cB) return null;
+                        return (
+                          <div key={`${dc.cardAId}-${dc.cardBId}-${idx}`} className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.35rem' }}>
+                              <strong className="font-cinzel" style={{ fontSize: '0.8rem', color: '#fef08a' }}>
+                                #{idx + 1} {cA.name} + {cB.name}
+                              </strong>
+                              <span className="tg-ai-combo-badge">
+                                {dc.coPlayWinRate.toFixed(1)}% WR ({dc.liftOverBaseline >= 0 ? '+' : ''}
+                                {dc.liftOverBaseline.toFixed(1)}% Lift • n={dc.sampleCount})
+                              </span>
+                            </div>
+                            <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '0 0 0.42rem', lineHeight: 1.4 }}>
+                              {dc.synergyNote}
+                            </p>
+                            <div className="tg-combo-cards-row">
+                              {[cA, cB].map((c) => (
+                                <div
+                                  key={c.id}
+                                  className="tg-mini-card-pill"
+                                  onClick={() => setInspectCard(c)}
+                                >
+                                  {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                                  <div>
+                                    <div className="tg-mini-card-name">{c.name}</div>
+                                    <div className="tg-mini-card-sub">
+                                      {c.cost}⚡ • {CARD_TYPE_LABELS[c.type]}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <h2 className="font-cinzel tg-panel-title">Combos & Sinergias do Grimório</h2>
             <div className="tg-combos-list">
               {playerProfile.signatureCombos.map((combo, idx) => (

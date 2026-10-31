@@ -12,8 +12,9 @@ export interface TutorialCodexViewProps {
 
 type CodexSectionId =
   | 'walkthrough'
-  | 'deckbuilding'
+  | 'combat_rules'
   | 'board_stacking'
+  | 'deckbuilding'
   | 'domains'
   | 'weather_runes'
   | 'keywords'
@@ -65,17 +66,17 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   {
     stepNumber: 2,
     badge: 'ECONOMIA ELEMENTAL',
-    title: 'Progressão de Essência & Afinidade',
-    subtitle: 'Sua Essência cresce automaticamente a cada turno (+1 até 10) sem travar sua compra.',
+    title: 'Progressão de Essência (até 15) & Afinidade',
+    subtitle: 'Sua Essência cresce automaticamente a cada rodada (+1 até 15) sem travar sua compra.',
     cardId: 'blue_36_tomo_infinito',
     summary:
-      'No início de cada turno, sua Essência Máxima sobe em +1 (até 10), sua reserva é recarregada, sua Afinidade Elemental avança +1 e você compra 1 carta.',
+      'No início de cada rodada, sua Essência Máxima sobe em +1 (até o teto de 15), sua reserva é recarregada, sua Afinidade Elemental avança e você compra 1 carta (limite de 12 cartas na mão).',
     keyPoints: [
       {
         tag: 'ATALHO [C]',
         title: 'Canalizar Carta (1x por Turno)',
         detail:
-          'Converta 1 carta da mão em Terreno Canalizado para ganhar +1 de Afinidade da cor dela e comprar +1 carta substituta imediatamente.',
+          'Converta 1 carta da mão em Terreno Canalizado para ganhar +1 de Afinidade da cor dela (com 65% de Afinidade cruzada secundária) e comprar +1 carta substituta na hora.',
       },
       {
         tag: 'IMPULSO EXTRA',
@@ -96,33 +97,33 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   {
     stepNumber: 3,
     badge: 'POSICIONAMENTO TÁTICO',
-    title: 'Mesa 6×4, Vanguarda & Pilhas 3x',
-    subtitle: 'Seis colunas e quatro fileiras com suporte para até 3 unidades empilhadas por slot.',
+    title: 'Mesa 6×4, Vanguarda vs. Retaguarda & Pilhas 3x',
+    subtitle: 'Seis colunas independentes e duas fileiras por lado, com até 3 unidades empilhadas por slot.',
     cardId: 'gold_07_dragao_ouro',
     summary:
-      'O tabuleiro divide cada lado em Vanguarda (linha de frente) e Retaguarda (suporte e relíquias). O posicionamento concede bônus automáticos de combate.',
+      'Cada lado possui 6 slots de Vanguarda (frente) e 6 de Retaguarda (trás). A fileira define quem você alcança, como o Soberano é protegido e quais bônus automáticos sua tropa recebe.',
     keyPoints: [
       {
         tag: 'LINHA DE FRENTE [V]',
-        title: 'Vanguarda, Invasão & Falange',
+        title: 'Vanguarda: Alcança Tudo & Falange',
         detail:
-          'Protege a coluna e o Soberano. Concede +1 ATQ de Invasão se a Vanguarda oposta estiver vazia e +1 de Armadura ao lado de um Guardião.',
+          'Ataca qualquer coluna inimiga (Vanguarda ou Retaguarda) e atinge o Soberano rival se a própria coluna estiver livre. Recebe +1 Armadura ao lado de um Guardião na Vanguarda e +1 ATQ de Invasão se a Retaguarda oposta da coluna estiver vazia.',
       },
       {
         tag: 'SUPORTE [R]',
-        title: 'Retaguarda & Cobertura',
+        title: 'Retaguarda: Defesa Só na Coluna & +1 ATQ',
         detail:
-          'Abriga atiradores, voadores, Relíquias e Emboscadas. Enquanto houver aliado na Vanguarda da mesma coluna, recebe proteção terrestre e +1 ATQ.',
+          'Ganha +1 ATQ de Disparo Apoiado quando há aliado na Vanguarda da mesma coluna. Atenção: uma criatura comum na Retaguarda só protege o Soberano contra ataques vindos da SUA própria coluna!',
       },
       {
-        tag: 'FORMAÇÃO',
-        title: 'Empilhamento 3x vs. Área',
+        tag: 'MOVIMENTAÇÃO 1×/TURNO',
+        title: 'Alternar Fileira & Pilhas 3x',
         detail:
-          'Empilhe até 3 unidades atrás de um Guardião contra alvos únicos, mas espalhe suas forças em colunas separadas contra Dragões com Sopro.',
+          'Uma vez por turno, mova gratuitamente 1 criatura não congelada entre Vanguarda e Retaguarda. Empilhe até 3 cartas atrás de um Guardião contra alvos únicos, mas espalhe colunas contra Sopro e Atropelar.',
       },
     ],
     proTip:
-      'Use a ação de Movimentação no seu turno para alternar unidades entre Vanguarda e Retaguarda na mesma coluna e salvar aliados feridos.',
+      'Consulte a aba "Combate, Fileiras & Bloqueios" aqui no Tutorial para ver a matriz completa de alcance por coluna, Voo, Alcance e Guardião!',
   },
   {
     stepNumber: 4,
@@ -157,34 +158,34 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   },
   {
     stepNumber: 5,
-    badge: 'FLUXO DE COMBATE',
-    title: 'Combate Direto & Prioridade de Alvos',
-    subtitle: 'Ataque individualmente com precisão cirúrgica ou dispare ofensiva total.',
+    badge: 'FASES DA RODADA, BLOQUEIO & 3 ONDAS',
+    title: 'Posturas (Atacar / Defender), Guardião, Voo & Alcance',
+    subtitle: 'Fase 1 de Mobilização, Fase 2 de Planejamento e Resolução Ordenada em 3 Ondas.',
     cardId: 'gold_59_cavaleiro_grifo',
     summary:
-      'Não há fases burocráticas: selecione qualquer unidade pronta para atacar um alvo válido na hora ou utilize o comando de ataque rápido na barra inferior.',
+      'Cada rodada divide-se em Mobilização (invocar, canalizar e mover 1 fileira) e Planejamento de Combate (alternar posturas Atacar ⚔️ ou Defender 🛡️ +1 Armadura, lançar feitiços e executar as 3 Ondas).',
     keyPoints: [
       {
-        tag: 'PRONTIDÃO',
-        title: 'Preparação & Ímpeto',
+        tag: '3 ONDAS DE COMBATE',
+        title: 'Magias → Iniciativa Ímpeto → Choque',
         detail:
-          'Unidades recém-invocadas entram em preparação e atacam no turno seguinte, exceto criaturas com Ímpeto, que atacam imediatamente.',
+          'Ao executar o combate: 1º resolvem Feitiços/Rituais; 2º atacam unidades com Ímpeto (se abaterem alvo sem Ímpeto, não sofrem contra-ataque!); 3º ocorre o Choque Simultâneo das demais tropas.',
       },
       {
-        tag: 'BLOQUEIO',
+        tag: 'QUEM BLOQUEIA QUEM',
         title: 'Guardião, Voo & Alcance',
         detail:
-          'Unidades com Guardião forçam ataques terrestres naquela coluna. Criaturas com Voo ou Alcance ignoram bloqueadores terrestres e atingem a Retaguarda.',
+          'Ter apenas Voo ou Alcance NÃO bloqueia ataques inimigos! Atacantes com Voo só são travados por Guardião + Voo; atacantes com Alcance só são travados por qualquer Guardião na Vanguarda.',
       },
       {
-        tag: 'CONTROLE',
-        title: 'Passar Turno [ESPAÇO]',
+        tag: 'CONTRA-ATAQUE & ARMADURA',
+        title: 'Disparo Livre na Retaguarda',
         detail:
-          'Após canalizar, invocar e concluir seus ataques, encerre a rodada pelo botão da barra inferior ou pressionando a barra de espaço.',
+          'Alcance disparando da Retaguarda NÃO sofre contra-ataque (na Vanguarda sofre!). Se o Ataque for menor ou igual à Armadura do alvo, o dano causado é 0 total.',
       },
     ],
     proTip:
-      'Use unidades de Alcance na Retaguarda para eliminar ameaças inimigas sem sofrer dano de contra-ataque.',
+      'Coloque campeões feridos em postura Defender (🛡️ +1 Armadura) e mantenha unidades de Alcance na Retaguarda atrás de um aliado (+1 ATQ e zero contra-ataque).',
   },
   {
     stepNumber: 6,
@@ -310,6 +311,37 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     proTip:
       'Abra o "Oráculo de Guerra → Compêndio de Combos" e ative o filtro "★ No Meu Grimório" para descobrir instantaneamente todos os combos compatíveis com as cartas que você possui!',
   },
+  {
+    stepNumber: 10,
+    badge: 'ATLAS & GRANDE CAMPANHA DE VAELORIA',
+    title: '21 Mapas (Zoom 100%), 190 Confrontos & Zona de Controle',
+    subtitle: 'Derrote todas as 276 criaturas Raras e Lendárias passo a passo pelas estradas e converta o continente à sua cor.',
+    cardId: 'neutral_173_gorgonoth_devorador_continentes',
+    summary:
+      'O Atlas de Vaeloria reúne 21 mapas 16:9 fixados em 100% de zoom e 100% visíveis na tela. Na Grande Campanha, você marcha passo a passo por 190 confrontos geográficos cobrindo 100% das criaturas Raras e Lendárias.',
+    keyPoints: [
+      {
+        tag: 'ZONA DE CONTROLE',
+        title: 'Marcha Passo a Passo Sem Saltar Inimigos',
+        detail:
+          'O Soberano caminha pelas estradas geográficas. Um adversário vivo bloqueia estritamente os caminhos e portais adiante dele — é preciso vencê-lo para abrir passagem.',
+      },
+      {
+        tag: 'RECUO TÁTICO LIVRE',
+        title: 'Mudança de Rota/Cor & Desbloqueio de Cartas',
+        detail:
+          'Se um Trono Tier 4–5 estiver forte demais, recue livremente por estradas já vencidas e migre para a fronteira Tier 1 de outra cor: cada vitória desbloqueia as cartas Raras/Lendárias daquele chefe no seu Grimório!',
+      },
+      {
+        tag: 'DOMINAÇÃO CROMÁTICA',
+        title: 'Conversão Territorial em 100%',
+        detail:
+          'Ao derrotar 100% dos confrontos de um sub-mapa, toda aquela região e seu território no Mapa Continental assumem permanentemente a cor da bandeira do seu Soberano.',
+      },
+    ],
+    proTip:
+      'As cartas Lendárias mais poderosas de custo 8–10 guardam os 6 Tronos Finais de cada cor, culminando em Gorgonoth na Cidade Franca Axial!',
+  },
 ];
 
 interface KeywordEntry {
@@ -329,9 +361,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Ofensiva',
     color: '#ef4444',
     description:
-      'Ignora o tempo de preparação e permite que a criatura ataque no mesmo turno em que entra em campo.',
+      'Ignora o tempo de preparação para atacar no turno em que entra e age na Onda 2 (Iniciativa Rápida): se abater um defensor sem Ímpeto, mata o alvo antes que ele possa contra-atacar.',
     tacticalTip:
-      'Ideal para abater ameaças recém-posicionadas ou finalizar o Soberano rival de surpresa.',
+      'Ideal para abater ameaças frágeis sem sofrer dano de retorno ou finalizar o Soberano rival de surpresa.',
     exampleCardId: 'red_04_meio_dragao',
   },
   {
@@ -340,9 +372,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Defensiva',
     color: '#facc15',
     description:
-      'Obriga inimigos terrestres a atacarem esta unidade antes de outros alvos na coluna ou do Soberano. Concede +1 de Armadura a aliados adjacentes na Vanguarda.',
+      'Na Vanguarda: obriga atacantes terrestres (de todas as 6 colunas) e arqueiros com Alcance a atacá-lo primeiro, além de dar +1 Armadura a vizinhos na Vanguarda. Na Retaguarda: só intercepta atacantes terrestres da Vanguarda rival até ±1 coluna e não para Alcance. Só bloqueia Voo se tiver Guardião + Voo.',
     tacticalTip:
-      'Posicione na frente de uma pilha 3x para blindar atacantes frágeis ou proteger Relíquias na Retaguarda.',
+      'Mantenha seus Guardiões na Vanguarda para travar todas as colunas do tabuleiro ao mesmo tempo.',
     exampleCardId: 'gold_04_armadura_conjurada',
   },
   {
@@ -351,9 +383,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Mobilidade',
     color: '#38bdf8',
     description:
-      'Ignora bloqueadores terrestres sem Voo ou Alcance, podendo alvejar diretamente a Retaguarda inimiga ou o Soberano rival.',
+      'Ataca qualquer coluna, ignora bloqueadores sem Voo e pode alvejar direto a Retaguarda ou o Soberano rival — só é bloqueado por inimigos com Guardião + Voo. Atenção: ter apenas Voo NÃO bloqueia voadores inimigos no turno deles.',
     tacticalTip:
-      'Excelente para destruir Relíquias e atiradores protegidos por muralhas de Guardiões.',
+      'Use como antiaéreo ativo no seu turno ou para destruir Relíquias escondidas atrás de Guardiões terrestres.',
     exampleCardId: 'red_06_efreeti',
   },
   {
@@ -362,9 +394,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Mobilidade',
     color: '#60a5fa',
     description:
-      'Ataca normalmente a partir da Retaguarda sem sofrer dano de contra-ataque e pode alvejar unidades com Voo.',
+      'Atinge alvos terrestres ou com Voo em qualquer coluna (só é travado por Guardião na Vanguarda inimiga). Quando ataca a partir da Retaguarda, NÃO sofre contra-ataque! Na Vanguarda, sofre contra-ataque normal. Ter apenas Alcance não bloqueia ataques rivais.',
     tacticalTip:
-      'Mantenha atrás de um aliado na Vanguarda para receber +1 ATQ de Cobertura e disparar em segurança.',
+      'Posicione na Retaguarda exatamente atrás de um aliado na mesma coluna para ganhar +1 ATQ de Disparo Apoiado e bater sem levar troco.',
     exampleCardId: 'green_02_aranha_gigante',
   },
   {
@@ -373,9 +405,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Defensiva',
     color: '#fde047',
     description:
-      'Anula completamente a primeira instância de dano que a unidade sofreria de qualquer fonte.',
+      'Anula completamente a primeira instância de dano que a unidade sofreria de qualquer fonte (inclusive impedindo Toque Letal nesse golpe).',
     tacticalTip:
-      'Remova o Escudo Divino inimigo com um efeito leve antes de usar seu ataque principal.',
+      'Remova o Escudo Divino inimigo com um efeito leve antes de desferir seu ataque pesado.',
     exampleCardId: 'gold_09_serafim_solar',
   },
   {
@@ -384,9 +416,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Ofensiva',
     color: '#a855f7',
     description:
-      'Qualquer quantidade de dano de combate causada a uma criatura (não absorvida por Escudo Divino) destrói o alvo.',
+      'Causando pelo menos 1 de dano real em combate (após Armadura e Escudo Divino): no corpo a corpo (ou atacando da Vanguarda) executa a criatura instantaneamente; em disparo à distância (Alcance na Retaguarda), aplica -1 de veneno adicional.',
     tacticalTip:
-      'A resposta mais eficiente de custo baixo para eliminar colossos e Titãs de alta Vida.',
+      'Avance o assassino para a Vanguarda quando quiser execução letal imediata contra colossos de alta Vida.',
     exampleCardId: 'purple_02_sombra',
   },
   {
@@ -395,9 +427,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Especial',
     color: '#c084fc',
     description:
-      'Sempre que esta unidade causa dano em combate, restaura 2 pontos de Vida ao seu Soberano.',
+      'Sempre que esta unidade causa dano real em combate, restaura +1 ponto de Vida ao seu Soberano.',
     tacticalTip:
-      'Sustenta sua Vida ao longo da partida e compensa o uso frequente do Pacto de Sangue.',
+      'Sustenta a Vida do seu Soberano ao longo da partida e compensa o uso do Pacto de Sangue.',
     exampleCardId: 'purple_19_conde_vampiro',
   },
   {
@@ -461,9 +493,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Defensiva',
     color: '#cbd5e1',
     description:
-      'Reduz todo dano sofrido de ataques e feitiços pelo valor de Armadura da unidade.',
+      'Reduz o dano sofrido: se Ataque <= Armadura, o dano recebido é 0 total! Se Ataque > Armadura, o dano recebido é (Ataque - Armadura, mínimo 1). Postura Defender concede +1 de Armadura extra.',
     tacticalTip:
-      'Unidades com 2 ou mais de Armadura neutralizam atacantes pequenos sem perder Vida.',
+      'Unidades com 2+ de Armadura (ou ao lado de um Guardião na Falange) anulam completamente atacantes pequenos.',
     exampleCardId: 'gold_05_automato_guardiao',
   },
   {
@@ -517,6 +549,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
     7: '7. Grimório',
     8: '8. Conclave',
     9: '9. Combos',
+    10: '10. Campanha',
   };
 
   const innerContent = (
@@ -553,11 +586,11 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
             </button>
             <button
               type="button"
-              className={`nav-tab-btn ${activeSection === 'deckbuilding' ? 'active' : ''}`}
-              onClick={() => setActiveSection('deckbuilding')}
+              className={`nav-tab-btn ${activeSection === 'combat_rules' ? 'active' : ''}`}
+              onClick={() => setActiveSection('combat_rules')}
               style={{ padding: '5px 10px', fontSize: '0.73rem' }}
             >
-              Construção de Grimórios
+              Combate, Fileiras & Bloqueios
             </button>
             <button
               type="button"
@@ -566,6 +599,14 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               style={{ padding: '5px 10px', fontSize: '0.73rem' }}
             >
               Mesa 6×4 & Formações
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeSection === 'deckbuilding' ? 'active' : ''}`}
+              onClick={() => setActiveSection('deckbuilding')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Construção de Grimórios
             </button>
             <button
               type="button"
@@ -704,7 +745,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
             >
               <div>
                 <div className="aaa-kicker" style={{ marginBottom: '0.25rem' }}>
-                  LIÇÃO 0{currentStep.stepNumber} • {currentStep.badge}
+                  LIÇÃO {String(currentStep.stepNumber).padStart(2, '0')} • {currentStep.badge}
                 </div>
                 <h2
                   className="font-cinzel aaa-codex-heading"
@@ -717,10 +758,20 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                     color: '#e6c875',
                     fontSize: '0.9rem',
                     fontWeight: 600,
-                    marginBottom: '0.85rem',
+                    marginBottom: '0.45rem',
                   }}
                 >
                   {currentStep.subtitle}
+                </p>
+                <p
+                  style={{
+                    color: '#cbd5e1',
+                    fontSize: '0.84rem',
+                    lineHeight: 1.55,
+                    margin: '0 0 0.85rem 0',
+                  }}
+                >
+                  {currentStep.summary}
                 </p>
 
                 {/* Balanced 3-Column Key Points Grid */}
@@ -782,6 +833,24 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                     </div>
                   ))}
                 </div>
+
+                {currentStep.proTip && (
+                  <div
+                    style={{
+                      padding: '0.6rem 0.85rem',
+                      borderRadius: '8px',
+                      background: 'rgba(11, 16, 28, 0.92)',
+                      border: '1px solid rgba(212, 175, 55, 0.3)',
+                      borderLeft: '3px solid #d4af37',
+                      fontSize: '0.8rem',
+                      color: '#e2e8f0',
+                      lineHeight: 1.48,
+                      marginBottom: '0.85rem',
+                    }}
+                  >
+                    <strong style={{ color: '#fde68a' }}>Conselho do Mestre:</strong> {currentStep.proTip}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -824,9 +893,9 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                         <button
                           type="button"
                           className="btn-fantasy"
-                          onClick={() => setActiveSection('domains')}
+                          onClick={() => setActiveSection('combat_rules')}
                         >
-                          Explorar os 5 Domínios →
+                          Ver Regras de Combate & Bloqueios →
                         </button>
                         {onStartPracticeDuel && (
                           <button
@@ -843,6 +912,263 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          SECTION 1.2: EXPLICIT COMBAT, LANE, COLUMN & BLOCKING RULES MATRIX
+         ===================================================================== */}
+      {activeSection === 'combat_rules' && (
+        <div className="tg-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+          <div>
+            <div className="aaa-kicker">REGRAS EXATAS DO MOTOR DE COMBATE • COLUNAS, FILEIRAS, INTERCEPTAÇÃO & 3 ONDAS</div>
+            <h2 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.35rem', marginBottom: '0.35rem' }}>
+              Vanguarda vs. Retaguarda, Defesa do Soberano, Voo, Alcance & Guardião
+            </h2>
+            <p style={{ color: '#cbd5e1', fontSize: '0.88rem', lineHeight: 1.6, margin: 0 }}>
+              Abaixo estão detalhadas todas as regras geométricas de alcance, proteção por coluna, contra-ataque e resolução em ondas exatamente como são calculadas na Arena.
+            </p>
+          </div>
+
+          {/* TABELA 1: VANGUARDA VS RETAGUARDA (CRIATURAS TERRESTRES) */}
+          <div
+            style={{
+              borderRadius: '10px',
+              background: '#0b101c',
+              border: '1px solid rgba(212, 175, 55, 0.32)',
+              overflowX: 'auto',
+            }}
+          >
+            <div
+              style={{
+                padding: '0.65rem 0.95rem',
+                borderBottom: '1px solid rgba(212, 175, 55, 0.24)',
+                background: '#0f1624',
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                color: '#d4af37',
+              }}
+            >
+              1. DIFERENÇAS EXATAS ENTRE VANGUARDA (FRENTE) E RETAGUARDA (TRÁS)
+            </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', color: '#e2e8f0' }}>
+              <thead>
+                <tr style={{ background: 'rgba(15, 23, 42, 0.9)', textAlign: 'left' }}>
+                  <th style={{ padding: '0.65rem 0.85rem', borderBottom: '1px solid rgba(148, 163, 184, 0.2)', width: '22%', color: '#fde68a' }}>
+                    Situação Tática
+                  </th>
+                  <th style={{ padding: '0.65rem 0.85rem', borderBottom: '1px solid rgba(148, 163, 184, 0.2)', width: '39%', color: '#f8fafc' }}>
+                    🛡️ Criatura na VANGUARDA (Frente)
+                  </th>
+                  <th style={{ padding: '0.65rem 0.85rem', borderBottom: '1px solid rgba(148, 163, 184, 0.2)', width: '39%', color: '#f8fafc' }}>
+                    🏹 Criatura na RETAGUARDA (Trás)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  {
+                    topic: 'Quais criaturas inimigas pode atacar? (terrestre sem Voo/Alcance)',
+                    vanguard:
+                      'Alcança QUALQUER criatura terrestre inimiga em QUALQUER coluna — tanto na Vanguarda quanto na Retaguarda adversária (respeitando Guardião, se houver).',
+                    rearguard:
+                      'Contra a Vanguarda inimiga: alcança QUALQUER coluna. Contra a Retaguarda inimiga: fica presa à SUA PRÓPRIA coluna (e só se a Vanguarda daquela coluna estiver vazia). Só ataca a Retaguarda de outras colunas se TODA a Vanguarda terrestre inimiga estiver vazia.',
+                  },
+                  {
+                    topic: 'Quando pode atacar o Soberano inimigo direto?',
+                    vanguard:
+                      'Assim que a SUA PRÓPRIA coluna estiver livre de bloqueadores terrestres (nem na Vanguarda nem na Retaguarda inimiga daquela coluna) e não houver Guardião interceptando.',
+                    rearguard:
+                      'Exige duas condições simultâneas: TODA a Vanguarda terrestre inimiga precisa estar vazia E a Retaguarda inimiga da sua própria coluna também precisa estar vazia.',
+                  },
+                  {
+                    topic: 'Protege o seu Soberano contra ataques de outras colunas?',
+                    vanguard:
+                      'Criatura comum bloqueia apenas a sua própria coluna. Porém, um GUARDIÃO na Vanguarda protege TODAS as 6 colunas do tabuleiro ao mesmo tempo (inclusive travando arqueiros com Alcance)!',
+                    rearguard:
+                      'NÃO! Uma criatura comum na Retaguarda só defende ataques ao Soberano vindos da SUA PRÓPRIA coluna. Se outra coluna estiver vazia (frente e trás), o inimigo daquela coluna acerta o Soberano direto. Mesmo um Guardião na Retaguarda só intercepta colunas coladas (±1).',
+                  },
+                  {
+                    topic: 'Como fica protegida de ataques inimigos?',
+                    vanguard:
+                      'Está na linha de frente: qualquer atacante inimigo (da Vanguarda ou da Retaguarda) pode alvejá-la.',
+                    rearguard:
+                      'Enquanto você mantiver unidades terrestres na sua Vanguarda, os atacantes terrestres da Retaguarda inimiga NÃO conseguem alcançar a sua Retaguarda fora de colunas abertas.',
+                  },
+                  {
+                    topic: 'Bônus automáticos de Formação',
+                    vanguard:
+                      '• Falange (+1 Armadura): se estiver ao lado (coluna ±1) ou empilhada com um aliado Guardião na Vanguarda.\n• Invasão (+1 ATQ): se o slot da Retaguarda inimiga na mesma coluna estiver vazio.',
+                    rearguard:
+                      '• Disparo Apoiado (+1 ATQ): ganha +1 ATQ sempre que houver pelo menos 1 criatura aliada exatamente à sua frente na Vanguarda da mesma coluna.',
+                  },
+                ].map((row, rIdx) => (
+                  <tr key={rIdx} style={{ borderBottom: '1px solid rgba(148, 163, 184, 0.14)' }}>
+                    <td style={{ padding: '0.68rem 0.85rem', fontWeight: 700, color: '#e5c97b', verticalAlign: 'top' }}>
+                      {row.topic}
+                    </td>
+                    <td style={{ padding: '0.68rem 0.85rem', color: '#cbd5e1', lineHeight: 1.5, verticalAlign: 'top', whiteSpace: 'pre-line' }}>
+                      {row.vanguard}
+                    </td>
+                    <td style={{ padding: '0.68rem 0.85rem', color: '#cbd5e1', lineHeight: 1.5, verticalAlign: 'top', whiteSpace: 'pre-line' }}>
+                      {row.rearguard}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* TABELA 2: MATRIZ VOO, ALCANCE & GUARDIÃO */}
+          <div
+            style={{
+              borderRadius: '10px',
+              background: '#0b101c',
+              border: '1px solid rgba(212, 175, 55, 0.32)',
+              overflowX: 'auto',
+            }}
+          >
+            <div
+              style={{
+                padding: '0.65rem 0.95rem',
+                borderBottom: '1px solid rgba(212, 175, 55, 0.24)',
+                background: '#0f1624',
+                fontSize: '0.7rem',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                color: '#d4af37',
+              }}
+            >
+              2. VOO, ALCANCE & GUARDIÃO: QUEM BLOQUEIA NO TURNO RIVAL vs. QUEM ACERTA NO SEU TURNO
+            </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', color: '#e2e8f0' }}>
+              <thead>
+                <tr style={{ background: 'rgba(15, 23, 42, 0.9)', textAlign: 'left' }}>
+                  <th style={{ padding: '0.65rem 0.85rem', borderBottom: '1px solid rgba(148, 163, 184, 0.2)', width: '20%', color: '#fde68a' }}>
+                    Tipo de Atacante
+                  </th>
+                  <th style={{ padding: '0.65rem 0.85rem', borderBottom: '1px solid rgba(148, 163, 184, 0.2)', width: '32%', color: '#f8fafc' }}>
+                    O que BLOQUEIA ele de bater no Soberano?
+                  </th>
+                  <th style={{ padding: '0.65rem 0.85rem', borderBottom: '1px solid rgba(148, 163, 184, 0.2)', width: '24%', color: '#f8fafc' }}>
+                    O que NÃO o bloqueia?
+                  </th>
+                  <th style={{ padding: '0.65rem 0.85rem', borderBottom: '1px solid rgba(148, 163, 184, 0.2)', width: '24%', color: '#f8fafc' }}>
+                    Contra-Ataque & Alvos
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  {
+                    type: '🪽 Criatura com Voo',
+                    blockedBy:
+                      'SOMENTE uma criatura inimiga que tenha GUARDIÃO + VOO juntos (em qualquer fileira ou coluna).',
+                    notBlockedBy:
+                      'Criaturas comuns com Voo, criaturas com Alcance (mesmo na mesma coluna) e Guardiões terrestres sem Voo.',
+                    counter:
+                      'Sofre contra-ataque normal ao bater em criaturas. No turno do rival, pode ser alvejada por unidades com Voo, unidades com Alcance ou Feitiços (antiaéreo ativo).',
+                  },
+                  {
+                    type: '🏹 Criatura com Alcance',
+                    blockedBy:
+                      'Qualquer criatura com GUARDIÃO posicionada na VANGUARDA inimiga (terrestre, voadora ou de alcance).',
+                    notBlockedBy:
+                      'Unidades sem Guardião (mesmo com Voo ou Alcance na mesma coluna) ou Guardiões escondidos na Retaguarda.',
+                    counter:
+                      'Na RETAGUARDA: Disparo Livre — NÃO sofre dano de contra-ataque! Na VANGUARDA: luta engajada e sofre contra-ataque normal. Acerta alvos terrestres e com Voo.',
+                  },
+                  {
+                    type: '⚔️ Terrestre na Vanguarda (sem Voo/Alcance)',
+                    blockedBy:
+                      '• Qualquer Guardião terrestre na Vanguarda rival (todas as colunas);\n• Guardião terrestre na Retaguarda rival até ±1 coluna;\n• Para proteger o Soberano: qualquer terrestre naquela mesma coluna.',
+                    notBlockedBy:
+                      'Unidades comuns posicionadas em outras colunas ou unidades com Voo.',
+                    counter:
+                      'Sofre contra-ataque normal (salvo se tiver Ímpeto na Onda de Iniciativa e abater um alvo sem Ímpeto antes da resposta). Não acerta alvos com Voo.',
+                  },
+                  {
+                    type: '🗡️ Terrestre na Retaguarda (sem Voo/Alcance)',
+                    blockedBy:
+                      '• Qualquer Guardião terrestre na Vanguarda rival;\n• Qualquer terrestre na Vanguarda rival impede ataques ao Soberano e às outras colunas da Retaguarda;\n• Terrestre na Retaguarda da mesma coluna protege o Soberano.',
+                    notBlockedBy:
+                      'Unidades com Voo (não bloqueiam terrestre, nem podem ser atacadas por terrestre sem Alcance).',
+                    counter:
+                      'Sofre contra-ataque normal (pois não tem Alcance). Use a Movimentação gratuita (1×/turno) para avançá-la à Vanguarda quando quiser abrir mais alvos.',
+                  },
+                ].map((row, rIdx) => (
+                  <tr key={rIdx} style={{ borderBottom: '1px solid rgba(148, 163, 184, 0.14)' }}>
+                    <td style={{ padding: '0.68rem 0.85rem', fontWeight: 700, color: '#e5c97b', verticalAlign: 'top' }}>
+                      {row.type}
+                    </td>
+                    <td style={{ padding: '0.68rem 0.85rem', color: '#cbd5e1', lineHeight: 1.5, verticalAlign: 'top', whiteSpace: 'pre-line' }}>
+                      {row.blockedBy}
+                    </td>
+                    <td style={{ padding: '0.68rem 0.85rem', color: '#94a3b8', lineHeight: 1.5, verticalAlign: 'top' }}>
+                      {row.notBlockedBy}
+                    </td>
+                    <td style={{ padding: '0.68rem 0.85rem', color: '#cbd5e1', lineHeight: 1.5, verticalAlign: 'top' }}>
+                      {row.counter}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* BLOCOS 3 & 4: FASES DA RODADA, 3 ONDAS, POSTURAS E FÓRMULAS EXATAS */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(265px, 1fr))',
+              gap: '0.85rem',
+            }}
+          >
+            {[
+              {
+                tag: 'FASE 1 + FASE 2 DA RODADA',
+                title: 'Posturas: Atacar (⚔️) vs. Defender (🛡️ +1 Armadura)',
+                desc: 'Na Fase 1 (Mobilização) você canaliza [C], invoca cartas e move até 1 unidade entre fileiras. Na Fase 2 (Planejamento) você escolhe a postura de cada criatura pronta: Atacar (definindo o alvo) ou Defender (não ataca na rodada, mas ganha +1 de Armadura de Bastião enquanto não estiver congelada).',
+              },
+              {
+                tag: 'RESOLUÇÃO EM 3 ONDAS',
+                title: '1º Magias → 2º Ímpeto → 3º Choque Simultâneo',
+                desc: 'Ao clicar em Executar Combate: Onda 1 resolve Feitiços e Poderes (Proteção/Cura → Controle/Congelar → Dano); Onda 2 dispara criaturas com Ímpeto (se matarem um defensor sem Ímpeto, não levam contra-ataque!); Onda 3 resolve o Choque Simultâneo das demais tropas.',
+              },
+              {
+                tag: 'FÓRMULA DE ARMADURA & ESCUDO',
+                title: 'Absorção Total quando Ataque <= Armadura',
+                desc: 'Se o Ataque do agressor for menor ou igual à Armadura atual do defensor (Ataque <= Armadura), o dano recebido é 0! Se Ataque > Armadura, o dano é (Ataque - Armadura). Já o Escudo Divino anula 100% da primeira instância de dano de qualquer valor.',
+              },
+              {
+                tag: 'PILHAS 3× & INTERAÇÕES ESPECIAIS',
+                title: 'Toque Letal, Atropelar & Sopro Elemental',
+                desc: 'Toque Letal executa instantaneamente no corpo a corpo ao causar 1+ de dano real, mas à distância (Alcance na Retaguarda) aplica apenas -1 de veneno extra. Contra slots com até 3 cartas empilhadas, Atropelar varre toda a pilha antes de atingir o Soberano e Sopro queima todas as cartas do slot!',
+              },
+            ].map((card, idx) => (
+              <div
+                key={idx}
+                style={{
+                  padding: '0.95rem 1.05rem',
+                  borderRadius: '10px',
+                  background: '#0b101c',
+                  border: '1px solid rgba(212, 175, 55, 0.28)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.35rem',
+                }}
+              >
+                <div style={{ fontSize: '0.63rem', fontWeight: 800, color: '#d4af37', letterSpacing: '0.08em' }}>
+                  {card.tag}
+                </div>
+                <div className="font-cinzel" style={{ fontSize: '0.91rem', fontWeight: 700, color: '#f8fafc' }}>
+                  {card.title}
+                </div>
+                <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.52, margin: 0 }}>{card.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -1152,25 +1478,25 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 tag: 'FILEIRA FRONTAL [V]',
                 title: 'Vanguarda, Invasão & Falange',
                 color: '#f87171',
-                desc: 'Unidades na Vanguarda bloqueiam ataques terrestres na coluna. Ganham +1 ATQ de Invasão quando a Vanguarda oposta está vazia e +1 de Armadura ao lado de um Guardião.',
+                desc: 'Ataca qualquer coluna inimiga (frente ou trás) e atinge o Soberano rival assim que a própria coluna estiver vazia de terrestres. Ganha +1 ATQ de Invasão quando a Retaguarda oposta da mesma coluna está vazia e +1 de Armadura ao lado (ou empilhada) de um Guardião na Vanguarda.',
               },
               {
                 tag: 'FILEIRA DE SUPORTE [R]',
-                title: 'Retaguarda & Cobertura',
+                title: 'Retaguarda, Defesa por Coluna & +1 ATQ',
                 color: '#60a5fa',
-                desc: 'Abriga atiradores de Alcance, Relíquias Contínuas e Emboscadas. Enquanto houver um aliado na Vanguarda da mesma coluna, recebe proteção terrestre e +1 ATQ.',
+                desc: 'Abriga Alcance (disparo sem contra-ataque!), Relíquias e Emboscadas, ganhando +1 ATQ de Disparo Apoiado atrás de um aliado na mesma coluna. Lembre-se: na Retaguarda, unidades comuns só protegem o Soberano contra ataques vindos da sua própria coluna!',
               },
               {
                 tag: 'CONCENTRAÇÃO (ATÉ 3X)',
                 title: 'Quando Empilhar no Mesmo Slot',
                 color: '#4ade80',
-                desc: 'Contra baralhos de dano focado ou abate individual, posicione 1 Guardião liderando o slot com até 2 atacantes ou suportes protegidos atrás dele.',
+                desc: 'Contra baralhos de dano focado ou abate individual, posicione 1 Guardião liderando o slot na Vanguarda (protegendo todas as 6 colunas!) com até 2 aliados empilhados ou apoiando na Retaguarda.',
               },
               {
-                tag: 'DISPERSÃO TÁTICA',
-                title: 'Quando Espalhar Pelas Colunas',
+                tag: 'DISPERSÃO & MOVIMENTO (1×/TURNO)',
+                title: 'Espalhar Colunas & Alternar Fileira',
                 color: '#facc15',
-                desc: 'Contra Dragões com Sopro, criaturas com Atropelar ou feitiços de área, distribua suas unidades em colunas diferentes para evitar dano triplo no mesmo slot.',
+                desc: 'Contra Sopro Elemental, Atropelar ou feitiços de área, espalhe suas tropas em colunas distintas. Use 1 movimentação gratuita por turno entre Vanguarda e Retaguarda para salvar campeões feridos.',
               },
             ].map((item, idx) => (
               <div
@@ -1480,9 +1806,22 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                       </span>
                     </div>
 
-                    <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.45, margin: 0 }}>
+                    <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.48, margin: '0 0 0.45rem' }}>
                       {kw.description}
                     </p>
+                    <div
+                      style={{
+                        fontSize: '0.74rem',
+                        color: '#e5c97b',
+                        lineHeight: 1.42,
+                        padding: '0.38rem 0.55rem',
+                        borderRadius: '6px',
+                        background: 'rgba(11, 16, 28, 0.9)',
+                        borderLeft: '2px solid rgba(212, 175, 55, 0.5)',
+                      }}
+                    >
+                      <strong style={{ color: '#fde68a' }}>Dica Tática:</strong> {kw.tacticalTip}
+                    </div>
                   </div>
 
                   {exCard && (

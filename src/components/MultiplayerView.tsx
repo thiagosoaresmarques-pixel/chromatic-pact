@@ -1199,6 +1199,22 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             </div>
           </form>
         )}
+
+        {onOpenAdminPanel && !isAdminProfile(currentUser) && (
+          <div className="account-admin-footer-row">
+            <button
+              type="button"
+              className="account-admin-footer-link"
+              onClick={() => {
+                onClose();
+                onOpenAdminPanel();
+              }}
+              title="Acessar Painel Administrativo"
+            >
+              👑 Painel Administrativo
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -107,6 +107,157 @@ type ActiveTab =
   | 'rules'
   | 'admin';
 
+type NavPillarId = 'home' | 'battle' | 'vaeloria' | 'collection' | 'codex';
+
+interface NavSubItem {
+  tab: ActiveTab;
+  icon: string;
+  label: string;
+  shortDesc: string;
+}
+
+interface NavPillarDef {
+  id: NavPillarId;
+  icon: string;
+  label: string;
+  defaultTab: ActiveTab;
+  items: NavSubItem[];
+}
+
+const NAV_PILLARS: NavPillarDef[] = [
+  {
+    id: 'home',
+    icon: '🏠',
+    label: 'Início',
+    defaultTab: 'home',
+    items: [],
+  },
+  {
+    id: 'battle',
+    icon: '⚔️',
+    label: 'Batalhar',
+    defaultTab: 'arena',
+    items: [
+      {
+        tab: 'arena',
+        icon: '⚔️',
+        label: 'Arena Solo',
+        shortDesc: 'Duelos rápidos contra os 30 Grimórios da IA',
+      },
+      {
+        tab: 'multiplayer',
+        icon: '🌐',
+        label: 'Conclave 1×1',
+        shortDesc: 'Salas online em tempo real e Ranking de Reputação',
+      },
+      {
+        tab: 'problems',
+        icon: '♟️',
+        label: 'Problemas Táticos',
+        shortDesc: 'Desafios de xeque-mate em 1 turno e Problema do Dia',
+      },
+    ],
+  },
+  {
+    id: 'vaeloria',
+    icon: '🗺️',
+    label: 'Vaeloria',
+    defaultTab: 'campaign',
+    items: [
+      {
+        tab: 'campaign',
+        icon: '🏰',
+        label: 'Campanha',
+        shortDesc: 'Crônica dos 26 Soberanos pelo Multimapa de Vaeloria',
+      },
+      {
+        tab: 'expedition',
+        icon: '🧭',
+        label: 'Expedição',
+        shortDesc: 'Jornada Roguelite com bênçãos e evolução de grimório',
+      },
+      {
+        tab: 'conquest',
+        icon: '🗺️',
+        label: 'Conquista',
+        shortDesc: 'Guerra Continental das 30 Províncias e 6 Tronos',
+      },
+    ],
+  },
+  {
+    id: 'collection',
+    icon: '📖',
+    label: 'Coleção',
+    defaultTab: 'deckbuilder',
+    items: [
+      {
+        tab: 'deckbuilder',
+        icon: '📖',
+        label: 'Grimório',
+        shortDesc: 'Construtor de decks de 100 cartas e acervo desbloqueado',
+      },
+      {
+        tab: 'packs',
+        icon: '🎁',
+        label: 'Relicário',
+        shortDesc: 'Rompa Selos Astrais com Ouro para expandir sua coleção',
+      },
+    ],
+  },
+  {
+    id: 'codex',
+    icon: '📜',
+    label: 'Códice',
+    defaultTab: 'tactics',
+    items: [
+      {
+        tab: 'tactics',
+        icon: '🔮',
+        label: 'Oráculo',
+        shortDesc: 'Guia estratégico de combos, sinergias e arquétipos',
+      },
+      {
+        tab: 'mythology',
+        icon: '📜',
+        label: 'Mitologia',
+        shortDesc: 'Atlas dos Reinos e Epopeia completa em VII Cantos',
+      },
+      {
+        tab: 'rules',
+        icon: '🎓',
+        label: 'Tutorial',
+        shortDesc: 'Regras fundamentais, zonas de combate e glossário',
+      },
+    ],
+  },
+];
+
+const LAST_PILLAR_TAB_STORAGE_KEY = 'chromatic_pact_last_pillar_tab_v1';
+
+function resolvePillarForTab(tab: ActiveTab): NavPillarId | null {
+  switch (tab) {
+    case 'home':
+      return 'home';
+    case 'arena':
+    case 'multiplayer':
+    case 'problems':
+      return 'battle';
+    case 'campaign':
+    case 'expedition':
+    case 'conquest':
+      return 'vaeloria';
+    case 'deckbuilder':
+    case 'packs':
+      return 'collection';
+    case 'tactics':
+    case 'mythology':
+    case 'rules':
+      return 'codex';
+    default:
+      return null;
+  }
+}
+
 interface ActiveConquestContext {
   provinceId: string;
   isDefensive: boolean;
@@ -877,28 +1028,157 @@ export const App: React.FC = () => {
   );
 
   const navTabsRef = useRef<HTMLElement | null>(null);
+  const navHoverCloseTimerRef = useRef<number | null>(null);
+  const [openNavPillar, setOpenNavPillar] = useState<Exclude<NavPillarId, 'home'> | null>(null);
+  const [popoverCoords, setPopoverCoords] = useState<{ top: number; left: number }>({
+    top: 56,
+    left: 24,
+  });
+  const [lastSubTabByPillar, setLastSubTabByPillar] = useState<
+    Partial<Record<NavPillarId, ActiveTab>>
+  >(() => {
+    try {
+      const raw = localStorage.getItem(LAST_PILLAR_TAB_STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as Partial<Record<NavPillarId, ActiveTab>>) : {};
+    } catch {
+      return {};
+    }
+  });
 
-  // Keep active navigation tab centered inside horizontal scrollbars (smartphone bottom bar & compact tablets)
-  useEffect(() => {
-    const navEl = navTabsRef.current;
-    if (!navEl) return;
-    if (navEl.scrollWidth <= navEl.clientWidth + 4) return;
-    const activeBtn = navEl.querySelector<HTMLElement>('.nav-tab-btn.active');
-    if (!activeBtn) return;
-    const targetLeft =
-      activeBtn.offsetLeft - navEl.clientWidth / 2 + activeBtn.offsetWidth / 2;
-    navEl.scrollTo({
-      left: Math.max(0, targetLeft),
-      behavior: 'smooth',
-    });
+  const effectiveNavTab: ActiveTab = useMemo(() => {
+    if (activeTab === 'arena') {
+      if (activeOnlineMatch) return 'multiplayer';
+      if (activeProblem) return 'problems';
+      if (activeCampaignBoss && activeConquestContext) return 'conquest';
+      if (activeCampaignBoss && isExpeditionBattle) return 'expedition';
+      if (activeCampaignBoss) return 'campaign';
+      return 'arena';
+    }
+    return activeTab;
   }, [
     activeTab,
-    activeCampaignBoss,
     activeOnlineMatch,
     activeProblem,
-    isExpeditionBattle,
+    activeCampaignBoss,
     activeConquestContext,
+    isExpeditionBattle,
   ]);
+
+  const activePillarId = useMemo(
+    () => resolvePillarForTab(effectiveNavTab),
+    [effectiveNavTab]
+  );
+
+  const activePillarDef = useMemo(
+    () => (activePillarId ? NAV_PILLARS.find((p) => p.id === activePillarId) ?? null : null),
+    [activePillarId]
+  );
+
+  const openPillarDef = useMemo(
+    () => (openNavPillar ? NAV_PILLARS.find((p) => p.id === openNavPillar) ?? null : null),
+    [openNavPillar]
+  );
+
+  useEffect(() => {
+    const pid = resolvePillarForTab(effectiveNavTab);
+    if (!pid || pid === 'home') return;
+    setLastSubTabByPillar((prev) => {
+      if (prev[pid] === effectiveNavTab) return prev;
+      const next = { ...prev, [pid]: effectiveNavTab };
+      try {
+        localStorage.setItem(LAST_PILLAR_TAB_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // Ignore storage quota errors
+      }
+      return next;
+    });
+  }, [effectiveNavTab]);
+
+  const clearNavHoverCloseTimer = useCallback(() => {
+    if (navHoverCloseTimerRef.current !== null) {
+      window.clearTimeout(navHoverCloseTimerRef.current);
+      navHoverCloseTimerRef.current = null;
+    }
+  }, []);
+
+  const scheduleNavHoverClose = useCallback(() => {
+    clearNavHoverCloseTimer();
+    navHoverCloseTimerRef.current = window.setTimeout(() => {
+      if (window.innerWidth > 768) {
+        setOpenNavPillar(null);
+      }
+    }, 160);
+  }, [clearNavHoverCloseTimer]);
+
+  useEffect(() => {
+    if (!openNavPillar) return;
+    const handleKeyDown = (ev: KeyboardEvent) => {
+      if (ev.key === 'Escape') {
+        setOpenNavPillar(null);
+      }
+    };
+    const handleResize = () => setOpenNavPillar(null);
+    const handleDocClick = (ev: MouseEvent) => {
+      const target = ev.target as HTMLElement | null;
+      if (
+        target?.closest('.nav-tab-btn') ||
+        target?.closest('.nav-group-popover') ||
+        target?.closest('.nav-mobile-sheet')
+      ) {
+        return;
+      }
+      setOpenNavPillar(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('resize', handleResize);
+    document.addEventListener('mousedown', handleDocClick);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('mousedown', handleDocClick);
+    };
+  }, [openNavPillar]);
+
+  const handleSelectSubTab = (targetTab: ActiveTab) => {
+    clearNavHoverCloseTimer();
+    setOpenNavPillar(null);
+    setIsNotifOpen(false);
+    setIsArenaNavExpanded(false);
+
+    if (targetTab === 'home') {
+      setActiveCampaignBoss(null);
+      setActiveOnlineMatch(null);
+      setActiveTab('home');
+      return;
+    }
+    if (targetTab === 'arena') {
+      handleOpenArenaSolo();
+      return;
+    }
+    if (targetTab === 'problems') {
+      setActiveProblem(null);
+      setActiveTab('problems');
+      return;
+    }
+    setActiveTab(targetTab);
+  };
+
+  const openPopoverAtButton = (
+    pillarId: Exclude<NavPillarId, 'home'>,
+    btnEl: HTMLElement
+  ) => {
+    const rect = btnEl.getBoundingClientRect();
+    const popoverWidth = 304;
+    const clampedLeft = Math.max(
+      12,
+      Math.min(window.innerWidth - popoverWidth - 12, rect.left + rect.width / 2 - popoverWidth / 2)
+    );
+    setPopoverCoords({
+      top: Math.round(rect.bottom + 6),
+      left: Math.round(clampedLeft),
+    });
+    setOpenNavPillar(pillarId);
+  };
 
   return (
     <div className="app-shell">
@@ -910,11 +1190,7 @@ export const App: React.FC = () => {
       >
         <div
           className="brand-logo"
-          onClick={() => {
-            setActiveCampaignBoss(null);
-            setIsArenaNavExpanded(false);
-            setActiveTab('home');
-          }}
+          onClick={() => handleSelectSubTab('home')}
         >
           <div className="brand-emblem">❖</div>
           <div>
@@ -925,165 +1201,130 @@ export const App: React.FC = () => {
 
         <nav
           ref={navTabsRef}
-          className={`nav-tabs ${activeTab === 'arena' ? 'is-arena-tabs' : ''} ${
+          className={`nav-tabs is-grouped-pillars ${activeTab === 'arena' ? 'is-arena-tabs' : ''} ${
             isArenaNavExpanded ? 'is-expanded-mobile' : ''
           }`}
-          onClick={() => setIsArenaNavExpanded(false)}
         >
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'home' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveCampaignBoss(null);
-              setActiveOnlineMatch(null);
-              setActiveTab('home');
-            }}
-          >
-            <span className="nav-tab-icon">🏠</span>
-            <span>Início</span>
-          </button>
+          {NAV_PILLARS.map((pillar) => {
+            const isActivePillar = activePillarId === pillar.id;
+            const isOpenPillar = openNavPillar === pillar.id;
+            const hasSubItems = pillar.items.length > 0;
+            const activeSubDef = pillar.items.find((it) => it.tab === effectiveNavTab);
 
-          <button
-            type="button"
-            className={`nav-tab-btn ${
-              activeTab === 'arena' && !activeCampaignBoss && !activeOnlineMatch && !activeProblem ? 'active' : ''
-            }`}
-            onClick={handleOpenArenaSolo}
-          >
-            <span className="nav-tab-icon">⚔️</span>
-            <span>Arena Solo</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${
-              activeTab === 'problems' || (activeTab === 'arena' && !!activeProblem)
-                ? 'active'
-                : ''
-            }`}
-            onClick={() => {
-              setActiveProblem(null);
-              setActiveTab('problems');
-            }}
-          >
-            <span className="nav-tab-icon">♟️</span>
-            <span>Problemas</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${
-              activeTab === 'multiplayer' || (activeTab === 'arena' && !!activeOnlineMatch)
-                ? 'active'
-                : ''
-            }`}
-            onClick={() => setActiveTab('multiplayer')}
-          >
-            <span className="nav-tab-icon">🌐</span>
-            <span>Conclave 1×1</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${
-              activeTab === 'campaign' ||
-              (activeTab === 'arena' &&
-                activeCampaignBoss &&
-                !isExpeditionBattle &&
-                !activeConquestContext)
-                ? 'active'
-                : ''
-            }`}
-            onClick={() => setActiveTab('campaign')}
-          >
-            <span className="nav-tab-icon">🏰</span>
-            <span>Campanha</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${
-              activeTab === 'expedition' ||
-              (activeTab === 'arena' && activeCampaignBoss && isExpeditionBattle)
-                ? 'active'
-                : ''
-            }`}
-            onClick={() => setActiveTab('expedition')}
-          >
-            <span className="nav-tab-icon">🧭</span>
-            <span>Expedição</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${
-              activeTab === 'conquest' ||
-              (activeTab === 'arena' && activeCampaignBoss && !!activeConquestContext)
-                ? 'active'
-                : ''
-            }`}
-            onClick={() => setActiveTab('conquest')}
-          >
-            <span className="nav-tab-icon">🗺️</span>
-            <span>Conquista</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'tactics' ? 'active' : ''}`}
-            onClick={() => setActiveTab('tactics')}
-          >
-            <span className="nav-tab-icon">🔮</span>
-            <span>Oráculo</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'deckbuilder' ? 'active' : ''}`}
-            onClick={() => setActiveTab('deckbuilder')}
-          >
-            <span className="nav-tab-icon">📖</span>
-            <span>Grimório</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'packs' ? 'active' : ''}`}
-            onClick={() => setActiveTab('packs')}
-          >
-            <span className="nav-tab-icon">🎁</span>
-            <span>Relicário</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'mythology' ? 'active' : ''}`}
-            onClick={() => setActiveTab('mythology')}
-          >
-            <span className="nav-tab-icon">📜</span>
-            <span>Mitologia</span>
-          </button>
-
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'rules' ? 'active' : ''}`}
-            onClick={() => setActiveTab('rules')}
-          >
-            <span className="nav-tab-icon">🎓</span>
-            <span>Tutorial</span>
-          </button>
+            return (
+              <button
+                key={pillar.id}
+                type="button"
+                className={`nav-tab-btn ${isActivePillar ? 'active' : ''} ${
+                  isOpenPillar ? 'is-open-pillar' : ''
+                }`}
+                aria-expanded={hasSubItems ? isOpenPillar : undefined}
+                aria-haspopup={hasSubItems ? 'menu' : undefined}
+                onMouseEnter={(e) => {
+                  if (!hasSubItems || window.innerWidth <= 768) return;
+                  clearNavHoverCloseTimer();
+                  openPopoverAtButton(
+                    pillar.id as Exclude<NavPillarId, 'home'>,
+                    e.currentTarget
+                  );
+                }}
+                onMouseLeave={() => {
+                  if (!hasSubItems || window.innerWidth <= 768) return;
+                  scheduleNavHoverClose();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!hasSubItems) {
+                    handleSelectSubTab('home');
+                    return;
+                  }
+                  const pid = pillar.id as Exclude<NavPillarId, 'home'>;
+                  if (window.innerWidth <= 768) {
+                    setIsNotifOpen(false);
+                    setOpenNavPillar((prev) => (prev === pid ? null : pid));
+                    return;
+                  }
+                  if (!isActivePillar) {
+                    const preferredTab = lastSubTabByPillar[pid] ?? pillar.defaultTab;
+                    handleSelectSubTab(preferredTab);
+                  } else {
+                    if (isOpenPillar) {
+                      setOpenNavPillar(null);
+                    } else {
+                      openPopoverAtButton(pid, e.currentTarget);
+                    }
+                  }
+                }}
+              >
+                <span className="nav-tab-icon">
+                  {activeSubDef ? activeSubDef.icon : pillar.icon}
+                </span>
+                <span className="nav-pillar-label">{pillar.label}</span>
+                {hasSubItems && (
+                  <span className={`nav-pillar-caret ${isOpenPillar ? 'is-open' : ''}`}>▾</span>
+                )}
+              </button>
+            );
+          })}
         </nav>
 
-        <div className="nav-right-controls">
-          <button
-            type="button"
-            className={`btn-fantasy nav-admin-btn ${activeTab === 'admin' ? 'active' : ''}`}
-            onClick={handleOpenAdminTab}
-            title="Painel de Administração"
+        {/* Desktop Hover/Click Group Popover (Positioned outside overflow clipping) */}
+        {openPillarDef && openPillarDef.items.length > 0 && (
+          <div
+            className="nav-group-popover"
+            role="menu"
+            style={{
+              top: `${popoverCoords.top}px`,
+              left: `${popoverCoords.left}px`,
+            }}
+            onMouseEnter={clearNavHoverCloseTimer}
+            onMouseLeave={scheduleNavHoverClose}
           >
-            <span>👑</span>
-            <span className="hide-on-mobile nav-admin-label">ADMIN</span>
-          </button>
+            <div className="nav-popover-header">
+              <span>
+                {openPillarDef.icon} {openPillarDef.label.toUpperCase()}
+              </span>
+            </div>
+            <div className="nav-popover-list">
+              {openPillarDef.items.map((sub) => {
+                const isSubActive = effectiveNavTab === sub.tab;
+                return (
+                  <button
+                    key={sub.tab}
+                    type="button"
+                    role="menuitem"
+                    className={`nav-popover-item ${isSubActive ? 'is-active' : ''}`}
+                    onClick={() => handleSelectSubTab(sub.tab)}
+                  >
+                    <span className="nav-popover-item-icon">{sub.icon}</span>
+                    <span className="nav-popover-item-copy">
+                      <span className="nav-popover-item-title-row">
+                        <strong className="font-cinzel">{sub.label}</strong>
+                        {isSubActive && <em className="nav-popover-active-pill">ATIVO</em>}
+                      </span>
+                      <small>{sub.shortDesc}</small>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        <div className="nav-right-controls">
+          {isAdmin && (
+            <button
+              type="button"
+              className={`btn-fantasy nav-admin-btn ${activeTab === 'admin' ? 'active' : ''}`}
+              onClick={() => {
+                setOpenNavPillar(null);
+                handleOpenAdminTab();
+              }}
+              title="Painel de Administração"
+            >
+              <span>👑</span>
+            </button>
+          )}
           {activeTab === 'arena' && (
             <button
               type="button"
@@ -1289,8 +1530,104 @@ export const App: React.FC = () => {
         </div>
       </header>
 
+      {/* Mobile Native Bottom-Sheet Menu for Grouped Pillars (<= 768px) */}
+      {openPillarDef && openPillarDef.items.length > 0 && (
+        <>
+          <div
+            className="nav-mobile-sheet-backdrop"
+            onClick={() => setOpenNavPillar(null)}
+          />
+          <div className="nav-mobile-sheet" role="dialog" aria-label={openPillarDef.label}>
+            <div className="nav-mobile-sheet-header">
+              <span className="font-cinzel">
+                {openPillarDef.icon} {openPillarDef.label}
+              </span>
+              <button
+                type="button"
+                className="nav-notif-mini-btn"
+                onClick={() => setOpenNavPillar(null)}
+              >
+                ✕
+              </button>
+            </div>
+            <div className="nav-mobile-sheet-list">
+              {openPillarDef.items.map((sub) => {
+                const isSubActive = effectiveNavTab === sub.tab;
+                return (
+                  <button
+                    key={sub.tab}
+                    type="button"
+                    className={`nav-mobile-sheet-item ${isSubActive ? 'is-active' : ''}`}
+                    onClick={() => handleSelectSubTab(sub.tab)}
+                  >
+                    <span className="nav-popover-item-icon">{sub.icon}</span>
+                    <span className="nav-popover-item-copy">
+                      <span className="nav-popover-item-title-row">
+                        <strong className="font-cinzel">{sub.label}</strong>
+                        {isSubActive && <em className="nav-popover-active-pill">ATIVO</em>}
+                      </span>
+                      <small>{sub.shortDesc}</small>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Main Content View */}
       <main style={{ flex: 1 }}>
+        {/* Contextual 1-Click Sibling Sub-Navigation Bar (Hidden inside fullscreen BattleArena to preserve 100% board height) */}
+        {activeTab !== 'arena' &&
+          activePillarDef &&
+          activePillarDef.items.length > 0 && (
+            <div className="section-subnav-shell">
+              <div className="section-subnav-bar" role="navigation" aria-label={activePillarDef.label}>
+                <span className="section-subnav-kicker">
+                  <span>{activePillarDef.icon}</span>
+                  <span>{activePillarDef.label.toUpperCase()}</span>
+                </span>
+                <div className="section-subnav-pills">
+                  {activePillarDef.items.map((sub) => {
+                    const isSubActive = effectiveNavTab === sub.tab;
+                    return (
+                      <button
+                        key={sub.tab}
+                        type="button"
+                        className={`section-subnav-pill ${isSubActive ? 'is-active' : ''}`}
+                        onClick={() => handleSelectSubTab(sub.tab)}
+                        title={sub.shortDesc}
+                      >
+                        <span>{sub.icon}</span>
+                        <span>{sub.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+        {activeTab === 'admin' && (
+          <div className="section-subnav-shell">
+            <div className="section-subnav-bar">
+              <span className="section-subnav-kicker">
+                <span>👑</span>
+                <span>ADMINISTRAÇÃO</span>
+              </span>
+              <div className="section-subnav-pills">
+                <button
+                  type="button"
+                  className="section-subnav-pill"
+                  onClick={() => handleSelectSubTab('home')}
+                >
+                  ← Voltar ao Salão Real
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {!isGuest &&
           customDecks.length === 0 &&
           activeTab !== 'deckbuilder' &&
@@ -1585,7 +1922,7 @@ export const App: React.FC = () => {
             initialTab={accountModalState.tab}
             onClose={() => setAccountModalState((prev) => ({ ...prev, open: false }))}
             onNeedsDeckSetup={() => setActiveTab('deckbuilder')}
-            onOpenAdminPanel={() => setActiveTab('admin')}
+            onOpenAdminPanel={handleOpenAdminTab}
           />
         )}
         </Suspense>

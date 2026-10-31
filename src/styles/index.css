@@ -14181,13 +14181,24 @@ input:focus-visible,
   box-shadow: none !important;
 }
 
+.db-modern-select option {
+  background: #111622;
+  color: #e2e8f0;
+}
+
+.db-modern-select optgroup {
+  background: #0b101c;
+  color: #e6c875;
+  font-weight: 700;
+}
+
 .db-deck-tile {
   background: #0e131d !important;
   border: 1px solid rgba(148, 163, 184, 0.14) !important;
 }
 
 .db-tile-domain-bar {
-  background: rgba(212, 175, 55, 0.55) !important;
+  opacity: 0.9;
 }
 
 /* 6. Oráculo de Guerra (TacticalGuideView) Sober Sections & Bars */

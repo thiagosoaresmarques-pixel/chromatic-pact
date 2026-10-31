@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { CardDefinition, CardType, Domain, Rarity } from '../types/game';
+import { CardDefinition, CardType, Domain, Keyword, Rarity } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS, MAX_COPIES_BY_RARITY, MAX_LEGENDARIES_PER_DECK } from '../data/decks';
 import {
@@ -8,6 +8,7 @@ import {
   DOMAIN_META,
   RARITY_LABELS,
   CARD_TYPE_LABELS,
+  formatCardFaceDescription,
 } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
@@ -243,6 +244,277 @@ const GalleryCardCell = React.memo<GalleryCardCellProps>(
 const INITIAL_VISIBLE_CARDS = 60;
 const VISIBLE_BATCH_STEP = 60;
 
+export type DeckSortMode =
+  | 'domain_cost'
+  | 'cost_domain'
+  | 'cost_desc'
+  | 'rarity_desc'
+  | 'atk_desc'
+  | 'hp_desc'
+  | 'name_asc';
+
+const DOMAIN_SORT_ORDER: Record<Domain, number> = {
+  red: 0,
+  blue: 1,
+  purple: 2,
+  green: 3,
+  gold: 4,
+  neutral: 5,
+};
+
+const RARITY_SORT_ORDER: Record<Rarity, number> = {
+  common: 0,
+  uncommon: 1,
+  rare: 2,
+  legendary: 3,
+};
+
+const TYPE_SORT_ORDER: Record<CardType, number> = {
+  creature: 0,
+  relic: 1,
+  spell: 2,
+  reaction: 3,
+};
+
+function compareDeckBuilderCards(a: CardDefinition, b: CardDefinition, sortMode: DeckSortMode): number {
+  switch (sortMode) {
+    case 'domain_cost':
+      return (
+        DOMAIN_SORT_ORDER[a.domain] - DOMAIN_SORT_ORDER[b.domain] ||
+        a.cost - b.cost ||
+        TYPE_SORT_ORDER[a.type] - TYPE_SORT_ORDER[b.type] ||
+        RARITY_SORT_ORDER[a.rarity] - RARITY_SORT_ORDER[b.rarity] ||
+        a.name.localeCompare(b.name, 'pt-BR')
+      );
+    case 'cost_domain':
+      return (
+        a.cost - b.cost ||
+        DOMAIN_SORT_ORDER[a.domain] - DOMAIN_SORT_ORDER[b.domain] ||
+        TYPE_SORT_ORDER[a.type] - TYPE_SORT_ORDER[b.type] ||
+        RARITY_SORT_ORDER[a.rarity] - RARITY_SORT_ORDER[b.rarity] ||
+        a.name.localeCompare(b.name, 'pt-BR')
+      );
+    case 'cost_desc':
+      return (
+        b.cost - a.cost ||
+        DOMAIN_SORT_ORDER[a.domain] - DOMAIN_SORT_ORDER[b.domain] ||
+        RARITY_SORT_ORDER[b.rarity] - RARITY_SORT_ORDER[a.rarity] ||
+        a.name.localeCompare(b.name, 'pt-BR')
+      );
+    case 'rarity_desc':
+      return (
+        RARITY_SORT_ORDER[b.rarity] - RARITY_SORT_ORDER[a.rarity] ||
+        DOMAIN_SORT_ORDER[a.domain] - DOMAIN_SORT_ORDER[b.domain] ||
+        a.cost - b.cost ||
+        a.name.localeCompare(b.name, 'pt-BR')
+      );
+    case 'atk_desc':
+      return (
+        b.atk - a.atk ||
+        a.cost - b.cost ||
+        DOMAIN_SORT_ORDER[a.domain] - DOMAIN_SORT_ORDER[b.domain] ||
+        a.name.localeCompare(b.name, 'pt-BR')
+      );
+    case 'hp_desc':
+      return (
+        b.hp - a.hp ||
+        a.cost - b.cost ||
+        DOMAIN_SORT_ORDER[a.domain] - DOMAIN_SORT_ORDER[b.domain] ||
+        a.name.localeCompare(b.name, 'pt-BR')
+      );
+    case 'name_asc':
+      return (
+        a.name.localeCompare(b.name, 'pt-BR') ||
+        DOMAIN_SORT_ORDER[a.domain] - DOMAIN_SORT_ORDER[b.domain] ||
+        a.cost - b.cost
+      );
+  }
+}
+
+interface AbilityFilterOption {
+  id: string;
+  group: 'keywords' | 'mechanics' | 'effects' | 'triggers';
+  label: string;
+  matches: (card: CardDefinition) => boolean;
+}
+
+const hasKeywordOrAscension = (c: CardDefinition, kw: Keyword): boolean =>
+  c.keywords.includes(kw) || Boolean(c.ascension?.addedKeywords?.includes(kw));
+
+const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
+  // 1. Palavras-Chave de Combate (11)
+  { id: 'kw:Guardião', group: 'keywords', label: '🛡️ Guardião', matches: (c) => hasKeywordOrAscension(c, 'Guardião') },
+  { id: 'kw:Voo', group: 'keywords', label: '🪽 Voo', matches: (c) => hasKeywordOrAscension(c, 'Voo') },
+  { id: 'kw:Alcance', group: 'keywords', label: '🏹 Alcance', matches: (c) => hasKeywordOrAscension(c, 'Alcance') },
+  { id: 'kw:Ímpeto', group: 'keywords', label: '⚡ Ímpeto', matches: (c) => hasKeywordOrAscension(c, 'Ímpeto') },
+  { id: 'kw:Atropelar', group: 'keywords', label: '🦏 Atropelar', matches: (c) => hasKeywordOrAscension(c, 'Atropelar') },
+  { id: 'kw:Toque Letal', group: 'keywords', label: '☠️ Toque Letal', matches: (c) => hasKeywordOrAscension(c, 'Toque Letal') },
+  { id: 'kw:Escudo Divino', group: 'keywords', label: '✨ Escudo Divino', matches: (c) => hasKeywordOrAscension(c, 'Escudo Divino') },
+  { id: 'kw:Dreno de Vida', group: 'keywords', label: '🩸 Dreno de Vida', matches: (c) => hasKeywordOrAscension(c, 'Dreno de Vida') },
+  { id: 'kw:Renascer', group: 'keywords', label: '⚰️ Renascer', matches: (c) => hasKeywordOrAscension(c, 'Renascer') },
+  { id: 'kw:Pele Incandescente', group: 'keywords', label: '🌋 Pele Incandescente', matches: (c) => hasKeywordOrAscension(c, 'Pele Incandescente') },
+  { id: 'kw:Fúria Crescente', group: 'keywords', label: '🔥 Fúria Crescente', matches: (c) => hasKeywordOrAscension(c, 'Fúria Crescente') },
+
+  // 2. Atributos, Mecânicas & Fileira
+  {
+    id: 'mech:armor',
+    group: 'mechanics',
+    label: '🧱 Armadura',
+    matches: (c) =>
+      c.armor > 0 ||
+      (c.ascension?.newArmor ?? 0) > 0 ||
+      c.effects.some((e) => e.type === 'shield_all_allies' && (e.secondaryValue ?? 0) > 0),
+  },
+  { id: 'mech:regeneration', group: 'mechanics', label: '🌿 Regeneração', matches: (c) => (c.regeneration ?? 0) > 0 },
+  { id: 'mech:breath', group: 'mechanics', label: '🐉 Sopro Elemental', matches: (c) => (c.breathDamage ?? 0) > 0 },
+  { id: 'mech:ascension', group: 'mechanics', label: '★ Ascensão (Evolução)', matches: (c) => Boolean(c.ascension) },
+  {
+    id: 'mech:break_domain',
+    group: 'mechanics',
+    label: '☸ Quebra-Domínio',
+    matches: (c) => c.effects.some((e) => e.type === 'break_domain_expansion'),
+  },
+  { id: 'mech:corruption', group: 'mechanics', label: '🩸 Custo de Corrupção', matches: (c) => (c.corruptionCost ?? 0) > 0 },
+  {
+    id: 'row:vanguard',
+    group: 'mechanics',
+    label: '⚔️ Fileira: Vanguarda',
+    matches: (c) => c.type === 'creature' && c.preferredRow === 'vanguard',
+  },
+  {
+    id: 'row:rearguard',
+    group: 'mechanics',
+    label: '🏹 Fileira: Retaguarda',
+    matches: (c) =>
+      (c.type === 'creature' && c.preferredRow === 'rearguard') ||
+      c.type === 'relic' ||
+      c.type === 'reaction',
+  },
+
+  // 3. Efeitos Ativos
+  {
+    id: 'eff:freeze',
+    group: 'effects',
+    label: '❄️ Congelar',
+    matches: (c) => c.effects.some((e) => e.type === 'freeze_enemy' || e.type === 'freeze_enemy_vanguard'),
+  },
+  {
+    id: 'eff:aoe_damage',
+    group: 'effects',
+    label: '💥 Dano em Área / Fileira',
+    matches: (c) =>
+      (c.breathDamage ?? 0) > 0 ||
+      c.effects.some((e) => e.type === 'damage_enemy_row' || e.type === 'damage_all_units'),
+  },
+  {
+    id: 'eff:single_damage',
+    group: 'effects',
+    label: '🎯 Dano Direto (Alvo / Soberano)',
+    matches: (c) =>
+      c.effects.some((e) => e.type === 'damage_single_enemy' || e.type === 'damage_enemy_sovereign'),
+  },
+  {
+    id: 'eff:removal',
+    group: 'effects',
+    label: '🗡️ Destruir / Devolver / Roubar',
+    matches: (c) =>
+      c.effects.some(
+        (e) => e.type === 'destroy_enemy' || e.type === 'bounce_enemy' || e.type === 'steal_small_enemy'
+      ),
+  },
+  {
+    id: 'eff:draw',
+    group: 'effects',
+    label: '📖 Comprar Cartas',
+    matches: (c) => c.effects.some((e) => e.type === 'draw_cards'),
+  },
+  {
+    id: 'eff:essence',
+    group: 'effects',
+    label: '⚡ Gerar Essência (+⚡)',
+    matches: (c) => c.effects.some((e) => e.type === 'grant_bonus_essence'),
+  },
+  {
+    id: 'eff:heal',
+    group: 'effects',
+    label: '💚 Cura / Restauração',
+    matches: (c) =>
+      c.effects.some(
+        (e) => e.type === 'heal_sovereign' || e.type === 'heal_all_allies' || e.type === 'heal_target_ally'
+      ),
+  },
+  {
+    id: 'eff:buff',
+    group: 'effects',
+    label: '🛡️ Fortalecer / Escudar Aliados',
+    matches: (c) =>
+      c.effects.some(
+        (e) => e.type === 'buff_target_ally' || e.type === 'buff_all_allies' || e.type === 'shield_all_allies'
+      ),
+  },
+  {
+    id: 'eff:debuff',
+    group: 'effects',
+    label: '📉 Reduzir Ataque (-ATQ)',
+    matches: (c) => c.effects.some((e) => e.type === 'debuff_enemy_vanguard_atk'),
+  },
+  {
+    id: 'eff:revive',
+    group: 'effects',
+    label: '💀 Reanimar da Cripta',
+    matches: (c) => c.effects.some((e) => e.type === 'revive_from_crypt'),
+  },
+  {
+    id: 'eff:summon',
+    group: 'effects',
+    label: '🐾 Invocar Fichas',
+    matches: (c) => c.effects.some((e) => e.type === 'summon_token'),
+  },
+
+  // 4. Gatilhos
+  {
+    id: 'trig:on_enter',
+    group: 'triggers',
+    label: '✨ Ao Entrar / Lançar',
+    matches: (c) => c.effects.some((e) => e.trigger === 'on_enter'),
+  },
+  {
+    id: 'trig:on_attack',
+    group: 'triggers',
+    label: '⚔️ Ao Atacar',
+    matches: (c) => c.effects.some((e) => e.trigger === 'on_attack'),
+  },
+  {
+    id: 'trig:on_death',
+    group: 'triggers',
+    label: '⚰️ Ao Morrer (Último Suspiro)',
+    matches: (c) => c.effects.some((e) => e.trigger === 'on_death'),
+  },
+  {
+    id: 'trig:spell_cast',
+    group: 'triggers',
+    label: '🔮 Ao Conjurar Feitiço',
+    matches: (c) => c.effects.some((e) => e.trigger === 'spell_cast'),
+  },
+  {
+    id: 'trig:turn_cycle',
+    group: 'triggers',
+    label: '⏳ Início / Fim do Turno',
+    matches: (c) => c.effects.some((e) => e.trigger === 'turn_start' || e.trigger === 'turn_end'),
+  },
+];
+
+const ABILITY_FILTER_BY_ID: Record<string, AbilityFilterOption> = Object.fromEntries(
+  ABILITY_FILTER_OPTIONS.map((opt) => [opt.id, opt])
+);
+
+const ABILITY_GROUP_LABELS: Record<AbilityFilterOption['group'], string> = {
+  keywords: 'Palavras-Chave de Combate',
+  mechanics: 'Atributos, Mecânicas & Fileira',
+  effects: 'Habilidades & Efeitos Ativos',
+  triggers: 'Gatilhos de Ativação',
+};
+
 export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   unlockedCardIds,
   customDecks,
@@ -267,10 +539,13 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const canModifySavedGrimoire =
     isGuest || isFirstDeckSetup || isReplacingGrimoire || totalOwnedCopies > 100;
 
-  // Filters
+  // Filters & Sorting
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
   const [typeFilter, setTypeFilter] = useState<CardType | 'all'>('all');
   const [rarityFilter, setRarityFilter] = useState<Rarity | 'all'>('all');
+  const [abilityFilter, setAbilityFilter] = useState<string>('all');
+  const [secondaryAbilityFilter, setSecondaryAbilityFilter] = useState<string>('all');
+  const [sortMode, setSortMode] = useState<DeckSortMode>('domain_cost');
   const [costFilter, setCostFilter] = useState<number | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [onlyUnlocked, setOnlyUnlocked] = useState<boolean>(false);
@@ -326,8 +601,12 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     domainFilter,
     typeFilter,
     rarityFilter,
+    abilityFilter,
+    secondaryAbilityFilter,
+    sortMode,
     costFilter,
     onlyUnlocked,
+    onlyMissingCopies,
     searchQuery,
     synergyFilterId,
   ]);
@@ -341,7 +620,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     return map;
   }, [deckCardIds]);
 
-  // Grouped deck entries sorted by cost then name
+  // Grouped deck entries sorted by Color -> Cost (or active sortMode)
   const groupedDeckList = useMemo(() => {
     const uniqueIds = Object.keys(deckCountsById);
     const items = uniqueIds
@@ -351,9 +630,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       }))
       .filter((item): item is { card: CardDefinition; count: number } => Boolean(item.card));
 
-    items.sort((a, b) => a.card.cost - b.card.cost || a.card.name.localeCompare(b.card.name));
+    items.sort((a, b) => compareDeckBuilderCards(a.card, b.card, sortMode));
     return items;
-  }, [deckCountsById]);
+  }, [deckCountsById, sortMode]);
 
   // Mana curve & domain stats for current deck
   const deckStats = useMemo(() => {
@@ -595,9 +874,15 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     };
   }, [deckCardIds, deckCountsById, deckStats]);
 
-  // Filtered 500-card catalog
+  // Filtered & sorted 500-card catalog (default: Color -> Cost)
   const filteredCards = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
+    const activePrimaryAbility =
+      abilityFilter !== 'all' ? ABILITY_FILTER_BY_ID[abilityFilter] ?? null : null;
+    const activeSecondaryAbility =
+      abilityFilter !== 'all' && secondaryAbilityFilter !== 'all'
+        ? ABILITY_FILTER_BY_ID[secondaryAbilityFilter] ?? null
+        : null;
     const activeSynergyPkg =
       synergyFilterId !== 'all' &&
       synergyFilterId !== 'recommended' &&
@@ -613,6 +898,8 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       if (domainFilter !== 'all' && card.domain !== domainFilter) return false;
       if (typeFilter !== 'all' && card.type !== typeFilter) return false;
       if (rarityFilter !== 'all' && card.rarity !== rarityFilter) return false;
+      if (activePrimaryAbility && !activePrimaryAbility.matches(card)) return false;
+      if (activeSecondaryAbility && !activeSecondaryAbility.matches(card)) return false;
       if (costFilter !== 'all') {
         if (costFilter === 7) {
           if (card.cost < 7) return false;
@@ -637,19 +924,24 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           card.name,
           card.subtype,
           card.description,
+          formatCardFaceDescription(card),
           card.originalInspiration,
           ...card.keywords,
+          ...(card.ascension?.addedKeywords ?? []),
         ]
           .join(' ')
           .toLowerCase();
         if (!haystack.includes(q)) return false;
       }
       return true;
-    });
+    }).sort((a, b) => compareDeckBuilderCards(a, b, sortMode));
   }, [
     domainFilter,
     typeFilter,
     rarityFilter,
+    abilityFilter,
+    secondaryAbilityFilter,
+    sortMode,
     costFilter,
     onlyUnlocked,
     onlyMissingCopies,
@@ -956,6 +1248,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     domainFilter !== 'all' ||
     typeFilter !== 'all' ||
     rarityFilter !== 'all' ||
+    abilityFilter !== 'all' ||
+    secondaryAbilityFilter !== 'all' ||
+    sortMode !== 'domain_cost' ||
     costFilter !== 'all' ||
     onlyUnlocked ||
     onlyMissingCopies ||
@@ -966,6 +1261,9 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     setDomainFilter('all');
     setTypeFilter('all');
     setRarityFilter('all');
+    setAbilityFilter('all');
+    setSecondaryAbilityFilter('all');
+    setSortMode('domain_cost');
     setCostFilter('all');
     setOnlyUnlocked(false);
     setOnlyMissingCopies(false);
@@ -1024,7 +1322,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           </div>
 
           <select
-            className="db-modern-select"
+            className={`db-modern-select ${typeFilter !== 'all' ? 'is-highlighted' : ''}`}
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as CardType | 'all')}
           >
@@ -1036,7 +1334,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           </select>
 
           <select
-            className="db-modern-select"
+            className={`db-modern-select ${rarityFilter !== 'all' ? 'is-highlighted' : ''}`}
             value={rarityFilter}
             onChange={(e) => setRarityFilter(e.target.value as Rarity | 'all')}
           >
@@ -1045,6 +1343,67 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             <option value="uncommon">Incomum</option>
             <option value="rare">Rara</option>
             <option value="legendary">Lendária</option>
+          </select>
+
+          <select
+            className={`db-modern-select ${abilityFilter !== 'all' ? 'is-highlighted' : ''}`}
+            value={abilityFilter}
+            title="Filtrar cartas por Palavra-Chave, Mecânica, Efeito ou Gatilho"
+            onChange={(e) => {
+              const val = e.target.value;
+              setAbilityFilter(val);
+              if (val === 'all' || val === secondaryAbilityFilter) {
+                setSecondaryAbilityFilter('all');
+              }
+            }}
+          >
+            <option value="all">Habilidade: Todas</option>
+            {(['keywords', 'mechanics', 'effects', 'triggers'] as const).map((grp) => (
+              <optgroup key={grp} label={ABILITY_GROUP_LABELS[grp]}>
+                {ABILITY_FILTER_OPTIONS.filter((opt) => opt.group === grp).map((opt) => (
+                  <option key={opt.id} value={opt.id}>
+                    {opt.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+
+          {abilityFilter !== 'all' && (
+            <select
+              className={`db-modern-select ${secondaryAbilityFilter !== 'all' ? 'is-highlighted' : ''}`}
+              value={secondaryAbilityFilter}
+              title="Combinar com uma segunda habilidade (filtro E)"
+              onChange={(e) => setSecondaryAbilityFilter(e.target.value)}
+            >
+              <option value="all">+ 2ª Habilidade (Opcional)</option>
+              {(['keywords', 'mechanics', 'effects', 'triggers'] as const).map((grp) => (
+                <optgroup key={grp} label={ABILITY_GROUP_LABELS[grp]}>
+                  {ABILITY_FILTER_OPTIONS.filter(
+                    (opt) => opt.group === grp && opt.id !== abilityFilter
+                  ).map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          )}
+
+          <select
+            className={`db-modern-select ${sortMode !== 'domain_cost' ? 'is-highlighted' : ''}`}
+            value={sortMode}
+            title="Ordenar catálogo e lista do grimório"
+            onChange={(e) => setSortMode(e.target.value as DeckSortMode)}
+          >
+            <option value="domain_cost">Ordem: Cor ➔ Custo</option>
+            <option value="cost_domain">Ordem: Custo ➔ Cor</option>
+            <option value="cost_desc">Ordem: Maior Custo</option>
+            <option value="rarity_desc">Ordem: Raridade</option>
+            <option value="atk_desc">Ordem: Maior Ataque</option>
+            <option value="hp_desc">Ordem: Maior Vida</option>
+            <option value="name_asc">Ordem: Nome (A–Z)</option>
           </select>
 
           {/* Compact Mana Cost Filter */}
@@ -1409,7 +1768,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               }}
             >
               <option value="" disabled>
-                Carregar Modelo de Grimório (27 Arquétipos)...
+                Carregar Modelo de Grimório ({PREBUILT_DECKS.length} Arquétipos)...
               </option>
               {PREBUILT_DECKS.map((d) => (
                 <option key={d.id} value={d.id}>

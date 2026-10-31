@@ -19,8 +19,17 @@ import {
   markFreeDraftPassClaimed,
   saveDraftRunState,
 } from '../data/vaeloriaDraftData';
-import { CampaignBoss, CardDefinition, ConquestBattleModifiers } from '../types/game';
+import { CampaignBoss, CardDefinition, ConquestBattleModifiers, Domain } from '../types/game';
 import { CardInspectModal, CardView, DOMAIN_META } from './CardView';
+
+const DRAFT_DOMAIN_SORT: Record<Domain, number> = {
+  red: 0,
+  blue: 1,
+  purple: 2,
+  green: 3,
+  gold: 4,
+  neutral: 5,
+};
 import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
 import { recordBestDraftWins } from '../data/sovereignRelics';
 import { playSfx } from '../utils/soundEngine';
@@ -225,6 +234,17 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
   }, [runState.draftedCardIds]);
 
   const maxCurveBin = Math.max(1, ...curveCounts);
+  const sortedDraftedCards = useMemo(() => {
+    return runState.draftedCardIds
+      .map((cid) => CARDS_BY_ID[cid])
+      .filter((c): c is CardDefinition => Boolean(c))
+      .sort(
+        (a, b) =>
+          DRAFT_DOMAIN_SORT[a.domain] - DRAFT_DOMAIN_SORT[b.domain] ||
+          a.cost - b.cost ||
+          a.name.localeCompare(b.name, 'pt-BR')
+      );
+  }, [runState.draftedCardIds]);
   const chosenSovereignCard = runState.chosenSovereignId
     ? CARDS_BY_ID[runState.chosenSovereignId]
     : undefined;
@@ -401,26 +421,31 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
 
           {showDeckDrawer && (
             <div className="draft-deck-drawer">
-              {runState.draftedCardIds.length === 0 ? (
+              {sortedDraftedCards.length === 0 ? (
                 <span style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
                   Nenhuma carta escolhida ainda.
                 </span>
               ) : (
-                runState.draftedCardIds.map((cid, i) => {
-                  const c = CARDS_BY_ID[cid];
-                  if (!c) return null;
-                  return (
-                    <button
-                      key={`${cid}_${i}`}
-                      type="button"
-                      className="draft-drawer-chip"
-                      onClick={() => setInspectCard(c)}
-                    >
-                      <span className="ddc-cost">{c.cost}⚡</span>
-                      <span>{c.name}</span>
-                    </button>
-                  );
-                })
+                sortedDraftedCards.map((c, i) => (
+                  <button
+                    key={`${c.id}_${i}`}
+                    type="button"
+                    className="draft-drawer-chip"
+                    onClick={() => setInspectCard(c)}
+                  >
+                    <span
+                      style={{
+                        width: 7,
+                        height: 7,
+                        borderRadius: '50%',
+                        background: DOMAIN_META[c.domain].color,
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span className="ddc-cost">{c.cost}⚡</span>
+                    <span>{c.name}</span>
+                  </button>
+                ))
               )}
             </div>
           )}
@@ -526,21 +551,26 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
 
           {showDeckDrawer && (
             <div className="draft-deck-drawer">
-              {runState.draftedCardIds.map((cid, i) => {
-                const c = CARDS_BY_ID[cid];
-                if (!c) return null;
-                return (
-                  <button
-                    key={`${cid}_${i}`}
-                    type="button"
-                    className="draft-drawer-chip"
-                    onClick={() => setInspectCard(c)}
-                  >
-                    <span className="ddc-cost">{c.cost}⚡</span>
-                    <span>{c.name}</span>
-                  </button>
-                );
-              })}
+              {sortedDraftedCards.map((c, i) => (
+                <button
+                  key={`${c.id}_${i}`}
+                  type="button"
+                  className="draft-drawer-chip"
+                  onClick={() => setInspectCard(c)}
+                >
+                  <span
+                    style={{
+                      width: 7,
+                      height: 7,
+                      borderRadius: '50%',
+                      background: DOMAIN_META[c.domain].color,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span className="ddc-cost">{c.cost}⚡</span>
+                  <span>{c.name}</span>
+                </button>
+              ))}
             </div>
           )}
 

@@ -722,6 +722,7 @@ interface ArchetypeBlueprint {
   targetAvgCost: number;
   minEarlyDrops: number;
   minCreatures: number;
+  maxRelics: number;
 }
 
 const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
@@ -737,6 +738,7 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     targetAvgCost: 2.7,
     minEarlyDrops: 34,
     minCreatures: 64,
+    maxRelics: 8,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.32,
@@ -758,6 +760,7 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     targetAvgCost: 3.9,
     minEarlyDrops: 24,
     minCreatures: 58,
+    maxRelics: 8,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.15,
@@ -778,6 +781,7 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     targetAvgCost: 3.4,
     minEarlyDrops: 26,
     minCreatures: 58,
+    maxRelics: 10,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 0.86,
@@ -799,7 +803,8 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     tacticalIdentity: 'aggro',
     targetAvgCost: 2.5,
     minEarlyDrops: 38,
-    minCreatures: 62,
+    minCreatures: 64,
+    maxRelics: 6,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.45,
@@ -819,7 +824,8 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     tacticalIdentity: 'control',
     targetAvgCost: 3.3,
     minEarlyDrops: 26,
-    minCreatures: 46,
+    minCreatures: 48,
+    maxRelics: 10,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.25,
@@ -840,6 +846,7 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     targetAvgCost: 3.8,
     minEarlyDrops: 24,
     minCreatures: 56,
+    maxRelics: 8,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.18,
@@ -861,7 +868,8 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     tacticalIdentity: 'tempo',
     targetAvgCost: 3.1,
     minEarlyDrops: 28,
-    minCreatures: 52,
+    minCreatures: 54,
+    maxRelics: 8,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.08,
@@ -881,13 +889,14 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     tacticalIdentity: 'control',
     targetAvgCost: 3.2,
     minEarlyDrops: 26,
-    minCreatures: 46,
+    minCreatures: 52,
+    maxRelics: 12,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 0.94,
       tradeValueBias: 1.30,
       spellHoldPatience: 1.32,
-      relicPriority: 1.2,
+      relicPriority: 1.16,
       mulliganCurveTarget: 3.0,
     },
   },
@@ -902,6 +911,7 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     targetAvgCost: 3.6,
     minEarlyDrops: 26,
     minCreatures: 58,
+    maxRelics: 8,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.18,
@@ -924,6 +934,7 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     targetAvgCost: 3.2,
     minEarlyDrops: 30,
     minCreatures: 60,
+    maxRelics: 10,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.05,
@@ -944,6 +955,7 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     targetAvgCost: 2.9,
     minEarlyDrops: 32,
     minCreatures: 58,
+    maxRelics: 8,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.28,
@@ -963,13 +975,14 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     tacticalIdentity: 'control',
     targetAvgCost: 3.5,
     minEarlyDrops: 25,
-    minCreatures: 48,
+    minCreatures: 52,
+    maxRelics: 12,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 0.92,
       tradeValueBias: 1.36,
       spellHoldPatience: 1.28,
-      relicPriority: 1.18,
+      relicPriority: 1.14,
       mulliganCurveTarget: 3.1,
     },
   },
@@ -985,7 +998,8 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     tacticalIdentity: 'midrange',
     targetAvgCost: 3.1,
     minEarlyDrops: 30,
-    minCreatures: 60,
+    minCreatures: 62,
+    maxRelics: 8,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 0.98,
@@ -1006,6 +1020,7 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     targetAvgCost: 3.4,
     minEarlyDrops: 28,
     minCreatures: 58,
+    maxRelics: 8,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
       aggroFaceBias: 1.16,
@@ -1021,19 +1036,20 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
     name: 'Julgamento Solar',
     subtitle: 'Mono-Dourado ⚖️ • Relíquias, Escudo Global & Cura',
     strategySummary:
-      'Acumula Relíquias imperiais, restaura a vida do Soberano e concede Escudo Divino em massa antes do veredito final.',
+      'Sustenta Santuários e Relíquias imperiais na Retaguarda enquanto paladinos blindados, curas e Escudo Divino em massa selam o veredito final.',
     tacticalIdentity: 'control',
-    targetAvgCost: 3.5,
-    minEarlyDrops: 25,
-    minCreatures: 50,
+    targetAvgCost: 3.4,
+    minEarlyDrops: 26,
+    minCreatures: 58,
+    maxRelics: 14,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
-      aggroFaceBias: 0.90,
-      tradeValueBias: 1.32,
+      aggroFaceBias: 0.98,
+      tradeValueBias: 1.30,
       guardianPriority: 1.28,
-      relicPriority: 1.38,
-      spellHoldPatience: 1.22,
-      mulliganCurveTarget: 3.1,
+      relicPriority: 1.24,
+      spellHoldPatience: 1.20,
+      mulliganCurveTarget: 3.0,
     },
   },
 
@@ -1047,16 +1063,17 @@ const ARCHETYPE_BLUEPRINTS: ArchetypeBlueprint[] = [
       'Opera com Constructos blindados, artilharia de Alcance, Pulso da Matriz (2⚡) e a Expansão de Domínio Matriz Horológica do Ponto Zero (6/6 Afinidade Axial).',
     tacticalIdentity: 'midrange',
     targetAvgCost: 3.2,
-    minEarlyDrops: 28,
-    minCreatures: 58,
+    minEarlyDrops: 30,
+    minCreatures: 70,
+    maxRelics: 8,
     seedWeights: {
       ...DEFAULT_AI_WEIGHTS,
-      aggroFaceBias: 1.12,
-      tradeValueBias: 1.20,
-      relicPriority: 1.25,
-      guardianPriority: 1.15,
-      domainExpansionEagerness: 1.25,
-      sovPowerTempoBias: 1.05,
+      aggroFaceBias: 1.14,
+      tradeValueBias: 1.22,
+      relicPriority: 1.05,
+      guardianPriority: 1.18,
+      domainExpansionEagerness: 1.30,
+      sovPowerTempoBias: 1.10,
       mulliganCurveTarget: 2.9,
     },
   },
@@ -1176,7 +1193,8 @@ function computeArchetypeSynergyAffinity(
     case 'mono_blue_chrono':
       if (effs.has('draw_cards')) s += 6.5;
       if (card.effects.some((e) => e.trigger === 'spell_cast')) s += 6.5;
-      if (card.type === 'spell' || card.type === 'reaction' || card.type === 'relic') s += 3.5;
+      if (card.type === 'spell' || card.type === 'reaction') s += 4.0;
+      else if (card.type === 'relic') s += 1.8;
       break;
     case 'mono_blue_abyssal':
       if (kw.has('Voo') || kw.has('Alcance')) s += 6.2;
@@ -1202,7 +1220,8 @@ function computeArchetypeSynergyAffinity(
       ) {
         s += 6.8;
       }
-      if (card.type === 'spell' || card.type === 'reaction' || card.type === 'relic') s += 3.2;
+      if (card.type === 'spell' || card.type === 'reaction') s += 3.8;
+      else if (card.type === 'relic') s += 1.6;
       break;
 
     case 'mono_gold_phalanx':
@@ -1215,15 +1234,34 @@ function computeArchetypeSynergyAffinity(
       if (kw.has('Voo') || card.ascension) s += 5.8;
       break;
     case 'mono_gold_judgment':
-      if (card.type === 'relic') s += 6.5;
+      if (card.type === 'relic') s += 3.8;
+      if (
+        card.type === 'creature' &&
+        (kw.has('Guardião') || kw.has('Escudo Divino') || card.armor >= 1)
+      ) {
+        s += 3.6;
+      }
       if (effs.has('shield_all_allies') || effs.has('heal_sovereign') || effs.has('heal_all_allies'))
         s += 6.0;
-      if (effs.has('destroy_enemy') || effs.has('damage_all_units')) s += 4.0;
+      if (effs.has('destroy_enemy') || effs.has('damage_all_units')) s += 4.2;
       break;
 
     case 'mono_neutral_axial':
-      if (kw.has('Alcance') || kw.has('Guardião') || card.armor >= 1) s += 3.5;
-      if (card.type === 'relic' || effs.has('draw_cards')) s += 3.5;
+      if (
+        card.type === 'creature' &&
+        (card.armor >= 1 ||
+          kw.has('Guardião') ||
+          kw.has('Alcance') ||
+          kw.has('Escudo Divino') ||
+          kw.has('Ímpeto') ||
+          kw.has('Voo'))
+      ) {
+        s += 4.6;
+      }
+      if (effs.has('break_domain_expansion')) s += 6.0;
+      if (effs.has('destroy_enemy') || effs.has('damage_single_enemy') || effs.has('draw_cards'))
+        s += 2.8;
+      if (card.type === 'relic' && card.effects.length > 0) s += 1.5;
       break;
   }
 
@@ -1234,13 +1272,15 @@ function assertValid100MonocolorDeck(
   cardIds: string[],
   expectedDomain: Domain,
   maxAllowedLegendaries = MAX_LEGENDARIES_PER_DECK,
-  label = ''
+  label = '',
+  maxAllowedRelics?: number
 ): void {
   if (cardIds.length !== REQUIRED_DECK_SIZE) {
     throw new Error(`[${label}] Expected ${REQUIRED_DECK_SIZE} cards, got ${cardIds.length}`);
   }
   const counts = new Map<string, number>();
   let legCount = 0;
+  let relicCount = 0;
   for (const id of cardIds) {
     const c = CARDS_BY_ID[id];
     if (!c) throw new Error(`[${label}] Unknown card ID: ${id}`);
@@ -1253,10 +1293,16 @@ function assertValid100MonocolorDeck(
     }
     counts.set(id, next);
     if (c.rarity === 'legendary') legCount += 1;
+    if (c.type === 'relic') relicCount += 1;
   }
   if (legCount > maxAllowedLegendaries) {
     throw new Error(
       `[${label}] Legendary cap exceeded: ${legCount} > ${maxAllowedLegendaries}`
+    );
+  }
+  if (maxAllowedRelics !== undefined && relicCount > maxAllowedRelics) {
+    throw new Error(
+      `[${label}] Relic cap exceeded: ${relicCount} > ${maxAllowedRelics}`
     );
   }
 }
@@ -1287,11 +1333,20 @@ function buildSeed100DeckForBlueprint(
   let legCount = 0;
   let earlyDropSlots = 0;
   let creatureSlots = 0;
+  let relicSlots = 0;
 
   const addCopies = (card: CardDefinition, maxWanted: number) => {
     const cap = Math.min(MAX_COPIES_BY_RARITY[card.rarity], maxWanted);
     while ((counts.get(card.id) ?? 0) < cap && deck.length < REQUIRED_DECK_SIZE) {
       if (card.rarity === 'legendary' && legCount >= MAX_LEGENDARIES_PER_DECK) break;
+      if (card.type === 'relic' && relicSlots >= bp.maxRelics) break;
+      if (
+        card.type !== 'creature' &&
+        creatureSlots < bp.minCreatures &&
+        REQUIRED_DECK_SIZE - deck.length <= bp.minCreatures - creatureSlots
+      ) {
+        break;
+      }
       deck.push(card.id);
       counts.set(card.id, (counts.get(card.id) ?? 0) + 1);
       if (card.rarity === 'legendary') {
@@ -1302,6 +1357,7 @@ function buildSeed100DeckForBlueprint(
         earlyDropSlots += 1;
       }
       if (card.type === 'creature') creatureSlots += 1;
+      if (card.type === 'relic') relicSlots += 1;
     }
   };
 
@@ -1312,8 +1368,14 @@ function buildSeed100DeckForBlueprint(
     }
   }
   for (const item of scored) {
-    if (creatureSlots >= bp.minCreatures || deck.length >= 82) break;
+    if (creatureSlots >= bp.minCreatures) break;
     if (item.card.type === 'creature' && item.card.cost <= 6) {
+      addCopies(item.card, MAX_COPIES_BY_RARITY[item.card.rarity]);
+    }
+  }
+  for (const item of scored) {
+    if (creatureSlots >= bp.minCreatures) break;
+    if (item.card.type === 'creature') {
       addCopies(item.card, MAX_COPIES_BY_RARITY[item.card.rarity]);
     }
   }
@@ -1322,13 +1384,19 @@ function buildSeed100DeckForBlueprint(
     addCopies(item.card, MAX_COPIES_BY_RARITY[item.card.rarity]);
   }
 
-  assertValid100MonocolorDeck(deck, bp.domain, MAX_LEGENDARIES_PER_DECK, `seed:${bp.id}`);
+  assertValid100MonocolorDeck(
+    deck,
+    bp.domain,
+    MAX_LEGENDARIES_PER_DECK,
+    `seed:${bp.id}`,
+    bp.maxRelics
+  );
   return deck;
 }
 
 /**
  * Builds a valid 100-card Exploration Deck prioritizing under-sampled cards in `arch.domainPool`
- * while preserving a playable curve backbone so every card gets realistic combat evaluation.
+ * while preserving a playable curve backbone and healthy Relic cap so every card gets realistic combat evaluation.
  */
 function buildExploration100Deck(
   arch: ArchetypeEvoState,
@@ -1338,14 +1406,18 @@ function buildExploration100Deck(
   const counts = new Map<string, number>();
   let legCount = 0;
   let earlyDrops = 0;
+  let relicCount = 0;
+  const exploreRelicCap = Math.max(16, arch.bp.maxRelics);
 
-  const tryAdd = (c: CardDefinition, wanted: number) => {
+  const tryAdd = (c: CardDefinition, wanted: number, enforceRelicCap = true) => {
     const cap = Math.min(MAX_COPIES_BY_RARITY[c.rarity], wanted);
     while ((counts.get(c.id) ?? 0) < cap && deck.length < REQUIRED_DECK_SIZE) {
       if (c.rarity === 'legendary' && legCount >= MAX_LEGENDARIES_PER_DECK) break;
+      if (enforceRelicCap && c.type === 'relic' && relicCount >= exploreRelicCap) break;
       deck.push(c.id);
       counts.set(c.id, (counts.get(c.id) ?? 0) + 1);
       if (c.rarity === 'legendary') legCount += 1;
+      if (c.type === 'relic') relicCount += 1;
       if (c.cost <= 2 && (c.type === 'creature' || c.type === 'relic')) earlyDrops += 1;
     }
   };
@@ -1373,6 +1445,10 @@ function buildExploration100Deck(
   for (const c of arch.domainPool) {
     if (deck.length >= REQUIRED_DECK_SIZE) break;
     tryAdd(c, MAX_COPIES_BY_RARITY[c.rarity]);
+  }
+  for (const c of arch.domainPool) {
+    if (deck.length >= REQUIRED_DECK_SIZE) break;
+    tryAdd(c, MAX_COPIES_BY_RARITY[c.rarity], false);
   }
 
   assertValid100MonocolorDeck(deck, arch.bp.domain, MAX_LEGENDARIES_PER_DECK, `explore:${arch.bp.id}`);
@@ -1644,9 +1720,14 @@ function proposeChallengerDeckAndWeights(
   const currentIds = arch.cardIds.slice();
   const counts = new Map<string, number>();
   let legCount = 0;
+  let creatureCount = 0;
+  let relicCount = 0;
   for (const id of currentIds) {
     counts.set(id, (counts.get(id) ?? 0) + 1);
-    if (CARDS_BY_ID[id]?.rarity === 'legendary') legCount += 1;
+    const c = CARDS_BY_ID[id];
+    if (c?.rarity === 'legendary') legCount += 1;
+    if (c?.type === 'creature') creatureCount += 1;
+    if (c?.type === 'relic') relicCount += 1;
   }
 
   const lcbById = new Map<string, number>();
@@ -1675,6 +1756,8 @@ function proposeChallengerDeckAndWeights(
       currentIds.splice(idx, 1);
       counts.set(weakId, (counts.get(weakId) ?? 1) - 1);
       if (card.rarity === 'legendary') legCount -= 1;
+      if (card.type === 'creature') creatureCount -= 1;
+      if (card.type === 'relic') relicCount -= 1;
       removed += 1;
     }
   }
@@ -1700,33 +1783,45 @@ function proposeChallengerDeckAndWeights(
     })
     .sort((a, b) => b.ucbScore - a.ucbScore);
 
+  const canAddCandidate = (c: CardDefinition): boolean => {
+    const curCopies = counts.get(c.id) ?? 0;
+    if (curCopies >= MAX_COPIES_BY_RARITY[c.rarity]) return false;
+    if (c.rarity === 'legendary' && legCount >= MAX_LEGENDARIES_PER_DECK) return false;
+    if (c.type === 'relic' && relicCount >= arch.bp.maxRelics) return false;
+    const remainingSlots = REQUIRED_DECK_SIZE - currentIds.length;
+    const neededCreatures = Math.max(0, arch.bp.minCreatures - creatureCount);
+    if (c.type !== 'creature' && remainingSlots <= neededCreatures) return false;
+    return true;
+  };
+
   for (const cand of ucbCandidates) {
     if (currentIds.length >= REQUIRED_DECK_SIZE) break;
     const c = cand.card;
-    const curCopies = counts.get(c.id) ?? 0;
-    if (curCopies >= MAX_COPIES_BY_RARITY[c.rarity]) continue;
-    if (c.rarity === 'legendary' && legCount >= MAX_LEGENDARIES_PER_DECK) continue;
+    if (!canAddCandidate(c)) continue;
 
     currentIds.push(c.id);
-    counts.set(c.id, curCopies + 1);
+    counts.set(c.id, (counts.get(c.id) ?? 0) + 1);
     if (c.rarity === 'legendary') legCount += 1;
+    if (c.type === 'creature') creatureCount += 1;
+    if (c.type === 'relic') relicCount += 1;
   }
 
   for (const c of arch.domainPool) {
     if (currentIds.length >= REQUIRED_DECK_SIZE) break;
-    const curCopies = counts.get(c.id) ?? 0;
-    if (curCopies >= MAX_COPIES_BY_RARITY[c.rarity]) continue;
-    if (c.rarity === 'legendary' && legCount >= MAX_LEGENDARIES_PER_DECK) continue;
+    if (!canAddCandidate(c)) continue;
     currentIds.push(c.id);
-    counts.set(c.id, curCopies + 1);
+    counts.set(c.id, (counts.get(c.id) ?? 0) + 1);
     if (c.rarity === 'legendary') legCount += 1;
+    if (c.type === 'creature') creatureCount += 1;
+    if (c.type === 'relic') relicCount += 1;
   }
 
   assertValid100MonocolorDeck(
     currentIds,
     arch.bp.domain,
     MAX_LEGENDARIES_PER_DECK,
-    `challenger:${arch.bp.id}`
+    `challenger:${arch.bp.id}`,
+    arch.bp.maxRelics
   );
 
   const wNext: AiDecisionWeights = { ...arch.weights };
@@ -1867,16 +1962,21 @@ function distillGraduatedTierDecksForArchetype(
     const counts = new Map<string, number>();
     let legCount = 0;
     let rareCount = 0;
+    let creatureCount = 0;
+    let relicCount = 0;
 
     for (const cid of arch.cardIds) {
       if (excludedIds.has(cid)) continue;
       const c = CARDS_BY_ID[cid]!;
       if (c.rarity === 'legendary' && legCount >= spec.maxLeg) continue;
       if (c.rarity === 'rare' && rareCount >= spec.maxRare) continue;
+      if (c.type === 'relic' && relicCount >= arch.bp.maxRelics) continue;
       deck.push(cid);
       counts.set(cid, (counts.get(cid) ?? 0) + 1);
       if (c.rarity === 'legendary') legCount += 1;
       if (c.rarity === 'rare') rareCount += 1;
+      if (c.type === 'creature') creatureCount += 1;
+      if (c.type === 'relic') relicCount += 1;
     }
 
     const fillCandidates = arch.domainPool
@@ -1906,14 +2006,21 @@ function distillGraduatedTierDecksForArchetype(
         if (deck.length >= REQUIRED_DECK_SIZE) break;
         if (c.rarity === 'legendary' && legCount >= spec.maxLeg) continue;
         if (c.rarity === 'rare' && rareCount >= spec.maxRare) continue;
+        if (c.type === 'relic' && relicCount >= arch.bp.maxRelics) continue;
         const cap = MAX_COPIES_BY_RARITY[c.rarity];
         while ((counts.get(c.id) ?? 0) < cap && deck.length < REQUIRED_DECK_SIZE) {
           if (c.rarity === 'legendary' && legCount >= spec.maxLeg) break;
           if (c.rarity === 'rare' && rareCount >= spec.maxRare) break;
+          if (c.type === 'relic' && relicCount >= arch.bp.maxRelics) break;
+          const remainingSlots = REQUIRED_DECK_SIZE - deck.length;
+          const neededCreatures = Math.max(0, arch.bp.minCreatures - creatureCount);
+          if (c.type !== 'creature' && remainingSlots <= neededCreatures) break;
           deck.push(c.id);
           counts.set(c.id, (counts.get(c.id) ?? 0) + 1);
           if (c.rarity === 'legendary') legCount += 1;
           if (c.rarity === 'rare') rareCount += 1;
+          if (c.type === 'creature') creatureCount += 1;
+          if (c.type === 'relic') relicCount += 1;
         }
       }
     };
@@ -1921,11 +2028,45 @@ function distillGraduatedTierDecksForArchetype(
     addUpTo(false);
     if (deck.length < REQUIRED_DECK_SIZE) addUpTo(true);
 
-    assertValid100MonocolorDeck(deck, arch.bp.domain, spec.maxLeg, `tier${tier}:${arch.bp.id}`);
+    assertValid100MonocolorDeck(
+      deck,
+      arch.bp.domain,
+      spec.maxLeg,
+      `tier${tier}:${arch.bp.id}`,
+      arch.bp.maxRelics
+    );
     out[tier] = computeMeta(tier, deck);
   }
 
   return out as Record<AiSkillTier, StabilizedTierDeckMetadata>;
+}
+
+/**
+ * Class-balances positive (`target > 0`) and negative (`target < 0`) discounted trajectory weights
+ * 50/50 before training a Domain Value MLP so domains with <50% or >50% cross-color win rates
+ * never develop a systematic output sign bias (`b3`) that distorts 1-ply / Beam Search rankings.
+ */
+function rebalanceTrajectorySamples(samples: ValueTrainingSample[]): ValueTrainingSample[] {
+  let posWeightSum = 0;
+  let negWeightSum = 0;
+  for (const s of samples) {
+    if (s.target > 0.01) posWeightSum += s.weight;
+    else if (s.target < -0.01) negWeightSum += s.weight;
+  }
+  if (posWeightSum <= 0 || negWeightSum <= 0) return samples;
+  const halfTotal = 0.5 * (posWeightSum + negWeightSum);
+  const posScale = clamp(halfTotal / posWeightSum, 0.35, 3.0);
+  const negScale = clamp(halfTotal / negWeightSum, 0.35, 3.0);
+  return samples.map((s) => ({
+    features: s.features,
+    target: s.target,
+    weight:
+      s.target > 0.01
+        ? s.weight * posScale
+        : s.target < -0.01
+          ? s.weight * negScale
+          : s.weight,
+  }));
 }
 
 // ============================================================================
@@ -2133,11 +2274,12 @@ async function main() {
       // Refresh Domain Value MLPs at Gen 3, Gen 7, and Gen 11
       if (gen === 3 || gen === 7 || gen === 11) {
         console.log(
-          `\n[Motor Neural — Geração ${gen}] Atualizando 6 Redes Value MLP (48->64->32->1) via Adam...`
+          `\n[Motor Neural — Geração ${gen}] Atualizando 6 Redes Value MLP (48->64->32->1, 50/50 Class-Balanced) via Adam...`
         );
         for (const [dom, samples] of trajectoriesByDomain.entries()) {
           if (samples.length >= 400) {
-            const mlp = trainValueMlpWithAdam(dom, samples, {
+            const balancedSamples = rebalanceTrajectorySamples(samples);
+            const mlp = trainValueMlpWithAdam(dom, balancedSamples, {
               epochs: 18,
               batchSize: 80,
               learningRate: 0.0027,
@@ -2560,7 +2702,7 @@ async function main() {
 
     // 3. Final Deep Training of all 6 Domain Value MLPs (48 -> 64 -> 32 -> 1)
     console.log(
-      '\n[Etapa 3] Treinamento Profundo Final das 6 Redes Neurais Value MLP (Adam + Holdout Validation)...'
+      '\n[Etapa 3] Treinamento Profundo Final das 6 Redes Neurais Value MLP (Adam + 50/50 Class-Balanced + Holdout Validation)...'
     );
     let totalTrajectories = 0;
     const domainNetworksOut: Record<string, SerializedValueMlp> = {};
@@ -2568,7 +2710,8 @@ async function main() {
     for (const dom of ['green', 'red', 'blue', 'purple', 'gold', 'neutral'] as Domain[]) {
       const samples = trajectoriesByDomain.get(dom) ?? [];
       totalTrajectories += samples.length;
-      const mlp = trainValueMlpWithAdam(dom, samples, {
+      const balancedSamples = rebalanceTrajectorySamples(samples);
+      const mlp = trainValueMlpWithAdam(dom, balancedSamples, {
         epochs: 30,
         batchSize: 96,
         learningRate: 0.0026,
@@ -2619,6 +2762,85 @@ async function main() {
         tierDecks,
       };
     }
+
+    // 4B. Global All-Pairs 16x15 Tier V Champion Round-Robin (Beam Search + Domain Value MLPs + Neutral Domain Expansion!)
+    console.log(
+      '\n[Etapa 4B] Torneio Todos-Contra-Todos dos 16 Campeões Tier V (120 confrontos * 8 jogos espelhados = 960 duelos Beam Search)...'
+    );
+    const champRRStart = Date.now();
+    const champRRJobs: Array<{
+      idA: MonocolorArchetypeId;
+      idB: MonocolorArchetypeId;
+      promise: Promise<WorkerPairBatchResponse>;
+    }> = [];
+    for (let i = 0; i < archetypes.length; i++) {
+      for (let j = i + 1; j < archetypes.length; j++) {
+        const a = archetypes[i];
+        const b = archetypes[j];
+        const mA = masteryById[a.bp.id];
+        const mB = masteryById[b.bp.id];
+        champRRJobs.push({
+          idA: a.bp.id,
+          idB: b.bp.id,
+          promise: pool.runBatch({
+            deckACardIds: mA.tierDecks[5].cardIds,
+            deckBCardIds: mB.tierDecks[5].cardIds,
+            nameA: a.bp.name,
+            nameB: b.bp.name,
+            deckIdA: a.bp.id,
+            deckIdB: b.bp.id,
+            domainA: a.bp.domain,
+            domainB: b.bp.domain,
+            profileA: mA.learnedProfile,
+            profileB: mB.learnedProfile,
+            skillTierA: 5,
+            skillTierB: 5,
+            mlpA: trainedMlps.get(a.bp.domain) ?? null,
+            mlpB: trainedMlps.get(b.bp.domain) ?? null,
+            fastRollout: false,
+            numMirrorPairs: 4, // 8 games per pair -> 120 games per Champion across all 15 rivals!
+            collectTelemetryA: false,
+            collectTelemetryB: false,
+            maxTrajectoriesPerSide: 0,
+          }),
+        });
+      }
+    }
+    const champRRResults = await Promise.all(champRRJobs.map((j) => j.promise));
+    const champRRScore = new Map<MonocolorArchetypeId, { score: number; games: number }>();
+    for (let i = 0; i < champRRJobs.length; i++) {
+      const job = champRRJobs[i];
+      const res = champRRResults[i];
+      totalMatchesSimulated += res.matchesPlayed;
+      const recA = champRRScore.get(job.idA) ?? { score: 0, games: 0 };
+      recA.score += res.scoreASum;
+      recA.games += res.matchesPlayed;
+      champRRScore.set(job.idA, recA);
+
+      const recB = champRRScore.get(job.idB) ?? { score: 0, games: 0 };
+      recB.score += res.matchesPlayed - res.scoreASum;
+      recB.games += res.matchesPlayed;
+      champRRScore.set(job.idB, recB);
+    }
+    for (const arch of archetypes) {
+      const rr = champRRScore.get(arch.bp.id);
+      if (rr && rr.games > 0) {
+        const globalWr = Math.round((rr.score / rr.games) * 1000) / 1000;
+        masteryById[arch.bp.id].championWinRate = globalWr;
+        masteryById[arch.bp.id].matchesSimulated += rr.games;
+        masteryById[arch.bp.id].learnedProfile.trainedWinRate = globalWr;
+        masteryById[arch.bp.id].learnedProfile.matchesSimulated += rr.games;
+      }
+      const m = masteryById[arch.bp.id];
+      const relicCnt = m.tierDecks[5].cardIds.filter((id) => CARDS_BY_ID[id]?.type === 'relic').length;
+      const creatCnt = m.tierDecks[5].cardIds.filter((id) => CARDS_BY_ID[id]?.type === 'creature').length;
+      console.log(
+        `   • [${arch.bp.id.padEnd(20)}] Global T5 WR: ${(m.championWinRate * 100).toFixed(1).padStart(5)}% | Criaturas: ${String(creatCnt).padStart(2)} | Relíquias: ${String(relicCnt).padStart(2)} | Jaccard: ${((m.championDeckJaccardStability ?? 1) * 100).toFixed(1)}%`
+      );
+    }
+    console.log(
+      `   ✓ Torneio Todos-Contra-Todos concluído em ${((Date.now() - champRRStart) / 1000).toFixed(1)}s.`
+    );
 
     // 5. Adaptive Sequential 5-Tier Sovereign Ladder Benchmark (Stops ONLY when every Tier IC95% <= ±3.0%!)
     console.log(

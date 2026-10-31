@@ -420,6 +420,14 @@ export function playRealmEntryMotif(
     | 'deep_roots'
     | 'sky_bastions'
     | 'prismatic_crater'
+    | 'sea_of_storms'
+    | 'boreal_skyway'
+    | 'capital_veridia'
+    | 'capital_vortex'
+    | 'capital_solaria'
+    | 'capital_eclipse'
+    | 'capital_pyros'
+    | 'capital_axial'
     | 'world'
 ): void {
   if (muted) return;
@@ -518,6 +526,67 @@ export function playRealmEntryMotif(
         const rays = [220.0, 293.66, 369.99, 493.88, 659.25, 880.0];
         rays.forEach((f, idx) => {
           playTone(ctx, f * 0.99, f, 0.38, 'triangle', 0.065, idx * 0.04);
+        });
+        break;
+      }
+      case 'sea_of_storms': {
+        // Storm maelstrom surf + distant brass lighthouse foghorn
+        playNoiseBurst(ctx, 0.48, 520, 0.11, 0);
+        playTone(ctx, 98.0, 92.5, 0.58, 'sawtooth', 0.1, 0.04);
+        playTone(ctx, 196.0, 293.66, 0.44, 'triangle', 0.08, 0.16);
+        break;
+      }
+      case 'boreal_skyway': {
+        // High-altitude jetstream gust + draconic wind-harp chord
+        playNoiseBurst(ctx, 0.42, 2600, 0.06, 0);
+        playTone(ctx, 440.0, 659.25, 0.38, 'sine', 0.085, 0.03);
+        playTone(ctx, 659.25, 880.0, 0.45, 'triangle', 0.08, 0.12);
+        playTone(ctx, 1174.66, 1318.51, 0.4, 'sine', 0.065, 0.2);
+        break;
+      }
+      case 'capital_veridia': {
+        // Mother-Tree amber chime + ceremonial wooden horn fifth
+        playTone(ctx, 293.66, 440.0, 0.42, 'triangle', 0.1, 0);
+        playTone(ctx, 587.33, 587.33, 0.48, 'sine', 0.09, 0.09);
+        playTone(ctx, 880.0, 880.0, 0.44, 'sine', 0.075, 0.18);
+        break;
+      }
+      case 'capital_vortex': {
+        // Grand Astrolabe carillon + precision clockwork escapement
+        const ticks = [1567.98, 1318.51, 1975.53];
+        ticks.forEach((f, idx) => {
+          playTone(ctx, f, f, 0.12, 'triangle', 0.075, idx * 0.08);
+        });
+        playTone(ctx, 523.25, 1046.5, 0.52, 'sine', 0.09, 0.2);
+        break;
+      }
+      case 'capital_solaria': {
+        // Imperial Aethelgard brass citadel trumpet triad
+        playTone(ctx, 329.63, 329.63, 0.4, 'sawtooth', 0.08, 0);
+        playTone(ctx, 415.3, 415.3, 0.42, 'triangle', 0.09, 0.08);
+        playTone(ctx, 493.88, 659.25, 0.54, 'triangle', 0.1, 0.16);
+        break;
+      }
+      case 'capital_eclipse': {
+        // Nocturnus high cathedral double bell toll + crypt choir fifth
+        playTone(ctx, 110.0, 108.0, 0.72, 'sine', 0.14, 0);
+        playTone(ctx, 329.63, 311.13, 0.54, 'triangle', 0.085, 0.1);
+        playTone(ctx, 659.25, 622.25, 0.48, 'sine', 0.07, 0.22);
+        break;
+      }
+      case 'capital_pyros': {
+        // Vulcanor titanic chain drawbridge clank + triple anvil strike
+        playNoiseBurst(ctx, 0.26, 620, 0.13, 0);
+        playTone(ctx, 82.41, 55.0, 0.52, 'sawtooth', 0.13, 0);
+        playTone(ctx, 523.25, 516.0, 0.28, 'triangle', 0.095, 0.06);
+        playTone(ctx, 659.25, 650.0, 0.34, 'triangle', 0.09, 0.18);
+        break;
+      }
+      case 'capital_axial': {
+        // Free-City of the Five Seals grand diplomatic fanfare
+        const chord = [261.63, 329.63, 392.0, 523.25, 659.25, 783.99];
+        chord.forEach((f, idx) => {
+          playTone(ctx, f, f, 0.42, 'triangle', 0.075, idx * 0.045);
         });
         break;
       }

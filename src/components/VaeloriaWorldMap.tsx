@@ -13,10 +13,13 @@ import {
   resolveNearestTerritory,
 } from '../data/vaeloriaMapData';
 import {
+  CARDINAL_TO_CAPITAL_MAP,
+  SCOPE_STAGE_PROJECTIONS,
   VAELORIA_CARDINAL_REALMS,
   VAELORIA_DEEP_FRONTIERS,
   VAELORIA_REALM_ORDER,
   VAELORIA_REGIONAL_MAPS,
+  VAELORIA_TRANSIT_CORRIDORS,
   VaeloriaMapScope,
   VaeloriaRealmId,
   RegionalBorderPortal,
@@ -24,6 +27,24 @@ import {
   resolveNearestRealmFromWorldCoords,
   resolveStageRegionalPlacement,
 } from '../data/vaeloriaMultimapData';
+import {
+  AtlasLayerVisibility,
+  DEFAULT_ATLAS_LAYER_VISIBILITY,
+  VaeloriaHistoricalEraId,
+} from '../data/vaeloriaCartographyDetails';
+import {
+  CartographicInspectionNote,
+  VaeloriaGazetteerEntry,
+} from '../data/vaeloriaCapitalDistricts';
+import {
+  AtlasLayerAndSearchHud,
+  CartographerInspectorCard,
+  CartographicHtmlPinsLayer,
+  CartographicScaleRuler,
+  CartographicSvgLayer,
+  GazetteerHighlightTarget,
+  MultiScaleScopeNavigator,
+} from './CartographicAtlasExtras';
 import { getWeeklyFeaturedRift, WEEKLY_RIFT_SHARDS_BONUS } from '../data/fractureRiftsData';
 import {
   getFogOfWarEnabled,
@@ -137,6 +158,20 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     realm: VaeloriaRealmId;
     landmark: RegionalLocalLandmark;
   } | null>(null);
+  const [atlasLayers, setAtlasLayers] = useState<AtlasLayerVisibility>(
+    DEFAULT_ATLAS_LAYER_VISIBILITY
+  );
+  const [eraFilter, setEraFilter] = useState<VaeloriaHistoricalEraId>('all_eras');
+  const [inspectedNote, setInspectedNote] =
+    useState<CartographicInspectionNote | null>(null);
+  const [gazetteerHighlight, setGazetteerHighlight] =
+    useState<GazetteerHighlightTarget | null>(null);
+
+  useEffect(() => {
+    if (!gazetteerHighlight) return;
+    const t = window.setTimeout(() => setGazetteerHighlight(null), 5500);
+    return () => window.clearTimeout(t);
+  }, [gazetteerHighlight]);
 
   useEffect(() => {
     setVisitedLandmarks(
@@ -165,17 +200,34 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
       counts[rid] = { total: 0, cleared: 0 };
     }
     for (const item of enrichedAllBosses) {
+      const isCleared = clearedBossIds.includes(item.boss.id);
       counts[item.realm].total += 1;
-      if (clearedBossIds.includes(item.boss.id)) {
-        counts[item.realm].cleared += 1;
+      if (isCleared) counts[item.realm].cleared += 1;
+      for (const rid of VAELORIA_REALM_ORDER) {
+        if (rid === item.realm) continue;
+        if (SCOPE_STAGE_PROJECTIONS[rid]?.[item.boss.id]) {
+          counts[rid].total += 1;
+          if (isCleared) counts[rid].cleared += 1;
+        }
       }
     }
     return counts;
   }, [enrichedAllBosses, clearedBossIds]);
 
+  const realmBadgeStrings = useMemo(() => {
+    const out: Partial<Record<VaeloriaRealmId, string>> = {};
+    for (const rid of VAELORIA_REALM_ORDER) {
+      const st = realmBossCounts[rid];
+      if (st.total > 0) {
+        out[rid] = `${st.cleared}/${st.total}`;
+      }
+    }
+    return out;
+  }, [realmBossCounts]);
+
   // Visible bosses in current map scope:
   // - On 'world': show `bosses` (respects Act filter in Campaign)
-  // - Inside a Regional Map: show all bosses belonging to that Realm so the regional atlas is always complete!
+  // - Inside a Regional / Corridor / Capital Map: show primary + projected bosses!
   const positionedBosses: PositionedBossEntry[] = useMemo(() => {
     if (mapScope === 'world') {
       const visibleIds = new Set(bosses.map((b) => b.id));
@@ -187,13 +239,17 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
           y: item.worldNode.y,
         }));
     }
-    return enrichedAllBosses
-      .filter((item) => item.realm === mapScope)
-      .map((item) => ({
-        ...item,
-        x: item.rx,
-        y: item.ry,
-      }));
+    const proj = SCOPE_STAGE_PROJECTIONS[mapScope];
+    return enrichedAllBosses.flatMap((item) => {
+      if (item.realm === mapScope) {
+        return [{ ...item, x: item.rx, y: item.ry }];
+      }
+      const pCoord = proj?.[item.boss.id];
+      if (pCoord) {
+        return [{ ...item, x: pCoord.rx, y: pCoord.ry }];
+      }
+      return [];
+    });
   }, [mapScope, bosses, enrichedAllBosses]);
 
   const selectedEntryGlobal = useMemo(
@@ -647,7 +703,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   }, [enrichedAllBosses, clearedBossIds]);
 
   const applyZoom = (nextZoomRaw: number) => {
-    const nextZoom = Math.max(1, Math.min(2.8, Number(nextZoomRaw.toFixed(2))));
+    const nextZoom = Math.max(1, Math.min(4.5, Number(nextZoomRaw.toFixed(2))));
     setZoom(nextZoom);
     if (followPawn && nextZoom > 1.02) {
       centerCameraAt(pawnPosRef.current.x, pawnPosRef.current.y, nextZoom);
@@ -655,6 +711,53 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
       setPan((prev) => clampPan(prev, nextZoom));
     }
   };
+
+  const handleSelectGazetteerEntry = useCallback(
+    (entry: VaeloriaGazetteerEntry) => {
+      setGazetteerHighlight({
+        scope: entry.scope,
+        x: entry.x,
+        y: entry.y,
+        label: entry.name,
+      });
+      if (entry.inspectionNote) {
+        setInspectedNote(entry.inspectionNote);
+      }
+      if (entry.bossId) {
+        const found = enrichedAllBosses.find((b) => b.boss.id === entry.bossId);
+        if (found) onSelectBoss(found.boss);
+      }
+      const targetZoom = Math.max(1.2, Math.min(4.5, entry.recommendedZoom));
+      if (entry.scope !== mapScopeRef.current) {
+        handleSwitchMapScope(entry.scope, {
+          x: entry.x,
+          y: entry.y,
+          banner: `🔎 ${entry.name}`,
+        });
+        window.setTimeout(() => {
+          setFollowPawn(false);
+          setZoom(targetZoom);
+          centerCameraAt(entry.x, entry.y, targetZoom);
+        }, 40);
+      } else {
+        setFollowPawn(false);
+        startMarchTo(entry.x, entry.y, true);
+        setZoom(targetZoom);
+        requestAnimationFrame(() => {
+          centerCameraAt(entry.x, entry.y, targetZoom);
+        });
+        showPortalNotification(`🔎 ${entry.name}`);
+      }
+    },
+    [
+      enrichedAllBosses,
+      onSelectBoss,
+      handleSwitchMapScope,
+      centerCameraAt,
+      startMarchTo,
+      showPortalNotification,
+    ]
+  );
 
   const handleCenterOnSovereign = () => {
     const targetZoom = mapScope === 'world' ? Math.max(zoom, 1.75) : Math.max(zoom, 1.45);
@@ -738,7 +841,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     const targetEl = e.target as HTMLElement | null;
     if (
       targetEl?.closest(
-        '.vwm-boss-node, .vwm-landmark-node, .vwm-pawn-challenge-pill, .vwm-dpad, .vwm-portal-gate, .vwm-realm-dive-chip, .vwm-minimap-radar, .vwm-minimap-toggle-pill'
+        '.vwm-boss-node, .vwm-landmark-node, .vwm-pawn-challenge-pill, .vwm-dpad, .vwm-portal-gate, .vwm-realm-dive-chip, .vwm-minimap-radar, .vwm-minimap-toggle-pill, .carto-toponym-pin, .carto-unified-settlement-pin, .carto-capital-district-pin, .carto-historical-battle-pin, .cartographer-notebook-card, .atlas-hud-cluster, .cartographic-scale-ruler'
       )
     ) {
       return;
@@ -831,76 +934,14 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         isTheaterFullscreen ? 'is-theater-fullscreen' : ''
       } ${mapScope !== 'world' ? 'is-regional-scope' : ''}`}
     >
-      {/* 1. 13-MAP TRI-SCALE INTERCONNECTED MULTIMAP ATLAS BAR */}
-      <div className="vwm-multimap-atlas-bar" role="tablist" aria-label="Atlas Multimapa de Vaeloria (13 Mapas)">
-        <button
-          type="button"
-          className={`vwm-atlas-pill is-world-pill ${mapScope === 'world' ? 'is-active' : ''}`}
-          onClick={() => handleSwitchMapScope('world')}
-        >
-          <span>🌍</span>
-          <strong>Continente</strong>
-          <small>
-            {clearedBossIds.length}/{enrichedAllBosses.length}
-          </small>
-        </button>
-
-        {VAELORIA_CARDINAL_REALMS.map((rid) => {
-          const rdef = VAELORIA_REGIONAL_MAPS[rid];
-          const stat = realmBossCounts[rid];
-          const isCurrent = mapScope === rid;
-          return (
-            <button
-              key={rid}
-              type="button"
-              className={`vwm-atlas-pill ${isCurrent ? 'is-active' : ''}`}
-              style={
-                {
-                  '--realm-accent': rdef.accentColor,
-                } as React.CSSProperties
-              }
-              onClick={() => handleSwitchMapScope(rid)}
-              title={`Abrir Mapa Regional de ${rdef.name}`}
-            >
-              <span>{rdef.icon}</span>
-              <strong>{rdef.shortName}</strong>
-              <small>
-                {stat.cleared}/{stat.total}
-              </small>
-            </button>
-          );
-        })}
-
-        <span className="vwm-atlas-divider" aria-hidden="true">
-          ✦ FRONTEIRAS
-        </span>
-
-        {VAELORIA_DEEP_FRONTIERS.map((rid) => {
-          const rdef = VAELORIA_REGIONAL_MAPS[rid];
-          const stat = realmBossCounts[rid];
-          const isCurrent = mapScope === rid;
-          return (
-            <button
-              key={rid}
-              type="button"
-              className={`vwm-atlas-pill is-frontier-pill ${isCurrent ? 'is-active' : ''}`}
-              style={
-                {
-                  '--realm-accent': rdef.accentColor,
-                } as React.CSSProperties
-              }
-              onClick={() => handleSwitchMapScope(rid)}
-              title={`Abrir Fronteira Profunda: ${rdef.name}`}
-            >
-              <span>{rdef.icon}</span>
-              <strong>{rdef.shortName}</strong>
-              <small>
-                {stat.cleared}/{stat.total}
-              </small>
-            </button>
-          );
-        })}
-      </div>
+      {/* 1. 21-MAP QUADRI-SCALE INTERCONNECTED MULTIMAP ATLAS BAR */}
+      <MultiScaleScopeNavigator
+        mapScope={mapScope}
+        onSelectScope={(s) => handleSwitchMapScope(s)}
+        worldBadge={`${clearedBossIds.length}/${enrichedAllBosses.length}`}
+        countByRealm={realmBadgeStrings}
+        variant="overworld"
+      />
 
       {/* 2. Top Cartographic Telemetry & Camera Controls */}
       <div className="vwm-hud-top">
@@ -1012,6 +1053,14 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             🌫️ Névoa
           </button>
 
+          <AtlasLayerAndSearchHud
+            layers={atlasLayers}
+            onChangeLayers={setAtlasLayers}
+            eraFilter={eraFilter}
+            onChangeEraFilter={setEraFilter}
+            onSelectGazetteerEntry={handleSelectGazetteerEntry}
+          />
+
           <button
             type="button"
             className="vwm-tool-btn"
@@ -1037,8 +1086,8 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             type="button"
             className="vwm-tool-btn"
             onClick={() => applyZoom(zoom + 0.25)}
-            disabled={zoom >= 2.79}
-            title="Aproximar câmera"
+            disabled={zoom >= 4.49}
+            title="Aproximar câmera até 450% (LOD 4)"
           >
             +
           </button>
@@ -1175,6 +1224,17 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 pointerEvents="none"
               />
             )}
+
+            {/* Living Cartographic Hydrography, Magma, Sea Lanes, Sky Jets, Ley Lines & Animated Traffic */}
+            <CartographicSvgLayer
+              scope={mapScope}
+              zoom={zoom}
+              viewBoxWidth={1600}
+              viewBoxHeight={900}
+              layers={atlasLayers}
+              idPrefix="vwm_svg"
+              onInspectNote={setInspectedNote}
+            />
 
             {/* Regional Roads from Central Citadel to Neighboring Citadels & Border Portals */}
             {activeRegionalDef ? (
@@ -1337,33 +1397,73 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             </g>
           </svg>
 
-          {/* On World Map: Clickable "Explorar Reino" Gateways on each of the 6 Realms */}
+          {/* Multi-LOD Toponyms, 162 Unified Settlements, 36 Capital Districts & VII Cantos Battlefields */}
+          <CartographicHtmlPinsLayer
+            scope={mapScope}
+            zoom={zoom}
+            layers={atlasLayers}
+            eraFilter={eraFilter}
+            showUnifiedSettlements={showGeographyLabels}
+            highlightTarget={gazetteerHighlight}
+            onInspectNote={setInspectedNote}
+          />
+
+          {/* On World Map: Clickable Gateways on Realms, Deep Frontiers, Corridors & Capital Dive Pills */}
           {mapScope === 'world' &&
             showGeographyLabels &&
-            VAELORIA_REALM_ORDER.map((rid) => {
+            [
+              ...VAELORIA_CARDINAL_REALMS,
+              ...VAELORIA_DEEP_FRONTIERS,
+              ...VAELORIA_TRANSIT_CORRIDORS,
+            ].map((rid) => {
               const rdef = VAELORIA_REGIONAL_MAPS[rid];
+              const capId = CARDINAL_TO_CAPITAL_MAP[rid];
+              const capDef = capId ? VAELORIA_REGIONAL_MAPS[capId] : null;
               return (
-                <button
-                  key={`dive-${rid}`}
-                  type="button"
-                  className="vwm-realm-dive-chip"
-                  style={
-                    {
-                      left: `${rdef.worldCenter.x}%`,
-                      top: `${rdef.worldCenter.y + (rid === 'matrix' ? 8.5 : 6.5)}%`,
-                      borderColor: `${rdef.accentColor}99`,
-                      transform: `translate(-50%, -50%) scale(${pinCounterScale})`,
-                    } as React.CSSProperties
-                  }
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSwitchMapScope(rid);
-                  }}
-                  title={`Entrar no Mapa Regional de ${rdef.name}`}
-                >
-                  <span>🔍</span>
-                  <strong>Mapa de {rdef.shortName}</strong>
-                </button>
+                <React.Fragment key={`dive-group-${rid}`}>
+                  <button
+                    type="button"
+                    className="vwm-realm-dive-chip"
+                    style={
+                      {
+                        left: `${rdef.worldCenter.x}%`,
+                        top: `${rdef.worldCenter.y + (rid === 'matrix' ? 8.5 : 6.5)}%`,
+                        borderColor: `${rdef.accentColor}99`,
+                        transform: `translate(-50%, -50%) scale(${pinCounterScale})`,
+                      } as React.CSSProperties
+                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSwitchMapScope(rid);
+                    }}
+                    title={`Entrar no Mapa de ${rdef.name}`}
+                  >
+                    <span>🔍</span>
+                    <strong>{rdef.shortName}</strong>
+                  </button>
+                  {capDef && zoom >= 1.9 && (
+                    <button
+                      type="button"
+                      className="vwm-realm-dive-chip is-capital-dive-chip"
+                      style={
+                        {
+                          left: `${rdef.worldCenter.x}%`,
+                          top: `${rdef.worldCenter.y + (rid === 'matrix' ? 12.2 : 10.2)}%`,
+                          borderColor: `${capDef.accentColor}cc`,
+                          transform: `translate(-50%, -50%) scale(${pinCounterScale})`,
+                        } as React.CSSProperties
+                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSwitchMapScope(capDef.id);
+                      }}
+                      title={`Mergulhar na 4ª Escala Urbana: ${capDef.name}`}
+                    >
+                      <span>🏰</span>
+                      <strong>{capDef.shortName}</strong>
+                    </button>
+                  )}
+                </React.Fragment>
               );
             })}
 
@@ -1716,6 +1816,16 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             ▼
           </button>
         </div>
+
+        {/* Dynamic Cartographic Scale Ruler (Leagues / Meters) */}
+        <CartographicScaleRuler scope={mapScope} zoom={zoom} />
+
+        {/* "📖 Caderno do Cartógrafo Real" Inspector Drawer */}
+        <CartographerInspectorCard
+          note={inspectedNote}
+          onClose={() => setInspectedNote(null)}
+          onNavigateScope={(s) => handleSwitchMapScope(s)}
+        />
       </div>
 
       {/* Bottom Cartographic Legend & Navigation Hint */}
@@ -1723,15 +1833,16 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         <span>
           {mapScope === 'world' ? (
             <>
-              🧭 <strong>Atlas Tri-Escala (13 Mapas)</strong>: Clique em qualquer <strong>Reino ou Fronteira acima</strong> ou em{' '}
-              <strong>🔍 Entrar</strong> para explorar <strong>72 Marcos Vivos</strong> •{' '}
-              <strong>WASD</strong> / Clique para marchar
+              🧭 <strong>Atlas Quadri-Escala (21 Mapas)</strong>: Explore <strong>6 Reinos</strong>,{' '}
+              <strong>6 Fronteiras</strong>, <strong>2 Corredores</strong> e <strong>6 Capitais</strong> •{' '}
+              Clique em rios, topônimos ou vilas para abrir o <strong>📖 Caderno do Cartógrafo</strong> •{' '}
+              <strong>WASD</strong> / Clique para marchar (Zoom até <strong>4.5x</strong>)
             </>
           ) : (
             <>
-              🧭 Clique nos <strong>✦ Marcos Regionais</strong> (com <strong>💎 Pacto Ancestral</strong>) • Marche até os{' '}
-              <strong>Portais de Fronteira</strong> para cruzar entre Reinos e Submundos •{' '}
-              <strong>🌍 Continente</strong> retorna à visão global
+              🧭 Clique nos <strong>✦ 120 Marcos Vivos</strong>, <strong>🏰 36 Distritos Imperiais</strong> ou{' '}
+              <strong>🌊 Rios & Rotas</strong> para ver crônicas e <strong>Cartas Nativas</strong> •{' '}
+              Marche até os <strong>Portais</strong> para cruzar entre as 4 escalas
             </>
           )}
         </span>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { OverworldFieldBuff } from '../types/game';
 import { CARDS_BY_ID } from '../data/cards';
+import { DOMAIN_META } from './CardView';
 import { playRealmEntryMotif, playSfx } from '../utils/soundEngine';
 import { setMusicState } from '../utils/musicEngine';
 import {
@@ -21,17 +22,37 @@ import {
   getRegionalConquestGeometries,
 } from '../data/vaeloriaConquestData';
 import {
+  CAPITAL_PROVINCE_TO_CAPITAL_MAP,
   PROVINCE_REGIONAL_COORDS,
+  REALM_WEATHER_PRESETS,
   RegionalBorderPortal,
   RegionalLocalLandmark,
-  VAELORIA_CARDINAL_REALMS,
-  VAELORIA_DEEP_FRONTIERS,
+  SCOPE_PROVINCE_PROJECTIONS,
   VAELORIA_REALM_ORDER,
   VAELORIA_REGIONAL_MAPS,
   VaeloriaMapScope,
   VaeloriaRealmId,
   resolveNearestRealmFromWorldCoords,
 } from '../data/vaeloriaMultimapData';
+import {
+  AtlasLayerVisibility,
+  DEFAULT_ATLAS_LAYER_VISIBILITY,
+  VaeloriaHistoricalEraId,
+} from '../data/vaeloriaCartographyDetails';
+import {
+  CartographicInspectionNote,
+  VaeloriaGazetteerEntry,
+  buildSettlementInspectionNote,
+} from '../data/vaeloriaCapitalDistricts';
+import {
+  AtlasLayerAndSearchHud,
+  CartographerInspectorCard,
+  CartographicHtmlPinsLayer,
+  CartographicScaleRuler,
+  CartographicSvgLayer,
+  GazetteerHighlightTarget,
+  MultiScaleScopeNavigator,
+} from './CartographicAtlasExtras';
 import {
   getFogOfWarEnabled,
   getLandmarkEventDef,
@@ -151,6 +172,20 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     realm: VaeloriaRealmId;
     landmark: RegionalLocalLandmark;
   } | null>(null);
+  const [atlasLayers, setAtlasLayers] = useState<AtlasLayerVisibility>(
+    DEFAULT_ATLAS_LAYER_VISIBILITY
+  );
+  const [eraFilter, setEraFilter] = useState<VaeloriaHistoricalEraId>('all_eras');
+  const [inspectedNote, setInspectedNote] =
+    useState<CartographicInspectionNote | null>(null);
+  const [gazetteerHighlight, setGazetteerHighlight] =
+    useState<GazetteerHighlightTarget | null>(null);
+
+  useEffect(() => {
+    if (!gazetteerHighlight) return;
+    const t = window.setTimeout(() => setGazetteerHighlight(null), 5500);
+    return () => window.clearTimeout(t);
+  }, [gazetteerHighlight]);
 
   useEffect(() => {
     setPendingBuff(getPendingOverworldBuff('conquest'));
@@ -180,14 +215,31 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
       VAELORIA_REALM_ORDER.map((rid) => [rid, { total: 0, owned: 0 }])
     ) as Record<VaeloriaRealmId, { total: number; owned: number }>;
     for (const item of enrichedAllProvinces) {
-      stats[item.realm].total += 1;
       const owner = provinceOwners[item.prov.id] ?? item.prov.initialOwner;
-      if (owner === playerFactionId) {
-        stats[item.realm].owned += 1;
+      const isOwned = owner === playerFactionId;
+      stats[item.realm].total += 1;
+      if (isOwned) stats[item.realm].owned += 1;
+      for (const rid of VAELORIA_REALM_ORDER) {
+        if (rid === item.realm) continue;
+        if (SCOPE_PROVINCE_PROJECTIONS[rid]?.[item.prov.id]) {
+          stats[rid].total += 1;
+          if (isOwned) stats[rid].owned += 1;
+        }
       }
     }
     return stats;
   }, [enrichedAllProvinces, provinceOwners, playerFactionId]);
+
+  const realmBadgeStrings = useMemo(() => {
+    const out: Partial<Record<VaeloriaRealmId, string>> = {};
+    for (const rid of VAELORIA_REALM_ORDER) {
+      const st = realmProvinceStats[rid];
+      if (st.total > 0) {
+        out[rid] = `${st.owned}/${st.total}`;
+      }
+    }
+    return out;
+  }, [realmProvinceStats]);
 
   const positionedProvinces: PositionedProvinceEntry[] = useMemo(() => {
     if (mapScope === 'world') {
@@ -197,26 +249,34 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         y: item.prov.y,
       }));
     }
-    return enrichedAllProvinces
-      .filter((item) => item.realm === mapScope)
-      .map((item) => ({
-        ...item,
-        x: item.rx,
-        y: item.ry,
-      }));
+    const proj = SCOPE_PROVINCE_PROJECTIONS[mapScope];
+    return enrichedAllProvinces.flatMap((item) => {
+      if (item.realm === mapScope) {
+        return [{ ...item, x: item.rx, y: item.ry }];
+      }
+      const pCoord = proj?.[item.prov.id];
+      if (pCoord) {
+        return [{ ...item, x: pCoord.rx, y: pCoord.ry }];
+      }
+      return [];
+    });
   }, [mapScope, enrichedAllProvinces]);
 
   const activeGeometries = useMemo(() => {
     if (mapScope === 'world') {
       return worldGeometries;
     }
-    const seeds = enrichedAllProvinces
-      .filter((item) => item.realm === mapScope)
-      .map((item) => ({
-        provinceId: item.prov.id,
-        rx: item.rx,
-        ry: item.ry,
-      }));
+    const proj = SCOPE_PROVINCE_PROJECTIONS[mapScope];
+    const seeds = enrichedAllProvinces.flatMap((item) => {
+      if (item.realm === mapScope) {
+        return [{ provinceId: item.prov.id, rx: item.rx, ry: item.ry }];
+      }
+      const pCoord = proj?.[item.prov.id];
+      if (pCoord) {
+        return [{ provinceId: item.prov.id, rx: pCoord.rx, ry: pCoord.ry }];
+      }
+      return [];
+    });
     return getRegionalConquestGeometries(mapScope, seeds);
   }, [mapScope, worldGeometries, enrichedAllProvinces]);
 
@@ -229,7 +289,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
 
   const [zoom, setZoom] = useState<number>(() => (isMobileViewport() ? 1 : 1.75));
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [overlayMode, setOverlayMode] = useState<'political' | 'terrain'>('political');
+  const [overlayMode, setOverlayMode] = useState<
+    'political' | 'terrain' | 'economy' | 'leylines' | 'military'
+  >('political');
   const [hoveredProvId, setHoveredProvId] = useState<string | null>(null);
 
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -301,7 +363,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
 
   const applyZoom = useCallback(
     (rawZoom: number) => {
-      const nextZoom = Math.max(1, Math.min(3.8, Number(rawZoom.toFixed(2))));
+      const nextZoom = Math.max(1, Math.min(4.5, Number(rawZoom.toFixed(2))));
       setZoom(nextZoom);
       if (followPawn && nextZoom > 1.02) {
         centerCameraAt(pawnPosRef.current.x, pawnPosRef.current.y, nextZoom);
@@ -372,7 +434,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
         requestAnimationFrame(() => {
           centerCameraAt(selProv.x, selProv.y, nextZ);
         });
-        setPortalBanner('🌍 Megamapa Continental de Vaeloria (30 Províncias)');
+        setPortalBanner(
+          `🌍 Megamapa Continental de Vaeloria (${CONQUEST_PROVINCES.length} Províncias)`
+        );
         return;
       }
 
@@ -380,7 +444,13 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
       setMusicState('sanctuary', regDef.domain);
       markRealmVisited(nextScope);
 
-      const realmProvs = enrichedAllProvinces.filter((p) => p.realm === nextScope);
+      const proj = SCOPE_PROVINCE_PROJECTIONS[nextScope];
+      const realmProvs = enrichedAllProvinces.flatMap((p) => {
+        if (p.realm === nextScope) return [p];
+        const pc = proj?.[p.prov.id];
+        if (pc) return [{ ...p, rx: pc.rx, ry: pc.ry }];
+        return [];
+      });
       const activeInRealm = realmProvs.find((p) => p.prov.id === selectedProvinceId);
       const preferred =
         activeInRealm ??
@@ -403,7 +473,10 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
       }
 
       setPortalBanner(
-        arrivalOverride?.banner ?? `${regDef.icon} ${regDef.name} (5 Províncias)`
+        arrivalOverride?.banner ??
+          `${regDef.icon} ${regDef.name} (${realmProvs.length} ${
+            realmProvs.length === 1 ? 'Cidadela' : 'Províncias'
+          })`
       );
     },
     [selectedProvinceId, enrichedAllProvinces, centerCameraAt, onSelectProvince]
@@ -733,7 +806,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     const targetEl = e.target as HTMLElement | null;
     if (
       targetEl?.closest(
-        '.cqm-prov-pin, .vwm-landmark-node, .vwm-pawn-challenge-pill, .vwm-dpad, .cqm-poly-hit, .vwm-portal-gate, .vwm-realm-dive-chip, .vwm-minimap-radar, .vwm-minimap-toggle-pill'
+        '.cqm-prov-pin, .vwm-landmark-node, .vwm-pawn-challenge-pill, .vwm-dpad, .cqm-poly-hit, .vwm-portal-gate, .vwm-realm-dive-chip, .vwm-minimap-radar, .vwm-minimap-toggle-pill, .carto-toponym-pin, .carto-unified-settlement-pin, .carto-capital-district-pin, .carto-historical-battle-pin, .cartographer-notebook-card, .atlas-hud-cluster, .cartographic-scale-ruler, .cqm-settlement-hit'
       )
     ) {
       return;
@@ -805,95 +878,97 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
     };
   }, [mapScope, zoom, pan.x, pan.y]);
 
+  const handleSelectGazetteerEntry = useCallback(
+    (entry: VaeloriaGazetteerEntry) => {
+      setGazetteerHighlight({
+        scope: entry.scope,
+        x: entry.x,
+        y: entry.y,
+        label: entry.name,
+      });
+      if (entry.inspectionNote) {
+        setInspectedNote(entry.inspectionNote);
+      }
+      if (entry.provinceId) {
+        const p = CONQUEST_PROVINCES_BY_ID[entry.provinceId];
+        if (p) {
+          lastSelectedRef.current = p.id;
+          onSelectProvince(p);
+        }
+      }
+      const targetZoom = Math.max(1.25, Math.min(4.5, entry.recommendedZoom));
+      if (entry.scope !== mapScopeRef.current) {
+        handleSwitchMapScope(entry.scope, {
+          x: entry.x,
+          y: entry.y,
+          banner: `🔎 ${entry.name}`,
+        });
+        window.setTimeout(() => {
+          setFollowPawn(false);
+          setZoom(targetZoom);
+          centerCameraAt(entry.x, entry.y, targetZoom);
+        }, 40);
+      } else {
+        setFollowPawn(false);
+        startMarchTo(entry.x, entry.y, true);
+        setZoom(targetZoom);
+        requestAnimationFrame(() => {
+          centerCameraAt(entry.x, entry.y, targetZoom);
+        });
+        setPortalBanner(`🔎 ${entry.name}`);
+      }
+    },
+    [onSelectProvince, handleSwitchMapScope, centerCameraAt, startMarchTo]
+  );
+
+  const selectedCapitalMapId =
+    CAPITAL_PROVINCE_TO_CAPITAL_MAP[selectedProvinceId];
+  const selectedCapitalMapDef = selectedCapitalMapId
+    ? VAELORIA_REGIONAL_MAPS[selectedCapitalMapId]
+    : null;
+
   return (
     <div
       className={`conquest-megamap-shell ${
         isTheaterFullscreen ? 'is-theater-fullscreen' : ''
       } ${mapScope !== 'world' ? 'is-regional-scope' : ''}`}
     >
-      {/* 1. 13-MAP INTERCONNECTED GEOPOLITICAL MULTIMAP BAR */}
-      <div className="vwm-multimap-atlas-bar" role="tablist" aria-label="Atlas Geopolítico de Vaeloria">
-        <button
-          type="button"
-          className={`vwm-atlas-pill is-world-pill ${mapScope === 'world' ? 'is-active' : ''}`}
-          onClick={() => handleSwitchMapScope('world')}
-        >
-          <span>🌍</span>
-          <strong>Continente</strong>
-          <small>
-            {ownedTotalCount}/{CONQUEST_PROVINCES.length}
-          </small>
-        </button>
+      {/* 1. 21-MAP QUADRI-SCALE INTERCONNECTED GEOPOLITICAL MULTIMAP BAR */}
+      <MultiScaleScopeNavigator
+        mapScope={mapScope}
+        onSelectScope={(s) => handleSwitchMapScope(s)}
+        worldBadge={`${ownedTotalCount}/${CONQUEST_PROVINCES.length}`}
+        countByRealm={realmBadgeStrings}
+        variant="conquest"
+      />
 
-        {VAELORIA_CARDINAL_REALMS.map((rid) => {
-          const rdef = VAELORIA_REGIONAL_MAPS[rid];
-          const st = realmProvinceStats[rid];
-          const isCurrent = mapScope === rid;
-          return (
-            <button
-              key={rid}
-              type="button"
-              className={`vwm-atlas-pill ${isCurrent ? 'is-active' : ''}`}
-              style={{ '--realm-accent': rdef.accentColor } as React.CSSProperties}
-              onClick={() => handleSwitchMapScope(rid)}
-              title={`Abrir Mapa Regional de Guerra de ${rdef.name}`}
-            >
-              <span>{rdef.icon}</span>
-              <strong>{rdef.shortName}</strong>
-              <small>
-                {st.owned}/{st.total}
-              </small>
-            </button>
-          );
-        })}
-
-        <span className="vwm-atlas-divider" aria-hidden="true">
-          ✦ FRONTEIRAS
-        </span>
-
-        {VAELORIA_DEEP_FRONTIERS.map((rid) => {
-          const rdef = VAELORIA_REGIONAL_MAPS[rid];
-          const st = realmProvinceStats[rid];
-          const isCurrent = mapScope === rid;
-          return (
-            <button
-              key={rid}
-              type="button"
-              className={`vwm-atlas-pill is-frontier-pill ${isCurrent ? 'is-active' : ''}`}
-              style={{ '--realm-accent': rdef.accentColor } as React.CSSProperties}
-              onClick={() => handleSwitchMapScope(rid)}
-              title={`Abrir Fronteira Profunda: ${rdef.name}`}
-            >
-              <span>{rdef.icon}</span>
-              <strong>{rdef.shortName}</strong>
-              <small>
-                {st.owned}/{st.total}
-              </small>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* 2. Top Megamap Telemetry & Multi-LOD Controls */}
+      {/* 2. Top Megamap Telemetry, 5 Geopolitical Lenses & Multi-LOD Controls */}
       <div className="cqm-toolbar">
         <div className="cqm-lod-group">
           <span className={`cqm-lod-pill lod-${lodLevel}`}>
             {activeRegionalDef
               ? `${activeRegionalDef.icon} ${activeRegionalDef.shortName.toUpperCase()} • ${
-                  activeRegionalDef.tier === 'deep_frontier' ? 'FRONTEIRA PROFUNDA' : 'MAPA REGIONAL'
+                  activeRegionalDef.tier === 'imperial_capital'
+                    ? 'PLANTA IMPERIAL (4ª ESCALA)'
+                    : activeRegionalDef.tier === 'transit_corridor'
+                      ? 'CORREDOR TRANSCONTINENTAL'
+                      : activeRegionalDef.tier === 'deep_frontier'
+                        ? 'FRONTEIRA PROFUNDA'
+                        : 'MAPA REGIONAL'
                 }`
               : lodLevel === 1
-              ? '🔭 LOD 1 • IMPÉRIOS'
-              : lodLevel === 2
-              ? `🗺️ LOD 2 • PROVÍNCIAS (${CONQUEST_PROVINCES.length})`
-              : '🔍 LOD 3 • TÁTICO LOCAL'}
+                ? '🔭 LOD 1 • IMPÉRIOS'
+                : lodLevel === 2
+                  ? `🗺️ LOD 2 • PROVÍNCIAS (${CONQUEST_PROVINCES.length})`
+                  : '🔍 LOD 3 • TÁTICO LOCAL'}
           </span>
 
-          <div className="vwm-mode-switch">
+          <div className="vwm-mode-switch" role="group" aria-label="5 Lentes Estratégicas da Conquista">
             <button
               type="button"
               className={`vwm-mode-switch-btn ${overlayMode === 'political' ? 'is-active' : ''}`}
               onClick={() => setOverlayMode('political')}
+              title="Lente Política: Fronteiras imperiais e controle de facção"
             >
               🎨 Político
             </button>
@@ -901,8 +976,33 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               type="button"
               className={`vwm-mode-switch-btn ${overlayMode === 'terrain' ? 'is-active' : ''}`}
               onClick={() => setOverlayMode('terrain')}
+              title="Lente Física: Relevo, rios, cordilheiras e passagens naturais"
             >
               🏔️ Relevo
+            </button>
+            <button
+              type="button"
+              className={`vwm-mode-switch-btn ${overlayMode === 'economy' ? 'is-active' : ''}`}
+              onClick={() => setOverlayMode('economy')}
+              title="Lente Logística: Fluxo de Suprimentos BFS, renda +⚙️ e alertas de enclave isolado"
+            >
+              ⚙️ Suprimentos
+            </button>
+            <button
+              type="button"
+              className={`vwm-mode-switch-btn ${overlayMode === 'leylines' ? 'is-active' : ''}`}
+              onClick={() => setOverlayMode('leylines')}
+              title="Lente Arcana: Domínios nativos, Santuários de Ley e clima tático regional"
+            >
+              🔮 Ley & Clima
+            </button>
+            <button
+              type="button"
+              className={`vwm-mode-switch-btn ${overlayMode === 'military' ? 'is-active' : ''}`}
+              onClick={() => setOverlayMode('military')}
+              title="Lente Militar: Força de guarnição ❤️, fortificações 🛡️, edifícios e alvos de cerco"
+            >
+              ⚔️ Guarnições
             </button>
           </div>
         </div>
@@ -915,6 +1015,17 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             >
               ✦ {pendingBuff.summaryLabel}
             </span>
+          )}
+
+          {selectedCapitalMapDef && mapScope !== selectedCapitalMapDef.id && (
+            <button
+              type="button"
+              className="vwm-tool-btn is-highlight-action"
+              onClick={() => handleSwitchMapScope(selectedCapitalMapDef.id)}
+              title={`Abrir Planta Urbana de 4ª Escala: ${selectedCapitalMapDef.name}`}
+            >
+              🏰 {selectedCapitalMapDef.shortName}
+            </button>
           )}
 
           {mapScope === 'world' ? (
@@ -936,6 +1047,14 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               🌍 {CONQUEST_PROVINCES.length} Províncias
             </button>
           )}
+
+          <AtlasLayerAndSearchHud
+            layers={atlasLayers}
+            onChangeLayers={setAtlasLayers}
+            eraFilter={eraFilter}
+            onChangeEraFilter={setEraFilter}
+            onSelectGazetteerEntry={handleSelectGazetteerEntry}
+          />
 
           <button
             type="button"
@@ -991,7 +1110,8 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             type="button"
             className="vwm-tool-btn"
             onClick={() => applyZoom(zoom + 0.3)}
-            disabled={zoom >= 3.79}
+            disabled={zoom >= 4.49}
+            title="Aproximar câmera até 450% (LOD 4)"
           >
             +
           </button>
@@ -1164,7 +1284,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               </g>
             )}
 
-            {/* 1. Political Territory Polygons (30 World OR 5 Regional Provinces) */}
+            {/* 1. 5-Lens Geopolitical Territory Polygons (48 World OR Regional/Capital Provinces) */}
             <g className="cqm-provinces-polys">
               {positionedProvinces.map((entry) => {
                 const { prov } = entry;
@@ -1176,42 +1296,80 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 const isHovered = prov.id === hoveredProvId;
                 const isAttackable = !hasActedThisSeason && attackableProvinceIds.has(prov.id);
                 const isPlayerOwned = ownerId === playerFactionId;
+                const isIsolated = Boolean(isolatedProvinceIds?.has(prov.id));
+                const fortLvl = fortifications[prov.id] ?? 0;
+                const domHex = DOMAIN_META[prov.domain]?.color ?? '#94a3b8';
+
+                let lensFill = faction.fillColor;
+                let lensStroke = faction.color;
+                if (overlayMode === 'terrain') {
+                  lensFill = isSelected
+                    ? 'rgba(250, 204, 21, 0.14)'
+                    : 'rgba(15, 23, 42, 0.04)';
+                  lensStroke = 'rgba(226, 232, 240, 0.24)';
+                } else if (overlayMode === 'economy') {
+                  if (isIsolated) {
+                    lensFill = 'rgba(245, 158, 11, 0.36)';
+                    lensStroke = '#f59e0b';
+                  } else if (isPlayerOwned) {
+                    lensFill =
+                      prov.supplyIncome >= 4
+                        ? 'rgba(16, 185, 129, 0.34)'
+                        : 'rgba(52, 211, 153, 0.22)';
+                    lensStroke = '#34d399';
+                  } else {
+                    lensFill =
+                      prov.supplyIncome >= 4
+                        ? 'rgba(250, 204, 21, 0.22)'
+                        : 'rgba(15, 23, 42, 0.2)';
+                    lensStroke = 'rgba(250, 204, 21, 0.45)';
+                  }
+                } else if (overlayMode === 'leylines') {
+                  lensFill = `${domHex}30`;
+                  lensStroke = domHex;
+                } else if (overlayMode === 'military') {
+                  if (isAttackable) {
+                    lensFill = 'rgba(239, 68, 68, 0.3)';
+                    lensStroke = '#f87171';
+                  } else if (isPlayerOwned) {
+                    lensFill =
+                      fortLvl > 0
+                        ? 'rgba(56, 189, 248, 0.28)'
+                        : 'rgba(34, 197, 94, 0.22)';
+                    lensStroke = '#38bdf8';
+                  } else {
+                    lensFill = 'rgba(15, 23, 42, 0.28)';
+                    lensStroke = 'rgba(148, 163, 184, 0.42)';
+                  }
+                }
 
                 return (
                   <g key={`poly-${prov.id}`}>
                     <path
                       d={geo.svgPath}
-                      fill={
-                        overlayMode === 'political'
-                          ? faction.fillColor
-                          : isSelected
-                          ? 'rgba(250, 204, 21, 0.14)'
-                          : 'rgba(15, 23, 42, 0.04)'
-                      }
+                      fill={lensFill}
                       fillOpacity={
                         overlayMode === 'terrain'
                           ? 1
                           : activeRegionalDef
-                          ? isSelected || isHovered
-                            ? 0.85
-                            : 0.62
-                          : isSelected || isHovered
-                          ? 1
-                          : isPlayerOwned
-                          ? 0.92
-                          : 0.72
+                            ? isSelected || isHovered
+                              ? 0.88
+                              : 0.65
+                            : isSelected || isHovered
+                              ? 1
+                              : isPlayerOwned
+                                ? 0.92
+                                : 0.74
                       }
                       stroke={
                         isSelected
                           ? '#fef08a'
                           : isAttackable && isHovered
-                          ? '#f87171'
-                          : overlayMode === 'political'
-                          ? faction.color
-                          : 'rgba(226, 232, 240, 0.22)'
+                            ? '#f87171'
+                            : lensStroke
                       }
-                      strokeWidth={isSelected ? 4.5 : 1.6}
-                      strokeOpacity={isSelected ? 0.98 : overlayMode === 'political' ? 0.48 : 0.25}
+                      strokeWidth={isSelected ? 4.5 : overlayMode === 'economy' && isIsolated ? 3.4 : 1.8}
+                      strokeOpacity={isSelected ? 0.98 : overlayMode === 'terrain' ? 0.25 : 0.56}
                       className="cqm-poly-hit"
                       onClick={(e) => handleActivateProvince(e, entry)}
                       onMouseEnter={() => setHoveredProvId(prov.id)}
@@ -1219,7 +1377,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                         setHoveredProvId((prev) => (prev === prov.id ? null : prev))
                       }
                     />
-                    {isAttackable && (isSelected || isHovered) && (
+                    {isAttackable && (isSelected || isHovered || overlayMode === 'military') && (
                       <path
                         d={geo.svgPath}
                         fill="url(#cqmTargetHatch)"
@@ -1230,6 +1388,17 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 );
               })}
             </g>
+
+            {/* 1B. Living Cartographic Hydrography, Magma, Sea Lanes, Sky Jets, Ley Conduits & Animated Traffic */}
+            <CartographicSvgLayer
+              scope={mapScope}
+              zoom={zoom}
+              viewBoxWidth={CONQUEST_MAP_WIDTH}
+              viewBoxHeight={CONQUEST_MAP_HEIGHT}
+              layers={atlasLayers}
+              idPrefix="cqm_svg"
+              onInspectNote={setInspectedNote}
+            />
 
             {/* 2. Dynamic Empire Merging Borders vs Internal County Borders */}
             <g className="cqm-borders-layer" pointerEvents="none">
@@ -1289,11 +1458,25 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 const mx = (x1 + x2) / 2;
                 const my = (y1 + y2) / 2 - (lnk.isNavalOrSky ? 28 : 14);
 
+                const ownerA = provinceOwners[lnk.a.prov.id] ?? lnk.a.prov.initialOwner;
+                const ownerB = provinceOwners[lnk.b.prov.id] ?? lnk.b.prov.initialOwner;
+                const isPlayerSupplyCorridor =
+                  ownerA === playerFactionId &&
+                  ownerB === playerFactionId &&
+                  !isolatedProvinceIds?.has(lnk.a.prov.id) &&
+                  !isolatedProvinceIds?.has(lnk.b.prov.id);
+                const isLeyResonanceLink =
+                  overlayMode === 'leylines' &&
+                  (buildings[lnk.a.prov.id] === 'ley_sanctum' ||
+                    buildings[lnk.b.prov.id] === 'ley_sanctum' ||
+                    lnk.a.prov.terrainKind === 'sanctuary' ||
+                    lnk.b.prov.terrainKind === 'sanctuary');
+
                 const isAttackVector =
                   !hasActedThisSeason &&
-                  ((provinceOwners[lnk.a.prov.id] === playerFactionId &&
+                  ((ownerA === playerFactionId &&
                     attackableProvinceIds.has(lnk.b.prov.id)) ||
-                    (provinceOwners[lnk.b.prov.id] === playerFactionId &&
+                    (ownerB === playerFactionId &&
                       attackableProvinceIds.has(lnk.a.prov.id)));
 
                 return (
@@ -1302,14 +1485,30 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                     d={`M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`}
                     fill="none"
                     stroke={
-                      isAttackVector
-                        ? 'rgba(251, 146, 60, 0.92)'
-                        : lnk.isNavalOrSky
-                        ? 'rgba(56, 189, 248, 0.65)'
-                        : 'rgba(226, 232, 240, 0.5)'
+                      overlayMode === 'economy' && isPlayerSupplyCorridor
+                        ? '#34d399'
+                        : isLeyResonanceLink
+                          ? '#c084fc'
+                          : isAttackVector
+                            ? 'rgba(251, 146, 60, 0.94)'
+                            : lnk.isNavalOrSky
+                              ? 'rgba(56, 189, 248, 0.65)'
+                              : 'rgba(226, 232, 240, 0.5)'
                     }
-                    strokeWidth={touchesSelected || isAttackVector ? 3.8 : 2.4}
+                    strokeWidth={
+                      (overlayMode === 'economy' && isPlayerSupplyCorridor) ||
+                      isLeyResonanceLink
+                        ? 4.6
+                        : touchesSelected || isAttackVector
+                          ? 3.8
+                          : 2.4
+                    }
                     strokeDasharray={lnk.isNavalOrSky ? '10 8' : '6 7'}
+                    className={
+                      overlayMode === 'economy' && isPlayerSupplyCorridor
+                        ? 'cqm-supply-flow-line'
+                        : undefined
+                    }
                   />
                 );
               })}
@@ -1380,9 +1579,9 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               </g>
             )}
 
-            {/* 5. Local Micro-Settlements (LOD 3 on World OR Always inside Regional Maps!) */}
-            {lodLevel >= 3 && (
-              <g filter="url(#cqmTextHalo)" pointerEvents="none">
+            {/* 5. Local Micro-Settlements (162 Clickable Villages, Mines, Harbors, Shrines & Watchtowers!) */}
+            {lodLevel >= 3 && atlasLayers.settlementsAndDistricts && (
+              <g filter="url(#cqmTextHalo)">
                 {positionedProvinces.map((entry) =>
                   entry.prov.microSettlements.map((ms, idx) => {
                     const spreadMul = activeRegionalDef ? 2.15 : 1;
@@ -1391,7 +1590,25 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                     const sx = (pctX / 100) * CONQUEST_MAP_WIDTH;
                     const sy = (pctY / 100) * CONQUEST_MAP_HEIGHT;
                     return (
-                      <g key={`${entry.prov.id}-ms-${idx}`} transform={`translate(${sx}, ${sy})`}>
+                      <g
+                        key={`${entry.prov.id}-ms-${idx}`}
+                        transform={`translate(${sx}, ${sy})`}
+                        className="cqm-settlement-hit"
+                        style={{ cursor: 'pointer', pointerEvents: 'all' }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playSfx('landmark_discover');
+                          setInspectedNote(
+                            buildSettlementInspectionNote(
+                              entry.prov,
+                              ms,
+                              pctX,
+                              pctY,
+                              mapScope
+                            )
+                          );
+                        }}
+                      >
                         <circle
                           cx="0"
                           cy="0"
@@ -1419,6 +1636,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                         >
                           {ms.name}
                         </text>
+                        <title>{`${ms.name} (${entry.prov.name}) — Clique para abrir no Caderno do Cartógrafo`}</title>
                       </g>
                     );
                   })
@@ -1491,6 +1709,17 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               />
             )}
           </svg>
+
+          {/* Multi-LOD Toponyms, 36 Capital Districts & VII Cantos Battlefields */}
+          <CartographicHtmlPinsLayer
+            scope={mapScope}
+            zoom={zoom}
+            layers={atlasLayers}
+            eraFilter={eraFilter}
+            showUnifiedSettlements={false}
+            highlightTarget={gazetteerHighlight}
+            onInspectNote={setInspectedNote}
+          />
 
           {/* Inside Regional Map: Interactive Living Landmarks (3-Season Cooldown in Conquest!) */}
           {activeRegionalDef &&
@@ -1646,13 +1875,39 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                   </span>
                 )}
 
-                {(prov.isCapital || lodLevel >= 2 || isSelected || isHovered) && (
+                {(prov.isCapital ||
+                  lodLevel >= 2 ||
+                  isSelected ||
+                  isHovered ||
+                  overlayMode !== 'political') && (
                   <span className="cqm-prov-label">
                     <strong>{prov.name}</strong>
-                    {(lodLevel >= 3 || isSelected || isHovered) && (
+                    {(lodLevel >= 3 ||
+                      isSelected ||
+                      isHovered ||
+                      overlayMode !== 'political') && (
                       <em>
-                        {ownerFaction.shortName} • +{prov.supplyIncome}⚙️
-                        {isAttackable ? ' • ⚔️ ALVO' : ''}
+                        {overlayMode === 'military'
+                          ? `❤️${20 + fortLvl * 4 + (prov.isCapital ? 8 : 0)} Guarnição${
+                              fortLvl > 0 ? ` • 🛡️Nv.${fortLvl}` : ''
+                            }${isAttackable ? ' • ⚔️ ALVO' : ''}`
+                          : overlayMode === 'leylines'
+                            ? `${REALM_WEATHER_PRESETS[entry.realm].icon} ${
+                                DOMAIN_META[prov.domain].shortName
+                              }${
+                                buildings[prov.id] === 'ley_sanctum'
+                                  ? ' • 🔮 Santuário'
+                                  : ''
+                              }`
+                            : overlayMode === 'economy'
+                              ? `${
+                                  isIsolated
+                                    ? `⚠️ Isolada (+${Math.floor(prov.supplyIncome / 2)}⚙️)`
+                                    : `✅ Suprida (+${prov.supplyIncome}⚙️)`
+                                }`
+                              : `${ownerFaction.shortName} • +${prov.supplyIncome}⚙️${
+                                  isAttackable ? ' • ⚔️ ALVO' : ''
+                                }`}
                       </em>
                     )}
                   </span>
@@ -1848,19 +2103,31 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             ▼
           </button>
         </div>
+
+        {/* Dynamic Cartographic Scale Ruler (Leagues / Meters) */}
+        <CartographicScaleRuler scope={mapScope} zoom={zoom} />
+
+        {/* "📖 Caderno do Cartógrafo Real" Inspector Drawer */}
+        <CartographerInspectorCard
+          note={inspectedNote}
+          onClose={() => setInspectedNote(null)}
+          onNavigateScope={(s) => handleSwitchMapScope(s)}
+        />
       </div>
 
       <div className="vwm-footer-hint">
         <span>
           {mapScope === 'world' ? (
             <>
-              🧭 <strong>Atlas Tri-Escala (13 Mapas)</strong>: Selecione qualquer <strong>Reino ou Fronteira</strong> acima •{' '}
-              <strong>Zoom LOD (1x–3.8x)</strong> • Vigie suas <strong>Linhas de Suprimento</strong> e cerque províncias vizinhas!
+              🧭 <strong>Atlas Geopolítico Quadri-Escala (21 Mapas • {CONQUEST_PROVINCES.length} Províncias)</strong>:{' '}
+              Alterne entre as <strong>5 Lentes Estratégicas</strong> • Clique em vilas, rios ou montanhas para abrir o{' '}
+              <strong>📖 Caderno do Cartógrafo</strong> • Zoom profundo até <strong>4.5x</strong>
             </>
           ) : (
             <>
-              🧭 Clique nos <strong>✦ Marcos Regionais</strong> (+Suprimentos⚙️ ou Bônus de Cerco) • Marche até os{' '}
-              <strong>Portais de Fronteira</strong> para cruzar Reinos e Fronteiras Profundas • <strong>🌍 Continente</strong> retorna às {CONQUEST_PROVINCES.length} províncias
+              🧭 Clique nos <strong>✦ 120 Marcos Regionais</strong> (+Suprimentos⚙️),{' '}
+              <strong>🏰 36 Distritos Imperiais</strong> ou <strong>🏘️ 162 Assentamentos</strong> •{' '}
+              <strong>🌍 {CONQUEST_PROVINCES.length} Províncias</strong> retorna à visão continental
             </>
           )}
         </span>

@@ -20980,6 +20980,30 @@ input:focus-visible,
 .arena-fullscreen-stage.biome-realm-prismatic_crater {
   background: radial-gradient(ellipse at 50% 15%, rgba(244, 114, 182, 0.22), transparent 65%), #090612;
 }
+.arena-fullscreen-stage.biome-realm-sea_of_storms {
+  background: radial-gradient(ellipse at 50% 15%, rgba(34, 211, 238, 0.22), transparent 65%), #040d14;
+}
+.arena-fullscreen-stage.biome-realm-boreal_skyway {
+  background: radial-gradient(ellipse at 50% 15%, rgba(253, 224, 71, 0.2), transparent 65%), #080a16;
+}
+.arena-fullscreen-stage.biome-realm-capital_veridia {
+  background: radial-gradient(ellipse at 50% 15%, rgba(16, 185, 129, 0.25), transparent 68%), #05100a;
+}
+.arena-fullscreen-stage.biome-realm-capital_vortex {
+  background: radial-gradient(ellipse at 50% 15%, rgba(56, 189, 248, 0.25), transparent 68%), #050b16;
+}
+.arena-fullscreen-stage.biome-realm-capital_solaria {
+  background: radial-gradient(ellipse at 50% 15%, rgba(234, 179, 8, 0.25), transparent 68%), #110d05;
+}
+.arena-fullscreen-stage.biome-realm-capital_eclipse {
+  background: radial-gradient(ellipse at 50% 15%, rgba(168, 85, 247, 0.25), transparent 68%), #09040f;
+}
+.arena-fullscreen-stage.biome-realm-capital_pyros {
+  background: radial-gradient(ellipse at 50% 15%, rgba(239, 68, 68, 0.26), transparent 68%), #120605;
+}
+.arena-fullscreen-stage.biome-realm-capital_axial {
+  background: radial-gradient(ellipse at 50% 15%, rgba(226, 232, 240, 0.22), transparent 68%), #090a10;
+}
 
 @media (max-width: 960px) {
   .ow-event-choices-grid.has-three-choices {
@@ -21109,5 +21133,1004 @@ input:focus-visible,
   .tg-ai-kpi-strip,
   .tg-ai-doctrine-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================================
+   ONDAS 1–5 (EXPANSÃO CARTOGRÁFICA PROFUNDA):
+   21 MAPAS QUADRI-ESCALA, HIDROGRAFIA VIVA, TOPÔNIMOS LOD 1–4, 36 DISTRITOS,
+   162 ASSENTAMENTOS, ALMANAQUE DE 767 LOCAIS & CADERNO DO CARTÓGRAFO REAL
+   ============================================================================ */
+
+/* 1. Quadri-Scale Navigator & Breadcrumb Strip */
+.multiscale-atlas-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+  padding: 0.5rem 0.68rem;
+  background: linear-gradient(180deg, rgba(11, 16, 28, 0.96) 0%, rgba(7, 10, 19, 0.98) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.34);
+  border-radius: 10px;
+  margin-bottom: 0.55rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+}
+
+.multiscale-tier-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.36rem;
+}
+
+.multiscale-tier-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  padding: 0.3rem 0.66rem;
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  color: #cbd5e1;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.multiscale-tier-tab:hover {
+  border-color: rgba(250, 204, 21, 0.55);
+  color: #fef08a;
+  background: rgba(30, 41, 59, 0.95);
+}
+
+.multiscale-tier-tab.subactive {
+  border-color: rgba(212, 175, 55, 0.48);
+  color: #f8fafc;
+  background: rgba(30, 41, 59, 0.92);
+}
+
+.multiscale-tier-tab.active {
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.26) 0%, rgba(146, 64, 14, 0.24) 100%);
+  border-color: #fbbf24;
+  color: #fef08a;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.24);
+}
+
+.multiscale-tier-tab-capital {
+  border-color: rgba(245, 158, 11, 0.38);
+}
+
+.multiscale-breadcrumb-strip {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+}
+
+.multiscale-crumb-sep {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 800;
+  user-select: none;
+}
+
+.multiscale-crumb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.multiscale-crumb-btn:hover {
+  color: #f8fafc;
+  border-color: rgba(250, 204, 21, 0.45);
+}
+
+.multiscale-crumb-btn.current {
+  color: #fde68a;
+  border-color: rgba(250, 204, 21, 0.55);
+  background: rgba(30, 41, 59, 0.92);
+}
+
+.multiscale-capital-dive-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.24rem 0.62rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(120, 53, 15, 0.55), rgba(15, 23, 42, 0.95));
+  border: 1px solid #fbbf24;
+  color: #fef08a;
+  font-family: var(--font-display);
+  font-size: 0.67rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.22);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.multiscale-capital-dive-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.4);
+}
+
+.multiscale-realms-row {
+  display: flex;
+  align-items: center;
+  gap: 0.36rem;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.multiscale-realm-chip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.34rem;
+  padding: 0.28rem 0.64rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #e2e8f0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.multiscale-realm-chip:hover {
+  background: rgba(30, 41, 59, 0.96);
+  border-color: rgba(250, 204, 21, 0.55);
+}
+
+.multiscale-realm-chip.active {
+  background: rgba(30, 41, 59, 0.98);
+  color: #fef08a;
+}
+
+.multiscale-chip-badge {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #fde68a;
+}
+
+/* 2. Floating Layers, Gazetteer Search (767) & Era Timeline HUD */
+.atlas-hud-cluster {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  z-index: 60;
+}
+
+.atlas-hud-buttons-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  flex-wrap: wrap;
+}
+
+.atlas-hud-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.28rem 0.62rem;
+  border-radius: 7px;
+  background: rgba(13, 19, 33, 0.92);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #e2e8f0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.atlas-hud-pill-btn:hover,
+.atlas-hud-pill-btn.active {
+  border-color: #fbbf24;
+  color: #fef08a;
+  background: rgba(30, 41, 59, 0.96);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.22);
+}
+
+.atlas-hud-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  padding: 0.72rem 0.82rem;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(11, 16, 29, 0.98) 0%, rgba(6, 9, 18, 0.99) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.58);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.88);
+  z-index: 220;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.atlas-gazetteer-popover {
+  width: 375px;
+}
+
+.atlas-popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.38rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #fef08a;
+  letter-spacing: 0.04em;
+}
+
+.atlas-popover-close {
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #cbd5e1;
+  border-radius: 5px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.atlas-layer-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.28rem 0.35rem;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  color: #e2e8f0;
+  cursor: pointer;
+}
+
+.atlas-layer-toggle-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.atlas-layer-toggle-row input[type='checkbox'] {
+  accent-color: #fbbf24;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.atlas-era-chips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 290px;
+  overflow-y: auto;
+}
+
+.atlas-era-option-btn {
+  text-align: left;
+  padding: 0.44rem 0.58rem;
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.84);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.atlas-era-option-btn:hover,
+.atlas-era-option-btn.active {
+  background: rgba(30, 41, 59, 0.96);
+  border-color: #fbbf24;
+}
+
+.atlas-era-opt-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.73rem;
+  color: #fef08a;
+  margin-bottom: 2px;
+}
+
+.atlas-era-opt-sub {
+  font-size: 0.66rem;
+  color: #94a3b8;
+  line-height: 1.35;
+}
+
+.atlas-era-hide-btn {
+  padding: 0.32rem 0.55rem;
+  border-radius: 6px;
+  background: rgba(127, 29, 29, 0.38);
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  color: #fecaca;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.atlas-gazetteer-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.65rem;
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  color: #f8fafc;
+  font-size: 0.76rem;
+  outline: none;
+}
+
+.atlas-gazetteer-input:focus {
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+}
+
+.atlas-gazetteer-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  max-height: 295px;
+  overflow-y: auto;
+}
+
+.atlas-gazetteer-empty {
+  padding: 1rem 0.5rem;
+  text-align: center;
+  font-size: 0.74rem;
+  color: #94a3b8;
+}
+
+.atlas-gazetteer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.52rem;
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.atlas-gazetteer-item:hover {
+  background: rgba(30, 41, 59, 0.96);
+  border-color: rgba(250, 204, 21, 0.48);
+}
+
+.atlas-gaz-icon {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.atlas-gaz-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.atlas-gaz-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.atlas-gaz-sub {
+  font-size: 0.64rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.atlas-gaz-scope-pill {
+  flex-shrink: 0;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #fde68a;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+
+/* 3. SVG Hydrography, Ley Conduits, Curved Calligraphic Labels & Animated Supply Flow */
+.myth-atlas-svg-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.myth-atlas-controls-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.myth-atlas-eras-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.34rem;
+}
+
+.carto-curved-path-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  fill: #e0f2fe;
+  paint-order: stroke fill;
+  stroke: rgba(2, 6, 23, 0.96);
+  stroke-width: 3.4px;
+  stroke-linejoin: round;
+  opacity: 0.92;
+}
+
+.carto-curved-label-lava_stream {
+  fill: #fed7aa;
+}
+
+.carto-curved-label-ley_conduit {
+  fill: #f3e8ff;
+}
+
+.carto-curved-label-sky_jet {
+  fill: #fef08a;
+}
+
+@keyframes cartoDashFlow {
+  from {
+    stroke-dashoffset: 44;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.carto-ley-animated-stroke {
+  animation: cartoDashFlow 3.4s linear infinite;
+}
+
+.cqm-supply-flow-line {
+  animation: cartoDashFlow 2.6s linear infinite;
+}
+
+/* 4. HTML Multi-LOD Toponyms, 162 Settlements, 36 Capital Districts & 15 Battlefields */
+.cartographic-html-pins-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.carto-toponym-pin {
+  position: absolute;
+  pointer-events: auto;
+  background: transparent;
+  border: none;
+  padding: 2px 5px;
+  font-family: var(--font-display);
+  color: rgba(248, 250, 252, 0.88);
+  text-shadow:
+    0 1px 3px rgba(2, 6, 23, 0.98),
+    0 0 7px rgba(2, 6, 23, 0.95),
+    0 0 14px rgba(2, 6, 23, 0.85);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.16s ease, filter 0.16s ease;
+}
+
+.carto-toponym-pin:hover {
+  color: #fef08a !important;
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.65));
+  z-index: 32;
+}
+
+.carto-toponym-lod-1 {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(254, 243, 199, 0.86);
+}
+
+.carto-toponym-lod-2 {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(226, 232, 240, 0.86);
+}
+
+.carto-toponym-lod-3 {
+  font-size: 0.6rem;
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(224, 242, 254, 0.88);
+}
+
+.carto-toponym-lod-4 {
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(253, 230, 138, 0.92);
+  background: rgba(8, 12, 24, 0.62);
+  border: 1px solid rgba(212, 175, 55, 0.32);
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+
+.carto-toponym-sea {
+  font-style: italic;
+  color: rgba(186, 230, 253, 0.86);
+  letter-spacing: 0.2em;
+}
+
+.carto-toponym-forest {
+  color: rgba(167, 243, 208, 0.88);
+}
+
+.carto-toponym-glacier {
+  color: rgba(224, 242, 254, 0.92);
+}
+
+.carto-unified-settlement-pin {
+  position: absolute;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(9, 14, 26, 0.84);
+  border: 1px solid rgba(212, 175, 55, 0.42);
+  color: #f1f5f9;
+  font-size: 0.58rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.72);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.carto-unified-settlement-pin:hover {
+  border-color: #fbbf24;
+  background: rgba(30, 41, 59, 0.96);
+  color: #fef08a;
+  z-index: 34;
+}
+
+.carto-capital-district-pin {
+  position: absolute;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px 4px 6px;
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(12, 17, 31, 0.94), rgba(6, 9, 18, 0.97));
+  border: 1.5px solid #fbbf24;
+  color: #f8fafc;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.82);
+  z-index: 22;
+  transition: box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.carto-capital-district-pin:hover {
+  background: rgba(23, 33, 54, 0.98);
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.45), 0 8px 20px rgba(0, 0, 0, 0.9);
+  z-index: 36;
+}
+
+.carto-district-crest {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(2, 6, 23, 0.85);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+
+.carto-district-meta {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.12;
+}
+
+.carto-district-role {
+  font-size: 0.52rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #fbbf24;
+  white-space: nowrap;
+}
+
+.carto-district-title {
+  font-family: var(--font-display);
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: #f8fafc;
+  white-space: nowrap;
+}
+
+.carto-historical-battle-pin {
+  position: absolute;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(69, 10, 10, 0.92), rgba(15, 23, 42, 0.95));
+  border: 1.5px solid #f87171;
+  color: #fef2f2;
+  font-size: 0.6rem;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.82);
+  z-index: 23;
+}
+
+.carto-historical-battle-pin:hover {
+  box-shadow: 0 0 16px rgba(248, 113, 113, 0.55);
+  z-index: 36;
+}
+
+.carto-battle-year {
+  color: #fde047;
+  font-family: var(--font-display);
+}
+
+.carto-gazetteer-highlight-ring {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 38;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.carto-gazetteer-ring-pulse {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid #facc15;
+  box-shadow: 0 0 22px rgba(250, 204, 21, 0.75), inset 0 0 14px rgba(250, 204, 21, 0.35);
+  animation: vwmRiftPulse 1.5s ease-in-out infinite;
+}
+
+.carto-gazetteer-ring-tag {
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(9, 13, 24, 0.95);
+  border: 1px solid #facc15;
+  color: #fef08a;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.vwm-realm-dive-chip.is-capital-dive-chip {
+  background: linear-gradient(135deg, rgba(69, 26, 3, 0.92), rgba(11, 16, 29, 0.96));
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.32), 0 6px 16px rgba(0, 0, 0, 0.75);
+}
+
+/* 5. "📖 Caderno do Cartógrafo Real" Inspector Drawer & Dynamic Scale Ruler */
+.cartographer-notebook-card {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 348px;
+  max-width: calc(100% - 24px);
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  padding: 0.85rem 0.95rem;
+  border-radius: 11px;
+  background: linear-gradient(180deg, rgba(13, 18, 31, 0.97) 0%, rgba(7, 10, 19, 0.99) 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.65);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.9), inset 0 0 24px rgba(212, 175, 55, 0.06);
+  z-index: 52;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cartographer-notebook-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cartographer-notebook-kicker {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.cartographer-notebook-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1.22;
+}
+
+.cartographer-notebook-sub {
+  font-size: 0.71rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.cartographer-notebook-close {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.cartographer-telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.38rem;
+}
+
+.cartographer-telemetry-cell {
+  padding: 0.36rem 0.48rem;
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.carto-tel-label {
+  font-size: 0.58rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.carto-tel-val {
+  font-size: 0.69rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.cartographer-lore-paragraph {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.48;
+  color: #cbd5e1;
+}
+
+.cartographer-tactical-box {
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.9);
+  border-left: 3px solid #fbbf24;
+  font-size: 0.71rem;
+  line-height: 1.4;
+  color: #fde68a;
+}
+
+.cartographer-fasttravel-btn {
+  padding: 0.42rem 0.7rem;
+  border-radius: 7px;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+  border: 1px solid #fbbf24;
+  color: #fef08a;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-align: center;
+}
+
+.cartographer-native-cards-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.38rem;
+}
+
+.cartographer-native-header {
+  font-family: var(--font-display);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fbbf24;
+}
+
+.cartographer-native-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.36rem;
+}
+
+.cartographer-native-card-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.3rem 0.42rem;
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #f8fafc;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.14s ease, border-color 0.14s ease;
+}
+
+.cartographer-native-card-chip:hover {
+  transform: translateY(-1px);
+  border-color: #fbbf24 !important;
+  background: rgba(30, 41, 59, 0.98);
+}
+
+.carto-ncard-thumb-wrap {
+  position: relative;
+  width: 30px;
+  height: 38px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #020617;
+}
+
+.carto-ncard-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carto-ncard-cost {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  min-width: 13px;
+  height: 13px;
+  padding: 0 2px;
+  border-radius: 999px;
+  font-size: 0.54rem;
+  font-weight: 900;
+  color: #020617;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carto-ncard-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.carto-ncard-name {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.carto-ncard-stats {
+  font-size: 0.58rem;
+  color: #94a3b8;
+}
+
+.cartographic-scale-ruler {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  z-index: 28;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: rgba(7, 11, 21, 0.88);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  font-size: 0.62rem;
+  color: #e2e8f0;
+  pointer-events: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+}
+
+.carto-scale-tier {
+  color: #fbbf24;
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.carto-scale-bar {
+  font-family: monospace;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.carto-scale-zoom {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .multiscale-breadcrumb-strip {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .cartographer-notebook-card {
+    top: auto;
+    bottom: 8px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+    max-height: 62%;
+  }
+
+  .atlas-hud-popover,
+  .atlas-gazetteer-popover {
+    right: auto;
+    left: 0;
+    width: min(330px, calc(100vw - 28px));
+  }
+
+  .cartographic-scale-ruler {
+    display: none;
   }
 }

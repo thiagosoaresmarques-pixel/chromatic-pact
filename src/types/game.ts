@@ -244,7 +244,15 @@ export type BiomeRealmId =
   | 'sunken_abyss'
   | 'deep_roots'
   | 'sky_bastions'
-  | 'prismatic_crater';
+  | 'prismatic_crater'
+  | 'sea_of_storms'
+  | 'boreal_skyway'
+  | 'capital_veridia'
+  | 'capital_vortex'
+  | 'capital_solaria'
+  | 'capital_eclipse'
+  | 'capital_pyros'
+  | 'capital_axial';
 
 export interface OverworldFieldBuff {
   id: string;

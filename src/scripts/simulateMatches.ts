@@ -25,11 +25,22 @@ import {
 import {
   VAELORIA_CARDINAL_REALMS,
   VAELORIA_DEEP_FRONTIERS,
+  VAELORIA_IMPERIAL_CAPITALS,
+  VAELORIA_TRANSIT_CORRIDORS,
   VAELORIA_REALM_ORDER,
   VAELORIA_REGIONAL_MAPS,
   STAGE_REGIONAL_COORDS,
   PROVINCE_REGIONAL_COORDS,
 } from '../data/vaeloriaMultimapData';
+import {
+  VAELORIA_CARTOGRAPHIC_PATHS,
+  VAELORIA_CARTOGRAPHIC_TOPONYMS,
+  VAELORIA_HISTORICAL_BATTLEFIELDS,
+} from '../data/vaeloriaCartographyDetails';
+import {
+  VAELORIA_CAPITAL_DISTRICTS,
+  getVaeloriaGazetteerIndex,
+} from '../data/vaeloriaCapitalDistricts';
 import {
   VAELORIA_WORLD_MAP_IMAGE,
   resolveStageMapNode,
@@ -109,15 +120,19 @@ function runAutomatedQA() {
   }
 
   // =========================================================================
-  // WAVE 1 QA: 13-Map Tri-Scale Atlas (1 World + 6 Cardinal + 6 Deep Frontiers)
+  // WAVE 1 QA: 21-Map Quadri-Scale Atlas (1 World + 6 Cardinal + 6 Deep Frontiers + 2 Corridors + 6 Capitals)
   // =========================================================================
-  console.log('\n[Wave 1] Validating 13-Map Tri-Scale Atlas & Bidirectional Portals...');
+  console.log('\n[Wave 1] Validating 21-Map Quadri-Scale Atlas & Bidirectional Portals...');
   if (
     VAELORIA_CARDINAL_REALMS.length !== 6 ||
     VAELORIA_DEEP_FRONTIERS.length !== 6 ||
-    VAELORIA_REALM_ORDER.length !== 12
+    VAELORIA_TRANSIT_CORRIDORS.length !== 2 ||
+    VAELORIA_IMPERIAL_CAPITALS.length !== 6 ||
+    VAELORIA_REALM_ORDER.length !== 20
   ) {
-    throw new Error(`Expected 6 Cardinal + 6 Deep Frontiers = 12 Realms, got ${VAELORIA_REALM_ORDER.length}`);
+    throw new Error(
+      `Expected 6 Cardinal + 6 Frontiers + 2 Corridors + 6 Capitals = 20 Realms, got ${VAELORIA_REALM_ORDER.length}`
+    );
   }
   const worldMapFull = path.join(process.cwd(), 'public', VAELORIA_WORLD_MAP_IMAGE.replace(/^\//, ''));
   if (!fs.existsSync(worldMapFull)) {
@@ -135,6 +150,18 @@ function runAutomatedQA() {
       throw new Error(`Realm ${realmId} has fewer than 2 portals`);
     }
     for (const portal of def.portals) {
+      if (
+        portal.x < 0 ||
+        portal.x > 100 ||
+        portal.y < 0 ||
+        portal.y > 100 ||
+        portal.arrivalX < 0 ||
+        portal.arrivalX > 100 ||
+        portal.arrivalY < 0 ||
+        portal.arrivalY > 100
+      ) {
+        throw new Error(`Out-of-bounds portal coordinates in ${realmId} (${portal.id})`);
+      }
       const targetDef = VAELORIA_REGIONAL_MAPS[portal.targetRealm];
       if (!targetDef) throw new Error(`Invalid portal targetRealm ${portal.targetRealm} in ${realmId}`);
       const hasReturn = targetDef.portals.some((p) => p.targetRealm === realmId);
@@ -145,13 +172,13 @@ function runAutomatedQA() {
     totalLandmarksCount += def.localLandmarks.length;
   }
   console.log(
-    `  OK — All 13 high-res map assets verified, bidirectional portals intact, ${totalLandmarksCount} Overworld landmarks registered.`
+    `  OK — All 21 high-res map assets verified, bidirectional portals intact across 4 tiers, ${totalLandmarksCount} Overworld landmarks registered.`
   );
 
   // =========================================================================
-  // WAVE 2 QA: 48-Province Conquest 2.0, BFS Supply Network, 5 Buildings, 8 Crises
+  // WAVE 2 QA: 48-Province Conquest 2.0, 162 Unified Settlements, BFS Supply & Cartography
   // =========================================================================
-  console.log('\n[Wave 2] Validating 48-Province Conquest Graph, Voronoi Silhouettes & BFS Supply...');
+  console.log('\n[Wave 2] Validating 48-Province Conquest Graph, 162 Settlements, Living Hydrography & LOD 1-4 Toponyms...');
   if (CONQUEST_PROVINCES.length !== 48) {
     throw new Error(`Expected 48 Conquest provinces, got ${CONQUEST_PROVINCES.length}`);
   }
@@ -162,10 +189,12 @@ function runAutomatedQA() {
     throw new Error(`Expected 8 Conquest Crises, got ${CONQUEST_CRISES.length}`);
   }
 
+  let totalSettlements = 0;
   for (const prov of CONQUEST_PROVINCES) {
     if (!PROVINCE_REGIONAL_COORDS[prov.id]) {
       throw new Error(`Province ${prov.id} missing PROVINCE_REGIONAL_COORDS entry`);
     }
+    totalSettlements += prov.microSettlements.length;
     for (const nId of prov.neighbors) {
       const neighbor = CONQUEST_PROVINCES_BY_ID[nId];
       if (!neighbor) {
@@ -175,6 +204,9 @@ function runAutomatedQA() {
         throw new Error(`Asymmetric province neighbor edge: ${prov.id} -> ${nId}`);
       }
     }
+  }
+  if (totalSettlements < 160) {
+    throw new Error(`Expected >= 160 unified micro-settlements, got ${totalSettlements}`);
   }
 
   const worldGeom = getConquestMapGeometries();
@@ -209,14 +241,54 @@ function runAutomatedQA() {
   if (!veridiaPocketSupply.isolatedIds.has(deepPyrosProv.id)) {
     throw new Error('BFS Supply Network failed to flag disconnected enclave pocket as isolated!');
   }
+
+  // Validate Living Hydrography, Multi-LOD Toponyms, 36 Capital Districts, 15 Battlefields & Gazetteer
+  if (VAELORIA_CARTOGRAPHIC_PATHS.length < 85) {
+    throw new Error(`Expected >= 85 cartographic curves, got ${VAELORIA_CARTOGRAPHIC_PATHS.length}`);
+  }
+  if (VAELORIA_CARTOGRAPHIC_TOPONYMS.length < 240) {
+    throw new Error(`Expected >= 240 LOD 1-4 toponyms, got ${VAELORIA_CARTOGRAPHIC_TOPONYMS.length}`);
+  }
+  if (VAELORIA_CAPITAL_DISTRICTS.length !== 36) {
+    throw new Error(`Expected 36 Capital Districts, got ${VAELORIA_CAPITAL_DISTRICTS.length}`);
+  }
+  if (VAELORIA_HISTORICAL_BATTLEFIELDS.length < 15) {
+    throw new Error(
+      `Expected >= 15 Historical Battlefields, got ${VAELORIA_HISTORICAL_BATTLEFIELDS.length}`
+    );
+  }
+  for (const p of VAELORIA_CARTOGRAPHIC_PATHS) {
+    for (const cid of p.nativeCardIds) {
+      if (!CARDS_BY_ID[cid]) throw new Error(`Path ${p.id} references unknown cardId ${cid}`);
+    }
+  }
+  for (const top of VAELORIA_CARTOGRAPHIC_TOPONYMS) {
+    for (const cid of top.nativeCardIds) {
+      if (!CARDS_BY_ID[cid]) throw new Error(`Toponym ${top.id} references unknown cardId ${cid}`);
+    }
+  }
+  for (const dist of VAELORIA_CAPITAL_DISTRICTS) {
+    for (const cid of dist.nativeCardIds) {
+      if (!CARDS_BY_ID[cid]) throw new Error(`District ${dist.id} references unknown cardId ${cid}`);
+    }
+  }
+  for (const bf of VAELORIA_HISTORICAL_BATTLEFIELDS) {
+    for (const cid of bf.nativeCardIds) {
+      if (!CARDS_BY_ID[cid]) throw new Error(`Battlefield ${bf.id} references unknown cardId ${cid}`);
+    }
+  }
+  const gazetteer = getVaeloriaGazetteerIndex();
+  if (gazetteer.length < 500) {
+    throw new Error(`Expected >= 500 Gazetteer locations, got ${gazetteer.length}`);
+  }
   console.log(
-    '  OK — All 48 provinces symmetric, 48 Voronoi paths valid, 5 buildings & 8 crises active, BFS logistics verified.'
+    `  OK — 48 provinces (${totalSettlements} settlements), ${VAELORIA_CARTOGRAPHIC_PATHS.length} living routes/rivers, ${VAELORIA_CARTOGRAPHIC_TOPONYMS.length} LOD 1-4 toponyms, ${VAELORIA_CAPITAL_DISTRICTS.length} districts, ${VAELORIA_HISTORICAL_BATTLEFIELDS.length} historical battlefields & ${gazetteer.length} Gazetteer entries verified.`
   );
 
   // =========================================================================
-  // WAVE 3 QA: Act VII (32 Bosses) & 72 Overworld Landmarks + Choice C
+  // WAVE 3 QA: Act VII (32 Bosses) & 120 Overworld Landmarks + 3-Choice Events
   // =========================================================================
-  console.log('\n[Wave 3] Validating 32 Campaign Bosses (Acts I-VII) & 72 Overworld Events...');
+  console.log('\n[Wave 3] Validating 32 Campaign Bosses (Acts I-VII) & 120 Overworld Events...');
   if (CAMPAIGN_BOSSES.length !== 32) {
     throw new Error(`Expected 32 Campaign Bosses, got ${CAMPAIGN_BOSSES.length}`);
   }
@@ -236,27 +308,31 @@ function runAutomatedQA() {
     }
   }
 
-  if (totalLandmarksCount !== 72) {
-    throw new Error(`Expected 72 Overworld landmarks across 12 realms, got ${totalLandmarksCount}`);
+  if (totalLandmarksCount !== 120) {
+    throw new Error(`Expected 120 Overworld landmarks across 20 realms, got ${totalLandmarksCount}`);
   }
   for (const realmId of VAELORIA_REALM_ORDER) {
     const rDef = VAELORIA_REGIONAL_MAPS[realmId];
     for (const lm of rDef.localLandmarks) {
       const ev = getLandmarkEventDef(realmId, lm);
-      if (rDef.tier === 'deep_frontier') {
+      if (
+        rDef.tier === 'deep_frontier' ||
+        rDef.tier === 'transit_corridor' ||
+        rDef.tier === 'imperial_capital'
+      ) {
         const choiceC = ev.choices.find((c) => c.id === 'choice_c');
         if (!choiceC) {
-          throw new Error(`Deep Frontier landmark ${lm.id} in ${realmId} missing choice_c!`);
+          throw new Error(`Expanded Realm landmark ${lm.id} in ${realmId} missing choice_c!`);
         }
         const previewC = resolveLandmarkChoicePreview(ev, choiceC, 'campaign');
-        if (previewC.shardsDelta <= 0 && !previewC.recruitedCard) {
-          throw new Error(`Deep Frontier choice_c on ${lm.id} granted neither shards nor card!`);
+        if (previewC.shardsDelta <= 0 && !previewC.recruitedCard && !previewC.fieldBuff) {
+          throw new Error(`Expanded Realm choice_c on ${lm.id} granted no reward!`);
         }
       }
     }
   }
   console.log(
-    '  OK — All 32 Campaign Bosses & 72 Overworld Landmarks (including Deep Frontier Choice C) verified.'
+    '  OK — All 32 Campaign Bosses & 120 Overworld Landmarks across 20 Realms verified.'
   );
 
   // =========================================================================

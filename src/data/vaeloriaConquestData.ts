@@ -1868,6 +1868,111 @@ export const CONQUEST_PROVINCES: ConquestProvinceDef[] = [
   },
 ];
 
+// Expansão Cartográfica Onda 3: +68 micro-assentamentos nomeados (elevando de 102 para 170 vilas, minas, portos, faróis e santuários)
+const EXTRA_PROVINCE_SETTLEMENTS: Record<string, MicroSettlement[]> = {
+  // Vórtex
+  prov_vortex_polar_spire: [
+    { name: 'Fundição do Pêndulo', dx: 1.8, dy: 1.4, kind: 'mine' },
+    { name: 'Farol Boreal Interno', dx: -1.9, dy: 1.3, kind: 'harbor' },
+  ],
+  prov_vortex_west_isles: [{ name: 'Ancoradouro de Geada', dx: 0.2, dy: 1.9, kind: 'harbor' }],
+  prov_vortex_dead_stars: [{ name: 'Mina de Meteorito Frio', dx: -1.8, dy: -1.2, kind: 'mine' }],
+  prov_vortex_glass_spires: [{ name: 'Capela da Refração', dx: 0.3, dy: -1.9, kind: 'shrine' }],
+  prov_vortex_sapphire_monolith: [{ name: 'Cais dos Baleeiros Polares', dx: 1.7, dy: 1.5, kind: 'harbor' }],
+  // Pyros
+  prov_pyros_split_anvil: [
+    { name: 'Vila dos Mestres-Ferreiros', dx: -1.9, dy: 1.4, kind: 'village' },
+    { name: 'Torre das Correntes Norte', dx: 1.9, dy: -1.4, kind: 'watchtower' },
+  ],
+  prov_pyros_runic_ridge: [{ name: 'Lavra de Rubi Bruto', dx: -0.3, dy: 1.8, kind: 'mine' }],
+  prov_pyros_west_caldera: [{ name: 'Posto dos Gêiseres', dx: 1.7, dy: -1.3, kind: 'watchtower' }],
+  prov_pyros_sky_corridor: [{ name: 'Píer de Wyverns Sul', dx: -1.6, dy: 1.4, kind: 'harbor' }],
+  prov_pyros_east_crater: [{ name: 'Paiol Piroclástico', dx: 0.2, dy: -1.9, kind: 'mine' }],
+  // Eclipse
+  prov_eclipse_obsidian_cathedral: [
+    { name: 'Bairro dos Embalsamadores', dx: -1.9, dy: 1.3, kind: 'village' },
+    { name: 'Cais das Barcaças Negras', dx: 1.8, dy: 1.5, kind: 'harbor' },
+  ],
+  prov_eclipse_abyssal_gorge: [{ name: 'Vigia do Abismo Roxo', dx: 1.6, dy: 1.3, kind: 'watchtower' }],
+  prov_eclipse_twilight_scarp: [{ name: ' Destilaria Carmesim', dx: -1.7, dy: 1.2, kind: 'mine' }],
+  prov_eclipse_blood_ossuary: [{ name: 'Enseada das Carcaças', dx: -1.8, dy: -1.3, kind: 'harbor' }],
+  prov_eclipse_black_marsh: [{ name: 'Ermida do Fogo-Fátuo', dx: 0.3, dy: -1.8, kind: 'shrine' }],
+  // Matriz Axial
+  prov_matrix_five_seals: [
+    { name: 'Feira das Cinco Bandeiras', dx: -1.9, dy: -1.4, kind: 'village' },
+    { name: 'Doca Fluvial da Trégua', dx: 1.9, dy: 1.4, kind: 'harbor' },
+  ],
+  prov_matrix_nw_monolith: [{ name: 'Pedreira Rúnica Cinza', dx: -1.6, dy: 1.3, kind: 'mine' }],
+  prov_matrix_ne_prism: [{ name: 'Observatório Neutro', dx: 1.7, dy: 1.3, kind: 'watchtower' }],
+  prov_matrix_west_ring: [{ name: 'Estalagem das Caravanas', dx: -1.7, dy: -1.2, kind: 'village' }],
+  prov_matrix_east_tribunal: [{ name: 'Capela do Ordenamento', dx: 0.2, dy: 1.8, kind: 'shrine' }],
+  // Solária
+  prov_solaria_great_dome: [
+    { name: 'Píer das Galés Douradas', dx: 1.9, dy: -1.4, kind: 'harbor' },
+    { name: 'Vila dos Escultores Reais', dx: -1.8, dy: 1.4, kind: 'village' },
+  ],
+  prov_solaria_eternal_reliquary: [{ name: 'Mina de Ouro Sagrado', dx: -1.7, dy: 1.2, kind: 'mine' }],
+  prov_solaria_dragon_gates: [{ name: 'Atalaia da Garganta Dourada', dx: 1.5, dy: 1.4, kind: 'watchtower' }],
+  prov_solaria_zenith_mirrors: [{ name: 'Oficina das Lentes', dx: -1.6, dy: 1.3, kind: 'village' }],
+  prov_solaria_hanging_gardens: [{ name: 'Porto das Cascatas', dx: 1.7, dy: 1.4, kind: 'harbor' }],
+  // Veridia
+  prov_veridia_mother_tree: [
+    { name: 'Porto Fluvial de Raízes', dx: -1.9, dy: 1.5, kind: 'harbor' },
+    { name: 'Círculo de Âmbar Vivo', dx: 1.9, dy: -1.3, kind: 'shrine' },
+  ],
+  prov_veridia_thorn_woods: [{ name: 'Guarita das Copas', dx: 1.6, dy: 1.3, kind: 'watchtower' }],
+  prov_veridia_jade_delta: [{ name: 'Trapiche das Especiarias', dx: 1.7, dy: -1.2, kind: 'harbor' }],
+  prov_veridia_fang_peninsula: [{ name: 'Aldeia dos Domadores', dx: -1.7, dy: 1.3, kind: 'village' }],
+  prov_veridia_emerald_canopy: [{ name: 'Colmeia de Resina Pura', dx: 0.3, dy: -1.8, kind: 'mine' }],
+  // 18 Províncias das 6 Fronteiras Profundas (garantindo 3–4 assentamentos em cada!)
+  prov_underforge_dragon_anvil: [
+    { name: 'Poço de Adamantina', dx: 0.2, dy: 1.7, kind: 'mine' },
+    { name: 'Guarita das Correntes', dx: -1.6, dy: 1.2, kind: 'watchtower' },
+  ],
+  prov_underforge_slag_cataracts: [{ name: 'Comporta Piroclástica', dx: 0.3, dy: -1.6, kind: 'harbor' }],
+  prov_underforge_basalt_crucible: [{ name: 'Altar dos Primeiros Anões', dx: -0.3, dy: 1.6, kind: 'shrine' }],
+  prov_astral_maelstrom_eye: [
+    { name: 'Ancoradouro Estelar', dx: 1.5, dy: -1.2, kind: 'harbor' },
+    { name: 'Torre de Sinais de Latão', dx: -1.5, dy: 1.3, kind: 'watchtower' },
+  ],
+  prov_astral_chronos_beacon: [{ name: 'Vila dos Navegadores', dx: 0.2, dy: 1.6, kind: 'village' }],
+  prov_astral_starwreck_reef: [{ name: 'Draga de Safira', dx: -0.3, dy: -1.6, kind: 'mine' }],
+  prov_abyss_drowned_basilica: [
+    { name: 'Cripta dos Corais Negros', dx: 1.5, dy: 1.2, kind: 'shrine' },
+    { name: 'Sino de Vigília Abissal', dx: -1.5, dy: -1.3, kind: 'watchtower' },
+  ],
+  prov_abyss_ghostfire_harbor: [{ name: ' estaleiro Fantasma', dx: 0.3, dy: 1.6, kind: 'harbor' }],
+  prov_abyss_leviathan_ribs: [{ name: 'Mina de Marfim Abissal', dx: -0.2, dy: -1.6, kind: 'mine' }],
+  prov_roots_amber_heart: [
+    { name: ' Trapiche do Lago Dourado', dx: 1.6, dy: 1.2, kind: 'harbor' },
+    { name: 'Vila das Raízes Antigas', dx: -1.6, dy: -1.2, kind: 'village' },
+  ],
+  prov_roots_spore_sanctuary: [{ name: 'Mina de Geodo Verde', dx: 0.3, dy: 1.6, kind: 'mine' }],
+  prov_roots_ironwood_bastion: [{ name: 'Torre de Pau-Ferro', dx: -0.3, dy: -1.6, kind: 'watchtower' }],
+  prov_sky_mirror_cathedral: [
+    { name: 'Píer de Luz Sólida', dx: 1.5, dy: 1.3, kind: 'harbor' },
+    { name: 'Santuário das Seis Asas', dx: -1.5, dy: -1.2, kind: 'shrine' },
+  ],
+  prov_sky_alabaster_citadel: [{ name: 'Vila dos Artífices Alados', dx: 0.2, dy: 1.6, kind: 'village' }],
+  prov_sky_armada_docks: [{ name: 'Farol Atmosférico Leste', dx: -0.3, dy: -1.6, kind: 'watchtower' }],
+  prov_crater_shattered_core: [
+    { name: 'Sonda do Núcleo Uno', dx: 1.6, dy: -1.2, kind: 'mine' },
+    { name: 'Posto da Guarda Axial', dx: -1.6, dy: 1.3, kind: 'watchtower' },
+  ],
+  prov_crater_sapphire_fault: [{ name: 'Extrator de Quartzo Azul', dx: 0.2, dy: 1.6, kind: 'mine' }],
+  prov_crater_solar_monoliths: [{ name: 'Acampamento Diplomático', dx: 0.3, dy: 1.6, kind: 'village' }],
+};
+
+for (const prov of CONQUEST_PROVINCES) {
+  const extras = EXTRA_PROVINCE_SETTLEMENTS[prov.id];
+  if (extras && extras.length > 0) {
+    prov.microSettlements = [
+      ...(prov.microSettlements ?? []),
+      ...extras.map((s) => ({ ...s, name: s.name.trim() })),
+    ];
+  }
+}
+
 export const CONQUEST_PROVINCES_BY_ID: Record<string, ConquestProvinceDef> = Object.fromEntries(
   CONQUEST_PROVINCES.map((p) => [p.id, p])
 );

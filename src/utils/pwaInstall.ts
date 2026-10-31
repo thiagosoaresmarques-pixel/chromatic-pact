@@ -57,9 +57,14 @@ export function initPwaSupport(): void {
     window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   if (!isLocalDev && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js').catch(() => {
-        // Ignore SW registration failure on unsupported browsers
-      });
+      navigator.serviceWorker
+        .register('/sw.js', { updateViaCache: 'none' })
+        .then((reg) => {
+          reg.update().catch(() => undefined);
+        })
+        .catch(() => {
+          // Ignore SW registration failure on unsupported browsers
+        });
     });
   }
 }

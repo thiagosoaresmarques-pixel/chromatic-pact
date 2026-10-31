@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'chromatic-pact-v2';
+const CACHE_VERSION = 'chromatic-pact-v3';
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
 const PRECACHE_URLS = [
@@ -43,10 +43,10 @@ self.addEventListener('fetch', (event) => {
   // Never cache real-time multiplayer SSE/API calls
   if (url.pathname.startsWith('/api/')) return;
 
-  // HTML / Document navigation: Network-First so updates deploy immediately
+  // HTML / Document navigation: Network-First (bypassing HTTP disk cache) so updates deploy immediately
   if (req.mode === 'navigate' || req.destination === 'document') {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-cache' })
         .then((res) => {
           const clone = res.clone();
           caches.open(ASSET_CACHE).then((cache) => cache.put(req, clone));

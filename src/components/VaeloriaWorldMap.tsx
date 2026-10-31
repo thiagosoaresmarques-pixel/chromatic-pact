@@ -68,6 +68,8 @@ import {
   computeUnlockedCampaignSubmaps,
   findSubmapStepPath,
   findWorldSubmapStepPath,
+  loadCampaignMapSession,
+  saveCampaignMapSession,
 } from '../data/vaeloriaGrandCampaign';
 
 export interface VaeloriaWorldMapProps {
@@ -82,6 +84,9 @@ export interface VaeloriaWorldMapProps {
   isDossierCollapsed?: boolean;
   onToggleDossier?: () => void;
   onOpenDossier?: () => void;
+  onCloseDossier?: () => void;
+  isTheaterFullscreen?: boolean;
+  onChangeTheaterFullscreen?: (next: boolean) => void;
   onSelectBoss: (boss: CampaignBoss) => void;
   onChallengeBoss: (boss: CampaignBoss) => void;
   onRewardGold?: (amount: number, reason?: string) => void;
@@ -137,6 +142,9 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   isDossierCollapsed = true,
   onToggleDossier,
   onOpenDossier,
+  onCloseDossier,
+  isTheaterFullscreen: controlledTheaterFullscreen,
+  onChangeTheaterFullscreen,
   onSelectBoss,
   onChallengeBoss,
   onRewardGold,
@@ -167,10 +175,49 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   // Zoom strictly locked at 100% (1.0x) on all maps and submaps
   const zoom = 1;
 
-  const [mapScope, setMapScope] = useState<VaeloriaMapScope>('world');
-  const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(false);
+  // Grand Campaign Submap Unlock & Reachability State
+  const unlockedCampaignSubmaps = useMemo(
+    () =>
+      isCampaign
+        ? computeUnlockedCampaignSubmaps(clearedBossIds, sovereignDomain)
+        : new Set<VaeloriaRealmId>(VAELORIA_REALM_ORDER),
+    [isCampaign, clearedBossIds, sovereignDomain]
+  );
+
+  const initialCampaignSessionRef = useRef(
+    isCampaign ? loadCampaignMapSession() : null
+  );
+
+  const [mapScope, setMapScope] = useState<VaeloriaMapScope>(() => {
+    const saved = initialCampaignSessionRef.current;
+    if (!isCampaign || !saved) return 'world';
+    if (saved.mapScope === 'world') return 'world';
+    return unlockedCampaignSubmaps.has(saved.mapScope) ? saved.mapScope : 'world';
+  });
+  const [internalTheaterFullscreen, setInternalTheaterFullscreen] = useState<boolean>(() =>
+    isCampaign ? Boolean(initialCampaignSessionRef.current?.isTheaterFullscreen) : false
+  );
+  const isTheaterFullscreen =
+    controlledTheaterFullscreen !== undefined
+      ? controlledTheaterFullscreen
+      : internalTheaterFullscreen;
+
+  const handleSetTheaterFullscreen = useCallback(
+    (next: boolean | ((prev: boolean) => boolean)) => {
+      const resolved = typeof next === 'function' ? next(isTheaterFullscreen) : next;
+      setInternalTheaterFullscreen(resolved);
+      onChangeTheaterFullscreen?.(resolved);
+      if (isCampaign) {
+        saveCampaignMapSession({ isTheaterFullscreen: resolved });
+      }
+    },
+    [isTheaterFullscreen, onChangeTheaterFullscreen, isCampaign]
+  );
+
   const [showMinimap, setShowMinimap] = useState<boolean>(false);
-  const [portalBanner, setPortalBanner] = useState<string | null>(null);
+  const [portalBanner, setPortalBanner] = useState<string | null>(() =>
+    isCampaign ? initialCampaignSessionRef.current?.returnBanner ?? null : null
+  );
   const [fogEnabled, setFogEnabled] = useState<boolean>(() =>
     isCampaign ? false : getFogOfWarEnabled()
   );
@@ -211,15 +258,6 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     );
     setPendingBuff(getPendingOverworldBuff(mode));
   }, [isCampaign, mode, clearedBossIds.length]);
-
-  // Grand Campaign Submap Unlock & Reachability State
-  const unlockedCampaignSubmaps = useMemo(
-    () =>
-      isCampaign
-        ? computeUnlockedCampaignSubmaps(clearedBossIds, sovereignDomain)
-        : new Set<VaeloriaRealmId>(VAELORIA_REALM_ORDER),
-    [isCampaign, clearedBossIds, sovereignDomain]
-  );
 
   const lockedCampaignSubmaps = useMemo(() => {
     if (!isCampaign) return new Set<VaeloriaRealmId>();
@@ -382,6 +420,14 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   // Sovereign Pawn Coordinates (0..100%)
   const [pawnPos, setPawnPos] = useState<{ x: number; y: number }>(() => {
     if (isCampaign) {
+      const saved = initialCampaignSessionRef.current;
+      if (saved?.pawnPos && (saved.mapScope === 'world' || unlockedCampaignSubmaps.has(saved.mapScope))) {
+        return saved.pawnPos;
+      }
+      if (mapScope !== 'world') {
+        const g = GRAND_CAMPAIGN_SUBMAP_GRAPHS[mapScope];
+        return { x: g.entryPos.x, y: g.entryPos.y };
+      }
       const startHub = GRAND_CAMPAIGN_SUBMAP_GRAPHS[startingRealm].worldHub;
       return { x: startHub.x, y: startHub.y };
     }
@@ -402,17 +448,36 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   mapScopeRef.current = mapScope;
   const marchWaypointsRef = useRef<MarchWaypoint[]>(marchWaypoints);
   marchWaypointsRef.current = marchWaypoints;
-  const lastWorldRealmRef = useRef<VaeloriaRealmId>(startingRealm);
+  const lastWorldRealmRef = useRef<VaeloriaRealmId>(
+    mapScope !== 'world' ? mapScope : startingRealm
+  );
+  const prevStartingRealmRef = useRef<VaeloriaRealmId>(startingRealm);
 
-  // Reposition Sovereign on world map if player switches Sovereign Banner Color while at world level with 0 progress
+  // Restore submap music & clear one-shot return banner on mount
   useEffect(() => {
     if (!isCampaign) return;
+    if (mapScopeRef.current !== 'world') {
+      const regDef = VAELORIA_REGIONAL_MAPS[mapScopeRef.current];
+      setMusicState('sanctuary', regDef.domain);
+      setVisitedRealms(markRealmVisited(mapScopeRef.current));
+    }
+    if (initialCampaignSessionRef.current?.returnBanner) {
+      saveCampaignMapSession({ returnBanner: null });
+    }
+  }, [isCampaign]);
+
+  // Reposition Sovereign on world map ONLY when player explicitly switches Sovereign Banner Color
+  useEffect(() => {
+    if (!isCampaign) return;
+    if (prevStartingRealmRef.current === startingRealm) return;
+    prevStartingRealmRef.current = startingRealm;
     lastWorldRealmRef.current = startingRealm;
     if (mapScopeRef.current === 'world') {
       const hub = GRAND_CAMPAIGN_SUBMAP_GRAPHS[startingRealm].worldHub;
       pawnPosRef.current = { x: hub.x, y: hub.y };
       setPawnPos({ x: hub.x, y: hub.y });
       setMarchWaypoints([]);
+      saveCampaignMapSession({ mapScope: 'world', pawnPos: { x: hub.x, y: hub.y } });
     }
   }, [isCampaign, startingRealm]);
 
@@ -426,17 +491,21 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     return () => window.clearTimeout(t);
   }, [portalBanner]);
 
-  // Escape exits Theater Fullscreen
+  // Escape closes Dossier Drawer first if open, otherwise exits Theater Fullscreen
   useEffect(() => {
     if (!isTheaterFullscreen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setIsTheaterFullscreen(false);
+        if (!isDossierCollapsed && onCloseDossier) {
+          onCloseDossier();
+          return;
+        }
+        handleSetTheaterFullscreen(false);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [isTheaterFullscreen]);
+  }, [isTheaterFullscreen, isDossierCollapsed, onCloseDossier, handleSetTheaterFullscreen]);
 
   const startWaypointMarch = useCallback((waypoints: MarchWaypoint[], silent = false) => {
     if (waypoints.length === 0) return;
@@ -533,6 +602,9 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         setMapScope('world');
         pawnPosRef.current = { x: wx, y: wy };
         setPawnPos({ x: wx, y: wy });
+        if (isCampaign) {
+          saveCampaignMapSession({ mapScope: 'world', pawnPos: { x: wx, y: wy }, returnBanner: null });
+        }
         showPortalNotification('Carta Continental de Vaeloria');
         return;
       }
@@ -576,6 +648,13 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
       setMapScope(nextScope);
       pawnPosRef.current = { x: destX, y: destY };
       setPawnPos({ x: destX, y: destY });
+      if (isCampaign) {
+        saveCampaignMapSession({
+          mapScope: nextScope,
+          pawnPos: { x: destX, y: destY },
+          returnBanner: null,
+        });
+      }
 
       showPortalNotification(arrivalOverride?.banner ?? regDef.name);
     },
@@ -692,7 +771,15 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
           if (Math.abs(nextDx) > 0.3) setFacingLeft(nextDx < 0);
         }
         arrivedCallback?.();
-        if (remaining.length === 0) return;
+        if (remaining.length === 0) {
+          if (isCampaign) {
+            saveCampaignMapSession({
+              mapScope: mapScopeRef.current,
+              pawnPos: { x: target.x, y: target.y },
+            });
+          }
+          return;
+        }
       } else {
         if (Math.abs(dx) > 0.3) setFacingLeft(dx < 0);
         const nx = cur.x + (dx / dist) * maxStep;
@@ -1052,7 +1139,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
           <button
             type="button"
             className={`vwm-tool-btn ${isTheaterFullscreen ? 'is-active' : ''}`}
-            onClick={() => setIsTheaterFullscreen((v) => !v)}
+            onClick={() => handleSetTheaterFullscreen((v) => !v)}
             title={
               isTheaterFullscreen
                 ? 'Sair da Tela Cheia (Esc)'

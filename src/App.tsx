@@ -19,6 +19,7 @@ import {
   NavigateToPoemDetail,
 } from './data/epicPoemData';
 import { buildGeographicBattleModifiers } from './data/vaeloriaMultimapData';
+import { saveCampaignReturnFromBossDuel } from './data/vaeloriaGrandCampaign';
 import { consumePendingOverworldBuff } from './data/vaeloriaOverworldEvents';
 import { applyEquippedRelicToModifiers } from './data/sovereignRelics';
 import type { DraftBattleOutcome, DraftRewardSummary } from './data/vaeloriaDraftData';
@@ -828,6 +829,7 @@ export const App: React.FC = () => {
 
   const handleStartBossBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
     trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: false });
+    saveCampaignReturnFromBossDuel(boss.id, { didWin: false, forceExpanded: true });
     try {
       localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
     } catch {
@@ -1029,6 +1031,7 @@ export const App: React.FC = () => {
         arenaWins: (prev.arenaWins ?? 0) + 1,
       }));
     } else {
+      saveCampaignReturnFromBossDuel(boss.id, { didWin: true, forceExpanded: true });
       const wasAlreadyDefeated = defeatedBossIds.includes(boss.id);
       const goldGranted = wasAlreadyDefeated
         ? VICTORY_GOLD_REWARD
@@ -2206,6 +2209,9 @@ export const App: React.FC = () => {
               const wasDraft = isDraftBattle;
               const wasConquest = Boolean(activeConquestContext);
               const wasExp = isExpeditionBattle;
+              if (!wasRift && !wasDraft && !wasConquest && !wasExp && activeCampaignBoss) {
+                saveCampaignReturnFromBossDuel(activeCampaignBoss.id, { forceExpanded: true });
+              }
               setActiveCampaignBoss(null);
               setActiveRiftId(null);
               setIsDraftBattle(false);

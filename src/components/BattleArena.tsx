@@ -5851,7 +5851,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               handleExitBattle();
                             }}
                           >
-                            🏠 Sair para o Início
+                            {campaignBoss ? '🗺️ Voltar ao Mapa' : '🏠 Sair para o Início'}
                           </button>
                         </div>
                       </div>
@@ -6434,13 +6434,30 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </button>
                 );
               })()}
+              {campaignBoss && onExitCampaign && gameState.winner === 'player' && (
+                <button
+                  type="button"
+                  className="btn-fantasy btn-fantasy-primary"
+                  onClick={onExitCampaign}
+                >
+                  🗺️ Voltar ao Mapa
+                </button>
+              )}
               {!onlineMatch && (
                 <button
                   type="button"
-                  className={tacticalProblem ? 'btn-fantasy' : 'btn-fantasy btn-fantasy-primary'}
+                  className={
+                    tacticalProblem || (campaignBoss && gameState.winner === 'player')
+                      ? 'btn-fantasy'
+                      : 'btn-fantasy btn-fantasy-primary'
+                  }
                   onClick={() => startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId)}
                 >
-                  {tacticalProblem ? '🔄 Repetir Problema' : '⚔️ Jogar Novamente'}
+                  {tacticalProblem
+                    ? '🔄 Repetir Problema'
+                    : campaignBoss && gameState.winner === 'player'
+                      ? '⚔️ Reenfrentar'
+                      : '⚔️ Jogar Novamente'}
                 </button>
               )}
               {tacticalProblem && onExitProblems && (
@@ -6457,9 +6474,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   🌐 Voltar ao Conclave 1×1
                 </button>
               )}
-              {campaignBoss && onExitCampaign && (
+              {campaignBoss && onExitCampaign && gameState.winner !== 'player' && (
                 <button type="button" className="btn-fantasy" onClick={onExitCampaign}>
-                  🏰 Voltar à Campanha
+                  🗺️ Voltar ao Mapa
                 </button>
               )}
               {!onlineMatch && !campaignBoss && !tacticalProblem && onExitArena && (
@@ -6519,7 +6536,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             style={{ padding: '4px 10px', fontSize: '0.7rem' }}
             onClick={handleExitBattle}
           >
-            🏠 Sair
+            {campaignBoss ? '🗺️ Voltar ao Mapa' : '🏠 Sair'}
           </button>
         </div>
       )}
@@ -6578,7 +6595,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     handleExitBattle();
                   }}
                 >
-                  🏠 Sair para o Início
+                  {campaignBoss ? '🗺️ Voltar ao Mapa' : '🏠 Sair para o Início'}
                 </button>
               )}
             </div>

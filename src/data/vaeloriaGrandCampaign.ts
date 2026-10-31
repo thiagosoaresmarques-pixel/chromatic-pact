@@ -5,7 +5,11 @@
 // ============================================================================
 
 import { BiomeRealmId, CampaignBoss, Domain } from '../types/game';
-import { VaeloriaRealmId } from './vaeloriaMultimapData';
+import {
+  VAELORIA_REGIONAL_MAPS,
+  VaeloriaMapScope,
+  VaeloriaRealmId,
+} from './vaeloriaMultimapData';
 
 export type SovereignBannerDomain = Exclude<Domain, 'neutral'>;
 
@@ -18603,4 +18607,98 @@ export function findWorldSubmapStepPath(
     y: GRAND_CAMPAIGN_SUBMAP_GRAPHS[rid].worldHub.y,
     submapId: rid,
   }));
+}
+
+// ============================================================================
+// PERSISTÊNCIA DE SESSÃO DO MAPA DA CAMPANHA (SUB-MAPA ATIVO + FORMATO EXPANDIDO)
+// ============================================================================
+
+export interface CampaignMapSessionState {
+  mapScope: VaeloriaMapScope;
+  pawnPos?: { x: number; y: number };
+  selectedBossId?: string;
+  isTheaterFullscreen: boolean;
+  returnBanner?: string | null;
+}
+
+const CAMPAIGN_MAP_SESSION_KEY = 'chromatic_pact_campaign_map_session_v1';
+
+export function loadCampaignMapSession(): CampaignMapSessionState | null {
+  try {
+    const raw = localStorage.getItem(CAMPAIGN_MAP_SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<CampaignMapSessionState>;
+    const scope = parsed.mapScope;
+    const isValidScope =
+      scope === 'world' || (typeof scope === 'string' && scope in VAELORIA_REGIONAL_MAPS);
+    if (!isValidScope) return null;
+    return {
+      mapScope: scope as VaeloriaMapScope,
+      pawnPos:
+        parsed.pawnPos &&
+        typeof parsed.pawnPos.x === 'number' &&
+        typeof parsed.pawnPos.y === 'number'
+          ? parsed.pawnPos
+          : undefined,
+      selectedBossId:
+        typeof parsed.selectedBossId === 'string' ? parsed.selectedBossId : undefined,
+      isTheaterFullscreen: Boolean(parsed.isTheaterFullscreen),
+      returnBanner:
+        typeof parsed.returnBanner === 'string' ? parsed.returnBanner : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function saveCampaignMapSession(patch: Partial<CampaignMapSessionState>): void {
+  try {
+    const prev = loadCampaignMapSession();
+    const next: CampaignMapSessionState = {
+      mapScope: patch.mapScope ?? prev?.mapScope ?? 'world',
+      pawnPos: patch.pawnPos ?? prev?.pawnPos,
+      selectedBossId: patch.selectedBossId ?? prev?.selectedBossId,
+      isTheaterFullscreen:
+        patch.isTheaterFullscreen !== undefined
+          ? patch.isTheaterFullscreen
+          : prev?.isTheaterFullscreen ?? false,
+      returnBanner:
+        patch.returnBanner !== undefined ? patch.returnBanner : prev?.returnBanner ?? null,
+    };
+    localStorage.setItem(CAMPAIGN_MAP_SESSION_KEY, JSON.stringify(next));
+  } catch {
+    // Ignore storage quota errors
+  }
+}
+
+/**
+ * Garante que ao entrar ou retornar de um duelo da Campanha (especialmente ao vencer
+ * e sair da mesa), o jogador retorne exatamente ao sub-mapa daquele confronto, nas
+ * coordenadas do Soberano enfrentado, e em formato expandido (Tela Cheia).
+ */
+export function saveCampaignReturnFromBossDuel(
+  bossId: string,
+  options?: { didWin?: boolean; forceExpanded?: boolean }
+): void {
+  const gcNode = GRAND_CAMPAIGN_NODES_BY_ID[bossId];
+  if (!gcNode) return;
+  const prev = loadCampaignMapSession();
+  const rdef = VAELORIA_REGIONAL_MAPS[gcNode.submapId];
+  const nextBanner =
+    options?.didWin === true
+      ? `✓ ${gcNode.boss.name} vencido — ${rdef.name}`
+      : options?.didWin === false
+        ? null
+        : prev?.returnBanner ?? rdef.name;
+
+  saveCampaignMapSession({
+    mapScope: gcNode.submapId,
+    pawnPos: { x: gcNode.rx, y: gcNode.ry },
+    selectedBossId: bossId,
+    isTheaterFullscreen:
+      options?.forceExpanded !== undefined
+        ? options.forceExpanded
+        : Boolean(options?.didWin || prev?.isTheaterFullscreen),
+    returnBanner: nextBanner,
+  });
 }

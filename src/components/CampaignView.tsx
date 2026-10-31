@@ -17,6 +17,8 @@ import {
   SovereignBannerDomain,
   computeSubmapReachability,
   computeUnlockedCampaignSubmaps,
+  loadCampaignMapSession,
+  saveCampaignMapSession,
 } from '../data/vaeloriaGrandCampaign';
 
 export interface CampaignViewProps {
@@ -127,11 +129,25 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const startingRealm = STARTING_REALM_BY_SOVEREIGN_DOMAIN[sovereignDomain];
 
   const [selectedBossId, setSelectedBossId] = useState<string>(() => {
+    const savedId = loadCampaignMapSession()?.selectedBossId;
+    if (savedId && fullBossRoster.some((b) => b.id === savedId)) {
+      return savedId;
+    }
     const firstInStartRealm = fullBossRoster.find(
       (b) => GRAND_CAMPAIGN_NODES_BY_ID[b.id]?.submapId === startingRealm
     );
     return firstInStartRealm?.id ?? fullBossRoster[0]?.id ?? '';
   });
+
+  const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(
+    () => Boolean(loadCampaignMapSession()?.isTheaterFullscreen)
+  );
+
+  useEffect(() => {
+    if (selectedBossId) {
+      saveCampaignMapSession({ selectedBossId });
+    }
+  }, [selectedBossId]);
 
   const [domainFilter, setDomainFilter] = useState<'all' | Domain>('all');
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
@@ -352,6 +368,12 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             isDossierCollapsed={isDossierCollapsed}
             onToggleDossier={() => setIsDossierCollapsed((v) => !v)}
             onOpenDossier={() => setIsDossierCollapsed(false)}
+            onCloseDossier={() => setIsDossierCollapsed(true)}
+            isTheaterFullscreen={isTheaterFullscreen}
+            onChangeTheaterFullscreen={(next) => {
+              setIsTheaterFullscreen(next);
+              saveCampaignMapSession({ isTheaterFullscreen: next });
+            }}
             onSelectBoss={(boss) => setSelectedBossId(boss.id)}
             onChallengeBoss={handleClickStartBoss}
             onRewardGold={onRewardGold}
@@ -414,7 +436,9 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         {/* Boss Dossier (Floating Overlay Drawer in Map Mode; Right Panel in List Mode) */}
         {activeBoss && !(viewMode === 'map' && isDossierCollapsed) && (
           <section
-            className={`aaa-boss-dossier ${viewMode === 'map' ? 'is-floating-map-drawer' : ''}`}
+            className={`aaa-boss-dossier ${viewMode === 'map' ? 'is-floating-map-drawer' : ''} ${
+              viewMode === 'map' && isTheaterFullscreen ? 'is-theater-overlay' : ''
+            }`}
             style={
               {
                 '--boss-accent': '#d4af37',

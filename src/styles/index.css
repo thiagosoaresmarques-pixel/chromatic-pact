@@ -17739,21 +17739,27 @@ input:focus-visible,
 .conquest-megamap-shell.is-theater-fullscreen {
   position: fixed !important;
   inset: 0 !important;
-  z-index: 2250 !important;
+  z-index: 1400 !important;
   width: 100vw !important;
-  height: 100vh !important;
+  height: 100dvh !important;
   margin: 0 !important;
   border-radius: 0 !important;
   border: none !important;
   background: radial-gradient(circle at 50% 35%, #0c1426 0%, #050811 100%) !important;
-  padding: 0.65rem 0.9rem !important;
+  padding: 0.45rem 0.7rem !important;
   box-sizing: border-box !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 0.5rem !important;
+  gap: 0.35rem !important;
 }
 
-.vaeloria-world-map-shell.is-theater-fullscreen .vwm-viewport,
+.vaeloria-world-map-shell.is-theater-fullscreen .vwm-stage-fit-box > .vwm-viewport {
+  width: min(100cqw, calc(100cqh * 16 / 9)) !important;
+  height: min(100cqh, calc(100cqw * 9 / 16)) !important;
+  aspect-ratio: 16 / 9 !important;
+  flex: 0 0 auto !important;
+}
+
 .conquest-megamap-shell.is-theater-fullscreen .vwm-viewport {
   flex: 1 1 auto !important;
   aspect-ratio: auto !important;
@@ -22593,6 +22599,15 @@ input:focus-visible,
   display: flex !important;
   flex-direction: column !important;
   gap: 0.55rem !important;
+}
+
+.aaa-boss-dossier.is-floating-map-drawer.is-theater-overlay {
+  position: fixed !important;
+  top: 52px !important;
+  right: 12px !important;
+  bottom: 12px !important;
+  max-height: calc(100dvh - 64px) !important;
+  z-index: 1460 !important;
 }
 
 .aaa-floating-drawer-topbar {

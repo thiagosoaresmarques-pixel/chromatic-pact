@@ -75,11 +75,11 @@ export interface MatchupGuideAnalysis {
 }
 
 const DOMAIN_EXPANSION_NAMES: Record<Exclude<Domain, 'neutral'>, string> = {
-  red: 'Caldeira do Sol Carmesim (6/6 Afinidade + 3⚡: mesa rachada por rios de lava derretida, Potencial 120% e Acerto Garantido por 3 rodadas)',
-  blue: 'Vazio Infinito de Cronos (6/6 Afinidade + 3⚡: santuário glacial e tempestade astral, Potencial 120% e Acerto Garantido por 3 rodadas)',
-  purple: 'Santuário Malevolente das Almas (6/6 Afinidade + 3⚡: cemitério gótico e névoa necrótica, Potencial 120% e Acerto Garantido por 3 rodadas)',
-  green: 'Mar de Árvores Primordial (6/6 Afinidade + 3⚡: solo de floresta primordial com raízes vivas, Potencial 120% e Acerto Garantido por 3 rodadas)',
-  gold: 'Tribunal da Sentença Dourada (6/6 Afinidade + 3⚡: santuário imperial com canais de ouro derretido, Potencial 120% e Acerto Garantido por 3 rodadas)',
+  red: 'Caldeira do Sol Carmesim (6/6 Afinidade + 3⚡: santuário vulcânico, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
+  blue: 'Vazio Infinito de Cronos (6/6 Afinidade + 3⚡: santuário glacial e tempestade astral, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
+  purple: 'Santuário Malevolente das Almas (6/6 Afinidade + 3⚡: necrópole gótica e névoa necrótica, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
+  green: 'Mar de Árvores Primordial (6/6 Afinidade + 3⚡: floresta primordial com raízes vivas, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
+  gold: 'Tribunal da Sentença Dourada (6/6 Afinidade + 3⚡: santuário imperial solar, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
 };
 
 export function buildDeckTacticalProfile(deck: PrebuiltDeck): DeckTacticalProfile {
@@ -545,7 +545,7 @@ export function analyzeMatchupPair(
       .slice(0, 2)
       .map((c) => c.name)
       .join(' + ') || 'seus campeões principais'
-  } e invoque sua Expansão de Domínio (⛩️ 6/6 Afinidade e 3⚡) para transformar a mesa de madeira por 3 rodadas com Potencial 120% e Acerto Garantido! ${
+  } e invoque sua Expansão de Domínio (⛩️ 6/6 Afinidade e 3⚡) para transformar a mesa de madeira por 3 rodadas com +1/+1, Ímpeto e Acerto Garantido! ${
     stackingRuleMode === 'stack_3x'
       ? 'Agrupe uma coluna 3x com Vanguarda invasora para somar +1 ATQ de Invasão em cada unidade da pilha e finalizar o Soberano inimigo em uma única investida.'
       : 'Mantenha pressão distribuída em múltiplas colunas para que mesmo uma magia de área inimiga deixe atacantes prontos para o golpe letal.'

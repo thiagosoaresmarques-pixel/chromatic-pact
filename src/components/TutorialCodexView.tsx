@@ -17,6 +17,7 @@ type CodexSectionId =
   | 'deckbuilding'
   | 'domains'
   | 'weather_runes'
+  | 'modes_economy'
   | 'keywords'
   | 'controls';
 
@@ -35,64 +36,64 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   {
     stepNumber: 1,
     badge: 'FUNDAMENTOS DA PARTIDA',
-    title: 'Os Soberanos & Condição de Vitória',
-    subtitle: 'Reduza a Vida do Soberano rival de 40 a 0 ou esgote o grimório inimigo.',
+    title: 'Os Soberanos, Fadiga & Condição de Vitória',
+    subtitle: 'Reduza a Vida do Soberano rival de 40 a 0 (grimório vazio causa 2 de Fadiga por compra).',
     cardId: 'neutral_10_valkyra_pentacromatica',
     summary:
-      'A partida ocorre em turnos alternados. Cada Soberano inicia com 40 pontos de Vida, 3 de Essência Máxima e 7 cartas na mão, com direito a um Mulligan inicial antes do Turno 1.',
+      'Cada Soberano inicia com 40 pontos de Vida, 3 de Essência Máxima e 7 cartas na mão (teto de 12 cartas na mão; compras acima de 12 queimam para a Cripta). Em caso de Colapso Mútuo simultâneo (ambos <= 0 PV), o jogador prevalece.',
     keyPoints: [
       {
         tag: 'RITUAL • 2 ESSÊNCIA',
-        title: 'Poder do Soberano',
+        title: 'Poder do Soberano (1×/Turno)',
         detail:
-          'Ativável uma vez por turno na barra inferior. Executa a habilidade assinatura do Domínio principal do seu grimório para causar dano, curar ou fortalecer aliados.',
+          'Ativável uma vez por turno na barra inferior. Dispara a técnica assinatura do Domínio principal do seu grimório para causar dano, congelar, curar ou blindar aliados.',
       },
       {
-        tag: 'RITUAL • 3 VIDA',
-        title: 'Pacto de Sangue',
+        tag: 'RITUAL • 3 VIDA & +1 CORRUPÇÃO',
+        title: 'Pacto de Sangue & Fadiga (-2 PV)',
         detail:
-          'Sacrifique 3 pontos de Vida uma vez por turno para receber +1 de Essência temporária imediata e acelerar uma invocação decisiva.',
+          'Sacrifique 3 PV (exige > 3 PV) 1× por turno para ganhar +1 Essência imediata e +1 Corrupção. Se o grimório acabar, você não perde na hora: cada compra vazia causa 2 de dano de Fadiga.',
       },
       {
-        tag: 'PREPARAÇÃO • 30s',
-        title: 'Mulligan Tático & Limite de 60s por Turno',
+        tag: 'PREPARAÇÃO • 30s / 60s',
+        title: 'Mulligan Inicial & Relógio de Fase',
         detail:
-          'Antes do 1º turno (30s), troque cartas pesadas da mão inicial de 7 cartas. Durante o combate, cada jogador tem 60 segundos por turno (⏱️ 60s) para agir antes que o turno passe automaticamente.',
+          'Antes do Turno 1 (30s), troque cartas pesadas da mão inicial (você compra as novas antes de reembaralhar as devolvidas). Em partida, cada fase tem 60 segundos.',
       },
     ],
     proTip:
-      'Sempre que encerrar o turno com 2 de Essência disponíveis, ative o Poder do Soberano para manter pressão constante.',
+      'Ao atingir 5+ de Corrupção Abissal, todas as suas criaturas entram com +1 ATQ permanente e seus feitiços/sopros ganham +1 de dano — mas não estoure 10/10 (-2 PV de Sobrecarga)!',
   },
   {
     stepNumber: 2,
     badge: 'ECONOMIA ELEMENTAL',
-    title: 'Progressão de Essência (até 15) & Afinidade',
-    subtitle: 'Sua Essência cresce automaticamente a cada rodada (+1 até 15) sem travar sua compra.',
+    title: 'Essência (até 15), Afinidade Inicial & Canalização',
+    subtitle: 'Sua Essência sobe +1 por rodada (até 15) e 65% da Afinidade de outras cores apoia cartas multicor.',
     cardId: 'blue_36_tomo_infinito',
     summary:
-      'No início de cada rodada, sua Essência Máxima sobe em +1 (até o teto de 15), sua reserva é recarregada, sua Afinidade Elemental avança e você compra 1 carta (limite de 12 cartas na mão).',
+      'Baralhos de 1 cor já iniciam a partida com 2 de Afinidade na sua cor; baralhos multicor iniciam com 1 + 1 nas duas cores principais. A cada rodada sua Essência Máxima sobe +1 (até 15) e você compra 1 carta.',
     keyPoints: [
       {
-        tag: 'ATALHO [C]',
-        title: 'Canalizar Carta (1x por Turno)',
+        tag: 'ATALHO [C] • 1×/TURNO',
+        title: 'Canalizar Carta (+1 Afinidade & +1 Carta)',
         detail:
-          'Converta 1 carta da mão em Terreno Canalizado para ganhar +1 de Afinidade da cor dela (com 65% de Afinidade cruzada secundária) e comprar +1 carta substituta na hora.',
+          'Recicle 1 carta da mão no Altar para ganhar +1 Afinidade da cor dela e comprar +1 carta substituta. Canalizar uma carta Neutra concede +1 Neutro E +1 automático na cor que sua mão mais precisa!',
       },
       {
-        tag: 'IMPULSO EXTRA',
-        title: 'Sacrificar Cartas Extras',
+        tag: 'IMPULSO EXTRA [C]',
+        title: 'Queimar Cartas por Essência (+1⚡)',
         detail:
-          'Após canalizar, você pode descartar cartas adicionais da mão para a Cripta em troca de +1 de Essência temporária neste turno e +1 de Afinidade.',
+          'Sem limite por turno: envie cartas extras da mão para a Cripta (sem comprar carta de reposição) em troca de +1 de Essência temporária neste turno e +1 de Afinidade.',
       },
       {
-        tag: 'PROGRESSÃO',
-        title: 'Função da Afinidade Elemental',
+        tag: 'AFINIDADE CRUZADA 65%',
+        title: 'Apoio Multicor & Marco 6/6',
         detail:
-          'A Afinidade acumulada habilita cartas avançadas daquele Domínio e libera a Expansão de Domínio ao atingir o marco 6/6.',
+          'Para jogar cartas com requisito de Afinidade, 65% (arredondado para cima) das suas Afinidades nas demais cores contam junto! E no seu Domínio Primário, todas as cores somam rumo ao marco 6/6 da Expansão.',
       },
     ],
     proTip:
-      'Nos três primeiros turnos, canalize uma carta de custo alto por rodada para ciclar sua mão gratuitamente e acelerar rumo ao marco 6/6.',
+      'Nos três primeiros turnos, canalize [C] cartas pesadas ou Neutras para ciclar sua mão gratuitamente e destravar tanto cartas multicor quanto o marco 6/6.',
   },
   {
     stepNumber: 3,
@@ -127,34 +128,34 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   },
   {
     stepNumber: 4,
-    badge: 'TIPOS DE CARTAS & EVOLUÇÃO',
-    title: 'Invocações, Relíquias, Reações & Ascensão',
-    subtitle: 'Combine criaturas, artefatos contínuos, feitiços, emboscadas e evoluções em campo.',
+    badge: 'TIPOS DE CARTAS, EMBOSCADAS & ASCENSÃO',
+    title: 'Invocações Ocultas, Emboscadas & Evolução ★',
+    subtitle: 'Entenda como Emboscadas disparam, por que não bloqueiam colunas e como a Ascensão preserva buffs.',
     cardId: 'green_40_licantropo_alfa',
     summary:
-      'Durante o seu turno, você executa invocações e rituais na ordem que preferir, adaptando sua formação às ameaças visíveis no tabuleiro.',
+      'Na Fase 1 (Mobilização), invocações rivais permanecem ocultas até a revelação da Fase 2. Combine criaturas, Relíquias de Retaguarda, Feitiços, Emboscadas e Ascensões.',
     keyPoints: [
       {
-        tag: 'PERMANENTES',
-        title: 'Criaturas & Relíquias Contínuas',
+        tag: 'PERMANENTES [R]',
+        title: 'Criaturas vs. Relíquias de Retaguarda',
         detail:
-          'Criaturas combatem na Vanguarda ou Retaguarda. Relíquias são instaladas na Retaguarda e geram efeitos passivos ou de início de turno.',
+          'Relíquias de baralho são instaladas exclusivamente na Retaguarda com Durabilidade própria (não atacam nem contra-atacam, mas geram efeitos passivos ou por turno). Não confunda com a Relíquia da Coroa equipada antes da batalha!',
       },
       {
-        tag: 'TÁTICA',
-        title: 'Feitiços & Emboscadas Ocultas',
+        tag: 'GATILHO EXATO • EMBOSCADAS',
+        title: 'Como Funcionam as Emboscadas',
         detail:
-          'Feitiços têm efeito imediato. Cartas de Reação podem ser lançadas na hora ou posicionadas na Retaguarda como Emboscadas que disparam no turno rival.',
+          'Reações armadas na Retaguarda NÃO bloqueiam a coluna nem impedem +1 ATQ de Invasão. Elas disparam ANTES do golpe se um inimigo atacar naquela mesma coluna OU se qualquer inimigo atacar seu Soberano (se matar/congelar o agressor, o golpe é cancelado!).',
       },
       {
-        tag: 'EVOLUÇÃO ★',
-        title: 'Ascensão de Criatura',
+        tag: 'EVOLUÇÃO ★ • PRESERVA BUFFS',
+        title: 'Ascensão de Criatura em Campo',
         detail:
-          'Unidades com a insígnia de Ascensão podem pagar seu custo de evolução em campo para assumir permanentemente uma forma superior.',
+          'Ao pagar o custo de Ascensão (★), a unidade evolui preservando 100% dos bônus permanentes (+ATQ/+ARM/+VID) que já havia acumulado antes, cura o ganho de Vida e recebe suas novas palavras-chave na hora.',
       },
     ],
     proTip:
-      'Posicione Emboscadas na Retaguarda de colunas estratégicas para punir atacantes pesados do oponente no momento do golpe.',
+      'Como qualquer ataque direto ao seu Soberano aciona Emboscadas armadas em QUALQUER coluna da sua Retaguarda, 1 Emboscada bem guardada pode salvar você de um golpe letal!',
   },
   {
     stepNumber: 5,
@@ -166,10 +167,10 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
       'Cada rodada divide-se em Mobilização (invocar, canalizar e mover 1 fileira) e Planejamento de Combate (alternar posturas Atacar ⚔️ ou Defender 🛡️ +1 Armadura, lançar feitiços e executar as 3 Ondas).',
     keyPoints: [
       {
-        tag: '3 ONDAS DE COMBATE',
-        title: 'Magias → Iniciativa Ímpeto → Choque',
+        tag: '3 ONDAS & REDIRECIONAMENTO',
+        title: 'Magias → Ímpeto → Choque Simultâneo',
         detail:
-          'Ao executar o combate: 1º resolvem Feitiços/Rituais; 2º atacam unidades com Ímpeto (se abaterem alvo sem Ímpeto, não sofrem contra-ataque!); 3º ocorre o Choque Simultâneo das demais tropas.',
+          '1º Feitiços/Poderes; 2º Ímpeto (sem contra-ataque se matar alvo sem Ímpeto!); 3º Choque Simultâneo (duelos mútuos batem uma única vez simultânea, e se o alvo já morreu na Onda 1/2 a unidade avança automaticamente na coluna!).',
       },
       {
         tag: 'QUEM BLOQUEIA QUEM',
@@ -189,96 +190,96 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   },
   {
     stepNumber: 6,
-    badge: 'EXPANSÃO DE DOMÍNIO',
-    title: 'Transformação da Mesa & Choque 50/50',
-    subtitle: 'Ao atingir 6/6 de Afinidade e pagar 3 de Essência, domine o campo por 3 rodadas.',
+    badge: 'EXPANSÃO DE DOMÍNIO & CLIMAS',
+    title: 'Barreira 6/6, 4 Contramedidas, Exaustão & 6 Climas',
+    subtitle: 'Com 6/6 de Afinidade e 3 de Essência, domine o campo por 3 rodadas — ou quebre a barreira rival.',
     cardId: 'purple_65_principe_mortos',
     summary:
-      'A Expansão de Domínio substitui a mesa de madeira pelo santuário elemental do seu Domínio, fortalecendo suas tropas e habilitando ataques diretos.',
+      'A Expansão de Domínio concede +1/+1, Ímpeto e Acerto Garantido a todas as suas criaturas aptas (atenção: NÃO remove Congelar nem Exaustão). Quando um Domínio é quebrado, o dono sofre 2 rodadas de Exaustão sem poder expandir.',
     keyPoints: [
       {
-        tag: 'OFENSIVA TOTAL',
-        title: '+1/+1, Ímpeto & Acerto Garantido',
+        tag: 'SOBREPUJAR vs. CHOQUE 50/50',
+        title: 'Disputa por Afinidade (-3 PV)',
         detail:
-          'Todas as suas criaturas ganham +1/+1 e Ímpeto, e todas as unidades aptas a atacar atravessam qualquer defesa para atingir diretamente o Soberano rival (no ataque automático focam sempre o Soberano, ou você pode escolher atacar qualquer criatura inimiga em cada carta).',
+          'Se você expandir contra um Domínio ativo tendo Afinidade ESTRITAMENTE MAIOR, estilhaça o Domínio rival na hora e causa 3 de dano ao Soberano dele! Se empatar ou for menor, inicia Disputa 50/50 anulando ambos os Acertos Garantidos.',
       },
       {
-        tag: 'COLISÃO',
-        title: 'Choque de Domínios 50/50',
+        tag: '4 CONTRAMEDIDAS',
+        title: 'Simples (2⚡), Sacrifício (10❤️), 8+ Dano & Roda',
         detail:
-          'Se ambos os Soberanos expandirem com Afinidades iguais, o tabuleiro se divide ao meio e o Acerto Garantido de ambos é neutralizado.',
+          '1) Domínio Simples (2⚡, anula Acerto Garantido por 1 rodada); 2) Tributo de Sacrifício (10 PV distribuídos entre tropas e Soberano, sem matar seu Soberano); 3) Causar 8+ de dano ao Soberano rival na rodada; 4) Unidades Quebra-Domínio (☸).',
       },
       {
-        tag: 'CONTRAMEDIDA',
-        title: 'Domínio Simples & Quebra',
+        tag: '6 CLIMAS ELEMENTAIS',
+        title: 'Climas Geográficos & Planares',
         detail:
-          'Ative o Domínio Simples (2 de Essência) para anular o Acerto Garantido por 1 turno, ou cause 8+ de dano ao Soberano rival para estilhaçar o Domínio dele.',
+          'Mapas regionais, Cercos da Conquista e Fendas ativam 6 Climas de Arena (Cinzas Rubras, Nevasca Astral, Eclipse Umbral, Monção Silvestre, Zênite Solar e Convergência Astral). Veja todos na aba "Expansão, Climas & Quebra"!',
       },
     ],
     proTip:
-      'Guardar sua Expansão de Domínio para responder à Expansão inimiga permite iniciar um Choque 50/50 ou sobrepujá-la caso sua Afinidade seja maior.',
+      'Se o inimigo expandir o Domínio e você tiver tropas com bastante Vida sobrando, use o Tributo de Sacrifício (10 PV distribuídos) para quebrar a barreira dele e deixá-lo 2 turnos em Exaustão!',
   },
   {
     stepNumber: 7,
-    badge: 'CONSTRUÇÃO & EDIÇÃO DE GRIMÓRIOS',
-    title: 'Forja de 100 Cartas, Edição por 100 Ouro & Relicário',
-    subtitle: '1º Grimório 100% livre, edição completa por 100 de Ouro a partir da 2ª vez e expansão via Relicário.',
+    badge: 'GRIMÓRIOS, PACOTES & ESTILHAÇOS ASTRAIS',
+    title: 'Forja de 100 Cartas (100🪙), Relicário (30🪙) & Estilhaços (💎)',
+    subtitle: '1º Grimório grátis, pacotes por 30 Ouro, edição completa por 100 Ouro e criação direta por Estilhaços.',
     cardId: 'blue_06_dragao_azul',
     summary:
-      `Seu 1º Grimório de 100 cartas é 100% livre entre as ${ALL_CARDS.length} cartas do jogo. A partir da 2ª vez, você pode trocar gratuitamente entre cartas que já possui na sua coleção (Grimório Base + pacotes do Relicário) ou pagar apenas 100 de Ouro na Forja para editar/substituir livremente todo o seu Grimório.`,
+      `Você inicia com 160 de Ouro (+10 de Ouro por vitória padrão) e monta seu 1º Grimório de 100 cartas gratuitamente entre as ${ALL_CARDS.length} cartas ou qualquer um dos 30 modelos táticos.`,
     keyPoints: [
       {
-        tag: 'ARQUITETURA • 100 CARTAS',
-        title: 'Proporção Ideal & Limites 3×/2×/1×',
+        tag: 'RELICÁRIO • 30 OURO',
+        title: 'Pacotes de 5 Cartas (1 Rara/Lendária)',
         detail:
-          'Equilibre 55–68 Criaturas (pelo menos 35 de Vanguarda), 14–22 Feitiços, 6–12 Reações e 6–12 Relíquias, respeitando até 3× Comum/Incomum, 2× Rara e 1× Lendária (máx. 10 Lendárias).',
+          'Cada pacote no Relicário custa 30 de Ouro (Pentacromático ou focado em 1 dos 5 Domínios) e traz 5 cartas com pelo menos 1 Rara ou Lendária garantida.',
       },
       {
-        tag: '100 OURO • TENTATIVA E ERRO',
-        title: 'Editar Grimório (100 🪙)',
+        tag: 'FORJA • ESTILHAÇOS 💎',
+        title: 'Reciclagem Automática & Criação Direta',
         detail:
-          `O 1º Grimório é gratuito. Da 2ª vez em diante, clique em "Editar (100 🪙)" na Forja de Grimórios para abrir todo o catálogo de ${ALL_CARDS.length} cartas ou carregar qualquer um dos 27 modelos táticos.`,
+          'Cópias além do limite útil (3× Comum/Incomum, 2× Rara, 1× Lendária) viram automaticamente Estilhaços Astrais (+5 / +15 / +40 / +120💎). Use-os na Forja para criar qualquer carta específica (20 / 50 / 140 / 360💎)!',
       },
       {
-        tag: 'RELICÁRIO • RESERVA GRATUITA',
-        title: 'Trocas Livres na Sua Coleção',
+        tag: 'EDIÇÃO TOTAL • 100 OURO',
+        title: 'Editar Grimório Base (100 🪙)',
         detail:
-          'Cartas obtidas no Relicário (+10 Ouro por vitória; 160 Ouro inicial) entram na sua coleção permanente e podem ser trocadas (−/+) no seu Grimório sem custo de Ouro.',
+          `Trocar cartas que você já possui na coleção é sempre gratuito. E por apenas 100 de Ouro você reabre todo o catálogo de ${ALL_CARDS.length} cartas ou os 30 modelos táticos na Forja.`,
       },
     ],
     proTip:
-      'Consulte a aba "Construção de Grimórios" aqui no Tutorial para ver o guia completo por cor, combinações de 2 a 5 cores, estratégias e táticas comuns!',
+      'Quer uma Lendária específica sem depender da sorte? Acumule 360 Estilhaços Astrais (💎) com duplicatas/Fendas/Draft ou derrote o chefe guardião dela na Grande Campanha!',
   },
   {
     stepNumber: 8,
-    badge: 'CONTA, MODOS & MULTIPLAYER 1×1',
-    title: 'Identidade do Soberano & Conclave Online',
-    subtitle: 'Perfil com Avatar Lendário, Campanha, Expedição Roguelite e Duelos 1×1 em tempo real.',
+    badge: 'TODOS OS MODOS & RELÍQUIAS DA COROA',
+    title: 'Os 7 Modos de Jogo, 12 Relíquias da Coroa & Conclave 1×1',
+    subtitle: 'Campanha (190 confrontos), Conquista (48 províncias), Expedição, Draft, Fendas, Enigmas e PvP.',
     cardId: 'red_08_dragao_vermelho',
     summary:
-      'Sua Conta de Soberano sincroniza seu perfil, Reputação e histórico na nuvem, permitindo alternar entre modos solo e confrontos 1×1 online em tempo real.',
+      'Antes de iniciar batalhas na Campanha, Conquista, Expedição, Arena ou Fendas, equipe 1 das 12 Relíquias da Coroa Soberana desbloqueadas na sua conta para receber bônus permanentes de abertura!',
     keyPoints: [
       {
-        tag: 'PERFIL SOBERANO',
-        title: 'Avatar Lendário & Título Fixo',
+        tag: 'ESTRATÉGIA & ROGUELITE',
+        title: 'Campanha (190), Conquista (48) & Expedição (9)',
         detail:
-          'Escolha qualquer Criatura ou Lendária como Avatar no cadastro ou em Meu Perfil. O Título Honorífico vincula-se automaticamente à criatura escolhida.',
+          'Grande Campanha (21 mapas em zoom 100% e 190 chefes); Conquista Continental (48 províncias, Suprimentos, 5 Edifícios, Diplomacia e Crises); e Expedição Roguelite (6 Bênçãos Soberanas, 40 cartas e 9 etapas).',
+      },
+      {
+        tag: 'DESAFIOS ESPECIAIS',
+        title: 'Crisol (Draft), Fendas (6) & Enigmas Letais',
+        detail:
+          'Crisol dos Cinco Selos (Draft de 40 cartas sem limite de cópias até 7 vitórias ou 3 derrotas; 1º passe grátis, depois 100🪙); Fendas da Fratura (6 mutadores simétricos + bônus semanal); e Enigmas de Letal em 1 Turno.',
       },
       {
         tag: 'MULTIPLAYER 1×1',
-        title: 'Fila Rápida & Salas PACT-XXXX',
+        title: 'Conclave Online & Salas PACT-XXXX',
         detail:
-          'No Conclave Online, entre na Fila Rápida 1×1 para pareamento automático ou crie uma Sala Privada com código PACT-XXXX para desafiar um amigo.',
-      },
-      {
-        tag: 'MODOS DE JOGO',
-        title: 'Arena, Campanha & Expedição',
-        detail:
-          'Além do Multiplayer, enfrente os 5 atos da Campanha Histórica, monte um grimório de 40 cartas na Expedição Roguelite ou treine na Arena Rápida.',
+          'Enfrente outros Soberanos em tempo real na Fila Rápida 1×1 (com ranking Elo de Reputação) ou crie Salas Privadas com código PACT-XXXX.',
       },
     ],
     proTip:
-      'Seu Nickname é único e permanente no ranking de Reputação (calculado pela fórmula de xadrez/tênis conforme a Reputação do adversário), mas você pode alterar seu Avatar, Grimório favorito e Senha a qualquer momento na aba Meu Perfil.',
+      'Consulte a nova aba "Economia, Relíquias & Modos" aqui no Tutorial para ver as regras detalhadas, custos e recompensas de cada um dos 7 modos!',
   },
   {
     stepNumber: 9,
@@ -427,9 +428,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Especial',
     color: '#c084fc',
     description:
-      'Sempre que esta unidade causa dano real em combate, restaura +1 ponto de Vida ao seu Soberano.',
+      'Restaura +2 pontos de Vida ao seu Soberano ao causar dano real direto ao Soberano rival, ou +1 ponto de Vida ao causar dano real a criaturas (tanto atacando quanto contra-atacando na defesa).',
     tacticalTip:
-      'Sustenta a Vida do seu Soberano ao longo da partida e compensa o uso do Pacto de Sangue.',
+      'Acertar diretamente o Soberano rival dobra a cura (+2 PV), compensando rapidamente o Pacto de Sangue.',
     exampleCardId: 'purple_19_conde_vampiro',
   },
   {
@@ -460,7 +461,7 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Ofensiva',
     color: '#22c55e',
     description:
-      'Atinge todas as cartas empilhadas no slot defensor e transfere o dano excedente diretamente ao Soberano rival.',
+      'Ao destruir o defensor, varre em sequência as demais cartas empilhadas naquele mesmo slot e transfere o dano restante diretamente ao Soberano rival.',
     tacticalTip:
       'Pune formações empilhadas 3x e garante dano contínuo ao Soberano oponente.',
     exampleCardId: 'green_03_ursogrifo',
@@ -471,9 +472,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Defensiva',
     color: '#fb7185',
     description:
-      'Ao sofrer um ataque corpo-a-corpo, causa +1 de dano de fogo extra de retorno ao atacante.',
+      'Ao sofrer um ataque engajado (sem Alcance da Retaguarda) e o agressor ainda sobreviver ao contra-ataque normal, causa +1 de dano de fogo extra de retorno.',
     tacticalTip:
-      'Posicione na Vanguarda para desgastar enxames de unidades de baixa Vida.',
+      'Posicione na Vanguarda para desgastar enxames de unidades de baixa Vida ou quebrar Escudos Divinos.',
     exampleCardId: 'red_05_salamandra',
   },
   {
@@ -482,9 +483,9 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Ofensiva',
     color: '#f97316',
     description:
-      'Ao atacar, varre a fileira inimiga causando dano elemental a todas as unidades e pilhas daquela fileira.',
+      'Ao entrar em campo: varre toda a fileira inimiga da frente (Vanguarda, ou Retaguarda se a Vanguarda estiver vazia, incluindo pilhas 3×). Ao atacar em combate: queima todas as outras cartas empilhadas no mesmo slot do alvo!',
     tacticalTip:
-      'A ferramenta definitiva para limpar tabuleiros cheios e pilhas de 3 unidades.',
+      'A ferramenta definitiva para limpar fileiras inteiras ao entrar e punir slots empilhados 3× a cada ataque.',
     exampleCardId: 'red_08_dragao_vermelho',
   },
   {
@@ -504,7 +505,7 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     category: 'Defensiva',
     color: '#4ade80',
     description:
-      'No início de cada turno do seu controlador, restaura automaticamente 2 pontos de Vida.',
+      'No início de cada turno do seu controlador, restaura automaticamente +X pontos de Vida conforme o valor de Regeneração da carta e bônus ativos (+1, +2 ou +3).',
     tacticalTip:
       'Faça trocas parciais no seu turno para recuperar a integridade da criatura na rodada seguinte.',
     exampleCardId: 'green_07_troll',
@@ -622,7 +623,15 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               onClick={() => setActiveSection('weather_runes')}
               style={{ padding: '5px 10px', fontSize: '0.73rem' }}
             >
-              Expansão de Domínio
+              Expansão, Climas & Quebra
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeSection === 'modes_economy' ? 'active' : ''}`}
+              onClick={() => setActiveSection('modes_economy')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Economia, Relíquias & Modos
             </button>
             <button
               type="button"
@@ -1145,7 +1154,27 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               {
                 tag: 'PILHAS 3× & INTERAÇÕES ESPECIAIS',
                 title: 'Toque Letal, Atropelar & Sopro Elemental',
-                desc: 'Toque Letal executa instantaneamente no corpo a corpo ao causar 1+ de dano real, mas à distância (Alcance na Retaguarda) aplica apenas -1 de veneno extra. Contra slots com até 3 cartas empilhadas, Atropelar varre toda a pilha antes de atingir o Soberano e Sopro queima todas as cartas do slot!',
+                desc: 'Toque Letal executa instantaneamente no corpo a corpo ao causar 1+ de dano real, mas à distância (Alcance na Retaguarda) aplica apenas -1 de veneno extra. Contra slots com até 3 cartas empilhadas, Atropelar varre toda a pilha antes de atingir o Soberano e Sopro queima todas as cartas do slot ao atacar (e toda a fileira ao entrar)!',
+              },
+              {
+                tag: 'EMBOSCADAS & INVOCAÇÃO OCULTA',
+                title: 'Gatilhos de Reação & Não-Bloqueio de Coluna',
+                desc: 'Na Fase 1 as invocações rivais entram ocultas até a Fase 2. Reações armadas como Emboscada na Retaguarda NÃO bloqueiam a coluna nem impedem +1 ATQ de Invasão: elas disparam ANTES do golpe se um inimigo atacar naquela coluna OU atacar diretamente seu Soberano (se matarem ou congelarem o agressor, cancelam o ataque!).',
+              },
+              {
+                tag: 'AVANÇO AUTOMÁTICO & DUELO MÚTUO',
+                title: 'Redirecionamento de Coluna na Onda 2 e Onda 3',
+                desc: 'Se o alvo planejado de uma unidade morrer antes da vez dela (na Onda 1 por feitiço ou na Onda 2 por Ímpeto), ela NÃO perde o ataque: redireciona automaticamente na mesma coluna ou avança até o Soberano! E se A planejou atacar B e B planejou atacar A na Onda 3, ambas trocam dano em um único Duelo Mútuo simultâneo.',
+              },
+              {
+                tag: 'CORRUPÇÃO ABISSAL (0 A 10) & ASCENSÃO ★',
+                title: 'Poder Sombrio (5+), Sobrecarga (10/10) & Evolução',
+                desc: 'Pacto de Sangue (-3 PV), Dreno Umbroso e cartas Abissais somam Corrupção: com 5+ de Corrupção suas criaturas entram com +1 ATQ permanente e feitiços/sopros causam +1 de dano; porém em 10/10 cada ponto extra causa -2 PV de rebote! Já a Ascensão (★) evolui a criatura preservando 100% dos buffs permanentes acumulados.',
+              },
+              {
+                tag: 'MÃO CHEIA (12), DEVOLUÇÃO (10) & FADIGA',
+                title: 'Regras de Limite de Mão, Grimório Vazio & Empate',
+                desc: 'O limite da mão é de 12 cartas (compras excedentes queimam direto para a Cripta; efeitos de devolver inimigo à mão enviam à Cripta se o rival tiver 10+ cartas). Grimório vazio não mata na hora: cada tentativa de compra causa -2 PV de Fadiga! Em Colapso Mútuo simultâneo (ambos <= 0 PV), o jogador prevalece.',
               },
             ].map((card, idx) => (
               <div
@@ -1271,10 +1300,10 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 },
                 {
                   dom: 'purple' as Domain,
-                  role: 'Necromancia, Renascer, Dreno Vital & Corrupção',
+                  role: 'Necromancia, Renascer, Dreno Vital & Corrupção Abissal',
                   strategy:
-                    'Transforme a Cripta em recurso: sacrifique ou troque unidades com Renascer e Eco Necrótico, acumule 5+ cartas na Cripta para ativar Corrupção e drene a Vida do Soberano rival.',
-                  keyCards: 'Priorize Esqueletos/Lichs com Renascer, Vampiros com Dreno Vital, Remoções Letais (Toque Mortal) e Altares de Reanimação.',
+                    'Transforme a Cripta em recurso com Renascer e reanimações, e acumule 5+ de Corrupção Abissal (via Pacto de Sangue, Dreno Umbroso e cartas de Pacto) para dar +1 ATQ às suas criaturas e +1 de dano às magias (cuidando do teto 10/10).',
+                  keyCards: 'Priorize Esqueletos/Lichs com Renascer, Vampiros com Dreno de Vida (+2 PV no Soberano), Remoções Letais e Altares de Reanimação.',
                 },
                 {
                   dom: 'green' as Domain,
@@ -1669,51 +1698,47 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
       )}
 
       {/* =====================================================================
-          SECTION 4: DOMAIN EXPANSION STATES & CLASH RULES
+          SECTION 4: DOMAIN EXPANSION, COUNTERMEASURES, EXHAUSTION & 6 WEATHERS
          ===================================================================== */}
       {activeSection === 'weather_runes' && (
-        <div className="tg-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div className="tg-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
           <div>
-            <div className="aaa-kicker">MECÂNICA SUPREMA DE CAMPO • MARCO 6/6 DE AFINIDADE</div>
+            <div className="aaa-kicker">MECÂNICA SUPREMA DE CAMPO • MARCO 6/6 DE AFINIDADE, QUEBRA & 6 CLIMAS</div>
             <h2 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.35rem', marginBottom: '0.35rem' }}>
-              Os 4 Estados da Expansão de Domínio
+              Expansão de Domínio, Contramedidas, Exaustão & Climas de Arena
             </h2>
             <p style={{ color: '#cbd5e1', fontSize: '0.88rem', lineHeight: 1.6, margin: 0 }}>
-              Ao acumular 6 de Afinidade Elemental e pagar 3 de Essência, o Soberano manifesta seu santuário sobre a mesa de guerra por 3 rodadas. Conheça como as interações e colisões de Domínio funcionam:
+              Ao acumular <strong>6 de Afinidade Elemental</strong> (no seu Domínio Primário, todas as suas cores somam!) e pagar <strong>3 de Essência</strong>, o Soberano manifesta seu santuário por <strong>3 rodadas</strong>. Veja os números exatos de colisão, ruptura, exaustão e os 6 Climas Elementais:
             </p>
           </div>
 
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
               gap: '0.9rem',
             }}
           >
             {[
               {
-                tag: 'ESTADO 01 • ATIVAÇÃO',
-                name: 'Expansão Radial (3 Rodadas)',
-                color: '#fb923c',
-                desc: 'Concede Potencial 120% às unidades do Domínio, dispara um efeito elemental no início de cada rodada e libera Acerto Garantido direto contra o Soberano rival.',
+                tag: 'ESTADO 01 • EXPANSÃO ATIVA (3 RODADAS)',
+                name: '+1/+1, Ímpeto & Acerto Garantido',
+                desc: 'Todas as suas criaturas ganham +1/+1 e Ímpeto, e atravessam toda a Vanguarda/Guardiões para atingir diretamente o Soberano rival (ou qualquer unidade escolhida). Atenção: NÃO remove Congelar, 0 ATQ ou condições negativas das cartas!',
               },
               {
-                tag: 'ESTADO 02 • COLISÃO',
-                name: 'Choque de Domínios 50/50',
-                color: '#a855f7',
-                desc: 'Se ambos os Soberanos expandirem com Afinidades empatadas, o campo se divide ao meio e o Acerto Garantido é anulado. Se uma Afinidade for maior, ela estilhaça o Domínio menor.',
+                tag: 'ESTADO 02 • SOBREPUJAR vs. CHOQUE 50/50',
+                name: 'Disputa de Afinidade (-3 PV no Perdedor)',
+                desc: 'Se você expandir contra um Domínio rival tendo Afinidade ESTRITAMENTE MAIOR, estilhaça o Domínio dele na hora e causa 3 de dano ao Soberano rival! Se as Afinidades empatarem (ou a sua for menor), entram em Choque 50/50 anulando ambos os Acertos Garantidos até alguém superar a Afinidade.',
               },
               {
-                tag: 'ESTADO 03 • DEFESA',
-                name: 'Domínio Simples (2 de Essência)',
-                color: '#38bdf8',
-                desc: 'Técnica defensiva de emergência que cria um perímetro pessoal por 1 rodada, desativando o Acerto Garantido da Expansão inimiga.',
+                tag: 'ESTADO 03 • DOMÍNIO SIMPLES (2⚡)',
+                name: 'Cúpula Pessoal Anti-Acerto Garantido',
+                desc: 'Pague 2 de Essência (1× por turno) para erguer um Domínio Simples por 1 rodada: neutraliza o Acerto Garantido inimigo e volta a exigir que o oponente respeite suas colunas e Guardiões.',
               },
               {
-                tag: 'ESTADO 04 • RUPTURA',
-                name: 'Estilhaçamento Forçado',
-                color: '#ef4444',
-                desc: 'Causar 8 ou mais de dano ao Soberano controlador na mesma rodada (ou pagar o Sacrifício de Ruptura) estilhaça o Domínio ativo imediatamente.',
+                tag: 'ESTADO 04 • 3 FORMAS DE QUEBRA & EXAUSTÃO',
+                name: '10❤️ Sacrifício, 8+ Dano, Roda ☸ & 2 Turnos',
+                desc: 'Quebre imediatamente o Domínio rival: (1) pagando 10 PV distribuídos entre suas tropas/Relíquias e seu Soberano (sem matar seu Soberano, mantendo >= 1 PV); (2) causando 8+ de dano ao Soberano rival na mesma rodada; ou (3) com Unidades Quebra-Domínio (☸). Todo Domínio quebrado impõe 2 RODADAS de Exaustão sem poder expandir!',
               },
             ].map((r, idx) => (
               <div
@@ -1722,7 +1747,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                   padding: '1rem',
                   borderRadius: '8px',
                   background: '#0b0f17',
-                  border: '1px solid rgba(148, 163, 184, 0.18)',
+                  border: '1px solid rgba(212, 175, 55, 0.25)',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.35rem',
@@ -1734,11 +1759,235 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 <div className="font-cinzel" style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>
                   {r.name}
                 </div>
-                <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.55, margin: 0 }}>
+                <p style={{ fontSize: '0.81rem', color: '#cbd5e1', lineHeight: 1.55, margin: 0 }}>
                   {r.desc}
                 </p>
               </div>
             ))}
+          </div>
+
+          <div>
+            <div className="aaa-kicker" style={{ marginBottom: '0.55rem' }}>
+              OS 6 CLIMAS ELEMENTAIS DE ARENA (SUB-MAPAS DA CAMPANHA, CERCOS DA CONQUISTA & FENDAS)
+            </div>
+            <p style={{ color: '#94a3b8', fontSize: '0.81rem', lineHeight: 1.5, margin: '0 0 0.75rem 0' }}>
+              Nos confrontos geográficos dos 20 sub-mapas da Campanha e nas províncias da Conquista Continental, o terreno ativa <strong>2 rodadas iniciais de Clima Regional</strong> (e na Fenda do Cataclismo Mutante o clima rotaciona toda rodada):
+            </p>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(255px, 1fr))',
+                gap: '0.8rem',
+              }}
+            >
+              {[
+                {
+                  icon: '🌋',
+                  name: 'Tempestade de Cinzas Rubras',
+                  tag: 'CLIMA RUBRO (PYROS)',
+                  desc: 'Todas as criaturas em campo (de ambos os lados) ganham +1 ATQ. No início do turno, causa 1 de dano de fogo ao Soberano rival.',
+                },
+                {
+                  icon: '❄️',
+                  name: 'Nevasca Astral',
+                  tag: 'CLIMA SAFIRA (VÓRTEX)',
+                  desc: 'No início do turno, reduz -1 ATQ da criatura inimiga de maior ataque e concede +1 de Essência extra na abertura/1º feitiço.',
+                },
+                {
+                  icon: '🌑',
+                  name: 'Eclipse Umbral',
+                  tag: 'CLIMA ABISSAL (ECLIPSE)',
+                  desc: 'No início do turno, drena 1 ponto de Vida do Soberano rival e restaura +1 ponto de Vida no controlador do Eclipse.',
+                },
+                {
+                  icon: '🌿',
+                  name: 'Monção da Selva Primordial',
+                  tag: 'CLIMA ESMERALDA (VERIDIA)',
+                  desc: 'No início do turno, regenera +1 de Vida em todas as criaturas aliadas (+1 de Vida Máxima nas unidades da Vanguarda).',
+                },
+                {
+                  icon: '☀️',
+                  name: 'Zênite Solar Imperial',
+                  tag: 'CLIMA SOLAR (SOLÁRIA)',
+                  desc: 'No início do turno, concede +1 de Armadura a um campeão na Vanguarda e restaura +1 ponto de Vida no Soberano.',
+                },
+                {
+                  icon: '🌀',
+                  name: 'Convergência da Fenda Astral',
+                  tag: 'CLIMA AXIAL (NEUTRO)',
+                  desc: 'Fluxo planar acelerado: concede +1 de Essência extra temporária no início do turno para jogadas de alto impacto.',
+                },
+              ].map((w, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: '0.9rem 1rem',
+                    borderRadius: '8px',
+                    background: '#0b101c',
+                    border: '1px solid rgba(148, 163, 184, 0.2)',
+                  }}
+                >
+                  <div style={{ fontSize: '0.62rem', fontWeight: 800, color: '#d4af37', letterSpacing: '0.08em' }}>
+                    {w.tag}
+                  </div>
+                  <div className="font-cinzel" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', margin: '0.2rem 0 0.35rem' }}>
+                    {w.icon} {w.name}
+                  </div>
+                  <p style={{ fontSize: '0.79rem', color: '#cbd5e1', lineHeight: 1.48, margin: 0 }}>{w.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          SECTION 4.5: ECONOMY, ASTRAL SHARDS, 12 SOVEREIGN RELICS & ALL 7 GAME MODES
+         ===================================================================== */}
+      {activeSection === 'modes_economy' && (
+        <div className="tg-panel" style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+          <div>
+            <div className="aaa-kicker">ECONOMIA DO SOBERANO • FORJA DE ESTILHAÇOS, 12 RELÍQUIAS DA COROA & OS 7 MODOS</div>
+            <h2 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.35rem', marginBottom: '0.35rem' }}>
+              Ouro, Estilhaços Astrais (💎), Relíquias da Coroa & Regras de Todos os Modos
+            </h2>
+            <p style={{ color: '#cbd5e1', fontSize: '0.88rem', lineHeight: 1.6, margin: 0 }}>
+              Guia completo de todas as moedas, criação direta de cartas, equipamentos da conta e regras específicas de cada modo de jogo em Vaeloria.
+            </p>
+          </div>
+
+          {/* BLOCO 1: ECONOMIA, FORJA DE ESTILHAÇOS & RELÍQUIAS DA COROA */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '0.9rem',
+            }}
+          >
+            <div
+              style={{
+                padding: '1rem',
+                borderRadius: '10px',
+                background: '#0b101c',
+                border: '1px solid rgba(212, 175, 55, 0.3)',
+              }}
+            >
+              <div style={{ fontSize: '0.64rem', fontWeight: 800, color: '#d4af37', letterSpacing: '0.08em' }}>
+                OURO (🪙) & RELICÁRIO (30🪙)
+              </div>
+              <h3 className="font-cinzel" style={{ fontSize: '0.94rem', color: '#f8fafc', margin: '0.25rem 0 0.4rem' }}>
+                Pacotes, Coleção & Edição por 100🪙
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.52, margin: 0 }}>
+                Você inicia com <strong>160🪙</strong> e ganha <strong>+10🪙</strong> por vitória padrão (além de prêmios maiores em Chefes, Conquista, Expedição, Draft, Fendas e Missões Diárias). No <strong>Relicário</strong>, pacotes custam <strong>30🪙</strong> (5 cartas, sendo 1 Rara ou Lendária garantida). Trocar cartas já obtidas no seu Grimório é grátis; reconstruir livremente todo o Grimório Base custa <strong>100🪙</strong>.
+              </p>
+            </div>
+
+            <div
+              style={{
+                padding: '1rem',
+                borderRadius: '10px',
+                background: '#0b101c',
+                border: '1px solid rgba(212, 175, 55, 0.3)',
+              }}
+            >
+              <div style={{ fontSize: '0.64rem', fontWeight: 800, color: '#d4af37', letterSpacing: '0.08em' }}>
+                ESTILHAÇOS ASTRAIS (💎) • FORJA DIRETA
+              </div>
+              <h3 className="font-cinzel" style={{ fontSize: '0.94rem', color: '#f8fafc', margin: '0.25rem 0 0.4rem' }}>
+                Reciclagem Automática & Custos de Criação
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.52, margin: 0 }}>
+                Qualquer cópia excedente além do limite útil de baralho (<strong>3×</strong> Comum/Incomum, <strong>2×</strong> Rara, <strong>1×</strong> Lendária) converte-se automaticamente em Estilhaços: <strong>+5💎 Comum</strong>, <strong>+15💎 Incomum</strong>, <strong>+40💎 Rara</strong> e <strong>+120💎 Lendária</strong>. Na Forja de Grimórios, crie qualquer carta específica por <strong>20💎 (Comum)</strong>, <strong>50💎 (Incomum)</strong>, <strong>140💎 (Rara)</strong> ou <strong>360💎 (Lendária)</strong>!
+              </p>
+            </div>
+
+            <div
+              style={{
+                padding: '1rem',
+                borderRadius: '10px',
+                background: '#0b101c',
+                border: '1px solid rgba(212, 175, 55, 0.3)',
+              }}
+            >
+              <div style={{ fontSize: '0.64rem', fontWeight: 800, color: '#d4af37', letterSpacing: '0.08em' }}>
+                EQUIPAMENTO DE CONTA • 12 RELÍQUIAS
+              </div>
+              <h3 className="font-cinzel" style={{ fontSize: '0.94rem', color: '#f8fafc', margin: '0.25rem 0 0.4rem' }}>
+                As 12 Relíquias da Coroa Soberana
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.52, margin: 0 }}>
+                Diferente das <em>Cartas de Relíquia</em> (jogadas na Retaguarda durante o duelo), a <strong>Relíquia da Coroa Soberana</strong> é equipada <strong>antes da partida</strong> (barra seletora no topo dos modos). Existem <strong>12 Relíquias</strong> desbloqueáveis por vitórias e marcos, concedendo bônus passivos de abertura como <strong>+PV Máximo</strong>, <strong>+1⚡ Essência Inicial</strong>, <strong>+1 Carta Inicial</strong>, <strong>+1 Armadura na Vanguarda</strong>, <strong>+1 Afinidade</strong> ou <strong>Dano de Artilharia</strong> no rival!
+              </p>
+            </div>
+          </div>
+
+          {/* BLOCO 2: REGRAS EXATAS DE TODOS OS 7 MODOS DE JOGO */}
+          <div>
+            <div className="aaa-kicker" style={{ marginBottom: '0.55rem' }}>
+              REGRAS ESPECÍFICAS DOS 7 MODOS DE JOGO
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(295px, 1fr))',
+                gap: '0.85rem',
+              }}
+            >
+              {[
+                {
+                  tag: 'MODO 1 • GRANDE CAMPANHA (21 MAPAS)',
+                  title: '🗺️ 190 Confrontos, Zona de Controle & Dominação',
+                  desc: '1 Mapa Continental + 20 Sub-Mapas em zoom 100%. Marche passo a passo pelas estradas: inimigos vivos bloqueiam caminhos e portais adiante (Zona de Controle), mas você pode recuar livremente para rotas vencidas ou migrar para outra cor. Vencer desbloqueia as cartas Raras/Lendárias daquele chefe (276 ao todo), ativa Pontos de Interesse no mapa e, em 100% do sub-mapa, converte todo o território à sua cor! (Inclui também a Trilha Clássica de 32 Chefes).',
+                },
+                {
+                  tag: 'MODO 2 • CONQUISTA CONTINENTAL (48 PROVÍNCIAS)',
+                  title: '🏰 Suprimentos, 5 Edifícios, Diplomacia & Crises',
+                  desc: 'Guerra por Estações entre 6 Facções. Você realiza 1 Cerco ofensivo por estação e responde a Alarmes de Defesa. Mantenha Linhas de Suprimento ligadas à sua Capital! Erga Fortificações (65 Supr.) e 5 Edifícios Provinciais: Forja de Guerra (+1 dano de abertura a cada 2), Mercado Imperial (+18/+25 Supr.), Torre Astral (+3 PV / +1 ARM), Doca de Projeção (ponte aérea a 2 saltos e Voo +1 ATQ) e Santuário de Ley (+1⚡ local). Use Diplomacia (Trégua 75, Pacto Comercial 35, Coalizão 65, Sabotagem 55) e supere Crises Imperiais!',
+                },
+                {
+                  tag: 'MODO 3 • EXPEDIÇÃO ROGUELITE (9 ETAPAS)',
+                  title: '🧭 6 Bênçãos Soberanas & Evolução de Baralho',
+                  desc: 'Escolha 1 entre 6 Bênçãos Soberanas exclusivas (Coroa da Forja, Sangue Dracônico, Conclave Arcano, Falange Imortal, Juramento da Roda ou Esquadra das Seis Asas), monte um grimório ágil de 40 cartas em 20 rodadas de escolhas e enfrente uma escalada de 9 Chefes da Fenda, coletando saques e Ouro a cada etapa vencida.',
+                },
+                {
+                  tag: 'MODO 4 • CRISOL DOS CINCO SELOS (DRAFT)',
+                  title: '⚖️ 40 Cartas Sem Limite de Cópias • 7 Vitórias / 3 Derrotas',
+                  desc: 'Seu 1º Passe do Crisol é GRÁTIS (depois 100🪙). Escolha 1 de 3 Domínios sorteados e construa 40 cartas em 20 escolhas (2 cartas por rodada). Regra especial do Crisol: NÃO há limite de cópias 3×/2×/1× (você pode acumular quantas cópias aparecerem!). A jornada vai até 7 Vitórias (Glória Suprema: até 360🪙 + 125💎) ou 3 Derrotas.',
+                },
+                {
+                  tag: 'MODO 5 • FENDAS DA FRATURA (6 MUTADORES)',
+                  title: '🌀 Regras Planares Simétricas & Bônus Semanal',
+                  desc: 'Duelos especiais onde uma anomalia altera as regras para AMBOS os lados: (1) Torrente Astral (+3⚡ iniciais); (2) Panteão Imortal (Lendárias custam -2⚡ e ganham +1/+1); (3) Trono de Vidro (Soberanos têm 20 PV e toda criatura ganha +2 ATQ e Ímpeto); (4) Noite do Sol Negro (todas as criaturas ganham Renascer); (5) Forja Viva (Relíquias custam -2⚡ e dão +1 ARM à coluna); (6) Cataclismo Mutante (Clima muda a cada rodada). A Fenda em Destaque Semanal paga +45🪙 e +25💎 extras!',
+                },
+                {
+                  tag: 'MODO 6 & 7 • ENIGMAS LETAIS & CONCLAVE 1×1',
+                  title: '🧩 Letal em 1 Turno, Arena Rápida & PvP Online',
+                  desc: 'Nos Desafios Táticos (Enigmas), você recebe uma mesa e mão fixas e deve descobrir a sequência exata de formação, movimentação e ataques para derrotar o rival em 1 único turno. Na Arena Rápida você testa grimórios contra os 30 arquétipos da IA, e no Conclave Online disputa partidas 1×1 ranqueadas (Fila Rápida ou Sala PACT-XXXX).',
+                },
+              ].map((m, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: '0.95rem 1.05rem',
+                    borderRadius: '10px',
+                    background: '#0b101c',
+                    border: '1px solid rgba(148, 163, 184, 0.2)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.35rem',
+                  }}
+                >
+                  <div style={{ fontSize: '0.63rem', fontWeight: 800, color: '#e6c875', letterSpacing: '0.08em' }}>
+                    {m.tag}
+                  </div>
+                  <div className="font-cinzel" style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc' }}>
+                    {m.title}
+                  </div>
+                  <p style={{ fontSize: '0.79rem', color: '#cbd5e1', lineHeight: 1.52, margin: 0 }}>{m.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -1928,9 +2177,9 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 desc: 'Escolha livremente seu 1º Grimório de 100 cartas (3× Comum/Incomum, 2× Rara, 1× Lendária, máx. 10 Lendárias) e alterne cartas da sua reserva quando quiser.',
               },
               {
-                key: 'Relicário & 500 Ouro',
-                title: 'Expansão de Acervo & Substituir Base',
-                desc: 'Cartas do Relicário somam-se à sua coleção total (mantendo 100 no Grimório de Combate). Por 500 de Ouro, substitua o Grimório Base preservando suas cartas do Relicário.',
+                key: 'Relicário (30🪙) & 100🪙',
+                title: 'Pacotes, Estilhaços (💎) & Editar Base',
+                desc: 'Pacotes custam 30 de Ouro (duplicatas excedentes viram Estilhaços Astrais 💎 para criar cartas exatas: 20/50/140/360💎). Por 100 de Ouro, edite ou substitua todo o Grimório Base.',
               },
               {
                 key: 'Oráculo • 62 Combos',

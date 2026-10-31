@@ -86,16 +86,25 @@ export const CARD_TYPE_LABELS: Record<CardDefinition['type'], string> = {
 };
 
 export const KEYWORD_TOOLTIPS: Record<Keyword, string> = {
-  Guardião: 'Inimigos terrestres são obrigados a atacar esta unidade antes de outras.',
-  Voo: 'Ignora a Vanguarda terrestre; só é bloqueado por Voo ou Alcance.',
-  Alcance: 'Ataca a partir da Retaguarda sem sofrer dano de contra-ataque.',
-  Ímpeto: 'Pode atacar criaturas inimigas no mesmo turno em que entra em campo.',
-  Atropelar: 'O dano excedente ao destruir um defensor atinge o Soberano inimigo.',
-  'Toque Letal': 'Qualquer dano causado à Vida de uma criatura a destrói imediatamente.',
-  'Escudo Divino': 'Anula completamente a primeira instância de dano que sofreria.',
-  'Dreno de Vida': 'Cura o seu Soberano em 2 PV sempre que esta unidade causar dano.',
-  Renascer: 'Na primeira vez que morre, retorna ao campo com 1 de Vida.',
-  'Pele Incandescente': 'Causa +1 de dano de fogo a quem atacá-la corpo-a-corpo.',
+  Guardião:
+    'Na Vanguarda: trava atacantes terrestres (todas as 6 colunas) e Alcance, e dá +1 ARM a vizinhos. Na Retaguarda: intercepta só Vanguarda terrestre até ±1 coluna. Só para Voo se tiver Guardião + Voo.',
+  Voo:
+    'Ataca qualquer coluna ignorando defensores sem Voo — só é bloqueado por Guardião + Voo. Ter apenas Voo não bloqueia voadores inimigos.',
+  Alcance:
+    'Atinge alvos terrestres ou com Voo em qualquer coluna (travado só por Guardião na Vanguarda). Na Retaguarda não sofre contra-ataque; na Vanguarda sofre.',
+  Ímpeto:
+    'Ataca no turno em que entra (criaturas ou Soberano) e age primeiro na Onda 2: se abater alvo sem Ímpeto, não sofre contra-ataque.',
+  Atropelar:
+    'Ao destruir o defensor, o dano excedente varre as demais cartas empilhadas no slot e depois atinge o Soberano rival.',
+  'Toque Letal':
+    'Ao causar 1+ de dano real: executa a criatura no corpo a corpo (ou atacando da Vanguarda); em disparo com Alcance na Retaguarda, aplica -1 de veneno extra.',
+  'Escudo Divino':
+    'Anula completamente a primeira instância de dano que sofreria (inclusive evitando Toque Letal nesse golpe).',
+  'Dreno de Vida':
+    'Restaura +2 PV no seu Soberano ao causar dano direto ao Soberano rival, ou +1 PV ao causar dano real a criaturas (atacando ou contra-atacando).',
+  Renascer: 'Na primeira vez que morre, retorna imediatamente ao campo com 1 de Vida.',
+  'Pele Incandescente':
+    'Ao sofrer ataque engajado (sem Alcance da Retaguarda), causa +1 de dano de fogo de retorno ao atacante.',
   'Fúria Crescente': 'Ganha +2 de ATQ permanentemente sempre que sobrevive a dano.',
 };
 

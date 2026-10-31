@@ -2,20 +2,20 @@ import { CardDefinition, CardEffect, Keyword } from '../types/game';
 
 const KEYWORD_COMBAT_CLAUSES: Record<Keyword, string> = {
   Guardião:
-    'obriga inimigos terrestres na mesma Coluna a atacarem esta unidade primeiro',
-  Voo: 'voa sobre defensores terrestres na Vanguarda',
-  Alcance: 'ataca à distância da Retaguarda sem sofrer contra-ataque',
-  Ímpeto: 'pode atacar criaturas inimigas no mesmo turno em que entra',
+    'na Vanguarda obriga atacantes terrestres de qualquer coluna e unidades com Alcance a atacarem esta unidade primeiro',
+  Voo: 'voa sobre defensores sem Voo em qualquer coluna, sendo bloqueada apenas por Guardião com Voo',
+  Alcance: 'ataca alvos terrestres ou voadores em qualquer coluna e não sofre contra-ataque ao disparar da Retaguarda',
+  Ímpeto: 'ataca no mesmo turno em que entra e golpeia primeiro na Onda de Iniciativa',
   Atropelar:
-    'causa o dano excedente ao Soberano inimigo ao destruir um defensor',
+    'varre cartas empilhadas no slot e causa o dano excedente ao Soberano inimigo ao destruir o defensor',
   'Toque Letal':
-    'destrói qualquer criatura que sofrer dano de Vida desta unidade',
+    'executa criaturas ao causar dano real corpo a corpo ou aplica 1 de veneno extra à distância',
   'Escudo Divino': 'anula o primeiro dano que sofreria',
   'Dreno de Vida':
-    'restaura 2 de Vida do seu Soberano sempre que causa dano',
+    'restaura 2 de Vida do seu Soberano ao atingir o Soberano rival ou 1 de Vida ao ferir criaturas',
   Renascer: 'retorna uma vez ao campo com 1 de Vida ao morrer',
   'Pele Incandescente':
-    'causa 1 de dano de fogo a quem a ataca corpo-a-corpo',
+    'causa 1 de dano de fogo de retorno a quem a ataca corpo a corpo',
   'Fúria Crescente': 'ganha +2 de Ataque sempre que sobrevive a dano',
 };
 
@@ -774,7 +774,7 @@ export function formatCardDetailedRules(card: CardDefinition): string[] {
   }
   if (card.armor > 0) {
     passiveParts.push(
-      `possui ${card.armor} de Armadura, reduzindo em ${card.armor} o dano sofrido em combate`
+      `possui ${card.armor} de Armadura, absorvendo totalmente ataques de valor ${card.armor} ou menor e reduzindo em ${card.armor} os ataques maiores`
     );
   }
   if (card.regeneration && card.regeneration > 0) {

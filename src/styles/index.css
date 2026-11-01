@@ -23173,3 +23173,207 @@ input:focus-visible,
   pointer-events: none;
   white-space: nowrap;
 }
+
+/* ============================================================================
+   CLEAN UI OVERHAUL — BARRA UNIFICADA SÓBRIA E MAPA WIDESCREEN SEM POLUIÇÃO
+   ============================================================================ */
+.aaa-page-shell.is-widescreen-map-page {
+  width: 100% !important;
+  max-width: 1960px !important;
+  padding: 6px 12px 10px !important;
+  gap: 0 !important;
+}
+
+.aaa-campaign-workspace.is-map-mode > .vaeloria-world-map-shell {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  gap: 8px !important;
+}
+
+.vaeloria-world-map-shell.is-theater-fullscreen {
+  background: #070a12 !important;
+  padding: 6px 10px 10px !important;
+  gap: 6px !important;
+}
+
+.vwm-unified-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 42px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.62);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.vwm-unified-left,
+.vwm-unified-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.vwm-unified-meta {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+}
+
+.vwm-unified-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(148, 163, 184, 0.16);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+/* Uniform 32px Sober Controls */
+.aaa-ctrl-field,
+.aaa-ctrl-btn,
+.sovereign-relic-bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  background: rgba(11, 15, 25, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  transition: border-color 0.14s ease, background 0.14s ease, color 0.14s ease;
+}
+
+.aaa-ctrl-btn,
+.sovereign-relic-bar-btn {
+  cursor: pointer;
+  transform: none !important;
+}
+
+.aaa-ctrl-field:hover,
+.aaa-ctrl-btn:hover,
+.sovereign-relic-bar-btn:hover {
+  background: rgba(20, 29, 48, 0.94);
+  border-color: rgba(148, 163, 184, 0.36);
+  color: #f8fafc;
+  transform: none !important;
+}
+
+.aaa-ctrl-field:focus-within {
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+.aaa-ctrl-btn.is-active,
+.aaa-ctrl-btn.is-accent {
+  background: rgba(161, 98, 7, 0.2);
+  border-color: rgba(212, 175, 55, 0.48);
+  color: #fef08a;
+}
+
+.aaa-ctrl-dot,
+.srb-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.aaa-ctrl-select-inner {
+  appearance: auto;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  color: #f1f5f9;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  height: 100%;
+  padding: 0 2px 0 0;
+  cursor: pointer;
+  max-width: 215px;
+}
+
+.vwm-scope-picker .aaa-ctrl-select-inner {
+  max-width: 240px;
+}
+
+.aaa-ctrl-select-inner option,
+.aaa-ctrl-select-inner optgroup {
+  background: #0b0f19;
+  color: #f1f5f9;
+  font-weight: 500;
+}
+
+.srb-label {
+  max-width: 175px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #f1f5f9;
+}
+
+.sovereign-relic-bar-btn .srb-count-pill {
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.12);
+  border: none;
+  color: #cbd5e1;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+.vwm-unified-bar .vwm-mode-switch {
+  height: 32px;
+  box-sizing: border-box;
+  padding: 2px;
+  border-radius: 6px;
+  background: rgba(11, 15, 25, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.vwm-unified-bar .vwm-mode-switch-btn {
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 4px;
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  box-shadow: none;
+}
+
+.vwm-unified-bar .vwm-mode-switch-btn.is-active {
+  background: rgba(161, 98, 7, 0.28);
+  color: #fef08a;
+  box-shadow: none;
+}
+
+.vwm-stage-fit-box > .vwm-viewport {
+  border-radius: 10px !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65) !important;
+}
+
+@media (max-width: 1180px) {
+  .vwm-unified-meta {
+    display: none;
+  }
+}

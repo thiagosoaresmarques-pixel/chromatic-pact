@@ -1732,11 +1732,6 @@ export const App: React.FC = () => {
     [effectiveNavTab]
   );
 
-  const activePillarDef = useMemo(
-    () => (activePillarId ? NAV_PILLARS.find((p) => p.id === activePillarId) ?? null : null),
-    [activePillarId]
-  );
-
   const openPillarDef = useMemo(
     () => (openNavPillar ? NAV_PILLARS.find((p) => p.id === openNavPillar) ?? null : null),
     [openNavPillar]
@@ -2394,43 +2389,11 @@ export const App: React.FC = () => {
 
       {/* Main Content View */}
       <main style={{ flex: 1 }}>
-        {/* Contextual 1-Click Sibling Sub-Navigation Bar (Hidden inside fullscreen BattleArena to preserve 100% board height) */}
-        {activeTab !== 'arena' &&
-          activePillarDef &&
-          activePillarDef.items.length > 0 && (
-            <div className="section-subnav-shell">
-              <div className="section-subnav-bar" role="navigation" aria-label={activePillarDef.label}>
-                <span className="section-subnav-kicker">
-                  <span>{activePillarDef.icon}</span>
-                  <span>{activePillarDef.label.toUpperCase()}</span>
-                </span>
-                <div className="section-subnav-pills">
-                  {activePillarDef.items.map((sub) => {
-                    const isSubActive = effectiveNavTab === sub.tab;
-                    return (
-                      <button
-                        key={sub.tab}
-                        type="button"
-                        className={`section-subnav-pill ${isSubActive ? 'is-active' : ''}`}
-                        onClick={() => handleSelectSubTab(sub.tab)}
-                        title={sub.shortDesc}
-                      >
-                        <span>{sub.icon}</span>
-                        <span>{sub.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-
         {activeTab === 'admin' && (
           <div className="section-subnav-shell">
             <div className="section-subnav-bar">
               <span className="section-subnav-kicker">
-                <span>👑</span>
-                <span>ADMINISTRAÇÃO</span>
+                <span>Administração</span>
               </span>
               <div className="section-subnav-pills">
                 <button
@@ -2438,7 +2401,7 @@ export const App: React.FC = () => {
                   className="section-subnav-pill"
                   onClick={() => handleSelectSubTab('home')}
                 >
-                  ← Voltar ao Salão Real
+                  ← Voltar ao Início
                 </button>
               </div>
             </div>

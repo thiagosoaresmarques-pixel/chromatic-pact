@@ -64,11 +64,11 @@ function inferDeckSovereignDomain(cardIds: string[]): SovereignBannerDomain {
 }
 
 const TIER_ROMAN: Record<number, string> = {
-  1: 'TIER I • FRONTEIRA',
-  2: 'TIER II • VANGUARDA',
-  3: 'TIER III • BASTIÃO',
-  4: 'TIER IV • ALTO TRONO',
-  5: 'TIER V • SOBERANO ÁPICE',
+  1: 'Tier I · Fronteira',
+  2: 'Tier II · Vanguarda',
+  3: 'Tier III · Bastião',
+  4: 'Tier IV · Alto Trono',
+  5: 'Tier V · Soberano Ápice',
 };
 
 export const CampaignView: React.FC<CampaignViewProps> = ({
@@ -141,12 +141,9 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     return firstInStartRealm?.id ?? fullBossRoster[0]?.id ?? '';
   });
 
-  // Sempre abre o modo Campanha em Tela Cheia por padrão
-  const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(true);
-
-  useEffect(() => {
-    saveCampaignMapSession({ isTheaterFullscreen: true });
-  }, []);
+  const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(
+    () => loadCampaignMapSession()?.isTheaterFullscreen ?? false
+  );
 
   useEffect(() => {
     if (selectedBossId) {
@@ -251,107 +248,112 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   );
   const bannerMeta = SOVEREIGN_BANNER_PALETTE[sovereignDomain];
 
+  const campaignLoadoutControls = (
+    <>
+      <label
+        className="aaa-ctrl-field"
+        title="Cor do Estandarte Soberano (converte sub-mapas 100% vencidos para sua cor)"
+      >
+        <span
+          className="aaa-ctrl-dot"
+          style={{ background: bannerMeta.hex }}
+          aria-hidden="true"
+        />
+        <select
+          value={sovereignDomain}
+          onChange={(e) => setSovereignDomain(e.target.value as SovereignBannerDomain)}
+          className="aaa-ctrl-select-inner"
+          aria-label="Cor do Estandarte"
+        >
+          <option value="green">Estandarte: Veridia</option>
+          <option value="red">Estandarte: Pyros</option>
+          <option value="blue">Estandarte: Vórtex</option>
+          <option value="purple">Estandarte: Eclipse</option>
+          <option value="gold">Estandarte: Solária</option>
+        </select>
+      </label>
+
+      <SovereignRelicSelectorBar
+        defeatedBossCount={grandClearedIds.length}
+        arenaWins={arenaWins}
+      />
+
+      {!isGuest && customDecks.length > 0 && (
+        <label className="aaa-ctrl-field" title="Grimório ativo para os duelos da Campanha">
+          <select
+            value={selectedDeckId}
+            onChange={(e) => {
+              const nextId = e.target.value;
+              setSelectedDeckId(nextId);
+              const chosen = customDecks.find((d) => d.id === nextId);
+              if (chosen) {
+                setSovereignDomain(inferDeckSovereignDomain(chosen.cardIds));
+              }
+            }}
+            className="aaa-ctrl-select-inner"
+            aria-label="Selecionar Grimório"
+          >
+            {customDecks.map((cd) => (
+              <option key={cd.id} value={cd.id}>
+                {cd.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
+      <div className="vwm-mode-switch" role="group" aria-label="Modo de visualização">
+        <button
+          type="button"
+          className={`vwm-mode-switch-btn ${viewMode === 'map' ? 'is-active' : ''}`}
+          onClick={() => setViewMode('map')}
+        >
+          Mapa
+        </button>
+        <button
+          type="button"
+          className={`vwm-mode-switch-btn ${viewMode === 'list' ? 'is-active' : ''}`}
+          onClick={() => {
+            setViewMode('list');
+            setIsDossierCollapsed(false);
+          }}
+        >
+          Lista
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <div className={`aaa-page-shell ${viewMode === 'map' ? 'is-widescreen-map-page' : ''}`}>
-      {/* Ultra-Slim Single-Row Campaign Command Bar */}
-      <div className="aaa-campaign-toolbar">
-        <div className="aaa-campaign-toolbar-left">
-          <span className="aaa-campaign-kpi-pill">
-            Confrontos: <strong>{grandClearedIds.length}/{fullBossRoster.length}</strong> ({pct}%)
-          </span>
-          <span
-            className="aaa-campaign-kpi-pill"
-            style={{ borderColor: bannerMeta.borderRgba }}
-          >
-            Sub-mapas Unificados: <strong>{conqueredSubmapsCount}/20</strong>
-          </span>
-
-          {viewMode === 'list' && (
-            <select
-              value={domainFilter}
-              onChange={(e) => setDomainFilter(e.target.value as 'all' | Domain)}
-              className="aaa-select aaa-toolbar-deck-select"
-              aria-label="Filtrar domínio na lista"
-            >
-              <option value="all">Todos os Domínios ({fullBossRoster.length})</option>
-              <option value="green">Veridia • Esmeralda</option>
-              <option value="red">Pyros • Rubro</option>
-              <option value="blue">Vórtex • Safira</option>
-              <option value="purple">Eclipse • Obsidiana</option>
-              <option value="gold">Solária • Alvorada</option>
-              <option value="neutral">Matriz Axial • Neutro</option>
-            </select>
-          )}
-        </div>
-
-        <div className="aaa-campaign-toolbar-right">
-          <label className="aaa-sovereign-banner-picker" title="Cor do Estandarte Soberano (converte sub-mapas 100% vencidos para sua cor)">
-            <span
-              className="aaa-sovereign-banner-dot"
-              style={{ background: bannerMeta.hex }}
-            />
-            <select
-              value={sovereignDomain}
-              onChange={(e) =>
-                setSovereignDomain(e.target.value as SovereignBannerDomain)
-              }
-              className="aaa-select aaa-banner-select"
-            >
-              <option value="green">Estandarte: Veridia (Verde)</option>
-              <option value="red">Estandarte: Pyros (Vermelho)</option>
-              <option value="blue">Estandarte: Vórtex (Azul)</option>
-              <option value="purple">Estandarte: Eclipse (Roxo)</option>
-              <option value="gold">Estandarte: Solária (Dourado)</option>
-            </select>
-          </label>
-
-          <SovereignRelicSelectorBar
-            defeatedBossCount={grandClearedIds.length}
-            arenaWins={arenaWins}
-          />
-
-          <div className="vwm-mode-switch">
-            <button
-              type="button"
-              className={`vwm-mode-switch-btn ${viewMode === 'map' ? 'is-active' : ''}`}
-              onClick={() => setViewMode('map')}
-            >
-              Mapa
-            </button>
-            <button
-              type="button"
-              className={`vwm-mode-switch-btn ${viewMode === 'list' ? 'is-active' : ''}`}
-              onClick={() => {
-                setViewMode('list');
-                setIsDossierCollapsed(false);
-              }}
-            >
-              Lista
-            </button>
+      {/* Only rendered in List mode; Map mode integrates controls directly into the single unified map bar */}
+      {viewMode === 'list' && (
+        <div className="vwm-unified-bar" style={{ marginBottom: '0.6rem' }}>
+          <div className="vwm-unified-left">
+            <label className="aaa-ctrl-field">
+              <select
+                value={domainFilter}
+                onChange={(e) => setDomainFilter(e.target.value as 'all' | Domain)}
+                className="aaa-ctrl-select-inner"
+                aria-label="Filtrar domínio na lista"
+              >
+                <option value="all">Todos os Domínios ({fullBossRoster.length})</option>
+                <option value="green">Veridia · Esmeralda</option>
+                <option value="red">Pyros · Rubro</option>
+                <option value="blue">Vórtex · Safira</option>
+                <option value="purple">Eclipse · Obsidiana</option>
+                <option value="gold">Solária · Alvorada</option>
+                <option value="neutral">Matriz Axial · Neutro</option>
+              </select>
+            </label>
+            <span className="vwm-unified-meta">
+              {grandClearedIds.length}/{fullBossRoster.length} vencidos ({pct}%) · {conqueredSubmapsCount}/20 unificados
+            </span>
           </div>
 
-          {!isGuest && customDecks.length > 0 && (
-            <select
-              value={selectedDeckId}
-              onChange={(e) => {
-                const nextId = e.target.value;
-                setSelectedDeckId(nextId);
-                const chosen = customDecks.find((d) => d.id === nextId);
-                if (chosen) {
-                  setSovereignDomain(inferDeckSovereignDomain(chosen.cardIds));
-                }
-              }}
-              className="aaa-select aaa-toolbar-deck-select"
-            >
-              {customDecks.map((cd) => (
-                <option key={cd.id} value={cd.id}>
-                  {cd.name}
-                </option>
-              ))}
-            </select>
-          )}
+          <div className="vwm-unified-right">{campaignLoadoutControls}</div>
         </div>
-      </div>
+      )}
 
       {/* Main Workspace: Full-Screen 16:9 Map Stage + Floating Collapsible Dossier Drawer */}
       <div
@@ -378,6 +380,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               setIsTheaterFullscreen(next);
               saveCampaignMapSession({ isTheaterFullscreen: next });
             }}
+            toolbarSlot={campaignLoadoutControls}
             onSelectBoss={(boss) => setSelectedBossId(boss.id)}
             onChallengeBoss={handleClickStartBoss}
             onRewardGold={onRewardGold}
@@ -414,20 +417,18 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   <div className="aaa-boss-row-info">
                     <div className="aaa-boss-row-top">
                       <span className="aaa-boss-stage-num">
-                        TIER {gcn?.tier ?? boss.difficultyTier ?? 1} • #{boss.stage}
-                        {rowStanding ? ` • Rank #${rowStanding.rank} [${rowStanding.tierBadge}]` : ''}
+                        Tier {gcn?.tier ?? boss.difficultyTier ?? 1} · #{boss.stage}
+                        {rowStanding ? ` · Rank #${rowStanding.rank}` : ''}
                       </span>
                       {isDefeated ? (
                         <span className="aaa-boss-cleared-tag">✓</span>
                       ) : !isAccessible ? (
-                        <span className="aaa-boss-locked-tag">🔒</span>
+                        <span className="aaa-boss-locked-tag">Bloq.</span>
                       ) : null}
                     </div>
                     <div className="font-cinzel aaa-boss-row-name">{boss.name}</div>
                     <div className="aaa-boss-row-geo">
-                      {rdef ? `${rdef.shortName} • ` : ''}
-                      {boss.archetypeTitle ? `${boss.archetypeTitle} • ` : ''}
-                      {gcn?.landmarkName ?? boss.landmarkName ?? ''}
+                      {rdef ? rdef.shortName : gcn?.landmarkName ?? boss.landmarkName ?? ''}
                     </div>
                   </div>
                   <div className="aaa-boss-row-stats">
@@ -455,7 +456,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             {viewMode === 'map' && (
               <div className="aaa-floating-drawer-topbar">
                 <span className="aaa-floating-drawer-kicker">
-                  DOSSIÊ DE CONFRONTO #{activeBoss.stage}/{fullBossRoster.length}
+                  Confronto #{activeBoss.stage} de {fullBossRoster.length}
                 </span>
                 <button
                   type="button"

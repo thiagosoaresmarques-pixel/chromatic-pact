@@ -37,6 +37,7 @@ export const SovereignRelicSelectorBar: React.FC<SovereignRelicSelectorBarProps>
 
   const activeRelic =
     equippedId !== 'none' ? SOVEREIGN_RELICS_BY_ID[equippedId] ?? SOVEREIGN_RELICS[0] : null;
+  const activeDomainColor = activeRelic ? DOMAIN_META[activeRelic.domain].color : '#64748b';
 
   const handleSelectRelic = (nextId: string) => {
     setEquippedId(nextId);
@@ -56,14 +57,17 @@ export const SovereignRelicSelectorBar: React.FC<SovereignRelicSelectorBarProps>
         }}
         title={
           activeRelic
-            ? `Relíquia Equipada: ${activeRelic.name} (${activeRelic.shortBonus}) — Clique para trocar`
-            : 'Nenhuma Relíquia da Coroa equipada — Clique para equipar'
+            ? `Relíquia equipada: ${activeRelic.name} — ${activeRelic.shortBonus} (clique para alterar)`
+            : 'Nenhuma Relíquia equipada (clique para escolher)'
         }
       >
-        <span className="srb-icon">{activeRelic ? activeRelic.icon : '👑'}</span>
-        <span className="srb-texts">
-          <strong>{activeRelic ? activeRelic.name : 'Sem Relíquia'}</strong>
-          <small>{activeRelic ? activeRelic.shortBonus : 'Clique para equipar Relíquia Real'}</small>
+        <span
+          className="srb-dot"
+          style={{ background: activeDomainColor }}
+          aria-hidden="true"
+        />
+        <span className="srb-label">
+          {activeRelic ? activeRelic.name : 'Sem Relíquia'}
         </span>
         <span className="srb-count-pill">
           {unlockedCount}/{SOVEREIGN_RELICS.length}
@@ -82,13 +86,13 @@ export const SovereignRelicSelectorBar: React.FC<SovereignRelicSelectorBarProps>
             <div className="ow-event-header">
               <div>
                 <span className="vwm-territory-kicker">
-                  TESOURO REAL DE VAELORIA • {unlockedCount}/{SOVEREIGN_RELICS.length} DESBLOQUEADAS
+                  Tesouro Real de Vaeloria · {unlockedCount}/{SOVEREIGN_RELICS.length} desbloqueadas
                 </span>
                 <h3
                   className="font-cinzel gold-gradient-text"
-                  style={{ margin: '2px 0 0', fontSize: '1.15rem' }}
+                  style={{ margin: '2px 0 0', fontSize: '1.12rem' }}
                 >
-                  👑 Relíquias da Coroa do Soberano
+                  Relíquias da Coroa
                 </h3>
               </div>
               <button
@@ -126,18 +130,23 @@ export const SovereignRelicSelectorBar: React.FC<SovereignRelicSelectorBarProps>
                     onClick={() => handleSelectRelic(relic.id)}
                   >
                     <div className="src-top">
-                      <span className="src-icon">{unlocked ? relic.icon : '🔒'}</span>
+                      <span
+                        className="srb-dot"
+                        style={{
+                          width: 9,
+                          height: 9,
+                          background: unlocked ? domMeta.color : '#475569',
+                        }}
+                      />
                       <div className="src-titles">
                         <strong className="font-cinzel">{relic.name}</strong>
-                        <small style={{ color: domMeta.color }}>
-                          {domMeta.icon} {domMeta.shortName}
-                        </small>
+                        <small style={{ color: domMeta.color }}>{domMeta.shortName}</small>
                       </div>
-                      {isEquipped && <span className="nav-popover-active-pill">EQUIPADA</span>}
+                      {isEquipped && <span className="nav-popover-active-pill">Equipada</span>}
                     </div>
                     <div className="src-bonus">{relic.shortBonus}</div>
                     <div className="src-lore">
-                      {unlocked ? relic.loreSnippet : `🔒 ${relic.unlockRequirementLabel}`}
+                      {unlocked ? relic.loreSnippet : `Requisito: ${relic.unlockRequirementLabel}`}
                     </div>
                   </button>
                 );

@@ -15,6 +15,7 @@ import {
   SCOPE_STAGE_PROJECTIONS,
   VAELORIA_CARDINAL_REALMS,
   VAELORIA_DEEP_FRONTIERS,
+  VAELORIA_IMPERIAL_CAPITALS,
   VAELORIA_REALM_ORDER,
   VAELORIA_REGIONAL_MAPS,
   VAELORIA_TRANSIT_CORRIDORS,
@@ -25,22 +26,12 @@ import {
   resolveNearestRealmFromWorldCoords,
   resolveStageRegionalPlacement,
 } from '../data/vaeloriaMultimapData';
+import { DEFAULT_ATLAS_LAYER_VISIBILITY } from '../data/vaeloriaCartographyDetails';
+import { CartographicInspectionNote } from '../data/vaeloriaCapitalDistricts';
 import {
-  AtlasLayerVisibility,
-  DEFAULT_ATLAS_LAYER_VISIBILITY,
-  VaeloriaHistoricalEraId,
-} from '../data/vaeloriaCartographyDetails';
-import {
-  CartographicInspectionNote,
-  VaeloriaGazetteerEntry,
-} from '../data/vaeloriaCapitalDistricts';
-import {
-  AtlasLayerAndSearchHud,
   CartographerInspectorCard,
   CartographicHtmlPinsLayer,
   CartographicSvgLayer,
-  GazetteerHighlightTarget,
-  MultiScaleScopeNavigator,
 } from './CartographicAtlasExtras';
 import { getWeeklyFeaturedRift, WEEKLY_RIFT_SHARDS_BONUS } from '../data/fractureRiftsData';
 import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
@@ -89,6 +80,7 @@ export interface VaeloriaWorldMapProps {
   onCloseDossier?: () => void;
   isTheaterFullscreen?: boolean;
   onChangeTheaterFullscreen?: (next: boolean) => void;
+  toolbarSlot?: React.ReactNode;
   onSelectBoss: (boss: CampaignBoss) => void;
   onChallengeBoss: (boss: CampaignBoss) => void;
   onRewardGold?: (amount: number, reason?: string) => void;
@@ -147,6 +139,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   onCloseDossier,
   isTheaterFullscreen: controlledTheaterFullscreen,
   onChangeTheaterFullscreen,
+  toolbarSlot,
   onSelectBoss,
   onChallengeBoss,
   onRewardGold,
@@ -236,23 +229,11 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     realm: VaeloriaRealmId;
     landmark: RegionalLocalLandmark;
   } | null>(null);
-  const [atlasLayers, setAtlasLayers] = useState<AtlasLayerVisibility>(
-    DEFAULT_ATLAS_LAYER_VISIBILITY
-  );
-  const [eraFilter, setEraFilter] = useState<VaeloriaHistoricalEraId>('all_eras');
   const [inspectedNote, setInspectedNote] =
     useState<CartographicInspectionNote | null>(null);
-  const [gazetteerHighlight, setGazetteerHighlight] =
-    useState<GazetteerHighlightTarget | null>(null);
   const [showGeographyLabels, setShowGeographyLabels] = useState<boolean>(false);
   const [hoveredBossId, setHoveredBossId] = useState<string | null>(null);
   const [hoveredWorldHubId, setHoveredWorldHubId] = useState<VaeloriaRealmId | null>(null);
-
-  useEffect(() => {
-    if (!gazetteerHighlight) return;
-    const t = window.setTimeout(() => setGazetteerHighlight(null), 5500);
-    return () => window.clearTimeout(t);
-  }, [gazetteerHighlight]);
 
   useEffect(() => {
     setVisitedLandmarks(
@@ -847,48 +828,6 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
 
   const sovereignCard = sovereignAvatarCardId ? CARDS_BY_ID[sovereignAvatarCardId] : undefined;
 
-  const handleSelectGazetteerEntry = useCallback(
-    (entry: VaeloriaGazetteerEntry) => {
-      if (
-        isCampaign &&
-        entry.scope !== 'world' &&
-        !unlockedCampaignSubmaps.has(entry.scope)
-      ) {
-        explainLockedSubmap(entry.scope);
-        return;
-      }
-      setGazetteerHighlight({
-        scope: entry.scope,
-        x: entry.x,
-        y: entry.y,
-        label: entry.name,
-      });
-      if (entry.inspectionNote) {
-        setInspectedNote(entry.inspectionNote);
-      }
-      if (entry.scope !== mapScopeRef.current) {
-        handleSwitchMapScope(entry.scope, {
-          x: isCampaign
-            ? GRAND_CAMPAIGN_SUBMAP_GRAPHS[entry.scope as VaeloriaRealmId]?.entryPos.x ?? entry.x
-            : entry.x,
-          y: isCampaign
-            ? GRAND_CAMPAIGN_SUBMAP_GRAPHS[entry.scope as VaeloriaRealmId]?.entryPos.y ?? entry.y
-            : entry.y,
-          banner: entry.name,
-        });
-      } else {
-        showPortalNotification(entry.name);
-      }
-    },
-    [
-      isCampaign,
-      unlockedCampaignSubmaps,
-      explainLockedSubmap,
-      handleSwitchMapScope,
-      showPortalNotification,
-    ]
-  );
-
   // Click on Continental Submap Hub (Campaign 'world')
   const handleClickWorldSubmapHub = (e: React.MouseEvent, rid: VaeloriaRealmId) => {
     e.stopPropagation();
@@ -994,102 +933,134 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
 
   const isCurrentSubmapConquered = Boolean(activeSubmapReach?.isSubmapConquered);
 
+  const formatRealmOptionLabel = (rid: VaeloriaRealmId): string => {
+    const def = VAELORIA_REGIONAL_MAPS[rid];
+    const badge = realmBadgeStrings[rid];
+    if (!isCampaign) {
+      return badge ? `${def.shortName} · ${badge}` : def.shortName;
+    }
+    if (conqueredCampaignSubmaps.has(rid)) {
+      return `${def.shortName} · ${badge ?? ''} (Unificado)`;
+    }
+    if (lockedCampaignSubmaps.has(rid)) {
+      return `${def.shortName} (Bloqueado)`;
+    }
+    return badge ? `${def.shortName} · ${badge}` : def.shortName;
+  };
+
   return (
     <div
       className={`vaeloria-world-map-shell ${
         isTheaterFullscreen ? 'is-theater-fullscreen' : ''
       } ${mapScope !== 'world' ? 'is-regional-scope' : ''}`}
     >
-      {/* 1. 21-MAP QUADRI-SCALE INTERCONNECTED MULTIMAP ATLAS BAR */}
-      <MultiScaleScopeNavigator
-        mapScope={mapScope}
-        onSelectScope={(s) => handleSwitchMapScope(s)}
-        worldBadge={`${clearedBossIds.length}/${enrichedAllBosses.length}`}
-        countByRealm={realmBadgeStrings}
-        lockedRealms={isCampaign ? lockedCampaignSubmaps : undefined}
-        conqueredRealms={isCampaign ? conqueredCampaignSubmaps : undefined}
-        sovereignAccentHex={isCampaign ? bannerPalette.hex : undefined}
-        onBlockedScopeSelect={isCampaign ? explainLockedSubmap : undefined}
-        variant="overworld"
-      />
+      {/* Unified Single-Row Command & Navigation Bar */}
+      <div className="vwm-unified-bar">
+        <div className="vwm-unified-left">
+          {mapScope !== 'world' ? (
+            <button
+              type="button"
+              className="aaa-ctrl-btn"
+              onClick={() => handleSwitchMapScope('world')}
+              title="Retornar ao Mapa Continental de Vaeloria"
+            >
+              ← Continente
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="aaa-ctrl-btn is-accent"
+              onClick={() => handleSwitchMapScope(currentWorldNearestHubRealm)}
+              title={`Entrar no sub-mapa de ${VAELORIA_REGIONAL_MAPS[currentWorldNearestHubRealm].name}`}
+            >
+              Entrar em {VAELORIA_REGIONAL_MAPS[currentWorldNearestHubRealm].shortName}
+            </button>
+          )}
 
-      {/* 2. Ultra-Slim Cartographic Telemetry & Controls Bar */}
-      <div className="vwm-hud-top">
-        <div
-          className="vwm-territory-pill"
-          style={{
-            borderColor: isCurrentSubmapConquered
-              ? bannerPalette.borderRgba
-              : 'rgba(212, 175, 55, 0.34)',
-          }}
-        >
-          <span
-            className="vwm-territory-dot"
-            style={{
-              background: isCurrentSubmapConquered
-                ? bannerPalette.hex
-                : activeRegionalDef
-                  ? activeRegionalDef.accentColor
-                  : currentWorldTerritory.color,
-            }}
-          />
-          <div className="vwm-territory-texts">
-            <strong className="font-cinzel vwm-territory-title">
-              {activeRegionalDef
-                ? activeRegionalDef.name
-                : 'Continente de Vaeloria (100% Enquadrado)'}
-              <span className="vwm-territory-landmark">
-                {' '}
-                —{' '}
-                {isCampaign && mapScope === 'world'
-                  ? `Sub-mapas Unificados: ${conqueredCampaignSubmaps.size}/20 • Escolha um Reino desbloqueado`
-                  : isCampaign && activeSubmapReach
-                    ? isCurrentSubmapConquered
-                      ? `✓ Território Convertido ao Estandarte ${bannerPalette.name} (${activeSubmapReach.clearedCount}/${activeSubmapReach.totalCount})`
-                      : `Estrada Tática: ${activeSubmapReach.clearedCount}/${activeSubmapReach.totalCount} confrontos vencidos`
-                    : dockedBossEntry
-                      ? dockedBossEntry.worldNode.landmarkName
-                      : activeRegionalDef
-                        ? activeRegionalDef.subtitle
-                        : currentWorldTerritory.subtitle}
-              </span>
-            </strong>
-          </div>
+          <label className="aaa-ctrl-field vwm-scope-picker">
+            <span
+              className="aaa-ctrl-dot"
+              style={{
+                background: isCurrentSubmapConquered
+                  ? bannerPalette.hex
+                  : activeRegionalDef
+                    ? activeRegionalDef.accentColor
+                    : currentWorldTerritory.color,
+              }}
+              aria-hidden="true"
+            />
+            <select
+              value={mapScope}
+              onChange={(e) => handleSwitchMapScope(e.target.value as VaeloriaMapScope)}
+              className="aaa-ctrl-select-inner"
+              aria-label="Selecionar território"
+            >
+              <option value="world">
+                Continente · {clearedBossIds.length}/{enrichedAllBosses.length}
+              </option>
+              <optgroup label="Reinos Cardeais">
+                {VAELORIA_CARDINAL_REALMS.map((rid) => (
+                  <option key={rid} value={rid}>
+                    {formatRealmOptionLabel(rid)}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Fronteiras">
+                {VAELORIA_DEEP_FRONTIERS.map((rid) => (
+                  <option key={rid} value={rid}>
+                    {formatRealmOptionLabel(rid)}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Corredores">
+                {VAELORIA_TRANSIT_CORRIDORS.map((rid) => (
+                  <option key={rid} value={rid}>
+                    {formatRealmOptionLabel(rid)}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="Capitais Imperiais">
+                {VAELORIA_IMPERIAL_CAPITALS.map((rid) => (
+                  <option key={rid} value={rid}>
+                    {formatRealmOptionLabel(rid)}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+          </label>
+
+          <span className="vwm-unified-meta">
+            {isCampaign && mapScope === 'world'
+              ? `${conqueredCampaignSubmaps.size}/20 unificados`
+              : isCampaign && activeSubmapReach
+                ? isCurrentSubmapConquered
+                  ? 'Território unificado'
+                  : `${activeSubmapReach.clearedCount}/${activeSubmapReach.totalCount} vencidos`
+                : dockedBossEntry
+                  ? dockedBossEntry.worldNode.landmarkName
+                  : activeRegionalDef
+                    ? activeRegionalDef.subtitle
+                    : currentWorldTerritory.subtitle}
+          </span>
         </div>
 
-        <div className="vwm-controls-group">
+        <div className="vwm-unified-right">
           {pendingBuff && (
             <span
               className="vwm-buff-ready-chip"
               title={`Bônus pronto para a próxima batalha (${pendingBuff.sourceLandmarkName})`}
             >
-              ✦ {pendingBuff.summaryLabel}
+              {pendingBuff.summaryLabel}
             </span>
           )}
 
-          {mapScope === 'world' ? (
-            <button
-              type="button"
-              className="vwm-tool-btn is-highlight-action"
-              onClick={() => handleSwitchMapScope(currentWorldNearestHubRealm)}
-              title={`Entrar no Sub-mapa de ${VAELORIA_REGIONAL_MAPS[currentWorldNearestHubRealm].name}`}
-            >
-              Entrar em {VAELORIA_REGIONAL_MAPS[currentWorldNearestHubRealm].shortName}
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="vwm-tool-btn is-highlight-action"
-              onClick={() => handleSwitchMapScope('world')}
-              title="Retornar ao Mapa Continental de Vaeloria (Recuo Livre)"
-            >
-              Mapa Continental
-            </button>
-          )}
+          {toolbarSlot}
+
+          {toolbarSlot && <span className="vwm-unified-divider" aria-hidden="true" />}
 
           <button
             type="button"
-            className={`vwm-tool-btn ${showGeographyLabels ? 'is-active' : ''}`}
+            className={`aaa-ctrl-btn ${showGeographyLabels ? 'is-active' : ''}`}
             onClick={() => setShowGeographyLabels((v) => !v)}
             title="Mostrar ou ocultar pinos de Santuários e Marcos Exploráveis"
           >
@@ -1099,7 +1070,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
           {!isCampaign && (
             <button
               type="button"
-              className={`vwm-tool-btn ${fogEnabled ? 'is-active' : ''}`}
+              className={`aaa-ctrl-btn ${fogEnabled ? 'is-active' : ''}`}
               onClick={() => {
                 const next = !fogEnabled;
                 setFogEnabled(next);
@@ -1111,22 +1082,10 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             </button>
           )}
 
-          <AtlasLayerAndSearchHud
-            layers={atlasLayers}
-            onChangeLayers={setAtlasLayers}
-            eraFilter={eraFilter}
-            onChangeEraFilter={setEraFilter}
-            onSelectGazetteerEntry={handleSelectGazetteerEntry}
-          />
-
-          <span className="vwm-fixed-zoom-pill" title="Zoom fixado em 100% para nitidez máxima">
-            100%
-          </span>
-
           {onToggleDossier && (
             <button
               type="button"
-              className={`vwm-tool-btn ${!isDossierCollapsed ? 'is-active' : ''}`}
+              className={`aaa-ctrl-btn ${!isDossierCollapsed ? 'is-active' : ''}`}
               onClick={onToggleDossier}
               title={
                 isDossierCollapsed
@@ -1134,21 +1093,21 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                   : 'Fechar gaveta do Dossiê'
               }
             >
-              {isDossierCollapsed ? 'Dossiê' : '✕ Dossiê'}
+              {isDossierCollapsed ? 'Dossiê' : 'Fechar Dossiê'}
             </button>
           )}
 
           <button
             type="button"
-            className={`vwm-tool-btn ${isTheaterFullscreen ? 'is-active' : ''}`}
+            className={`aaa-ctrl-btn ${isTheaterFullscreen ? 'is-active' : ''}`}
             onClick={() => handleSetTheaterFullscreen((v) => !v)}
             title={
               isTheaterFullscreen
                 ? 'Sair da Tela Cheia (Esc)'
-                : 'Abrir Mapa em Tela Cheia (100% na tela)'
+                : 'Expandir mapa em Tela Cheia'
             }
           >
-            {isTheaterFullscreen ? '✕ Sair' : '⛶ Tela Cheia'}
+            {isTheaterFullscreen ? 'Sair' : 'Tela Cheia'}
           </button>
         </div>
       </div>
@@ -1255,7 +1214,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 zoom={zoom}
                 viewBoxWidth={1600}
                 viewBoxHeight={900}
-                layers={atlasLayers}
+                layers={DEFAULT_ATLAS_LAYER_VISIBILITY}
                 idPrefix="vwm_svg"
                 onInspectNote={setInspectedNote}
               />
@@ -1492,10 +1451,10 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
             <CartographicHtmlPinsLayer
               scope={mapScope}
               zoom={zoom}
-              layers={atlasLayers}
-              eraFilter={eraFilter}
+              layers={DEFAULT_ATLAS_LAYER_VISIBILITY}
+              eraFilter="all_eras"
               showUnifiedSettlements={showGeographyLabels}
-              highlightTarget={gazetteerHighlight}
+              highlightTarget={null}
               inspectedNoteId={inspectedNote?.id ?? null}
               onInspectNote={setInspectedNote}
             />

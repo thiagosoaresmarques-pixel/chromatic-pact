@@ -263,6 +263,7 @@ interface SovereignAccountModalProps {
   initialTab?: AccountModalTab;
   onNeedsDeckSetup?: () => void;
   onOpenAdminPanel?: () => void;
+  onOpenPwaInstall?: () => void;
 }
 
 export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
@@ -274,6 +275,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   initialTab = 'profile',
   onNeedsDeckSetup,
   onOpenAdminPanel,
+  onOpenPwaInstall,
 }) => {
   const isUnregistered = isUnregisteredProfile(currentUser);
   const [tab, setTab] = useState<AccountModalTab>(
@@ -1279,11 +1281,22 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             </div>
 
             <div className="portable-codex-actions">
-              {pwaState.canInstall && (
+              {pwaState.shouldPromoteInstall && (
                 <button
                   type="button"
                   className="aaa-btn aaa-btn-primary"
-                  onClick={() => triggerPwaInstallPrompt()}
+                  onClick={async () => {
+                    if (pwaState.canInstall) {
+                      const res = await triggerPwaInstallPrompt();
+                      if (res === 'unavailable' && onOpenPwaInstall) {
+                        onClose();
+                        onOpenPwaInstall();
+                      }
+                    } else if (onOpenPwaInstall) {
+                      onClose();
+                      onOpenPwaInstall();
+                    }
+                  }}
                 >
                   📲 Instalar App
                 </button>

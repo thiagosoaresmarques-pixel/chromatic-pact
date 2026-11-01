@@ -10,15 +10,26 @@
     <meta name="apple-mobile-web-app-title" content="Chromatic Pact" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/icons/icon-192.svg" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <script>
+      // Capture early beforeinstallprompt events on fast cached visits (returning users!)
+      // before React / ES modules finish hydrating.
+      window.__chromaticDeferredPwaPrompt = null;
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        window.__chromaticDeferredPwaPrompt = e;
+        window.dispatchEvent(new CustomEvent('chromatic:pwa-prompt-captured'));
+      });
+    </script>
     <title>Chromatic Pact — Card Game Tático & RPG Dark Fantasy Online (Jogue Grátis)</title>
-    <meta name="description" content="Jogue Chromatic Pact grátis no navegador! Card game tático online e RPG Dark Fantasy com 996 cartas únicas no universo autoral de Vaeloria. TCG estratégico online grátis sem download — monte seu deck ou escolha um pronto e entre na batalha." />
-    <meta name="keywords" content="card game online, jogo de cartas online, tcg online grátis, card game navegador, rpg tático online, dark fantasy, card game de fantasia sombria, vaeloria, 996 cartas, sem download, chromatic pact, card game estratégico" />
+    <meta name="description" content="Jogue Chromatic Pact grátis no navegador ou instale o App! Card game tático online e RPG Dark Fantasy com 1.038 cartas únicas, 190 confrontos de Campanha, 48 Províncias e 44 Campeões IA no universo autoral de Vaeloria." />
+    <meta name="keywords" content="card game online, jogo de cartas online, tcg online grátis, card game navegador, rpg tático online, dark fantasy, card game de fantasia sombria, vaeloria, 1038 cartas, pwa, chromatic pact, card game estratégico" />
     <link rel="canonical" href="https://chromaticpact.com/" />
 
     <!-- OpenGraph -->
     <meta property="og:title" content="Chromatic Pact — Card Game Tático & RPG Dark Fantasy Online (Jogue Grátis)" />
-    <meta property="og:description" content="Card game tático online e RPG Dark Fantasy com 996 cartas únicas no navegador, ambientado no universo de Vaeloria. Jogue grátis agora sem download!" />
+    <meta property="og:description" content="Card game tático online e RPG Dark Fantasy com 1.038 cartas únicas, 48 Províncias e 44 Campeões IA no universo de Vaeloria. Jogue grátis no navegador ou instale em Tela Cheia!" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://chromaticpact.com/" />
     <meta property="og:site_name" content="Chromatic Pact" />
@@ -27,7 +38,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Chromatic Pact — Card Game Tático & RPG Dark Fantasy Online (Jogue Grátis)" />
-    <meta name="twitter:description" content="Card game tático online e RPG Dark Fantasy com 996 cartas únicas no navegador, ambientado no universo de Vaeloria. Jogue grátis sem download!" />
+    <meta name="twitter:description" content="Card game tático online e RPG Dark Fantasy com 1.038 cartas únicas, 48 Províncias e 44 Campeões IA no universo de Vaeloria. Jogue grátis!" />
 
     <!-- Schema.org VideoGame JSON-LD -->
     <script type="application/ld+json">
@@ -36,11 +47,11 @@
         "@type": "VideoGame",
         "name": "Chromatic Pact",
         "url": "https://chromaticpact.com/",
-        "description": "Card game tático online e RPG Dark Fantasy com 996 cartas únicas jogável direto no navegador sem download.",
+        "description": "Card game tático online e RPG Dark Fantasy com 1.038 cartas únicas, Grande Campanha de 190 Confrontos e Conquista de 48 Províncias.",
         "genre": ["Card Game", "Tactical RPG", "Dark Fantasy", "Strategy"],
         "playMode": ["SinglePlayer", "MultiPlayer"],
         "applicationCategory": "Game",
-        "operatingSystem": "Web Browser",
+        "operatingSystem": "Web Browser, Android, iOS, Windows, macOS",
         "inLanguage": "pt-BR",
         "offers": {
           "@type": "Offer",

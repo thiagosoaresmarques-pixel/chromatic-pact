@@ -1,9 +1,13 @@
-const CACHE_VERSION = 'chromatic-pact-v3';
+const CACHE_VERSION = 'chromatic-pact-v4';
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
 const PRECACHE_URLS = [
   '/',
   '/manifest.webmanifest',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/icon-maskable-512.png',
+  '/icons/apple-touch-icon.png',
   '/icons/icon-192.svg',
   '/icons/icon-512.svg',
 ];
@@ -16,6 +20,12 @@ self.addEventListener('install', (event) => {
       .then((cache) => cache.addAll(PRECACHE_URLS))
       .catch(() => undefined)
   );
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('activate', (event) => {
@@ -43,13 +53,21 @@ self.addEventListener('fetch', (event) => {
   // Never cache real-time multiplayer SSE/API calls
   if (url.pathname.startsWith('/api/')) return;
 
-  // HTML / Document navigation: Network-First (bypassing HTTP disk cache) so updates deploy immediately
-  if (req.mode === 'navigate' || req.destination === 'document') {
+  // HTML / Document navigation & Web App Manifest:
+  // Strict Network-First (bypassing HTTP disk cache via 'no-store') so returning users
+  // ALWAYS receive the newest deployed JS/CSS bundle hashes immediately!
+  if (
+    req.mode === 'navigate' ||
+    req.destination === 'document' ||
+    url.pathname.endsWith('.webmanifest')
+  ) {
     event.respondWith(
-      fetch(req, { cache: 'no-cache' })
+      fetch(req, { cache: 'no-store' })
         .then((res) => {
-          const clone = res.clone();
-          caches.open(ASSET_CACHE).then((cache) => cache.put(req, clone));
+          if (res && res.status === 200) {
+            const clone = res.clone();
+            caches.open(ASSET_CACHE).then((cache) => cache.put(req, clone));
+          }
           return res;
         })
         .catch(() => caches.match(req).then((cached) => cached || caches.match('/')))
@@ -57,16 +75,32 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Static artwork, maps, icons, hashed JS/CSS chunks: Stale-While-Revalidate
-  const isCacheableStatic =
-    url.pathname.startsWith('/assets/') ||
+  // Immutable content-hashed Vite JS/CSS bundles (/assets/index-XYZ.js): Cache-First
+  if (url.pathname.startsWith('/assets/')) {
+    event.respondWith(
+      caches.open(ASSET_CACHE).then((cache) =>
+        cache.match(req).then((cached) => {
+          if (cached) return cached;
+          return fetch(req).then((res) => {
+            if (res && res.status === 200) {
+              cache.put(req, res.clone());
+            }
+            return res;
+          });
+        })
+      )
+    );
+    return;
+  }
+
+  // Static artwork, maps, tabletops, icons: Stale-While-Revalidate
+  const isCacheableArt =
     url.pathname.startsWith('/cards/') ||
     url.pathname.startsWith('/map/') ||
     url.pathname.startsWith('/tabletops/') ||
-    url.pathname.startsWith('/icons/') ||
-    url.pathname.endsWith('.webmanifest');
+    url.pathname.startsWith('/icons/');
 
-  if (isCacheableStatic) {
+  if (isCacheableArt) {
     event.respondWith(
       caches.open(ASSET_CACHE).then((cache) =>
         cache.match(req).then((cached) => {

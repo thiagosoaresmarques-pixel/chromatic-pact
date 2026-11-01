@@ -30,6 +30,8 @@ export interface SovereignRoyalCommandStripProps {
   astralShards: number;
   defeatedBossCount: number;
   arenaWins: number;
+  showInstallApp?: boolean;
+  onInstallApp?: () => void;
   onNavigate: (dest: RoyalQuickDestination) => void;
   onStartDailyProblem: (problem: TacticalProblem) => void;
   onClaimQuestGold: (amount: number, questTitle: string) => void;
@@ -43,6 +45,8 @@ export const SovereignRoyalCommandStrip: React.FC<SovereignRoyalCommandStripProp
   astralShards,
   defeatedBossCount,
   arenaWins,
+  showInstallApp = false,
+  onInstallApp,
   onNavigate,
   onStartDailyProblem,
   onClaimQuestGold,
@@ -190,6 +194,17 @@ export const SovereignRoyalCommandStrip: React.FC<SovereignRoyalCommandStripProp
               onClick={onOpenAccountModal}
             >
               ✨ Criar Conta (+160 🪙)
+            </button>
+          )}
+
+          {showInstallApp && onInstallApp && (
+            <button
+              type="button"
+              className="rcs-mini-cta is-gold"
+              onClick={onInstallApp}
+              title="Instalar Aplicativo Chromatic Pact em Tela Cheia (PC / Android / iPhone)"
+            >
+              📲 Instalar App
             </button>
           )}
 

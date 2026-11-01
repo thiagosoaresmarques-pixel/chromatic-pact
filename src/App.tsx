@@ -110,6 +110,14 @@ import {
   VICTORY_GOLD_REWARD,
 } from './utils/multiplayerEngine';
 import { initAdsTelemetry, trackAdsEvent } from './utils/adsTelemetry';
+import {
+  applyPwaUpdate,
+  getPwaInstallState,
+  PwaInstallState,
+  subscribePwaInstallState,
+  triggerPwaInstallPrompt,
+} from './utils/pwaInstall';
+import { PwaInstallBanner, PwaInstallGuideModal } from './components/PwaInstallModalAndBanner';
 
 export interface SovereignNotification {
   id: string;
@@ -119,7 +127,7 @@ export interface SovereignNotification {
   createdAt: number;
   read: boolean;
   actionLabel?: string;
-  actionTarget?: ActiveTab | 'account_modal';
+  actionTarget?: ActiveTab | 'account_modal' | 'pwa_modal' | 'pwa_update';
 }
 
 type ActiveTab =
@@ -551,6 +559,16 @@ export const App: React.FC = () => {
   const [liveToastNotif, setLiveToastNotif] = useState<SovereignNotification | null>(null);
   const seenRoomCodesRef = useRef<Set<string>>(new Set());
 
+  // PWA Installation & Auto-Update State
+  const [pwaState, setPwaState] = useState<PwaInstallState>(() => getPwaInstallState());
+  const [isPwaModalOpen, setIsPwaModalOpen] = useState<boolean>(false);
+  const hasSeededPwaNotifRef = useRef<boolean>(false);
+  const hasShownPostDuelPwaHintRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    return subscribePwaInstallState(setPwaState);
+  }, []);
+
   const pushNotification = useCallback(
     (
       item: Omit<SovereignNotification, 'id' | 'createdAt' | 'read'>,
@@ -628,6 +646,29 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleInstallPwaClick = useCallback(async () => {
+    setIsNotifOpen(false);
+    setLiveToastNotif(null);
+    if (pwaState.canInstall) {
+      const outcome = await triggerPwaInstallPrompt();
+      if (outcome === 'accepted') {
+        trackAdsEvent('install_pwa', { platform: pwaState.platform });
+        pushNotification({
+          kicker: 'APLICATIVO OFICIAL INSTALADO',
+          title: '📲 Chromatic Pact em Tela Cheia Ativado!',
+          message:
+            'O ícone dourado de Vaeloria foi adicionado à sua Tela Inicial / Área de Trabalho com cache instantâneo.',
+        });
+        return;
+      }
+      if (outcome === 'unavailable') {
+        setIsPwaModalOpen(true);
+      }
+    } else {
+      setIsPwaModalOpen(true);
+    }
+  }, [pwaState.canInstall, pwaState.platform, pushNotification]);
+
   const handleNotificationAction = (n: SovereignNotification) => {
     setNotifications((prev) => {
       const next = prev.map((item) => (item.id === n.id ? { ...item, read: true } : item));
@@ -646,10 +687,48 @@ export const App: React.FC = () => {
         open: true,
         tab: isUnregisteredProfile(currentUser) ? 'create' : 'profile',
       });
+    } else if (n.actionTarget === 'pwa_modal') {
+      void handleInstallPwaClick();
+    } else if (n.actionTarget === 'pwa_update') {
+      applyPwaUpdate();
     } else {
       setActiveTab(n.actionTarget);
     }
   };
+
+  // Seed non-intrusive PWA App notification for returning & new browser-tab players
+  useEffect(() => {
+    if (pwaState.shouldPromoteInstall && !hasSeededPwaNotifRef.current) {
+      hasSeededPwaNotifRef.current = true;
+      pushNotification(
+        {
+          kicker: 'APLICATIVO EM TELA CHEIA (PWA)',
+          title: '📲 Instale o App Chromatic Pact',
+          message:
+            'Jogue sem barras do navegador, com atalho direto na Tela Inicial / Área de Trabalho e artes das 1.038 cartas em cache instantâneo.',
+          actionLabel: 'Instalar App',
+          actionTarget: 'pwa_modal',
+        },
+        false
+      );
+    }
+  }, [pwaState.shouldPromoteInstall, pushNotification]);
+
+  // Notify returning users when a newer game build activates in background
+  useEffect(() => {
+    if (!pwaState.updateAvailable) return;
+    pushNotification(
+      {
+        kicker: 'NOVA VERSÃO DISPONÍVEL',
+        title: '✨ Atualização de Vaeloria Pronta',
+        message:
+          'Os ajustes mais recentes de cartas, Campeões IA e modos foram baixados. Atualize quando quiser aplicar!',
+        actionLabel: 'Atualizar Agora',
+        actionTarget: 'pwa_update',
+      },
+      activeTab !== 'arena'
+    );
+  }, [pwaState.updateAvailable, activeTab, pushNotification]);
 
   // Seed initial account / deck onboarding notification when user changes
   useEffect(() => {
@@ -1293,6 +1372,22 @@ export const App: React.FC = () => {
 
   const handleMatchConcluded = useCallback(
     ({ didWin, usedDeckId }: { didWin: boolean; usedDeckId: string | null }) => {
+      if (
+        pwaState.shouldPromoteInstall &&
+        !pwaState.isBannerSnoozed &&
+        !hasShownPostDuelPwaHintRef.current
+      ) {
+        hasShownPostDuelPwaHintRef.current = true;
+        pushNotification({
+          kicker: 'DICA DE MESA • TELA CHEIA 100%',
+          title: '📲 Gostou da partida? Jogue no App Oficial!',
+          message:
+            'Instale o Chromatic Pact na Tela Inicial / Área de Trabalho para remover barras do navegador e carregar artes instantaneamente.',
+          actionLabel: 'Instalar App',
+          actionTarget: 'pwa_modal',
+        });
+      }
+
       if (isGuest || isDraftBattle) return;
       updateCurrentUserProgression((prev) => {
         const decks = prev.customDecks ?? [];
@@ -1312,7 +1407,13 @@ export const App: React.FC = () => {
         };
       });
     },
-    [isGuest, isDraftBattle]
+    [
+      isGuest,
+      isDraftBattle,
+      pwaState.shouldPromoteInstall,
+      pwaState.isBannerSnoozed,
+      pushNotification,
+    ]
   );
 
   const handleSaveCustomDeck = (
@@ -1928,6 +2029,45 @@ export const App: React.FC = () => {
             )}
           </div>
 
+          {pwaState.updateAvailable && (
+            <button
+              type="button"
+              className="btn-fantasy"
+              onClick={() => applyPwaUpdate()}
+              style={{
+                padding: '4px 10px',
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                borderColor: 'rgba(52, 211, 153, 0.72)',
+                color: '#6ee7b7',
+              }}
+              title="Nova atualização de Vaeloria disponível! Clique para recarregar na versão mais recente"
+            >
+              <span>🔄</span>
+              <span className="hide-on-mobile"> ATUALIZAR</span>
+            </button>
+          )}
+
+          {pwaState.shouldPromoteInstall && (
+            <button
+              type="button"
+              className="btn-fantasy"
+              onClick={handleInstallPwaClick}
+              style={{
+                padding: '4px 10px',
+                fontSize: '0.72rem',
+                fontWeight: 800,
+                borderColor: 'rgba(250, 204, 21, 0.65)',
+                color: '#fde047',
+                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.16), rgba(15, 23, 42, 0.85))',
+              }}
+              title="Instalar Aplicativo Chromatic Pact em Tela Cheia (PC / Android / iPhone)"
+            >
+              <span>📲</span>
+              <span className="hide-on-mobile"> APP</span>
+            </button>
+          )}
+
           <button
             type="button"
             className={`btn-fantasy nav-audio-btn ${
@@ -2087,6 +2227,26 @@ export const App: React.FC = () => {
             </div>
           )}
 
+        {activeTab !== 'arena' &&
+          (pwaState.updateAvailable ||
+            (pwaState.shouldPromoteInstall && !pwaState.isBannerSnoozed)) && (
+            <div className="aaa-onboarding-shell" style={{ paddingBottom: 0 }}>
+              <PwaInstallBanner
+                pwaState={pwaState}
+                onOpenGuideModal={() => setIsPwaModalOpen(true)}
+                onInstalled={() => {
+                  trackAdsEvent('install_pwa', { platform: pwaState.platform });
+                  pushNotification({
+                    kicker: 'APLICATIVO OFICIAL INSTALADO',
+                    title: '📲 Chromatic Pact em Tela Cheia Ativado!',
+                    message:
+                      'O ícone dourado de Vaeloria foi adicionado à sua Tela Inicial / Área de Trabalho com cache instantâneo.',
+                  });
+                }}
+              />
+            </div>
+          )}
+
         {activeTab === 'home' && (
           <div className="aaa-page-shell aaa-home-lobby-shell">
             {/* Collapsible Royal Command Strip (1-Click Resume + Daily Quests + Crown Relics) */}
@@ -2097,6 +2257,8 @@ export const App: React.FC = () => {
               astralShards={astralShards}
               defeatedBossCount={defeatedBossIds.length}
               arenaWins={arenaWins}
+              showInstallApp={pwaState.shouldPromoteInstall}
+              onInstallApp={handleInstallPwaClick}
               onNavigate={(dest) => handleSelectSubTab(dest)}
               onStartDailyProblem={handleStartProblem}
               onClaimQuestGold={handleClaimQuestGold}
@@ -2458,9 +2620,25 @@ export const App: React.FC = () => {
             onClose={() => setAccountModalState((prev) => ({ ...prev, open: false }))}
             onNeedsDeckSetup={() => setActiveTab('deckbuilder')}
             onOpenAdminPanel={handleOpenAdminTab}
+            onOpenPwaInstall={() => setIsPwaModalOpen(true)}
           />
         )}
         </Suspense>
+
+        <PwaInstallGuideModal
+          open={isPwaModalOpen}
+          pwaState={pwaState}
+          onClose={() => setIsPwaModalOpen(false)}
+          onInstalled={() => {
+            trackAdsEvent('install_pwa', { platform: pwaState.platform });
+            pushNotification({
+              kicker: 'APLICATIVO OFICIAL INSTALADO',
+              title: '📲 Chromatic Pact em Tela Cheia Ativado!',
+              message:
+                'O ícone dourado de Vaeloria foi adicionado à sua Tela Inicial / Área de Trabalho com cache instantâneo.',
+            });
+          }}
+        />
 
         {/* Live Floating Toast Notification */}
         {liveToastNotif && (

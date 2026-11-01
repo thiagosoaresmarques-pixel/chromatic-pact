@@ -14,7 +14,8 @@ export type AdsConversionEventName =
   | 'match_victory'
   | 'register_account'
   | 'open_pack'
-  | 'save_deck';
+  | 'save_deck'
+  | 'install_pwa';
 
 export interface AdsAttributionData {
   gclid?: string;

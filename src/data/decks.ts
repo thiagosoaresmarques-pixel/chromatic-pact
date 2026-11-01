@@ -4560,7 +4560,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "green"
     ],
     "avatarCardId": "green_03_ursogrifo",
-    "startingHp": 42,
+    "startingHp": 40,
     "passiveName": "Emboscada na Clareira",
     "passiveDescription": "Domina a floresta com feras de Regeneração e investidas de Atropelar.",
     "rewardGold": 100,
@@ -4576,7 +4576,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "blue"
     ],
     "avatarCardId": "blue_06_dragao_azul",
-    "startingHp": 45,
+    "startingHp": 40,
     "passiveName": "Zero Absoluto",
     "passiveDescription": "Congela suas linhas de frente enquanto ataca pelos céus com Voo e Alcance.",
     "rewardGold": 130,
@@ -4592,7 +4592,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "gold_07_dragao_ouro",
-    "startingHp": 48,
+    "startingHp": 40,
     "passiveName": "Égide Imaculada",
     "passiveDescription": "Seus Golems e Celestiais utilizam Armadura pesada e Escudos Divinos.",
     "rewardGold": 160,
@@ -4609,7 +4609,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "gold_47_dragao_solar",
-    "startingHp": 50,
+    "startingHp": 40,
     "passiveName": "Bênção da Aurora Silvestre",
     "passiveDescription": "Combina a Regeneração da selva com Escudos Divinos e Relíquias sagradas.",
     "rewardGold": 200,
@@ -4626,7 +4626,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "blue"
     ],
     "avatarCardId": "purple_07_lich",
-    "startingHp": 53,
+    "startingHp": 40,
     "passiveName": "Colheita de Almas",
     "passiveDescription": "Reanima colossos da Cripta e congela os defensores com feitiços psíquicos.",
     "rewardGold": 240,
@@ -4643,7 +4643,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "blue"
     ],
     "avatarCardId": "red_45_fenix_primordial",
-    "startingHp": 56,
+    "startingHp": 40,
     "passiveName": "Sobrecarga Piro-Rúnica",
     "passiveDescription": "Desencadeia torrentes de feitiços, raios em cadeia e Fênix que renascem das cinzas.",
     "rewardGold": 280,
@@ -4660,7 +4660,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "green"
     ],
     "avatarCardId": "purple_45_dragao_sombras",
-    "startingHp": 59,
+    "startingHp": 40,
     "passiveName": "Esporos Necróticos",
     "passiveDescription": "Comanda feras com Toque Letal e mortos-vivos que retornam incessantemente da Cripta.",
     "rewardGold": 320,
@@ -4677,7 +4677,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "purple_46_noiva_vampira",
-    "startingHp": 62,
+    "startingHp": 40,
     "passiveName": "Dízimo de Sangue Real",
     "passiveDescription": "Drena a vitalidade do Soberano rival enquanto se protege atrás de Relíquias e Guardiões blindados.",
     "rewardGold": 380,
@@ -4695,7 +4695,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "green_67_tiranossauro_alfa",
-    "startingHp": 65,
+    "startingHp": 40,
     "passiveName": "Fornalha Primordial",
     "passiveDescription": "Comanda 33 titãs pré-históricos e dragões de Sopro devastador com Ímpeto imediato.",
     "rewardGold": 450,
@@ -4713,7 +4713,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "purple"
     ],
     "avatarCardId": "gold_65_emperion_solar",
-    "startingHp": 68,
+    "startingHp": 40,
     "passiveName": "Santuário de Artefatos",
     "passiveDescription": "Ergue 14 Relíquias e Itens Mágicos na Retaguarda que fortalecem sua falange a cada turno.",
     "rewardGold": 520,
@@ -4731,7 +4731,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "red"
     ],
     "avatarCardId": "purple_65_principe_mortos",
-    "startingHp": 70,
+    "startingHp": 40,
     "passiveName": "Cetro da Caveira Abissal",
     "passiveDescription": "Reanima legiões caídas da Cripta e drena a alma dos vivos sob o clarão da Lua Sangrenta.",
     "rewardGold": 600,
@@ -4748,7 +4748,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "red_08_dragao_vermelho",
-    "startingHp": 72,
+    "startingHp": 40,
     "passiveName": "Escamas de Fogo e Ouro",
     "passiveDescription": "Alia a artilharia piromântica dos dragões vermelhos às égides celestiais douradas.",
     "rewardGold": 660,
@@ -4765,7 +4765,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "blue_80_senhor_tempo",
-    "startingHp": 74,
+    "startingHp": 40,
     "passiveName": "Roda da Eternidade",
     "passiveDescription": "Restaura +1 de Vida por turno, paralisa defensores no fluxo temporal e comanda 10 Relíquias do Relógio.",
     "rewardGold": 750,
@@ -4785,7 +4785,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "neutral_10_valkyra_pentacromatica",
-    "startingHp": 80,
+    "startingHp": 40,
     "passiveName": "Convergência Pentacromática",
     "passiveDescription": "Inicia com todas as 5 Afinidades ativas, drena 1 de Vida por turno e comanda dragões lendários de todos os cinco domínios!",
     "rewardGold": 1000,
@@ -4802,7 +4802,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "blue"
     ],
     "avatarCardId": "red_100_dragao_vulcanico_anciao",
-    "startingHp": 76,
+    "startingHp": 40,
     "passiveName": "Morteiro Piro-Astral",
     "passiveDescription": "Empilha artilheiros de Alcance na Retaguarda e dispara barragens de meteoros e trovões a cada turno.",
     "rewardGold": 820,
@@ -4819,7 +4819,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "gold_97_colosso_celestial",
-    "startingHp": 78,
+    "startingHp": 40,
     "passiveName": "Formação Tripla de Escudos",
     "passiveDescription": "Especialista em empilhar 3 defensores por slot, multiplicando bônus de +2/+2 e Escudos Divinos em área.",
     "rewardGold": 900,
@@ -4837,7 +4837,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "green"
     ],
     "avatarCardId": "purple_100_dragao_necrotico",
-    "startingHp": 80,
+    "startingHp": 40,
     "passiveName": "Sopro da Ressurreição",
     "passiveDescription": "Congela a linha de frente inimiga enquanto reanima Hidras e Quimeras mutantes diretamente da Cripta.",
     "rewardGold": 980,
@@ -4855,7 +4855,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "gold_99_serafim_coroado",
-    "startingHp": 82,
+    "startingHp": 40,
     "passiveName": "Tributo do Sol Carmesim",
     "passiveDescription": "Drena vitalidade e incinera invasores com 8 Relíquias Imperiais e Serafins blindados.",
     "rewardGold": 1100,
@@ -4873,7 +4873,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "red"
     ],
     "avatarCardId": "blue_98_soberano_mares",
-    "startingHp": 85,
+    "startingHp": 40,
     "passiveName": "Maremoto das Estrelas Mortas",
     "passiveDescription": "Comanda 21 Magias e Reações devastadoras que paralisam o tempo e queimam o Soberano rival.",
     "rewardGold": 1250,
@@ -4893,7 +4893,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "neutral_10_valkyra_pentacromatica",
-    "startingHp": 90,
+    "startingHp": 40,
     "passiveName": "Graal do Prisma Infinito",
     "passiveDescription": "Inicia com todas as 5 Afinidades, 10 Relíquias Prismáticas e invoca Khorvath, Solarius, Morgath, Yggdrakon e Zephyros!",
     "rewardGold": 1500,
@@ -4910,7 +4910,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "blue"
     ],
     "avatarCardId": "red_172_armada_draconica_chama",
-    "startingHp": 92,
+    "startingHp": 40,
     "passiveName": "Barragem das Armadas Aladas",
     "passiveDescription": "Suas criaturas com Voo, Sopro Elemental ou Armadas Dracônicas entram com +1 ATQ e atingem o Soberano rival com 1 de dano de rasante!",
     "rewardGold": 1650,
@@ -4928,7 +4928,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "purple"
     ],
     "avatarCardId": "gold_172_armada_draconica_sol",
-    "startingHp": 94,
+    "startingHp": 40,
     "passiveName": "Céu Blindado da Esquadra",
     "passiveDescription": "Todas as criaturas invocadas por este Soberano entram com +1 Armadura, e em rodadas pares o fulgor do Zênite restaura +2 PV.",
     "rewardGold": 1800,
@@ -4946,7 +4946,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "blue"
     ],
     "avatarCardId": "purple_171_pactuario_elemental_abismo",
-    "startingHp": 96,
+    "startingHp": 40,
     "passiveName": "Ressonância do Prisma Partido",
     "passiveDescription": "Inicia o duelo com +1 de Essência Máxima e fere o Soberano rival em 1 PV no início de cada rodada caso não haja Guardiões na defesa.",
     "rewardGold": 1950,
@@ -4963,7 +4963,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "green"
     ],
     "avatarCardId": "red_173_general_roda_chama",
-    "startingHp": 98,
+    "startingHp": 40,
     "passiveName": "Giro da Adaptação Brutal",
     "passiveDescription": "Suas criaturas entram com +1 ATQ e +1 Regeneração; além disso, cada giro no início da rodada desgasta em -1 turno qualquer Expansão de Domínio rival!",
     "rewardGold": 2150,
@@ -4981,7 +4981,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "purple"
     ],
     "avatarCardId": "gold_173_general_roda_sol",
-    "startingHp": 100,
+    "startingHp": 40,
     "passiveName": "Sentença Anti-Domínio",
     "passiveDescription": "Suas lendas entram com Escudo Divino (+1 Armadura nas demais tropas) e punem qualquer Expansão de Domínio rival ativa drenando 2 PV por rodada!",
     "rewardGold": 2400,
@@ -5001,7 +5001,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "neutral_173_general_roda_matriz",
-    "startingHp": 108,
+    "startingHp": 40,
     "passiveName": "Julgamento dos Oito Raios",
     "passiveDescription": "Inicia com as 5 Afinidades despertas; suas criaturas entram com +1 Armadura e +1 Regeneração, e a cada rodada a Roda Prismática restaura +1 PV e concede +1 ATQ às suas fileiras!",
     "rewardGold": 3000,
@@ -5019,7 +5019,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "red_119_soberano_piroclasma",
-    "startingHp": 110,
+    "startingHp": 40,
     "passiveName": "Fornalha do Manto",
     "passiveDescription": "Suas criaturas entram com +1 ATQ e +1 Armadura temperada em magma, e em rodadas ímpares o calor abissal queima o Soberano rival em 1 PV!",
     "rewardGold": 3200,
@@ -5037,7 +5037,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "purple"
     ],
     "avatarCardId": "blue_117_arconte_astral",
-    "startingHp": 113,
+    "startingHp": 40,
     "passiveName": "Gravidade Estelar",
     "passiveDescription": "Inicia com +1 de Essência Máxima e no início de cada rodada congela 1 criatura rival aleatória sob o zero absoluto do vácuo astral!",
     "rewardGold": 3450,
@@ -5055,7 +5055,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "green"
     ],
     "avatarCardId": "blue_95_leviata_abissal",
-    "startingHp": 116,
+    "startingHp": 40,
     "passiveName": "Pressão Hadal",
     "passiveDescription": "Suas criaturas entram com +1 Regeneração (Lendas ganham Renascer) e em rodadas pares a maré abissal drena 2 PV do Soberano rival!",
     "rewardGold": 3700,
@@ -5073,7 +5073,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "blue"
     ],
     "avatarCardId": "green_142_patriarca_selva_eterna",
-    "startingHp": 119,
+    "startingHp": 40,
     "passiveName": "Seiva do Mundo Subterrâneo",
     "passiveDescription": "Suas criaturas entram com +2 PV Máximo e +1 Regeneração, e no início de cada rodada as raízes primordiais restauram +2 PV ao Soberano!",
     "rewardGold": 3950,
@@ -5091,7 +5091,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "blue"
     ],
     "avatarCardId": "gold_100_dragao_imperial_ouro",
-    "startingHp": 122,
+    "startingHp": 40,
     "passiveName": "Égide Estratosférica",
     "passiveDescription": "Suas criaturas entram com Escudo Divino (ou +2 Armadura adicional) e unidades com Voo recebem +1 ATQ imediato nas alturas do Zênite!",
     "rewardGold": 4200,
@@ -5111,7 +5111,7 @@ export const CAMPAIGN_BOSSES: CampaignBoss[] = [
       "gold"
     ],
     "avatarCardId": "neutral_167_arauto_prisma_matriz",
-    "startingHp": 125,
+    "startingHp": 40,
     "passiveName": "Singularidade da Fratura",
     "passiveDescription": "Inicia com as 5 Afinidades em nível 3 e +1 Essência Máxima; suas criaturas entram com +1 ATQ, +1 Armadura e +1 Regeneração, enquanto o núcleo prismático drena 1 PV rival e restaura 1 PV por rodada!",
     "rewardGold": 4500,

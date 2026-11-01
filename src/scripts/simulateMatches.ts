@@ -620,7 +620,15 @@ function runAutomatedQA() {
     (c) => c.type === 'creature' && (c.rarity === 'rare' || c.rarity === 'legendary')
   );
   const featuredCreatureSet = new Set<string>();
+  for (const boss of CAMPAIGN_BOSSES) {
+    if (boss.startingHp !== 40) {
+      throw new Error(`Expected legacy Campaign boss ${boss.id} to have symmetric 40 PV, got ${boss.startingHp}`);
+    }
+  }
   for (const boss of GRAND_CAMPAIGN_BOSSES) {
+    if (boss.startingHp !== 40) {
+      throw new Error(`Expected Grand Campaign boss ${boss.id} to have symmetric 40 PV, got ${boss.startingHp}`);
+    }
     if (!boss.customDeckCardIds || boss.customDeckCardIds.length !== 100) {
       throw new Error(
         `Grand Campaign boss ${boss.id} must have a 100-card customDeckCardIds, got ${boss.customDeckCardIds?.length}`

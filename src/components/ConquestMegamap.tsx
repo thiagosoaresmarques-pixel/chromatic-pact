@@ -17,8 +17,6 @@ import {
   ConquestProvinceDef,
   PROVINCE_BUILDINGS,
   ProvinceBuildingType,
-  getConquestMapGeometries,
-  getRegionalConquestGeometries,
   resolveConquestChampionForProvince,
   resolveConquestProvinceSkillTier,
 } from '../data/vaeloriaConquestData';
@@ -158,8 +156,6 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   onLaunchSiege,
   onExploreLandmarkReward,
 }) => {
-  const worldGeometries = useMemo(() => getConquestMapGeometries(), []);
-
   const [mapScope, setMapScope] = useState<VaeloriaMapScope>('world');
   const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(false);
   const [followPawn, setFollowPawn] = useState<boolean>(false);
@@ -262,24 +258,6 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
       return [];
     });
   }, [mapScope, enrichedAllProvinces]);
-
-  const activeGeometries = useMemo(() => {
-    if (mapScope === 'world') {
-      return worldGeometries;
-    }
-    const proj = SCOPE_PROVINCE_PROJECTIONS[mapScope];
-    const seeds = enrichedAllProvinces.flatMap((item) => {
-      if (item.realm === mapScope) {
-        return [{ provinceId: item.prov.id, rx: item.rx, ry: item.ry }];
-      }
-      const pCoord = proj?.[item.prov.id];
-      if (pCoord) {
-        return [{ provinceId: item.prov.id, rx: pCoord.rx, ry: pCoord.ry }];
-      }
-      return [];
-    });
-    return getRegionalConquestGeometries(mapScope, seeds);
-  }, [mapScope, worldGeometries, enrichedAllProvinces]);
 
   const [pawnPos, setPawnPos] = useState<{ x: number; y: number }>(() => ({
     x: selectedProvince.x,
@@ -949,7 +927,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               onClick={() => setOverlayMode('political')}
               title="Lente Política: Fronteiras imperiais e controle de facção"
             >
-              🎨 Político
+              Político
             </button>
             <button
               type="button"
@@ -957,15 +935,15 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               onClick={() => setOverlayMode('terrain')}
               title="Lente Física: Relevo, rios, cordilheiras e passagens naturais"
             >
-              🏔️ Relevo
+              Relevo
             </button>
             <button
               type="button"
               className={`vwm-mode-switch-btn ${overlayMode === 'economy' ? 'is-active' : ''}`}
               onClick={() => setOverlayMode('economy')}
-              title="Lente Logística: Fluxo de Suprimentos BFS, renda +⚙️ e alertas de enclave isolado"
+              title="Lente Logística: Fluxo de Suprimentos BFS, renda e alertas de enclave isolado"
             >
-              ⚙️ Suprimentos
+              Suprimentos
             </button>
             <button
               type="button"
@@ -973,15 +951,15 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               onClick={() => setOverlayMode('leylines')}
               title="Lente Arcana: Domínios nativos, Santuários de Ley e clima tático regional"
             >
-              🔮 Ley & Clima
+              Ley e Clima
             </button>
             <button
               type="button"
               className={`vwm-mode-switch-btn ${overlayMode === 'military' ? 'is-active' : ''}`}
               onClick={() => setOverlayMode('military')}
-              title="Lente Militar: Força de guarnição ❤️, fortificações 🛡️, edifícios e alvos de cerco"
+              title="Lente Militar: Força de guarnição, fortificações, edifícios e alvos de cerco"
             >
-              ⚔️ Guarnições
+              Guarnições
             </button>
           </div>
         </div>
@@ -1221,12 +1199,10 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               </g>
             )}
 
-            {/* 1. 5-Lens Geopolitical Territory Polygons (48 World OR Regional/Capital Provinces) */}
+            {/* 1. Organic Feathered Province Control Auras (Zero rectangular/polygonal shadow boxes!) */}
             <g className="cqm-provinces-polys">
               {positionedProvinces.map((entry) => {
                 const { prov } = entry;
-                const geo = activeGeometries.provinces[prov.id];
-                if (!geo) return null;
                 const ownerId = provinceOwners[prov.id] ?? prov.initialOwner;
                 const faction = CONQUEST_FACTIONS[ownerId];
                 const isSelected = prov.id === selectedProvinceId;
@@ -1237,76 +1213,81 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 const fortLvl = fortifications[prov.id] ?? 0;
                 const domHex = DOMAIN_META[prov.domain]?.color ?? '#94a3b8';
 
-                let lensFill = faction.fillColor;
-                let lensStroke = faction.color;
+                const cx = (entry.x / 100) * CONQUEST_MAP_WIDTH;
+                const cy = (entry.y / 100) * CONQUEST_MAP_HEIGHT;
+                const auraRadius = activeRegionalDef
+                  ? isSelected || isHovered
+                    ? 360
+                    : 280
+                  : prov.isCapital
+                    ? 240
+                    : 185;
+
+                let auraHex = faction.color;
+                let centerOpacity = isSelected || isHovered ? 0.36 : isPlayerOwned ? 0.26 : 0.16;
+
                 if (overlayMode === 'terrain') {
-                  lensFill = isSelected
-                    ? 'rgba(250, 204, 21, 0.14)'
-                    : 'rgba(15, 23, 42, 0.04)';
-                  lensStroke = 'rgba(226, 232, 240, 0.24)';
+                  auraHex = '#fde047';
+                  centerOpacity = isSelected || isHovered ? 0.22 : 0;
                 } else if (overlayMode === 'economy') {
                   if (isIsolated) {
-                    lensFill = 'rgba(245, 158, 11, 0.36)';
-                    lensStroke = '#f59e0b';
+                    auraHex = '#f59e0b';
+                    centerOpacity = 0.36;
                   } else if (isPlayerOwned) {
-                    lensFill =
-                      prov.supplyIncome >= 4
-                        ? 'rgba(16, 185, 129, 0.34)'
-                        : 'rgba(52, 211, 153, 0.22)';
-                    lensStroke = '#34d399';
+                    auraHex = '#34d399';
+                    centerOpacity = prov.supplyIncome >= 4 ? 0.32 : 0.22;
                   } else {
-                    lensFill =
-                      prov.supplyIncome >= 4
-                        ? 'rgba(250, 204, 21, 0.22)'
-                        : 'rgba(15, 23, 42, 0.2)';
-                    lensStroke = 'rgba(250, 204, 21, 0.45)';
+                    auraHex = '#eab308';
+                    centerOpacity = prov.supplyIncome >= 4 ? 0.2 : 0.08;
                   }
                 } else if (overlayMode === 'leylines') {
-                  lensFill = `${domHex}30`;
-                  lensStroke = domHex;
+                  auraHex = domHex;
+                  centerOpacity = 0.28;
                 } else if (overlayMode === 'military') {
                   if (isAttackable) {
-                    lensFill = 'rgba(239, 68, 68, 0.3)';
-                    lensStroke = '#f87171';
+                    auraHex = '#ef4444';
+                    centerOpacity = 0.34;
                   } else if (isPlayerOwned) {
-                    lensFill =
-                      fortLvl > 0
-                        ? 'rgba(56, 189, 248, 0.28)'
-                        : 'rgba(34, 197, 94, 0.22)';
-                    lensStroke = '#38bdf8';
+                    auraHex = fortLvl > 0 ? '#38bdf8' : '#22c55e';
+                    centerOpacity = 0.26;
                   } else {
-                    lensFill = 'rgba(15, 23, 42, 0.28)';
-                    lensStroke = 'rgba(148, 163, 184, 0.42)';
+                    auraHex = '#64748b';
+                    centerOpacity = 0.12;
                   }
                 }
 
+                const gradId = `cqm_aura_${prov.id}`;
+
                 return (
                   <g key={`poly-${prov.id}`}>
-                    <path
-                      d={geo.svgPath}
-                      fill={lensFill}
-                      fillOpacity={
-                        overlayMode === 'terrain'
-                          ? 1
-                          : activeRegionalDef
-                            ? isSelected || isHovered
-                              ? 0.48
-                              : 0.3
-                            : isSelected || isHovered
-                              ? 0.52
-                              : isPlayerOwned
-                                ? 0.38
-                                : 0.28
-                      }
-                      stroke={
-                        isSelected
-                          ? '#fef08a'
-                          : isAttackable && isHovered
-                            ? '#f87171'
-                            : lensStroke
-                      }
-                      strokeWidth={isSelected ? 4.5 : overlayMode === 'economy' && isIsolated ? 3.4 : 1.8}
-                      strokeOpacity={isSelected ? 0.98 : overlayMode === 'terrain' ? 0.25 : 0.56}
+                    {centerOpacity > 0 && (
+                      <>
+                        <defs>
+                          <radialGradient id={gradId} cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor={auraHex} stopOpacity={centerOpacity} />
+                            <stop
+                              offset="52%"
+                              stopColor={auraHex}
+                              stopOpacity={Number((centerOpacity * 0.38).toFixed(3))}
+                            />
+                            <stop offset="100%" stopColor={auraHex} stopOpacity={0} />
+                          </radialGradient>
+                        </defs>
+                        <circle
+                          cx={cx}
+                          cy={cy}
+                          r={auraRadius}
+                          fill={`url(#${gradId})`}
+                          pointerEvents="none"
+                        />
+                      </>
+                    )}
+                    {/* Invisible circular tactical hit area centered on province stronghold */}
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={activeRegionalDef ? 170 : 115}
+                      fill="rgba(255,255,255,0.001)"
                       className="cqm-poly-hit"
                       onClick={(e) => handleActivateProvince(e, entry)}
                       onMouseEnter={() => setHoveredProvId(prov.id)}
@@ -1314,13 +1295,6 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                         setHoveredProvId((prev) => (prev === prov.id ? null : prev))
                       }
                     />
-                    {isAttackable && (isSelected || isHovered || overlayMode === 'military') && (
-                      <path
-                        d={geo.svgPath}
-                        fill="url(#cqmTargetHatch)"
-                        pointerEvents="none"
-                      />
-                    )}
                   </g>
                 );
               })}
@@ -1336,50 +1310,6 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
               idPrefix="cqm_svg"
               onInspectNote={setInspectedNote}
             />
-
-            {/* 2. Dynamic Empire Merging Borders vs Internal County Borders */}
-            <g className="cqm-borders-layer" pointerEvents="none">
-              {activeGeometries.sharedBorders.map((b) => {
-                const ownerA = provinceOwners[b.provA];
-                const ownerB = provinceOwners[b.provB];
-                const sameEmpire = ownerA === ownerB;
-
-                if (sameEmpire) {
-                  if (lodLevel === 1) return null;
-                  return (
-                    <path
-                      key={b.key}
-                      d={b.svgPath}
-                      fill="none"
-                      stroke="rgba(226, 232, 240, 0.38)"
-                      strokeWidth={lodLevel === 3 ? 1.8 : 2}
-                      strokeDasharray="8 8"
-                    />
-                  );
-                }
-
-                const involvesPlayer = ownerA === playerFactionId || ownerB === playerFactionId;
-                return (
-                  <g key={b.key}>
-                    <path
-                      d={b.svgPath}
-                      fill="none"
-                      stroke="rgba(2, 6, 23, 0.9)"
-                      strokeWidth={involvesPlayer ? 8 : 6}
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d={b.svgPath}
-                      fill="none"
-                      stroke={involvesPlayer ? '#fde047' : '#f8fafc'}
-                      strokeOpacity={involvesPlayer ? 0.95 : 0.65}
-                      strokeWidth={involvesPlayer ? 3.4 : 2.3}
-                      strokeLinecap="round"
-                    />
-                  </g>
-                );
-              })}
-            </g>
 
             {/* 3. Roads & Border Portal Spurs */}
             <g className="cqm-roads-layer" pointerEvents="none">

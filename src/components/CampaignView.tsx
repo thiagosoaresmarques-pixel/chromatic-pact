@@ -141,9 +141,12 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     return firstInStartRealm?.id ?? fullBossRoster[0]?.id ?? '';
   });
 
-  const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(
-    () => Boolean(loadCampaignMapSession()?.isTheaterFullscreen)
-  );
+  // Sempre abre o modo Campanha em Tela Cheia por padrão
+  const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(true);
+
+  useEffect(() => {
+    saveCampaignMapSession({ isTheaterFullscreen: true });
+  }, []);
 
   useEffect(() => {
     if (selectedBossId) {
@@ -342,7 +345,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             >
               {customDecks.map((cd) => (
                 <option key={cd.id} value={cd.id}>
-                  ★ {cd.name}
+                  {cd.name}
                 </option>
               ))}
             </select>

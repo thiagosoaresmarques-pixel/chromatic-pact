@@ -17949,11 +17949,14 @@ input:focus-visible,
   gap: 0.35rem !important;
 }
 
-.vaeloria-world-map-shell.is-theater-fullscreen .vwm-stage-fit-box > .vwm-viewport {
-  width: min(100cqw, calc(100cqh * 16 / 9)) !important;
-  height: min(100cqh, calc(100cqw * 9 / 16)) !important;
-  aspect-ratio: 16 / 9 !important;
-  flex: 0 0 auto !important;
+.vaeloria-world-map-shell.is-theater-fullscreen .vwm-stage-fit-box > .vwm-viewport,
+.conquest-megamap-shell.is-theater-fullscreen .vwm-stage-fit-box > .vwm-viewport {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  aspect-ratio: auto !important;
+  flex: 1 1 auto !important;
 }
 
 .conquest-megamap-shell.is-theater-fullscreen .vwm-viewport {

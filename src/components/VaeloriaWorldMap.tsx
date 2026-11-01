@@ -197,7 +197,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
     return unlockedCampaignSubmaps.has(saved.mapScope) ? saved.mapScope : 'world';
   });
   const [internalTheaterFullscreen, setInternalTheaterFullscreen] = useState<boolean>(() =>
-    isCampaign ? Boolean(initialCampaignSessionRef.current?.isTheaterFullscreen) : false
+    isCampaign ? true : false
   );
   const isTheaterFullscreen =
     controlledTheaterFullscreen !== undefined
@@ -1260,63 +1260,58 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 onInspectNote={setInspectedNote}
               />
 
-              {/* CAMPAIGN CONTINENTAL MAP: 20 Territory Polygons + Continental Road Graph */}
+              {/* CAMPAIGN CONTINENTAL MAP: Soft Radial Hub Auras (Zero Rectangles!) + Continental Road Graph */}
               {isCampaign && mapScope === 'world' && (
                 <g className="vwm-world-campaign-layer">
-                  {/* 1. Territory Polygons (Convert to Player's Sovereign Color when 100% cleared!) */}
+                  <defs>
+                    <radialGradient id="vwmConqueredHubGlow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor={bannerPalette.hex} stopOpacity="0.34" />
+                      <stop offset="55%" stopColor={bannerPalette.hex} stopOpacity="0.12" />
+                      <stop offset="100%" stopColor={bannerPalette.hex} stopOpacity="0" />
+                    </radialGradient>
+                    <radialGradient id="vwmHoveredHubGlow" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#fde047" stopOpacity="0.24" />
+                      <stop offset="55%" stopColor="#fde047" stopOpacity="0.08" />
+                      <stop offset="100%" stopColor="#fde047" stopOpacity="0" />
+                    </radialGradient>
+                  </defs>
+
+                  {/* 1. Organic Feathered Hub Auras ONLY for Conquered or Hovered Realms (Zero dark shadow boxes!) */}
                   {VAELORIA_REALM_ORDER.map((rid) => {
                     const g = GRAND_CAMPAIGN_SUBMAP_GRAPHS[rid];
                     const isConq = conqueredCampaignSubmaps.has(rid);
                     const isUnl = unlockedCampaignSubmaps.has(rid);
                     const isHov = hoveredWorldHubId === rid;
-                    const pts = g.worldPolygon
-                      .map(([px, py]) => `${(px * 16).toFixed(1)},${(py * 9).toFixed(1)}`)
-                      .join(' ');
+                    const cx = g.worldHub.x * 16;
+                    const cy = g.worldHub.y * 9;
 
                     if (isConq) {
                       return (
-                        <g key={`wpoly-${rid}`}>
-                          <polygon
-                            points={pts}
-                            fill={bannerPalette.hex}
-                            fillOpacity={isHov ? 0.46 : 0.36}
-                            style={{ mixBlendMode: 'color' }}
-                          />
-                          <polygon
-                            points={pts}
-                            fill={bannerPalette.fillRgba}
-                            stroke={bannerPalette.borderRgba}
-                            strokeWidth={isHov ? 3.2 : 2.2}
-                            strokeLinejoin="round"
-                          />
-                        </g>
-                      );
-                    }
-
-                    if (isUnl) {
-                      return (
-                        <polygon
-                          key={`wpoly-${rid}`}
-                          points={pts}
-                          fill={isHov ? 'rgba(212, 175, 55, 0.11)' : 'rgba(212, 175, 55, 0.03)'}
-                          stroke={isHov ? 'rgba(250, 204, 21, 0.65)' : 'rgba(212, 175, 55, 0.24)'}
-                          strokeWidth={isHov ? 2.2 : 1.2}
-                          strokeLinejoin="round"
+                        <circle
+                          key={`waura-${rid}`}
+                          cx={cx}
+                          cy={cy}
+                          r={isHov ? 165 : 140}
+                          fill="url(#vwmConqueredHubGlow)"
+                          pointerEvents="none"
                         />
                       );
                     }
 
-                    return (
-                      <polygon
-                        key={`wpoly-${rid}`}
-                        points={pts}
-                        fill="rgba(4, 8, 18, 0.32)"
-                        stroke="rgba(100, 116, 139, 0.22)"
-                        strokeWidth="1.1"
-                        strokeDasharray="6 6"
-                        strokeLinejoin="round"
-                      />
-                    );
+                    if (isUnl && isHov) {
+                      return (
+                        <circle
+                          key={`waura-${rid}`}
+                          cx={cx}
+                          cy={cy}
+                          r={125}
+                          fill="url(#vwmHoveredHubGlow)"
+                          pointerEvents="none"
+                        />
+                      );
+                    }
+
+                    return null;
                   })}
 
                   {/* 2. Continental Roads between the 20 Submap Hubs */}
@@ -1797,7 +1792,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                       <span className="vwm-boss-tooltip">
                         <strong>{boss.name}</strong>
                         <em>
-                          {worldNode.landmarkName} • {boss.startingHp} PV • 🧠 T{tSpec.roman} ({tSpec.title})
+                          {worldNode.landmarkName} · {boss.startingHp} PV · Grau {tSpec.roman} ({tSpec.title})
                         </em>
                         {standing && (
                           <small

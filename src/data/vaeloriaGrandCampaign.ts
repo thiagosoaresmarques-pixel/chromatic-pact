@@ -18955,7 +18955,8 @@ export function loadCampaignMapSession(): CampaignMapSessionState | null {
           : undefined,
       selectedBossId:
         typeof parsed.selectedBossId === 'string' ? parsed.selectedBossId : undefined,
-      isTheaterFullscreen: Boolean(parsed.isTheaterFullscreen),
+      isTheaterFullscreen:
+        parsed.isTheaterFullscreen !== undefined ? Boolean(parsed.isTheaterFullscreen) : true,
       returnBanner:
         typeof parsed.returnBanner === 'string' ? parsed.returnBanner : null,
     };
@@ -18974,7 +18975,7 @@ export function saveCampaignMapSession(patch: Partial<CampaignMapSessionState>):
       isTheaterFullscreen:
         patch.isTheaterFullscreen !== undefined
           ? patch.isTheaterFullscreen
-          : prev?.isTheaterFullscreen ?? false,
+          : prev?.isTheaterFullscreen ?? true,
       returnBanner:
         patch.returnBanner !== undefined ? patch.returnBanner : prev?.returnBanner ?? null,
     };

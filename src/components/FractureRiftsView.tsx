@@ -2,19 +2,33 @@ import React, { useMemo, useState } from 'react';
 import { CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import {
+  AI_SKILL_TIER_SPECS,
+  BICOLOR_ARCHETYPE_MASTERY,
+  BicolorArchetypeId,
+  MONOCOLOR_ARCHETYPE_MASTERY,
+  MonocolorArchetypeId,
+  POLYCOLOR_ARCHETYPE_MASTERY,
+  PolycolorArchetypeId,
+} from '../data/aiMonocolorMastery';
+import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
+import {
   FRACTURE_RIFTS,
   FractureRiftDef,
   getCurrentIsoWeekKey,
   getWeeklyFeaturedRift,
   loadRiftProgress,
+  resolveDefaultRiftSkillTier,
+  RIFT_TIER_GOLD_REWARD,
   STANDARD_RIFT_WIN_GOLD,
   WEEKLY_RIFT_GOLD_BONUS,
   WEEKLY_RIFT_SHARDS_BONUS,
 } from '../data/fractureRiftsData';
-import { RiftMutatorId } from '../types/game';
+import { AiSkillTier, RiftMutatorId } from '../types/game';
 import { playSfx } from '../utils/soundEngine';
 import type { CustomSavedDeck } from './BattleArena';
+import { DOMAIN_META } from './CardView';
 import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
+import { TacticalGuideView } from './TacticalGuideView';
 
 export interface FractureRiftsViewProps {
   customDecks: CustomSavedDeck[];
@@ -23,7 +37,21 @@ export interface FractureRiftsViewProps {
   arenaWins: number;
   onRequireAccount: () => void;
   onRequireDeckSetup: () => void;
-  onStartRiftBattle: (riftId: RiftMutatorId, playerDeckCardIds: string[]) => void;
+  onStartRiftBattle: (
+    riftId: RiftMutatorId,
+    playerDeckCardIds: string[],
+    aiSkillTier?: AiSkillTier
+  ) => void;
+}
+
+function getChampionTitle(archetypeId: string): string {
+  const mono = MONOCOLOR_ARCHETYPE_MASTERY[archetypeId as MonocolorArchetypeId];
+  if (mono) return mono.name;
+  const bi = BICOLOR_ARCHETYPE_MASTERY[archetypeId as BicolorArchetypeId];
+  if (bi) return bi.name;
+  const poly = POLYCOLOR_ARCHETYPE_MASTERY[archetypeId as PolycolorArchetypeId];
+  if (poly) return poly.name;
+  return archetypeId;
 }
 
 export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
@@ -38,6 +66,8 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
     () => customDecks[0]?.id ?? PREBUILT_DECKS[0].id
   );
+  const [tierSelection, setTierSelection] = useState<'auto' | 3 | 4 | 5>('auto');
+  const [oracleOpponentId, setOracleOpponentId] = useState<string | null>(null);
 
   const weeklyRift = useMemo(() => getWeeklyFeaturedRift(), []);
   const currentWeekKey = useMemo(() => getCurrentIsoWeekKey(), []);
@@ -53,18 +83,25 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
     [riftProgress.clearedRiftCounts]
   );
 
+  const resolveEffectiveTier = (rift: FractureRiftDef): AiSkillTier => {
+    if (tierSelection !== 'auto') return tierSelection;
+    const clears = riftProgress.clearedRiftCounts[rift.id] ?? 0;
+    return resolveDefaultRiftSkillTier(rift.id, clears);
+  };
+
   const handleLaunchRift = (rift: FractureRiftDef) => {
     if (!isGuest && customDecks.length === 0) {
       onRequireDeckSetup();
       return;
     }
+    const effectiveTier = resolveEffectiveTier(rift);
     playSfx('summon');
     if (customDecks.length > 0) {
       const chosen = customDecks.find((d) => d.id === selectedDeckId) ?? customDecks[0];
-      onStartRiftBattle(rift.id, chosen.cardIds);
+      onStartRiftBattle(rift.id, chosen.cardIds, effectiveTier);
     } else {
       const fallback = PREBUILT_DECKS.find((d) => d.id === selectedDeckId) ?? PREBUILT_DECKS[0];
-      onStartRiftBattle(rift.id, fallback.cardIds);
+      onStartRiftBattle(rift.id, fallback.cardIds, effectiveTier);
     }
   };
 
@@ -121,6 +158,24 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                       ))}
                 </select>
               )}
+            </div>
+
+            <div className="rifts-deck-picker">
+              <label htmlFor="rift-tier-select">Maestria do Guardião (IA)</label>
+              <select
+                id="rift-tier-select"
+                className="rifts-select"
+                value={String(tierSelection)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setTierSelection(val === 'auto' ? 'auto' : (Number(val) as 3 | 4 | 5));
+                }}
+              >
+                <option value="auto">Automático por Progressão (T3 → T5)</option>
+                <option value="3">Tier III • Veterano (+15 Ouro)</option>
+                <option value="4">Tier IV • Mestre (+20 Ouro)</option>
+                <option value="5">Tier V • Grão-Mestre (+25 Ouro)</option>
+              </select>
             </div>
 
             <div className="rifts-progress-pill">
@@ -197,6 +252,19 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
           const isWeekly = rift.id === weeklyRift.id;
           const clears = riftProgress.clearedRiftCounts[rift.id] ?? 0;
           const avatarCard = CARDS_BY_ID[rift.challengerAvatarId];
+          const effTier = resolveEffectiveTier(rift);
+          const tSpec = AI_SKILL_TIER_SPECS[effTier];
+          const standing = getUnifiedStandingForDeckId(rift.archetypeId);
+          const champTitle = getChampionTitle(rift.archetypeId);
+          const hpScale =
+            rift.id === 'glass_thrones'
+              ? 0
+              : effTier >= 5
+                ? 4
+                : effTier === 4
+                  ? 2
+                  : 0;
+          const tierGold = RIFT_TIER_GOLD_REWARD[effTier] ?? STANDARD_RIFT_WIN_GOLD;
 
           return (
             <article
@@ -231,28 +299,96 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                   />
                 )}
                 <div className="rift-challenger-copy">
-                  <span className="rift-challenger-label">GUARDIÃO DA FENDA ({rift.challengerHp} PV)</span>
+                  <span className="rift-challenger-label">
+                    GUARDIÃO ({rift.challengerHp + hpScale} PV • +{tierGold} OURO)
+                  </span>
                   <strong>{rift.challengerName}</strong>
                   <small>{rift.challengerTitle}</small>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      alignItems: 'center',
+                      gap: '5px',
+                      marginTop: '4px',
+                      fontSize: '0.68rem',
+                    }}
+                    title={tSpec.description}
+                  >
+                    <span
+                      style={{
+                        padding: '1px 6px',
+                        borderRadius: 4,
+                        background: 'rgba(15, 23, 42, 0.85)',
+                        border: '1px solid rgba(212, 175, 55, 0.45)',
+                        color: '#fde68a',
+                        fontWeight: 700,
+                      }}
+                    >
+                      🧠 {tSpec.shortLabel}
+                    </span>
+                    <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{champTitle}</span>
+                    {standing && (
+                      <span style={{ color: '#93c5fd', fontWeight: 700 }}>
+                        • #{standing.rank}/44 [Tier {standing.tierBadge}]
+                      </span>
+                    )}
+                    <span style={{ display: 'inline-flex', gap: 3 }}>
+                      {rift.domains.map((domKey) => (
+                        <i
+                          key={domKey}
+                          title={DOMAIN_META[domKey].name}
+                          style={{
+                            width: 7,
+                            height: 7,
+                            borderRadius: '50%',
+                            background: DOMAIN_META[domKey].color,
+                            display: 'inline-block',
+                          }}
+                        />
+                      ))}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="rift-card-footer">
+              <div className="rift-card-footer" style={{ gap: '0.45rem', flexWrap: 'wrap' }}>
                 <span className="rift-clears-chip">
                   {clears > 0 ? `✓ Expurgada ${clears}×` : 'Ainda não expurgada'}
                 </span>
-                <button
-                  type="button"
-                  className="btn-fantasy btn-fantasy-primary rift-card-btn"
-                  onClick={() => handleLaunchRift(rift)}
-                >
-                  Entrar na Fenda →
-                </button>
+                <div style={{ display: 'flex', gap: '0.4rem', marginLeft: 'auto' }}>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary"
+                    style={{ padding: '6px 10px', fontSize: '0.72rem' }}
+                    onClick={() => setOracleOpponentId(rift.archetypeId)}
+                    title="Consultar Matchup e contra-jogadas no Oráculo de Guerra"
+                  >
+                    Matchup
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-fantasy btn-fantasy-primary rift-card-btn"
+                    onClick={() => handleLaunchRift(rift)}
+                  >
+                    Entrar ({tSpec.roman}) →
+                  </button>
+                </div>
               </div>
             </article>
           );
         })}
       </section>
+
+      {oracleOpponentId && (
+        <TacticalGuideView
+          customDecks={customDecks}
+          initialPlayerDeckId={selectedDeckId}
+          initialOpponentDeckId={oracleOpponentId}
+          isModal={true}
+          onClose={() => setOracleOpponentId(null)}
+        />
+      )}
     </div>
   );
 };

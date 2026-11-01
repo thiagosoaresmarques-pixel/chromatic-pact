@@ -5,7 +5,16 @@
 // ============================================================================
 
 import { BiomeRealmId, CampaignBoss, Domain } from '../types/game';
-import { resolveCampaignBossGraduatedSetup } from './aiMonocolorMastery';
+import {
+  BICOLOR_ARCHETYPE_MASTERY,
+  BicolorArchetypeId,
+  MONOCOLOR_ARCHETYPE_MASTERY,
+  MonocolorArchetypeId,
+  POLYCOLOR_ARCHETYPE_MASTERY,
+  PolycolorArchetypeId,
+  resolveCampaignBossGraduatedSetup,
+} from './aiMonocolorMastery';
+import type { UnifiedChampionId } from './aiUnifiedTournamentData';
 import {
   VAELORIA_REGIONAL_MAPS,
   VaeloriaMapScope,
@@ -18319,9 +18328,302 @@ export const GRAND_CAMPAIGN_NODES: GrandCampaignEncounterNode[] = [
   }
 ];
 
-// Hydrate all 190 Grand Campaign encounters with their Tier-graduated 100-card Monocolor/Prismatic Grimoires & trained Archetype IDs
+/**
+ * Maps each of the 20 geographic sub-maps and encounter orders across all 44 Co-Evolved Champions
+ * (16 Monocolor + 15 Bicolor + 10 Tricolor + 3 Pentachromatic Apexes), ensuring that:
+ *  - Tier I–II border garrisons introduce pure Monocolor and Chromatic-Axial Bicolor Pacts;
+ *  - Tier III–IV corridors & Deep Frontiers unleash Bicolor Alliances and Tricolor Cataclysms;
+ *  - Tier IV–V Imperial Capitals, Prismatic Crater, Horological Matrix, and the Free City Throne
+ *    culminate in Master/Grandmaster Tricolor Triads and the 3 Pentachromatic Sovereigns;
+ *  - Primary submap domain always stays `domains[0]` so map coloring & commander invariants remain 100% intact.
+ */
+function resolveGrandCampaignChampionAssignment(
+  node: GrandCampaignEncounterNode
+): UnifiedChampionId | undefined {
+  const { submapId, submapOrder: ord, tier } = node;
+
+  switch (submapId) {
+    // ── VERIDIA (Green • 14 encounters) ──
+    case 'veridia':
+      if (ord <= 2) return 'mono_green_swarm';
+      if (ord <= 4) return 'mono_green_roots';
+      if (ord <= 7) return ord % 2 === 0 ? 'mono_green_colossus' : 'mono_green_swarm';
+      if (ord === 8) return 'dual_green_neutral';
+      if (ord === 9) return 'dual_green_gold';
+      if (ord === 10) return 'dual_blue_green';
+      if (ord === 11) return 'dual_purple_green';
+      if (ord === 12) return 'mono_green_roots';
+      if (ord === 13) return 'dual_red_green';
+      return 'mono_green_colossus'; // Throne of Veridia
+
+    // ── DEEP ROOTS (Green Deep Frontier • 13 encounters) ──
+    case 'deep_roots':
+      if (ord <= 3) return ord === 2 ? 'mono_green_swarm' : 'mono_green_roots';
+      if (ord === 4) return 'dual_green_neutral';
+      if (ord === 5) return 'dual_green_gold';
+      if (ord === 6) return 'mono_green_roots';
+      if (ord === 7) return 'dual_purple_green';
+      if (ord === 8) return 'dual_blue_green';
+      if (ord === 9) return 'dual_red_green';
+      if (ord === 10) return 'tri_blue_green_gold';
+      if (ord === 11) return 'tri_purple_green_gold';
+      if (ord === 12) return 'tri_red_green_gold';
+      return 'tri_red_blue_green'; // Throne of Amber Heart
+
+    // ── CAPITAL VERIDIA (Galhada Viva • 13 encounters, Tier 3–5) ──
+    case 'capital_veridia':
+      if (ord <= 2) return 'mono_green_swarm';
+      if (ord <= 4) return 'mono_green_roots';
+      if (ord === 5) return 'dual_green_gold';
+      if (ord === 6) return 'dual_red_green';
+      if (ord === 7) return 'dual_blue_green';
+      if (ord === 8) return 'dual_purple_green';
+      if (ord === 9) return 'tri_blue_purple_green';
+      if (ord === 10) return 'mono_green_swarm';
+      if (ord === 11) return 'tri_purple_green_gold';
+      if (ord === 12) return 'tri_red_green_gold';
+      return 'mono_green_colossus'; // Tier V Emerald Throne
+
+    // ── PYROS (Red • 11 encounters) ──
+    case 'pyros':
+      if (ord <= 2) return 'mono_red_blitz';
+      if (ord === 3) return 'mono_red_pyroclasm';
+      if (ord <= 5) return ord === 4 ? 'mono_red_pyroclasm' : 'mono_red_blitz';
+      if (ord === 6) return 'dual_red_neutral';
+      if (ord === 7) return 'dual_red_purple';
+      if (ord === 8) return 'dual_red_blue';
+      if (ord === 9) return 'mono_red_pyroclasm';
+      if (ord === 10) return 'dual_red_gold';
+      return 'mono_red_dragon'; // Central Caldera Throne
+
+    // ── UNDERFORGE (Red Deep Frontier • 10 encounters) ──
+    case 'underforge':
+      if (ord === 1) return 'mono_red_blitz';
+      if (ord === 2) return 'dual_red_neutral';
+      if (ord === 3) return 'mono_red_pyroclasm';
+      if (ord === 4) return 'dual_red_purple';
+      if (ord === 5) return 'mono_red_dragon';
+      if (ord === 6) return 'dual_red_gold';
+      if (ord === 7) return 'dual_red_green';
+      if (ord === 8) return 'tri_red_purple_gold';
+      if (ord === 9) return 'tri_red_green_gold';
+      return 'tri_red_blue_gold'; // Adamantine Anvil Throne (#1 Zenith Armada!)
+
+    // ── CAPITAL PYROS (Vulcanor • 10 encounters, Tier 3–5) ──
+    case 'capital_pyros':
+      if (ord === 1) return 'mono_red_blitz';
+      if (ord === 2) return 'mono_red_pyroclasm';
+      if (ord === 3) return 'dual_red_neutral';
+      if (ord === 4) return 'dual_red_blue';
+      if (ord === 5) return 'dual_red_purple';
+      if (ord === 6) return 'mono_red_pyroclasm';
+      if (ord === 7) return 'dual_red_gold';
+      if (ord === 8) return 'tri_red_blue_green';
+      if (ord === 9) return 'tri_red_green_gold';
+      return 'mono_red_dragon'; // Tier V Supreme Anvil Throne
+
+    // ── VORTEX (Blue • 8 encounters) ──
+    case 'vortex':
+      if (ord <= 2) return 'mono_blue_frost';
+      if (ord === 3) return 'mono_blue_abyssal';
+      if (ord === 4) return 'dual_blue_purple';
+      if (ord === 5) return 'mono_blue_chrono';
+      if (ord === 6) return 'dual_blue_neutral';
+      if (ord === 7) return 'mono_blue_frost';
+      return 'mono_blue_chrono'; // Polar Spire of Chronos
+
+    // ── SEA OF STORMS (Blue Maritime Corridor • 6 encounters) ──
+    case 'sea_of_storms':
+      if (ord === 1) return 'mono_blue_frost';
+      if (ord === 2) return 'mono_blue_chrono';
+      if (ord === 3) return 'dual_blue_neutral';
+      if (ord === 4) return 'dual_red_blue';
+      if (ord === 5) return 'dual_blue_green';
+      return 'dual_blue_purple'; // Maritime Eye of Storms
+
+    // ── ASTRAL ISLES (Blue Deep Frontier • 7 encounters) ──
+    case 'astral_isles':
+      if (ord === 1) return 'mono_blue_frost';
+      if (ord === 2) return 'dual_blue_gold';
+      if (ord === 3) return 'mono_blue_chrono';
+      if (ord === 4) return 'dual_red_blue';
+      if (ord === 5) return 'tri_red_blue_purple';
+      if (ord === 6) return 'tri_blue_purple_gold';
+      return 'tri_red_blue_green'; // Horological Maelstrom Beacon
+
+    // ── CAPITAL VORTEX (Cristália • 7 encounters, Tier 3–5) ──
+    case 'capital_vortex':
+      if (ord === 1) return 'mono_blue_frost';
+      if (ord === 2) return 'dual_blue_neutral';
+      if (ord === 3) return 'mono_blue_abyssal';
+      if (ord === 4) return 'dual_blue_gold';
+      if (ord === 5) return 'tri_blue_purple_green';
+      if (ord === 6) return 'tri_red_blue_purple';
+      return 'mono_blue_chrono'; // Tier V Great Astrolabe Throne
+
+    // ── ECLIPSE (Purple • 12 encounters) ──
+    case 'eclipse':
+      if (ord <= 2) return 'mono_purple_crypt';
+      if (ord === 3) return 'mono_purple_umbral';
+      if (ord === 4) return 'mono_purple_blood';
+      if (ord === 5) return 'dual_red_purple';
+      if (ord === 6) return 'mono_purple_umbral';
+      if (ord === 7) return 'dual_purple_gold';
+      if (ord === 8) return 'mono_purple_crypt';
+      if (ord === 9) return 'dual_purple_neutral';
+      if (ord === 10) return 'dual_blue_purple';
+      if (ord === 11) return 'dual_purple_green';
+      return 'mono_purple_blood'; // Eclipse Central Altar
+
+    // ── SUNKEN ABYSS (Purple Deep Frontier • 10 encounters) ──
+    case 'sunken_abyss':
+      if (ord === 1) return 'mono_purple_crypt';
+      if (ord === 2) return 'mono_purple_umbral';
+      if (ord === 3) return 'dual_purple_neutral';
+      if (ord === 4) return 'dual_blue_purple';
+      if (ord === 5) return 'mono_purple_crypt';
+      if (ord === 6) return 'dual_purple_gold';
+      if (ord === 7) return 'dual_red_purple';
+      if (ord === 8) return 'tri_red_purple_gold';
+      if (ord === 9) return 'tri_blue_purple_green';
+      return 'tri_red_purple_green'; // Drowned Basilica of the Leviathan
+
+    // ── CAPITAL ECLIPSE (Nocturnus • 10 encounters, Tier 3–5) ──
+    case 'capital_eclipse':
+      if (ord === 1) return 'mono_purple_crypt';
+      if (ord === 2) return 'dual_purple_gold';
+      if (ord === 3) return 'mono_purple_umbral';
+      if (ord === 4) return 'dual_blue_purple';
+      if (ord === 5) return 'dual_red_purple';
+      if (ord === 6) return 'mono_purple_umbral';
+      if (ord === 7) return 'tri_purple_green_gold';
+      if (ord === 8) return 'tri_red_purple_green';
+      if (ord === 9) return 'mono_purple_crypt';
+      return 'mono_purple_blood'; // Tier V Obsidian Cathedral Throne
+
+    // ── SOLARIA (Gold • 9 encounters) ──
+    case 'solaria':
+      if (ord === 1) return 'mono_gold_phalanx';
+      if (ord === 2) return 'mono_gold_celestial';
+      if (ord === 3) return 'mono_gold_judgment';
+      if (ord === 4) return 'mono_gold_phalanx';
+      if (ord === 5) return 'dual_gold_neutral';
+      if (ord === 6) return 'dual_green_gold';
+      if (ord === 7) return 'dual_blue_gold';
+      if (ord === 8) return 'mono_gold_judgment';
+      return 'mono_gold_celestial'; // Central Zenith of Solaria
+
+    // ── BOREAL SKYWAY (Gold Aerial Corridor • 7 encounters) ──
+    case 'boreal_skyway':
+      if (ord === 1) return 'mono_gold_phalanx';
+      if (ord === 2) return 'mono_gold_celestial';
+      if (ord === 3) return 'dual_gold_neutral';
+      if (ord === 4) return 'dual_blue_gold';
+      if (ord === 5) return 'dual_purple_gold';
+      if (ord === 6) return 'dual_red_gold';
+      return 'tri_red_blue_gold'; // Solar Armada Skyway Arch
+
+    // ── SKY BASTIONS (Gold Deep Frontier • 7 encounters) ──
+    case 'sky_bastions':
+      if (ord === 1) return 'mono_gold_phalanx';
+      if (ord === 2) return 'dual_gold_neutral';
+      if (ord === 3) return 'mono_gold_judgment';
+      if (ord === 4) return 'dual_blue_gold';
+      if (ord === 5) return 'tri_blue_green_gold';
+      if (ord === 6) return 'tri_blue_purple_gold';
+      return 'tri_red_blue_gold'; // Alabaster Cascade Citadel
+
+    // ── CAPITAL SOLARIA (Aethelgard • 8 encounters, Tier 3–5) ──
+    case 'capital_solaria':
+      if (ord === 1) return 'mono_gold_phalanx';
+      if (ord === 2) return 'dual_green_gold';
+      if (ord === 3) return 'mono_gold_judgment';
+      if (ord === 4) return 'dual_blue_gold';
+      if (ord === 5) return 'tri_blue_green_gold';
+      if (ord === 6) return 'tri_blue_purple_gold';
+      if (ord === 7) return 'tri_red_blue_gold';
+      return 'mono_gold_celestial'; // Tier V Golden Dome Throne
+
+    // ── MATRIX (Grey Axial Ring • 10 encounters, Tier 2–4) ──
+    case 'matrix':
+      if (ord <= 3) return 'mono_neutral_axial';
+      if (ord === 4) return 'dual_green_neutral';
+      if (ord === 5) return 'dual_red_neutral';
+      if (ord === 6) return 'dual_blue_neutral';
+      if (ord === 7) return 'dual_gold_neutral';
+      if (ord === 8) return 'penta_prismatic_crater';
+      if (ord === 9) return 'penta_wheel_convergence';
+      return 'penta_wheel_convergence'; // Outer Ring of the Grey Frontier
+
+    // ── PRISMATIC CRATER (Central Crater • 9 encounters, Tier 3–4) ──
+    case 'prismatic_crater':
+      if (ord === 1) return 'mono_neutral_axial';
+      if (ord === 2) return 'dual_purple_neutral';
+      if (ord === 3) return 'dual_gold_neutral';
+      if (ord === 4) return 'mono_neutral_axial';
+      if (ord === 5) return 'tri_red_blue_purple';
+      if (ord === 6) return 'tri_red_purple_gold';
+      if (ord === 7) return 'tri_blue_green_gold';
+      if (ord === 8) return 'penta_wheel_convergence';
+      return 'penta_prismatic_crater'; // Shattered Core of the Prismatic Crater
+
+    // ── CAPITAL AXIAL (Free City & Tower of Five Seals • 9 encounters, Tier 4–5) ──
+    case 'capital_axial':
+      if (ord === 1) return 'tri_purple_green_gold'; // Emerald Embassy
+      if (ord === 2) return 'penta_free_city_sovereign';
+      if (ord === 3) return 'penta_wheel_convergence';
+      if (ord === 4) return 'penta_prismatic_crater';
+      if (ord === 5) return 'penta_free_city_sovereign'; // Ring of Free Companies & Mint
+      if (ord === 6) return 'tri_red_purple_green'; // Umbral Embassy
+      if (ord === 7) return 'tri_red_green_gold'; // Crimson Forge Embassy
+      if (ord === 8) return 'tri_red_blue_gold'; // Sapphire Conclave Embassy (#1 Global!)
+      return 'penta_wheel_convergence'; // Supreme Throne of the Tower of Five Seals
+  }
+
+  return tier >= 5 ? 'penta_free_city_sovereign' : undefined;
+}
+
+function resolveDomainsForAssignedChampion(
+  primarySubmapDomain: Domain,
+  champId: UnifiedChampionId,
+  fallbackDomains: Domain[]
+): Domain[] {
+  let rawDomains: Domain[] = fallbackDomains;
+  const mono = MONOCOLOR_ARCHETYPE_MASTERY[champId as MonocolorArchetypeId];
+  const bi = BICOLOR_ARCHETYPE_MASTERY[champId as BicolorArchetypeId];
+  const poly = POLYCOLOR_ARCHETYPE_MASTERY[champId as PolycolorArchetypeId];
+  if (mono) {
+    rawDomains = [mono.domain];
+  } else if (bi) {
+    rawDomains = [...bi.domains];
+  } else if (poly) {
+    rawDomains = [...poly.domains];
+  }
+
+  // Keep the submap's primary domain at index 0 whenever present so map UI badges/accents match the region!
+  if (rawDomains.includes(primarySubmapDomain)) {
+    return [
+      primarySubmapDomain,
+      ...rawDomains.filter((d) => d !== primarySubmapDomain),
+    ];
+  }
+  return rawDomains;
+}
+
+// Hydrate all 190 Grand Campaign encounters with their Tier-graduated 100-card Co-Evolved Champion Grimoires (all 44 Archetypes)
 for (const node of GRAND_CAMPAIGN_NODES) {
   node.boss.difficultyTier = node.tier;
+  const submapDom = VAELORIA_REGIONAL_MAPS[node.submapId]?.domain ?? node.boss.domains[0] ?? 'neutral';
+  const assignedChamp = resolveGrandCampaignChampionAssignment(node);
+  if (assignedChamp) {
+    node.boss.archetypeId = assignedChamp;
+    node.boss.deckId = assignedChamp;
+    node.boss.domains = resolveDomainsForAssignedChampion(
+      submapDom,
+      assignedChamp,
+      node.boss.domains
+    );
+  }
   const graduated = resolveCampaignBossGraduatedSetup(node.boss);
   node.boss.deckId = graduated.archetypeId;
   node.boss.archetypeId = graduated.archetypeId;

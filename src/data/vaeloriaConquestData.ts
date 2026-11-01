@@ -1,4 +1,5 @@
 import {
+  AiSkillTier,
   ArenaWeatherType,
   BiomeRealmId,
   CampaignBoss,
@@ -6,6 +7,17 @@ import {
   Domain,
   OverworldFieldBuff,
 } from '../types/game';
+import {
+  BICOLOR_ARCHETYPE_MASTERY,
+  BicolorArchetypeId,
+  MONOCOLOR_ARCHETYPE_MASTERY,
+  MonocolorArchetypeId,
+  POLYCOLOR_ARCHETYPE_MASTERY,
+  PolycolorArchetypeId,
+  resolveBicolorArchetypeForDomains,
+  resolveCampaignBossGraduatedSetup,
+} from './aiMonocolorMastery';
+import type { UnifiedChampionId } from './aiUnifiedTournamentData';
 
 export type ConquestFactionId = 'vortex' | 'pyros' | 'eclipse' | 'matrix' | 'solaria' | 'veridia';
 
@@ -2788,6 +2800,153 @@ export function buildConquestBattleModifiers(params: {
   };
 }
 
+const PROVINCE_CHAMPION_MAP: Record<string, UnifiedChampionId> = {
+  // ── VORTEX (Blue) ──
+  prov_vortex_polar_spire: 'tri_red_blue_purple',
+  prov_vortex_west_isles: 'mono_blue_frost',
+  prov_vortex_dead_stars: 'dual_blue_purple',
+  prov_vortex_glass_spires: 'mono_blue_chrono',
+  prov_vortex_sapphire_monolith: 'dual_blue_neutral',
+
+  // ── PYROS (Red) ──
+  prov_pyros_split_anvil: 'tri_red_blue_gold', // #1 Global Zenith Armada
+  prov_pyros_runic_ridge: 'dual_red_neutral',
+  prov_pyros_west_caldera: 'mono_red_blitz',
+  prov_pyros_sky_corridor: 'dual_red_blue',
+  prov_pyros_east_crater: 'mono_red_pyroclasm',
+
+  // ── ECLIPSE (Purple) ──
+  prov_eclipse_obsidian_cathedral: 'tri_red_purple_green',
+  prov_eclipse_abyssal_gorge: 'mono_purple_crypt',
+  prov_eclipse_twilight_scarp: 'tri_red_purple_gold',
+  prov_eclipse_blood_ossuary: 'mono_purple_blood',
+  prov_eclipse_black_marsh: 'dual_purple_green',
+
+  // ── MATRIX (Neutral / Axial) ──
+  prov_matrix_five_seals: 'penta_wheel_convergence',
+  prov_matrix_nw_monolith: 'mono_neutral_axial',
+  prov_matrix_ne_prism: 'penta_free_city_sovereign',
+  prov_matrix_west_ring: 'dual_purple_neutral',
+  prov_matrix_east_tribunal: 'dual_gold_neutral',
+
+  // ── SOLARIA (Gold) ──
+  prov_solaria_great_dome: 'tri_blue_purple_gold',
+  prov_solaria_eternal_reliquary: 'mono_gold_judgment',
+  prov_solaria_dragon_gates: 'dual_red_gold',
+  prov_solaria_zenith_mirrors: 'mono_gold_phalanx',
+  prov_solaria_hanging_gardens: 'dual_green_gold',
+
+  // ── VERIDIA (Green) ──
+  prov_veridia_mother_tree: 'tri_red_green_gold',
+  prov_veridia_thorn_woods: 'mono_green_swarm',
+  prov_veridia_jade_delta: 'dual_blue_green',
+  prov_veridia_fang_peninsula: 'dual_red_green',
+  prov_veridia_emerald_canopy: 'mono_green_roots',
+
+  // ── DEEP FRONTIER: UNDERFORGE (Red) ──
+  prov_underforge_dragon_anvil: 'mono_red_dragon',
+  prov_underforge_slag_cataracts: 'dual_red_purple',
+  prov_underforge_basalt_crucible: 'tri_red_blue_green',
+
+  // ── DEEP FRONTIER: ASTRAL ISLES (Blue) ──
+  prov_astral_maelstrom_eye: 'dual_blue_gold',
+  prov_astral_chronos_beacon: 'mono_blue_abyssal',
+  prov_astral_starwreck_reef: 'tri_blue_purple_green',
+
+  // ── DEEP FRONTIER: SUNKEN ABYSS (Purple) ──
+  prov_abyss_drowned_basilica: 'mono_purple_umbral',
+  prov_abyss_ghostfire_harbor: 'dual_purple_gold',
+  prov_abyss_leviathan_ribs: 'tri_purple_green_gold',
+
+  // ── DEEP FRONTIER: DEEP ROOTS (Green) ──
+  prov_roots_amber_heart: 'mono_green_colossus',
+  prov_roots_spore_sanctuary: 'dual_green_neutral',
+  prov_roots_ironwood_bastion: 'tri_blue_green_gold',
+
+  // ── DEEP FRONTIER: SKY BASTIONS (Gold) ──
+  prov_sky_mirror_cathedral: 'mono_gold_celestial',
+  prov_sky_alabaster_citadel: 'dual_gold_neutral',
+  prov_sky_armada_docks: 'tri_red_blue_gold',
+
+  // ── DEEP FRONTIER: PRISMATIC CRATER (Neutral / Pentachromatic) ──
+  prov_crater_shattered_core: 'penta_prismatic_crater',
+  prov_crater_sapphire_fault: 'tri_red_blue_purple',
+  prov_crater_solar_monoliths: 'penta_wheel_convergence',
+};
+
+const FACTION_APEX_CHAMPION: Record<ConquestFactionId, UnifiedChampionId> = {
+  pyros: 'tri_red_blue_gold',
+  vortex: 'tri_red_blue_purple',
+  eclipse: 'tri_red_purple_green',
+  solaria: 'tri_blue_purple_gold',
+  veridia: 'tri_red_green_gold',
+  matrix: 'penta_wheel_convergence',
+};
+
+export function resolveConquestProvinceSkillTier(
+  province: ConquestProvinceDef,
+  fortificationLevel: number,
+  season: number,
+  isIsolated = false
+): AiSkillTier {
+  let tier: number;
+  if (province.isCapital || province.id === 'prov_crater_shattered_core') {
+    tier = 5;
+  } else if (province.frontierGroup === 'prismatic_crater') {
+    tier = 4 + (fortificationLevel >= 2 || season >= 8 ? 1 : 0);
+  } else if (province.frontierGroup) {
+    tier = 4 + (fortificationLevel >= 2 && season >= 8 ? 1 : 0);
+  } else if (province.initialOwner === 'matrix') {
+    tier = 3 + (fortificationLevel >= 1 ? 1 : 0) + (season >= 7 ? 1 : 0);
+  } else if (province.baseGarrisonHp <= 48 && fortificationLevel === 0 && season <= 2) {
+    tier = 2;
+  } else {
+    tier = 3 + (fortificationLevel >= 2 ? 1 : 0) + (season >= 7 ? 1 : 0);
+  }
+
+  if (isIsolated && !province.isCapital) {
+    tier -= 1;
+  }
+  return Math.max(1, Math.min(5, tier)) as AiSkillTier;
+}
+
+export function resolveConquestChampionForProvince(
+  province: ConquestProvinceDef,
+  ownerFactionId: ConquestFactionId
+): UnifiedChampionId {
+  const faction = CONQUEST_FACTIONS[ownerFactionId];
+  const baseChamp = PROVINCE_CHAMPION_MAP[province.id] ?? 'mono_neutral_axial';
+
+  if (province.isCapital) {
+    return FACTION_APEX_CHAMPION[ownerFactionId] ?? baseChamp;
+  }
+
+  // If conquered by a rival throne of a different domain (outside Prismatic Crater), form a dynamic Pact!
+  if (
+    ownerFactionId !== province.initialOwner &&
+    faction.domain !== province.domain &&
+    province.frontierGroup !== 'prismatic_crater'
+  ) {
+    const dynamicPair = resolveBicolorArchetypeForDomains([faction.domain, province.domain]);
+    if (dynamicPair) return dynamicPair;
+  }
+
+  return baseChamp;
+}
+
+function getDomainsForUnifiedChampion(
+  champId: UnifiedChampionId,
+  fallbackDomains: Domain[]
+): Domain[] {
+  const mono = MONOCOLOR_ARCHETYPE_MASTERY[champId as MonocolorArchetypeId];
+  if (mono) return [mono.domain];
+  const bi = BICOLOR_ARCHETYPE_MASTERY[champId as BicolorArchetypeId];
+  if (bi) return [...bi.domains];
+  const poly = POLYCOLOR_ARCHETYPE_MASTERY[champId as PolycolorArchetypeId];
+  if (poly) return [...poly.domains];
+  return fallbackDomains;
+}
+
 export function buildConquestBossForProvince(
   province: ConquestProvinceDef,
   ownerFactionId: ConquestFactionId,
@@ -2801,20 +2960,39 @@ export function buildConquestBossForProvince(
   const isolationPenalty = isIsolated ? -4 : 0;
   const totalHp = Math.max(30, province.baseGarrisonHp + fortBonusHp + seasonScale + isolationPenalty);
 
-  return {
+  const skillTier = resolveConquestProvinceSkillTier(
+    province,
+    fortificationLevel,
+    season,
+    isIsolated
+  );
+  const champId = resolveConquestChampionForProvince(province, ownerFactionId);
+  const champDomains = getDomainsForUnifiedChampion(champId, [faction.domain, province.domain]);
+
+  const rawBoss: CampaignBoss = {
     id: `conquest_${province.id}_s${season}`,
     stage: season,
     name: province.isCapital ? faction.rulerName : province.garrisonCommander,
     title: `${faction.shortName} • ${province.name}${
       fortificationLevel > 0 ? ` (Bastião Nv.${fortificationLevel})` : ''
     }${isIsolated ? ' • Isolada' : ''}`,
-    domains: [faction.domain, province.domain],
+    domains: champDomains,
     avatarCardId: province.isCapital ? faction.avatarCardId : province.garrisonAvatarCardId,
     startingHp: totalHp,
     passiveName: province.isCapital ? faction.imperialDoctrineName : province.strategicBonusTitle,
     passiveDescription: province.strategicBonusDesc,
-    rewardGold: province.frontierGroup ? 15 : 10,
+    rewardGold: province.isCapital ? 25 : province.frontierGroup ? 15 : 10,
     loreIntro: province.loreSnippet,
-    deckId: province.isCapital ? faction.defaultDeckId : province.garrisonDeckId,
+    deckId: champId,
+    archetypeId: champId,
+    difficultyTier: skillTier,
   };
+
+  const graduated = resolveCampaignBossGraduatedSetup(rawBoss);
+  rawBoss.deckId = graduated.archetypeId;
+  rawBoss.archetypeId = graduated.archetypeId;
+  rawBoss.archetypeTitle = graduated.archetypeTitle;
+  rawBoss.customDeckCardIds = graduated.cardIds;
+
+  return rawBoss;
 }

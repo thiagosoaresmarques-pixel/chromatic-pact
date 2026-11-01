@@ -10,6 +10,9 @@ import { PREBUILT_DECKS } from '../data/decks';
 import { playSfx } from '../utils/soundEngine';
 import { CardInspectModal, DOMAIN_META } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
+import { TacticalGuideView } from './TacticalGuideView';
+import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import { ActiveInvasionVector, ConquestMegamap } from './ConquestMegamap';
 import {
   CONQUEST_CRISES,
@@ -178,6 +181,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
   const [bannerToast, setBannerToast] = useState<string | null>(null);
   const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(true);
   const [showDiplomacyModal, setShowDiplomacyModal] = useState<boolean>(false);
+  const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -1064,6 +1068,36 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
         ? selectedOwnerFaction.avatarCardId
         : selectedProvince.garrisonAvatarCardId
     ];
+  const selectedProvinceBossPreview = useMemo(
+    () =>
+      buildConquestBossForProvince(
+        selectedProvince,
+        selectedOwnerId,
+        selectedFortLvl,
+        runState.season,
+        allIsolatedProvinceIds.has(selectedProvince.id)
+      ),
+    [selectedProvince, selectedOwnerId, selectedFortLvl, runState.season, allIsolatedProvinceIds]
+  );
+  const selectedStanding = useMemo(
+    () =>
+      getUnifiedStandingForDeckId(
+        selectedProvinceBossPreview.archetypeId ?? selectedProvinceBossPreview.deckId
+      ),
+    [selectedProvinceBossPreview.archetypeId, selectedProvinceBossPreview.deckId]
+  );
+  const defenseAlarmBossPreview = useMemo(() => {
+    const alarm = runState.pendingDefenseAlarm;
+    if (!alarm) return null;
+    const fromProv = CONQUEST_PROVINCES_BY_ID[alarm.fromProvinceId];
+    if (!fromProv) return null;
+    return buildConquestBossForProvince(
+      fromProv,
+      alarm.attackerFactionId,
+      0,
+      runState.season
+    );
+  }, [runState.pendingDefenseAlarm, runState.season]);
 
   return (
     <div
@@ -1312,6 +1346,15 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 </strong>
                 <span>
                   Lute pessoalmente na Arena com os bônus de Bastião da sua província ou delegue a defesa à Guarnição local.
+                  {defenseAlarmBossPreview?.archetypeTitle && (
+                    <>
+                      {' '}• Força Invasora:{' '}
+                      <strong style={{ color: '#fde68a' }}>
+                        {AI_SKILL_TIER_SPECS[(defenseAlarmBossPreview.difficultyTier ?? 3)].shortLabel} —{' '}
+                        {defenseAlarmBossPreview.archetypeTitle}
+                      </strong>
+                    </>
+                  )}
                 </span>
               </div>
               <div className="cda-actions">
@@ -1397,7 +1440,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
               </div>
 
               <div className="aaa-dossier-content">
-                <div className="aaa-dossier-meta-row">
+                <div className="aaa-dossier-meta-row" style={{ flexWrap: 'wrap', gap: 6 }}>
                   <span
                     className="aaa-dossier-stage-pill"
                     style={{ borderColor: selectedOwnerFaction.color, color: selectedOwnerFaction.color }}
@@ -1408,12 +1451,63 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                   <span className="aaa-domain-tag">
                     {selectedProvince.terrainLabel}
                   </span>
+                  {selectedProvinceBossPreview.domains.map((domKey) => (
+                    <span key={domKey} className="aaa-domain-tag">
+                      <i
+                        className="aaa-domain-dot"
+                        style={{ backgroundColor: DOMAIN_META[domKey].color }}
+                      />
+                      {DOMAIN_META[domKey].shortName}
+                    </span>
+                  ))}
                 </div>
 
                 <h2 className="font-cinzel aaa-dossier-title" style={{ fontSize: '1.22rem' }}>
                   {selectedProvince.name}
                 </h2>
                 <div className="aaa-dossier-subtitle">{selectedProvince.regionLabel}</div>
+
+                {(() => {
+                  const bossTier = selectedProvinceBossPreview.difficultyTier ?? 3;
+                  const tSpec = AI_SKILL_TIER_SPECS[bossTier];
+                  const aiModeBadge =
+                    tSpec.beamDepth > 1
+                      ? `Value MLP + Beam (${tSpec.beamWidth}×${tSpec.beamDepth})`
+                      : tSpec.useValueMlp
+                        ? 'Value MLP Neural'
+                        : 'Heurística Tática';
+                  return (
+                    <div
+                      className="vwm-dossier-geo-badge"
+                      style={{
+                        marginTop: 6,
+                        marginBottom: 4,
+                        borderColor: 'rgba(212, 175, 55, 0.35)',
+                        background: 'rgba(15, 23, 42, 0.72)',
+                        flexWrap: 'wrap',
+                      }}
+                      title={tSpec.description}
+                    >
+                      <span>🧠 {tSpec.shortLabel} ({aiModeBadge})</span>
+                      {selectedProvinceBossPreview.archetypeTitle && (
+                        <>
+                          <span>•</span>
+                          <strong style={{ color: '#fde68a' }}>
+                            {selectedProvinceBossPreview.archetypeTitle}
+                          </strong>
+                        </>
+                      )}
+                      {selectedStanding && (
+                        <>
+                          <span>•</span>
+                          <span style={{ color: '#93c5fd', fontWeight: 700 }}>
+                            Rank #{selectedStanding.rank}/44 [Tier {selectedStanding.tierBadge}]
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <blockquote className="aaa-dossier-quote">{selectedProvince.loreSnippet}</blockquote>
 
@@ -1547,6 +1641,17 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                       {selectedFortLvl >= 2
                         ? 'Bastião Máximo (Nv.2)'
                         : `Erguer Bastião Nv.${selectedFortLvl + 1} (${BASTION_BUILD_COST} Supr.)`}
+                    </button>
+                  )}
+
+                  {!isSelectedPlayerOwned && (
+                    <button
+                      type="button"
+                      className="aaa-btn aaa-btn-secondary"
+                      onClick={() => setShowTacticalGuideModal(true)}
+                      title="Consultar Matchup e contra-jogadas no Oráculo de Guerra"
+                    >
+                      Matchup
                     </button>
                   )}
 
@@ -1705,6 +1810,18 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {showTacticalGuideModal && (
+        <TacticalGuideView
+          customDecks={customDecks}
+          initialPlayerDeckId={runState.selectedDeckId}
+          initialOpponentDeckId={
+            selectedProvinceBossPreview.archetypeId ?? selectedProvinceBossPreview.deckId
+          }
+          isModal={true}
+          onClose={() => setShowTacticalGuideModal(false)}
+        />
       )}
 
       {inspectCard && (

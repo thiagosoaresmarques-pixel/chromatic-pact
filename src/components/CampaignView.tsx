@@ -3,6 +3,7 @@ import { AiSkillTier, CampaignBoss, CardDefinition, Domain } from '../types/game
 import { CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import { DOMAIN_META, CardInspectModal } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
@@ -235,7 +236,6 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const activeBossCard = activeBoss ? CARDS_BY_ID[activeBoss.avatarCardId] : undefined;
   const companionBossCard =
     activeBoss?.companionCardId ? CARDS_BY_ID[activeBoss.companionCardId] : undefined;
-  const activePrimaryDomain = resolvePrimaryBossDomain(activeBoss?.domains);
   const activeSubmapDef = activeGcNode
     ? VAELORIA_REGIONAL_MAPS[activeGcNode.submapId]
     : null;
@@ -391,6 +391,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               const dom = resolvePrimaryBossDomain(boss.domains);
               const gcn = GRAND_CAMPAIGN_NODES_BY_ID[boss.id];
               const rdef = gcn ? VAELORIA_REGIONAL_MAPS[gcn.submapId] : null;
+              const rowStanding = getUnifiedStandingForDeckId(boss.archetypeId ?? boss.deckId);
 
               return (
                 <div
@@ -411,6 +412,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                     <div className="aaa-boss-row-top">
                       <span className="aaa-boss-stage-num">
                         TIER {gcn?.tier ?? boss.difficultyTier ?? 1} • #{boss.stage}
+                        {rowStanding ? ` • Rank #${rowStanding.rank} [${rowStanding.tierBadge}]` : ''}
                       </span>
                       {isDefeated ? (
                         <span className="aaa-boss-cleared-tag">✓</span>
@@ -421,6 +423,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                     <div className="font-cinzel aaa-boss-row-name">{boss.name}</div>
                     <div className="aaa-boss-row-geo">
                       {rdef ? `${rdef.shortName} • ` : ''}
+                      {boss.archetypeTitle ? `${boss.archetypeTitle} • ` : ''}
                       {gcn?.landmarkName ?? boss.landmarkName ?? ''}
                     </div>
                   </div>
@@ -485,17 +488,19 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             </div>
 
             <div className="aaa-dossier-content">
-              <div className="aaa-dossier-meta-row">
+              <div className="aaa-dossier-meta-row" style={{ flexWrap: 'wrap', gap: 6 }}>
                 <span className="aaa-dossier-stage-pill">
                   {TIER_ROMAN[activeGcNode?.tier ?? activeBoss.difficultyTier ?? 1]}
                 </span>
-                <span className="aaa-domain-tag">
-                  <i
-                    className="aaa-domain-dot"
-                    style={{ backgroundColor: DOMAIN_META[activePrimaryDomain].color }}
-                  />
-                  {DOMAIN_META[activePrimaryDomain].shortName}
-                </span>
+                {activeBoss.domains.map((domKey) => (
+                  <span key={domKey} className="aaa-domain-tag">
+                    <i
+                      className="aaa-domain-dot"
+                      style={{ backgroundColor: DOMAIN_META[domKey].color }}
+                    />
+                    {DOMAIN_META[domKey].shortName}
+                  </span>
+                ))}
               </div>
 
               <h2 className="font-cinzel aaa-dossier-title">{activeBoss.name}</h2>
@@ -512,6 +517,15 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               {(() => {
                 const bossTier = ((activeGcNode?.tier ?? activeBoss.difficultyTier ?? 1) as AiSkillTier);
                 const tSpec = AI_SKILL_TIER_SPECS[bossTier];
+                const standing = getUnifiedStandingForDeckId(
+                  activeBoss.archetypeId ?? activeBoss.deckId
+                );
+                const aiModeBadge =
+                  tSpec.beamDepth > 1
+                    ? `Value MLP + Beam (${tSpec.beamWidth}×${tSpec.beamDepth})`
+                    : tSpec.useValueMlp
+                      ? 'Value MLP Neural'
+                      : 'Heurística Tática';
                 return (
                   <div
                     className="vwm-dossier-geo-badge"
@@ -519,16 +533,25 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                       marginTop: 4,
                       borderColor: 'rgba(212, 175, 55, 0.35)',
                       background: 'rgba(15, 23, 42, 0.72)',
+                      flexWrap: 'wrap',
                     }}
                     title={tSpec.description}
                   >
-                    <span>🧠 {tSpec.shortLabel}</span>
+                    <span>🧠 {tSpec.shortLabel} ({aiModeBadge})</span>
                     {activeBoss.archetypeTitle && (
                       <>
                         <span>•</span>
                         <strong style={{ color: '#fde68a' }}>
-                          {activeBoss.archetypeTitle} (100 Cartas)
+                          {activeBoss.archetypeTitle}
                         </strong>
+                      </>
+                    )}
+                    {standing && (
+                      <>
+                        <span>•</span>
+                        <span style={{ color: '#93c5fd', fontWeight: 700 }}>
+                          Rank #{standing.rank}/44 [Tier {standing.tierBadge}]
+                        </span>
                       </>
                     )}
                   </div>
@@ -636,7 +659,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
         <TacticalGuideView
           customDecks={customDecks}
           initialPlayerDeckId={selectedDeckId}
-          initialOpponentDeckId={activeBoss.deckId}
+          initialOpponentDeckId={activeBoss.archetypeId ?? activeBoss.deckId}
           isModal={true}
           onClose={() => setShowTacticalGuideModal(false)}
         />

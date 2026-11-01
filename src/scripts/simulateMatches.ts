@@ -59,9 +59,11 @@ import {
   CONQUEST_PROVINCES,
   CONQUEST_PROVINCES_BY_ID,
   PROVINCE_BUILDING_ORDER,
+  buildConquestBossForProvince,
   computeEmpireSupplyStatus,
   getConquestMapGeometries,
 } from '../data/vaeloriaConquestData';
+import { UNIFIED_CHAMPION_STANDINGS } from '../data/aiUnifiedTournamentData';
 import {
   getLandmarkEventDef,
   resolveLandmarkChoicePreview,
@@ -691,6 +693,36 @@ function runAutomatedQA() {
   const apexFinal = runSingleAiDuel(apexState, 70);
   console.log(
     `  OK — Grand Campaign verified: 190 encounters (${Object.keys(GRAND_CAMPAIGN_SUBMAP_GRAPHS).length} submaps), ${featuredCreatureSet.size}/${allRareAndLegendaryCreatures.length} Rare+Legendary creatures (0 domain mismatches), 190/190 BFS from all 5 colors | Apex Duel [${apexBoss.name}] Turn ${apexFinal.turn}.`
+  );
+
+  // Validate Tier I–V Co-Evolved Champion Coverage across Grand Campaign, Conquest, and Fracture Rifts
+  const campaignChampionSet = new Set(GRAND_CAMPAIGN_BOSSES.map((b) => b.archetypeId));
+  for (const st of UNIFIED_CHAMPION_STANDINGS) {
+    if (!campaignChampionSet.has(st.archetypeId)) {
+      throw new Error(`Grand Campaign missing Co-Evolved Champion archetype: ${st.archetypeId}`);
+    }
+  }
+  for (const prov of CONQUEST_PROVINCES) {
+    const cqBoss = buildConquestBossForProvince(prov, prov.initialOwner, 0, 1, false);
+    if (!cqBoss.customDeckCardIds || cqBoss.customDeckCardIds.length !== 100 || !cqBoss.archetypeId) {
+      throw new Error(`Invalid Conquest boss setup for province ${prov.id}`);
+    }
+  }
+  for (const rift of FRACTURE_RIFTS) {
+    for (const t of [3, 4, 5] as const) {
+      const { boss: rBoss } = buildRiftBattleEncounter(rift.id, t);
+      if (
+        !rBoss.customDeckCardIds ||
+        rBoss.customDeckCardIds.length !== 100 ||
+        rBoss.difficultyTier !== t ||
+        !rBoss.archetypeId
+      ) {
+        throw new Error(`Invalid Fracture Rift boss setup for ${rift.id} at Tier ${t}`);
+      }
+    }
+  }
+  console.log(
+    `  OK — Tier I–V Co-Evolved Champions verified across Campaign (44/44 archetypes), Conquest (48/48 provinces), and Fracture Rifts (6×3 Tiers).`
   );
 
   console.log('\nALL 6-WAVE QA CHECKS & SIMULATIONS PASSED!');

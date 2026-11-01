@@ -1,9 +1,25 @@
-import { CampaignBoss, ConquestBattleModifiers, Domain, RiftMutatorId } from '../types/game';
+import {
+  AiSkillTier,
+  CampaignBoss,
+  ConquestBattleModifiers,
+  Domain,
+  RiftMutatorId,
+} from '../types/game';
 import { CAMPAIGN_BOSSES, PREBUILT_DECKS } from './decks';
+import { resolveCampaignBossGraduatedSetup } from './aiMonocolorMastery';
+import type { UnifiedChampionId } from './aiUnifiedTournamentData';
 
 export const WEEKLY_RIFT_GOLD_BONUS = 45;
 export const WEEKLY_RIFT_SHARDS_BONUS = 25;
 export const STANDARD_RIFT_WIN_GOLD = 15;
+
+export const RIFT_TIER_GOLD_REWARD: Record<AiSkillTier, number> = {
+  1: 10,
+  2: 12,
+  3: 15,
+  4: 20,
+  5: 25,
+};
 
 const RIFT_PROGRESS_STORAGE_KEY = 'chromatic_pact_fracture_rifts_v1';
 
@@ -13,6 +29,8 @@ export interface FractureRiftDef {
   kicker: string;
   icon: string;
   domain: Domain;
+  domains: Domain[];
+  archetypeId: UnifiedChampionId;
   accent: string;
   shortRule: string;
   detailedRule: string;
@@ -31,15 +49,17 @@ export const FRACTURE_RIFTS: FractureRiftDef[] = [
     kicker: 'FENDA DE HIPER-ESSÊNCIA',
     icon: '⚡',
     domain: 'blue',
+    domains: ['blue', 'red', 'green'],
+    archetypeId: 'tri_red_blue_green',
     accent: '#38bdf8',
     shortRule: 'Início com 6⚡, +2⚡/rodada (teto 12⚡) e +1 carta comprada por turno.',
     detailedRule:
       'As linhas de força planar transbordam: ambos os Soberanos iniciam com 6⚡ de Essência, ganham +2⚡ de Essência máxima a cada rodada (até 12⚡) e compram +1 carta extra por turno.',
     tacticalTip: 'Inclua titãs de custo alto, combos de múltiplos feitiços e compras explosivas.',
     challengerName: 'Aethon, Senhor da Torrente',
-    challengerTitle: 'Arconte da Fenda Safira',
+    challengerTitle: 'Arconte da Tormenta Primordial',
     challengerAvatarId: 'blue_06_dragao_azul',
-    challengerDeckId: 'deck_blue_tempest',
+    challengerDeckId: 'deck_tri_tempest_primordial',
     challengerHp: 44,
   },
   {
@@ -48,15 +68,17 @@ export const FRACTURE_RIFTS: FractureRiftDef[] = [
     kicker: 'FENDA DE CONVERGÊNCIA LENDÁRIA',
     icon: '👑',
     domain: 'gold',
+    domains: ['gold', 'red', 'blue', 'purple', 'green'],
+    archetypeId: 'penta_prismatic_crater',
     accent: '#facc15',
     shortRule: 'Cartas Lendárias custam -2⚡ de Essência e entram com +1 ATQ / +1 PV.',
     detailedRule:
       'Os antigos tronos respondem ao chamado: todas as cartas de raridade Lendária custam -2⚡ de Essência (mínimo 1⚡) e criaturas Lendárias entram em campo fortalecidas com +1/+1.',
     tacticalTip: 'Maximize suas 10 Lendas no Grimório para dominar o tabuleiro cedo.',
     challengerName: 'Aurion, Vigia do Panteão',
-    challengerTitle: 'Regente das Dez Coroas',
+    challengerTitle: 'Regente Pentacromático das Dez Coroas',
     challengerAvatarId: 'gold_09_serafim_solar',
-    challengerDeckId: 'deck_gold_bastion',
+    challengerDeckId: 'deck_spec_pentachromatic',
     challengerHp: 46,
   },
   {
@@ -65,15 +87,17 @@ export const FRACTURE_RIFTS: FractureRiftDef[] = [
     kicker: 'FENDA DE TEMPESTADE PERPÉTUA',
     icon: '🌪️',
     domain: 'red',
+    domains: ['red', 'blue', 'purple', 'green', 'gold'],
+    archetypeId: 'penta_wheel_convergence',
     accent: '#f97316',
     shortRule: 'O Clima Planar nunca expira e transmuta entre os 6 Climas a cada rodada.',
     detailedRule:
       'Cinzas rubras, nevascas astrais, eclipses e monções se alternam sem cessar: no início de cada rodada, a arena transmuta para um novo Clima Elemental ativo para ambos os lados.',
     tacticalTip: 'Adapte sua postura (Ataque/Bastião) conforme o clima da rodada atual.',
     challengerName: 'Ignarok da Fenda Vulcânica',
-    challengerTitle: 'Arauto das Seis Tormentas',
+    challengerTitle: 'Arauto da Roda das Seis Tormentas',
     challengerAvatarId: 'red_08_dragao_vermelho',
-    challengerDeckId: 'deck_red_inferno',
+    challengerDeckId: 'deck_penta_wheel_convergence',
     challengerHp: 44,
   },
   {
@@ -82,15 +106,17 @@ export const FRACTURE_RIFTS: FractureRiftDef[] = [
     kicker: 'FENDA DE MORTE SÚBITA REAL',
     icon: '🩸',
     domain: 'red',
+    domains: ['red', 'neutral'],
+    archetypeId: 'dual_red_neutral',
     accent: '#ef4444',
     shortRule: 'Ambos os Soberanos têm 20 PV; todas as criaturas ganham +2 ATQ e Ímpeto.',
     detailedRule:
       'Nenhum bastião está seguro: os dois Soberanos iniciam com apenas 20 PV, enquanto toda criatura invocada entra em campo com +2 ATQ e Ímpeto imediato.',
     tacticalTip: 'Guardiões na Vanguarda, Escudo Divino e Reações de emboscada decidem em poucos turnos!',
     challengerName: 'Kaelen, Lâmina de Cristal',
-    challengerTitle: 'Executor da Fenda Carmesim',
+    challengerTitle: 'Executor da Legião Mercenária Rubra',
     challengerAvatarId: 'red_119_soberano_piroclasma',
-    challengerDeckId: 'deck_red_inferno',
+    challengerDeckId: 'deck_dual_red_neutral',
     challengerHp: 20,
   },
   {
@@ -99,15 +125,17 @@ export const FRACTURE_RIFTS: FractureRiftDef[] = [
     kicker: 'FENDA DA FORJA ANCESTRAL',
     icon: '🏛️',
     domain: 'gold',
+    domains: ['gold', 'blue', 'red'],
+    archetypeId: 'tri_red_blue_gold',
     accent: '#f59e0b',
     shortRule: 'Relíquias custam -2⚡ de Essência e concedem +1🛡️ Armadura na mesma coluna.',
     detailedRule:
       'Os autômatos primordiais despertaram: cartas do tipo Relíquia custam -2⚡ de Essência (mínimo 0⚡) e concedem +1🛡️ de Armadura adicional a todas as criaturas aliadas na mesma coluna.',
     tacticalTip: 'Posicione Relíquias na Retaguarda atrás dos seus Guardiões principais.',
     challengerName: 'Vaelgor, Arquiteto de Bronze',
-    challengerTitle: 'Mestre das Relíquias Vivas',
+    challengerTitle: 'Almirante da Armada do Zênite (#1 Global)',
     challengerAvatarId: 'gold_07_dragao_ouro',
-    challengerDeckId: 'deck_gold_bastion',
+    challengerDeckId: 'deck_tri_zenith_armada',
     challengerHp: 45,
   },
   {
@@ -116,15 +144,17 @@ export const FRACTURE_RIFTS: FractureRiftDef[] = [
     kicker: 'FENDA DA CRIPTA DESPERTA',
     icon: '💀',
     domain: 'purple',
+    domains: ['purple', 'red', 'green'],
+    archetypeId: 'tri_red_purple_green',
     accent: '#a855f7',
     shortRule: 'Todas as criaturas invocadas recebem a palavra-chave Renascer.',
     detailedRule:
       'O véu entre a vida e a Cripta foi rasgado: toda criatura invocada por qualquer Soberano recebe automaticamente Renascer, retornando com 1 PV na primeira vez em que for destruída.',
     tacticalTip: 'Efeitos de morte (on_death), Atropelar e Sopro Elemental brilham contra fileiras imortais.',
     challengerName: 'Morvath do Eclipse Eterno',
-    challengerTitle: 'Soberano da Fenda Umbral',
+    challengerTitle: 'Soberano da Lua Sangrenta',
     challengerAvatarId: 'purple_08_lorde_abissal',
-    challengerDeckId: 'deck_purple_abyss',
+    challengerDeckId: 'deck_tri_blood_moon',
     challengerHp: 44,
   },
 ];
@@ -210,37 +240,70 @@ export function recordRiftVictory(riftId: RiftMutatorId): {
   return { progress: next, awardedWeeklyBonus };
 }
 
-export function buildRiftBattleEncounter(riftId: RiftMutatorId): {
+export function resolveDefaultRiftSkillTier(
+  riftId: RiftMutatorId,
+  clears = 0
+): AiSkillTier {
+  const isWeekly = getWeeklyFeaturedRift().id === riftId;
+  if (clears >= 3) return 5;
+  if (isWeekly || clears >= 1) return 4;
+  return 3;
+}
+
+export function buildRiftBattleEncounter(
+  riftId: RiftMutatorId,
+  overrideTier?: AiSkillTier
+): {
   boss: CampaignBoss;
   modifiers: ConquestBattleModifiers;
 } {
   const rift = FRACTURE_RIFTS_BY_ID[riftId] ?? FRACTURE_RIFTS[0];
+  const progress = loadRiftProgress();
+  const clears = progress.clearedRiftCounts[rift.id] ?? 0;
+  const skillTier: AiSkillTier = overrideTier ?? resolveDefaultRiftSkillTier(rift.id, clears);
   const validDeck =
     PREBUILT_DECKS.find((d) => d.id === rift.challengerDeckId)?.id ??
     CAMPAIGN_BOSSES[0]?.deckId ??
     PREBUILT_DECKS[0].id;
 
+  const hpScaleByTier =
+    rift.id === 'glass_thrones'
+      ? 0
+      : skillTier >= 5
+        ? 4
+        : skillTier === 4
+          ? 2
+          : 0;
+
   const boss: CampaignBoss = {
-    id: `rift_boss_${rift.id}`,
-    stage: 1,
+    id: `rift_boss_${rift.id}_t${skillTier}`,
+    stage: skillTier >= 5 ? 25 : skillTier === 4 ? 15 : 6,
     name: rift.challengerName,
     title: `${rift.icon} ${rift.name} • ${rift.challengerTitle}`,
-    domains: [rift.domain],
+    domains: rift.domains,
     avatarCardId: rift.challengerAvatarId,
-    startingHp: rift.challengerHp,
+    startingHp: rift.challengerHp + hpScaleByTier,
     passiveName: `Mutador: ${rift.name}`,
     passiveDescription: rift.shortRule,
-    rewardGold: STANDARD_RIFT_WIN_GOLD,
+    rewardGold: RIFT_TIER_GOLD_REWARD[skillTier] ?? STANDARD_RIFT_WIN_GOLD,
     loreIntro: rift.detailedRule,
-    deckId: validDeck,
+    deckId: rift.archetypeId ?? validDeck,
+    archetypeId: rift.archetypeId,
+    difficultyTier: skillTier,
   };
+
+  const graduated = resolveCampaignBossGraduatedSetup(boss);
+  boss.deckId = graduated.archetypeId;
+  boss.archetypeId = graduated.archetypeId;
+  boss.archetypeTitle = graduated.archetypeTitle;
+  boss.customDeckCardIds = graduated.cardIds;
 
   const modifiers: ConquestBattleModifiers = {
     provinceId: `rift_${rift.id}`,
     provinceName: `Fenda: ${rift.name}`,
     provinceDomain: rift.domain,
     isDefensiveSiege: false,
-    isCapitalSiege: false,
+    isCapitalSiege: skillTier >= 5,
     playerBonusHp: 0,
     playerBonusEssence: 0,
     enemyOpeningDamage: 0,

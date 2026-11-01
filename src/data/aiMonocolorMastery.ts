@@ -527,6 +527,48 @@ export function resolveCampaignBossGraduatedSetup(boss: CampaignBoss): {
   const signatureIds = [boss.avatarCardId];
   if (boss.companionCardId) signatureIds.push(boss.companionCardId);
 
+  const explicitId = boss.archetypeId || boss.deckId;
+  if (explicitId) {
+    if (explicitId in MONOCOLOR_ARCHETYPE_MASTERY) {
+      const m = MONOCOLOR_ARCHETYPE_MASTERY[explicitId as MonocolorArchetypeId];
+      const tDeck = m?.tierDecks?.[skillTier] ?? m?.tierDecks?.[5];
+      if (m && tDeck && tDeck.cardIds.length === DECK_SIZE) {
+        return {
+          cardIds: injectSignatureCardsInto100Deck(tDeck.cardIds, signatureIds),
+          archetypeId: m.archetypeId,
+          archetypeTitle: m.name,
+          skillTier,
+        };
+      }
+    }
+    const explicitBi = resolveBicolorArchetypeForDeckId(explicitId);
+    if (explicitBi) {
+      const biMastery = BICOLOR_ARCHETYPE_MASTERY[explicitBi];
+      const biTierDeck = biMastery?.tierDecks?.[skillTier] ?? biMastery?.tierDecks?.[5];
+      if (biMastery && biTierDeck && biTierDeck.cardIds.length === DECK_SIZE) {
+        return {
+          cardIds: injectSignatureCardsInto100Deck(biTierDeck.cardIds, signatureIds),
+          archetypeId: explicitBi,
+          archetypeTitle: biMastery.name,
+          skillTier,
+        };
+      }
+    }
+    const explicitPoly = resolvePolycolorArchetypeForDeckId(explicitId);
+    if (explicitPoly) {
+      const polyMastery = POLYCOLOR_ARCHETYPE_MASTERY[explicitPoly];
+      const polyTierDeck = polyMastery?.tierDecks?.[skillTier] ?? polyMastery?.tierDecks?.[5];
+      if (polyMastery && polyTierDeck && polyTierDeck.cardIds.length === DECK_SIZE) {
+        return {
+          cardIds: injectSignatureCardsInto100Deck(polyTierDeck.cardIds, signatureIds),
+          archetypeId: explicitPoly,
+          archetypeTitle: polyMastery.name,
+          skillTier,
+        };
+      }
+    }
+  }
+
   if (boss.domains.length === 2) {
     const biArchId =
       resolveBicolorArchetypeForDomains(boss.domains) ??

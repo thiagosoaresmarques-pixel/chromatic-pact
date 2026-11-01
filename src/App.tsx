@@ -960,14 +960,18 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
-  const handleStartRiftBattle = (riftId: RiftMutatorId, playerDeckCardIds: string[]) => {
+  const handleStartRiftBattle = (
+    riftId: RiftMutatorId,
+    playerDeckCardIds: string[],
+    aiSkillTier?: AiSkillTier
+  ) => {
     trackAdsEvent('start_duel', { mode: 'fracture_rift', riftId, isGuest });
     try {
       localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
     } catch {
       // Ignore
     }
-    const { boss, modifiers } = buildRiftBattleEncounter(riftId);
+    const { boss, modifiers } = buildRiftBattleEncounter(riftId, aiSkillTier);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(false);
@@ -985,8 +989,9 @@ export const App: React.FC = () => {
     if (activeRiftId) {
       const { awardedWeeklyBonus } = recordRiftVictory(activeRiftId);
       const riftDef = FRACTURE_RIFTS_BY_ID[activeRiftId];
+      const baseRiftGold = boss.rewardGold ?? STANDARD_RIFT_WIN_GOLD;
       const goldEarned =
-        STANDARD_RIFT_WIN_GOLD + (awardedWeeklyBonus ? WEEKLY_RIFT_GOLD_BONUS : 0);
+        baseRiftGold + (awardedWeeklyBonus ? WEEKLY_RIFT_GOLD_BONUS : 0);
       const shardsEarned = awardedWeeklyBonus ? WEEKLY_RIFT_SHARDS_BONUS : 0;
 
       if (!isGuest) {

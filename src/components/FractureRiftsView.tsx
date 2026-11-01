@@ -161,7 +161,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
             </div>
 
             <div className="rifts-deck-picker">
-              <label htmlFor="rift-tier-select">Maestria do Guardião (IA)</label>
+              <label htmlFor="rift-tier-select">Maestria do Soberano</label>
               <select
                 id="rift-tier-select"
                 className="rifts-select"

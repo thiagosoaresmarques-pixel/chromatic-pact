@@ -511,7 +511,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
                       fontWeight: 800,
                       letterSpacing: '0.04em',
                     }}
-                    title={`Nota do Oráculo no Crisol (3.600 duelos simulados): Tier ${p.tier} • Score ${p.score.toFixed(1)}`}
+                    title={`Avaliação no Crisol: Grau ${p.tier} · Afinidade ${p.score.toFixed(1)}`}
                   >
                     <span>🔮 Pick {p.tier}</span>
                     <span style={{ opacity: 0.8 }}>({Math.round(p.score)})</span>

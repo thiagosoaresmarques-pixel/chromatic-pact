@@ -732,7 +732,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 {stats.totalArenaWins + stats.totalPvpMatches}
               </div>
               <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
-                {stats.totalArenaWins} vitórias IA • {stats.totalPvpMatches} duelos PvP
+                {stats.totalArenaWins} vitórias contra Soberanos • {stats.totalPvpMatches} duelos PvP
               </div>
             </div>
 
@@ -1413,7 +1413,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   <th style={{ padding: '0.85rem 0.75rem' }}>E-mail</th>
                   <th style={{ padding: '0.85rem 0.75rem' }}>Ouro</th>
                   <th style={{ padding: '0.85rem 0.75rem' }}>Elo</th>
-                  <th style={{ padding: '0.85rem 0.75rem' }}>Combates (PvP / IA)</th>
+                  <th style={{ padding: '0.85rem 0.75rem' }}>Combates (PvP / Soberanos)</th>
                   <th style={{ padding: '0.85rem 0.75rem' }}>Grimórios / Chefes</th>
                   <th style={{ padding: '0.85rem 0.75rem' }}>Última Atividade</th>
                   <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Ações</th>
@@ -1490,7 +1490,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           {p.eloRating ?? 1200}
                         </td>
                         <td style={{ padding: '0.75rem', color: '#cbd5e1' }}>
-                          {p.pvpWins ?? 0}V/{p.pvpLosses ?? 0}D PvP • {p.arenaWins ?? 0}V IA
+                          {p.pvpWins ?? 0}V/{p.pvpLosses ?? 0}D PvP • {p.arenaWins ?? 0}V Soberanos
                         </td>
                         <td style={{ padding: '0.75rem', color: '#cbd5e1' }}>
                           {p.customDecks?.length ?? 0} deck(s) • {p.defeatedBossIds?.length ?? 0}/{CAMPAIGN_BOSSES.length} chefes
@@ -1927,7 +1927,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   title: '+160 Ouro de Boas-Vindas & +500 Cartas no Navegador',
                   hook: '0–3s (Gancho): "Quer jogar um TCG completo com mais de 500 cartas sem instalar 10 GB no celular ou PC?"',
                   scene: '3–15s (Tela): Mostre a abertura de um Pacote Místico no Mercado revelando uma carta Mítica e os 5 Grimórios Soberanos prontos.',
-                  cta: '15–20s (CTA): "Crie sua conta gratuita agora e receba +160 de Ouro + 5 Decks completos para duelar contra a IA ou 1×1!"',
+                  cta: '15–20s (CTA): "Crie sua conta gratuita agora e receba +160 de Ouro + 5 Decks completos para duelar contra os Soberanos ou 1×1!"',
                   caption:
                     'Mais de 500 cartas originais, 7 Chefes de Campanha, 100 Problemas Táticos e Duelos 1×1 direto no navegador — sem precisar baixar nada! 👑🐉 Crie sua conta Soberana grátis e comece com +160 de Ouro no link da bio (chromaticpact.com)! #jogosgratis #browsergames #cardgames #dndbrasil #fantasia #gamerbrasil #chromaticpact',
                 },

@@ -516,7 +516,7 @@ export function analyzeMatchupPair(
   // General Tactics against enemy structure (100-card decks)
   let generalTactics = '';
   if (e.counts.creature >= 65) {
-    generalTactics = `${e.deck.name} joga com ${e.counts.creature} criaturas (${e.pcts.creature}% do baralho de 100 cartas) e apenas ${e.counts.spell} feitiços. Ele tentará inundar a Vanguarda [V] e ganhar +1 ATQ de Invasão. Não troque vida cedo: posicione bloqueadores com alta Armadura/HP, force a IA a empilhar 2–3 criaturas no mesmo slot e limpe a pilha inteira com Sopro, Atropelar ou feitiços de fileira!`;
+    generalTactics = `${e.deck.name} joga com ${e.counts.creature} criaturas (${e.pcts.creature}% do baralho de 100 cartas) e apenas ${e.counts.spell} feitiços. Ele tentará inundar a Vanguarda [V] e ganhar +1 ATQ de Invasão. Não troque vida cedo: posicione bloqueadores com alta Armadura/HP, force o Soberano rival a empilhar 2–3 criaturas no mesmo slot e limpe a pilha inteira com Sopro, Atropelar ou feitiços de fileira!`;
   } else if (e.counts.spell + e.counts.reaction >= 38) {
     generalTactics = `${e.deck.name} é um Grimório pesado em magias (${e.counts.spell} Feitiços e ${e.counts.reaction} Reações em 100 cartas) com menos criaturas (${e.counts.creature}). A fraqueza estrutural dele é a falta de corpos para bloquear todas as 6 colunas. Pressione 3 colunas diferentes ao mesmo tempo e teste as Emboscadas na Retaguarda [R] inimiga atacando primeiro com sua unidade mais barata antes de comprometer seu campeão principal.`;
   } else if (e.counts.relic >= 18) {
@@ -853,7 +853,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               onClick={() => setViewSection('matchup_duel')}
               style={{ padding: '5px 10px', fontSize: '0.73rem' }}
             >
-              Simulador 1×1
+              Confronto 1×1
             </button>
             <button
               type="button"
@@ -1025,21 +1025,21 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 value={selectedPlayerDeckId}
                 onChange={(e) => setSelectedPlayerDeckId(e.target.value)}
               >
-                <optgroup label="Soberanos Tricolores & Pentacromáticos IA (13 Ápices Tier V)">
+                <optgroup label="Grão-Soberanos Tricolores & Pentacromáticos (13 Ápices)">
                   {trainedPolyDecks.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.name}
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label="Campeões Bicolores IA (15 Pactos Tier V)">
+                <optgroup label="Soberanos Bicolores (15 Pactos)">
                   {trainedBiDecks.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.name}
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label="Campeões Monocolores IA (16 Arquétipos Tier V)">
+                <optgroup label="Soberanos Monocolores (16 Arquétipos)">
                   {trainedMonoDecks.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.name}
@@ -1090,7 +1090,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 >
                   {([1, 2, 3, 4, 5] as AiSkillTier[]).map((t) => (
                     <option key={t} value={t}>
-                      IA {AI_SKILL_TIER_SPECS[t].shortLabel}
+                      {AI_SKILL_TIER_SPECS[t].shortLabel}
                     </option>
                   ))}
                 </select>
@@ -1133,21 +1133,21 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                   if (viewSection === 'matrix_all') setViewSection('matchup_duel');
                 }}
               >
-                <optgroup label="Soberanos Tricolores & Pentacromáticos IA (13 Ápices Tier V)">
+                <optgroup label="Grão-Soberanos Tricolores & Pentacromáticos (13 Ápices)">
                   {trainedPolyDecks.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.name}
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label="Campeões Bicolores IA (15 Pactos Tier V)">
+                <optgroup label="Soberanos Bicolores (15 Pactos)">
                   {trainedBiDecks.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.name}
                     </option>
                   ))}
                 </optgroup>
-                <optgroup label="Campeões Monocolores IA (16 Arquétipos Tier V)">
+                <optgroup label="Soberanos Monocolores (16 Arquétipos)">
                   {trainedMonoDecks.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.name}
@@ -1324,14 +1324,14 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 <div className="tg-ai-oracle-header">
                   <div>
                     <div className="aaa-kicker" style={{ color: '#94a3b8', marginBottom: '0.15rem' }}>
-                      LIGA EVOLUCIONÁRIA ({AI_LEAGUE_SUMMARY.totalMatchesSimulated.toLocaleString('pt-BR')} DUELOS IA vs IA)
+                      CONCLAVE DE VAELORIA ({AI_LEAGUE_SUMMARY.totalMatchesSimulated.toLocaleString('pt-BR')} DUELOS OFICIAIS)
                     </div>
                     <h3 className="font-cinzel" style={{ margin: 0, fontSize: '0.96rem', color: '#f8fafc' }}>
-                      Sabedoria Empírica da IA (Extraída por Simulação)
+                      Doutrina de Guerra do Soberano
                     </h3>
                   </div>
                   <span className="tg-ai-oracle-badge">
-                    {learnedAiProfile.generationsTrained} Gerações Evoluídas
+                    {learnedAiProfile.generationsTrained} Ciclos de Maestria
                   </span>
                 </div>
 
@@ -1343,7 +1343,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                     </span>
                   </div>
                   <div className="tg-ai-kpi-cell">
-                    <span className="tg-ai-kpi-label">Evolução (Base → IA)</span>
+                    <span className="tg-ai-kpi-label">Taxa de Vitória</span>
                     <span className="tg-ai-kpi-value" style={{ color: '#e5c97b' }}>
                       {fmtAiPct(learnedAiProfile.baselineWinRate)}% → {fmtAiPct(learnedAiProfile.trainedWinRate)}%
                     </span>
@@ -1480,7 +1480,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 {learnedAiProfile.discoveredCombos.length > 0 && (
                   <div>
                     <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.4rem' }}>
-                      Combos Campeões Descobertos na Liga IA vs IA
+                      Combos Assinatura dos Soberanos
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                       {learnedAiProfile.discoveredCombos.slice(0, 4).map((dc, idx) => {
@@ -1896,7 +1896,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.8rem' }}>
               <div>
                 <div className="aaa-kicker">
-                  GRANDE TORNEIO UNIFICADO DE VAELORIA • {UNIFIED_TOURNAMENT_SUMMARY.totalMatchesSimulated.toLocaleString('pt-BR')} DUELOS BEAM SEARCH TIER V
+                  GRANDE TORNEIO UNIFICADO DE VAELORIA • {UNIFIED_TOURNAMENT_SUMMARY.totalMatchesSimulated.toLocaleString('pt-BR')} CONFRONTOS OFICIAIS
                 </div>
                 <h2 className="font-cinzel tg-panel-title">
                   Tier List Oficial & Ecologia Inter-Formatos (1, 2, 3 e 5 Cores)
@@ -1906,7 +1906,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 className="tg-ai-combo-badge"
                 style={{ fontSize: '0.72rem', padding: '4px 10px' }}
               >
-                IC 95% Máx: ±{(UNIFIED_TOURNAMENT_SUMMARY.maxChampionCi95HalfWidth * 100).toFixed(2)}% • 34 Value MLPs
+                44 Grão-Soberanos de Vaeloria
               </span>
             </div>
 

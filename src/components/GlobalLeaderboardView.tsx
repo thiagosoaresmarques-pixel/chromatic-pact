@@ -12,7 +12,6 @@ import {
   ELO_DIVISIONS,
   EloDivisionId,
   getEloDivisionMeta,
-  SOVEREIGN_ELO_CALIBRATION_SUMMARY,
   SovereignAiLeaderboardEntry,
 } from '../data/sovereignEloLadder';
 import { AiSkillTier, CardDefinition, Domain } from '../types/game';
@@ -987,7 +986,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                     </div>
 
                     <div>
-                      <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Histórico Simulado</div>
+                      <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Histórico de Duelos</div>
                       <div
                         style={{
                           fontSize: '0.92rem',
@@ -1030,7 +1029,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                           marginBottom: '0.45rem',
                         }}
                       >
-                        Progressão do arquétipo por grau de IA
+                        Progressão do arquétipo por grau de maestria
                       </div>
                       <div
                         style={{
@@ -1228,13 +1227,10 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
             </div>
 
             <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.5, margin: '0 0 0.9rem' }}>
-              Jogadores e Soberanos compartilham a mesma escala FIDE / Bradley-Terry (ancorada em{' '}
-              <strong style={{ color: '#e2e8f0' }}>1200 ELO</strong> e calibrada em{' '}
-              {(
-                SOVEREIGN_ELO_CALIBRATION_SUMMARY.totalCalibrationMatches + 27984
-              ).toLocaleString('pt-BR')}{' '}
-              partidas simuladas). Todos os duelos ranqueados são disputados em igualdade (40 PV vs
-              40 PV, grimórios de 100 cartas, sem modificadores externos).
+              Jogadores e Soberanos de Vaeloria compartilham a mesma escala competitiva oficial
+              (ancorada em <strong style={{ color: '#e2e8f0' }}>1200 ELO</strong>). Todos os duelos
+              ranqueados são disputados em igualdade (40 PV vs 40 PV, grimórios de 100 cartas, sem
+              modificadores externos).
             </p>
 
             <div

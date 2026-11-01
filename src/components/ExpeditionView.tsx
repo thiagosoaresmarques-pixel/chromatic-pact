@@ -1157,12 +1157,6 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   const standing = getUnifiedStandingForDeckId(
                     currentBoss.archetypeId ?? currentBoss.deckId
                   );
-                  const aiModeBadge =
-                    tSpec.beamDepth > 1
-                      ? `Value MLP + Beam (${tSpec.beamWidth}×${tSpec.beamDepth})`
-                      : tSpec.useValueMlp
-                        ? 'Value MLP Neural'
-                        : 'Heurística Tática';
                   return (
                     <div
                       className="vwm-dossier-geo-badge"
@@ -1174,7 +1168,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                       }}
                       title={tSpec.description}
                     >
-                      <span>🧠 {tSpec.shortLabel} ({aiModeBadge})</span>
+                      <span>{tSpec.shortLabel} · {tSpec.title}</span>
                       {currentBoss.archetypeTitle && (
                         <>
                           <span>•</span>

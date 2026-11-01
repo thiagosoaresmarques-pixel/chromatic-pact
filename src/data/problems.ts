@@ -143,13 +143,13 @@ export const PROBLEM_DIFFICULTY_META: Record<
     description: 'Quebra-cabeças de 5 a 6 ações encadeadas onde um único erro de 1⚡ ou 1 coluna deixa o Soberano rival vivo (+10 🪙 por problema).',
   },
   campeoes_torneio: {
-    label: '🏆 Campeões • Grão-Mestres IA',
+    label: '🏆 Grão-Soberanos',
     starsText: '👑★★★★★',
     color: '#fde047',
     bg: 'rgba(234, 179, 8, 0.16)',
     border: 'rgba(250, 204, 21, 0.65)',
     description:
-      'Desafios de 1 turno inspirados nas jogadas e combos de maior Valor Shapley descobertos pelos Campeões do Grande Torneio Unificado (#1–#44) — desbloqueados desde o início (+12 🪙 por problema).',
+      'Desafios de 1 turno inspirados nas jogadas e combos assinatura dos Grão-Soberanos de Vaeloria (#1–#44) — desbloqueados desde o início (+12 🪙 por problema).',
   },
 };
 

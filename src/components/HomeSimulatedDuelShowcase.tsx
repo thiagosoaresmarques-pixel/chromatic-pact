@@ -1578,7 +1578,7 @@ export const HomeSimulatedDuelShowcase: React.FC<HomeSimulatedDuelShowcaseProps>
         <div
           className="sim-arena-scenario-tabs"
           role="tablist"
-          aria-label="Duelos Temáticos Simulados"
+          aria-label="Duelos Temáticos de Vaeloria"
         >
           {SIM_DUEL_SCENARIOS.map((sc, idx) => {
             const isActive = idx === scenarioIdx;

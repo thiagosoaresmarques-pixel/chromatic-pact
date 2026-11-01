@@ -520,12 +520,6 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                 const standing = getUnifiedStandingForDeckId(
                   activeBoss.archetypeId ?? activeBoss.deckId
                 );
-                const aiModeBadge =
-                  tSpec.beamDepth > 1
-                    ? `Value MLP + Beam (${tSpec.beamWidth}×${tSpec.beamDepth})`
-                    : tSpec.useValueMlp
-                      ? 'Value MLP Neural'
-                      : 'Heurística Tática';
                 return (
                   <div
                     className="vwm-dossier-geo-badge"
@@ -537,7 +531,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                     }}
                     title={tSpec.description}
                   >
-                    <span>🧠 {tSpec.shortLabel} ({aiModeBadge})</span>
+                    <span>{tSpec.shortLabel} · {tSpec.title}</span>
                     {activeBoss.archetypeTitle && (
                       <>
                         <span>•</span>

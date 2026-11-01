@@ -1831,23 +1831,23 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               }}
             >
               <option value="" disabled>
-                Carregar Modelo de Grimório (44 Co-Evoluídos IA + {PREBUILT_DECKS.length} Clássicos)...
+                Carregar Modelo de Grimório (44 Soberanos + {PREBUILT_DECKS.length} Clássicos)...
               </option>
-              <optgroup label="Grimórios Monocolor Co-Evoluídos (16 Arquétipos IA)">
+              <optgroup label="Grimórios de Soberanos Monocolores (16 Arquétipos)">
                 {getTrainedMonocolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}
                   </option>
                 ))}
               </optgroup>
-              <optgroup label="Grimórios Bicolores Co-Evoluídos (15 Pactos IA)">
+              <optgroup label="Grimórios de Soberanos Bicolores (15 Pactos)">
                 {getTrainedBicolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}
                   </option>
                 ))}
               </optgroup>
-              <optgroup label="Grimórios Tricolores & Pentacromáticos Ápice (13 Soberanos IA)">
+              <optgroup label="Grimórios de Grão-Soberanos Tricolores & Pentacromáticos (13 Ápices)">
                 {getTrainedPolycolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}

@@ -234,7 +234,7 @@ export const SovereignRoyalCommandStrip: React.FC<SovereignRoyalCommandStripProp
                 type="button"
                 className="rcs-resume-btn"
                 onClick={() => onNavigate('leaderboard')}
-                title="Ranking Geral ELO Unificado (Usuários da Plataforma + Soberanos Calibrados IA)"
+                title="Ranking Geral ELO Unificado de Jogadores e Soberanos"
               >
                 <span>🏆 Ranking ELO</span>
                 <strong>{eloRating}</strong>

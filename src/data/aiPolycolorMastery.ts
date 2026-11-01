@@ -124,7 +124,7 @@ export function getTrainedPolycolorPrebuiltDecks(tier: AiSkillTier = 5): Prebuil
     list.push({
       id: m.archetypeId,
       name: m.name,
-      subtitle: `${m.subtitle} • Co-Evoluído IA`,
+      subtitle: m.subtitle,
       domains: [...m.domains],
       strategy: m.strategySummary,
       coverCardId: m.coverCardId,

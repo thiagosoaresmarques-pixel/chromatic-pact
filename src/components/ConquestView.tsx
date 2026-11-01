@@ -1470,12 +1470,6 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 {(() => {
                   const bossTier = selectedProvinceBossPreview.difficultyTier ?? 3;
                   const tSpec = AI_SKILL_TIER_SPECS[bossTier];
-                  const aiModeBadge =
-                    tSpec.beamDepth > 1
-                      ? `Value MLP + Beam (${tSpec.beamWidth}×${tSpec.beamDepth})`
-                      : tSpec.useValueMlp
-                        ? 'Value MLP Neural'
-                        : 'Heurística Tática';
                   return (
                     <div
                       className="vwm-dossier-geo-badge"
@@ -1488,7 +1482,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                       }}
                       title={tSpec.description}
                     >
-                      <span>🧠 {tSpec.shortLabel} ({aiModeBadge})</span>
+                      <span>{tSpec.shortLabel} · {tSpec.title}</span>
                       {selectedProvinceBossPreview.archetypeTitle && (
                         <>
                           <span>•</span>

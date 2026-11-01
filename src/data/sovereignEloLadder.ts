@@ -230,7 +230,7 @@ export function buildRankedSovereignBossEncounter(
     domains: entry.domains,
     startingHp: 40,
     avatarCardId: entry.avatarCardId,
-    passiveName: 'Duelo Ranqueado FIDE (40❤️ vs 40❤️)',
+    passiveName: 'Duelo Ranqueado Oficial (40❤️ vs 40❤️)',
     passiveDescription: `Confronto oficial simétrico valendo Rating contra ${entry.realmOrigin} (${entry.eloRating} ELO • Tier ${entry.skillTier}).`,
     rewardGold: 15,
     loreIntro: `Duelo Ranqueado Oficial pelo Ranking Geral de Vaeloria contra ${entry.sovereignName} (${entry.eloRating} ELO).`,

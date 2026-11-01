@@ -4420,12 +4420,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         campaignBoss?.deckId ??
                         selectedAiDeckId
                     );
-                    const aiModeText =
-                      tSpec.beamDepth > 1
-                        ? `Value MLP + Beam Search (${tSpec.beamWidth}×${tSpec.beamDepth})`
-                        : tSpec.useValueMlp
-                          ? 'Value MLP Neural'
-                          : 'Heurística Tática';
+                    const aiModeText = tSpec.title;
                     return (
                       <div
                         style={{
@@ -4443,7 +4438,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         }}
                       >
                         <strong style={{ color: '#fde047' }}>
-                          🧠 {tSpec.shortLabel} ({aiModeText})
+                          {tSpec.shortLabel} · {aiModeText}
                         </strong>
                         {champStanding && (
                           <>
@@ -6190,7 +6185,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 }}
                                 className="awmt-deck-select"
                               >
-                                <optgroup label="Soberanos Tricolores & Pentacromáticos IA (13 Ápices)">
+                                <optgroup label="Grão-Soberanos Tricolores & Pentacromáticos (13 Ápices)">
                                   {allAvailableAiDecks
                                     .filter((d) => d.id.startsWith('tri_') || d.id.startsWith('penta_'))
                                     .map((d) => {
@@ -6203,7 +6198,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                       );
                                     })}
                                 </optgroup>
-                                <optgroup label="Campeões Bicolores Co-Evoluídos IA (15 Pactos)">
+                                <optgroup label="Soberanos Bicolores (15 Pactos)">
                                   {allAvailableAiDecks
                                     .filter((d) => d.id.startsWith('dual_'))
                                     .map((d) => {
@@ -6216,7 +6211,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                       );
                                     })}
                                 </optgroup>
-                                <optgroup label="Campeões Monocolores Co-Evoluídos IA (16 Arquétipos)">
+                                <optgroup label="Soberanos Monocolores (16 Arquétipos)">
                                   {allAvailableAiDecks
                                     .filter((d) => d.id.startsWith('mono_'))
                                     .map((d) => {
@@ -6240,8 +6235,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             </div>
 
                             <div className="awmt-deck-field">
-                              <span className="awmt-deck-tag p2" title="Escala tanto o Grimório Rival (Tier I..V) quanto a Rede Neural & Busca Tática da IA">
-                                GRAU IA
+                              <span className="awmt-deck-tag p2" title="Define o Grau de Maestria e poder do Grimório do Soberano rival">
+                                MAESTRIA
                               </span>
                               <select
                                 value={selectedAiSkillTier}
@@ -6866,7 +6861,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="font-cinzel"
                       style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fde047' }}
                     >
-                      🏆 RANKING GERAL ELO DE VAELORIA (FIDE)
+                      🏆 RANKING GERAL DE VAELORIA
                     </span>
                     <span
                       style={{

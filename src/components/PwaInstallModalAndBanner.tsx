@@ -82,7 +82,7 @@ export const PwaInstallBanner: React.FC<PwaInstallBannerProps> = ({
                 NOVA VERSÃO DE VAELORIA PRONTA
               </div>
               <div style={{ fontSize: '0.78rem', color: '#e2e8f0', opacity: 0.92 }}>
-                Uma atualização com os ajustes mais recentes de cartas, Campeões IA e modos já foi
+                Uma atualização com os ajustes mais recentes de cartas, Soberanos e modos já foi
                 baixada em segundo plano.
               </div>
             </div>

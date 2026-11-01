@@ -15,7 +15,7 @@ export const GRANDMASTER_CHAMPION_PROBLEMS: Omit<TacticalProblem, 'number' | 'co
     subtitle:
       'Campeão #1 Global (Pyros + Vórtex + Solária): Refratar +1⚡ com o Arauto da Supernova, varrer bloqueadores enfraquecidos e amplificar a esquadra aérea com Tambores da Conquista',
     difficulty: 'campeoes_torneio',
-    difficultyLabel: '🏆 Campeões • Grão-Mestres IA',
+    difficultyLabel: '🏆 Grão-Soberanos',
     stars: 5,
     goldReward: 12,
     primaryDomain: 'red',
@@ -76,7 +76,7 @@ export const GRANDMASTER_CHAMPION_PROBLEMS: Omit<TacticalProblem, 'number' | 'co
     subtitle:
       'Campeão #2 Global (Pyros + Matriz Axial): Gerar +1⚡ com o Mercenário Planar, assassinar o Guardião blindado com Toque Letal e detonar o Núcleo da Fornalha',
     difficulty: 'campeoes_torneio',
-    difficultyLabel: '🏆 Campeões • Grão-Mestres IA',
+    difficultyLabel: '🏆 Grão-Soberanos',
     stars: 5,
     goldReward: 12,
     primaryDomain: 'red',
@@ -139,7 +139,7 @@ export const GRANDMASTER_CHAMPION_PROBLEMS: Omit<TacticalProblem, 'number' | 'co
     subtitle:
       'Campeão #3 Global (Pyros + Eclipse + Veridia): Pacto de Sangue no limite vital, gatilho duplo do Pactuário Umbral e Atropelar sobre o bloqueador',
     difficulty: 'campeoes_torneio',
-    difficultyLabel: '🏆 Campeões • Grão-Mestres IA',
+    difficultyLabel: '🏆 Grão-Soberanos',
     stars: 5,
     goldReward: 12,
     primaryDomain: 'purple',
@@ -196,7 +196,7 @@ export const GRANDMASTER_CHAMPION_PROBLEMS: Omit<TacticalProblem, 'number' | 'co
     subtitle:
       'Convergência dos Oito Raios (Pentacromático): Quebrar exclusivamente o Domínio rival numa Disputa 50/50 para reativar Ímpeto + Acerto Garantido e reembolsar +2⚡',
     difficulty: 'campeoes_torneio',
-    difficultyLabel: '🏆 Campeões • Grão-Mestres IA',
+    difficultyLabel: '🏆 Grão-Soberanos',
     stars: 5,
     goldReward: 12,
     primaryDomain: 'gold',
@@ -263,7 +263,7 @@ export const GRANDMASTER_CHAMPION_PROBLEMS: Omit<TacticalProblem, 'number' | 'co
     subtitle:
       'Soberania da Cratera Prismática (Pentacromático): Canalizar para atingir 6/6 de Afinidade, refratar +1⚡ com o Arauto da Raiz, Ascender o Flagelo e Expandir o Domínio',
     difficulty: 'campeoes_torneio',
-    difficultyLabel: '🏆 Campeões • Grão-Mestres IA',
+    difficultyLabel: '🏆 Grão-Soberanos',
     stars: 5,
     goldReward: 12,
     primaryDomain: 'green',
@@ -323,7 +323,7 @@ export const GRANDMASTER_CHAMPION_PROBLEMS: Omit<TacticalProblem, 'number' | 'co
     subtitle:
       'Bastião do Eclipse Dourado (Eclipse + Veridia + Solária): Manobra de Fileira [⇄], Poder do Soberano para romper Escudo Divino e abate com Toque Letal',
     difficulty: 'campeoes_torneio',
-    difficultyLabel: '🏆 Campeões • Grão-Mestres IA',
+    difficultyLabel: '🏆 Grão-Soberanos',
     stars: 5,
     goldReward: 12,
     primaryDomain: 'gold',

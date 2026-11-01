@@ -339,11 +339,11 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
         >
           <div>
             <strong className="font-cinzel" style={{ color: '#fde047', marginRight: 6 }}>
-              🏆 PROBLEMAS DOS GRÃO-MESTRES IA (#111–#116):
+              🏆 PROBLEMAS DOS GRÃO-SOBERANOS (#111–#116):
             </strong>
             <span>
-              Quebra-cabeças letais em 1 turno extraídos dos combos de maior Valor Shapley do
-              Grande Torneio Unificado (44 × 43 Campeões Tier V). Desbloqueados desde o início!
+              Quebra-cabeças letais em 1 turno inspirados nas sequências de combate dos
+              Grão-Soberanos de Vaeloria. Desbloqueados desde o início!
             </span>
           </div>
           <span

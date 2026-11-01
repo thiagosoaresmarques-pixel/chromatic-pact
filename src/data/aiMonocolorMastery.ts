@@ -68,7 +68,7 @@ export const AI_SKILL_TIER_SPECS: Record<AiSkillTier, AiSkillTierSpec> = {
     shortLabel: 'Tier I • Iniciante',
     title: 'Patrulha de Fronteira',
     description:
-      'Grimório básico (0 Lendárias, foco em Comuns/Incomuns) e IA impulsiva (τ=1.35) sem Rede Neural nem busca multi-passo.',
+      'Grimório de fronteira (foco em Comuns e Incomuns) e postura tática direta.',
     temperature: 1.35,
     useValueMlp: false,
     beamWidth: 1,
@@ -83,7 +83,7 @@ export const AI_SKILL_TIER_SPECS: Record<AiSkillTier, AiSkillTierSpec> = {
     shortLabel: 'Tier II • Regular',
     title: 'Guarnição Regular',
     description:
-      'Grimório intermediário (1–2 Lendárias) e heurística posicional padrão da cor (τ=0.70) sem retenção avançada de combos.',
+      'Grimório intermediário (1–2 Lendárias) e domínio posicional disciplinado.',
     temperature: 0.7,
     useValueMlp: false,
     beamWidth: 1,
@@ -98,7 +98,7 @@ export const AI_SKILL_TIER_SPECS: Record<AiSkillTier, AiSkillTierSpec> = {
     shortLabel: 'Tier III • Veterano',
     title: 'Bastião Veterano',
     description:
-      'Grimório temático sinérgico (4–5 Lendárias) guiado pela Rede Neural Value MLP da cor e combos Shapley (τ=0.25).',
+      'Grimório sinérgico (4–5 Lendárias) com domínio completo de terreno e rituais.',
     temperature: 0.25,
     useValueMlp: true,
     beamWidth: 1,
@@ -113,7 +113,7 @@ export const AI_SKILL_TIER_SPECS: Record<AiSkillTier, AiSkillTierSpec> = {
     shortLabel: 'Tier IV • Mestre',
     title: 'Elite do Alto Trono',
     description:
-      'Grimório de elite (7–8 Lendárias) com Value MLP + Beam Search tático (largura 4, prof. 3) otimizando a sequência do turno (τ=0.06).',
+      'Grimório de elite (7–8 Lendárias) com planejamento profundo de sequências táticas.',
     temperature: 0.06,
     useValueMlp: true,
     beamWidth: 4,
@@ -128,7 +128,7 @@ export const AI_SKILL_TIER_SPECS: Record<AiSkillTier, AiSkillTierSpec> = {
     shortLabel: 'Tier V • Grão-Mestre',
     title: 'Soberano Ápice',
     description:
-      'Grimório Campeão Co-Evoluído (10/10 Lendárias + General da Roda) com Value MLP + Beam Search completo + Check Anti-Letal 1-ply (τ=0.00).',
+      'Grimório Real Completo (10 Lendárias + General da Roda) e maestria soberana absoluta.',
     temperature: 0,
     useValueMlp: true,
     beamWidth: 5,
@@ -759,7 +759,7 @@ export function getTrainedMonocolorPrebuiltDecks(tier: AiSkillTier = 5): Prebuil
     list.push({
       id: m.archetypeId,
       name: `${m.name}`,
-      subtitle: `${m.subtitle} • Co-Evoluído IA`,
+      subtitle: m.subtitle,
       domains: [m.domain],
       strategy: m.strategySummary,
       coverCardId: m.coverCardId,

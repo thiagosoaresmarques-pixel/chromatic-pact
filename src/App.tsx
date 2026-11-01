@@ -200,7 +200,7 @@ const NAV_PILLARS: NavPillarDef[] = [
         tab: 'arena',
         icon: '⚔️',
         label: 'Arena Solo',
-        shortDesc: 'Duelos contra os 44 Campeões IA (Tier I–V) e 40 Grimórios',
+        shortDesc: 'Duelos contra os Soberanos de Vaeloria e 40 Grimórios',
       },
       {
         tab: 'draft',
@@ -218,7 +218,7 @@ const NAV_PILLARS: NavPillarDef[] = [
         tab: 'leaderboard',
         icon: '🏆',
         label: 'Ranking ELO',
-        shortDesc: 'Ranking Geral Unificado (Usuários da Plataforma + Soberanos IA)',
+        shortDesc: 'Ranking Geral Unificado de Jogadores e Soberanos',
       },
       {
         tab: 'multiplayer',
@@ -759,7 +759,7 @@ export const App: React.FC = () => {
         kicker: 'NOVA VERSÃO DISPONÍVEL',
         title: '✨ Atualização de Vaeloria Pronta',
         message:
-          'Os ajustes mais recentes de cartas, Campeões IA e modos foram baixados. Atualize quando quiser aplicar!',
+          'Os ajustes mais recentes de cartas, Soberanos e modos foram baixados. Atualize quando quiser aplicar!',
         actionLabel: 'Atualizar Agora',
         actionTarget: 'pwa_update',
       },

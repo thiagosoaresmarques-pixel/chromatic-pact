@@ -3,7 +3,11 @@ import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
 import type { UnifiedFormatKind } from '../data/aiUnifiedTournamentData';
-import { calculateFideRankedEloDelta } from '../data/eloDivisions';
+import {
+  calculateFideRankedEloDelta,
+  ELO_SCHEMA_VERSION,
+  INITIAL_PLAYER_ELO,
+} from '../data/eloDivisions';
 import type { SovereignAiLeaderboardEntry } from '../data/sovereignEloLadderData';
 
 export const VICTORY_GOLD_REWARD = 10;
@@ -128,6 +132,7 @@ export interface SovereignUserProfile {
   title: string;
   avatarCardId: string;
   eloRating: number;
+  eloBaseVersion?: number;
   pvpWins: number;
   pvpLosses: number;
   rankedSovereignWins?: number;
@@ -401,7 +406,8 @@ const UNREGISTERED_PLACEHOLDER: SovereignUserProfile = {
   username: 'Sem Conta',
   title: 'Visitante sem Pacto',
   avatarCardId: 'neutral_10_valkyra_pentacromatica',
-  eloRating: 1200,
+  eloRating: INITIAL_PLAYER_ELO,
+  eloBaseVersion: ELO_SCHEMA_VERSION,
   pvpWins: 0,
   pvpLosses: 0,
   preferredDeckId: 'deck_red_aggro',
@@ -409,6 +415,97 @@ const UNREGISTERED_PLACEHOLDER: SovereignUserProfile = {
 
 export function isUnregisteredProfile(profile: SovereignUserProfile): boolean {
   return !profile || profile.id === 'unregistered' || profile.username === 'Sem Conta';
+}
+
+const LEGACY_INITIAL_PLAYER_ELO = 1200;
+
+/**
+ * Recalcula retroativamente o ELO de qualquer perfil legado (base antiga 1200 -> nova base 1000),
+ * reprocessando o histórico de partidas ranqueadas (com fator K provisório nas 10 primeiras)
+ * ou reancorando contas 0V/0D diretamente em 1000 ELO.
+ */
+export function recalculateProfileEloFromInitialBase(
+  profile: SovereignUserProfile
+): { profile: SovereignUserProfile; wasRecalculated: boolean } {
+  if (isUnregisteredProfile(profile)) {
+    return {
+      profile: {
+        ...profile,
+        eloRating: INITIAL_PLAYER_ELO,
+        eloBaseVersion: ELO_SCHEMA_VERSION,
+      },
+      wasRecalculated: false,
+    };
+  }
+
+  if ((profile.eloBaseVersion ?? 1) >= ELO_SCHEMA_VERSION) {
+    return { profile, wasRecalculated: false };
+  }
+
+  const pvpGames = (profile.pvpWins ?? 0) + (profile.pvpLosses ?? 0);
+  const sovGames = (profile.rankedSovereignWins ?? 0) + (profile.rankedSovereignLosses ?? 0);
+  const totalRanked = pvpGames + sovGames;
+  const historyChrono = [...(profile.recentRankedHistory ?? [])].reverse();
+  const baseShift = LEGACY_INITIAL_PLAYER_ELO - INITIAL_PLAYER_ELO;
+
+  if (totalRanked === 0 && historyChrono.length === 0) {
+    const nextElo =
+      (profile.eloRating ?? LEGACY_INITIAL_PLAYER_ELO) === LEGACY_INITIAL_PLAYER_ELO
+        ? INITIAL_PLAYER_ELO
+        : Math.max(100, (profile.eloRating ?? LEGACY_INITIAL_PLAYER_ELO) - baseShift);
+    return {
+      profile: {
+        ...profile,
+        eloRating: nextElo,
+        eloBaseVersion: ELO_SCHEMA_VERSION,
+      },
+      wasRecalculated: true,
+    };
+  }
+
+  const priorGames = Math.max(0, totalRanked - historyChrono.length);
+  let runningElo: number;
+  if (priorGames === 0) {
+    runningElo = INITIAL_PLAYER_ELO;
+  } else {
+    const firstMatch = historyChrono[0];
+    const preWindowLegacyElo = firstMatch
+      ? firstMatch.newElo - firstMatch.deltaElo
+      : profile.eloRating ?? LEGACY_INITIAL_PLAYER_ELO;
+    runningElo = Math.max(100, preWindowLegacyElo - baseShift);
+  }
+
+  const recomputedChrono: RankedMatchHistoryItem[] = [];
+  for (let i = 0; i < historyChrono.length; i++) {
+    const item = historyChrono[i];
+    const gameIdx = priorGames + i;
+    const rawDelta =
+      item.mode === 'pvp'
+        ? calculateReputationDelta(runningElo, item.opponentElo, item.didWin, 32)
+        : calculateFideRankedEloDelta({
+            playerElo: runningElo,
+            opponentElo: item.opponentElo,
+            didWin: item.didWin,
+            totalRankedGamesPlayed: gameIdx,
+          }).delta;
+    const nextMatchElo = Math.max(100, runningElo + rawDelta);
+    recomputedChrono.push({
+      ...item,
+      deltaElo: nextMatchElo - runningElo,
+      newElo: nextMatchElo,
+    });
+    runningElo = nextMatchElo;
+  }
+
+  return {
+    profile: {
+      ...profile,
+      eloRating: runningElo,
+      recentRankedHistory: recomputedChrono.reverse(),
+      eloBaseVersion: ELO_SCHEMA_VERSION,
+    },
+    wasRecalculated: true,
+  };
 }
 
 export function getSavedAccountsRoster(): SovereignUserProfile[] {
@@ -422,8 +519,10 @@ export function getSavedAccountsRoster(): SovereignUserProfile[] {
           .filter((a) => !isUnregisteredProfile(a))
           .map((acc) => {
             const { cleaned, wasModified } = stripImposedStarterGrimoire(acc);
-            if (wasModified) anyCleaned = true;
-            return cleaned;
+            const { profile: rebased, wasRecalculated } =
+              recalculateProfileEloFromInitialBase(cleaned);
+            if (wasModified || wasRecalculated) anyCleaned = true;
+            return rebased;
           });
         if (anyCleaned) {
           try {
@@ -608,15 +707,19 @@ export function ensureStarterDeckForUser(profile: SovereignUserProfile): Soverei
   }
   const shouldBeAdmin = isAdminProfile(profile);
   const { cleaned, wasModified } = stripImposedStarterGrimoire(profile);
-  if (wasModified || (shouldBeAdmin && !cleaned.isAdmin)) {
+  const { profile: rebased, wasRecalculated } = recalculateProfileEloFromInitialBase(cleaned);
+  if (wasModified || wasRecalculated || (shouldBeAdmin && !rebased.isAdmin)) {
     const updated: SovereignUserProfile = {
-      ...cleaned,
+      ...rebased,
       isAdmin: shouldBeAdmin,
     };
     setActiveTabUserProfile(updated);
+    if (wasRecalculated) {
+      void syncProfileToSupabaseIfConfigured(updated);
+    }
     return updated;
   }
-  return cleaned;
+  return rebased;
 }
 
 /**
@@ -655,6 +758,7 @@ function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
     rsl: profile.rankedSovereignLosses ?? 0,
     rhist: (profile.recentRankedOpponentIds ?? []).slice(-6),
     rmh: (profile.recentRankedHistory ?? []).slice(0, 8),
+    ebv: profile.eloBaseVersion ?? ELO_SCHEMA_VERSION,
     pref: profile.preferredDeckId || '',
     adm: isAdminProfile(profile),
     ca: profile.createdAt ?? Date.now(),
@@ -680,13 +784,14 @@ function decodeCloudTitleMeta(
   rankedSovereignLosses?: number;
   recentRankedOpponentIds?: string[];
   recentRankedHistory?: RankedMatchHistoryItem[];
+  eloBaseVersion?: number;
   preferredDeckId?: string;
   isAdmin?: boolean;
   createdAt?: number;
   lastActiveAt?: number;
 } {
   const fallbackTitle = getAvatarHonorificTitle(avatarCardId);
-  if (!rawTitle) return { title: fallbackTitle };
+  if (!rawTitle) return { title: fallbackTitle, eloBaseVersion: 1 };
   if (rawTitle.startsWith('{')) {
     try {
       const parsed = JSON.parse(rawTitle) as {
@@ -704,6 +809,7 @@ function decodeCloudTitleMeta(
         rsl?: number;
         rhist?: string[];
         rmh?: RankedMatchHistoryItem[];
+        ebv?: number;
         pref?: string;
         adm?: boolean;
         ca?: number;
@@ -724,16 +830,17 @@ function decodeCloudTitleMeta(
         rankedSovereignLosses: typeof parsed.rsl === 'number' ? parsed.rsl : undefined,
         recentRankedOpponentIds: Array.isArray(parsed.rhist) ? parsed.rhist : undefined,
         recentRankedHistory: Array.isArray(parsed.rmh) ? parsed.rmh : undefined,
+        eloBaseVersion: typeof parsed.ebv === 'number' ? parsed.ebv : 1,
         preferredDeckId: parsed.pref || undefined,
         isAdmin: Boolean(parsed.adm),
         createdAt: typeof parsed.ca === 'number' ? parsed.ca : undefined,
         lastActiveAt: typeof parsed.la === 'number' ? parsed.la : undefined,
       };
     } catch {
-      return { title: fallbackTitle };
+      return { title: fallbackTitle, eloBaseVersion: 1 };
     }
   }
-  return { title: fallbackTitle };
+  return { title: fallbackTitle, eloBaseVersion: 1 };
 }
 
 export function createNewSovereignAccount(params: {
@@ -753,7 +860,8 @@ export function createNewSovereignAccount(params: {
     passwordHash: hashPassword(params.password),
     title: getAvatarHonorificTitle(chosenAvatar),
     avatarCardId: chosenAvatar,
-    eloRating: 1200,
+    eloRating: INITIAL_PLAYER_ELO,
+    eloBaseVersion: ELO_SCHEMA_VERSION,
     pvpWins: 0,
     pvpLosses: 0,
     preferredDeckId: '',
@@ -829,10 +937,10 @@ export function calculateReputationDelta(
 export function recordPvpMatchResult(
   profile: SovereignUserProfile,
   didWin: boolean,
-  opponentRating = 1200,
+  opponentRating = INITIAL_PLAYER_ELO,
   opponentMeta?: { name?: string; avatarCardId?: string }
 ): SovereignUserProfile {
-  const prevElo = profile.eloRating ?? 1200;
+  const prevElo = profile.eloRating ?? INITIAL_PLAYER_ELO;
   const reputationDelta = calculateReputationDelta(prevElo, opponentRating, didWin, 32);
   const newElo = Math.max(100, prevElo + reputationDelta);
   const entry: RankedMatchHistoryItem = {
@@ -849,6 +957,7 @@ export function recordPvpMatchResult(
   const updated: SovereignUserProfile = {
     ...profile,
     eloRating: newElo,
+    eloBaseVersion: ELO_SCHEMA_VERSION,
     pvpWins: profile.pvpWins + (didWin ? 1 : 0),
     pvpLosses: profile.pvpLosses + (didWin ? 0 : 1),
     recentRankedHistory: [entry, ...(profile.recentRankedHistory ?? [])].slice(0, 10),
@@ -944,7 +1053,8 @@ function hydrateProfileFromRow(
     passwordHash: meta.passwordHash || localMatch?.passwordHash,
     title: meta.title,
     avatarCardId: resolvedAvatar,
-    eloRating: row.elo_rating ?? 1200,
+    eloRating: row.elo_rating ?? INITIAL_PLAYER_ELO,
+    eloBaseVersion: meta.eloBaseVersion ?? 1,
     pvpWins: row.pvp_wins ?? 0,
     pvpLosses: row.pvp_losses ?? 0,
     rankedSovereignWins: meta.rankedSovereignWins ?? localMatch?.rankedSovereignWins ?? 0,
@@ -966,10 +1076,11 @@ function hydrateProfileFromRow(
     lastActiveAt: meta.lastActiveAt ?? updatedMs ?? localMatch?.lastActiveAt,
   };
   const { cleaned, wasModified } = stripImposedStarterGrimoire(rawProfile);
-  if (wasModified) {
-    syncProfileToSupabaseIfConfigured(cleaned);
+  const { profile: rebased, wasRecalculated } = recalculateProfileEloFromInitialBase(cleaned);
+  if (wasModified || wasRecalculated) {
+    void syncProfileToSupabaseIfConfigured(rebased);
   }
-  return cleaned;
+  return rebased;
 }
 
 /**
@@ -1857,7 +1968,7 @@ export async function publishGlobalAdminAnnouncement(
         username: '__admin_global_announcement__',
         title: JSON.stringify(announcement),
         avatar_card_id: 'neutral_10_valkyra_pentacromatica',
-        elo_rating: 1200,
+        elo_rating: INITIAL_PLAYER_ELO,
         pvp_wins: 0,
         pvp_losses: 0,
         gold: 0,
@@ -2036,7 +2147,7 @@ export async function fetchUnifiedPlatformLeaderboard(
         hp.avatarCardId && CARDS_BY_ID[hp.avatarCardId]
           ? hp.avatarCardId
           : 'neutral_10_valkyra_pentacromatica',
-      eloRating: hp.eloRating ?? 1200,
+      eloRating: hp.eloRating ?? INITIAL_PLAYER_ELO,
       wins: rankedWins,
       losses: rankedLosses,
       totalGames,
@@ -2104,7 +2215,7 @@ export async function fetchUnifiedPlatformLeaderboard(
     }
   }
 
-  const refElo = currentUserEntry?.eloRating ?? currentUser?.eloRating ?? 1200;
+  const refElo = currentUserEntry?.eloRating ?? currentUser?.eloRating ?? INITIAL_PLAYER_ELO;
   let nextSovereignTarget: UnifiedLeaderboardEntry | null = null;
   for (let i = rawEntries.length - 1; i >= 0; i--) {
     const e = rawEntries[i];
@@ -2145,13 +2256,19 @@ export function recordRankedSovereignDuelResult(
   didWin: boolean,
   victoryGoldBonus = 15
 ): RankedSovereignDuelUpdateResult {
-  const previousElo = profile.eloRating ?? 1200;
+  const previousElo = profile.eloRating ?? INITIAL_PLAYER_ELO;
+  const totalRankedGamesPlayed =
+    (profile.pvpWins ?? 0) +
+    (profile.pvpLosses ?? 0) +
+    (profile.rankedSovereignWins ?? 0) +
+    (profile.rankedSovereignLosses ?? 0);
   const calc = calculateFideRankedEloDelta({
     playerElo: previousElo,
     opponentElo: opponentEntry.eloRating,
     didWin,
     recentOpponentIds: profile.recentRankedOpponentIds ?? [],
     opponentKey: opponentEntry.sovereignId,
+    totalRankedGamesPlayed,
   });
 
   const newElo = Math.max(100, previousElo + calc.delta);
@@ -2174,6 +2291,7 @@ export function recordRankedSovereignDuelResult(
   const updatedProfile: SovereignUserProfile = {
     ...profile,
     eloRating: newElo,
+    eloBaseVersion: ELO_SCHEMA_VERSION,
     rankedSovereignWins: (profile.rankedSovereignWins ?? 0) + (didWin ? 1 : 0),
     rankedSovereignLosses: (profile.rankedSovereignLosses ?? 0) + (didWin ? 0 : 1),
     recentRankedOpponentIds: nextHistory,

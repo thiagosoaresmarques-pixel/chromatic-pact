@@ -7,9 +7,11 @@ import {
   buildRankedSovereignBossEncounter,
   calculateFideRankedEloDelta,
   getEloDivisionMeta,
+  INITIAL_PLAYER_ELO,
   SOVEREIGN_AI_LEADERBOARD_ROSTER,
   SOVEREIGN_ELO_CALIBRATION_SUMMARY,
 } from '../data/sovereignEloLadder';
+import { recalculateProfileEloFromInitialBase } from '../utils/multiplayerEngine';
 import {
   ASYMMETRIC_AUDIT_SUMMARY,
   DRAFT_CARD_PICK_TIERS,
@@ -844,8 +846,84 @@ function runAutomatedQA() {
   if (!(freshDelta.delta > repeatDelta.delta && repeatDelta.delta > 0)) {
     throw new Error('FIDE anti-farm K-factor decay validation failed!');
   }
-  if (getEloDivisionMeta(1200).id !== 'ouro_solar' || getEloDivisionMeta(2050).id !== 'grao_mestre_penta') {
+  if (
+    INITIAL_PLAYER_ELO !== 1000 ||
+    getEloDivisionMeta(INITIAL_PLAYER_ELO).id !== 'ferro_axial' ||
+    getEloDivisionMeta(1200).id !== 'ouro_solar' ||
+    getEloDivisionMeta(2050).id !== 'grao_mestre_penta'
+  ) {
     throw new Error('ELO Division threshold lookup validation failed!');
+  }
+  const provisionalDelta = calculateFideRankedEloDelta({
+    playerElo: INITIAL_PLAYER_ELO,
+    opponentElo: 1024,
+    didWin: true,
+    totalRankedGamesPlayed: 0,
+  });
+  const steadyDelta = calculateFideRankedEloDelta({
+    playerElo: INITIAL_PLAYER_ELO,
+    opponentElo: 1024,
+    didWin: true,
+    totalRankedGamesPlayed: 15,
+  });
+  if (!(provisionalDelta.kFactorUsed === 32 && steadyDelta.kFactorUsed === 24 && provisionalDelta.delta > steadyDelta.delta)) {
+    throw new Error('Provisional K=32 vs steady K=24 calibration failed!');
+  }
+  const silverCount = SOVEREIGN_AI_LEADERBOARD_ROSTER.filter(
+    (s) => getEloDivisionMeta(s.eloRating).id === 'prata_fronteira'
+  ).length;
+  const ironCount = SOVEREIGN_AI_LEADERBOARD_ROSTER.filter(
+    (s) => getEloDivisionMeta(s.eloRating).id === 'ferro_axial'
+  ).length;
+  if (silverCount < 3 || ironCount < 3) {
+    throw new Error(`Expected >=3 Sovereigns in Ferro (${ironCount}) and Prata (${silverCount})!`);
+  }
+  const migratedZero = recalculateProfileEloFromInitialBase({
+    id: 'sov_legacy_zero',
+    username: 'LegacyZero',
+    title: 'Soberano',
+    avatarCardId: 'neutral_10_valkyra_pentacromatica',
+    eloRating: 1200,
+    pvpWins: 0,
+    pvpLosses: 0,
+    preferredDeckId: '',
+  });
+  const migratedPlayed = recalculateProfileEloFromInitialBase({
+    id: 'sov_legacy_played',
+    username: 'LegacyPlayed',
+    title: 'Soberano',
+    avatarCardId: 'neutral_10_valkyra_pentacromatica',
+    eloRating: 1224,
+    pvpWins: 0,
+    pvpLosses: 0,
+    rankedSovereignWins: 2,
+    rankedSovereignLosses: 0,
+    recentRankedHistory: [
+      {
+        id: 'm2',
+        timestamp: 2,
+        opponentName: 'Sov2',
+        opponentElo: 1200,
+        mode: 'sovereign',
+        didWin: true,
+        deltaElo: 12,
+        newElo: 1224,
+      },
+      {
+        id: 'm1',
+        timestamp: 1,
+        opponentName: 'Sov1',
+        opponentElo: 1200,
+        mode: 'sovereign',
+        didWin: true,
+        deltaElo: 12,
+        newElo: 1212,
+      },
+    ],
+    preferredDeckId: '',
+  });
+  if (migratedZero.profile.eloRating !== 1000 || !(migratedPlayed.profile.eloRating > 1030 && migratedPlayed.profile.eloRating < 1100)) {
+    throw new Error('Retroactive ELO recalculation from base 1000 failed!');
   }
   console.log(
     `  OK — 220/220 ELO cells verified (T1=${dist[1].meanElo} < T2=${dist[2].meanElo} < T3=${dist[3].meanElo} < T4=${dist[4].meanElo} < T5=${dist[5].meanElo}), ${SOVEREIGN_AI_LEADERBOARD_ROSTER.length} Leaderboard Sovereigns, ${ASYMMETRIC_AUDIT_SUMMARY.totalAsymmetricMatches} Asymmetric Audit matches & 1,038 Draft Pick Tiers.`

@@ -96,7 +96,7 @@ const GlobalLeaderboardView = React.lazy(() =>
   }))
 );
 import type { LastRankedDuelSummary } from './components/GlobalLeaderboardView';
-import { getEloDivisionMeta } from './data/eloDivisions';
+import { getEloDivisionMeta, INITIAL_PLAYER_ELO } from './data/eloDivisions';
 import type { SovereignAiLeaderboardEntry } from './data/sovereignEloLadderData';
 import {
   adminSaveCloudProfile,
@@ -1039,7 +1039,7 @@ export const App: React.FC = () => {
   ) => {
     const { findClosestRankedSovereignForElo } = await import('./data/sovereignEloLadder');
     const matched = findClosestRankedSovereignForElo(
-      currentUser.eloRating ?? 1200,
+      currentUser.eloRating ?? INITIAL_PLAYER_ELO,
       currentUser.recentRankedOpponentIds ?? []
     );
     await handleStartRankedSovereignDuel(matched, playerDeckIds, playerDeckId);
@@ -2061,7 +2061,7 @@ export const App: React.FC = () => {
                 tab: isUnregisteredProfile(currentUser) ? 'create' : 'profile',
               })
             }
-            title={`Perfil de ${currentUser.username} (${currentUser.eloRating ?? 1200} ELO)`}
+            title={`Perfil de ${currentUser.username} (${currentUser.eloRating ?? INITIAL_PLAYER_ELO} ELO)`}
           >
             <span className={`nav-account-dot ${isGuest ? 'is-guest' : ''}`} />
             {isUnregisteredProfile(currentUser) ? (
@@ -2701,7 +2701,7 @@ export const App: React.FC = () => {
                         activeOnlineMatch.role === 'host'
                           ? activeOnlineMatch.room.guest
                           : activeOnlineMatch.room.host;
-                      const opponentRating = oppInfo?.eloRating ?? 1200;
+                      const opponentRating = oppInfo?.eloRating ?? INITIAL_PLAYER_ELO;
                       const prevRating = currentUser.eloRating;
                       const updated = recordPvpMatchResult(currentUser, didWin, opponentRating, {
                         name: oppInfo?.username,

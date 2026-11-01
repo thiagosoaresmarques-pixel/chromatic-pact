@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { CAMPAIGN_BOSSES } from '../data/decks';
+import { ELO_SCHEMA_VERSION, INITIAL_PLAYER_ELO } from '../data/eloDivisions';
 import {
   adminDeleteCloudProfile,
   adminDeleteCloudRoom,
@@ -205,7 +206,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     return [...list].sort((a, b) => {
       // Master admin tsm81 always on top if tied
       if (userSort === 'gold') return (b.gold ?? 0) - (a.gold ?? 0);
-      if (userSort === 'elo') return (b.eloRating ?? 1200) - (a.eloRating ?? 1200);
+      if (userSort === 'elo') return (b.eloRating ?? INITIAL_PLAYER_ELO) - (a.eloRating ?? INITIAL_PLAYER_ELO);
       if (userSort === 'wins')
         return (b.pvpWins ?? 0) + (b.arenaWins ?? 0) - ((a.pvpWins ?? 0) + (a.arenaWins ?? 0));
       return (b.lastActiveAt ?? b.createdAt ?? 0) - (a.lastActiveAt ?? a.createdAt ?? 0);
@@ -932,7 +933,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                         onClick={() => {
                           setSelectedUser(p);
                           setCustomGoldInput(String(p.gold ?? 0));
-                          setCustomEloInput(String(p.eloRating ?? 1200));
+                          setCustomEloInput(String(p.eloRating ?? INITIAL_PLAYER_ELO));
                           setSection('users');
                         }}
                       >
@@ -1256,9 +1257,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                       type="button"
                       className="nav-notif-mini-btn"
                       onClick={() => {
-                        const val = Math.max(100, parseInt(customEloInput || '1200', 10) || 1200);
+                        const val = Math.max(
+                          100,
+                          parseInt(customEloInput || String(INITIAL_PLAYER_ELO), 10) || INITIAL_PLAYER_ELO
+                        );
                         handleSaveModifiedUser(
-                          { ...selectedUser, eloRating: val },
+                          { ...selectedUser, eloRating: val, eloBaseVersion: ELO_SCHEMA_VERSION },
                           `Elo Atualizado (${selectedUser.username})`,
                           `Reputação definida para ${val}.`
                         );
@@ -1487,7 +1491,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           {(p.gold ?? 0).toLocaleString('pt-BR')}
                         </td>
                         <td style={{ padding: '0.75rem', fontWeight: 800, color: '#38bdf8' }}>
-                          {p.eloRating ?? 1200}
+                          {p.eloRating ?? INITIAL_PLAYER_ELO}
                         </td>
                         <td style={{ padding: '0.75rem', color: '#cbd5e1' }}>
                           {p.pvpWins ?? 0}V/{p.pvpLosses ?? 0}D PvP • {p.arenaWins ?? 0}V Soberanos
@@ -1512,7 +1516,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             onClick={() => {
                               setSelectedUser(p);
                               setCustomGoldInput(String(p.gold ?? 0));
-                              setCustomEloInput(String(p.eloRating ?? 1200));
+                              setCustomEloInput(String(p.eloRating ?? INITIAL_PLAYER_ELO));
                             }}
                           >
                             ⚙️ Editar / Suporte

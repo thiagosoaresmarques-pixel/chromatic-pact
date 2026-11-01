@@ -1612,12 +1612,16 @@ export const UNIFIED_MATCHUP_MATRIX: Record<UnifiedChampionId, Record<UnifiedCha
     });
   }
 
-  // 2. 24 Regional Commanders & Vanguard Wardens across Tiers I–IV (6 per tier), sorted by ELO so top commanders pick first
+  // 2. 24 Regional Commanders & Vanguard Wardens across Tiers I–IV (6 per tier), stratified by ELO quantiles so every division is populated
+  const QUANTILE_INDICES = [3, 11, 18, 25, 33, 40];
   const commanderSeeds: Array<{ tier: 1 | 2 | 3 | 4; c: ChampionFullEntry }> = [];
   for (const tier of [4, 3, 2, 1] as const) {
-    for (let pick = 0; pick < 6; pick++) {
-      const cIdx = (pick * 7 + tier * 3) % N;
-      commanderSeeds.push({ tier, c: champions[cIdx] });
+    const sortedByTierElo = [...champions].sort(
+      (a, b) => archetypeTierEloMap[a.id][tier].elo - archetypeTierEloMap[b.id][tier].elo
+    );
+    for (const qIdx of QUANTILE_INDICES) {
+      const picked = sortedByTierElo[Math.min(sortedByTierElo.length - 1, qIdx)];
+      commanderSeeds.push({ tier, c: picked });
     }
   }
   commanderSeeds.sort(

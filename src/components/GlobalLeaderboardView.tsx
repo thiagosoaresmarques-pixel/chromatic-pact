@@ -8,6 +8,7 @@ import {
   EloDivisionId,
   getEloDivisionMeta,
   getSignatureCardsForSovereign,
+  INITIAL_PLAYER_ELO,
   SovereignAiLeaderboardEntry,
 } from '../data/sovereignEloLadder';
 import { CardDefinition, Domain } from '../types/game';
@@ -154,7 +155,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
     onChallengeSovereign(entry, activeDeck.cardIds, activeDeck.id);
   };
 
-  const playerElo = currentUser.eloRating ?? 1200;
+  const playerElo = currentUser.eloRating ?? INITIAL_PLAYER_ELO;
   const playerDiv = getEloDivisionMeta(playerElo);
   const playerWins = (currentUser.pvpWins ?? 0) + (currentUser.rankedSovereignWins ?? 0);
   const playerLosses = (currentUser.pvpLosses ?? 0) + (currentUser.rankedSovereignLosses ?? 0);
@@ -1413,8 +1414,9 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
             </div>
 
             <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.5, margin: '0 0 0.9rem' }}>
-              Jogadores e Soberanos de Vaeloria compartilham a mesma escala competitiva oficial
-              (ancorada em <strong style={{ color: '#e2e8f0' }}>1200 ELO</strong>). Todos os duelos
+              Jogadores e Soberanos de Vaeloria compartilham a mesma escala competitiva oficial.
+              Novos Soberanos iniciam em <strong style={{ color: '#e2e8f0' }}>{INITIAL_PLAYER_ELO} ELO</strong>{' '}
+              (Ferro Axial), com calibração acelerada nas 10 primeiras partidas. Todos os duelos
               ranqueados são disputados em igualdade (40 PV vs 40 PV, grimórios de 100 cartas, sem
               modificadores externos).
             </p>

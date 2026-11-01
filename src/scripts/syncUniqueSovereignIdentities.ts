@@ -98,29 +98,56 @@ function main(): void {
     });
   }
 
-  // 2. All 24 Regional Commanders (Tiers I–IV), processed in descending ELO order
-  const commanderEntries = SOVEREIGN_AI_LEADERBOARD_ROSTER.filter((e) => !e.isGrandSovereign).sort(
-    (a, b) => b.eloRating - a.eloRating || b.simulatedWinRate - a.simulatedWinRate
+  // 2. All 24 Regional Commanders (6 per Tier I–IV), stratified by ELO quantiles so every division (including Ferro & Prata) is continuously populated
+  const QUANTILE_INDICES = [3, 11, 18, 25, 33, 40];
+  const commanderSeeds: Array<{ tier: 1 | 2 | 3 | 4; st: (typeof UNIFIED_CHAMPION_STANDINGS)[number] }> = [];
+  for (const tier of [4, 3, 2, 1] as const) {
+    const sortedByTierElo = [...UNIFIED_CHAMPION_STANDINGS].sort(
+      (a, b) => ARCHETYPE_TIER_ELO_MAP[a.archetypeId][tier].elo - ARCHETYPE_TIER_ELO_MAP[b.archetypeId][tier].elo
+    );
+    for (const qIdx of QUANTILE_INDICES) {
+      const picked = sortedByTierElo[Math.min(sortedByTierElo.length - 1, qIdx)];
+      commanderSeeds.push({ tier, st: picked });
+    }
+  }
+  commanderSeeds.sort(
+    (a, b) =>
+      ARCHETYPE_TIER_ELO_MAP[b.st.archetypeId][b.tier].elo -
+      ARCHETYPE_TIER_ELO_MAP[a.st.archetypeId][a.tier].elo
   );
 
-  for (const prev of commanderEntries) {
-    const m = masteryByArch(prev.archetypeId);
-    const tier = prev.skillTier as 1 | 2 | 3 | 4;
+  for (const { tier, st } of commanderSeeds) {
+    const archId = st.archetypeId;
+    const cell = ARCHETYPE_TIER_ELO_MAP[archId][tier];
+    const m = masteryByArch(archId);
     const deckT: string[] = m?.tierDecks?.[tier]?.cardIds ?? [];
     const ident = resolveUniqueRegionalCommanderIdentity({
-      archetypeId: prev.archetypeId,
+      archetypeId: archId,
       skillTier: tier,
-      domains: prev.domains,
+      domains: st.domains,
       deckCardIds: deckT,
       usedCardIds,
     });
 
     nextRoster.push({
-      ...prev,
+      sovereignId: `sov_t${tier}_${archId}`,
       sovereignName: ident.sovereignName,
       sovereignTitle: ident.sovereignTitle,
       realmOrigin: ident.realmOrigin,
+      archetypeId: archId,
+      archetypeName: st.name,
+      archetypeSubtitle: st.subtitle,
+      skillTier: tier,
+      isGrandSovereign: false,
+      format: st.format,
+      domains: st.domains,
       avatarCardId: ident.avatarCardId,
+      eloRating: cell.elo,
+      eloRd: cell.rd,
+      simulatedGames: cell.games,
+      simulatedWins: cell.wins,
+      simulatedLosses: cell.losses,
+      simulatedWinRate: cell.winRate,
     });
   }
 

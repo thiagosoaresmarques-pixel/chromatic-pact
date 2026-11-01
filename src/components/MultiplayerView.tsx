@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
+import { INITIAL_PLAYER_ELO } from '../data/eloDivisions';
 import { createInitialGameState } from '../engine/gameEngine';
 import { playSfx } from '../utils/soundEngine';
 import {
@@ -1642,13 +1643,13 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   };
 
   const handleQuickMatchmaking = () => {
-    const myElo = currentUser.eloRating ?? 1200;
+    const myElo = currentUser.eloRating ?? INITIAL_PLAYER_ELO;
     const candidates = rooms
       .filter((r) => r.status === 'waiting' && r.isPublicQueue && r.host.id !== currentUser.id)
       .sort(
         (a, b) =>
-          Math.abs((a.host.eloRating ?? 1200) - myElo) -
-          Math.abs((b.host.eloRating ?? 1200) - myElo)
+          Math.abs((a.host.eloRating ?? INITIAL_PLAYER_ELO) - myElo) -
+          Math.abs((b.host.eloRating ?? INITIAL_PLAYER_ELO) - myElo)
       );
     if (candidates.length > 0) {
       handleJoinRoom(candidates[0]);

@@ -1,3 +1,6 @@
+export const INITIAL_PLAYER_ELO = 1000;
+export const ELO_SCHEMA_VERSION = 2;
+
 export type EloDivisionId =
   | 'ferro_axial'
   | 'prata_fronteira'
@@ -130,21 +133,32 @@ export function calculateFideRankedEloDelta(params: {
   didWin: boolean;
   recentOpponentIds?: string[];
   opponentKey?: string;
+  totalRankedGamesPlayed?: number;
 }): {
   delta: number;
   kFactorUsed: number;
   expectedWinProb: number;
   repeatCount: number;
 } {
-  const { playerElo, opponentElo, didWin, recentOpponentIds = [], opponentKey } = params;
+  const {
+    playerElo,
+    opponentElo,
+    didWin,
+    recentOpponentIds = [],
+    opponentKey,
+    totalRankedGamesPlayed,
+  } = params;
   const recentWindow = recentOpponentIds.slice(-5);
   const repeatCount = opponentKey
     ? recentWindow.filter((id) => id === opponentKey).length
     : 0;
 
-  let kFactorUsed = 24;
-  if (repeatCount === 1) kFactorUsed = 14;
-  else if (repeatCount === 2) kFactorUsed = 8;
+  const isProvisional =
+    typeof totalRankedGamesPlayed === 'number' && totalRankedGamesPlayed < 10;
+
+  let kFactorUsed = isProvisional ? 32 : 24;
+  if (repeatCount === 1) kFactorUsed = isProvisional ? 18 : 14;
+  else if (repeatCount === 2) kFactorUsed = isProvisional ? 10 : 8;
   else if (repeatCount >= 3) kFactorUsed = 4;
 
   const expectedWinProb = 1 / (1 + Math.pow(10, (opponentElo - playerElo) / 400));

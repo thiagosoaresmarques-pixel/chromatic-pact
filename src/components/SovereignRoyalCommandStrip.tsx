@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { TACTICAL_PROBLEMS, TacticalProblem } from '../data/problems';
 import { CAMPAIGN_BOSSES } from '../data/decks';
+import { INITIAL_PLAYER_ELO } from '../data/eloDivisions';
 import { loadDraftRunState } from '../data/vaeloriaDraftData';
 import { getWeeklyFeaturedRift } from '../data/fractureRiftsData';
 import {
@@ -43,7 +44,7 @@ export interface SovereignRoyalCommandStripProps {
 export const SovereignRoyalCommandStrip: React.FC<SovereignRoyalCommandStripProps> = ({
   isGuest,
   username,
-  eloRating = 1200,
+  eloRating = INITIAL_PLAYER_ELO,
   gold,
   astralShards,
   defeatedBossCount,

@@ -6,10 +6,12 @@ import type { UnifiedChampionId } from './aiUnifiedTournamentData';
 import {
   calculateFideRankedEloDelta,
   ELO_DIVISIONS,
+  ELO_SCHEMA_VERSION,
   EloDivisionId,
   EloDivisionMeta,
   getEloDivisionMeta,
   getEloDivisionProgressPct,
+  INITIAL_PLAYER_ELO,
 } from './eloDivisions';
 import {
   ARCHETYPE_TIER_ELO_MAP,
@@ -24,8 +26,10 @@ export {
   ARCHETYPE_TIER_ELO_MAP,
   calculateFideRankedEloDelta,
   ELO_DIVISIONS,
+  ELO_SCHEMA_VERSION,
   getEloDivisionMeta,
   getEloDivisionProgressPct,
+  INITIAL_PLAYER_ELO,
   SOVEREIGN_AI_LEADERBOARD_ROSTER,
   SOVEREIGN_ELO_CALIBRATION_SUMMARY,
 };

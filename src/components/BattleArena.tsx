@@ -24,9 +24,15 @@ import {
   POLYCOLOR_ARCHETYPE_MASTERY,
   resolveBicolorArchetypeForDeckId,
   resolveCampaignBossGraduatedSetup,
+  resolveDomainValueMlpForActor,
   resolvePolycolorArchetypeForDeckId,
 } from '../data/aiMonocolorMastery';
-import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
+import {
+  getEmpiricalUnifiedWinRatePct,
+  getUnifiedStandingForDeckId,
+} from '../data/aiUnifiedTournament';
+import { evaluateStateWithValueMlp } from '../engine/aiValueNetwork';
+import { getMatchupGuide } from '../data/tacticalGuide';
 import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
 import {
   activateSimpleDomain,
@@ -553,6 +559,82 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const [selectedAttackerId, setSelectedAttackerId] = useState<string | null>(null);
   const [hoveredAttackTargetId, setHoveredAttackTargetId] = useState<string | null>(null);
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
+
+  // Neural Value MLP Turn-by-Turn Advantage Telemetry (Post-Match Oracle Analysis)
+  const neuralTelemetryRef = useRef<
+    {
+      stepKey: string;
+      turn: number;
+      activePlayer: 'player' | 'ai';
+      winPct: number;
+      playerHp: number;
+      aiHp: number;
+      keyAction: string;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    if (tacticalProblem) return;
+    if (
+      gameState.turn === 1 &&
+      gameState.combatLog.length <= 2 &&
+      neuralTelemetryRef.current.length > 3
+    ) {
+      neuralTelemetryRef.current = [];
+    }
+
+    let winPct = 50;
+    if (gameState.phase === 'gameover') {
+      winPct = gameState.winner === 'player' ? 100 : gameState.winner === 'ai' ? 0 : 50;
+    } else {
+      const pMlp = resolveDomainValueMlpForActor(gameState, 'player');
+      const aMlp = resolveDomainValueMlpForActor(gameState, 'ai');
+      const vP = evaluateStateWithValueMlp(gameState, 'player', pMlp);
+      const vA = evaluateStateWithValueMlp(gameState, 'ai', aMlp);
+      const symV = (vP - vA) * 0.5;
+      winPct = Math.max(2, Math.min(98, Math.round((symV + 1) * 50)));
+    }
+
+    let latestMsg = '';
+    for (let i = gameState.combatLog.length - 1; i >= 0; i--) {
+      const entry = gameState.combatLog[i];
+      if (entry && entry.category !== 'turn') {
+        latestMsg = entry.message;
+        break;
+      }
+    }
+
+    const stepKey =
+      gameState.phase === 'gameover'
+        ? `gameover_t${gameState.turn}`
+        : `t${gameState.turn}_${gameState.activePlayer}`;
+    const snap = {
+      stepKey,
+      turn: gameState.turn,
+      activePlayer: gameState.activePlayer,
+      winPct,
+      playerHp: gameState.player.hp,
+      aiHp: gameState.ai.hp,
+      keyAction: latestMsg,
+    };
+
+    const arr = neuralTelemetryRef.current;
+    if (arr.length > 0 && arr[arr.length - 1].stepKey === stepKey) {
+      arr[arr.length - 1] = snap;
+    } else {
+      arr.push(snap);
+      if (arr.length > 60) arr.shift();
+    }
+  }, [
+    tacticalProblem,
+    gameState.turn,
+    gameState.activePlayer,
+    gameState.phase,
+    gameState.winner,
+    gameState.combatLog.length,
+    gameState.player.hp,
+    gameState.ai.hp,
+  ]);
   const [hoveredCardInfo, setHoveredCardInfo] = useState<{
     card: CardDefinition;
     unit?: BoardUnit;
@@ -4136,28 +4218,46 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   {!onlineMatch && !tacticalProblem && (() => {
                     const activeAiTier = gameState.aiSkillTier ?? 3;
                     const tSpec = AI_SKILL_TIER_SPECS[activeAiTier];
+                    const champStanding = getUnifiedStandingForDeckId(
+                      gameState.aiDeckId ??
+                        campaignBoss?.archetypeId ??
+                        campaignBoss?.deckId ??
+                        selectedAiDeckId
+                    );
                     return (
                       <span
-                        className="hud-pill-env-chip hide-on-mobile"
+                        className="hud-pill-env-chip"
                         style={{
                           borderColor:
                             activeAiTier >= 5
                               ? 'rgba(250, 204, 21, 0.75)'
                               : activeAiTier >= 4
                                 ? 'rgba(192, 132, 252, 0.65)'
-                                : 'rgba(148, 163, 184, 0.4)',
+                                : 'rgba(148, 163, 184, 0.45)',
                           color:
                             activeAiTier >= 5
                               ? '#fde047'
                               : activeAiTier >= 4
                                 ? '#e9d5ff'
                                 : '#cbd5e1',
-                          fontSize: '0.64rem',
+                          fontSize: '0.62rem',
                           fontWeight: 800,
+                          whiteSpace: 'nowrap',
                         }}
-                        title={`${tSpec.shortLabel} (${tSpec.title}): ${tSpec.description}`}
+                        title={`${tSpec.shortLabel} (${tSpec.title})${
+                          champStanding
+                            ? ` • Campeão #${champStanding.rank}/44 [Tier ${champStanding.tierBadge}]: ${champStanding.name}`
+                            : ''
+                        } — ${tSpec.description}`}
                       >
                         🧠 T{tSpec.roman}
+                        {champStanding && (
+                          <>
+                            {' '}
+                            • #{champStanding.rank} [{champStanding.tierBadge}]
+                            <span className="hide-on-mobile"> {champStanding.name}</span>
+                          </>
+                        )}
                       </span>
                     );
                   })()}
@@ -4289,6 +4389,53 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       ✕ Ocultar Painel
                     </button>
                   </div>
+                  {!onlineMatch && !tacticalProblem && (() => {
+                    const activeAiTier = gameState.aiSkillTier ?? 3;
+                    const tSpec = AI_SKILL_TIER_SPECS[activeAiTier];
+                    const champStanding = getUnifiedStandingForDeckId(
+                      gameState.aiDeckId ??
+                        campaignBoss?.archetypeId ??
+                        campaignBoss?.deckId ??
+                        selectedAiDeckId
+                    );
+                    const aiModeText =
+                      tSpec.beamDepth > 1
+                        ? `Value MLP + Beam Search (${tSpec.beamWidth}×${tSpec.beamDepth})`
+                        : tSpec.useValueMlp
+                          ? 'Value MLP Neural'
+                          : 'Heurística Tática';
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '5px 8px',
+                          marginTop: '4px',
+                          borderRadius: '6px',
+                          background: 'rgba(15, 23, 42, 0.85)',
+                          border: '1px solid rgba(212, 175, 55, 0.35)',
+                          fontSize: '0.68rem',
+                          color: '#e2e8f0',
+                        }}
+                      >
+                        <strong style={{ color: '#fde047' }}>
+                          🧠 {tSpec.shortLabel} ({aiModeText})
+                        </strong>
+                        {champStanding && (
+                          <>
+                            <span style={{ color: '#64748b' }}>•</span>
+                            <span style={{ color: '#93c5fd', fontWeight: 700 }}>
+                              🏆 Rank #{champStanding.rank}/44 [Tier {champStanding.tierBadge}] —{' '}
+                              {champStanding.name} (
+                              {(champStanding.overallWinRate * 100).toFixed(1)}% WR Global)
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })()}
                   <div className="hud-dropdown-row">
                     {/* Left Card: Channeled Lands, Elemental Affinities & Crypt */}
                     <div className="hud-dropdown-section hud-drawer-card">
@@ -6613,7 +6760,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         <div className="modal-backdrop" onClick={() => setGameoverStage('dismissed')}>
           <div
             className="modal-panel gameover-modal-panel"
-            style={{ maxWidth: '500px', textAlign: 'center', padding: '1.75rem 1.5rem', position: 'relative' }}
+            style={{
+              maxWidth: '560px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              textAlign: 'center',
+              padding: '1.5rem 1.35rem',
+              position: 'relative',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -6680,6 +6834,230 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     <span>
                       ❤️ {dossier.playerFinalHp} vs {dossier.aiFinalHp} PV
                     </span>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* Post-Match Neural Telemetry ("Análise do Oráculo" via Value MLP) */}
+            {!tacticalProblem && !onlineMatch && (() => {
+              const snaps = neuralTelemetryRef.current;
+              const rivalRawId =
+                gameState.aiDeckId ??
+                campaignBoss?.archetypeId ??
+                campaignBoss?.deckId ??
+                selectedAiDeckId;
+              const rivalStanding = getUnifiedStandingForDeckId(rivalRawId);
+              const playerRawId = gameState.playerDeckId ?? selectedPlayerDeckId;
+              const playerStanding = getUnifiedStandingForDeckId(playerRawId);
+              const empiricalWr = getEmpiricalUnifiedWinRatePct(playerRawId, rivalRawId);
+              const activeAiTier = gameState.aiSkillTier ?? 3;
+              const tierSpec = AI_SKILL_TIER_SPECS[activeAiTier];
+
+              const myClassicId =
+                playerStanding?.classicDeckIds[0] ??
+                (PREBUILT_DECKS.some((d) => d.id === playerRawId)
+                  ? playerRawId
+                  : 'deck_red_inferno');
+              const enemyClassicId =
+                rivalStanding?.classicDeckIds[0] ??
+                campaignBoss?.deckId ??
+                (PREBUILT_DECKS.some((d) => d.id === rivalRawId)
+                  ? rivalRawId
+                  : 'deck_blue_tempest');
+              const matchupGuide = getMatchupGuide(myClassicId, enemyClassicId);
+
+              // Find biggest single-step swing in neural advantage
+              let bestIdx = snaps.length > 1 ? 1 : 0;
+              let bestAbsDelta = 0;
+              for (let i = 1; i < snaps.length; i++) {
+                const absDelta = Math.abs(snaps[i].winPct - snaps[i - 1].winPct);
+                if (absDelta >= bestAbsDelta) {
+                  bestAbsDelta = absDelta;
+                  bestIdx = i;
+                }
+              }
+              const prevWin = snaps[bestIdx - 1]?.winPct ?? 50;
+              const currWin =
+                snaps[bestIdx]?.winPct ?? (gameState.winner === 'player' ? 100 : 0);
+              const delta = currWin - prevWin;
+              const pivotTurn = snaps[bestIdx]?.turn ?? gameState.turn;
+              const pivotAction = snaps[bestIdx]?.keyAction || gameState.winReason;
+
+              // Build SVG sparkline coordinates (240x40)
+              const svgW = 240;
+              const svgH = 40;
+              const plotSnaps =
+                snaps.length >= 2
+                  ? snaps
+                  : [
+                      { winPct: 50, turn: 1 },
+                      { winPct: gameState.winner === 'player' ? 100 : 0, turn: gameState.turn },
+                    ];
+              const polyPoints = plotSnaps
+                .map((s, idx) => {
+                  const x = (idx / Math.max(1, plotSnaps.length - 1)) * (svgW - 8) + 4;
+                  const y = svgH - 4 - (s.winPct / 100) * (svgH - 8);
+                  return `${x.toFixed(1)},${y.toFixed(1)}`;
+                })
+                .join(' ');
+              const pivotX =
+                snaps.length >= 2
+                  ? (bestIdx / Math.max(1, snaps.length - 1)) * (svgW - 8) + 4
+                  : svgW - 4;
+              const pivotY = svgH - 4 - (currWin / 100) * (svgH - 8);
+
+              return (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    padding: '0.75rem 0.85rem',
+                    marginBottom: '0.9rem',
+                    borderRadius: '10px',
+                    background:
+                      'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 27, 75, 0.72))',
+                    border: '1px solid rgba(168, 85, 247, 0.42)',
+                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '4px',
+                      marginBottom: '6px',
+                    }}
+                  >
+                    <span
+                      className="font-cinzel"
+                      style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 800,
+                        letterSpacing: '0.07em',
+                        color: '#e9d5ff',
+                      }}
+                    >
+                      🔮 ANÁLISE DO ORÁCULO • REDE NEURAL VALUE MLP
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '0.64rem',
+                        fontWeight: 700,
+                        color: '#fde047',
+                      }}
+                    >
+                      🧠 T{tierSpec.roman}
+                      {rivalStanding
+                        ? ` • #${rivalStanding.rank}/44 [${rivalStanding.tierBadge}] ${rivalStanding.name}`
+                        : ''}
+                    </span>
+                  </div>
+
+                  {/* Sparkline + Turning Point */}
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '112px 1fr',
+                      gap: '8px',
+                      alignItems: 'center',
+                      padding: '6px 8px',
+                      borderRadius: '7px',
+                      background: 'rgba(2, 6, 23, 0.65)',
+                      border: '1px solid rgba(148, 163, 184, 0.2)',
+                      marginBottom: '7px',
+                    }}
+                  >
+                    <div>
+                      <svg
+                        viewBox={`0 0 ${svgW} ${svgH}`}
+                        style={{ width: '100%', height: '38px', display: 'block' }}
+                        aria-label="Trajetória de vantagem neural turno a turno"
+                      >
+                        <line
+                          x1="0"
+                          y1={svgH / 2}
+                          x2={svgW}
+                          y2={svgH / 2}
+                          stroke="rgba(148,163,184,0.35)"
+                          strokeDasharray="3 3"
+                          strokeWidth="1"
+                        />
+                        <polyline
+                          fill="none"
+                          stroke={gameState.winner === 'player' ? '#34d399' : '#f87171'}
+                          strokeWidth="2.4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          points={polyPoints}
+                        />
+                        <circle
+                          cx={pivotX}
+                          cy={pivotY}
+                          r="4"
+                          fill="#fde047"
+                          stroke="#0f172a"
+                          strokeWidth="1.5"
+                        />
+                      </svg>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          fontSize: '0.58rem',
+                          color: '#94a3b8',
+                        }}
+                      >
+                        <span>T1 (50%)</span>
+                        <span>Virada T{pivotTurn}</span>
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: '0.72rem', lineHeight: 1.35, color: '#e2e8f0' }}>
+                      <strong
+                        style={{
+                          color: delta >= 0 ? '#6ee7b7' : '#fca5a5',
+                          display: 'block',
+                        }}
+                      >
+                        ⚡ Momento Decisivo (Turno {pivotTurn}): {prevWin}% ➔ {currWin}% (
+                        {delta >= 0 ? `+${delta}%` : `${delta}%`})
+                      </strong>
+                      {pivotAction && (
+                        <span
+                          style={{
+                            color: '#cbd5e1',
+                            fontSize: '0.67rem',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {pivotAction}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Tactical Advice Against Faced Champion */}
+                  <div style={{ fontSize: '0.7rem', lineHeight: 1.38, color: '#cbd5e1' }}>
+                    {empiricalWr !== null && (
+                      <div style={{ marginBottom: '3px', color: '#93c5fd', fontWeight: 700 }}>
+                        📊 Taxa Empírica no Torneio Unificado: {empiricalWr}% para o seu arquétipo
+                      </div>
+                    )}
+                    <div style={{ marginBottom: '3px' }}>
+                      <strong style={{ color: '#fde68a' }}>🛡️ Contra-Tática:</strong>{' '}
+                      {matchupGuide.positioningTactic}
+                    </div>
+                    <div>
+                      <strong style={{ color: '#c4b5fd' }}>🎯 Ponto de Atenção:</strong>{' '}
+                      {gameState.winner === 'player'
+                        ? matchupGuide.keyObjective
+                        : matchupGuide.dangerWatchout}
+                    </div>
                   </div>
                 </div>
               );

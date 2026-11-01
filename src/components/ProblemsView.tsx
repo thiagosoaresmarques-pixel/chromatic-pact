@@ -132,6 +132,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
 
           {tierProgress.map((tp) => {
             const isSelected = selectedTier === tp.tier;
+            const isChampTier = tp.tier === 'campeoes_torneio';
             return (
               <button
                 key={tp.tier}
@@ -145,6 +146,14 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 5,
+                  borderColor:
+                    isChampTier && !isSelected
+                      ? 'rgba(250, 204, 21, 0.5)'
+                      : undefined,
+                  color:
+                    isChampTier && !isSelected
+                      ? '#fde047'
+                      : undefined,
                 }}
               >
                 <span>{tp.isCompleted ? '✓' : tp.unlocked ? '•' : '🔒'}</span>
@@ -310,6 +319,49 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
         </div>
       )}
 
+      {/* Grandmaster Champions Showcase Strip */}
+      {selectedTier === 'campeoes_torneio' && (
+        <div
+          style={{
+            padding: '10px 14px',
+            borderRadius: 8,
+            background:
+              'linear-gradient(135deg, rgba(30, 27, 75, 0.72), rgba(15, 23, 42, 0.92))',
+            border: '1px solid rgba(250, 204, 21, 0.45)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+            fontSize: '0.78rem',
+            color: '#e2e8f0',
+          }}
+        >
+          <div>
+            <strong className="font-cinzel" style={{ color: '#fde047', marginRight: 6 }}>
+              🏆 PROBLEMAS DOS GRÃO-MESTRES IA (#111–#116):
+            </strong>
+            <span>
+              Quebra-cabeças letais em 1 turno extraídos dos combos de maior Valor Shapley do
+              Grande Torneio Unificado (44 × 43 Campeões Tier V). Desbloqueados desde o início!
+            </span>
+          </div>
+          <span
+            style={{
+              padding: '3px 9px',
+              borderRadius: 999,
+              background: 'rgba(234, 179, 8, 0.18)',
+              border: '1px solid rgba(250, 204, 21, 0.45)',
+              color: '#fde68a',
+              fontWeight: 800,
+              fontSize: '0.7rem',
+            }}
+          >
+            +12 🪙 Ouro cada
+          </span>
+        </div>
+      )}
+
       {/* Empty Filter State */}
       {filteredProblems.length === 0 && (
         <div
@@ -429,6 +481,22 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                 >
                   {prob.title}
                 </div>
+                {prob.difficulty === 'campeoes_torneio' && (
+                  <div
+                    style={{
+                      fontSize: '0.66rem',
+                      color: '#fde68a',
+                      fontWeight: 700,
+                      marginTop: 2,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                    title={prob.mechanicTag}
+                  >
+                    {prob.mechanicTag}
+                  </div>
+                )}
               </div>
             </div>
           );

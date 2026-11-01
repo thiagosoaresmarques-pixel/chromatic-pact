@@ -33,6 +33,9 @@ const DRAFT_DOMAIN_SORT: Record<Domain, number> = {
 import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
 import { recordBestDraftWins } from '../data/sovereignRelics';
 import { playSfx } from '../utils/soundEngine';
+import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
+import { TacticalGuideView } from './TacticalGuideView';
 
 export interface DraftCrucibleViewProps {
   userId: string;
@@ -66,6 +69,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
   const [runState, setRunState] = useState<DraftRunState>(() => loadDraftRunState());
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [showDeckDrawer, setShowDeckDrawer] = useState<boolean>(false);
+  const [showMatchupModal, setShowMatchupModal] = useState<boolean>(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const processedOutcomeRef = useRef<string | null>(null);
 
@@ -188,7 +192,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
   };
 
   const handleLaunchGauntletMatch = () => {
-    const { boss, modifiers } = buildDraftGauntletBoss(runState.wins);
+    const { boss, modifiers } = buildDraftGauntletBoss(runState.wins, runState.runId);
     const fullDeckIds = runState.chosenSovereignId
       ? [
           runState.chosenSovereignId,
@@ -249,9 +253,18 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
     ? CARDS_BY_ID[runState.chosenSovereignId]
     : undefined;
   const nextPreview = useMemo(
-    () => buildDraftGauntletBoss(runState.wins),
-    [runState.wins]
+    () => buildDraftGauntletBoss(runState.wins, runState.runId),
+    [runState.wins, runState.runId]
   );
+  const nextStanding = useMemo(
+    () =>
+      getUnifiedStandingForDeckId(
+        nextPreview.boss.archetypeId ?? nextPreview.boss.deckId
+      ),
+    [nextPreview.boss.archetypeId, nextPreview.boss.deckId]
+  );
+  const nextTierSpec =
+    AI_SKILL_TIER_SPECS[nextPreview.boss.difficultyTier ?? 3];
 
   return (
     <div className="aaa-page-shell draft-crucible-shell">
@@ -607,7 +620,61 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
                 <strong className="font-cinzel" style={{ display: 'block', color: '#fca5a5' }}>
                   {nextPreview.boss.name} ({nextPreview.boss.startingHp} PV)
                 </strong>
-                <small style={{ color: '#cbd5e1' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    alignItems: 'center',
+                    gap: '6px',
+                    margin: '4px 0',
+                    fontSize: '0.72rem',
+                  }}
+                >
+                  <span
+                    style={{
+                      padding: '2px 7px',
+                      borderRadius: '999px',
+                      background: 'rgba(15, 23, 42, 0.85)',
+                      border: '1px solid rgba(212, 175, 55, 0.45)',
+                      color: '#fde68a',
+                      fontWeight: 700,
+                    }}
+                    title={nextTierSpec.description}
+                  >
+                    🧠 {nextTierSpec.shortLabel} ({nextTierSpec.title})
+                  </span>
+                  {nextStanding && (
+                    <span
+                      style={{
+                        padding: '2px 7px',
+                        borderRadius: '999px',
+                        background: 'rgba(30, 58, 138, 0.45)',
+                        border: '1px solid rgba(96, 165, 250, 0.45)',
+                        color: '#bfdbfe',
+                        fontWeight: 700,
+                      }}
+                    >
+                      🏆 #{nextStanding.rank}/44 [{nextStanding.tierBadge}] {nextStanding.name}
+                    </span>
+                  )}
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                    {nextPreview.boss.domains.map((dom) => (
+                      <span
+                        key={dom}
+                        title={DOMAIN_META[dom].name}
+                        style={{
+                          width: 9,
+                          height: 9,
+                          borderRadius: '50%',
+                          backgroundColor: DOMAIN_META[dom].color,
+                          border: '1px solid rgba(255,255,255,0.45)',
+                          display: 'inline-block',
+                        }}
+                      />
+                    ))}
+                  </span>
+                </div>
+                <small style={{ color: '#cbd5e1', display: 'block' }}>
                   {nextPreview.boss.passiveName}: {nextPreview.boss.passiveDescription}
                 </small>
               </div>
@@ -622,6 +689,14 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
               onClick={handleLaunchGauntletMatch}
             >
               ⚔️ Iniciar {runState.wins + 1}ª Batalha do Crisol
+            </button>
+            <button
+              type="button"
+              className="aaa-btn aaa-btn-secondary"
+              onClick={() => setShowMatchupModal(true)}
+              title="Abrir dossiê tático do Oráculo de Guerra contra este Campeão"
+            >
+              📊 Matchup
             </button>
             <button
               type="button"
@@ -678,6 +753,15 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
             </button>
           </div>
         </div>
+      )}
+
+      {showMatchupModal && (
+        <TacticalGuideView
+          initialOpponentDeckId={nextPreview.boss.archetypeId ?? nextPreview.boss.deckId}
+          initialViewSection="matchup_duel"
+          isModal={true}
+          onClose={() => setShowMatchupModal(false)}
+        />
       )}
 
       {inspectCard && (

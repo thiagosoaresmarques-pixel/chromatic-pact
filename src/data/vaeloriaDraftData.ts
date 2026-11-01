@@ -1,7 +1,19 @@
 import { ALL_CARDS, CARDS_BY_ID } from './cards';
 import { PREBUILT_DECKS } from './decks';
-import { ArenaWeatherType, CampaignBoss, CardDefinition, ConquestBattleModifiers, Domain } from '../types/game';
+import {
+  AiSkillTier,
+  ArenaWeatherType,
+  CampaignBoss,
+  CardDefinition,
+  ConquestBattleModifiers,
+  Domain,
+} from '../types/game';
 import { applyEquippedRelicToModifiers, recordBestDraftWins } from './sovereignRelics';
+import {
+  AI_SKILL_TIER_SPECS,
+  resolveCampaignBossGraduatedSetup,
+} from './aiMonocolorMastery';
+import { getUnifiedStandingForDeckId, UnifiedChampionId } from './aiUnifiedTournament';
 
 export const DRAFT_ENTRY_GOLD_COST = 100;
 export const DRAFT_TOTAL_ROUNDS = 20;
@@ -179,6 +191,19 @@ const BUCKET_LABELS_BY_THEME: Array<{
     label: '🔥 Sinergia Tática',
     filter: (c) => c.effects.length > 0,
   },
+  {
+    label: '⚙️ Artilharia Axial & Armas',
+    filter: (c) =>
+      c.domain === 'neutral' ||
+      c.keywords.includes('Alcance') ||
+      c.keywords.includes('Ímpeto'),
+  },
+  {
+    label: '🌈 Pontes do Prisma & Afinidade',
+    filter: (c) =>
+      c.id.includes('_167_arauto_prisma_') ||
+      c.effects.some((e) => e.type === 'grant_bonus_essence' || e.type === 'draw_cards'),
+  },
 ];
 
 export function generateDraftRoundBuckets(
@@ -257,99 +282,262 @@ const CRUCIBLE_CHALLENGERS: Array<{
   title: string;
   name: string;
   hp: number;
+  skillTier: AiSkillTier;
   weather: ArenaWeatherType;
   passiveName: string;
   passiveDesc: string;
+  championPool: UnifiedChampionId[];
 }> = [
   {
     name: 'Kaelen, Iniciado das Brasas',
-    title: '1ª Provação do Crisol',
+    title: '1ª Provação do Crisol • Grau I',
     hp: 20,
+    skillTier: 1,
     weather: 'ash_storm',
     passiveName: 'Batismo das Cinzas',
     passiveDesc: 'Arena aquecida pela Tempestade de Cinzas nos 2 primeiros turnos.',
+    championPool: [
+      'mono_red_blitz',
+      'mono_blue_frost',
+      'mono_purple_crypt',
+      'mono_green_swarm',
+      'mono_gold_phalanx',
+      'mono_neutral_axial',
+    ],
   },
   {
     name: 'Lyra, Vigia de Cristália',
-    title: '2ª Provação do Crisol',
+    title: '2ª Provação do Crisol • Grau II',
     hp: 22,
+    skillTier: 2,
     weather: 'astral_blizzard',
     passiveName: 'Lente Polar',
     passiveDesc: 'Nevasca Astral inicial testa a resiliência da sua curva de Essência.',
+    championPool: [
+      'mono_blue_chrono',
+      'mono_red_pyroclasm',
+      'mono_purple_umbral',
+      'mono_green_roots',
+      'mono_gold_judgment',
+      'dual_blue_neutral',
+      'dual_green_neutral',
+      'dual_gold_neutral',
+    ],
   },
   {
     name: 'Thorn, Voz da Mata Antiga',
-    title: '3ª Provação do Crisol',
+    title: '3ª Provação do Crisol • Grau III',
     hp: 23,
+    skillTier: 3,
     weather: 'sylvan_monsoon',
     passiveName: 'Seiva Crescente',
     passiveDesc: 'Monção Primordial regenera unidades em combate nos turnos iniciais.',
+    championPool: [
+      'mono_green_colossus',
+      'mono_red_dragon',
+      'mono_blue_abyssal',
+      'mono_purple_blood',
+      'mono_gold_celestial',
+      'dual_red_green',
+      'dual_green_gold',
+      'dual_purple_green',
+    ],
   },
   {
     name: 'Malakor, Tecelão do Eclipse',
-    title: '4ª Provação do Crisol',
+    title: '4ª Provação do Crisol • Grau III',
     hp: 25,
+    skillTier: 3,
     weather: 'umbral_eclipse',
     passiveName: 'Véu Abissal',
     passiveDesc: 'Eclipse Umbral drena a vitalidade dos tronos a cada abertura.',
+    championPool: [
+      'dual_blue_purple',
+      'dual_red_purple',
+      'dual_purple_gold',
+      'dual_purple_neutral',
+      'dual_blue_gold',
+      'dual_blue_green',
+      'dual_red_gold',
+      'dual_red_blue',
+    ],
   },
   {
     name: 'Aurelia, Juíza do Zênite',
-    title: '5ª Provação do Crisol',
+    title: '5ª Provação do Crisol • Grau IV',
     hp: 26,
+    skillTier: 4,
     weather: 'solar_zenith',
     passiveName: 'Decreto Solar',
     passiveDesc: 'Zênite Solar concede armadura adicional à Vanguarda.',
+    championPool: [
+      'tri_blue_green_gold',
+      'tri_blue_purple_gold',
+      'tri_red_green_gold',
+      'tri_red_purple_gold',
+      'tri_red_blue_purple',
+      'tri_blue_purple_green',
+      'tri_purple_green_gold',
+    ],
   },
   {
     name: 'Draven, Marechal Ferrobruxo',
-    title: '6ª Provação do Crisol',
+    title: '6ª Provação do Crisol • Grau IV',
     hp: 28,
+    skillTier: 4,
     weather: 'ash_storm',
     passiveName: 'Forja Implacável',
-    passiveDesc: 'Veterano de seis selos com grimório agressivo e pressão constante.',
+    passiveDesc: 'Contendor de elite com arquétipo Top 5 Global e pressão implacável.',
+    championPool: [
+      'dual_red_neutral',
+      'tri_red_purple_green',
+      'tri_red_blue_green',
+      'tri_red_blue_gold',
+    ],
   },
   {
     name: 'Vaelkor, Árbitro do Sétimo Selo',
-    title: 'Provação Final • Campeão Imortal',
+    title: 'Provação Final • Grão-Mestre Grau V',
     hp: 30,
+    skillTier: 5,
     weather: 'astral_convergence',
     passiveName: 'Convergência dos Cinco Selos',
     passiveDesc: 'Fluxo planar acelerado na batalha decisiva pela 7ª Vitória do Crisol!',
+    championPool: [
+      'penta_wheel_convergence',
+      'tri_red_blue_gold',
+      'penta_prismatic_crater',
+      'penta_free_city_sovereign',
+    ],
   },
 ];
 
-export function buildDraftGauntletBoss(wins: number): {
+function hashRunSeed(seedText: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seedText.length; i++) {
+    h ^= seedText.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function resolveChampionMetaForDraft(champId: UnifiedChampionId): {
+  prebuiltDeckId: string;
+  domains: Domain[];
+  avatarCardId: string;
+  title: string;
+} {
+  const standing = getUnifiedStandingForDeckId(champId);
+  if (standing) {
+    const pb =
+      PREBUILT_DECKS.find((d) => standing.classicDeckIds.includes(d.id)) ?? PREBUILT_DECKS[0];
+    return {
+      prebuiltDeckId: pb.id,
+      domains: [...standing.domains],
+      avatarCardId: standing.coverCardId,
+      title: standing.name,
+    };
+  }
+  const fallback = PREBUILT_DECKS[0];
+  return {
+    prebuiltDeckId: fallback.id,
+    domains: fallback.domains,
+    avatarCardId: fallback.coverCardId,
+    title: fallback.name,
+  };
+}
+
+/**
+ * Condenses a 100-card Co-Evolved Champion list into a symmetric 40-card Draft Gauntlet deck
+ * (<= 4 Legendaries, <= 2 copies per non-Legendary, preserving signature commander & curve).
+ */
+function condenseChampionListTo40(cardIds100: string[], avatarCardId: string): string[] {
+  const result: string[] = [];
+  const counts: Record<string, number> = {};
+  let legCount = 0;
+
+  const tryAdd = (cid: string): boolean => {
+    const c = CARDS_BY_ID[cid];
+    if (!c) return false;
+    const isLeg = c.rarity === 'legendary';
+    if (isLeg && legCount >= 4) return false;
+    const maxCopies = isLeg ? 1 : 2;
+    if ((counts[cid] ?? 0) >= maxCopies) return false;
+    result.push(cid);
+    counts[cid] = (counts[cid] ?? 0) + 1;
+    if (isLeg) legCount += 1;
+    return true;
+  };
+
+  if (CARDS_BY_ID[avatarCardId]) {
+    tryAdd(avatarCardId);
+  }
+
+  // Stride across the 100-card list so early/mid/late curve proportions stay faithful
+  for (let pass = 0; pass < 3 && result.length < 40; pass++) {
+    for (let i = pass; i < cardIds100.length && result.length < 40; i += 3) {
+      tryAdd(cardIds100[i]);
+    }
+  }
+  for (const cid of cardIds100) {
+    if (result.length >= 40) break;
+    tryAdd(cid);
+  }
+  return result.slice(0, 40);
+}
+
+export function buildDraftGauntletBoss(
+  wins: number,
+  runId?: string
+): {
   boss: CampaignBoss;
   modifiers: ConquestBattleModifiers | null;
 } {
   const tierIdx = Math.max(0, Math.min(CRUCIBLE_CHALLENGERS.length - 1, wins));
   const tier = CRUCIBLE_CHALLENGERS[tierIdx];
-  const deck = PREBUILT_DECKS[(wins * 4 + 1) % PREBUILT_DECKS.length] ?? PREBUILT_DECKS[0];
-  const avatarId =
-    deck.coverCardId && CARDS_BY_ID[deck.coverCardId]
-      ? deck.coverCardId
-      : deck.cardIds[0] ?? ALL_CARDS[0].id;
+  const poolIdx = runId
+    ? hashRunSeed(`${runId}_w${wins}`) % tier.championPool.length
+    : 0;
+  const champId = tier.championPool[poolIdx] ?? tier.championPool[0];
+  const champMeta = resolveChampionMetaForDraft(champId);
+  const standing = getUnifiedStandingForDeckId(champId);
+  const tSpec = AI_SKILL_TIER_SPECS[tier.skillTier];
 
-  const boss: CampaignBoss = {
-    id: `crucible_stage_${wins + 1}`,
+  const avatarId =
+    champMeta.avatarCardId && CARDS_BY_ID[champMeta.avatarCardId]
+      ? champMeta.avatarCardId
+      : ALL_CARDS[0].id;
+
+  const stubBoss: CampaignBoss = {
+    id: `crucible_t${tier.skillTier}_stage_${wins + 1}`,
     stage: wins + 1,
     name: tier.name,
     title: tier.title,
-    domains: deck.domains,
+    domains: champMeta.domains,
     avatarCardId: avatarId,
     startingHp: tier.hp,
     passiveName: tier.passiveName,
     passiveDescription: tier.passiveDesc,
     rewardGold: 15,
     loreIntro: `Rodada ${wins + 1} do Crisol dos Cinco Selos.`,
-    deckId: deck.id,
+    deckId: champMeta.prebuiltDeckId,
+    difficultyTier: tier.skillTier,
+    archetypeId: champId,
+    archetypeTitle: standing?.name ?? champMeta.title,
+  };
+
+  const graduated = resolveCampaignBossGraduatedSetup(stubBoss);
+  const condensed40 = condenseChampionListTo40(graduated.cardIds, avatarId);
+
+  const boss: CampaignBoss = {
+    ...stubBoss,
+    customDeckCardIds: condensed40,
   };
 
   const baseModifiers: ConquestBattleModifiers = {
     provinceId: `crucible_${wins + 1}`,
     provinceName: `Crisol dos Cinco Selos (${wins}V)`,
-    provinceDomain: deck.domains[0] ?? 'neutral',
+    provinceDomain: champMeta.domains[0] ?? 'neutral',
     isDefensiveSiege: false,
     isCapitalSiege: wins === 6,
     playerBonusHp: 0,
@@ -359,9 +547,11 @@ export function buildDraftGauntletBoss(wins: number): {
     relicDiscount: false,
     dragonSkyBonus: false,
     legendaryWheelBonus: false,
-    landmarkLabel: `Crisol • ${wins + 1}ª Provação`,
+    landmarkLabel: `Crisol • ${wins + 1}ª Provação (T${tSpec.roman})`,
     initialWeather: tier.weather,
-    bannerSummary: `⚖️ Crisol (${wins} Vitórias): Clima inicial [${tier.passiveName}] por 2 rodadas.`,
+    bannerSummary: `⚖️ Crisol (${wins}V • T${tSpec.roman} ${tSpec.title}${
+      standing ? ` • #${standing.rank}/44` : ''
+    }): Clima inicial [${tier.passiveName}] por 2 rodadas.`,
   };
 
   return {

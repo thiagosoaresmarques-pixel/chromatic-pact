@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { CampaignBoss, CardDefinition, CardType, Domain } from '../types/game';
+import { AiSkillTier, CampaignBoss, CardDefinition, CardType, Domain } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import { playSfx } from '../utils/soundEngine';
@@ -10,6 +10,9 @@ import { VaeloriaWorldMap } from './VaeloriaWorldMap';
 import { resolvePrimaryBossDomain, resolveStageMapNode } from '../data/vaeloriaMapData';
 import { clearExpeditionVisitedLandmarks } from '../data/vaeloriaOverworldEvents';
 import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
+import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
+import { TacticalGuideView } from './TacticalGuideView';
 
 export interface SovereignBlessing {
   id:
@@ -140,6 +143,9 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     rewardGold: 120,
     loreIntro: 'A primeira fenda do Vazio se abre na floresta petrificada.',
     deckId: 'deck_green_wild',
+    difficultyTier: 1,
+    archetypeId: 'mono_green_swarm',
+    archetypeTitle: 'Alcateia da Galhada Viva',
   },
   {
     id: 'exp_boss_2',
@@ -153,7 +159,10 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     passiveDescription: 'Dispara feitiços de congelamento e raios em cadeia contra slots agrupados.',
     rewardGold: 160,
     loreIntro: 'Torres flutuantes de cristal faiscam no horizonte do Vazio.',
-    deckId: 'deck_blue_tempest',
+    deckId: 'deck_squad_siege_battery',
+    difficultyTier: 2,
+    archetypeId: 'dual_red_blue',
+    archetypeTitle: 'Bateria Termo-Arcana',
   },
   {
     id: 'exp_boss_3',
@@ -167,7 +176,10 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     passiveDescription: 'Posiciona Relíquias na Retaguarda e Golens com Armadura pesada.',
     rewardGold: 210,
     loreIntro: 'As forjas abandonadas do Vazio ainda batem em ritmo de guerra.',
-    deckId: 'deck_gold_bastion',
+    deckId: 'deck_dual_draconic_pact',
+    difficultyTier: 2,
+    archetypeId: 'dual_red_gold',
+    archetypeTitle: 'Legião da Forja Solar',
   },
   {
     id: 'exp_boss_4',
@@ -182,26 +194,32 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     rewardGold: 260,
     loreIntro: 'Os guerreiros que caíram nas expedições passadas erguem-se contra você.',
     deckId: 'deck_purple_abyss',
+    difficultyTier: 3,
+    archetypeId: 'dual_blue_purple',
+    archetypeTitle: 'Coven do Vórtice Umbral',
   },
   {
     id: 'exp_boss_5',
     stage: 5,
-    name: 'Ignis-Vor, Devorador de Crateras',
-    title: 'Tirano Dracônico do Vazio (Etapa 5/9)',
-    domains: ['red', 'gold'],
+    name: 'Ignis-Vor, Soberano da Lua Sangrenta',
+    title: 'Tirano Tricolor do Vazio (Etapa 5/9)',
+    domains: ['red', 'purple', 'green'],
     avatarCardId: 'red_08_dragao_vermelho',
     startingHp: 62,
-    passiveName: 'Sopro Cataclísmico',
-    passiveDescription: 'Dragões ancestrais que varrem fileiras inteiras com Sopro Elemental.',
+    passiveName: 'Sopro & Pacto Carniceiro',
+    passiveDescription: 'Combina Sopro Elemental, pactos abissais e feras com Atropelar em investidas implacáveis.',
     rewardGold: 320,
-    loreIntro: 'O calor do núcleo planar derrete até mesmo os escudos mais espessos.',
-    deckId: 'deck_dual_draconic_pact',
+    loreIntro: 'O calor do núcleo planar se funde à névoa carmesim, derretendo até escudos espessos.',
+    deckId: 'deck_tri_blood_moon',
+    difficultyTier: 3,
+    archetypeId: 'tri_red_purple_green',
+    archetypeTitle: 'Corte da Lua Sangrenta',
   },
   {
     id: 'exp_boss_6',
     stage: 6,
     name: 'Chronos-Vael, Juiz das Eras',
-    title: 'Regente do Relógio Quebrado (Etapa 6/9)',
+    title: 'Regente do Relicário Eterno (Etapa 6/9)',
     domains: ['blue', 'gold', 'purple'],
     avatarCardId: 'blue_80_senhor_tempo',
     startingHp: 68,
@@ -209,13 +227,16 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     passiveDescription: 'Congela a Vanguarda e comanda Relíquias temporais na Retaguarda.',
     rewardGold: 400,
     loreIntro: 'Nas galerias suspensas do Vazio, o próprio tempo tenta detê-lo.',
-    deckId: 'deck_spec_chronomancer',
+    deckId: 'deck_tri_eternal_reliquary',
+    difficultyTier: 4,
+    archetypeId: 'tri_blue_purple_gold',
+    archetypeTitle: 'Relicário Eterno de Nocturnus',
   },
   {
     id: 'exp_boss_7_armada',
     stage: 7,
-    name: 'Almirantes da Armada do Prisma',
-    title: 'Esquadrões Alados da Fenda (Etapa 7/9)',
+    name: 'Almirantes da Chama Celeste',
+    title: 'Campeões #1 do Firmamento (Etapa 7/9)',
     domains: ['red', 'blue', 'gold'],
     avatarCardId: 'neutral_172_armada_draconica_matriz',
     startingHp: 74,
@@ -225,7 +246,10 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     rewardGold: 500,
     loreIntro:
       'Sete esquadras dracônicas rompem as nuvens do Vazio em formação cerrada, cobrindo todas as colunas com sopro prismático.',
-    deckId: 'deck_squad_siege_battery',
+    deckId: 'deck_tri_zenith_armada',
+    difficultyTier: 4,
+    archetypeId: 'tri_red_blue_gold',
+    archetypeTitle: 'Conclave da Chama Celeste',
   },
   {
     id: 'exp_boss_8_valkyra',
@@ -242,6 +266,9 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     loreIntro:
       'Antes do santuário final da Roda Matriz, as cinco cabeças de Valkyra testam a coesão do seu grimório.',
     deckId: 'deck_spec_pentachromatic',
+    difficultyTier: 5,
+    archetypeId: 'penta_prismatic_crater',
+    archetypeTitle: 'Soberania da Cratera Prismática',
   },
   {
     id: 'exp_boss_9_vaelkor',
@@ -257,7 +284,10 @@ const EXPEDITION_STAGES: CampaignBoss[] = [
     rewardGold: 850,
     loreIntro:
       'No eixo silencioso onde todos os planos se cruzam, a Roda Matriz de Oito Raios gira pela última vez. Vença o Árbitro Supremo!',
-    deckId: 'deck_penta_valkyra_pact',
+    deckId: 'deck_penta_wheel_convergence',
+    difficultyTier: 5,
+    archetypeId: 'penta_wheel_convergence',
+    archetypeTitle: 'Convergência dos Oito Raios',
   },
 ];
 
@@ -333,6 +363,35 @@ const PACK_ARCHETYPES: {
       c.rarity === 'legendary' ||
       c.keywords.includes('Escudo Divino') ||
       c.keywords.includes('Guardião'),
+  },
+  {
+    id: 'mercury_artillery',
+    title: 'Artilharia de Mercúrio (#2)',
+    subtitle: 'Espadas Voadoras, Ferro Meteórico & Ímpeto Axial',
+    domain: 'neutral',
+    filter: (c) =>
+      (c.domain === 'neutral' && (c.keywords.includes('Ímpeto') || c.keywords.includes('Alcance') || c.keywords.includes('Voo'))) ||
+      (c.domain === 'red' && c.keywords.includes('Ímpeto')),
+  },
+  {
+    id: 'blood_moon_court',
+    title: 'Corte da Lua Sangrenta (#3)',
+    subtitle: 'Pactos de Sangue, Renascer & Atropelar Selvagem',
+    domain: 'purple',
+    filter: (c) =>
+      (c.domain === 'purple' && (c.keywords.includes('Renascer') || c.keywords.includes('Dreno de Vida'))) ||
+      (c.domain === 'green' && c.keywords.includes('Atropelar')) ||
+      (c.domain === 'red' && c.type === 'spell'),
+  },
+  {
+    id: 'prismatic_heralds',
+    title: 'Conclave do Prisma (#1)',
+    subtitle: 'Arautos Multicores, Pontes de Afinidade & Refração',
+    domain: 'blue',
+    filter: (c) =>
+      c.id.includes('arauto_prisma') ||
+      /_(167|168|169|170|171|172)_/.test(c.id) ||
+      (c.domain === 'neutral' && c.cost <= 3),
   },
 ];
 
@@ -444,6 +503,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
   const [lootChoices, setLootChoices] = useState<CardDefinition[]>([]);
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [showMatchupModal, setShowMatchupModal] = useState(false);
 
   useEffect(() => {
     try {
@@ -994,12 +1054,21 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                       <div className="aaa-boss-row-info">
                         <div className="aaa-boss-row-top">
                           <span className="aaa-boss-stage-num">
-                            ETAPA {stageBoss.stage}/{TOTAL_EXPEDITION_STAGES}
+                            ETAPA {stageBoss.stage}/{TOTAL_EXPEDITION_STAGES} • 🧠 T
+                            {AI_SKILL_TIER_SPECS[(stageBoss.difficultyTier ?? 3) as AiSkillTier].roman}
                           </span>
                           {isCleared && <span className="aaa-boss-cleared-tag">✓</span>}
                         </div>
                         <div className="font-cinzel aaa-boss-row-name">{stageBoss.name}</div>
-                        <div className="aaa-boss-row-geo">{nodeInfo.landmarkName}</div>
+                        <div className="aaa-boss-row-geo">
+                          {nodeInfo.landmarkName}
+                          {(() => {
+                            const st = getUnifiedStandingForDeckId(
+                              stageBoss.archetypeId ?? stageBoss.deckId
+                            );
+                            return st ? ` • 🏆 #${st.rank}/44 [${st.tierBadge}]` : '';
+                          })()}
+                        </div>
                       </div>
                       <div className="aaa-boss-row-stats">
                         <span>{stageBoss.startingHp} PV</span>
@@ -1082,6 +1151,50 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   <strong>{currentStageMapNode.landmarkName}</strong>
                 </div>
 
+                {(() => {
+                  const bossTier = (currentBoss.difficultyTier ?? 3) as AiSkillTier;
+                  const tSpec = AI_SKILL_TIER_SPECS[bossTier];
+                  const standing = getUnifiedStandingForDeckId(
+                    currentBoss.archetypeId ?? currentBoss.deckId
+                  );
+                  const aiModeBadge =
+                    tSpec.beamDepth > 1
+                      ? `Value MLP + Beam (${tSpec.beamWidth}×${tSpec.beamDepth})`
+                      : tSpec.useValueMlp
+                        ? 'Value MLP Neural'
+                        : 'Heurística Tática';
+                  return (
+                    <div
+                      className="vwm-dossier-geo-badge"
+                      style={{
+                        marginTop: 4,
+                        borderColor: 'rgba(212, 175, 55, 0.35)',
+                        background: 'rgba(15, 23, 42, 0.72)',
+                        flexWrap: 'wrap',
+                      }}
+                      title={tSpec.description}
+                    >
+                      <span>🧠 {tSpec.shortLabel} ({aiModeBadge})</span>
+                      {currentBoss.archetypeTitle && (
+                        <>
+                          <span>•</span>
+                          <strong style={{ color: '#fde68a' }}>
+                            {currentBoss.archetypeTitle}
+                          </strong>
+                        </>
+                      )}
+                      {standing && (
+                        <>
+                          <span>•</span>
+                          <span style={{ color: '#93c5fd', fontWeight: 700 }}>
+                            🏆 #{standing.rank}/44 [Tier {standing.tierBadge}]
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  );
+                })()}
+
                 {currentBoss.loreIntro && (
                   <blockquote className="aaa-dossier-quote">{currentBoss.loreIntro}</blockquote>
                 )}
@@ -1130,6 +1243,15 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   <button
                     type="button"
                     className="aaa-btn aaa-btn-secondary"
+                    onClick={() => setShowMatchupModal(true)}
+                    title="Consultar análise tática e contra-jogadas do Oráculo de Guerra"
+                  >
+                    📊 Matchup
+                  </button>
+
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary"
                     onClick={handleSaveExpeditionDeckToGrimoire}
                   >
                     Salvar Deck
@@ -1150,6 +1272,15 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
             )}
           </div>
         </div>
+      )}
+
+      {showMatchupModal && (
+        <TacticalGuideView
+          initialOpponentDeckId={currentBoss.archetypeId ?? currentBoss.deckId}
+          initialViewSection="matchup_duel"
+          isModal={true}
+          onClose={() => setShowMatchupModal(false)}
+        />
       )}
 
       {inspectCard && (

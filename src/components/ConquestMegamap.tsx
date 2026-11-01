@@ -19,7 +19,11 @@ import {
   ProvinceBuildingType,
   getConquestMapGeometries,
   getRegionalConquestGeometries,
+  resolveConquestChampionForProvince,
+  resolveConquestProvinceSkillTier,
 } from '../data/vaeloriaConquestData';
+import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import {
   CAPITAL_PROVINCE_TO_CAPITAL_MAP,
   PROVINCE_REGIONAL_COORDS,
@@ -1683,6 +1687,15 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
             const isIsolated = Boolean(isolatedProvinceIds?.has(prov.id));
             const isDockedChallengeHere = canChallengeDocked && dockedProvince?.id === prov.id;
             const showSubBadges = lodLevel >= 2 || isHovered || isSelected;
+            const provSkillTier = resolveConquestProvinceSkillTier(
+              prov,
+              fortLvl,
+              season,
+              isIsolated
+            );
+            const provTierSpec = AI_SKILL_TIER_SPECS[provSkillTier];
+            const provChampId = resolveConquestChampionForProvince(prov, ownerId);
+            const provStanding = getUnifiedStandingForDeckId(provChampId);
 
             const pinCounterScale =
               zoom > 1.6 ? Math.max(0.58, 1.15 / Math.sqrt(zoom)) : activeRegionalDef ? 1.12 : 1;
@@ -1713,7 +1726,11 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                 onMouseLeave={() =>
                   setHoveredProvId((prev) => (prev === prov.id ? null : prev))
                 }
-                title={`${prov.name} (${ownerFaction.shortName}) • +${prov.supplyIncome} Suprimentos${
+                title={`${prov.name} (${ownerFaction.shortName}) • T${provTierSpec.roman} ${provTierSpec.title}${
+                  provStanding
+                    ? ` • #${provStanding.rank}/44 [${provStanding.tierBadge}] ${provStanding.name}`
+                    : ''
+                } • +${prov.supplyIncome} Suprimentos${
                   isIsolated ? ' • Linha de Suprimento Cortada (-50%)' : ''
                 }`}
               >
@@ -1758,7 +1775,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                     <strong>{prov.name}</strong>
                     <em>
                       {overlayMode === 'military'
-                        ? `Guarnição ${20 + fortLvl * 4 + (prov.isCapital ? 8 : 0)}${
+                        ? `Guarnição ${prov.baseGarrisonHp + fortLvl * 4} PV • 🧠 T${provTierSpec.roman}${
                             fortLvl > 0 ? ` • Fort. Nv.${fortLvl}` : ''
                           }${isAttackable ? ' • ALVO' : ''}`
                         : overlayMode === 'leylines'
@@ -1773,10 +1790,23 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
                                   ? `Isolada (+${Math.floor(prov.supplyIncome / 2)} Supr.)`
                                   : `Suprida (+${prov.supplyIncome} Supr.)`
                               }`
-                            : `${ownerFaction.shortName} • +${prov.supplyIncome} Supr.${
+                            : `${ownerFaction.shortName} • 🧠 T${provTierSpec.roman} • +${prov.supplyIncome} Supr.${
                                 isAttackable ? ' • ALVO' : ''
                               }`}
                     </em>
+                    {provStanding && (
+                      <small
+                        style={{
+                          display: 'block',
+                          color: '#fde047',
+                          fontWeight: 700,
+                          fontSize: '0.64rem',
+                          marginTop: 2,
+                        }}
+                      >
+                        🏆 #{provStanding.rank}/44 [{provStanding.tierBadge}] {provStanding.name}
+                      </small>
+                    )}
                   </span>
                 )}
               </button>

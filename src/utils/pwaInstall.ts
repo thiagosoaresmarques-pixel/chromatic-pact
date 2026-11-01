@@ -32,13 +32,24 @@ declare global {
 }
 
 const PWA_BANNER_SNOOZE_KEY = 'chromatic_pact_pwa_banner_snooze_until_v1';
+const SW_AUTORELOAD_GUARD_KEY = 'chromatic_pact_sw_autoreload_ts_v1';
 const DEFAULT_SNOOZE_HOURS = 18;
 
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 let updateAvailableFlag = false;
 let swRegistration: ServiceWorkerRegistration | null = null;
 let initialized = false;
+let canSafeAutoReloadCheck: () => boolean = () => true;
 const listeners = new Set<(state: PwaInstallState) => void>();
+
+/**
+ * Registers a guard (e.g., `() => activeTab !== 'arena'`) so when a new Service Worker
+ * deploy takes control (`controllerchange`), the app reloads seamlessly without Ctrl+F5
+ * whenever the player is NOT mid-combat!
+ */
+export function setPwaAutoReloadGuard(guardFn: () => boolean): void {
+  canSafeAutoReloadCheck = guardFn;
+}
 
 export function detectPwaPlatform(): { platform: PwaPlatformKind; browser: PwaBrowserKind } {
   if (typeof navigator === 'undefined') {
@@ -174,11 +185,24 @@ export function initPwaSupport(): void {
     const hadControllerAtBoot = Boolean(navigator.serviceWorker.controller);
 
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      // Only signal an update if there was already a previous SW controlling this returning user
-      if (hadControllerAtBoot) {
-        updateAvailableFlag = true;
-        notifyListeners();
+      // Only signal/auto-reload if there was already a previous SW controlling this returning user
+      if (!hadControllerAtBoot) return;
+
+      if (canSafeAutoReloadCheck()) {
+        try {
+          const lastReload = Number(sessionStorage.getItem(SW_AUTORELOAD_GUARD_KEY) || '0');
+          if (Date.now() - lastReload > 30_000) {
+            sessionStorage.setItem(SW_AUTORELOAD_GUARD_KEY, String(Date.now()));
+            window.location.reload();
+            return;
+          }
+        } catch {
+          // Fall through to manual update banner if sessionStorage is blocked
+        }
       }
+
+      updateAvailableFlag = true;
+      notifyListeners();
     });
 
     const registerSw = () => {
@@ -210,12 +234,17 @@ export function initPwaSupport(): void {
       window.addEventListener('load', registerSw, { once: true });
     }
 
-    // Whenever returning user brings the tab/PWA back to foreground, check for new deploys!
+    // Whenever returning user brings the tab/PWA back to foreground (or every 4 min), check for new deploys!
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && swRegistration) {
         swRegistration.update().catch(() => undefined);
       }
     });
+    window.setInterval(() => {
+      if (document.visibilityState === 'visible' && swRegistration) {
+        swRegistration.update().catch(() => undefined);
+      }
+    }, 4 * 60 * 1000);
   }
 }
 

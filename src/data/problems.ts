@@ -7,13 +7,15 @@ import {
 } from '../engine/gameEngine';
 import { BoardUnit, CardDefinition, Domain, GameState, RowType } from '../types/game';
 import { EXTRA_50_TACTICAL_PROBLEMS } from './problemsExpansion100';
+import { GRANDMASTER_CHAMPION_PROBLEMS } from './problemsGrandmasters';
 
 export type ProblemDifficultyTier =
   | 'iniciante'
   | 'intermediario'
   | 'avancado'
   | 'mestre'
-  | 'grao_mestre';
+  | 'grao_mestre'
+  | 'campeoes_torneio';
 
 export const PROBLEM_TIERS_ORDER: ProblemDifficultyTier[] = [
   'iniciante',
@@ -21,6 +23,7 @@ export const PROBLEM_TIERS_ORDER: ProblemDifficultyTier[] = [
   'avancado',
   'mestre',
   'grao_mestre',
+  'campeoes_torneio',
 ];
 
 export interface ProblemUnitPlacement {
@@ -138,6 +141,15 @@ export const PROBLEM_DIFFICULTY_META: Record<
     bg: 'rgba(217, 70, 239, 0.16)',
     border: 'rgba(232, 121, 249, 0.55)',
     description: 'Quebra-cabeças de 5 a 6 ações encadeadas onde um único erro de 1⚡ ou 1 coluna deixa o Soberano rival vivo (+10 🪙 por problema).',
+  },
+  campeoes_torneio: {
+    label: '🏆 Campeões • Grão-Mestres IA',
+    starsText: '👑★★★★★',
+    color: '#fde047',
+    bg: 'rgba(234, 179, 8, 0.16)',
+    border: 'rgba(250, 204, 21, 0.65)',
+    description:
+      'Desafios de 1 turno inspirados nas jogadas e combos de maior Valor Shapley descobertos pelos Campeões do Grande Torneio Unificado (#1–#44) — desbloqueados desde o início (+12 🪙 por problema).',
   },
 };
 
@@ -3218,11 +3230,12 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
   },
 ];
 
-// Combina os 50 problemas base + 60 problemas de expansão agrupados por Grau (22 por Grau = 110 Problemas)
+// Combina os 50 problemas base + 60 problemas de expansão + 6 problemas dos Campeões Grão-Mestres IA (116 Problemas)
 // Remove qualquer spoiler de mecânica do título e padroniza o objetivo para não entregar a resposta no enunciado
 export const TACTICAL_PROBLEMS: TacticalProblem[] = PROBLEM_TIERS_ORDER.flatMap((tier) => [
   ...BASE_50_TACTICAL_PROBLEMS.filter((p) => p.difficulty === tier),
   ...EXTRA_50_TACTICAL_PROBLEMS.filter((p) => p.difficulty === tier),
+  ...GRANDMASTER_CHAMPION_PROBLEMS.filter((p) => p.difficulty === tier),
 ]).map((problem, index) => {
   const num = index + 1;
   const cleanTitle = problem.title.replace(/\s*\([^)]*\)\s*$/, '').trim();
@@ -3501,12 +3514,14 @@ export function isProblemTierUnlocked(
   tier: ProblemDifficultyTier,
   solvedIdsInput?: string[]
 ): boolean {
+  if (tier === 'campeoes_torneio') return true; // Vitrine dos Campeões Grão-Mestres IA sempre aberta!
   const tierIdx = PROBLEM_TIERS_ORDER.indexOf(tier);
   if (tierIdx <= 0) return true; // Grau I (Iniciante) está sempre desbloqueado
   const solvedSet = new Set(solvedIdsInput ?? getSolvedProblemIds());
   // Para desbloquear um Grau, todos os Graus anteriores devem estar 100% resolvidos (22/22)
   for (let i = 0; i < tierIdx; i++) {
     const prevTier = PROBLEM_TIERS_ORDER[i];
+    if (prevTier === 'campeoes_torneio') continue;
     const prevTierProblems = TACTICAL_PROBLEMS.filter((p) => p.difficulty === prevTier);
     const allPrevSolved = prevTierProblems.every((p) => solvedSet.has(p.id));
     if (!allPrevSolved) return false;

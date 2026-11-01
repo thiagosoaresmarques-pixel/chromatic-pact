@@ -43,6 +43,8 @@ import {
   MultiScaleScopeNavigator,
 } from './CartographicAtlasExtras';
 import { getWeeklyFeaturedRift, WEEKLY_RIFT_SHARDS_BONUS } from '../data/fractureRiftsData';
+import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import {
   getFogOfWarEnabled,
   getLandmarkEventDef,
@@ -1787,22 +1789,38 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                   </span>
                   <span className="vwm-boss-stage-badge">{badgeLabel}</span>
 
-                  {isHovered && (
-                    <span className="vwm-boss-tooltip">
-                      <strong>{boss.name}</strong>
-                      <em>
-                        {worldNode.landmarkName} • {boss.startingHp} PV
-                        {entry.tier ? ` • Tier ${entry.tier}` : ''}
-                      </em>
-                      <small className="vwm-boss-tooltip-status">
-                        {isCleared
-                          ? '✓ Derrotado (Recuo livre / Reenfrentar)'
-                          : isLocked
-                            ? '🔒 Estrada bloqueada pela guarnição anterior'
-                            : '⚔ Acessível — Clique para marchar / desafiar'}
-                      </small>
-                    </span>
-                  )}
+                  {isHovered && (() => {
+                    const effTier = (boss.difficultyTier ?? entry.tier ?? 3) as 1 | 2 | 3 | 4 | 5;
+                    const tSpec = AI_SKILL_TIER_SPECS[effTier];
+                    const standing = getUnifiedStandingForDeckId(boss.archetypeId ?? boss.deckId);
+                    return (
+                      <span className="vwm-boss-tooltip">
+                        <strong>{boss.name}</strong>
+                        <em>
+                          {worldNode.landmarkName} • {boss.startingHp} PV • 🧠 T{tSpec.roman} ({tSpec.title})
+                        </em>
+                        {standing && (
+                          <small
+                            style={{
+                              display: 'block',
+                              color: '#fde047',
+                              fontWeight: 700,
+                              marginTop: 2,
+                            }}
+                          >
+                            🏆 #{standing.rank}/44 [{standing.tierBadge}] {standing.name}
+                          </small>
+                        )}
+                        <small className="vwm-boss-tooltip-status">
+                          {isCleared
+                            ? '✓ Derrotado (Recuo livre / Reenfrentar)'
+                            : isLocked
+                              ? '🔒 Estrada bloqueada pela guarnição anterior'
+                              : '⚔ Acessível — Clique para marchar / desafiar'}
+                        </small>
+                      </span>
+                    );
+                  })()}
                 </button>
               );
             })}
@@ -1822,18 +1840,24 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
                 } as React.CSSProperties
               }
             >
-              {dockedBossEntry && (
-                <button
-                  type="button"
-                  className="vwm-pawn-challenge-pill"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onChallengeBoss(dockedBossEntry.boss);
-                  }}
-                >
-                  ⚔ Desafiar {dockedBossEntry.boss.name}
-                </button>
-              )}
+              {dockedBossEntry && (() => {
+                const dBoss = dockedBossEntry.boss;
+                const dTier = (dBoss.difficultyTier ?? dockedBossEntry.tier ?? 3) as 1 | 2 | 3 | 4 | 5;
+                const dStanding = getUnifiedStandingForDeckId(dBoss.archetypeId ?? dBoss.deckId);
+                return (
+                  <button
+                    type="button"
+                    className="vwm-pawn-challenge-pill"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChallengeBoss(dBoss);
+                    }}
+                  >
+                    ⚔ Desafiar {dBoss.name} (T{AI_SKILL_TIER_SPECS[dTier].roman}
+                    {dStanding ? ` • #${dStanding.rank}/44` : ''})
+                  </button>
+                );
+              })()}
 
               <div className="vwm-pawn-aura" />
               <div className="vwm-pawn-token" title={`${sovereignLabel} — Em marcha`}>

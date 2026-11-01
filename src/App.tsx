@@ -114,6 +114,7 @@ import {
   applyPwaUpdate,
   getPwaInstallState,
   PwaInstallState,
+  setPwaAutoReloadGuard,
   subscribePwaInstallState,
   triggerPwaInstallPrompt,
 } from './utils/pwaInstall';
@@ -564,8 +565,11 @@ export const App: React.FC = () => {
   const [isPwaModalOpen, setIsPwaModalOpen] = useState<boolean>(false);
   const hasSeededPwaNotifRef = useRef<boolean>(false);
   const hasShownPostDuelPwaHintRef = useRef<boolean>(false);
+  const activeTabLiveRef = useRef<ActiveTab>(activeTab);
+  activeTabLiveRef.current = activeTab;
 
   useEffect(() => {
+    setPwaAutoReloadGuard(() => activeTabLiveRef.current !== 'arena');
     return subscribePwaInstallState(setPwaState);
   }, []);
 

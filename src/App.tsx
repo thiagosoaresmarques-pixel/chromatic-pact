@@ -411,9 +411,17 @@ function loadSavedAppNavState(): SavedAppNavState | null {
 
 export const App: React.FC = () => {
   const initialNavState = useMemo(() => loadSavedAppNavState(), []);
-  const [activeTab, setActiveTab] = useState<ActiveTab>(
-    () => initialNavState?.activeTab ?? 'home'
-  );
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    try {
+      const urlTab = new URLSearchParams(window.location.search).get('tab') as ActiveTab | null;
+      if (urlTab && resolvePillarForTab(urlTab) !== null) {
+        return urlTab;
+      }
+    } catch {
+      // ignore URL parse issues
+    }
+    return initialNavState?.activeTab ?? 'home';
+  });
   const [soundMuted, setSoundMuted] = useState<boolean>(() => isMuted());
   const [musicInfo, setMusicInfo] = useState<MusicStateDescriptor>(() => getCurrentMusicState());
 

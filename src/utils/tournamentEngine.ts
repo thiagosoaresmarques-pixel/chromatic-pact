@@ -754,12 +754,13 @@ export function computeTournamentSnapshot(
   if (def.includeAllSovereigns) {
     for (const sov of SOVEREIGN_AI_LEADERBOARD_ROSTER) {
       const pid = `sov::${sov.sovereignId}`;
+      const shortRealm = sov.realmOrigin.split(/\s*[—•·]\s*/)[0]?.trim() || sov.realmOrigin;
       participantMap.set(pid, {
         participantId: pid,
         kind: 'sovereign',
         rank: 0,
         displayName: sov.sovereignName,
-        subtitle: `${sov.realmOrigin} · ${sov.sovereignTitle}`,
+        subtitle: shortRealm,
         avatarCardId: sov.avatarCardId,
         eloRating: sov.eloRating,
         primaryDomain: sov.domains[0] ?? 'neutral',
@@ -779,12 +780,15 @@ export function computeTournamentSnapshot(
 
   for (const hum of uniqueHumans) {
     const pid = `hum::${hum.username.trim().toLowerCase()}`;
+    const shortHumSub = (hum.deckName || hum.title || '')
+      .split(/\s*[—•·]\s*/)[0]
+      ?.trim();
     participantMap.set(pid, {
       participantId: pid,
       kind: 'human',
       rank: 0,
       displayName: hum.username,
-      subtitle: hum.deckName || hum.title,
+      subtitle: shortHumSub || hum.title,
       avatarCardId: hum.avatarCardId,
       eloRating: hum.eloRating,
       primaryDomain: hum.primaryDomain || inferDeckPrimaryDomain(hum.deckCardIds),

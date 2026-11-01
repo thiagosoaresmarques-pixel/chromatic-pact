@@ -64,12 +64,21 @@ interface TournamentsViewProps {
 type TournamentDetailTab = 'podium' | 'standings' | 'pairings';
 
 const DOMAIN_LABELS_PT: Record<Domain, string> = {
-  red: 'Pyros (Chama)',
-  green: 'Veridia (Selva)',
-  blue: 'Vórtex (Tempestade)',
-  purple: 'Eclipse (Abismo)',
-  gold: 'Solária (Ordem)',
+  red: 'Pyros',
+  green: 'Veridia',
+  blue: 'Vórtex',
+  purple: 'Eclipse',
+  gold: 'Solária',
   neutral: 'Matriz Axial',
+};
+
+const DOMAIN_ACCENT_HEX: Record<Domain, string> = {
+  red: '#ef4444',
+  green: '#22c55e',
+  blue: '#38bdf8',
+  purple: '#a855f7',
+  gold: '#eab308',
+  neutral: '#94a3b8',
 };
 
 const ALL_DOMAINS_ORDER: Domain[] = ['red', 'blue', 'gold', 'purple', 'green', 'neutral'];
@@ -81,10 +90,10 @@ function formatClockCountdown(ms: number): string {
   const m = Math.floor((totalSec % 3600) / 60);
   const s = totalSec % 60;
   if (d > 0) {
-    return `${d}d ${String(h).padStart(2, '0')}h ${String(m).padStart(2, '0')}m`;
+    return `${d}d ${h}h`;
   }
   if (h > 0) {
-    return `${h}h ${String(m).padStart(2, '0')}m ${String(s).padStart(2, '0')}s`;
+    return `${h}h ${String(m).padStart(2, '0')}m`;
   }
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
@@ -102,15 +111,16 @@ function formatBrtHourMinute(epochMs: number): string {
   }
 }
 
-function formatBrtDateLabel(epochMs: number): string {
+function formatBrtFriendlyDate(epochMs: number): string {
   try {
-    return new Intl.DateTimeFormat('pt-BR', {
+    const raw = new Intl.DateTimeFormat('pt-BR', {
       weekday: 'short',
       day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
+      month: 'short',
       timeZone: 'America/Sao_Paulo',
     }).format(new Date(epochMs));
+    const clean = raw.replace(/\./g, '');
+    return clean.charAt(0).toUpperCase() + clean.slice(1);
   } catch {
     return new Date(epochMs).toLocaleDateString('pt-BR');
   }
@@ -118,6 +128,29 @@ function formatBrtDateLabel(epochMs: number): string {
 
 function formatPoints(pts: number): string {
   return Number.isInteger(pts) ? `${pts}.0` : pts.toFixed(1);
+}
+
+function compactDisplayName(name: string): string {
+  const commaIdx = name.indexOf(',');
+  if (commaIdx > 2) return name.slice(0, commaIdx).trim();
+  return name;
+}
+
+function cleanTournamentTitle(title: string): string {
+  return title
+    .replace(/\s*—\s*Circuito Suíço Oficial/i, '')
+    .replace(/\s*—\s*Suíço Oficial/i, '');
+}
+
+const LEGENDARY_BACKDROP_CARDS = ALL_CARDS.filter(
+  (c) => c.rarity === 'legendary' && Boolean(c.imagePath)
+);
+
+function pickEventBackdropArt(defId: string): string | undefined {
+  if (LEGENDARY_BACKDROP_CARDS.length === 0) return undefined;
+  let sum = 17;
+  for (let i = 0; i < defId.length; i += 1) sum = (sum * 31 + defId.charCodeAt(i)) >>> 0;
+  return LEGENDARY_BACKDROP_CARDS[sum % LEGENDARY_BACKDROP_CARDS.length]?.imagePath;
 }
 
 function resolveDeckCardsForPvp(cardIds: string[]): CardDefinition[] {
@@ -141,7 +174,7 @@ function formatRoundChipLabel(item: ParticipantRoundHistoryItem): {
 } {
   if (item.outcome === 'IN_PROGRESS') {
     return {
-      short: `R${item.round}`,
+      short: '•',
       tone: 'live',
       tooltip: `Rodada ${item.round} · Mesa #${item.tableNumber}: em andamento contra ${item.opponentName}`,
     };
@@ -195,8 +228,13 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     entriesByTournament: { [DEFAULT_INAUGURAL_TOURNAMENT.id]: [] },
     primaryTournamentId: DEFAULT_INAUGURAL_TOURNAMENT.id,
   }));
-  // Null = Tournament Hub (Página Inicial dos Torneios); non-null = Specific Tournament Detail
-  const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
+  const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(() => {
+    try {
+      return new URLSearchParams(window.location.search).get('tid') || null;
+    } catch {
+      return null;
+    }
+  });
 
   const [nowMs, setNowMs] = useState<number>(() => getTournamentNowMs());
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
@@ -213,8 +251,24 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   });
 
   // Detail View state
-  const [detailTab, setDetailTab] = useState<TournamentDetailTab>('standings');
-  const [selectedRoundTab, setSelectedRoundTab] = useState<number>(1);
+  const [detailTab, setDetailTab] = useState<TournamentDetailTab>(() => {
+    try {
+      const v = new URLSearchParams(window.location.search).get('tview');
+      if (v === 'podium' || v === 'standings' || v === 'pairings') return v;
+    } catch {
+      // ignore
+    }
+    return 'standings';
+  });
+  const [selectedRoundTab, setSelectedRoundTab] = useState<number>(() => {
+    try {
+      const r = Number(new URLSearchParams(window.location.search).get('tround'));
+      if (Number.isFinite(r) && r >= 1) return Math.floor(r);
+    } catch {
+      // ignore
+    }
+    return 1;
+  });
   const [standingsSearch, setStandingsSearch] = useState<string>('');
   const [domainFilter, setDomainFilter] = useState<'all' | Domain>('all');
   const [standingsPage, setStandingsPage] = useState<number>(1);
@@ -224,6 +278,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   // Modals (Progressive Disclosure)
   const [inspectedParticipantId, setInspectedParticipantId] = useState<string | null>(null);
   const [showRulesModal, setShowRulesModal] = useState<boolean>(false);
+  const [showAdminModal, setShowAdminModal] = useState<boolean>(false);
   const [statusFeedback, setStatusFeedback] = useState<string | null>(null);
 
   // Deterministic table handshake state
@@ -236,7 +291,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   } | null>(null);
 
   // Admin schedule form state
-  const [admTitle, setAdmTitle] = useState<string>('Terça Soberana — Suíço Oficial');
+  const [admTitle, setAdmTitle] = useState<string>('Terça Soberana');
   const [admStartLocal, setAdmStartLocal] = useState<string>(() => {
     const d = new Date(Date.now() + 15 * 60 * 1000);
     const pad = (n: number) => String(n).padStart(2, '0');
@@ -280,18 +335,18 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   }, [refreshCloudCatalog]);
 
   useEffect(() => {
-    if (!inspectedParticipantId && !showRulesModal) return;
+    if (!inspectedParticipantId && !showRulesModal && !showAdminModal) return;
     const onKey = (ev: KeyboardEvent) => {
       if (ev.key === 'Escape') {
         if (inspectedParticipantId) setInspectedParticipantId(null);
-        else setShowRulesModal(false);
+        else if (showRulesModal) setShowRulesModal(false);
+        else setShowAdminModal(false);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [inspectedParticipantId, showRulesModal]);
+  }, [inspectedParticipantId, showRulesModal, showAdminModal]);
 
-  // Discrete stage fingerprint across catalog so snapshots only recompute when rounds/entries change
   const catalogStageSignature = useMemo(
     () =>
       catalog.tournaments
@@ -300,7 +355,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     [catalog.tournaments, nowMs]
   );
 
-  // Precomputed snapshots for all catalog tournaments (each takes ~1.2ms, memoized on stage boundaries)
   const snapshotsById = useMemo(() => {
     const map: Record<string, ComputedTournamentSnapshot> = {};
     const snapNow = getTournamentNowMs();
@@ -359,7 +413,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     [snapshotsById, activeDefinition, catalog.entriesByTournament, isGuest, currentUser.username, nowMs]
   );
 
-  // Keep selectedRoundTab valid when currentRound advances
   useEffect(() => {
     if (snapshot.currentRound > 0 && selectedRoundTab > snapshot.currentRound) {
       setSelectedRoundTab(snapshot.currentRound);
@@ -430,7 +483,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
       });
       const domLabel = DOMAIN_LABELS_PT[entry.primaryDomain] ?? entry.primaryDomain;
       setStatusFeedback(
-        `Inscrição confirmada com "${entry.deckName}" (${domLabel}). Pareamento automático ativo.`
+        `Inscrição confirmada com "${entry.deckName}" (${domLabel}).`
       );
     } finally {
       setIsEnrolling(false);
@@ -550,7 +603,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     onStartTournamentPvpMatch,
   ]);
 
-  // Listen for deterministic table handshake completion or 35s W.O. timeout
   useEffect(() => {
     if (!pvpHandshakeState || !snapshot.myEntry || !snapshot.myStanding) return;
 
@@ -634,7 +686,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
         setPvpHandshakeState(null);
         void upsertHumanTournamentEntryToCloud(woEntry).then(() => refreshCloudCatalog());
         setStatusFeedback(
-          `Vitória por W.O. (+1,0 pt) registrada na Rodada ${pvpHandshakeState.round}: ${pvpHandshakeState.opponent.displayName} não compareceu à mesa.`
+          `Vitória por W.O. (+1,0 pt) registrada na Rodada ${pvpHandshakeState.round}.`
         );
       }
     }, 1000);
@@ -654,7 +706,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     refreshCloudCatalog,
   ]);
 
-  // Automatic Round Launch when inside an active tournament + enrolled + autoStartRounds enabled
   useEffect(() => {
     if (
       !selectedTournamentId ||
@@ -689,7 +740,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     handleEnterRoundMatch,
   ]);
 
-  // Standings filtering & pagination
   const filteredStandings = useMemo(() => {
     const q = standingsSearch.trim().toLowerCase();
     return snapshot.standings.filter((s) => {
@@ -709,7 +759,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     return filteredStandings.slice(start, start + PAGE_SIZE);
   }, [filteredStandings, clampedStandingsPage]);
 
-  // Selected round pairings filtering & pagination
   const activeRoundPairingsList = useMemo(
     () => snapshot.roundsPairings[selectedRoundTab] ?? [],
     [snapshot.roundsPairings, selectedRoundTab]
@@ -738,7 +787,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     return filteredPairings.slice(start, start + PAGE_SIZE);
   }, [filteredPairings, clampedPairingsPage]);
 
-  // Edition Stats & Domain Best Performers for the Podium Tab
   const editionStats = useMemo(() => {
     let totalMatches = 0;
     let totalDraws = 0;
@@ -790,19 +838,19 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
 
     const prizeLabelMap: Record<TournamentPrizeKind, { label: string; desc: string }> = {
       unowned_domain_rare_card: {
-        label: '1 Carta Rara Inédita (Cor do Grimório)',
+        label: '1 Carta Rara Inédita',
         desc: 'Sorteada automaticamente entre as Raras inéditas da cor predominante do Grimório do Campeão (+50 Ouro).',
       },
       unowned_domain_legendary_card: {
-        label: '1 Carta Lendária Inédita (Cor do Grimório)',
+        label: '1 Carta Lendária Inédita',
         desc: 'Sorteada entre as Lendárias inéditas da cor predominante do Grimório do Campeão (+50 Ouro).',
       },
       gold_and_shards: {
-        label: '300 Ouro + 150 Estilhaços Astrais',
+        label: '300 Ouro + 150 Estilhaços',
         desc: 'Creditados diretamente na conta do Campeão ao término da última rodada.',
       },
       cash_brl_pix: {
-        label: `Premiação Oficial R$ ${admCashBrl},00 (PIX) + Carta Rara`,
+        label: `R$ ${admCashBrl},00 (PIX) + Carta Rara`,
         desc: `R$ ${admCashBrl},00 via PIX mediante verificação de conta do Campeão + 1 Carta Rara inédita da cor do Grimório.`,
       },
     };
@@ -836,12 +884,12 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
 
     const ok = await publishTournamentDefinitionToCloud(newDef);
     if (ok) {
+      setShowAdminModal(false);
       await refreshCloudCatalog();
-      setStatusFeedback(`Torneio "${newDef.title}" agendado e publicado com sucesso.`);
+      setStatusFeedback(`Torneio "${newDef.title}" agendado com sucesso.`);
     }
   };
 
-  // Hub lists: Live + Upcoming vs Finished
   const { liveAndUpcomingList, finishedList } = useMemo(() => {
     const liveOrNext: ComputedTournamentSnapshot[] = [];
     const done: ComputedTournamentSnapshot[] = [];
@@ -855,26 +903,25 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     return { liveAndUpcomingList: liveOrNext, finishedList: done };
   }, [catalog.tournaments, snapshotsById]);
 
-  // Status Header Badge Computation for Detail View
   const phaseSummary = useMemo(() => {
     if (snapshot.phase === 'registration') {
       const rem = snapshot.definition.startsAtMs - nowMs;
       return {
         tone: 'upcoming' as const,
-        label: `Inscrições Abertas · Início em ${formatClockCountdown(rem)}`,
-        sub: `${formatBrtDateLabel(snapshot.definition.startsAtMs)} · ${formatBrtHourMinute(
+        label: `Início em ${formatClockCountdown(rem)}`,
+        sub: `${formatBrtFriendlyDate(snapshot.definition.startsAtMs)} · ${formatBrtHourMinute(
           snapshot.definition.startsAtMs
-        )} às ${formatBrtHourMinute(snapshot.definition.endsAtMs)} (BRT)`,
+        )}–${formatBrtHourMinute(snapshot.definition.endsAtMs)}`,
       };
     }
     if (snapshot.phase === 'round_active') {
       const rem = snapshot.roundPlayDeadlineMs - nowMs;
       return {
         tone: 'live' as const,
-        label: `Rodada ${snapshot.currentRound}/${snapshot.definition.totalRounds} em andamento · ${formatClockCountdown(
+        label: `Rodada ${snapshot.currentRound}/${snapshot.definition.totalRounds} · ${formatClockCountdown(
           rem
         )}`,
-        sub: `${snapshot.definition.turnTimeLimitSec}s por turno · Casamento Suíço automático`,
+        sub: `${snapshot.definition.turnTimeLimitSec}s por turno`,
       };
     }
     if (snapshot.phase === 'round_break') {
@@ -882,18 +929,18 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
       const nextR = Math.min(snapshot.definition.totalRounds, snapshot.currentRound + 1);
       return {
         tone: 'break' as const,
-        label: `Emparceirando Rodada ${nextR}/${snapshot.definition.totalRounds} em ${formatClockCountdown(
+        label: `Próxima rodada (${nextR}/${snapshot.definition.totalRounds}) em ${formatClockCountdown(
           rem
         )}`,
-        sub: 'Calculando mesas por pontuação e Buchholz',
+        sub: 'Emparceiramento automático',
       };
     }
     return {
       tone: 'finished' as const,
-      label: `Encerrado · ${snapshot.definition.totalRounds}/${snapshot.definition.totalRounds} Rodadas`,
-      sub: `${formatBrtDateLabel(snapshot.definition.startsAtMs)} · Homologado às ${formatBrtHourMinute(
-        snapshot.definition.endsAtMs
-      )}`,
+      label: 'Encerrado',
+      sub: `${formatBrtFriendlyDate(snapshot.definition.startsAtMs)} · ${formatBrtHourMinute(
+        snapshot.definition.startsAtMs
+      )}–${formatBrtHourMinute(snapshot.definition.endsAtMs)}`,
     };
   }, [snapshot, nowMs]);
 
@@ -903,212 +950,229 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
 
   const podiumTop3 = useMemo(() => snapshot.standings.slice(0, 3), [snapshot.standings]);
 
-  // Render Rules Modal (shared between Hub & Detail)
-  const renderRulesModal = () => {
-    if (!showRulesModal) return null;
-    return (
-      <div
-        className="aaa-modal-backdrop"
-        onClick={() => setShowRulesModal(false)}
-        role="dialog"
-        aria-modal="true"
-      >
-        <div className="trn-rules-modal" onClick={(e) => e.stopPropagation()}>
-          <div className="trn-rules-header">
-            <h2 className="font-cinzel" style={{ margin: 0, fontSize: '1.06rem' }}>
-              Regulamento Suíço, Cadência de Turno &amp; Premiações
-            </h2>
-            <button
-              type="button"
-              className="aaa-btn aaa-btn-secondary trn-compact-btn"
-              onClick={() => setShowRulesModal(false)}
-            >
-              Fechar
-            </button>
-          </div>
+  // Shared Modals (Rules & Admin Creation)
+  const renderSharedModals = () => (
+    <>
+      {showRulesModal && (
+        <div
+          className="trn-modal-backdrop"
+          onClick={() => setShowRulesModal(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="trn-modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="trn-modal-head">
+              <h2 className="trn-modal-title">Regulamento &amp; Cadências</h2>
+              <button
+                type="button"
+                className="trn-btn trn-btn-ghost"
+                onClick={() => setShowRulesModal(false)}
+              >
+                Fechar
+              </button>
+            </div>
 
-          <div className="trn-rules-body">
-            <section className="trn-rules-sec">
-              <h3>1. Formato Suíço de Rodadas Fixas</h3>
-              <p>
-                Inspirado nos torneios clássicos semanais de rodadas fixas, nenhum competidor é
-                eliminado: todos disputam todas as rodadas programadas em janelas sincronizadas. A
-                cada rodada, o sistema emparceira competidores com a mesma pontuação (Vitória ={' '}
-                <code>1,0</code>, Empate = <code>0,5</code>, Derrota = <code>0,0</code>), sem
-                repetir confrontos.
-              </p>
-              <p>
-                <strong>Critérios de desempate oficiais:</strong> 1º Pontos → 2º Buchholz (soma dos
-                pontos finais de todos os adversários enfrentados) → 3º Saldo de PV → 4º Número de
-                vitórias → 5º ELO. Se o relógio da rodada zerar com duelo em curso, prevalece maior
-                Vida atual ou maior poder total em mesa (soma de Ataque + Vida das tropas vivas).
-              </p>
-            </section>
+            <div className="trn-rules-body">
+              <section className="trn-rules-sec">
+                <h3>Formato Suíço de Rodadas Fixas</h3>
+                <p>
+                  Nenhum competidor é eliminado: todos disputam todas as rodadas programadas em
+                  janelas sincronizadas. A cada rodada, cruzam-se competidores de mesma pontuação
+                  (Vitória = <code>1,0</code>, Empate = <code>0,5</code>, Derrota = <code>0,0</code>
+                  ), sem repetir confrontos.
+                </p>
+                <p>
+                  <strong>Desempate na classificação:</strong> 1º Pontos → 2º Buchholz (soma dos
+                  pontos finais dos adversários enfrentados) → 3º Saldo de PV → 4º Vitórias → 5º
+                  ELO. No fim do tempo da rodada, prevalece maior Vida atual ou maior soma de Ataque
+                  + Vida em mesa.
+                </p>
+              </section>
 
-            <section className="trn-rules-sec">
-              <h3>2. Calibração de Limites de Tempo por Turno (40 PV vs 40 PV)</h3>
-              <p>
-                Na <strong>Campanha, Expedição e modos solo</strong>, não há relógio por turno. A
-                cronometragem aplica-se exclusivamente aos Torneios, Conclave 1×1 e Duelos
-                Ranqueados:
-              </p>
-              <table className="trn-table trn-bench-table">
-                <thead>
-                  <tr>
-                    <th>Cadência</th>
-                    <th>Duração Média</th>
-                    <th>Teto P95</th>
-                    <th>Rodadas em 1h</th>
-                    <th>Indicação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.values(TOURNAMENT_TIME_CONTROLS).map((tc) => (
-                    <tr
-                      key={tc.id}
-                      className={tc.id === 'rapid_45s' ? 'trn-row-me' : ''}
-                    >
-                      <td>
-                        <strong>{tc.label}</strong>
-                      </td>
-                      <td>{tc.avgMatchMinutes}</td>
-                      <td>{tc.p95MatchMinutes}</td>
-                      <td>{tc.recommendedRoundsIn1h} rodadas</td>
-                      <td className="trn-player-sub">{tc.verdict}</td>
+              <section className="trn-rules-sec">
+                <h3>Calibração de Tempo por Turno</h3>
+                <p>
+                  Na Campanha e modos de exploração não há relógio. A cronometragem vale apenas em
+                  Torneios e partidas competitivas:
+                </p>
+                <table className="trn-table trn-bench-table">
+                  <thead>
+                    <tr>
+                      <th>Cadência</th>
+                      <th>Média</th>
+                      <th>Teto P95</th>
+                      <th>Em 1 hora</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </section>
+                  </thead>
+                  <tbody>
+                    {Object.values(TOURNAMENT_TIME_CONTROLS).map((tc) => (
+                      <tr key={tc.id} className={tc.id === 'rapid_45s' ? 'trn-row-me' : ''}>
+                        <td>
+                          <strong>{tc.label}</strong>
+                        </td>
+                        <td>{tc.avgMatchMinutes}</td>
+                        <td>{tc.p95MatchMinutes}</td>
+                        <td>{tc.recommendedRoundsIn1h} rodadas</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </section>
 
-            <section className="trn-rules-sec">
-              <h3>3. Premiações Oficiais (Cartas, Ouro &amp; R$ / PIX)</h3>
-              <p>
-                Ao término da última rodada, a súmula oficial é homologada automaticamente e a
-                premiação da edição é creditada no inventário do Campeão (ou liquidada via PIX nas
-                edições especiais patrocinadas, mediante Grimório travado na inscrição e auditoria
-                automática das rodadas).
-              </p>
-            </section>
+              <section className="trn-rules-sec">
+                <h3>Premiações</h3>
+                <p>
+                  Ao término da última rodada, a súmula é homologada automaticamente e a premiação é
+                  creditada ao Campeão da edição.
+                </p>
+              </section>
+            </div>
           </div>
         </div>
-      </div>
-    );
-  };
+      )}
 
-  // Render Admin Progressive Disclosure
-  const renderAdminPanel = () => {
-    if (!isAdminProfile(currentUser)) return null;
-    return (
-      <details className="trn-admin-details">
-        <summary className="trn-admin-summary">
-          Administração de Torneios · Agendar Nova Copa Suíça (Cartas ou R$ / PIX)
-        </summary>
-        <form className="trn-admin-form" onSubmit={(e) => void handleAdminPublishTournament(e)}>
-          <label className="trn-field">
-            <span>Título do Torneio</span>
-            <input
-              type="text"
-              value={admTitle}
-              onChange={(e) => setAdmTitle(e.target.value)}
-              required
-            />
-          </label>
-          <label className="trn-field">
-            <span>Início (Horário Local)</span>
-            <input
-              type="datetime-local"
-              value={admStartLocal}
-              onChange={(e) => setAdmStartLocal(e.target.value)}
-              required
-            />
-          </label>
-          <label className="trn-field">
-            <span>Cadência por Turno</span>
-            <select
-              value={admTimeControl}
-              onChange={(e) => setAdmTimeControl(e.target.value as TournamentTimeControlId)}
+      {showAdminModal && isAdminProfile(currentUser) && (
+        <div
+          className="trn-modal-backdrop"
+          onClick={() => setShowAdminModal(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="trn-modal-box trn-modal-narrow" onClick={(e) => e.stopPropagation()}>
+            <div className="trn-modal-head">
+              <h2 className="trn-modal-title">Agendar Novo Torneio</h2>
+              <button
+                type="button"
+                className="trn-btn trn-btn-ghost"
+                onClick={() => setShowAdminModal(false)}
+              >
+                Fechar
+              </button>
+            </div>
+            <form
+              className="trn-admin-modal-form"
+              onSubmit={(e) => void handleAdminPublishTournament(e)}
             >
-              {Object.values(TOURNAMENT_TIME_CONTROLS).map((tc) => (
-                <option key={tc.id} value={tc.id}>
-                  {tc.label} ({tc.recommendedRoundMinutes} min/rodada)
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="trn-field">
-            <span>Rodadas Fixas</span>
-            <input
-              type="number"
-              min={3}
-              max={11}
-              value={admRounds}
-              onChange={(e) => setAdmRounds(Number(e.target.value))}
-            />
-          </label>
-          <label className="trn-field">
-            <span>Premiação Principal</span>
-            <select
-              value={admPrizeKind}
-              onChange={(e) => setAdmPrizeKind(e.target.value as TournamentPrizeKind)}
-            >
-              <option value="unowned_domain_rare_card">
-                Carta Rara Inédita (Cor do Grimório)
-              </option>
-              <option value="unowned_domain_legendary_card">
-                Carta Lendária Inédita (Cor do Grimório)
-              </option>
-              <option value="gold_and_shards">300 Ouro + 150 Estilhaços</option>
-              <option value="cash_brl_pix">Premiação em R$ (PIX) + Carta Rara</option>
-            </select>
-          </label>
-          {admPrizeKind === 'cash_brl_pix' && (
-            <label className="trn-field">
-              <span>Valor em R$ (PIX)</span>
-              <input
-                type="number"
-                min={10}
-                step={10}
-                value={admCashBrl}
-                onChange={(e) => setAdmCashBrl(Number(e.target.value))}
-              />
-            </label>
-          )}
-          <div className="trn-admin-submit">
-            <button type="submit" className="aaa-btn aaa-btn-primary trn-compact-btn">
-              Publicar Torneio Oficial
-            </button>
+              <label className="trn-field">
+                <span>Nome do torneio</span>
+                <input
+                  type="text"
+                  value={admTitle}
+                  onChange={(e) => setAdmTitle(e.target.value)}
+                  required
+                />
+              </label>
+              <div className="trn-form-row-2">
+                <label className="trn-field">
+                  <span>Data e horário de início</span>
+                  <input
+                    type="datetime-local"
+                    value={admStartLocal}
+                    onChange={(e) => setAdmStartLocal(e.target.value)}
+                    required
+                  />
+                </label>
+                <label className="trn-field">
+                  <span>Rodadas</span>
+                  <input
+                    type="number"
+                    min={3}
+                    max={11}
+                    value={admRounds}
+                    onChange={(e) => setAdmRounds(Number(e.target.value))}
+                  />
+                </label>
+              </div>
+              <label className="trn-field">
+                <span>Ritmo de jogo</span>
+                <select
+                  value={admTimeControl}
+                  onChange={(e) => setAdmTimeControl(e.target.value as TournamentTimeControlId)}
+                >
+                  {Object.values(TOURNAMENT_TIME_CONTROLS).map((tc) => (
+                    <option key={tc.id} value={tc.id}>
+                      {tc.label} ({tc.recommendedRoundMinutes} min/rodada)
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="trn-field">
+                <span>Premiação oficial</span>
+                <select
+                  value={admPrizeKind}
+                  onChange={(e) => setAdmPrizeKind(e.target.value as TournamentPrizeKind)}
+                >
+                  <option value="unowned_domain_rare_card">
+                    1 Carta Rara Inédita (Cor do Grimório)
+                  </option>
+                  <option value="unowned_domain_legendary_card">
+                    1 Carta Lendária Inédita (Cor do Grimório)
+                  </option>
+                  <option value="gold_and_shards">300 Ouro + 150 Estilhaços</option>
+                  <option value="cash_brl_pix">Premiação em R$ (PIX) + Carta Rara</option>
+                </select>
+              </label>
+              {admPrizeKind === 'cash_brl_pix' && (
+                <label className="trn-field">
+                  <span>Valor em R$ (PIX)</span>
+                  <input
+                    type="number"
+                    min={10}
+                    step={10}
+                    value={admCashBrl}
+                    onChange={(e) => setAdmCashBrl(Number(e.target.value))}
+                  />
+                </label>
+              )}
+              <div className="trn-modal-foot">
+                <button
+                  type="button"
+                  className="trn-btn trn-btn-ghost"
+                  onClick={() => setShowAdminModal(false)}
+                >
+                  Cancelar
+                </button>
+                <button type="submit" className="trn-btn trn-btn-primary">
+                  Publicar torneio
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
-      </details>
-    );
-  };
+        </div>
+      )}
+    </>
+  );
 
   // ==========================================================================
-  // VIEW A: TOURNAMENT HUB (PÁGINA INICIAL DOS TORNEIOS)
+  // VIEW A: TOURNAMENT HUB (CLEAN EDITORIAL ARENA LOBBY)
   // ==========================================================================
   if (!selectedTournamentId) {
     return (
       <div className="aaa-page-shell tournaments-shell">
-        <header className="trn-header-bar">
-          <div className="trn-header-titles">
-            <div className="trn-title-row">
-              <h1 className="font-cinzel trn-main-title">Salão de Torneios de Vaeloria</h1>
-              <span className="trn-status-pill trn-status-upcoming">Circuito Suíço Oficial</span>
-            </div>
-            <p className="trn-subtitle">
-              Edições regulares de rodadas fixas com pareamento Suíço automático, controle de tempo
-              por turno e súmulas homologadas.
-            </p>
+        <header className="trn-top-bar">
+          <div className="trn-top-bar-left">
+            <h1 className="trn-page-heading">Torneios</h1>
+            <span className="trn-page-sub">
+              Sistema Suíço de rodadas fixas · Pareamento automático
+            </span>
           </div>
 
-          <div className="trn-header-actions">
+          <div className="trn-top-bar-actions">
+            {isAdminProfile(currentUser) && (
+              <button
+                type="button"
+                className="trn-btn trn-btn-ghost"
+                onClick={() => setShowAdminModal(true)}
+              >
+                + Novo torneio
+              </button>
+            )}
             <button
               type="button"
-              className="aaa-btn aaa-btn-secondary trn-compact-btn"
+              className="trn-btn trn-btn-ghost"
               onClick={() => setShowRulesModal(true)}
             >
-              Regulamento &amp; Cadências
+              Regulamento
             </button>
           </div>
         </header>
@@ -1126,73 +1190,176 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
           </div>
         )}
 
-        {/* 1. LIVE & UPCOMING SCHEDULED TOURNAMENTS */}
-        <section className="trn-hub-section">
-          <div className="trn-hub-section-head">
-            <h2 className="font-cinzel trn-hub-section-title">
-              Torneios Abertos &amp; Próximas Edições
-            </h2>
-            <span className="trn-hub-section-meta">
-              Inscrição gratuita · Grimório de 100 cartas
-            </span>
+        {/* 1. UPCOMING & LIVE EVENTS (2-COLUMN ARCHITECTURAL CARDS) */}
+        <section className="trn-section">
+          <div className="trn-section-bar">
+            <h2 className="trn-section-title">Próximas edições</h2>
           </div>
 
           {liveAndUpcomingList.length === 0 ? (
             <div className="trn-empty-pairings">
-              Nenhum torneio agendado no momento. Novas edições oficiais são abertas semanalmente.
+              Nenhuma edição aberta no momento.
             </div>
           ) : (
-            <div className="trn-hub-cards-list">
+            <div className="trn-upcoming-grid">
               {liveAndUpcomingList.map((tSnap) => {
                 const isLive = tSnap.phase === 'round_active' || tSnap.phase === 'round_break';
                 const remMs = isLive
                   ? tSnap.roundEndsAtMs - nowMs
                   : tSnap.definition.startsAtMs - nowMs;
                 const enrolled = Boolean(tSnap.myEntry);
+                const artPath = pickEventBackdropArt(tSnap.definition.id);
 
                 return (
-                  <div
+                  <article
                     key={tSnap.definition.id}
-                    className={`trn-hub-event-row ${isLive ? 'is-live' : ''}`}
+                    className={`trn-event-card ${isLive ? 'is-live' : ''}`}
+                    onClick={() => openTournamentDetail(tSnap.definition.id, 'standings')}
                   >
-                    <div className="trn-hub-event-main">
-                      <div className="trn-title-row">
-                        <span
-                          className={`trn-status-pill ${
-                            isLive ? 'trn-status-live' : 'trn-status-upcoming'
-                          }`}
+                    {artPath && (
+                      <div
+                        className="trn-event-card-art"
+                        style={{ backgroundImage: `url(${artPath}?v=12)` }}
+                        aria-hidden="true"
+                      />
+                    )}
+
+                    <div className="trn-event-card-content">
+                      <div className="trn-event-card-top">
+                        <span className={`trn-badge ${isLive ? 'live' : 'upcoming'}`}>
+                          {isLive
+                            ? `Ao vivo · R${tSnap.currentRound}/${tSnap.definition.totalRounds}`
+                            : `Em ${formatClockCountdown(remMs)}`}
+                        </span>
+                        <span className="trn-event-date">
+                          {formatBrtFriendlyDate(tSnap.definition.startsAtMs)} ·{' '}
+                          {formatBrtHourMinute(tSnap.definition.startsAtMs)}
+                        </span>
+                      </div>
+
+                      <h3 className="trn-event-card-title">
+                        {cleanTournamentTitle(tSnap.definition.title)}
+                      </h3>
+
+                      <div className="trn-event-specs-grid">
+                        <div className="trn-spec-item">
+                          <span className="trn-spec-label">Formato</span>
+                          <span className="trn-spec-val">
+                            Suíço · {tSnap.definition.totalRounds} rodadas
+                          </span>
+                        </div>
+                        <div className="trn-spec-item">
+                          <span className="trn-spec-label">Ritmo</span>
+                          <span className="trn-spec-val">
+                            {tSnap.definition.turnTimeLimitSec}s / turno
+                          </span>
+                        </div>
+                        <div className="trn-spec-item">
+                          <span className="trn-spec-label">Premiação</span>
+                          <span className="trn-spec-val gold">
+                            {tSnap.definition.prizeSpec.label.replace(/\s*\(Cor do Grimório\)/i, '')}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="trn-event-card-foot">
+                        <span className="trn-event-count">
+                          {tSnap.totalParticipantsCount} competidores
+                          {enrolled ? ' · Inscrito' : ''}
+                        </span>
+
+                        <button
+                          type="button"
+                          className="trn-btn trn-btn-primary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openTournamentDetail(tSnap.definition.id, 'standings');
+                          }}
                         >
                           {isLive
-                            ? `Ao Vivo · Rodada ${tSnap.currentRound}/${tSnap.definition.totalRounds}`
-                            : `Inscrições Abertas · ${formatClockCountdown(remMs)}`}
-                        </span>
-                        {enrolled && <span className="trn-enrolled-pill">Inscrito</span>}
-                        <strong className="trn-hub-event-title">{tSnap.definition.title}</strong>
+                            ? 'Entrar na mesa'
+                            : enrolled
+                            ? 'Ver torneio'
+                            : 'Inscrever-se'}
+                        </button>
                       </div>
-                      <div className="trn-hub-event-sub">
-                        {formatBrtDateLabel(tSnap.definition.startsAtMs)} ·{' '}
-                        {formatBrtHourMinute(tSnap.definition.startsAtMs)} às{' '}
-                        {formatBrtHourMinute(tSnap.definition.endsAtMs)} (BRT) ·{' '}
-                        {tSnap.definition.totalRounds} Rodadas ·{' '}
-                        {tSnap.definition.turnTimeLimitSec}s/turno ·{' '}
-                        {tSnap.totalParticipantsCount} competidores · Prêmio:{' '}
-                        <strong style={{ color: '#e2e8f0' }}>
-                          {tSnap.definition.prizeSpec.label}
-                        </strong>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* 2. COMPLETED TOURNAMENTS ARCHIVE (CLEAN PODIUM MINI-STRIP, ZERO TRUNCATION) */}
+        <section className="trn-section">
+          <div className="trn-section-bar">
+            <h2 className="trn-section-title">Edições concluídas</h2>
+          </div>
+
+          {finishedList.length === 0 ? (
+            <div className="trn-empty-pairings">Nenhuma edição concluída ainda.</div>
+          ) : (
+            <div className="trn-archive-list">
+              {finishedList.map((fSnap) => {
+                const top3 = fSnap.standings.slice(0, 3);
+                return (
+                  <div
+                    key={fSnap.definition.id}
+                    className="trn-archive-card"
+                    onClick={() => openTournamentDetail(fSnap.definition.id, 'podium')}
+                  >
+                    <div className="trn-archive-info">
+                      <div className="trn-archive-title">{fSnap.definition.title}</div>
+                      <div className="trn-archive-meta">
+                        {formatBrtFriendlyDate(fSnap.definition.startsAtMs)} ·{' '}
+                        {fSnap.definition.totalRounds} rodadas ·{' '}
+                        {fSnap.totalParticipantsCount} competidores
                       </div>
                     </div>
 
-                    <div className="trn-hub-event-cta">
+                    <div className="trn-archive-medals">
+                      {top3.map((m, idx) => {
+                        const card = CARDS_BY_ID[m.avatarCardId];
+                        return (
+                          <div
+                            key={m.participantId}
+                            className={`trn-mini-medal place-${idx + 1}`}
+                            title={`${idx + 1}º ${m.displayName} (${formatPoints(m.points)} pts)`}
+                          >
+                            {card?.imagePath ? (
+                              <img
+                                src={`${card.imagePath}?v=12`}
+                                alt={m.displayName}
+                                loading="lazy"
+                                className="trn-mini-medal-avatar"
+                              />
+                            ) : (
+                              <div className="trn-mini-medal-avatar" />
+                            )}
+                            <div className="trn-mini-medal-text">
+                              <span className="trn-mini-medal-rank">
+                                {idx + 1}º {compactDisplayName(m.displayName)}
+                              </span>
+                              <span className="trn-mini-medal-pts">
+                                {formatPoints(m.points)} pts
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="trn-archive-cta">
                       <button
                         type="button"
-                        className="aaa-btn aaa-btn-primary trn-compact-btn"
-                        onClick={() => openTournamentDetail(tSnap.definition.id, 'standings')}
+                        className="trn-btn trn-btn-ghost"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openTournamentDetail(fSnap.definition.id, 'podium');
+                        }}
                       >
-                        {isLive
-                          ? 'Entrar no Torneio'
-                          : enrolled
-                          ? 'Ver Inscrição'
-                          : 'Abrir & Inscrever-se'}
+                        Ver resultados →
                       </button>
                     </div>
                   </div>
@@ -1202,109 +1369,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
           )}
         </section>
 
-        {/* 2. COMPLETED TOURNAMENTS ARCHIVE (WITH TOP 3 SUMMARY & SÚMULA ACCESS) */}
-        <section className="trn-hub-section">
-          <div className="trn-hub-section-head">
-            <h2 className="font-cinzel trn-hub-section-title">
-              Torneios Encerrados — Galeria &amp; Súmulas Oficiais
-            </h2>
-            <span className="trn-hub-section-meta">
-              Pódio, classificação completa, mesas por rodada e histórico individual
-            </span>
-          </div>
-
-          {finishedList.length === 0 ? (
-            <div className="trn-empty-pairings">Nenhuma edição encerrada registrada ainda.</div>
-          ) : (
-            <div className="trn-table-wrap">
-              <table className="trn-table">
-                <thead>
-                  <tr>
-                    <th>Edição &amp; Data</th>
-                    <th style={{ textAlign: 'right' }}>Competidores</th>
-                    <th>Pódio Oficial (1º · 2º · 3º)</th>
-                    <th style={{ textAlign: 'right', width: '132px' }}>Súmula</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {finishedList.map((fSnap) => {
-                    const first = fSnap.standings[0];
-                    const second = fSnap.standings[1];
-                    const third = fSnap.standings[2];
-                    const champCard = first ? CARDS_BY_ID[first.avatarCardId] : undefined;
-
-                    return (
-                      <tr key={fSnap.definition.id} className="trn-clickable-row" onClick={() => openTournamentDetail(fSnap.definition.id, 'podium')}>
-                        <td>
-                          <div className="trn-player-text">
-                            <span className="trn-player-name">{fSnap.definition.title}</span>
-                            <span className="trn-player-sub">
-                              {formatBrtDateLabel(fSnap.definition.startsAtMs)} ·{' '}
-                              {formatBrtHourMinute(fSnap.definition.startsAtMs)}–
-                              {formatBrtHourMinute(fSnap.definition.endsAtMs)} ·{' '}
-                              {fSnap.definition.totalRounds} Rodadas (
-                              {fSnap.definition.turnTimeLimitSec}s/turno)
-                            </span>
-                          </div>
-                        </td>
-                        <td className="trn-num-muted">{fSnap.totalParticipantsCount}</td>
-                        <td>
-                          {first ? (
-                            <div className="trn-player-cell">
-                              {champCard?.imagePath ? (
-                                <img
-                                  src={`${champCard.imagePath}?v=12`}
-                                  alt={first.displayName}
-                                  loading="lazy"
-                                  className="trn-avatar trn-avatar-gold"
-                                />
-                              ) : (
-                                <div className="trn-avatar" />
-                              )}
-                              <div className="trn-player-text">
-                                <span className="trn-player-name">
-                                  1º {first.displayName}{' '}
-                                  <span style={{ color: '#f3e3b0', fontWeight: 700 }}>
-                                    ({formatPoints(first.points)} pts)
-                                  </span>
-                                </span>
-                                <span className="trn-player-sub">
-                                  {second
-                                    ? `2º ${second.displayName} (${formatPoints(second.points)})`
-                                    : ''}
-                                  {third
-                                    ? ` · 3º ${third.displayName} (${formatPoints(third.points)})`
-                                    : ''}
-                                </span>
-                              </div>
-                            </div>
-                          ) : (
-                            <span className="trn-player-sub">—</span>
-                          )}
-                        </td>
-                        <td style={{ textAlign: 'right' }}>
-                          <button
-                            type="button"
-                            className="aaa-btn aaa-btn-secondary trn-compact-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openTournamentDetail(fSnap.definition.id, 'podium');
-                            }}
-                          >
-                            Ver Súmula
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-
-        {renderAdminPanel()}
-        {renderRulesModal()}
+        {renderSharedModals()}
       </div>
     );
   }
@@ -1314,42 +1379,41 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   // ==========================================================================
   return (
     <div className="aaa-page-shell tournaments-shell">
-      {/* 1. TOURNAMENT HEADER BAR WITH BACK TO HUB */}
-      <header className="trn-header-bar">
-        <div className="trn-header-titles">
-          <div className="trn-title-row">
+      <header className="trn-top-bar">
+        <div className="trn-top-bar-left">
+          <div className="trn-detail-title-line">
             <button
               type="button"
-              className="aaa-btn aaa-btn-secondary trn-compact-btn"
+              className="trn-back-btn"
               onClick={() => setSelectedTournamentId(null)}
             >
-              ← Todos os Torneios
+              ← Torneios
             </button>
-            <h1 className="font-cinzel trn-main-title">{snapshot.definition.title}</h1>
-            <span className={`trn-status-pill trn-status-${phaseSummary.tone}`}>
-              {phaseSummary.label}
-            </span>
+            <span className="trn-crumb-sep">/</span>
+            <h1 className="trn-page-heading">{snapshot.definition.title}</h1>
+            <span className={`trn-badge ${phaseSummary.tone}`}>{phaseSummary.label}</span>
           </div>
-          <p className="trn-subtitle">
-            {phaseSummary.sub} · {snapshot.totalParticipantsCount} competidores ·{' '}
-            {snapshot.definition.turnTimeLimitSec}s/turno · Prêmio:{' '}
-            <strong>{snapshot.definition.prizeSpec.label}</strong>
-          </p>
+          <span className="trn-page-sub">
+            {phaseSummary.sub} · {snapshot.definition.totalRounds} rodadas ·{' '}
+            {snapshot.definition.turnTimeLimitSec}s/turno · {snapshot.totalParticipantsCount}{' '}
+            competidores · Prêmio: {snapshot.definition.prizeSpec.label}
+          </span>
         </div>
 
-        <div className="trn-header-actions">
+        <div className="trn-top-bar-actions">
           {snapshot.myStanding && (
             <button
               type="button"
-              className="aaa-btn aaa-btn-secondary trn-compact-btn"
+              className="trn-btn trn-btn-ghost"
               onClick={() => setInspectedParticipantId(snapshot.myStanding!.participantId)}
             >
-              Minha Campanha (#{snapshot.myStanding.rank} · {formatPoints(snapshot.myStanding.points)} pt)
+              Minha campanha (#{snapshot.myStanding.rank} ·{' '}
+              {formatPoints(snapshot.myStanding.points)} pt)
             </button>
           )}
           <button
             type="button"
-            className="aaa-btn aaa-btn-secondary trn-compact-btn"
+            className="trn-btn trn-btn-ghost"
             onClick={() => setShowRulesModal(true)}
           >
             Regulamento
@@ -1370,7 +1434,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
         </div>
       )}
 
-      {/* 2. ENROLLMENT OR ACTIVE ROUND MATCH STRIP (WHEN NOT FINISHED) */}
+      {/* ENROLLMENT OR ACTIVE MATCH BAR (WHEN NOT FINISHED) */}
       {snapshot.phase !== 'finished' && (
         <section className="trn-action-strip">
           {!snapshot.myEntry ? (
@@ -1378,13 +1442,12 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
               <div className="trn-enroll-info">
                 <div className="trn-strip-title">
                   {snapshot.phase === 'registration'
-                    ? 'Inscrição Gratuita Aberta'
-                    : `Inscrição Tardia Aberta (Entrada na Rodada ${snapshot.currentRound})`}
+                    ? 'Inscrição aberta'
+                    : `Inscrição tardia aberta (Rodada ${snapshot.currentRound})`}
                 </div>
                 <div className="trn-strip-desc">
-                  Escolha seu Grimório de 100 cartas para disputar as{' '}
-                  {snapshot.definition.totalRounds} rodadas Suíças. Premiação oficial:{' '}
-                  {snapshot.definition.prizeSpec.label}.
+                  Selecione seu Grimório de 100 cartas para competir nas{' '}
+                  {snapshot.definition.totalRounds} rodadas.
                 </div>
               </div>
 
@@ -1394,7 +1457,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                     className="trn-deck-select"
                     value={selectedDeckObj?.id ?? ''}
                     onChange={(e) => setSelectedDeckId(e.target.value)}
-                    aria-label="Selecionar Grimório para o Torneio"
+                    aria-label="Selecionar Grimório"
                   >
                     {customDecks.map((d) => {
                       const dom = inferDeckPrimaryDomain(d.cardIds);
@@ -1409,14 +1472,14 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
 
                 <button
                   type="button"
-                  className="aaa-btn aaa-btn-primary trn-primary-cta"
+                  className="trn-btn trn-btn-primary"
                   disabled={isEnrolling}
                   onClick={() => void handleEnroll()}
                 >
                   {isGuest
-                    ? 'Entrar na Conta para Competir'
+                    ? 'Entrar na conta'
                     : customDecks.length === 0
-                    ? 'Montar Grimório para Competir'
+                    ? 'Montar Grimório'
                     : isEnrolling
                     ? 'Inscrevendo...'
                     : 'Inscrever Grimório'}
@@ -1429,7 +1492,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                 <div className="trn-strip-title">
                   {snapshot.phase === 'registration' ? (
                     <>
-                      Grimório inscrito: <strong>{snapshot.myEntry.deckName}</strong> (
+                      Inscrito com <strong>{snapshot.myEntry.deckName}</strong> (
                       {DOMAIN_LABELS_PT[snapshot.myEntry.primaryDomain]})
                     </>
                   ) : myOpponentStanding ? (
@@ -1437,37 +1500,34 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                       Rodada {snapshot.currentRound}/{snapshot.definition.totalRounds} · Mesa #
                       {snapshot.myCurrentPairing?.tableNumber ?? 1}:{' '}
                       <strong>{currentUser.username}</strong> vs{' '}
-                      <strong>{myOpponentStanding.displayName}</strong> ({myOpponentStanding.eloRating}{' '}
-                      ELO)
+                      <strong>{myOpponentStanding.displayName}</strong> ({myOpponentStanding.eloRating})
                     </>
                   ) : (
-                    <>Rodada {snapshot.currentRound}: Bye Suíço (+1,0 ponto automático)</>
+                    <>Rodada {snapshot.currentRound}: Bye Suíço (+1,0 pt)</>
                   )}
                 </div>
                 <div className="trn-strip-desc">
                   {snapshot.phase === 'registration'
-                    ? `A 1ª rodada inicia automaticamente às ${formatBrtHourMinute(
+                    ? `A 1ª rodada começa às ${formatBrtHourMinute(
                         snapshot.definition.startsAtMs
-                      )}. Mantenha esta tela aberta para entrar na mesa.`
+                      )}.`
                     : myCurrentRoundRecord
-                    ? `Partida concluída (${
+                    ? `Resultado registrado (${
                         myCurrentRoundRecord.score === 1
-                          ? 'Vitória +1,0 pt'
+                          ? 'Vitória +1,0'
                           : myCurrentRoundRecord.score === 0.5
-                          ? 'Empate +0,5 pt'
-                          : 'Derrota 0,0 pt'
+                          ? 'Empate +0,5'
+                          : 'Derrota 0,0'
                       }). Próxima rodada em ${formatClockCountdown(
                         snapshot.roundEndsAtMs - nowMs
                       )}.`
                     : pvpHandshakeState
-                    ? `Conectando à mesa com ${pvpHandshakeState.opponent.displayName}... W.O. automático a seu favor em ${pvpHandshakeState.secondsLeft}s caso ausente.`
+                    ? `Aguardando ${pvpHandshakeState.opponent.displayName} na mesa (${pvpHandshakeState.secondsLeft}s)...`
                     : snapshot.phase === 'round_break'
-                    ? `Intervalo entre rodadas. Nova mesa em ${formatClockCountdown(
-                        snapshot.roundEndsAtMs - nowMs
-                      )}.`
-                    : `Janela da rodada encerra em ${formatClockCountdown(
+                    ? `Próxima rodada em ${formatClockCountdown(snapshot.roundEndsAtMs - nowMs)}.`
+                    : `Tempo restante da rodada: ${formatClockCountdown(
                         snapshot.roundPlayDeadlineMs - nowMs
-                      )} (${snapshot.definition.turnTimeLimitSec}s por turno).`}
+                      )}.`}
                 </div>
               </div>
 
@@ -1478,16 +1538,16 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                     checked={autoStartRounds}
                     onChange={(e) => handleToggleAutoStart(e.target.checked)}
                   />
-                  <span>Auto-iniciar rodadas</span>
+                  <span>Auto-iniciar</span>
                 </label>
 
                 {snapshot.phase === 'registration' && customDecks.length > 1 && (
                   <button
                     type="button"
-                    className="aaa-btn aaa-btn-secondary trn-compact-btn"
+                    className="trn-btn trn-btn-ghost"
                     onClick={() => void handleEnroll()}
                   >
-                    Trocar Grimório
+                    Atualizar Grimório
                   </button>
                 )}
 
@@ -1497,10 +1557,10 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                   !pvpHandshakeState && (
                     <button
                       type="button"
-                      className="aaa-btn aaa-btn-primary trn-primary-cta"
+                      className="trn-btn trn-btn-primary"
                       onClick={() => void handleEnterRoundMatch()}
                     >
-                      Entrar na Mesa · R{snapshot.currentRound}
+                      Entrar na mesa · R{snapshot.currentRound}
                     </button>
                   )}
               </div>
@@ -1509,7 +1569,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
         </section>
       )}
 
-      {/* 3. SUB-NAVIGATION TABS + CONTEXTUAL FILTERS */}
+      {/* SUB-NAVIGATION BAR */}
       <div className="trn-toolbar">
         <div className="trn-subtabs" role="tablist">
           {snapshot.phase === 'finished' && (
@@ -1520,7 +1580,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
               className={`trn-subtab ${detailTab === 'podium' ? 'active' : ''}`}
               onClick={() => setDetailTab('podium')}
             >
-              Pódio Oficial
+              Pódio
             </button>
           )}
           <button
@@ -1530,7 +1590,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             className={`trn-subtab ${detailTab === 'standings' ? 'active' : ''}`}
             onClick={() => setDetailTab('standings')}
           >
-            Classificação Geral ({snapshot.totalParticipantsCount})
+            Classificação ({snapshot.totalParticipantsCount})
           </button>
           <button
             type="button"
@@ -1544,9 +1604,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
               }
             }}
           >
-            {snapshot.currentRound > 0
-              ? `Rodadas & Mesas (${snapshot.currentRound}/${snapshot.definition.totalRounds})`
-              : 'Rodadas & Mesas'}
+            Rodadas &amp; Mesas
           </button>
         </div>
 
@@ -1559,9 +1617,9 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                 setDomainFilter(e.target.value as 'all' | Domain);
                 setStandingsPage(1);
               }}
-              aria-label="Filtrar por domínio cromático"
+              aria-label="Domínio"
             >
-              <option value="all">Todos os Domínios</option>
+              <option value="all">Todos os domínios</option>
               {ALL_DOMAINS_ORDER.map((dom) => (
                 <option key={dom} value={dom}>
                   {DOMAIN_LABELS_PT[dom]}
@@ -1571,7 +1629,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             <input
               type="search"
               className="trn-search-input"
-              placeholder="Buscar competidor ou reino..."
+              placeholder="Buscar competidor..."
               value={standingsSearch}
               onChange={(e) => {
                 setStandingsSearch(e.target.value);
@@ -1586,7 +1644,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             <input
               type="search"
               className="trn-search-input"
-              placeholder="Buscar competidor ou nº da mesa..."
+              placeholder="Buscar competidor ou mesa..."
               value={pairingsSearch}
               onChange={(e) => {
                 setPairingsSearch(e.target.value);
@@ -1597,7 +1655,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
         )}
       </div>
 
-      {/* 4A. TAB: PÓDIO OFICIAL & SÚMULA DE HONRA (DEDICATED VIEW — NO REDUNDANT FULL TABLE BELOW) */}
+      {/* TAB 1: PÓDIO OFICIAL */}
       {detailTab === 'podium' && snapshot.phase === 'finished' && (
         <div className="trn-podium-stage">
           <div className="trn-podium-grid">
@@ -1606,87 +1664,97 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
               const place = visualIdx === 1 ? 1 : visualIdx === 0 ? 2 : 3;
               const placeLabel =
                 place === 1
-                  ? '1º Lugar · Campeão Oficial'
+                  ? '1º Lugar · Campeão'
                   : place === 2
-                  ? '2º Lugar · Vice-Campeão'
-                  : '3º Lugar · Pódio Oficial';
+                  ? '2º Lugar · Vice-campeão'
+                  : '3º Lugar';
               const portrait = CARDS_BY_ID[medalist.avatarCardId];
               const hpSign = medalist.hpDiff > 0 ? `+${medalist.hpDiff}` : `${medalist.hpDiff}`;
 
               return (
                 <article
                   key={medalist.participantId}
-                  className={`trn-podium-card trn-podium-place-${place}`}
+                  className={`trn-podium-card place-${place}`}
+                  onClick={() => setInspectedParticipantId(medalist.participantId)}
                 >
-                  <div className="trn-podium-place-kicker">{placeLabel}</div>
+                  {portrait?.imagePath && (
+                    <div
+                      className="trn-podium-bg-art"
+                      style={{ backgroundImage: `url(${portrait.imagePath}?v=12)` }}
+                      aria-hidden="true"
+                    />
+                  )}
 
-                  <div className="trn-podium-identity">
-                    {portrait?.imagePath ? (
-                      <img
-                        src={`${portrait.imagePath}?v=12`}
-                        alt={medalist.displayName}
-                        className="trn-podium-portrait"
+                  <div className="trn-podium-card-inner">
+                    <div className="trn-podium-head">
+                      <span className="trn-podium-kicker">{placeLabel}</span>
+                      <span
+                        className="trn-domain-dot"
+                        style={{ backgroundColor: DOMAIN_ACCENT_HEX[medalist.primaryDomain] }}
+                        title={DOMAIN_LABELS_PT[medalist.primaryDomain]}
                       />
-                    ) : (
-                      <div className="trn-podium-portrait" />
-                    )}
-                    <div className="trn-podium-names">
-                      <h3 className="font-cinzel trn-podium-name">{medalist.displayName}</h3>
-                      <div className="trn-podium-sub">{medalist.subtitle}</div>
+                    </div>
+
+                    <div className="trn-podium-hero">
+                      {portrait?.imagePath ? (
+                        <img
+                          src={`${portrait.imagePath}?v=12`}
+                          alt={medalist.displayName}
+                          className="trn-podium-avatar-lg"
+                        />
+                      ) : (
+                        <div className="trn-podium-avatar-lg" />
+                      )}
+                      <div className="trn-podium-names">
+                        <h3 className="trn-podium-name">{medalist.displayName}</h3>
+                        <span className="trn-podium-sub">{medalist.subtitle}</span>
+                      </div>
+                    </div>
+
+                    <div className="trn-podium-metrics">
+                      <div className="trn-podium-metric">
+                        <span className="trn-podium-metric-label">Pontos</span>
+                        <strong className="trn-podium-metric-val gold">
+                          {formatPoints(medalist.points)}
+                        </strong>
+                      </div>
+                      <div className="trn-podium-metric">
+                        <span className="trn-podium-metric-label">Buchholz</span>
+                        <strong className="trn-podium-metric-val">
+                          {formatPoints(medalist.buchholz)}
+                        </strong>
+                      </div>
+                      <div className="trn-podium-metric">
+                        <span className="trn-podium-metric-label">V-E-D</span>
+                        <strong className="trn-podium-metric-val">
+                          {medalist.wins}-{medalist.draws}-{medalist.losses}
+                        </strong>
+                      </div>
+                      <div className="trn-podium-metric">
+                        <span className="trn-podium-metric-label">Saldo PV</span>
+                        <strong className="trn-podium-metric-val">{hpSign}</strong>
+                      </div>
+                    </div>
+
+                    <div className="trn-podium-foot">
+                      <div className="trn-round-chips-row">
+                        {medalist.matchHistory.map((item) => {
+                          const chip = formatRoundChipLabel(item);
+                          return (
+                            <span
+                              key={`pod_r${item.round}`}
+                              className={`trn-round-chip tone-${chip.tone}`}
+                              title={chip.tooltip}
+                            >
+                              {chip.short}
+                            </span>
+                          );
+                        })}
+                      </div>
+
+                      <span className="trn-podium-link">Ver partidas →</span>
                     </div>
                   </div>
-
-                  <div className="trn-podium-metrics">
-                    <div className="trn-podium-metric">
-                      <span className="trn-podium-metric-label">Pontos</span>
-                      <strong className="trn-podium-metric-val gold">
-                        {formatPoints(medalist.points)}
-                      </strong>
-                    </div>
-                    <div className="trn-podium-metric">
-                      <span className="trn-podium-metric-label">Buchholz</span>
-                      <strong className="trn-podium-metric-val">
-                        {formatPoints(medalist.buchholz)}
-                      </strong>
-                    </div>
-                    <div className="trn-podium-metric">
-                      <span className="trn-podium-metric-label">V-E-D</span>
-                      <strong className="trn-podium-metric-val">
-                        {medalist.wins}-{medalist.draws}-{medalist.losses}
-                      </strong>
-                    </div>
-                    <div className="trn-podium-metric">
-                      <span className="trn-podium-metric-label">Saldo PV</span>
-                      <strong className="trn-podium-metric-val">{hpSign}</strong>
-                    </div>
-                  </div>
-
-                  <div className="trn-round-chips-row">
-                    {medalist.matchHistory.map((item) => {
-                      const chip = formatRoundChipLabel(item);
-                      return (
-                        <span
-                          key={`pod_r${item.round}`}
-                          className={`trn-round-chip tone-${chip.tone}`}
-                          title={chip.tooltip}
-                        >
-                          R{item.round}:{chip.short}
-                        </span>
-                      );
-                    })}
-                  </div>
-
-                  <button
-                    type="button"
-                    className={
-                      place === 1
-                        ? 'aaa-btn aaa-btn-primary trn-compact-btn'
-                        : 'aaa-btn aaa-btn-secondary trn-compact-btn'
-                    }
-                    onClick={() => setInspectedParticipantId(medalist.participantId)}
-                  >
-                    Ver as {medalist.matchHistory.length} Partidas
-                  </button>
                 </article>
               );
             })}
@@ -1695,68 +1763,51 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
           {snapshot.finalizedAward && awardedPrizeCard && (
             <div className="trn-finished-banner">
               <div className="trn-finished-col">
-                <div className="trn-kicker">Premiação Oficial Homologada</div>
+                <div className="trn-kicker">Premiação Entregue</div>
                 <div className="trn-finished-headline">
-                  Campeão: <strong>{snapshot.finalizedAward.winnerUsername}</strong> (
-                  {formatPoints(snapshot.finalizedAward.winnerPoints)} pts ·{' '}
-                  {DOMAIN_LABELS_PT[snapshot.finalizedAward.primaryDomain]})
-                </div>
-                <div className="trn-strip-desc">
-                  Carta Rara inédita sorteada e creditada automaticamente no Grimório do Campeão.
+                  <strong>{awardedPrizeCard.name}</strong> creditada para{' '}
+                  <strong>{snapshot.finalizedAward.winnerUsername}</strong>
                 </div>
               </div>
               <button
                 type="button"
-                className="trn-prize-card-chip"
+                className="trn-btn trn-btn-ghost"
                 onClick={() => onInspectCard(awardedPrizeCard)}
               >
-                {awardedPrizeCard.imagePath && (
-                  <img
-                    src={`${awardedPrizeCard.imagePath}?v=12`}
-                    alt={awardedPrizeCard.name}
-                    className="trn-prize-card-thumb"
-                  />
-                )}
-                <div className="trn-prize-card-meta">
-                  <span className="trn-kicker">Carta Rara Entregue</span>
-                  <strong className="trn-prize-card-name">{awardedPrizeCard.name}</strong>
-                  <span className="trn-prize-card-sub">Clique para inspecionar a carta</span>
-                </div>
+                Inspecionar carta
               </button>
             </div>
           )}
 
-          {/* EDITION METRICS & BEST BY CHROMATIC DOMAIN */}
+          {/* COMPACT STATS & DOMAIN LEADERS */}
           <div className="trn-edition-stats-bar">
             <div className="trn-stat-cell">
-              <span className="trn-stat-label">Partidas Homologadas</span>
+              <span className="trn-stat-label">Partidas disputadas</span>
               <strong className="trn-stat-value">
-                {editionStats.totalMatches} ({snapshot.definition.totalRounds} rodadas)
+                {editionStats.totalMatches} em {snapshot.definition.totalRounds} rodadas
               </strong>
             </div>
             <div className="trn-stat-cell">
-              <span className="trn-stat-label">Campanhas 100% Invictas</span>
+              <span className="trn-stat-label">Campanhas invictas</span>
               <strong className="trn-stat-value">{editionStats.undefeatedCount}</strong>
             </div>
             <div className="trn-stat-cell">
-              <span className="trn-stat-label">Empates Técnicos (½–½)</span>
+              <span className="trn-stat-label">Empates técnicos</span>
               <strong className="trn-stat-value">{editionStats.totalDraws}</strong>
             </div>
             <div className="trn-stat-cell">
-              <span className="trn-stat-label">Cadência Oficial</span>
+              <span className="trn-stat-label">Ritmo oficial</span>
               <strong className="trn-stat-value">
-                {snapshot.definition.turnTimeLimitSec}s / turno
+                {snapshot.definition.turnTimeLimitSec}s por turno
               </strong>
             </div>
           </div>
 
           <section className="trn-domain-leaders-panel">
             <div className="trn-domain-leaders-header">
-              <span className="trn-domain-leaders-title">
-                Melhor Campanha por Domínio Cromático
-              </span>
+              <span className="trn-domain-leaders-title">Líderes por domínio cromático</span>
               <span className="trn-domain-leaders-hint">
-                Clique em qualquer competidor para ver contra quem jogou em cada rodada
+                Clique para ver os adversários enfrentados nas 6 rodadas
               </span>
             </div>
             <div className="trn-domain-leaders-grid">
@@ -1780,13 +1831,16 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                       <div className="trn-avatar" />
                     )}
                     <div className="trn-player-text">
-                      <span className="trn-domain-kicker">{DOMAIN_LABELS_PT[domain]}</span>
-                      <span className="trn-player-name">
-                        #{leader.rank} {leader.displayName}
+                      <span className="trn-domain-kicker">
+                        <span
+                          className="trn-domain-dot-inline"
+                          style={{ backgroundColor: DOMAIN_ACCENT_HEX[domain] }}
+                        />
+                        {DOMAIN_LABELS_PT[domain]} · #{leader.rank} geral
                       </span>
+                      <span className="trn-player-name">{compactDisplayName(leader.displayName)}</span>
                       <span className="trn-player-sub">
-                        {formatPoints(leader.points)} pts · Buchholz {formatPoints(leader.buchholz)} ·{' '}
-                        {leader.wins}-{leader.draws}-{leader.losses}
+                        {formatPoints(leader.points)} pts · Buchholz {formatPoints(leader.buchholz)}
                       </span>
                     </div>
                   </button>
@@ -1797,16 +1851,9 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
         </div>
       )}
 
-      {/* 4B. TAB: CLASSIFICAÇÃO GERAL COMPLETA (CLICKABLE ROWS + ROUND TRAJECTORY) */}
+      {/* TAB 2: CLASSIFICAÇÃO GERAL */}
       {detailTab === 'standings' && (
         <div className="trn-table-wrap">
-          <div className="trn-table-hint-bar">
-            <span>
-              Clique em qualquer competidor para abrir a súmula completa das rodadas e adversários
-              enfrentados.
-            </span>
-            <span>{filteredStandings.length} competidores exibidos</span>
-          </div>
           <table className="trn-table">
             <thead>
               <tr>
@@ -1815,7 +1862,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                 <th style={{ textAlign: 'right' }}>Pts</th>
                 <th style={{ textAlign: 'right' }}>Buchholz</th>
                 <th style={{ textAlign: 'center' }}>V-E-D</th>
-                <th>Campanha por Rodada</th>
+                <th>Rodadas</th>
                 <th style={{ textAlign: 'right' }}>Saldo PV</th>
                 <th style={{ textAlign: 'right' }}>ELO</th>
               </tr>
@@ -1845,7 +1892,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                             className="trn-avatar"
                           />
                         ) : (
-                          <div className="trn-avatar trn-avatar-fallback" />
+                          <div className="trn-avatar" />
                         )}
                         <div className="trn-player-text">
                           <div className="trn-player-name-line">
@@ -1863,7 +1910,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                     </td>
                     <td>
                       {row.matchHistory.length === 0 ? (
-                        <span className="trn-player-sub">Aguardando 1ª rodada</span>
+                        <span className="trn-player-sub">—</span>
                       ) : (
                         <div className="trn-round-chips-row">
                           {row.matchHistory.map((item) => {
@@ -1893,36 +1940,35 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             <div className="trn-pagination">
               <button
                 type="button"
-                className="aaa-btn aaa-btn-secondary trn-compact-btn"
+                className="trn-btn trn-btn-ghost"
                 disabled={clampedStandingsPage <= 1}
                 onClick={() => setStandingsPage((p) => Math.max(1, p - 1))}
               >
-                Anterior
+                ← Anterior
               </button>
               <span className="trn-page-indicator">
                 Página {clampedStandingsPage} de {totalStandingsPages}
               </span>
               <button
                 type="button"
-                className="aaa-btn aaa-btn-secondary trn-compact-btn"
+                className="trn-btn trn-btn-ghost"
                 disabled={clampedStandingsPage >= totalStandingsPages}
                 onClick={() => setStandingsPage((p) => Math.min(totalStandingsPages, p + 1))}
               >
-                Próxima
+                Próxima →
               </button>
             </div>
           )}
         </div>
       )}
 
-      {/* 4C. TAB: RODADAS & MESAS (ROUND SELECTOR R1..RN + ALL TABLES) */}
+      {/* TAB 3: RODADAS & MESAS (SYMMETRIC FACE-OFF LAYOUT) */}
       {detailTab === 'pairings' && (
         <div className="trn-table-wrap">
           {snapshot.currentRound === 0 ? (
             <div className="trn-empty-pairings">
-              O emparceiramento da 1ª Rodada será publicado automaticamente às{' '}
-              <strong>{formatBrtHourMinute(snapshot.definition.startsAtMs)}</strong> com todos os{' '}
-              {snapshot.totalParticipantsCount} competidores.
+              As mesas da 1ª rodada serão abertas automaticamente às{' '}
+              <strong>{formatBrtHourMinute(snapshot.definition.startsAtMs)}</strong>.
             </div>
           ) : (
             <>
@@ -1930,7 +1976,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                 <div className="trn-round-pills-list" role="tablist" aria-label="Selecionar rodada">
                   {Array.from({ length: snapshot.currentRound }, (_, idx) => idx + 1).map(
                     (rNum) => {
-                      const count = (snapshot.roundsPairings[rNum] ?? []).length;
                       const isActive = selectedRoundTab === rNum;
                       return (
                         <button
@@ -1944,24 +1989,24 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                             setPairingsPage(1);
                           }}
                         >
-                          Rodada {rNum} ({count} mesas)
+                          Rodada {rNum}
                         </button>
                       );
                     }
                   )}
                 </div>
                 <span className="trn-round-selector-hint">
-                  Mesas ordenadas pela pontuação Suíça no início da Rodada {selectedRoundTab}
+                  {filteredPairings.length} mesas · Clique em qualquer competidor para ver sua súmula
                 </span>
               </div>
 
-              <table className="trn-table">
+              <table className="trn-table trn-pairings-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '72px' }}>Mesa</th>
-                    <th>Competidor A</th>
-                    <th style={{ width: '165px', textAlign: 'center' }}>Placar &amp; Detalhe</th>
-                    <th>Competidor B</th>
+                    <th style={{ width: '64px' }}>Mesa</th>
+                    <th style={{ textAlign: 'right' }}>Competidor A</th>
+                    <th style={{ width: '140px', textAlign: 'center' }}>Resultado</th>
+                    <th style={{ textAlign: 'left' }}>Competidor B</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1991,12 +2036,23 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                         className={pair.isMyTable ? 'trn-row-me' : ''}
                       >
                         <td className="trn-rank-cell">#{pair.tableNumber}</td>
-                        <td>
+                        <td style={{ textAlign: 'right' }}>
                           <button
                             type="button"
-                            className="trn-pair-player-btn"
+                            className="trn-pair-player-btn align-right"
                             onClick={() => setInspectedParticipantId(pair.playerA.participantId)}
                           >
+                            <div className="trn-player-text align-right">
+                              <span
+                                className={`trn-player-name ${aWon ? 'trn-winner-highlight' : ''}`}
+                              >
+                                {pair.playerA.displayName}
+                              </span>
+                              <span className="trn-pair-pts">
+                                #{pair.playerA.rank} · {formatPoints(pair.pointsBeforeA)} pt ·{' '}
+                                {pair.playerA.eloRating}
+                              </span>
+                            </div>
                             {avatarA?.imagePath ? (
                               <img
                                 src={`${avatarA.imagePath}?v=12`}
@@ -2007,17 +2063,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                             ) : (
                               <div className="trn-avatar trn-avatar-sm" />
                             )}
-                            <div className="trn-player-text">
-                              <span
-                                className={`trn-player-name ${aWon ? 'trn-winner-highlight' : ''}`}
-                              >
-                                {pair.playerA.displayName}
-                              </span>
-                              <span className="trn-pair-pts">
-                                #{pair.playerA.rank} geral · tinha {formatPoints(pair.pointsBeforeA)}{' '}
-                                pt · {pair.playerA.eloRating} ELO
-                              </span>
-                            </div>
                           </button>
                         </td>
                         <td style={{ textAlign: 'center' }}>
@@ -2031,8 +2076,8 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                             </span>
                             {pair.result !== 'IN_PROGRESS' && pair.result !== 'BYE' && (
                               <span className="trn-score-detail">
-                                {pair.turns > 0 ? `${pair.turns} turnos · ` : ''}
-                                {absMargin > 0 ? `saldo ${absMargin} PV` : 'igualdade'}
+                                {pair.turns > 0 ? `${pair.turns}t · ` : ''}
+                                {absMargin > 0 ? `+${absMargin} PV` : '0 PV'}
                               </span>
                             )}
                           </div>
@@ -2063,9 +2108,8 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                                   {pair.playerB.displayName}
                                 </span>
                                 <span className="trn-pair-pts">
-                                  #{pair.playerB.rank} geral · tinha{' '}
-                                  {formatPoints(pair.pointsBeforeB)} pt · {pair.playerB.eloRating}{' '}
-                                  ELO
+                                  #{pair.playerB.rank} · {formatPoints(pair.pointsBeforeB)} pt ·{' '}
+                                  {pair.playerB.eloRating}
                                 </span>
                               </div>
                             </button>
@@ -2083,24 +2127,24 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                 <div className="trn-pagination">
                   <button
                     type="button"
-                    className="aaa-btn aaa-btn-secondary trn-compact-btn"
+                    className="trn-btn trn-btn-ghost"
                     disabled={clampedPairingsPage <= 1}
                     onClick={() => setPairingsPage((p) => Math.max(1, p - 1))}
                   >
-                    Anterior
+                    ← Anterior
                   </button>
                   <span className="trn-page-indicator">
                     Página {clampedPairingsPage} de {totalPairingsPages}
                   </span>
                   <button
                     type="button"
-                    className="aaa-btn aaa-btn-secondary trn-compact-btn"
+                    className="trn-btn trn-btn-ghost"
                     disabled={clampedPairingsPage >= totalPairingsPages}
                     onClick={() =>
                       setPairingsPage((p) => Math.min(totalPairingsPages, p + 1))
                     }
                   >
-                    Próxima
+                    Próxima →
                   </button>
                 </div>
               )}
@@ -2109,35 +2153,32 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
         </div>
       )}
 
-      {/* 5. MODAL: SÚMULA INDIVIDUAL DO COMPETIDOR (ROUND-BY-ROUND OPPONENTS & RESULTS) */}
+      {/* MODAL: SÚMULA INDIVIDUAL DO COMPETIDOR */}
       {inspectedStanding && (
         <div
-          className="aaa-modal-backdrop"
+          className="trn-modal-backdrop"
           onClick={() => setInspectedParticipantId(null)}
           role="dialog"
           aria-modal="true"
         >
-          <div
-            className="trn-competitor-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="trn-competitor-modal-head">
+          <div className="trn-modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="trn-modal-head">
               <div className="trn-player-cell">
                 {CARDS_BY_ID[inspectedStanding.avatarCardId]?.imagePath ? (
                   <img
                     src={`${CARDS_BY_ID[inspectedStanding.avatarCardId].imagePath}?v=12`}
                     alt={inspectedStanding.displayName}
-                    className="trn-podium-portrait"
+                    className="trn-podium-avatar-lg"
                   />
                 ) : (
-                  <div className="trn-podium-portrait" />
+                  <div className="trn-podium-avatar-lg" />
                 )}
                 <div className="trn-player-text">
                   <div className="trn-kicker">
-                    #{inspectedStanding.rank} na Classificação ·{' '}
+                    #{inspectedStanding.rank} na classificação ·{' '}
                     {DOMAIN_LABELS_PT[inspectedStanding.primaryDomain]}
                   </div>
-                  <h2 className="font-cinzel" style={{ margin: '2px 0', fontSize: '1.08rem' }}>
+                  <h2 className="trn-modal-title" style={{ marginTop: '2px' }}>
                     {inspectedStanding.displayName}
                   </h2>
                   <div className="trn-player-sub">{inspectedStanding.subtitle}</div>
@@ -2146,7 +2187,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
 
               <button
                 type="button"
-                className="aaa-btn aaa-btn-secondary trn-compact-btn"
+                className="trn-btn trn-btn-ghost"
                 onClick={() => setInspectedParticipantId(null)}
               >
                 Fechar
@@ -2155,9 +2196,9 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
 
             <div className="trn-competitor-summary-strip">
               <div>
-                <span>Pontuação</span>
+                <span>Pontos</span>
                 <strong style={{ color: '#f3e3b0' }}>
-                  {formatPoints(inspectedStanding.points)} pts
+                  {formatPoints(inspectedStanding.points)}
                 </strong>
               </div>
               <div>
@@ -2165,13 +2206,13 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                 <strong>{formatPoints(inspectedStanding.buchholz)}</strong>
               </div>
               <div>
-                <span>Campanha (V-E-D)</span>
+                <span>V-E-D</span>
                 <strong>
                   {inspectedStanding.wins}-{inspectedStanding.draws}-{inspectedStanding.losses}
                 </strong>
               </div>
               <div>
-                <span>Saldo de PV</span>
+                <span>Saldo PV</span>
                 <strong>
                   {inspectedStanding.hpDiff > 0
                     ? `+${inspectedStanding.hpDiff}`
@@ -2187,17 +2228,17 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             <div className="trn-competitor-modal-body">
               {inspectedStanding.matchHistory.length === 0 ? (
                 <div className="trn-empty-pairings">
-                  Este competidor ainda não possui rodadas concluídas nesta edição.
+                  Nenhuma rodada concluída nesta edição ainda.
                 </div>
               ) : (
                 <table className="trn-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '96px' }}>Rodada</th>
-                      <th>Adversário Enfrentado</th>
-                      <th style={{ textAlign: 'center', width: '125px' }}>Resultado</th>
-                      <th style={{ textAlign: 'right', width: '130px' }}>Detalhe</th>
-                      <th style={{ textAlign: 'right', width: '80px' }}>Acum.</th>
+                      <th style={{ width: '96px' }}>Mesa</th>
+                      <th>Adversário</th>
+                      <th style={{ textAlign: 'center', width: '120px' }}>Resultado</th>
+                      <th style={{ textAlign: 'right', width: '115px' }}>Detalhe</th>
+                      <th style={{ textAlign: 'right', width: '72px' }}>Acum.</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2205,14 +2246,14 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                       const oppCard = CARDS_BY_ID[m.opponentAvatarCardId];
                       const outcomeLabel =
                         m.outcome === 'WIN'
-                          ? 'Vitória (+1,0)'
+                          ? 'Vitória +1,0'
                           : m.outcome === 'DRAW'
-                          ? 'Empate (+0,5)'
+                          ? 'Empate +0,5'
                           : m.outcome === 'BYE'
-                          ? 'Bye (+1,0)'
+                          ? 'Bye +1,0'
                           : m.outcome === 'IN_PROGRESS'
                           ? 'Em jogo'
-                          : 'Derrota (0,0)';
+                          : 'Derrota 0,0';
                       const tone =
                         m.outcome === 'WIN' || m.outcome === 'BYE'
                           ? 'win'
@@ -2238,18 +2279,18 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                               }}
                               title={`Ir para a Mesa #${m.tableNumber} da Rodada ${m.round}`}
                             >
-                              R{m.round} · Mesa #{m.tableNumber}
+                              R{m.round} · #{m.tableNumber}
                             </button>
                           </td>
                           <td>
                             {m.opponentId === '__BYE__' ? (
-                              <span className="trn-player-sub">Bye Suíço regulamentar</span>
+                              <span className="trn-player-sub">Bye Suíço</span>
                             ) : (
                               <button
                                 type="button"
                                 className="trn-pair-player-btn"
                                 onClick={() => setInspectedParticipantId(m.opponentId)}
-                                title={`Abrir súmula de ${m.opponentName}`}
+                                title={`Ver campanha de ${m.opponentName}`}
                               >
                                 {oppCard?.imagePath ? (
                                   <img
@@ -2264,15 +2305,17 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                                 <div className="trn-player-text">
                                   <span className="trn-player-name">{m.opponentName}</span>
                                   <span className="trn-pair-pts">
-                                    #{m.opponentFinalRank} na classificação · fechou com{' '}
-                                    {formatPoints(m.opponentFinalPoints)} pts · {m.opponentElo} ELO
+                                    #{m.opponentFinalRank} geral · {formatPoints(m.opponentFinalPoints)}{' '}
+                                    pts · {m.opponentElo} ELO
                                   </span>
                                 </div>
                               </button>
                             )}
                           </td>
                           <td style={{ textAlign: 'center' }}>
-                            <span className={`trn-round-chip tone-${tone}`}>{outcomeLabel}</span>
+                            <span className={`trn-round-chip pill tone-${tone}`}>
+                              {outcomeLabel}
+                            </span>
                           </td>
                           <td className="trn-num-muted">
                             {m.outcome === 'IN_PROGRESS'
@@ -2288,17 +2331,16 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
               )}
 
               <div className="trn-buchholz-footnote">
-                Buchholz ({formatPoints(inspectedStanding.buchholz)}) = soma dos pontos finais dos
-                adversários enfrentados nesta edição. Clique no nome de qualquer adversário acima
-                para inspecionar a campanha dele.
+                Buchholz ({formatPoints(inspectedStanding.buchholz)}) corresponde à soma dos pontos
+                finais dos adversários enfrentados. Clique em qualquer adversário para abrir a
+                campanha dele.
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {renderAdminPanel()}
-      {renderRulesModal()}
+      {renderSharedModals()}
     </div>
   );
 };

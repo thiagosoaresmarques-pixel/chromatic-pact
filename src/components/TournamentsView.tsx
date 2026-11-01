@@ -36,10 +36,12 @@ import {
 } from '../utils/tournamentEngine';
 import type { CustomSavedDeck } from './BattleArena';
 import { DOMAIN_META } from './CardView';
+import { TournamentMatchViewerModal } from './TournamentMatchViewerModal';
 
 export interface ActiveTournamentMatchLaunch {
   tournament: SwissTournamentDefinition;
   roundNumber: number;
+  tableNumber?: number;
   roundPlayDeadlineMs: number;
   entry: HumanTournamentEntry;
   opponentStanding: ComputedTournamentStanding;
@@ -277,6 +279,24 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
 
   // Modals (Progressive Disclosure)
   const [inspectedParticipantId, setInspectedParticipantId] = useState<string | null>(null);
+  const [watchedTable, setWatchedTable] = useState<{ round: number; tableNumber: number } | null>(
+    () => {
+      try {
+        const sp = new URLSearchParams(window.location.search).get('tspectate');
+        if (sp) {
+          const [rStr, tStr] = sp.split(':');
+          const r = Number(rStr);
+          const t = Number(tStr);
+          if (Number.isFinite(r) && Number.isFinite(t) && r >= 1 && t >= 1) {
+            return { round: Math.floor(r), tableNumber: Math.floor(t) };
+          }
+        }
+      } catch {
+        // ignore
+      }
+      return null;
+    }
+  );
   const [showRulesModal, setShowRulesModal] = useState<boolean>(false);
   const [showAdminModal, setShowAdminModal] = useState<boolean>(false);
   const [statusFeedback, setStatusFeedback] = useState<string | null>(null);
@@ -413,8 +433,22 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     [snapshotsById, activeDefinition, catalog.entriesByTournament, isGuest, currentUser.username, nowMs]
   );
 
+  const userPinnedRoundRef = useRef<boolean>(
+    typeof window !== 'undefined' && window.location.search.includes('tround=')
+  );
+  const prevTrackedRoundRef = useRef<number>(0);
+
   useEffect(() => {
-    if (snapshot.currentRound > 0 && selectedRoundTab > snapshot.currentRound) {
+    if (snapshot.currentRound <= 0) return;
+    if (selectedRoundTab > snapshot.currentRound) {
+      setSelectedRoundTab(snapshot.currentRound);
+      return;
+    }
+    if (
+      !userPinnedRoundRef.current &&
+      snapshot.currentRound !== prevTrackedRoundRef.current
+    ) {
+      prevTrackedRoundRef.current = snapshot.currentRound;
       setSelectedRoundTab(snapshot.currentRound);
     }
   }, [snapshot.currentRound, selectedRoundTab]);
@@ -515,6 +549,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     const launchPayload: ActiveTournamentMatchLaunch = {
       tournament: snapshot.definition,
       roundNumber: round,
+      tableNumber: snapshot.myCurrentPairing.tableNumber,
       roundPlayDeadlineMs: snapshot.roundPlayDeadlineMs,
       entry: updatedEntry,
       opponentStanding: opp,
@@ -820,6 +855,12 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
       snapshot.standings.find((s) => s.participantId === inspectedParticipantId) ?? null
     );
   }, [inspectedParticipantId, snapshot.standings]);
+
+  const activeWatchedPairing: ComputedRoundPairing | null = useMemo(() => {
+    if (!watchedTable) return null;
+    const list = snapshot.roundsPairings[watchedTable.round] ?? [];
+    return list.find((p) => p.tableNumber === watchedTable.tableNumber) ?? null;
+  }, [watchedTable, snapshot.roundsPairings]);
 
   const handleAdminPublishTournament = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1193,7 +1234,13 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
         {/* 1. UPCOMING & LIVE EVENTS (2-COLUMN ARCHITECTURAL CARDS) */}
         <section className="trn-section">
           <div className="trn-section-bar">
-            <h2 className="trn-section-title">Próximas edições</h2>
+            <h2 className="trn-section-title">
+              {liveAndUpcomingList.some(
+                (s) => s.phase === 'round_active' || s.phase === 'round_break'
+              )
+                ? 'Em andamento & próximas edições'
+                : 'Próximas edições'}
+            </h2>
           </div>
 
           {liveAndUpcomingList.length === 0 ? (
@@ -1369,7 +1416,17 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
           )}
         </section>
 
-        {renderSharedModals()}
+        {/* MODAL: TRANSMISSÃO AO VIVO & REPRISE DA PARTIDA */}
+      {activeWatchedPairing && (
+        <TournamentMatchViewerModal
+          tournament={snapshot.definition}
+          pairing={activeWatchedPairing}
+          onClose={() => setWatchedTable(null)}
+          onInspectCard={onInspectCard}
+        />
+      )}
+
+      {renderSharedModals()}
       </div>
     );
   }
@@ -1394,9 +1451,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             <span className={`trn-badge ${phaseSummary.tone}`}>{phaseSummary.label}</span>
           </div>
           <span className="trn-page-sub">
-            {phaseSummary.sub} · {snapshot.definition.totalRounds} rodadas ·{' '}
-            {snapshot.definition.turnTimeLimitSec}s/turno · {snapshot.totalParticipantsCount}{' '}
-            competidores · Prêmio: {snapshot.definition.prizeSpec.label}
+            Sistema Suíço · {snapshot.definition.totalRounds} rodadas ({snapshot.definition.turnTimeLimitSec}s/turno) · Prêmio: {snapshot.definition.prizeSpec.label}
           </span>
         </div>
 
@@ -1985,6 +2040,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                           aria-selected={isActive}
                           className={`trn-round-tab-btn ${isActive ? 'active' : ''}`}
                           onClick={() => {
+                            userPinnedRoundRef.current = true;
                             setSelectedRoundTab(rNum);
                             setPairingsPage(1);
                           }}
@@ -2003,10 +2059,11 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
               <table className="trn-table trn-pairings-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '64px' }}>Mesa</th>
+                    <th style={{ width: '60px' }}>Mesa</th>
                     <th style={{ textAlign: 'right' }}>Competidor A</th>
-                    <th style={{ width: '140px', textAlign: 'center' }}>Resultado</th>
+                    <th style={{ width: '132px', textAlign: 'center' }}>Resultado</th>
                     <th style={{ textAlign: 'left' }}>Competidor B</th>
+                    <th style={{ width: '112px', textAlign: 'right' }}>Transmissão</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2029,6 +2086,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                     const aWon = pair.result === 'A_WIN' || pair.result === 'BYE';
                     const bWon = pair.result === 'B_WIN';
                     const absMargin = Math.abs(pair.hpDiffA);
+                    const isLiveTable = pair.result === 'IN_PROGRESS';
 
                     return (
                       <tr
@@ -2068,17 +2126,21 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                         <td style={{ textAlign: 'center' }}>
                           <div className="trn-score-stack">
                             <span
-                              className={`trn-score-badge ${
-                                pair.result === 'IN_PROGRESS' ? 'live' : ''
-                              }`}
+                              className={`trn-score-badge ${isLiveTable ? 'live' : ''}`}
                             >
                               {resLabel}
                             </span>
-                            {pair.result !== 'IN_PROGRESS' && pair.result !== 'BYE' && (
+                            {isLiveTable ? (
                               <span className="trn-score-detail">
-                                {pair.turns > 0 ? `${pair.turns}t · ` : ''}
-                                {absMargin > 0 ? `+${absMargin} PV` : '0 PV'}
+                                Turno {pair.liveTurnEstimate ?? 1}
                               </span>
+                            ) : (
+                              pair.result !== 'BYE' && (
+                                <span className="trn-score-detail">
+                                  {pair.turns > 0 ? `${pair.turns}t · ` : ''}
+                                  {absMargin > 0 ? `+${absMargin} PV` : '0 PV'}
+                                </span>
+                              )
                             )}
                           </div>
                         </td>
@@ -2115,6 +2177,25 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                             </button>
                           ) : (
                             <span className="trn-player-sub">Bye Suíço (+1,0 pt)</span>
+                          )}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          {pair.playerB && pair.result !== 'BYE' ? (
+                            <button
+                              type="button"
+                              className={`trn-watch-btn ${isLiveTable ? 'is-live' : ''}`}
+                              onClick={() =>
+                                setWatchedTable({
+                                  round: pair.round,
+                                  tableNumber: pair.tableNumber,
+                                })
+                              }
+                            >
+                              {isLiveTable && <span className="trn-live-dot" />}
+                              {isLiveTable ? 'Assistir' : 'Rever'}
+                            </button>
+                          ) : (
+                            <span className="trn-player-sub">—</span>
                           )}
                         </td>
                       </tr>
@@ -2234,11 +2315,12 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                 <table className="trn-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '96px' }}>Mesa</th>
+                      <th style={{ width: '90px' }}>Mesa</th>
                       <th>Adversário</th>
-                      <th style={{ textAlign: 'center', width: '120px' }}>Resultado</th>
-                      <th style={{ textAlign: 'right', width: '115px' }}>Detalhe</th>
-                      <th style={{ textAlign: 'right', width: '72px' }}>Acum.</th>
+                      <th style={{ textAlign: 'center', width: '115px' }}>Resultado</th>
+                      <th style={{ textAlign: 'right', width: '105px' }}>Detalhe</th>
+                      <th style={{ textAlign: 'right', width: '62px' }}>Acum.</th>
+                      <th style={{ textAlign: 'right', width: '96px' }}>Partida</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2263,6 +2345,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                           ? 'live'
                           : 'loss';
                       const hpStr = m.hpDiff > 0 ? `+${m.hpDiff} PV` : `${m.hpDiff} PV`;
+                      const isLiveRow = m.outcome === 'IN_PROGRESS';
 
                       return (
                         <tr key={`hist_r${m.round}`}>
@@ -2318,11 +2401,31 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                             </span>
                           </td>
                           <td className="trn-num-muted">
-                            {m.outcome === 'IN_PROGRESS'
-                              ? '—'
+                            {isLiveRow
+                              ? `Turno ${m.liveTurnEstimate ?? 1}`
                               : `${hpStr}${m.turns > 0 ? ` · ${m.turns}t` : ''}`}
                           </td>
                           <td className="trn-num-strong">{formatPoints(m.cumulativePoints)}</td>
+                          <td style={{ textAlign: 'right' }}>
+                            {m.opponentId !== '__BYE__' ? (
+                              <button
+                                type="button"
+                                className={`trn-watch-btn ${isLiveRow ? 'is-live' : ''}`}
+                                onClick={() => {
+                                  setInspectedParticipantId(null);
+                                  setWatchedTable({
+                                    round: m.round,
+                                    tableNumber: m.tableNumber,
+                                  });
+                                }}
+                              >
+                                {isLiveRow && <span className="trn-live-dot" />}
+                                {isLiveRow ? 'Assistir' : 'Rever'}
+                              </button>
+                            ) : (
+                              <span className="trn-player-sub">—</span>
+                            )}
+                          </td>
                         </tr>
                       );
                     })}
@@ -2338,6 +2441,16 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* MODAL: TRANSMISSÃO AO VIVO & REPRISE DA PARTIDA */}
+      {activeWatchedPairing && (
+        <TournamentMatchViewerModal
+          tournament={snapshot.definition}
+          pairing={activeWatchedPairing}
+          onClose={() => setWatchedTable(null)}
+          onInspectCard={onInspectCard}
+        />
       )}
 
       {renderSharedModals()}

@@ -188,6 +188,9 @@ export interface ParticipantRoundHistoryItem {
   cumulativePoints: number;
   hpDiff: number;
   turns: number;
+  liveTurnEstimate?: number;
+  matchStartMs?: number;
+  matchFinishMs?: number;
 }
 
 export interface ComputedTournamentStanding {
@@ -222,6 +225,12 @@ export interface ComputedRoundPairing {
   result: 'A_WIN' | 'B_WIN' | 'DRAW' | 'BYE' | 'IN_PROGRESS' | 'PENDING';
   hpDiffA: number;
   turns: number;
+  liveTurnEstimate?: number;
+  matchStartMs?: number;
+  matchFinishMs?: number;
+  canonicalResult?: 'A_WIN' | 'B_WIN' | 'DRAW';
+  canonicalHpDiffA?: number;
+  canonicalTurns?: number;
   roomCode?: string;
   isHumanTable: boolean;
   isMyTable?: boolean;
@@ -262,20 +271,20 @@ export interface TournamentCatalogData {
 // 3. INAUGURAL EDITION & AUTOMATIC OFFICIAL WEEKLY SCHEDULE + CLOCK SYNC
 // ============================================================================
 
-export const INAUGURAL_TOURNAMENT_ID = 'copa_inaugural_2026_11_01_17h';
+export const INAUGURAL_TOURNAMENT_ID = 'copa_vaeloria_2026_11_01_19h';
 
-// 2026-11-01T17:00:00-03:00 = 2026-11-01T20:00:00.000Z
-const INAUGURAL_START_MS = Date.parse('2026-11-01T17:00:00-03:00');
-const INAUGURAL_END_MS = Date.parse('2026-11-01T18:00:00-03:00');
+// 2026-11-01T19:00:00-03:00 -> 2026-11-01T20:00:00-03:00
+const INAUGURAL_START_MS = Date.parse('2026-11-01T19:00:00-03:00');
+const INAUGURAL_END_MS = Date.parse('2026-11-01T20:00:00-03:00');
 
 export const DEFAULT_INAUGURAL_TOURNAMENT: SwissTournamentDefinition = {
   id: INAUGURAL_TOURNAMENT_ID,
-  title: 'Copa Suíça de Vaeloria — Edição Inaugural',
-  subtitle: 'Sistema Suíço · 6 Rodadas · Aberto a Todos',
+  title: 'Copa Suíça de Vaeloria — Edição das 19h',
+  subtitle: 'Sistema Suíço · 6 Rodadas · 45s / turno',
   startsAtMs: INAUGURAL_START_MS,
   endsAtMs: INAUGURAL_END_MS,
   totalRounds: 6,
-  roundDurationMs: 10 * 60 * 1000, // 10 min per round x 6 rounds = 60 min (17h-18h)
+  roundDurationMs: 10 * 60 * 1000, // 10 min per round x 6 rounds = 60 min (19h-20h)
   playWindowMs: 9.5 * 60 * 1000,   // 9m30s active play + 30s automatic pairing interval
   timeControlId: 'rapid_45s',
   turnTimeLimitSec: 45,
@@ -289,115 +298,15 @@ export const DEFAULT_INAUGURAL_TOURNAMENT: SwissTournamentDefinition = {
     goldBonus: 50,
   },
   createdBy: 'tsm81',
-  createdAtMs: Date.parse('2026-11-01T16:15:00-03:00'),
+  createdAtMs: Date.parse('2026-11-01T18:52:00-03:00'),
   finalizedAward: null,
 };
 
-const BRT_OFFSET_MS = -3 * 3600 * 1000;
-
 /**
- * Generates deterministic recurring official calendar tournaments (Tuesday 20:00 BRT & Sunday 17:00 BRT)
- * so the Tournament Hub always presents upcoming open-registration events alongside historical editions.
+ * Returns only explicitly published tournaments (no auto-generated extra editions unless scheduled).
  */
-export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamentDefinition[] {
-  const results: SwissTournamentDefinition[] = [];
-  const brtNow = new Date(nowMs + BRT_OFFSET_MS);
-  const baseYear = brtNow.getUTCFullYear();
-  const baseMonth = brtNow.getUTCMonth();
-  const baseDate = brtNow.getUTCDate();
-
-  const makeBrtEpoch = (year: number, month0: number, day: number, hourBrt: number): number => {
-    // BRT is UTC-03:00 -> UTC = hourBrt + 3
-    return Date.UTC(year, month0, day, hourBrt + 3, 0, 0, 0);
-  };
-
-  const formatDateSlug = (epochMs: number): string => {
-    const d = new Date(epochMs + BRT_OFFSET_MS);
-    const y = d.getUTCFullYear();
-    const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(d.getUTCDate()).padStart(2, '0');
-    return `${y}_${m}_${day}`;
-  };
-
-  // Scan next 9 calendar days in BRT for the next Tuesday (day === 2) and next Sunday (day === 0)
-  let addedTuesday = false;
-  let addedSunday = false;
-
-  for (let offsetDays = 0; offsetDays <= 10; offsetDays += 1) {
-    const probeBrt = new Date(Date.UTC(baseYear, baseMonth, baseDate + offsetDays, 12, 0, 0));
-    const dow = probeBrt.getUTCDay();
-    const y = probeBrt.getUTCFullYear();
-    const m = probeBrt.getUTCMonth();
-    const d = probeBrt.getUTCDate();
-
-    if (dow === 2 && !addedTuesday) {
-      const startMs = makeBrtEpoch(y, m, d, 20);
-      const endMs = startMs + 60 * 60 * 1000;
-      if (endMs > nowMs) {
-        const slug = formatDateSlug(startMs);
-        results.push({
-          id: `terca_soberana_${slug}_20h`,
-          title: 'Terça Soberana — Circuito Suíço Oficial',
-          subtitle: 'Edição Semanal de Terça · 6 Rodadas · 45s / turno',
-          startsAtMs: startMs,
-          endsAtMs: endMs,
-          totalRounds: 6,
-          roundDurationMs: 10 * 60 * 1000,
-          playWindowMs: 9.5 * 60 * 1000,
-          timeControlId: 'rapid_45s',
-          turnTimeLimitSec: 45,
-          mulliganTimeLimitSec: 20,
-          includeAllSovereigns: true,
-          prizeSpec: {
-            kind: 'unowned_domain_rare_card',
-            label: '1 Carta Rara Inédita (Cor do Grimório)',
-            description:
-              'Concedida automaticamente ao Campeão ao término da 6ª rodada, sorteada entre as cartas Raras inéditas da cor predominante do Grimório inscrito (+50 Ouro).',
-            goldBonus: 50,
-          },
-          createdBy: 'Vaeloria',
-          createdAtMs: startMs - 7 * 24 * 3600 * 1000,
-          finalizedAward: null,
-        });
-        addedTuesday = true;
-      }
-    }
-
-    if (dow === 0 && !addedSunday) {
-      const startMs = makeBrtEpoch(y, m, d, 17);
-      const endMs = startMs + 60 * 60 * 1000;
-      if (startMs !== INAUGURAL_START_MS && endMs > nowMs) {
-        const slug = formatDateSlug(startMs);
-        results.push({
-          id: `copa_dominical_${slug}_17h`,
-          title: 'Copa Dominical de Vaeloria',
-          subtitle: 'Edição de Fim de Semana · 6 Rodadas · 45s / turno',
-          startsAtMs: startMs,
-          endsAtMs: endMs,
-          totalRounds: 6,
-          roundDurationMs: 10 * 60 * 1000,
-          playWindowMs: 9.5 * 60 * 1000,
-          timeControlId: 'rapid_45s',
-          turnTimeLimitSec: 45,
-          mulliganTimeLimitSec: 20,
-          includeAllSovereigns: true,
-          prizeSpec: {
-            kind: 'unowned_domain_rare_card',
-            label: '1 Carta Rara Inédita (Cor do Grimório)',
-            description:
-              'Concedida automaticamente ao Campeão ao término da 6ª rodada, sorteada entre as cartas Raras inéditas da cor predominante do Grimório inscrito (+50 Ouro).',
-            goldBonus: 50,
-          },
-          createdBy: 'Vaeloria',
-          createdAtMs: startMs - 7 * 24 * 3600 * 1000,
-          finalizedAward: null,
-        });
-        addedSunday = true;
-      }
-    }
-  }
-
-  return results;
+export function buildScheduledOfficialTournaments(_nowMs: number): SwissTournamentDefinition[] {
+  return [];
 }
 
 let serverClockOffsetMs = 0;
@@ -424,20 +333,32 @@ export function getTournamentStageKey(def: SwissTournamentDefinition, nowMs: num
   const elapsed = nowMs - def.startsAtMs;
   const rIdx = Math.min(def.totalRounds, Math.floor(elapsed / def.roundDurationMs) + 1);
   const win = getRoundWindowTimestamps(def, rIdx);
-  return nowMs < win.playDeadlineMs ? `r${rIdx}_active` : `r${rIdx}_break`;
+  if (nowMs < win.playDeadlineMs) {
+    const tick4s = Math.floor(elapsed / 4000);
+    return `r${rIdx}_active_${tick4s}`;
+  }
+  return `r${rIdx}_break`;
 }
 
 // ============================================================================
 // 4. DETERMINISTIC HASH & SEEDED PRNG FOR RACE-FREE MULTI-CLIENT CONSENSUS
 // ============================================================================
 
-function hashSeed(input: string): number {
+export function hashTournamentSeed(input: string): number {
   let h = 2166136261;
   for (let i = 0; i < input.length; i += 1) {
     h ^= input.charCodeAt(i);
     h = Math.imul(h, 16777619);
   }
   return h >>> 0;
+}
+
+function hashSeed(input: string): number {
+  return hashTournamentSeed(input);
+}
+
+export function computeCanonicalPairKey(idA: string, idB: string): string {
+  return idA < idB ? `${idA}::${idB}` : `${idB}::${idA}`;
 }
 
 function seededUnitFloat(seedKey: string): number {
@@ -475,35 +396,58 @@ export function inferDeckPrimaryDomain(cardIds: string[]): Domain {
 
 /**
  * Resolves a Sovereign vs Sovereign pairing deterministically from calibrated ELO
- * so all clients compute the exact same leaderboard in < 2ms with zero race conditions.
+ * AND assigns a realistic human-paced clock window (3m20s to 8m35s within the 9m30s round)
+ * so unwatched tables consume 0ms CPU while remaining live-watchable in real time.
  */
-function resolveSovereignVsSovereignMatch(
+export function resolveSovereignVsSovereignMatch(
   tournamentId: string,
   round: number,
   idA: string,
   eloA: number,
   idB: string,
-  eloB: number
-): { result: 'A_WIN' | 'B_WIN' | 'DRAW'; hpDiffA: number; turns: number } {
-  const canonicalPair = idA < idB ? `${idA}::${idB}` : `${idB}::${idA}`;
+  eloB: number,
+  roundStartMs = 0,
+  playWindowMs = 9.5 * 60 * 1000
+): {
+  result: 'A_WIN' | 'B_WIN' | 'DRAW';
+  hpDiffA: number;
+  turns: number;
+  matchStartMs: number;
+  matchFinishMs: number;
+} {
+  const canonicalPair = computeCanonicalPairKey(idA, idB);
   const uOutcome = seededUnitFloat(`${tournamentId}::r${round}::out::${canonicalPair}`);
   const uMargin = seededUnitFloat(`${tournamentId}::r${round}::mrg::${canonicalPair}`);
   const uTurns = seededUnitFloat(`${tournamentId}::r${round}::trn::${canonicalPair}`);
+  const uPace = seededUnitFloat(`${tournamentId}::r${round}::pace::${canonicalPair}`);
+  const uSeat = seededUnitFloat(`${tournamentId}::r${round}::seat::${canonicalPair}`);
 
   const expectedA = 1 / (1 + Math.pow(10, (eloB - eloA) / 400));
   const drawProb = 0.03; // Rare round-bell technical draw
   const winProbA = expectedA * (1 - drawProb);
   const turns = 4 + Math.floor(uTurns * 5); // 4..8 rounds
 
+  // Realistic human cadence: 4..9s seating + ~42..60s per full round (capped safely inside playWindowMs)
+  const seatOffsetMs = Math.round((4 + uSeat * 5) * 1000);
+  const secPerRound = 41 + uPace * 19; // 41..60s per full round (2 turns)
+  const maxPlaySpanMs = Math.max(90_000, playWindowMs - 16_000);
+  const rawDurationMs = Math.round(turns * secPerRound * 1000);
+  const clampedDurationMs = Math.min(maxPlaySpanMs - seatOffsetMs, Math.max(150_000, rawDurationMs));
+  const matchStartMs = roundStartMs + seatOffsetMs;
+  const matchFinishMs =
+    uOutcome >= winProbA && uOutcome < winProbA + drawProb
+      ? roundStartMs + maxPlaySpanMs
+      : matchStartMs + clampedDurationMs;
+
   if (uOutcome < winProbA) {
     const hp = 6 + Math.floor(uMargin * 22);
-    return { result: 'A_WIN', hpDiffA: hp, turns };
+    return { result: 'A_WIN', hpDiffA: hp, turns, matchStartMs, matchFinishMs };
   }
   if (uOutcome < winProbA + drawProb) {
-    return { result: 'DRAW', hpDiffA: 0, turns: 8 };
+    return { result: 'DRAW', hpDiffA: 0, turns: 8, matchStartMs, matchFinishMs };
   }
   const hp = 6 + Math.floor(uMargin * 22);
-  return { result: 'B_WIN', hpDiffA: -hp, turns };
+  return { result: 'B_WIN', hpDiffA: -hp, turns, matchStartMs, matchFinishMs };
 }
 
 // ============================================================================
@@ -861,7 +805,9 @@ export function computeTournamentSnapshot(
       pts: 1 | 0.5 | 0,
       hpDelta: number,
       turns: number,
-      explicitOutcome?: ParticipantRoundHistoryItem['outcome']
+      explicitOutcome?: ParticipantRoundHistoryItem['outcome'],
+      matchStartMs?: number,
+      matchFinishMs?: number
     ) => {
       st.points += pts;
       st.hpDiff += hpDelta;
@@ -892,13 +838,18 @@ export function computeTournamentSnapshot(
         cumulativePoints: st.points,
         hpDiff: hpDelta,
         turns,
+        matchStartMs,
+        matchFinishMs,
       });
     };
 
     const recordInProgressMatch = (
       st: ComputedTournamentStanding,
       opp: ComputedTournamentStanding,
-      tNum: number
+      tNum: number,
+      liveTurnEstimate?: number,
+      matchStartMs?: number,
+      matchFinishMs?: number
     ) => {
       st.matchHistory.push({
         round: r,
@@ -916,6 +867,9 @@ export function computeTournamentSnapshot(
         cumulativePoints: st.points,
         hpDiff: 0,
         turns: 0,
+        liveTurnEstimate,
+        matchStartMs,
+        matchFinishMs,
       });
     };
 
@@ -955,31 +909,144 @@ export function computeTournamentSnapshot(
           a.participantId,
           a.eloRating,
           b.participantId,
-          b.eloRating
+          b.eloRating,
+          rWin.startMs,
+          def.playWindowMs
         );
-        if (res.result === 'A_WIN') {
-          recordCompletedMatch(a, b, currentTable, 1, res.hpDiffA, res.turns);
-          recordCompletedMatch(b, a, currentTable, 0, -res.hpDiffA, res.turns);
-        } else if (res.result === 'B_WIN') {
-          recordCompletedMatch(a, b, currentTable, 0, res.hpDiffA, res.turns);
-          recordCompletedMatch(b, a, currentTable, 1, -res.hpDiffA, res.turns);
+        const isStillPlayingLive =
+          r === currentRound &&
+          phase === 'round_active' &&
+          nowMs < res.matchFinishMs;
+
+        if (isStillPlayingLive) {
+          const span = Math.max(1, res.matchFinishMs - res.matchStartMs);
+          const prog = Math.max(0, Math.min(0.99, (nowMs - res.matchStartMs) / span));
+          const liveTurn = Math.max(1, Math.min(res.turns, Math.floor(prog * res.turns) + 1));
+          recordInProgressMatch(
+            a,
+            b,
+            currentTable,
+            liveTurn,
+            res.matchStartMs,
+            res.matchFinishMs
+          );
+          recordInProgressMatch(
+            b,
+            a,
+            currentTable,
+            liveTurn,
+            res.matchStartMs,
+            res.matchFinishMs
+          );
+          roundPairings.push({
+            tableNumber: currentTable,
+            round: r,
+            playerA: { ...a },
+            playerB: { ...b },
+            pointsBeforeA: ptsBeforeA,
+            pointsBeforeB: ptsBeforeB,
+            result: 'IN_PROGRESS',
+            hpDiffA: 0,
+            turns: 0,
+            liveTurnEstimate: liveTurn,
+            matchStartMs: res.matchStartMs,
+            matchFinishMs: res.matchFinishMs,
+            canonicalResult: res.result,
+            canonicalHpDiffA: res.hpDiffA,
+            canonicalTurns: res.turns,
+            isHumanTable: false,
+            isMyTable: false,
+          });
         } else {
-          recordCompletedMatch(a, b, currentTable, 0.5, 0, res.turns);
-          recordCompletedMatch(b, a, currentTable, 0.5, 0, res.turns);
+          if (res.result === 'A_WIN') {
+            recordCompletedMatch(
+              a,
+              b,
+              currentTable,
+              1,
+              res.hpDiffA,
+              res.turns,
+              undefined,
+              res.matchStartMs,
+              res.matchFinishMs
+            );
+            recordCompletedMatch(
+              b,
+              a,
+              currentTable,
+              0,
+              -res.hpDiffA,
+              res.turns,
+              undefined,
+              res.matchStartMs,
+              res.matchFinishMs
+            );
+          } else if (res.result === 'B_WIN') {
+            recordCompletedMatch(
+              a,
+              b,
+              currentTable,
+              0,
+              res.hpDiffA,
+              res.turns,
+              undefined,
+              res.matchStartMs,
+              res.matchFinishMs
+            );
+            recordCompletedMatch(
+              b,
+              a,
+              currentTable,
+              1,
+              -res.hpDiffA,
+              res.turns,
+              undefined,
+              res.matchStartMs,
+              res.matchFinishMs
+            );
+          } else {
+            recordCompletedMatch(
+              a,
+              b,
+              currentTable,
+              0.5,
+              0,
+              res.turns,
+              undefined,
+              res.matchStartMs,
+              res.matchFinishMs
+            );
+            recordCompletedMatch(
+              b,
+              a,
+              currentTable,
+              0.5,
+              0,
+              res.turns,
+              undefined,
+              res.matchStartMs,
+              res.matchFinishMs
+            );
+          }
+          roundPairings.push({
+            tableNumber: currentTable,
+            round: r,
+            playerA: { ...a },
+            playerB: { ...b },
+            pointsBeforeA: ptsBeforeA,
+            pointsBeforeB: ptsBeforeB,
+            result: res.result,
+            hpDiffA: res.hpDiffA,
+            turns: res.turns,
+            matchStartMs: res.matchStartMs,
+            matchFinishMs: res.matchFinishMs,
+            canonicalResult: res.result,
+            canonicalHpDiffA: res.hpDiffA,
+            canonicalTurns: res.turns,
+            isHumanTable: false,
+            isMyTable: false,
+          });
         }
-        roundPairings.push({
-          tableNumber: currentTable,
-          round: r,
-          playerA: { ...a },
-          playerB: { ...b },
-          pointsBeforeA: ptsBeforeA,
-          pointsBeforeB: ptsBeforeB,
-          result: res.result,
-          hpDiffA: res.hpDiffA,
-          turns: res.turns,
-          isHumanTable: false,
-          isMyTable: false,
-        });
       } else if (a.kind === 'human' && b.kind === 'human') {
         const recA = a.humanEntry?.resultsByRound?.[r];
         const recB = b.humanEntry?.resultsByRound?.[r];
@@ -1333,8 +1400,8 @@ export function computeTournamentSnapshot(
 // 7. SUPABASE CLOUD PERSISTENCE & MULTI-TOURNAMENT CATALOG CACHE
 // ============================================================================
 
-const LOCAL_TOURNAMENT_CATALOG_KEY = 'chromatic_pact_tournament_catalog_v2';
-const LOCAL_TOURNAMENT_ENTRIES_KEY = 'chromatic_pact_tournament_entries_v1';
+const LOCAL_TOURNAMENT_CATALOG_KEY = 'chromatic_pact_tournament_catalog_v3';
+const LOCAL_TOURNAMENT_ENTRIES_KEY = 'chromatic_pact_tournament_entries_v2';
 const CLAIMED_TOURNAMENT_PRIZES_KEY = 'chromatic_pact_claimed_tournaments_v1';
 
 const CLOUD_META_PREFIX = '__tournament_meta__:';
@@ -1415,15 +1482,14 @@ function assembleCatalogFromRaw(
 ): TournamentCatalogData {
   const defMap = new Map<string, SwissTournamentDefinition>();
 
-  // 1. Always include Inaugural Edition
-  defMap.set(DEFAULT_INAUGURAL_TOURNAMENT.id, DEFAULT_INAUGURAL_TOURNAMENT);
+  if (cloudDefs.length === 0) {
+    defMap.set(DEFAULT_INAUGURAL_TOURNAMENT.id, DEFAULT_INAUGURAL_TOURNAMENT);
+  }
 
-  // 2. Include deterministic upcoming official calendar tournaments
   for (const sched of buildScheduledOfficialTournaments(nowMs)) {
     defMap.set(sched.id, sched);
   }
 
-  // 3. Cloud / Admin definitions override or extend calendar definitions
   for (const cd of cloudDefs) {
     if (cd && cd.id) {
       defMap.set(cd.id, {

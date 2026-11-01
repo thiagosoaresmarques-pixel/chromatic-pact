@@ -219,6 +219,7 @@ export interface BattleArenaProps {
     turnTimeLimitSec: number;
     mulliganTimeLimitSec: number;
     onExitTournament: () => void;
+    onTournamentLiveStateUpdate?: (state: GameState, turnTimeLeftSec: number) => void;
     onTournamentMatchResult: (info: {
       score: 1 | 0.5 | 0;
       hpDiff: number;
@@ -729,6 +730,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       ? Math.max(0, Math.ceil((tournamentContext.roundPlayDeadlineMs - getTournamentNowMs()) / 1000))
       : 0
   );
+
+  useEffect(() => {
+    if (!tournamentContext?.onTournamentLiveStateUpdate) return;
+    tournamentContext.onTournamentLiveStateUpdate(gameState, turnTimeLeft);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState.combatLog.length, gameState.turn, gameState.phase]);
   const [isHandPinnedOpen, setIsHandPinnedOpen] = useState(false);
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [isCommandDockMinimized, setIsCommandDockMinimized] = useState(false);

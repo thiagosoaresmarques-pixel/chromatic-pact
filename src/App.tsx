@@ -113,6 +113,7 @@ import {
   publishTournamentDefinitionToCloud,
   upsertHumanTournamentEntryToCloud,
 } from './utils/tournamentEngine';
+import { recordHumanTournamentMatchState } from './utils/tournamentSpectatorEngine';
 import { getEloDivisionMeta, INITIAL_PLAYER_ELO } from './data/eloDivisions';
 import type { SovereignAiLeaderboardEntry } from './data/sovereignEloLadderData';
 import {
@@ -2874,6 +2875,22 @@ export const App: React.FC = () => {
                       setActiveCampaignBoss(null);
                       setActiveOnlineMatch(null);
                       setActiveTab('tournaments');
+                    },
+                    onTournamentLiveStateUpdate: (liveGameState, turnTimeLeftSec) => {
+                      const ctx = activeTournamentMatch;
+                      recordHumanTournamentMatchState({
+                        tournament: ctx.tournament,
+                        roundNumber: ctx.roundNumber,
+                        tableNumber: ctx.tableNumber ?? 1,
+                        myParticipantId: `hum::${ctx.entry.username.trim().toLowerCase()}`,
+                        mySubtitle: ctx.entry.deckName || ctx.entry.title,
+                        myPrimaryDomain: ctx.entry.primaryDomain,
+                        opponentStanding: ctx.opponentStanding,
+                        localPerspectiveRole: 'player_is_me',
+                        state: liveGameState,
+                        turnTimeLeftSec,
+                        nowMs: getTournamentNowMs(),
+                      });
                     },
                     onTournamentMatchResult: ({ score, hpDiff, turns, reason }) => {
                       const ctx = activeTournamentMatch;

@@ -2028,7 +2028,7 @@ export async function fetchUnifiedPlatformLeaderboard(
       globalRank: 0,
       categoryRank: 0,
       displayName: s.sovereignName,
-      subtitle: `${s.archetypeName} • ${s.sovereignTitle}`,
+      subtitle: s.archetypeName,
       realmOrOrigin: s.realmOrigin,
       avatarCardId:
         s.avatarCardId && CARDS_BY_ID[s.avatarCardId]

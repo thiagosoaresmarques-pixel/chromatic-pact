@@ -19,7 +19,7 @@ import type { CustomSavedDeck } from './components/BattleArena';
 import type { ConquestBattleOutcome } from './components/ConquestView';
 import type { ConquestFactionId } from './data/vaeloriaConquestData';
 import type { AccountModalTab } from './components/MultiplayerView';
-import type { TacticalProblem } from './data/problems';
+import { TACTICAL_PROBLEMS, type TacticalProblem } from './data/problems';
 import {
   NAVIGATE_TO_POEM_EVENT,
   NavigateToPoemDetail,
@@ -42,10 +42,14 @@ import {
   resolvePackDuplicatesWithShards,
   salvageAllExcessDuplicates,
 } from './utils/craftingEngine';
-import { recordDailyQuestEvent } from './utils/dailyQuestsEngine';
+import {
+  claimDailyQuestReward,
+  DAILY_PROBLEM_BONUS_GOLD,
+  getDailyState,
+  recordDailyQuestEvent,
+} from './utils/dailyQuestsEngine';
 import { CardInspectModal } from './components/CardView';
 import { HomeSimulatedDuelShowcase } from './components/HomeSimulatedDuelShowcase';
-import { SovereignRoyalCommandStrip } from './components/SovereignRoyalCommandStrip';
 
 // Lazy-loaded heavy modules for instant initial load & modular chunking (Onda 5)
 const BattleArena = React.lazy(() =>
@@ -841,9 +845,20 @@ export const App: React.FC = () => {
     return () => unsub();
   }, [currentUser.id, pushNotification]);
 
+  const [dailyPopoverTick, setDailyPopoverTick] = useState(0);
+  const dailyPopoverState = useMemo(
+    () => getDailyState(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isNotifOpen, gold, arenaWins, defeatedBossIds.length, dailyPopoverTick]
+  );
+  const claimableDailyCount = useMemo(
+    () => dailyPopoverState.quests.filter((q) => q.progress >= q.target && !q.claimed).length,
+    [dailyPopoverState.quests]
+  );
+
   const unreadNotifCount = useMemo(
-    () => notifications.filter((n) => !n.read).length,
-    [notifications]
+    () => notifications.filter((n) => !n.read).length + claimableDailyCount,
+    [notifications, claimableDailyCount]
   );
 
   const updateCurrentUserProgression = (
@@ -2002,23 +2017,6 @@ export const App: React.FC = () => {
             </button>
           )}
 
-          <button
-            type="button"
-            className={`btn-fantasy ${activeTab === 'leaderboard' ? 'active' : ''}`}
-            onClick={() => handleSelectSubTab('leaderboard')}
-            style={{
-              padding: '4px 9px',
-              fontSize: '0.72rem',
-              fontWeight: 800,
-              borderColor: 'rgba(250, 204, 21, 0.55)',
-              color: '#fde047',
-            }}
-            title="Ranking Geral ELO Unificado (Usuários + Soberanos IA)"
-          >
-            <span>🏆</span>
-            <span className="hide-on-mobile"> ELO</span>
-          </button>
-
           <div
             className="gold-pill nav-account-pill"
             onClick={() =>
@@ -2027,29 +2025,17 @@ export const App: React.FC = () => {
                 tab: isUnregisteredProfile(currentUser) ? 'create' : 'profile',
               })
             }
-            title="Clique para abrir seu Perfil do Soberano, Entrar ou Criar Conta"
+            title={`Perfil de ${currentUser.username} (${currentUser.eloRating ?? 1200} ELO)`}
           >
             <span className={`nav-account-dot ${isGuest ? 'is-guest' : ''}`} />
             {isUnregisteredProfile(currentUser) ? (
-              <span className="nav-account-label" style={{ fontWeight: 800 }}>
-                ENTRAR<span className="hide-on-mobile"> / CRIAR CONTA</span>
+              <span className="nav-account-label" style={{ fontWeight: 700 }}>
+                Entrar
               </span>
             ) : (
-              <>
-                <span className="nav-account-label" style={{ fontWeight: 800 }}>
-                  {isAdmin ? '👑 ' : ''}
-                  {currentUser.username}
-                </span>
-                <span
-                  className="hide-on-mobile nav-account-elo"
-                  style={{ opacity: 0.78, fontSize: '0.68rem' }}
-                >
-                  ({currentUser.eloRating})
-                </span>
-                <span className="nav-account-badge hide-on-mobile">
-                  {isAdmin ? 'ADMIN' : 'PERFIL'}
-                </span>
-              </>
+              <span className="nav-account-label" style={{ fontWeight: 700 }}>
+                {currentUser.username}
+              </span>
             )}
           </div>
 
@@ -2057,7 +2043,7 @@ export const App: React.FC = () => {
             className="gold-pill nav-gold-pill"
             onClick={() => setActiveTab('packs')}
             style={{ cursor: 'pointer' }}
-            title={`Saldo: ${gold.toLocaleString('pt-BR')} Ouro (+10 Ouro por vitória) — Clique para abrir o Relicário`}
+            title={`Saldo: ${gold.toLocaleString('pt-BR')} Ouro — Abrir Relicário`}
           >
             <span className="gold-gem-dot" />
             <span className="nav-gold-amount">
@@ -2066,23 +2052,22 @@ export const App: React.FC = () => {
                 : gold >= 100000
                 ? `${Math.floor(gold / 1000)}k`
                 : gold.toLocaleString('pt-BR')}
-              <span className="hide-on-mobile nav-gold-word"> OURO</span>
             </span>
           </div>
 
-          {!isGuest && (
+          {!isGuest && astralShards > 0 && (
             <div
               className="gold-pill astral-shards-pill hide-on-mobile"
               onClick={() => setActiveTab('deckbuilder')}
               style={{ cursor: 'pointer' }}
-              title={`Estilhaços Astrais: ${astralShards.toLocaleString('pt-BR')} 💎 — Clique para Forjar Cartas no Grimório`}
+              title={`Estilhaços Astrais: ${astralShards.toLocaleString('pt-BR')} — Abrir Grimório`}
             >
-              <span>💎</span>
+              <span style={{ fontSize: '0.72rem', opacity: 0.85 }}>💎</span>
               <span className="nav-gold-amount">{astralShards.toLocaleString('pt-BR')}</span>
             </div>
           )}
 
-          {/* Sovereign Notification Center (Bell + Unread Counter + Popover) */}
+          {/* Sovereign Notification & Daily Quests Popover (Progressive Disclosure) */}
           <div className="nav-notif-wrapper">
             <button
               type="button"
@@ -2097,10 +2082,10 @@ export const App: React.FC = () => {
                   return nextOpen;
                 });
               }}
-              title="Central de Notificações do Soberano"
+              title="Avisos e Decretos Diários"
+              aria-label="Avisos e Decretos Diários"
             >
               <span>🔔</span>
-              <span className="hide-on-mobile nav-notif-label">AVISOS</span>
               {unreadNotifCount > 0 && (
                 <span className="nav-notif-badge">
                   {unreadNotifCount > 99 ? '99+' : unreadNotifCount}
@@ -2111,9 +2096,7 @@ export const App: React.FC = () => {
             {isNotifOpen && (
               <div className="nav-notif-popover" onClick={(e) => e.stopPropagation()}>
                 <div className="nav-notif-header">
-                  <span className="nav-notif-title">
-                    Central de Notificações ({notifications.length})
-                  </span>
+                  <span className="nav-notif-title">Avisos & Missões</span>
                   <div className="nav-notif-header-actions">
                     {notifications.length > 0 && (
                       <button
@@ -2134,12 +2117,107 @@ export const App: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Quiet Progressive-Disclosure Daily Quests Block */}
+                <div
+                  style={{
+                    padding: '0.65rem 0.85rem',
+                    borderBottom: '1px solid rgba(148, 163, 184, 0.14)',
+                    background: 'rgba(15, 23, 42, 0.55)',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '0.45rem',
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        letterSpacing: '0.06em',
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      Missões Diárias
+                    </span>
+                    <button
+                      type="button"
+                      className="nav-notif-mini-btn"
+                      onClick={() => {
+                        const prob =
+                          TACTICAL_PROBLEMS.find((p) => p.id === dailyPopoverState.dailyProblemId) ??
+                          TACTICAL_PROBLEMS[0];
+                        setIsNotifOpen(false);
+                        handleStartProblem(prob);
+                      }}
+                    >
+                      Problema do Dia{' '}
+                      {dailyPopoverState.dailyProblemSolvedToday
+                        ? '✓'
+                        : `(+${DAILY_PROBLEM_BONUS_GOLD} Ouro)`}
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {dailyPopoverState.quests.map((q) => {
+                      const ready = q.progress >= q.target && !q.claimed;
+                      return (
+                        <div
+                          key={q.id}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '4px 0',
+                            fontSize: '0.76rem',
+                            color: q.claimed ? '#64748b' : '#e2e8f0',
+                          }}
+                          title={q.description}
+                        >
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {q.title}{' '}
+                            <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}>
+                              ({q.progress}/{q.target})
+                            </span>
+                          </span>
+                          {ready ? (
+                            <button
+                              type="button"
+                              className="nav-notif-mini-btn"
+                              style={{ color: '#fde047', borderColor: 'rgba(250, 204, 21, 0.45)' }}
+                              onClick={() => {
+                                if (isGuest) {
+                                  setIsNotifOpen(false);
+                                  setAccountModalState({ open: true, tab: 'create' });
+                                  return;
+                                }
+                                const { claimedQuest } = claimDailyQuestReward(q.id);
+                                setDailyPopoverTick((t) => t + 1);
+                                if (claimedQuest) {
+                                  handleClaimQuestGold(claimedQuest.goldReward, claimedQuest.title);
+                                }
+                              }}
+                            >
+                              Resgatar +{q.goldReward}
+                            </button>
+                          ) : (
+                            <span style={{ fontSize: '0.7rem', color: q.claimed ? '#34d399' : '#64748b' }}>
+                              {q.claimed ? '✓' : `+${q.goldReward}`}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div className="nav-notif-list">
                   {notifications.length === 0 ? (
-                    <div className="nav-notif-empty">
-                      Nenhuma notificação no momento. Seus alertas de vitórias, Ouro, Reputação e
-                      salas 1×1 aparecerão aqui.
-                    </div>
+                    <div className="nav-notif-empty">Nenhuma notificação recente.</div>
                   ) : (
                     notifications.map((n) => (
                       <div
@@ -2182,57 +2260,50 @@ export const App: React.FC = () => {
               className="btn-fantasy"
               onClick={() => applyPwaUpdate()}
               style={{
-                padding: '4px 10px',
+                padding: '4px 8px',
                 fontSize: '0.72rem',
-                fontWeight: 800,
-                borderColor: 'rgba(52, 211, 153, 0.72)',
-                color: '#6ee7b7',
+                borderColor: 'rgba(148, 163, 184, 0.35)',
+                color: '#e2e8f0',
               }}
-              title="Nova atualização de Vaeloria disponível! Clique para recarregar na versão mais recente"
+              title="Atualizar para a versão mais recente"
             >
-              <span>🔄</span>
-              <span className="hide-on-mobile"> ATUALIZAR</span>
+              <span>↻</span>
+              <span className="hide-on-mobile"> Atualizar</span>
             </button>
           )}
 
           {pwaState.shouldPromoteInstall && (
             <button
               type="button"
-              className="btn-fantasy"
+              className="btn-fantasy hide-on-mobile"
               onClick={handleInstallPwaClick}
               style={{
-                padding: '4px 10px',
+                padding: '4px 9px',
                 fontSize: '0.72rem',
-                fontWeight: 800,
-                borderColor: 'rgba(250, 204, 21, 0.65)',
-                color: '#fde047',
-                background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.16), rgba(15, 23, 42, 0.85))',
+                fontWeight: 600,
+                borderColor: 'rgba(148, 163, 184, 0.28)',
+                color: '#cbd5e1',
+                background: 'rgba(15, 23, 42, 0.65)',
               }}
-              title="Instalar Aplicativo Chromatic Pact em Tela Cheia (PC / Android / iPhone)"
+              title="Instalar aplicativo em tela cheia"
             >
-              <span>📲</span>
-              <span className="hide-on-mobile"> APP</span>
+              Instalar App
             </button>
           )}
 
           <button
             type="button"
-            className={`btn-fantasy nav-audio-btn ${
-              !soundMuted && musicInfo.stage === 'climax' ? 'btn-fantasy-danger' : ''
-            }`}
+            className="btn-fantasy nav-audio-btn"
             onClick={handleToggleSound}
+            style={{ padding: '4px 8px' }}
             title={
               soundMuted
-                ? 'Clique para ativar Trilha Adaptativa & Efeitos Sonoros'
-                : `Trilha Adaptativa Ativa: ${musicInfo.label}`
+                ? 'Ativar áudio'
+                : `Áudio ativo (${musicInfo.label})`
             }
+            aria-label={soundMuted ? 'Ativar áudio' : 'Silenciar áudio'}
           >
-            <span className="show-on-mobile-inline nav-audio-icon">{soundMuted ? '🔇' : '🔊'}</span>
-            <span className="hide-on-mobile nav-audio-label">
-              {soundMuted
-                ? 'ÁUDIO OFF'
-                : `${musicInfo.stage === 'climax' ? 'CLÍMAX' : 'ÁUDIO ON'}`}
-            </span>
+            <span>{soundMuted ? '🔇' : '🔊'}</span>
           </button>
         </div>
       </header>
@@ -2374,51 +2445,17 @@ export const App: React.FC = () => {
             </div>
           )}
 
-        {activeTab !== 'arena' &&
-          (pwaState.updateAvailable ||
-            (pwaState.shouldPromoteInstall && !pwaState.isBannerSnoozed)) && (
-            <div className="aaa-onboarding-shell" style={{ paddingBottom: 0 }}>
-              <PwaInstallBanner
-                pwaState={pwaState}
-                onOpenGuideModal={() => setIsPwaModalOpen(true)}
-                onInstalled={() => {
-                  trackAdsEvent('install_pwa', { platform: pwaState.platform });
-                  pushNotification({
-                    kicker: 'APLICATIVO OFICIAL INSTALADO',
-                    title: '📲 Chromatic Pact em Tela Cheia Ativado!',
-                    message:
-                      'O ícone dourado de Vaeloria foi adicionado à sua Tela Inicial / Área de Trabalho com cache instantâneo.',
-                  });
-                }}
-              />
-            </div>
-          )}
+        {activeTab !== 'arena' && pwaState.updateAvailable && (
+          <div className="aaa-onboarding-shell" style={{ paddingBottom: 0 }}>
+            <PwaInstallBanner
+              pwaState={pwaState}
+              onOpenGuideModal={() => setIsPwaModalOpen(true)}
+            />
+          </div>
+        )}
 
         {activeTab === 'home' && (
           <div className="aaa-page-shell aaa-home-lobby-shell">
-            {/* Collapsible Royal Command Strip (1-Click Resume + Daily Quests + Crown Relics) */}
-            <SovereignRoyalCommandStrip
-              isGuest={isGuest}
-              username={currentUser.username}
-              eloRating={currentUser.eloRating}
-              gold={gold}
-              astralShards={astralShards}
-              defeatedBossCount={defeatedBossIds.length}
-              arenaWins={arenaWins}
-              showInstallApp={pwaState.shouldPromoteInstall}
-              onInstallApp={handleInstallPwaClick}
-              onNavigate={(dest) => handleSelectSubTab(dest)}
-              onStartDailyProblem={handleStartProblem}
-              onClaimQuestGold={handleClaimQuestGold}
-              onOpenAccountModal={() =>
-                setAccountModalState({
-                  open: true,
-                  tab: isGuest ? 'create' : 'profile',
-                })
-              }
-            />
-
-            {/* Authentic BattleArena Combat Table Showcase */}
             <div className="aaa-home-showcase-hero">
               <HomeSimulatedDuelShowcase
                 onInspectCard={setShowcaseInspectCard}

@@ -7000,54 +7000,35 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               const pivotY = svgH - 4 - (currWin / 100) * (svgH - 8);
 
               return (
-                <div
+                <details
                   style={{
                     textAlign: 'left',
-                    padding: '0.75rem 0.85rem',
-                    marginBottom: '0.9rem',
-                    borderRadius: '10px',
-                    background:
-                      'linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(30, 27, 75, 0.72))',
-                    border: '1px solid rgba(168, 85, 247, 0.42)',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+                    padding: '0.55rem 0.75rem',
+                    marginBottom: '0.85rem',
+                    borderRadius: '8px',
+                    background: 'rgba(15, 23, 42, 0.65)',
+                    border: '1px solid rgba(148, 163, 184, 0.18)',
                   }}
                 >
-                  <div
+                  <summary
                     style={{
+                      cursor: 'pointer',
+                      fontSize: '0.76rem',
+                      fontWeight: 600,
+                      color: '#cbd5e1',
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      flexWrap: 'wrap',
-                      gap: '4px',
-                      marginBottom: '6px',
+                      gap: '6px',
                     }}
                   >
-                    <span
-                      className="font-cinzel"
-                      style={{
-                        fontSize: '0.7rem',
-                        fontWeight: 800,
-                        letterSpacing: '0.07em',
-                        color: '#e9d5ff',
-                      }}
-                    >
-                      🔮 ANÁLISE DO ORÁCULO • REDE NEURAL VALUE MLP
+                    <span>Análise tática da partida (Turno decisivo: T{pivotTurn})</span>
+                    <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+                      T{tierSpec.roman}
+                      {rivalStanding ? ` · ${rivalStanding.name}` : ''}
                     </span>
-                    <span
-                      style={{
-                        fontSize: '0.64rem',
-                        fontWeight: 700,
-                        color: '#fde047',
-                      }}
-                    >
-                      🧠 T{tierSpec.roman}
-                      {rivalStanding
-                        ? ` • #${rivalStanding.rank}/44 [${rivalStanding.tierBadge}] ${rivalStanding.name}`
-                        : ''}
-                    </span>
-                  </div>
+                  </summary>
 
-                  {/* Sparkline + Turning Point */}
                   <div
                     style={{
                       display: 'grid',
@@ -7056,30 +7037,31 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       alignItems: 'center',
                       padding: '6px 8px',
                       borderRadius: '7px',
-                      background: 'rgba(2, 6, 23, 0.65)',
-                      border: '1px solid rgba(148, 163, 184, 0.2)',
+                      background: 'rgba(2, 6, 23, 0.55)',
+                      border: '1px solid rgba(148, 163, 184, 0.14)',
+                      marginTop: '8px',
                       marginBottom: '7px',
                     }}
                   >
                     <div>
                       <svg
                         viewBox={`0 0 ${svgW} ${svgH}`}
-                        style={{ width: '100%', height: '38px', display: 'block' }}
-                        aria-label="Trajetória de vantagem neural turno a turno"
+                        style={{ width: '100%', height: '36px', display: 'block' }}
+                        aria-label="Trajetória de vantagem turno a turno"
                       >
                         <line
                           x1="0"
                           y1={svgH / 2}
                           x2={svgW}
                           y2={svgH / 2}
-                          stroke="rgba(148,163,184,0.35)"
+                          stroke="rgba(148,163,184,0.3)"
                           strokeDasharray="3 3"
                           strokeWidth="1"
                         />
                         <polyline
                           fill="none"
                           stroke={gameState.winner === 'player' ? '#34d399' : '#f87171'}
-                          strokeWidth="2.4"
+                          strokeWidth="2.2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           points={polyPoints}
@@ -7087,23 +7069,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         <circle
                           cx={pivotX}
                           cy={pivotY}
-                          r="4"
+                          r="3.5"
                           fill="#fde047"
                           stroke="#0f172a"
                           strokeWidth="1.5"
                         />
                       </svg>
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          fontSize: '0.58rem',
-                          color: '#94a3b8',
-                        }}
-                      >
-                        <span>T1 (50%)</span>
-                        <span>Virada T{pivotTurn}</span>
-                      </div>
                     </div>
 
                     <div style={{ fontSize: '0.72rem', lineHeight: 1.35, color: '#e2e8f0' }}>
@@ -7113,14 +7084,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           display: 'block',
                         }}
                       >
-                        ⚡ Momento Decisivo (Turno {pivotTurn}): {prevWin}% ➔ {currWin}% (
-                        {delta >= 0 ? `+${delta}%` : `${delta}%`})
+                        Virada no Turno {pivotTurn}: {prevWin}% → {currWin}%
                       </strong>
                       {pivotAction && (
                         <span
                           style={{
-                            color: '#cbd5e1',
-                            fontSize: '0.67rem',
+                            color: '#94a3b8',
+                            fontSize: '0.68rem',
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
@@ -7133,75 +7103,39 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     </div>
                   </div>
 
-                  {/* Tactical Advice Against Faced Champion */}
-                  <div style={{ fontSize: '0.7rem', lineHeight: 1.38, color: '#cbd5e1' }}>
+                  <div style={{ fontSize: '0.72rem', lineHeight: 1.4, color: '#94a3b8' }}>
                     {empiricalWr !== null && (
-                      <div style={{ marginBottom: '3px', color: '#93c5fd', fontWeight: 700 }}>
-                        📊 Taxa Empírica no Torneio Unificado: {empiricalWr}% para o seu arquétipo
+                      <div style={{ marginBottom: '3px', color: '#cbd5e1' }}>
+                        Taxa empírica deste confronto: {empiricalWr}%
                       </div>
                     )}
-                    <div style={{ marginBottom: '3px' }}>
-                      <strong style={{ color: '#fde68a' }}>🛡️ Contra-Tática:</strong>{' '}
+                    <div>
+                      <strong style={{ color: '#e2e8f0' }}>Contra-tática:</strong>{' '}
                       {matchupGuide.positioningTactic}
                     </div>
-                    <div>
-                      <strong style={{ color: '#c4b5fd' }}>🎯 Ponto de Atenção:</strong>{' '}
-                      {gameState.winner === 'player'
-                        ? matchupGuide.keyObjective
-                        : matchupGuide.dangerWatchout}
-                    </div>
                   </div>
-                </div>
+                </details>
               );
             })()}
 
             {gameState.winner === 'player' && (
               <div
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.6rem',
-                  marginBottom: '1.25rem',
+                  padding: '0.65rem 0.85rem',
+                  borderRadius: '8px',
+                  background: 'rgba(212, 175, 55, 0.08)',
+                  border: '1px solid rgba(212, 175, 55, 0.28)',
+                  color: '#fde68a',
+                  fontSize: '0.84rem',
+                  fontWeight: 600,
+                  marginBottom: '1.15rem',
                 }}
               >
-                <div
-                  style={{
-                    padding: '0.75rem',
-                    borderRadius: '8px',
-                    background: 'rgba(212, 175, 55, 0.1)',
-                    border: '1px solid rgba(212, 175, 55, 0.35)',
-                    color: '#fde68a',
-                    fontWeight: 700,
-                  }}
-                >
-                  {tacticalProblem
-                    ? `♟️ ${tacticalProblem.code} Resolvido! Recompensa: +${tacticalProblem.goldReward} Ouro (1ª conclusão)`
-                    : isGuest
-                    ? 'Modo Visitante: Crie sua Conta de Soberano para conquistar +10 Ouro por vitória!'
-                    : `Recompensa: +${VICTORY_GOLD_REWARD} Ouro`}
-                </div>
-
-                <div
-                  style={{
-                    padding: '0.75rem 0.9rem',
-                    borderRadius: '8px',
-                    background:
-                      'linear-gradient(135deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.95))',
-                    border: '1px solid rgba(250, 204, 21, 0.5)',
-                    color: '#f8fafc',
-                    fontSize: '0.84rem',
-                    lineHeight: 1.45,
-                  }}
-                >
-                  <div style={{ color: '#fde047', fontWeight: 800, marginBottom: '0.2rem' }}>
-                    🎁 Bônus de Soberano no Relicário (+160 Ouro)
-                  </div>
-                  <div>
-                    {isGuest
-                      ? 'Crie sua conta gratuita para salvar seu progresso na nuvem, acumular +10 Ouro por vitória e resgatar imediatamente +160 Ouro de Boas-Vindas para abrir pacotes no Relicário!'
-                      : `Lembrete: Sua conta gratuita salva seu progresso e garante +160 Ouro de Boas-Vindas no Relicário para expandir sua coleção de ${ALL_CARDS.length} cartas!`}
-                  </div>
-                </div>
+                {tacticalProblem
+                  ? `${tacticalProblem.code} resolvido · +${tacticalProblem.goldReward} Ouro (1ª conclusão)`
+                  : isGuest
+                  ? 'Modo Visitante · Crie sua conta gratuita para salvar progresso e receber +160 Ouro iniciais'
+                  : `+${VICTORY_GOLD_REWARD} Ouro`}
               </div>
             )}
 

@@ -11,7 +11,8 @@
     "train:ai": "node ./node_modules/tsx/dist/cli.mjs src/scripts/trainAiLeague.ts",
     "train:mono": "node --import tsx src/scripts/trainMonocolorEvolution.ts",
     "train:bicolor": "node --import tsx src/scripts/trainBicolorEvolution.ts",
-    "train:polycolor": "node --import tsx src/scripts/trainPolycolorEvolution.ts"
+    "train:polycolor": "node --import tsx src/scripts/trainPolycolorEvolution.ts",
+    "tournament:unified": "node --import tsx src/scripts/runUnifiedTournament.ts"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

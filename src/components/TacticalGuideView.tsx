@@ -20,6 +20,14 @@ import {
   resolveBicolorArchetypeForDeckId,
   resolvePolycolorArchetypeForDeckId,
 } from '../data/aiMonocolorMastery';
+import {
+  getEmpiricalUnifiedWinRatePct,
+  getUnifiedStandingForDeckId,
+  UNIFIED_CHAMPION_STANDINGS,
+  UNIFIED_FORMAT_LABELS,
+  UNIFIED_TOURNAMENT_SUMMARY,
+  UnifiedFormatKind,
+} from '../data/aiUnifiedTournament';
 import { CardView, CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 
@@ -27,7 +35,12 @@ export interface TacticalGuideViewProps {
   customDecks?: CustomSavedDeck[];
   initialPlayerDeckId?: string;
   initialOpponentDeckId?: string;
-  initialViewSection?: 'deck_mastery' | 'matchup_duel' | 'matrix_all' | 'combos_compendium';
+  initialViewSection?:
+    | 'deck_mastery'
+    | 'matchup_duel'
+    | 'matrix_all'
+    | 'global_tier_list'
+    | 'combos_compendium';
   isModal?: boolean;
   onClose?: () => void;
   onLaunchDuel?: (playerDeckId: string, opponentDeckId: string) => void;
@@ -417,37 +430,47 @@ export function analyzeMatchupPair(
       ? getMatchupGuide(p.deck.id, e.deck.id)
       : null;
 
-  // Calculate tactical favorability score (45..55) based on calibrated 80-card simulation & matchup dynamics
-  let score = EMPIRICAL_WIN_RATES[p.deck.id]?.[e.deck.id] ?? 50;
+  // Calculate tactical favorability score using the Grand Unified 44x43 Tournament Matrix when available
+  const unifiedWr = getEmpiricalUnifiedWinRatePct(p.deck.id, e.deck.id);
+  let score = unifiedWr ?? EMPIRICAL_WIN_RATES[p.deck.id]?.[e.deck.id] ?? 50;
 
-  // Spell-heavy / AoE decks punish super creature-heavy swarm decks (scaled for 80-card decks)
-  if (p.breathAndAoECards.length >= 8 && e.counts.creature >= 50) score += 1;
-  if (e.breathAndAoECards.length >= 8 && p.counts.creature >= 50) score -= 1;
-
-  // Fast creature swarm pressures slow Relic/Spell decks
   const pEarly = (p.curve[1] ?? 0) + (p.curve[2] ?? 0);
   const eEarly = (e.curve[1] ?? 0) + (e.curve[2] ?? 0);
-  if (pEarly >= 20 && e.counts.relic >= 14) score += 1;
-  if (eEarly >= 20 && p.counts.relic >= 14) score -= 1;
 
-  // Relic engines out-value low-aggression midrange/control in long games
-  if (p.counts.relic >= 14 && eEarly <= 14) score += 1;
-  if (e.counts.relic >= 14 && pEarly <= 14) score -= 1;
+  if (unifiedWr === null) {
+    // Fallback structural adjustments only for custom unmeasured player decks
+    if (p.breathAndAoECards.length >= 8 && e.counts.creature >= 50) score += 1;
+    if (e.breathAndAoECards.length >= 8 && p.counts.creature >= 50) score -= 1;
 
-  score = Math.round(Math.max(45, Math.min(55, score)));
+    if (pEarly >= 20 && e.counts.relic >= 14) score += 1;
+    if (eEarly >= 20 && p.counts.relic >= 14) score -= 1;
+
+    if (p.counts.relic >= 14 && eEarly <= 14) score += 1;
+    if (e.counts.relic >= 14 && pEarly <= 14) score -= 1;
+
+    score = Math.round(Math.max(45, Math.min(55, score)));
+  } else {
+    score = Math.round(Math.max(15, Math.min(85, score)));
+  }
 
   let favorabilityLabel = 'CONFRONTO EQUILIBRADO (50/50)';
   let favorabilityColor = '#fde047';
-  if (score >= 53) {
+  if (score >= 58) {
+    favorabilityLabel = `DOMÍNIO TÁTICO (${score}/${100 - score})`;
+    favorabilityColor = '#22c55e';
+  } else if (score >= 53) {
     favorabilityLabel = `FAVORÁVEL (${score}/${100 - score})`;
     favorabilityColor = '#4ade80';
   } else if (score >= 51) {
     favorabilityLabel = `LEVE VANTAGEM (${score}/${100 - score})`;
     favorabilityColor = '#86efac';
+  } else if (score <= 42) {
+    favorabilityLabel = `ALTO RISCO (${score}/${100 - score})`;
+    favorabilityColor = '#f87171';
   } else if (score <= 47) {
     favorabilityLabel = `DESAFIADOR (${score}/${100 - score})`;
     favorabilityColor = '#fb923c';
-  } else if (score < 50) {
+  } else if (score !== 50) {
     favorabilityLabel = `EQUILÍBRIO TÁTICO (${score}/${100 - score})`;
     favorabilityColor = '#fde047';
   }
@@ -593,6 +616,10 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
   onClose,
   onLaunchDuel,
 }) => {
+  const trainedMonoDecks = useMemo(() => getTrainedMonocolorPrebuiltDecks(5), []);
+  const trainedBiDecks = useMemo(() => getTrainedBicolorPrebuiltDecks(5), []);
+  const trainedPolyDecks = useMemo(() => getTrainedPolycolorPrebuiltDecks(5), []);
+
   const allDecks: PrebuiltDeck[] = useMemo(() => {
     const customConverted: PrebuiltDeck[] = customDecks.map((cd) => {
       const domainsSet = new Set<Domain>();
@@ -611,13 +638,13 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
       };
     });
     return [
-      ...getTrainedMonocolorPrebuiltDecks(5),
-      ...getTrainedBicolorPrebuiltDecks(5),
-      ...getTrainedPolycolorPrebuiltDecks(5),
+      ...trainedMonoDecks,
+      ...trainedBiDecks,
+      ...trainedPolyDecks,
       ...PREBUILT_DECKS,
       ...customConverted,
     ];
-  }, [customDecks]);
+  }, [customDecks, trainedMonoDecks, trainedBiDecks, trainedPolyDecks]);
 
   const [selectedPlayerDeckId, setSelectedPlayerDeckId] = useState<string>(
     initialPlayerDeckId && allDecks.some((d) => d.id === initialPlayerDeckId)
@@ -634,9 +661,11 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
   });
 
   const [viewSection, setViewSection] = useState<
-    'deck_mastery' | 'matchup_duel' | 'matrix_all' | 'combos_compendium'
+    'deck_mastery' | 'matchup_duel' | 'matrix_all' | 'global_tier_list' | 'combos_compendium'
   >(initialViewSection ?? (initialOpponentDeckId ? 'matchup_duel' : 'deck_mastery'));
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
+  const [unifiedFormatFilter, setUnifiedFormatFilter] = useState<UnifiedFormatKind | 'all'>('all');
+  const [unifiedTierFilter, setUnifiedTierFilter] = useState<'all' | 'S' | 'A' | 'B'>('all');
   const [comboTierFilter, setComboTierFilter] = useState<ComboColorTier | 'all'>('all');
   const [comboSearchQuery, setComboSearchQuery] = useState<string>('');
   const [onlyInDeckCombos, setOnlyInDeckCombos] = useState<boolean>(false);
@@ -823,6 +852,14 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             </button>
             <button
               type="button"
+              className={`nav-tab-btn ${viewSection === 'global_tier_list' ? 'active' : ''}`}
+              onClick={() => setViewSection('global_tier_list')}
+              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+            >
+              Ranking Global ({UNIFIED_TOURNAMENT_SUMMARY.totalChampions})
+            </button>
+            <button
+              type="button"
               className={`nav-tab-btn ${viewSection === 'combos_compendium' ? 'active' : ''}`}
               onClick={() => setViewSection('combos_compendium')}
               style={{ padding: '5px 10px', fontSize: '0.73rem' }}
@@ -921,7 +958,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
       </div>
 
       {/* COMPACT DUAL DECK SELECTOR BAR */}
-      {viewSection !== 'combos_compendium' && (
+      {viewSection !== 'combos_compendium' && viewSection !== 'global_tier_list' && (
         <div className="tg-selector-banner">
           <div className="tg-selector-card player-side">
             <div className="tg-selector-thumb">
@@ -930,12 +967,44 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               )}
             </div>
             <div className="tg-selector-body">
+              {(() => {
+                const st = getUnifiedStandingForDeckId(playerProfile.deck.id);
+                if (!st) return null;
+                return (
+                  <div className="tg-selector-kicker-row" style={{ marginBottom: '2px' }}>
+                    <span className="tg-selector-kicker" style={{ color: '#e5c97b' }}>
+                      #{st.rank}/44 • Tier {st.tierBadge} ({(st.overallWinRate * 100).toFixed(1)}% Global)
+                    </span>
+                  </div>
+                );
+              })()}
               <select
                 className="aaa-select tg-deck-select"
                 value={selectedPlayerDeckId}
                 onChange={(e) => setSelectedPlayerDeckId(e.target.value)}
               >
-                <optgroup label="Grimórios Oficiais">
+                <optgroup label="Soberanos Tricolores & Pentacromáticos IA (13 Ápices Tier V)">
+                  {trainedPolyDecks.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Campeões Bicolores IA (15 Pactos Tier V)">
+                  {trainedBiDecks.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Campeões Monocolores IA (16 Arquétipos Tier V)">
+                  {trainedMonoDecks.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Grimórios Oficiais Clássicos">
                   {PREBUILT_DECKS.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.name}
@@ -986,6 +1055,17 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               )}
             </div>
             <div className="tg-selector-body">
+              {(() => {
+                const st = getUnifiedStandingForDeckId(opponentProfile.deck.id);
+                if (!st) return null;
+                return (
+                  <div className="tg-selector-kicker-row" style={{ marginBottom: '2px' }}>
+                    <span className="tg-selector-kicker" style={{ color: '#fca5a5' }}>
+                      #{st.rank}/44 • Tier {st.tierBadge} ({(st.overallWinRate * 100).toFixed(1)}% Global)
+                    </span>
+                  </div>
+                );
+              })()}
               <select
                 className="aaa-select tg-deck-select"
                 value={selectedOpponentDeckId}
@@ -994,7 +1074,28 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                   if (viewSection === 'matrix_all') setViewSection('matchup_duel');
                 }}
               >
-                <optgroup label="Grimórios Oficiais">
+                <optgroup label="Soberanos Tricolores & Pentacromáticos IA (13 Ápices Tier V)">
+                  {trainedPolyDecks.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Campeões Bicolores IA (15 Pactos Tier V)">
+                  {trainedBiDecks.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Campeões Monocolores IA (16 Arquétipos Tier V)">
+                  {trainedMonoDecks.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="Grimórios Oficiais Clássicos">
                   {PREBUILT_DECKS.map((d) => (
                     <option key={d.id} value={d.id}>
                       {d.name}
@@ -1617,7 +1718,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             </div>
 
             <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-              {(['all', 'red', 'blue', 'purple', 'green', 'gold'] as const).map((dom) => (
+              {(['all', 'red', 'blue', 'purple', 'green', 'gold', 'neutral'] as const).map((dom) => (
                 <button
                   key={dom}
                   type="button"
@@ -1702,6 +1803,241 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          TAB 3B: GRANDE TORNEIO UNIFICADO DE VAELORIA (44 × 43 CAMPEÕES TIER V)
+          ===================================================================== */}
+      {viewSection === 'global_tier_list' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* Ecology Overview Card */}
+          <div className="tg-panel">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.8rem' }}>
+              <div>
+                <div className="aaa-kicker">
+                  GRANDE TORNEIO UNIFICADO DE VAELORIA • {UNIFIED_TOURNAMENT_SUMMARY.totalMatchesSimulated.toLocaleString('pt-BR')} DUELOS BEAM SEARCH TIER V
+                </div>
+                <h2 className="font-cinzel tg-panel-title">
+                  Tier List Oficial & Ecologia Inter-Formatos (1, 2, 3 e 5 Cores)
+                </h2>
+              </div>
+              <span
+                className="tg-ai-combo-badge"
+                style={{ fontSize: '0.72rem', padding: '4px 10px' }}
+              >
+                IC 95% Máx: ±{(UNIFIED_TOURNAMENT_SUMMARY.maxChampionCi95HalfWidth * 100).toFixed(2)}% • 34 Value MLPs
+              </span>
+            </div>
+
+            <div className="tg-matrix-table-wrap" style={{ marginBottom: '0.5rem' }}>
+              <table className="tg-matrix-table">
+                <thead>
+                  <tr>
+                    <th>Formato de Grimório</th>
+                    <th>WR Global</th>
+                    <th>vs 1 Cor (Mono)</th>
+                    <th>vs 2 Cores (Bicolor)</th>
+                    <th>vs 3 Cores (Tríade)</th>
+                    <th>vs 5 Cores (Penta)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(['tricolor', 'bicolor', 'pentachromatic', 'monocolor'] as UnifiedFormatKind[]).map((fmt) => {
+                    const row = UNIFIED_TOURNAMENT_SUMMARY.formatEcologyMatrix[fmt];
+                    return (
+                      <tr key={fmt}>
+                        <td style={{ fontWeight: 800, color: '#f8fafc' }}>
+                          {UNIFIED_FORMAT_LABELS[fmt]}
+                        </td>
+                        <td style={{ fontWeight: 800, color: row.overallWinRate >= 0.5 ? '#4ade80' : '#fbbf24' }}>
+                          {(row.overallWinRate * 100).toFixed(1)}%
+                        </td>
+                        <td style={{ color: '#cbd5e1' }}>{(row.vsFormat.monocolor * 100).toFixed(1)}%</td>
+                        <td style={{ color: '#cbd5e1' }}>{(row.vsFormat.bicolor * 100).toFixed(1)}%</td>
+                        <td style={{ color: '#cbd5e1' }}>{(row.vsFormat.tricolor * 100).toFixed(1)}%</td>
+                        <td style={{ color: '#cbd5e1' }}>{(row.vsFormat.pentachromatic * 100).toFixed(1)}%</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Full 44-Champion Standings Table */}
+          <div className="tg-panel">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '0.9rem' }}>
+              <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                {(
+                  [
+                    { id: 'all', label: 'Todos (44)' },
+                    { id: 'monocolor', label: '1 Cor (16)' },
+                    { id: 'bicolor', label: '2 Cores (15)' },
+                    { id: 'tricolor', label: '3 Cores (10)' },
+                    { id: 'pentachromatic', label: '5 Cores (3)' },
+                  ] as const
+                ).map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className={`nav-tab-btn ${unifiedFormatFilter === f.id ? 'active' : ''}`}
+                    style={{ padding: '0.28rem 0.6rem', fontSize: '0.71rem' }}
+                    onClick={() => setUnifiedFormatFilter(f.id)}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                {(
+                  [
+                    { id: 'all', label: 'Todos os Tiers' },
+                    { id: 'S', label: `Tier S (${UNIFIED_TOURNAMENT_SUMMARY.tierCounts.S})` },
+                    { id: 'A', label: `Tier A (${UNIFIED_TOURNAMENT_SUMMARY.tierCounts.A})` },
+                    { id: 'B', label: `Tier B (${UNIFIED_TOURNAMENT_SUMMARY.tierCounts.B})` },
+                  ] as const
+                ).map((t) => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    className={`nav-tab-btn ${unifiedTierFilter === t.id ? 'active' : ''}`}
+                    style={{ padding: '0.28rem 0.6rem', fontSize: '0.71rem' }}
+                    onClick={() => setUnifiedTierFilter(t.id)}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                {(['all', 'red', 'blue', 'purple', 'green', 'gold', 'neutral'] as const).map((dom) => (
+                  <button
+                    key={dom}
+                    type="button"
+                    className={`nav-tab-btn ${domainFilter === dom ? 'active' : ''}`}
+                    style={{ padding: '0.28rem 0.55rem', fontSize: '0.71rem' }}
+                    onClick={() => setDomainFilter(dom)}
+                  >
+                    {dom === 'all' ? 'Todas Cores' : `${DOMAIN_META[dom].icon} ${DOMAIN_META[dom].shortName}`}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="tg-matrix-table-wrap">
+              <table className="tg-matrix-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Tier</th>
+                    <th>Campeão Co-Evoluído (Tier V)</th>
+                    <th>WR Global (±IC 95%)</th>
+                    <th>Por Formato (1C / 2C / 3C / 5C)</th>
+                    <th>Melhor Matchup</th>
+                    <th>Principal Counter</th>
+                    <th>Ação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {UNIFIED_CHAMPION_STANDINGS.filter((st) => {
+                    if (unifiedFormatFilter !== 'all' && st.format !== unifiedFormatFilter) return false;
+                    if (unifiedTierFilter !== 'all' && st.tierBadge !== unifiedTierFilter) return false;
+                    if (domainFilter !== 'all' && !st.domains.includes(domainFilter)) return false;
+                    return true;
+                  }).map((st) => {
+                    const best = st.bestMatchups[0];
+                    const worst = st.worstMatchups[0];
+                    const bestDeck = best ? getUnifiedStandingForDeckId(best.opponentId) : undefined;
+                    const worstDeck = worst ? getUnifiedStandingForDeckId(worst.opponentId) : undefined;
+                    const tierColor =
+                      st.tierBadge === 'S'
+                        ? '#facc15'
+                        : st.tierBadge === 'A'
+                          ? '#4ade80'
+                          : '#93c5fd';
+                    return (
+                      <tr
+                        key={st.archetypeId}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => {
+                          setSelectedPlayerDeckId(st.archetypeId);
+                          if (worst) setSelectedOpponentDeckId(worst.opponentId);
+                          setViewSection('matchup_duel');
+                        }}
+                      >
+                        <td style={{ fontWeight: 800, color: '#e2e8f0' }}>#{st.rank}</td>
+                        <td>
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              padding: '2px 8px',
+                              borderRadius: '4px',
+                              fontWeight: 900,
+                              fontSize: '0.74rem',
+                              color: tierColor,
+                              border: `1px solid ${tierColor}`,
+                              background: 'rgba(15, 23, 42, 0.75)',
+                            }}
+                          >
+                            {st.tierBadge}
+                          </span>
+                        </td>
+                        <td>
+                          <div style={{ fontWeight: 700, color: '#f8fafc' }}>
+                            {st.domains.map((d) => DOMAIN_META[d].icon).join('')} {st.name}
+                          </div>
+                          <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+                            {UNIFIED_FORMAT_LABELS[st.format]}
+                          </div>
+                        </td>
+                        <td>
+                          <div style={{ fontWeight: 800, color: st.overallWinRate >= 0.5 ? '#4ade80' : '#fbbf24' }}>
+                            {(st.overallWinRate * 100).toFixed(1)}%
+                          </div>
+                          <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>
+                            ±{(st.ci95HalfWidth * 100).toFixed(2)}% • n={st.matchesPlayed}
+                          </div>
+                        </td>
+                        <td style={{ fontSize: '0.73rem', color: '#cbd5e1', whiteSpace: 'nowrap' }}>
+                          {(st.vsFormatWinRates.monocolor * 100).toFixed(0)}% /{' '}
+                          {(st.vsFormatWinRates.bicolor * 100).toFixed(0)}% /{' '}
+                          {(st.vsFormatWinRates.tricolor * 100).toFixed(0)}% /{' '}
+                          {(st.vsFormatWinRates.pentachromatic * 100).toFixed(0)}%
+                        </td>
+                        <td style={{ fontSize: '0.73rem', color: '#86efac' }}>
+                          {best && bestDeck
+                            ? `${bestDeck.domains.map((d) => DOMAIN_META[d].icon).join('')} ${bestDeck.name} (${(best.winRate * 100).toFixed(0)}%)`
+                            : '—'}
+                        </td>
+                        <td style={{ fontSize: '0.73rem', color: '#fca5a5' }}>
+                          {worst && worstDeck
+                            ? `${worstDeck.domains.map((d) => DOMAIN_META[d].icon).join('')} ${worstDeck.name} (${(worst.winRate * 100).toFixed(0)}%)`
+                            : '—'}
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn-fantasy"
+                            style={{ padding: '0.25rem 0.6rem', fontSize: '0.68rem' }}
+                            onClick={(ev) => {
+                              ev.stopPropagation();
+                              setSelectedPlayerDeckId(st.archetypeId);
+                              if (worst) setSelectedOpponentDeckId(worst.opponentId);
+                              setViewSection('matchup_duel');
+                            }}
+                          >
+                            Ver 1×1 →
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

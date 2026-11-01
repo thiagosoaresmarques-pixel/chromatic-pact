@@ -114,7 +114,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                           </option>
                         );
                       })
-                    : PREBUILT_DECKS.slice(0, 5).map((pd) => (
+                    : PREBUILT_DECKS.filter((pd) => pd.domains.length === 1).map((pd) => (
                         <option key={pd.id} value={pd.id}>
                           {pd.name} (Visitante)
                         </option>

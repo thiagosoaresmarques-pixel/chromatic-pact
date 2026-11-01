@@ -1,5 +1,11 @@
 import React, { Suspense, useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { CampaignBoss, CardDefinition, ConquestBattleModifiers, RiftMutatorId } from './types/game';
+import {
+  AiSkillTier,
+  CampaignBoss,
+  CardDefinition,
+  ConquestBattleModifiers,
+  RiftMutatorId,
+} from './types/game';
 import { ALL_CARDS, CARDS_BY_ID } from './data/cards';
 import { getSharedAudioContext, isMuted, toggleMute } from './utils/soundEngine';
 import {
@@ -168,7 +174,7 @@ const NAV_PILLARS: NavPillarDef[] = [
         tab: 'arena',
         icon: '⚔️',
         label: 'Arena Solo',
-        shortDesc: 'Duelos rápidos contra os 30 Grimórios da IA',
+        shortDesc: 'Duelos contra os 44 Campeões IA (Tier I–V) e 40 Grimórios',
       },
       {
         tab: 'draft',
@@ -322,6 +328,8 @@ interface SavedAppNavState {
   quickDuelDecks: {
     playerDeckId?: string;
     aiDeckId?: string;
+    aiSkillTier?: AiSkillTier;
+    nonce?: number;
   };
 }
 
@@ -462,7 +470,10 @@ export const App: React.FC = () => {
   const [quickDuelDecks, setQuickDuelDecks] = useState<{
     playerDeckId?: string;
     aiDeckId?: string;
+    aiSkillTier?: AiSkillTier;
+    nonce?: number;
   }>(() => initialNavState?.quickDuelDecks ?? {});
+  const [pendingBuilderTemplateId, setPendingBuilderTemplateId] = useState<string | null>(null);
   const [showcaseInspectCard, setShowcaseInspectCard] = useState<CardDefinition | null>(null);
   const [poemJumpTarget, setPoemJumpTarget] = useState<NavigateToPoemDetail | null>(null);
 
@@ -2191,6 +2202,8 @@ export const App: React.FC = () => {
             }}
             initialPlayerDeckId={quickDuelDecks.playerDeckId}
             initialAiDeckId={quickDuelDecks.aiDeckId}
+            initialAiSkillTier={quickDuelDecks.aiSkillTier}
+            quickDuelNonce={quickDuelDecks.nonce}
             onCampaignVictory={handleCampaignVictory}
             onCampaignDefeat={handleCampaignDefeat}
             onExitArena={() => {
@@ -2315,17 +2328,36 @@ export const App: React.FC = () => {
         {activeTab === 'tactics' && (
           <TacticalGuideView
             customDecks={customDecks}
-            onLaunchDuel={(playerDeckId, opponentDeckId) => {
+            onLaunchDuel={(playerDeckId, opponentDeckId, aiSkillTier) => {
               if (!isGuest && customDecks.length === 0) {
+                setPendingBuilderTemplateId(playerDeckId);
                 setActiveTab('deckbuilder');
                 return;
               }
+              try {
+                localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+              } catch {
+                // Ignore
+              }
               setActiveCampaignBoss(null);
+              setActiveProblem(null);
+              setActiveOnlineMatch(null);
               setIsExpeditionBattle(false);
               setIsDraftBattle(false);
               setActiveRiftId(null);
-              setQuickDuelDecks({ playerDeckId, aiDeckId: opponentDeckId });
+              setActiveConquestContext(null);
+              setActiveGeoModifiers(null);
+              setQuickDuelDecks({
+                playerDeckId,
+                aiDeckId: opponentDeckId,
+                aiSkillTier: aiSkillTier ?? 5,
+                nonce: Date.now(),
+              });
               setActiveTab('arena');
+            }}
+            onImportToDeckBuilder={(templateDeckId) => {
+              setPendingBuilderTemplateId(templateDeckId);
+              setActiveTab('deckbuilder');
             }}
           />
         )}
@@ -2344,6 +2376,8 @@ export const App: React.FC = () => {
             onDeleteCustomDeck={handleDeleteCustomDeck}
             onCraftCard={handleCraftCard}
             onSalvageDuplicates={handleSalvageExcessDuplicates}
+            initialTemplateDeckId={pendingBuilderTemplateId}
+            onConsumeInitialTemplate={() => setPendingBuilderTemplateId(null)}
           />
         )}
 

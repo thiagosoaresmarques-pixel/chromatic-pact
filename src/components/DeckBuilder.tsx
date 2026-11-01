@@ -138,6 +138,8 @@ export interface DeckBuilderProps {
   isGuest?: boolean;
   username?: string;
   onRequireAccount?: () => void;
+  initialTemplateDeckId?: string | null;
+  onConsumeInitialTemplate?: () => void;
 }
 
 interface GalleryCardCellProps {
@@ -532,10 +534,13 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   onDeleteCustomDeck,
   isGuest = false,
   onRequireAccount,
+  initialTemplateDeckId,
+  onConsumeInitialTemplate,
 }) => {
   // First-time deck setup is 100% free; from the 2nd time onward, full editing/reforging costs 100 Gold
   const isFirstDeckSetup = !isGuest && customDecks.length === 0;
   const [isReplacingGrimoire, setIsReplacingGrimoire] = useState<boolean>(false);
+  const [lastRequestedTemplateId, setLastRequestedTemplateId] = useState<string | null>(null);
   const hasFreeCatalogSelection = isGuest || isFirstDeckSetup || isReplacingGrimoire;
   const totalOwnedCopies = useMemo(
     () => Object.values(unlockedCardIds).reduce((sum, n) => sum + n, 0),
@@ -1066,6 +1071,66 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     setDeckCardIds(nextIds);
   };
 
+  const handleLoadPrebuilt = useCallback(
+    (prebuiltId: string, forceFullCatalog = false) => {
+      const allTemplates = [
+        ...getTrainedPolycolorPrebuiltDecks(5),
+        ...getTrainedBicolorPrebuiltDecks(5),
+        ...getTrainedMonocolorPrebuiltDecks(5),
+        ...PREBUILT_DECKS,
+      ];
+      const found = allTemplates.find((d) => d.id === prebuiltId);
+      if (!found) return;
+
+      setActiveGuideDeckId(prebuiltId);
+      setLastRequestedTemplateId(prebuiltId);
+
+      if (forceFullCatalog || isGuest || isFirstDeckSetup || isReplacingGrimoire) {
+        setDeckName(`${found.name}`);
+        setEditingDeckId(customDecks[0]?.id ?? `custom_${Date.now()}`);
+        setDeckCardIds([...found.cardIds]);
+        setSaveBanner(`✨ Modelo "${found.name}" (100/100 cartas) carregado na Forja!`);
+        setTimeout(() => setSaveBanner(null), 3500);
+        return;
+      }
+
+      // Registered account with an existing consecrated Base Grimoire:
+      // Load the subset of cards currently owned in collection & offer 1-click Substituir Grimório (100 Gold) for full 100/100
+      const accepted: string[] = [];
+      const usedCounts: Record<string, number> = {};
+      let legs = 0;
+      for (const cid of found.cardIds) {
+        const card = CARDS_BY_ID[cid];
+        if (!card || accepted.length >= 100) continue;
+        const maxRarity = MAX_COPIES_BY_RARITY[card.rarity] ?? 2;
+        const owned = unlockedCardIds[cid] ?? 0;
+        const cur = usedCounts[cid] ?? 0;
+        if (card.rarity === 'legendary' && legs >= MAX_LEGENDARIES_PER_DECK) continue;
+        if (cur < maxRarity && cur < owned) {
+          accepted.push(cid);
+          usedCounts[cid] = cur + 1;
+          if (card.rarity === 'legendary') legs += 1;
+        }
+      }
+      setDeckName(`${found.name}`);
+      setEditingDeckId(customDecks[0]?.id ?? `custom_${Date.now()}`);
+      setDeckCardIds(accepted);
+      setSaveBanner(
+        accepted.length === 100
+          ? `✨ "${found.name}" (100/100 cartas da sua coleção) carregado na Forja!`
+          : `📥 "${found.name}": ${accepted.length}/100 cartas disponíveis na sua coleção carregadas. Clique em "Editar (${GRIMOIRE_REPLACEMENT_GOLD_COST} 🪙)" para liberar as 100 cartas completas deste Campeão!`
+      );
+      setTimeout(() => setSaveBanner(null), 4500);
+    },
+    [customDecks, isFirstDeckSetup, isGuest, isReplacingGrimoire, unlockedCardIds]
+  );
+
+  useEffect(() => {
+    if (!initialTemplateDeckId) return;
+    handleLoadPrebuilt(initialTemplateDeckId);
+    onConsumeInitialTemplate?.();
+  }, [initialTemplateDeckId, handleLoadPrebuilt, onConsumeInitialTemplate]);
+
   const handleStartReplaceGrimoire = () => {
     if (isGuest) {
       onRequireAccount?.();
@@ -1080,14 +1145,22 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     }
     setIsReplacingGrimoire(true);
     setOnlyUnlocked(false);
-    setSaveBanner(
-      `Modo de Substituição ativado! Escolha um novo Grimório de 100 cartas e clique em Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro).`
-    );
-    setTimeout(() => setSaveBanner(null), 3800);
+    if (lastRequestedTemplateId) {
+      handleLoadPrebuilt(lastRequestedTemplateId, true);
+      setSaveBanner(
+        `Modo de Substituição ativado! As 100 cartas completas do Campeão selecionado foram liberadas — clique em Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro).`
+      );
+    } else {
+      setSaveBanner(
+        `Modo de Substituição ativado! Escolha um novo Grimório de 100 cartas e clique em Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro).`
+      );
+    }
+    setTimeout(() => setSaveBanner(null), 4000);
   };
 
   const handleCancelReplaceGrimoire = () => {
     setIsReplacingGrimoire(false);
+    setLastRequestedTemplateId(null);
     if (customDecks[0]) {
       setDeckName(customDecks[0].name);
       setEditingDeckId(customDecks[0].id);
@@ -1133,6 +1206,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     if (wasReplacing) {
       setIsReplacingGrimoire(false);
     }
+    setLastRequestedTemplateId(null);
     onSaveCustomDeck(
       {
         id: editingDeckId,
@@ -1147,28 +1221,6 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
         : `Grimório "${cleanName}" (100 cartas) salvo! Todos os modos de combate estão liberados.`
     );
     setTimeout(() => setSaveBanner(null), 3500);
-  };
-
-  const handleLoadPrebuilt = (prebuiltId: string) => {
-    if (!isGuest && !isFirstDeckSetup && !isReplacingGrimoire) {
-      setSaveBanner(
-        `🔒 Seu Grimório inicial já foi consagrado! Para escolher outro Grimório completo, use "Substituir Grimório (${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)".`
-      );
-      setTimeout(() => setSaveBanner(null), 3500);
-      return;
-    }
-    const allTemplates = [
-      ...getTrainedMonocolorPrebuiltDecks(5),
-      ...getTrainedBicolorPrebuiltDecks(5),
-      ...getTrainedPolycolorPrebuiltDecks(5),
-      ...PREBUILT_DECKS,
-    ];
-    const found = allTemplates.find((d) => d.id === prebuiltId);
-    if (!found) return;
-    setActiveGuideDeckId(prebuiltId);
-    setDeckName(`${found.name}`);
-    setEditingDeckId(customDecks[0]?.id ?? `custom_${Date.now()}`);
-    setDeckCardIds([...found.cardIds]);
   };
 
   const handleLoadCustom = (custom: CustomSavedDeck) => {
@@ -2226,6 +2278,10 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           initialPlayerDeckId={deckCardIds.length > 0 ? editingDeckId : activeGuideDeckId}
           initialViewSection={guideModalSection}
           isModal={true}
+          onImportToDeckBuilder={(templateDeckId) => {
+            setShowTacticalGuideModal(false);
+            handleLoadPrebuilt(templateDeckId);
+          }}
           onClose={() => {
             setShowTacticalGuideModal(false);
             setGuideModalSection('deck_mastery');

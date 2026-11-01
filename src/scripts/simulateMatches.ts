@@ -607,9 +607,9 @@ function runAutomatedQA() {
   );
   const featuredCreatureSet = new Set<string>();
   for (const boss of GRAND_CAMPAIGN_BOSSES) {
-    if (!boss.customDeckCardIds || boss.customDeckCardIds.length !== 40) {
+    if (!boss.customDeckCardIds || boss.customDeckCardIds.length !== 100) {
       throw new Error(
-        `Grand Campaign boss ${boss.id} must have a 40-card customDeckCardIds, got ${boss.customDeckCardIds?.length}`
+        `Grand Campaign boss ${boss.id} must have a 100-card customDeckCardIds, got ${boss.customDeckCardIds?.length}`
       );
     }
     const rdef = boss.submapId ? VAELORIA_REGIONAL_MAPS[boss.submapId] : undefined;

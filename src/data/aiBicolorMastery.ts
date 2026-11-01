@@ -40,6 +40,11 @@ export const CLASSIC_DECK_ID_TO_BICOLOR_ARCHETYPE: Record<string, BicolorArchety
   deck_spec_chronomancer: 'dual_blue_gold',
   deck_squad_thousand_shields: 'dual_green_gold',
   deck_squad_siege_battery: 'dual_red_blue',
+  deck_dual_red_neutral: 'dual_red_neutral',
+  deck_dual_blue_neutral: 'dual_blue_neutral',
+  deck_dual_purple_neutral: 'dual_purple_neutral',
+  deck_dual_green_neutral: 'dual_green_neutral',
+  deck_dual_gold_neutral: 'dual_gold_neutral',
 };
 
 const DOMAIN_PAIR_LOOKUP: Record<string, BicolorArchetypeId> = (() => {

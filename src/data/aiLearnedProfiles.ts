@@ -3762,6 +3762,34 @@ export const AI_LEARNED_PROFILES: Record<string, DeckLearnedAiProfile> = {
   }
 };
 
+// Synchronize all PREBUILT_DECKS (including new Axial, Bicolor-Axial, Tricolor & Pentachromatic Champions)
+// with their latest Co-Evolved Phase 1/2/3 learned profiles
+const CLASSIC_MONO_PROFILE_MAP: Record<string, MonocolorArchetypeId> = {
+  deck_red_inferno: 'mono_red_blitz',
+  deck_blue_tempest: 'mono_blue_frost',
+  deck_purple_abyss: 'mono_purple_crypt',
+  deck_green_wild: 'mono_green_colossus',
+  deck_gold_bastion: 'mono_gold_celestial',
+  deck_neutral_axial: 'mono_neutral_axial',
+};
+
+for (const deck of PREBUILT_DECKS) {
+  const polyId = resolvePolycolorArchetypeForDeckId(deck.id);
+  const biId = resolveBicolorArchetypeForDeckId(deck.id);
+  const monoId = CLASSIC_MONO_PROFILE_MAP[deck.id];
+  const evolvedProfile =
+    (polyId ? POLYCOLOR_ARCHETYPE_MASTERY[polyId]?.learnedProfile : undefined) ??
+    (biId ? BICOLOR_ARCHETYPE_MASTERY[biId]?.learnedProfile : undefined) ??
+    (monoId ? MONOCOLOR_ARCHETYPE_MASTERY[monoId]?.learnedProfile : undefined);
+  if (evolvedProfile) {
+    AI_LEARNED_PROFILES[deck.id] = {
+      ...evolvedProfile,
+      deckId: deck.id,
+      deckName: deck.name,
+    };
+  }
+}
+
 /**
  * Resolves the learned AI tactical profile for either 'player' or 'ai' in O(1) when deckId/bossId
  * is present, or via fast card-overlap matching for custom/restored decks.

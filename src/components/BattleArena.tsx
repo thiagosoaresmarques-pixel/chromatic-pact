@@ -26,6 +26,7 @@ import {
   resolveCampaignBossGraduatedSetup,
   resolvePolycolorArchetypeForDeckId,
 } from '../data/aiMonocolorMastery';
+import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
 import {
   activateSimpleDomain,
@@ -176,6 +177,8 @@ export interface BattleArenaProps {
   onExitProblems?: () => void;
   initialPlayerDeckId?: string;
   initialAiDeckId?: string;
+  initialAiSkillTier?: AiSkillTier;
+  quickDuelNonce?: number;
   onCampaignVictory?: (boss: CampaignBoss) => void;
   onCampaignDefeat?: (boss: CampaignBoss) => void;
   onExitArena?: () => void;
@@ -363,6 +366,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onExitProblems,
   initialPlayerDeckId,
   initialAiDeckId,
+  initialAiSkillTier,
+  quickDuelNonce,
   onCampaignVictory,
   onCampaignDefeat,
   onExitArena,
@@ -387,25 +392,44 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       onExitArena();
     }
   };
-  const allowedPlayerDecks = useMemo(
-    () =>
-      !isGuest && customDecks.length > 0
-        ? customDecks.map((cd) => ({
-            id: cd.id,
-            name: `★ ${cd.name}`,
-            subtitle: 'Grimório Autoral (100 Cartas)',
-            coverCardId: cd.cardIds[0] ?? 'red_01',
-            cardIds: cd.cardIds,
-          }))
-        : MONOCHROMATIC_STARTER_DECKS.map((d) => ({
-            id: d.id,
-            name: d.name,
-            subtitle: d.subtitle,
-            coverCardId: d.coverCardId,
-            cardIds: d.cardIds,
-          })),
-    [isGuest, customDecks]
-  );
+  const allowedPlayerDecks = useMemo(() => {
+    if (!isGuest && customDecks.length > 0) {
+      return customDecks.map((cd) => ({
+        id: cd.id,
+        name: `★ ${cd.name}`,
+        subtitle: 'Grimório Autoral (100 Cartas)',
+        coverCardId: cd.cardIds[0] ?? 'red_01',
+        cardIds: cd.cardIds,
+      }));
+    }
+    const guestPool = [
+      ...MONOCHROMATIC_STARTER_DECKS,
+      ...getTrainedPolycolorPrebuiltDecks(5),
+      ...getTrainedBicolorPrebuiltDecks(5),
+      ...getTrainedMonocolorPrebuiltDecks(5),
+      ...PREBUILT_DECKS,
+    ];
+    const seen = new Set<string>();
+    const unique: {
+      id: string;
+      name: string;
+      subtitle: string;
+      coverCardId: string;
+      cardIds: string[];
+    }[] = [];
+    for (const d of guestPool) {
+      if (seen.has(d.id)) continue;
+      seen.add(d.id);
+      unique.push({
+        id: d.id,
+        name: d.name,
+        subtitle: d.subtitle,
+        coverCardId: d.coverCardId,
+        cardIds: d.cardIds,
+      });
+    }
+    return unique;
+  }, [isGuest, customDecks]);
 
   const initialSavedSnapshot = useMemo(() => {
     if (onlineMatch) return null;
@@ -432,7 +456,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       'deck_red_inferno'
   );
   const [selectedAiSkillTier, setSelectedAiSkillTier] = useState<AiSkillTier>(
-    () => initialSavedSnapshot?.gameState?.aiSkillTier ?? 3
+    () => initialSavedSnapshot?.gameState?.aiSkillTier ?? initialAiSkillTier ?? 3
   );
   const allAvailableAiDecks = useMemo(() => {
     const trainedMono = getTrainedMonocolorPrebuiltDecks(selectedAiSkillTier);
@@ -1585,6 +1609,28 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setTurnTimeLeft(TURN_TIME_LIMIT_SECONDS);
     playSfx('draw');
   };
+
+  const lastQuickDuelNonceRef = useRef<number | undefined>(quickDuelNonce);
+  useEffect(() => {
+    if (
+      quickDuelNonce === undefined ||
+      quickDuelNonce === lastQuickDuelNonceRef.current ||
+      campaignBoss ||
+      tacticalProblem ||
+      onlineMatch
+    ) {
+      return;
+    }
+    lastQuickDuelNonceRef.current = quickDuelNonce;
+    const nextP = initialPlayerDeckId ?? selectedPlayerDeckId;
+    const nextA = initialAiDeckId ?? selectedAiDeckId;
+    const nextT = initialAiSkillTier ?? selectedAiSkillTier;
+    setSelectedPlayerDeckId(nextP);
+    setSelectedAiDeckId(nextA);
+    setSelectedAiSkillTier(nextT);
+    startNewQuickMatch(nextP, nextA, nextT);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quickDuelNonce]);
 
   // Reset Turn Timer (60s) whenever the turn number, active player, or Mulligan state changes
   useEffect(() => {
@@ -5975,16 +6021,46 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 }}
                                 className="awmt-deck-select"
                               >
-                                <optgroup label="Grimórios Monocolor Co-Evoluídos (IA)">
+                                <optgroup label="Soberanos Tricolores & Pentacromáticos IA (13 Ápices)">
+                                  {allAvailableAiDecks
+                                    .filter((d) => d.id.startsWith('tri_') || d.id.startsWith('penta_'))
+                                    .map((d) => {
+                                      const st = getUnifiedStandingForDeckId(d.id);
+                                      const rankTag = st ? `#${st.rank} [${st.tierBadge}] ` : '';
+                                      return (
+                                        <option key={d.id} value={d.id}>
+                                          {rankTag}{d.name}
+                                        </option>
+                                      );
+                                    })}
+                                </optgroup>
+                                <optgroup label="Campeões Bicolores Co-Evoluídos IA (15 Pactos)">
+                                  {allAvailableAiDecks
+                                    .filter((d) => d.id.startsWith('dual_'))
+                                    .map((d) => {
+                                      const st = getUnifiedStandingForDeckId(d.id);
+                                      const rankTag = st ? `#${st.rank} [${st.tierBadge}] ` : '';
+                                      return (
+                                        <option key={d.id} value={d.id}>
+                                          {rankTag}{d.name}
+                                        </option>
+                                      );
+                                    })}
+                                </optgroup>
+                                <optgroup label="Campeões Monocolores Co-Evoluídos IA (16 Arquétipos)">
                                   {allAvailableAiDecks
                                     .filter((d) => d.id.startsWith('mono_'))
-                                    .map((d) => (
-                                      <option key={d.id} value={d.id}>
-                                        {d.name} ({d.domains[0]?.toUpperCase()})
-                                      </option>
-                                    ))}
+                                    .map((d) => {
+                                      const st = getUnifiedStandingForDeckId(d.id);
+                                      const rankTag = st ? `#${st.rank} [${st.tierBadge}] ` : '';
+                                      return (
+                                        <option key={d.id} value={d.id}>
+                                          {rankTag}{d.name} ({d.domains[0]?.toUpperCase()})
+                                        </option>
+                                      );
+                                    })}
                                 </optgroup>
-                                <optgroup label="Grimórios Clássicos de Vaeloria">
+                                <optgroup label="Grimórios Oficiais de Vaeloria">
                                   {PREBUILT_DECKS.map((d) => (
                                     <option key={d.id} value={d.id}>
                                       {d.name}
@@ -7107,11 +7183,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           initialOpponentDeckId={campaignBoss ? campaignBoss.deckId : selectedAiDeckId}
           isModal={true}
           onClose={() => setShowTacticalAdvisor(false)}
-          onLaunchDuel={(pId, aId) => {
+          onLaunchDuel={(pId, aId, tier) => {
+            const nextTier = tier ?? selectedAiSkillTier;
             setShowTacticalAdvisor(false);
             setSelectedPlayerDeckId(pId);
             setSelectedAiDeckId(aId);
-            startNewQuickMatch(pId, aId);
+            setSelectedAiSkillTier(nextTier);
+            startNewQuickMatch(pId, aId, nextTier);
           }}
         />
       )}

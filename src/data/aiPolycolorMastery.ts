@@ -35,8 +35,12 @@ export const CLASSIC_DECK_ID_TO_POLYCOLOR_ARCHETYPE: Record<string, PolycolorArc
   deck_tri_eternal_horizon: 'tri_blue_green_gold',
   deck_tri_abyssal_chimera: 'tri_blue_purple_green',
   deck_tri_crimson_sun: 'tri_red_purple_gold',
+  deck_tri_zenith_armada: 'tri_red_blue_gold',
+  deck_tri_tempest_primordial: 'tri_red_blue_green',
+  deck_tri_eclipse_bastion: 'tri_purple_green_gold',
   deck_spec_pentachromatic: 'penta_prismatic_crater',
   deck_penta_valkyra_pact: 'penta_free_city_sovereign',
+  deck_penta_wheel_convergence: 'penta_wheel_convergence',
 };
 
 const TRICOLOR_KEY_LOOKUP: Record<string, PolycolorArchetypeId> = (() => {

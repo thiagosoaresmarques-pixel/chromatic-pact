@@ -24,11 +24,12 @@ import {
 export * from './aiUnifiedTournamentData';
 
 const CLASSIC_DECK_FALLBACK_TO_UNIFIED: Record<string, UnifiedChampionId> = {
-  deck_red_inferno: 'mono_red_dragon',
+  deck_red_inferno: 'mono_red_blitz',
   deck_blue_tempest: 'mono_blue_frost',
   deck_purple_abyss: 'mono_purple_crypt',
   deck_green_wild: 'mono_green_colossus',
-  deck_gold_bastion: 'mono_gold_phalanx',
+  deck_gold_bastion: 'mono_gold_celestial',
+  deck_neutral_axial: 'mono_neutral_axial',
   deck_spec_chronomancer: 'dual_blue_gold',
   deck_squad_thousand_shields: 'dual_green_gold',
   deck_squad_siege_battery: 'dual_red_blue',

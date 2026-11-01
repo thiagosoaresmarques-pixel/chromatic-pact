@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CardDefinition, CardType, Domain, PrebuiltDeck } from '../types/game';
+import { AiSkillTier, CardDefinition, CardType, Domain, PrebuiltDeck } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS, CAMPAIGN_BOSSES } from '../data/decks';
 import { DECK_TACTICAL_PROFILES, EMPIRICAL_WIN_RATES, getMatchupGuide } from '../data/tacticalGuide';
@@ -10,6 +10,7 @@ import {
   DeckLearnedAiProfile,
 } from '../data/aiLearnedProfiles';
 import {
+  AI_SKILL_TIER_SPECS,
   BICOLOR_ARCHETYPE_MASTERY,
   getTrainedBicolorPrebuiltDecks,
   getTrainedMonocolorPrebuiltDecks,
@@ -43,7 +44,8 @@ export interface TacticalGuideViewProps {
     | 'combos_compendium';
   isModal?: boolean;
   onClose?: () => void;
-  onLaunchDuel?: (playerDeckId: string, opponentDeckId: string) => void;
+  onLaunchDuel?: (playerDeckId: string, opponentDeckId: string, aiSkillTier?: AiSkillTier) => void;
+  onImportToDeckBuilder?: (templateDeckId: string) => void;
 }
 
 export interface DeckTacticalProfile {
@@ -615,6 +617,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
   isModal = false,
   onClose,
   onLaunchDuel,
+  onImportToDeckBuilder,
 }) => {
   const trainedMonoDecks = useMemo(() => getTrainedMonocolorPrebuiltDecks(5), []);
   const trainedBiDecks = useMemo(() => getTrainedBicolorPrebuiltDecks(5), []);
@@ -666,10 +669,20 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
   const [domainFilter, setDomainFilter] = useState<Domain | 'all'>('all');
   const [unifiedFormatFilter, setUnifiedFormatFilter] = useState<UnifiedFormatKind | 'all'>('all');
   const [unifiedTierFilter, setUnifiedTierFilter] = useState<'all' | 'S' | 'A' | 'B'>('all');
+  const [challengeAiTier, setChallengeAiTier] = useState<AiSkillTier>(5);
   const [comboTierFilter, setComboTierFilter] = useState<ComboColorTier | 'all'>('all');
   const [comboSearchQuery, setComboSearchQuery] = useState<string>('');
   const [onlyInDeckCombos, setOnlyInDeckCombos] = useState<boolean>(false);
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
+
+  const customDeckIdSet = useMemo(() => new Set(customDecks.map((cd) => cd.id)), [customDecks]);
+  const resolvePlayerDeckForChallenge = (preferredId: string): string => {
+    if (customDecks.length > 0) {
+      if (customDeckIdSet.has(preferredId)) return preferredId;
+      return customDecks[0].id;
+    }
+    return preferredId;
+  };
 
   const comboTierCounts = useMemo(() => {
     const counts: Record<ComboColorTier, number> = { mono: 0, dual: 0, tri: 0, poly: 0 };
@@ -969,12 +982,41 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
             <div className="tg-selector-body">
               {(() => {
                 const st = getUnifiedStandingForDeckId(playerProfile.deck.id);
-                if (!st) return null;
+                const canImportPlayerDeck =
+                  Boolean(onImportToDeckBuilder) && !customDeckIdSet.has(playerProfile.deck.id);
+                if (!st && !canImportPlayerDeck) return null;
                 return (
-                  <div className="tg-selector-kicker-row" style={{ marginBottom: '2px' }}>
-                    <span className="tg-selector-kicker" style={{ color: '#e5c97b' }}>
-                      #{st.rank}/44 • Tier {st.tierBadge} ({(st.overallWinRate * 100).toFixed(1)}% Global)
-                    </span>
+                  <div
+                    className="tg-selector-kicker-row"
+                    style={{
+                      marginBottom: '3px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '6px',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    {st ? (
+                      <span className="tg-selector-kicker" style={{ color: '#e5c97b' }}>
+                        #{st.rank}/44 • Tier {st.tierBadge} ({(st.overallWinRate * 100).toFixed(1)}% Global)
+                      </span>
+                    ) : (
+                      <span className="tg-selector-kicker" style={{ color: '#94a3b8' }}>
+                        Grimório Selecionado
+                      </span>
+                    )}
+                    {canImportPlayerDeck && (
+                      <button
+                        type="button"
+                        className="btn-fantasy"
+                        style={{ padding: '1px 7px', fontSize: '0.65rem' }}
+                        title="Abrir este Grimório na Forja de Grimórios (100 cartas)"
+                        onClick={() => onImportToDeckBuilder?.(playerProfile.deck.id)}
+                      >
+                        ⚒️ Abrir na Forja
+                      </button>
+                    )}
                   </div>
                 );
               })()}
@@ -1038,13 +1080,30 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               ⇄ {activeMatchup.favorabilityScore}% vs {100 - activeMatchup.favorabilityScore}%
             </button>
             {onLaunchDuel && (
-              <button
-                type="button"
-                className="btn-fantasy btn-fantasy-primary"
-                onClick={() => onLaunchDuel(selectedPlayerDeckId, selectedOpponentDeckId)}
-              >
-                Testar na Arena
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <select
+                  className="aaa-select"
+                  style={{ padding: '4px 6px', fontSize: '0.68rem', minWidth: '86px' }}
+                  value={challengeAiTier}
+                  title={AI_SKILL_TIER_SPECS[challengeAiTier].description}
+                  onChange={(e) => setChallengeAiTier(Number(e.target.value) as AiSkillTier)}
+                >
+                  {([1, 2, 3, 4, 5] as AiSkillTier[]).map((t) => (
+                    <option key={t} value={t}>
+                      IA {AI_SKILL_TIER_SPECS[t].shortLabel}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="btn-fantasy btn-fantasy-primary"
+                  onClick={() =>
+                    onLaunchDuel(selectedPlayerDeckId, selectedOpponentDeckId, challengeAiTier)
+                  }
+                >
+                  ⚔️ Desafiar (T{AI_SKILL_TIER_SPECS[challengeAiTier].roman})
+                </button>
+              </div>
             )}
           </div>
 
@@ -1786,18 +1845,38 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                       {analysis.priorityTargets[0]?.card.name ?? 'Campeão Rival'}
                     </td>
                     <td>
-                      <button
-                        type="button"
-                        className="btn-fantasy"
-                        style={{ padding: '0.25rem 0.6rem', fontSize: '0.68rem' }}
-                        onClick={(ev) => {
-                          ev.stopPropagation();
-                          setSelectedOpponentDeckId(deck.id);
-                          setViewSection('matchup_duel');
-                        }}
-                      >
-                        Ver Tática →
-                      </button>
+                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                        {onLaunchDuel && (
+                          <button
+                            type="button"
+                            className="btn-fantasy btn-fantasy-primary"
+                            style={{ padding: '0.25rem 0.55rem', fontSize: '0.68rem' }}
+                            title={`Enfrentar ${deck.name} na Arena (${AI_SKILL_TIER_SPECS[challengeAiTier].shortLabel})`}
+                            onClick={(ev) => {
+                              ev.stopPropagation();
+                              onLaunchDuel(
+                                resolvePlayerDeckForChallenge(selectedPlayerDeckId),
+                                deck.id,
+                                challengeAiTier
+                              );
+                            }}
+                          >
+                            ⚔️ T{AI_SKILL_TIER_SPECS[challengeAiTier].roman}
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="btn-fantasy"
+                          style={{ padding: '0.25rem 0.55rem', fontSize: '0.68rem' }}
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            setSelectedOpponentDeckId(deck.id);
+                            setViewSection('matchup_duel');
+                          }}
+                        >
+                          Ver Tática →
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -1925,6 +2004,31 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                   </button>
                 ))}
               </div>
+
+              {(onLaunchDuel || onImportToDeckBuilder) && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                  {onLaunchDuel && (
+                    <>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#e5c97b' }}>
+                        ⚔️ Grau ao Desafiar:
+                      </span>
+                      <select
+                        className="aaa-select"
+                        style={{ padding: '3px 7px', fontSize: '0.71rem' }}
+                        value={challengeAiTier}
+                        title={AI_SKILL_TIER_SPECS[challengeAiTier].description}
+                        onChange={(e) => setChallengeAiTier(Number(e.target.value) as AiSkillTier)}
+                      >
+                        {([1, 2, 3, 4, 5] as AiSkillTier[]).map((t) => (
+                          <option key={t} value={t}>
+                            {AI_SKILL_TIER_SPECS[t].shortLabel} — {AI_SKILL_TIER_SPECS[t].title}
+                          </option>
+                        ))}
+                      </select>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="tg-matrix-table-wrap">
@@ -2018,19 +2122,54 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                             : '—'}
                         </td>
                         <td>
-                          <button
-                            type="button"
-                            className="btn-fantasy"
-                            style={{ padding: '0.25rem 0.6rem', fontSize: '0.68rem' }}
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              setSelectedPlayerDeckId(st.archetypeId);
-                              if (worst) setSelectedOpponentDeckId(worst.opponentId);
-                              setViewSection('matchup_duel');
-                            }}
-                          >
-                            Ver 1×1 →
-                          </button>
+                          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', whiteSpace: 'nowrap' }}>
+                            {onLaunchDuel && (
+                              <button
+                                type="button"
+                                className="btn-fantasy btn-fantasy-primary"
+                                style={{ padding: '0.24rem 0.52rem', fontSize: '0.67rem' }}
+                                title={`Desafiar ${st.name} na Arena (${AI_SKILL_TIER_SPECS[challengeAiTier].shortLabel})`}
+                                onClick={(ev) => {
+                                  ev.stopPropagation();
+                                  onLaunchDuel(
+                                    resolvePlayerDeckForChallenge(selectedPlayerDeckId),
+                                    st.archetypeId,
+                                    challengeAiTier
+                                  );
+                                }}
+                              >
+                                ⚔️ Desafiar (T{AI_SKILL_TIER_SPECS[challengeAiTier].roman})
+                              </button>
+                            )}
+                            {onImportToDeckBuilder && (
+                              <button
+                                type="button"
+                                className="btn-fantasy"
+                                style={{ padding: '0.24rem 0.52rem', fontSize: '0.67rem' }}
+                                title={`Importar ${st.name} (100 cartas) para a Forja de Grimórios`}
+                                onClick={(ev) => {
+                                  ev.stopPropagation();
+                                  onImportToDeckBuilder(st.archetypeId);
+                                }}
+                              >
+                                ⚒️ Forja
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              className="btn-fantasy"
+                              style={{ padding: '0.24rem 0.52rem', fontSize: '0.67rem' }}
+                              title="Analisar Matchup 1×1, Counters e Guia Tático"
+                              onClick={(ev) => {
+                                ev.stopPropagation();
+                                setSelectedPlayerDeckId(st.archetypeId);
+                                if (worst) setSelectedOpponentDeckId(worst.opponentId);
+                                setViewSection('matchup_duel');
+                              }}
+                            >
+                              1×1 →
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

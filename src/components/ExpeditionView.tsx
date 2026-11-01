@@ -645,7 +645,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
         lootPending: false,
       };
     });
-    setToastMsg(`✨ [${lootCard.name}] foi adicionada ao seu Grimório da Expedição!`);
+    setToastMsg(`[${lootCard.name}] adicionada ao seu Grimório da Expedição.`);
     setTimeout(() => setToastMsg(null), 3200);
   };
 
@@ -935,10 +935,10 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
               }}
             >
               <h3 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.2rem', margin: '0 0 0.35rem' }}>
-                ☸ Expedição Concluída! O Vazio Curvou-se ao Seu Grimório!
+                Expedição Concluída — O Vazio Curvou-se ao Seu Grimório
               </h3>
               <p style={{ fontSize: '0.82rem', color: '#e2e8f0', margin: '0 0 0.75rem' }}>
-                Você superou as {TOTAL_EXPEDITION_STAGES} etapas da Expedição — incluindo as Armadas do Prisma, Valkyra e Vaelkor! Salve seu grimório ou inicie uma nova jornada com outra Bênção.
+                Você superou as {TOTAL_EXPEDITION_STAGES} etapas da Expedição — incluindo as Armadas do Prisma, Valkyra e Vaelkor. Salve seu grimório ou inicie uma nova jornada com outra Bênção.
               </p>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
                 <button
@@ -946,7 +946,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                   className="aaa-btn aaa-btn-primary"
                   onClick={handleSaveExpeditionDeckToGrimoire}
                 >
-                  ★ Salvar Grimório Campeão
+                  Salvar Grimório Campeão
                 </button>
                 <button
                   type="button"
@@ -1054,7 +1054,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                       <div className="aaa-boss-row-info">
                         <div className="aaa-boss-row-top">
                           <span className="aaa-boss-stage-num">
-                            ETAPA {stageBoss.stage}/{TOTAL_EXPEDITION_STAGES} • 🧠 T
+                            Etapa {stageBoss.stage}/{TOTAL_EXPEDITION_STAGES} · Grau{' '}
                             {AI_SKILL_TIER_SPECS[(stageBoss.difficultyTier ?? 3) as AiSkillTier].roman}
                           </span>
                           {isCleared && <span className="aaa-boss-cleared-tag">✓</span>}
@@ -1066,7 +1066,7 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                             const st = getUnifiedStandingForDeckId(
                               stageBoss.archetypeId ?? stageBoss.deckId
                             );
-                            return st ? ` • 🏆 #${st.rank}/44 [${st.tierBadge}]` : '';
+                            return st ? ` · #${st.rank} no Ranking` : '';
                           })()}
                         </div>
                       </div>
@@ -1168,10 +1168,10 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                       }}
                       title={tSpec.description}
                     >
-                      <span>{tSpec.shortLabel} · {tSpec.title}</span>
+                      <span>Grau {tSpec.roman} · {tSpec.title}</span>
                       {currentBoss.archetypeTitle && (
                         <>
-                          <span>•</span>
+                          <span>·</span>
                           <strong style={{ color: '#fde68a' }}>
                             {currentBoss.archetypeTitle}
                           </strong>
@@ -1179,9 +1179,9 @@ export const ExpeditionView: React.FC<ExpeditionViewProps> = ({
                       )}
                       {standing && (
                         <>
-                          <span>•</span>
-                          <span style={{ color: '#93c5fd', fontWeight: 700 }}>
-                            🏆 #{standing.rank}/44 [Tier {standing.tierBadge}]
+                          <span>·</span>
+                          <span style={{ color: '#94a3b8', fontWeight: 600 }}>
+                            #{standing.rank} no Ranking
                           </span>
                         </>
                       )}

@@ -565,20 +565,20 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   <span className="aaa-metric-val">{activeBoss.startingHp} PV</span>
                 </div>
                 <div className="aaa-metric-box">
-                  <span className="aaa-metric-lbl">ESPÓLIO</span>
+                  <span className="aaa-metric-lbl">Espólio</span>
                   <span className="aaa-metric-val gold-text">
                     +{activeBoss.rewardGold} Ouro
-                    {activeBoss.rewardShards ? ` • +${activeBoss.rewardShards} Est.` : ''}
+                    {activeBoss.rewardShards ? ` · +${activeBoss.rewardShards} Est.` : ''}
                   </span>
                 </div>
                 <div className="aaa-metric-box">
-                  <span className="aaa-metric-lbl">ESTRADA</span>
+                  <span className="aaa-metric-lbl">Acesso</span>
                   <span className="aaa-metric-val">
                     {isActiveDefeated
-                      ? '✓ VENCIDO'
+                      ? '✓ Vencido'
                       : isActiveAccessible
-                        ? 'ACESSÍVEL'
-                        : '🔒 BLOQUEADO'}
+                        ? 'Acessível'
+                        : 'Bloqueado'}
                   </span>
                 </div>
               </div>
@@ -586,7 +586,9 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
               {activeBoss.rewardCardIds && activeBoss.rewardCardIds.length > 0 && (
                 <div className="aaa-dossier-passive-panel">
                   <div className="aaa-passive-kicker">
-                    CARTA(S) LIBERADA(S) AO VENCER
+                    {isActiveDefeated
+                      ? 'Espólio da 1ª vitória · ✓ Integrado à sua coleção'
+                      : 'Espólio da 1ª vitória · +1 cópia na sua coleção'}
                   </div>
                   <div className="aaa-dossier-reward-cards-row">
                     {activeBoss.rewardCardIds.map((cid) => {
@@ -598,10 +600,30 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                           type="button"
                           className="aaa-reward-card-chip"
                           onClick={() => setInspectCard(rc)}
-                          title="Clique para inspecionar a carta"
+                          title="Clique para inspecionar a carta completa"
                         >
-                          <span>
-                            {rc.rarity === 'legendary' ? '♛' : '◈'} {rc.name}
+                          <span
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              width: '100%',
+                              gap: '8px',
+                            }}
+                          >
+                            <span>
+                              {rc.rarity === 'legendary' ? '♛' : '◈'} {rc.name}
+                            </span>
+                            <small
+                              style={{
+                                fontSize: '0.66rem',
+                                color: isActiveDefeated ? '#6ee7b7' : '#cbd5e1',
+                                fontWeight: 600,
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {isActiveDefeated ? '✓ Obtida' : '+1 cópia'}
+                            </small>
                           </span>
                         </button>
                       );
@@ -612,7 +634,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
               <div className="aaa-dossier-passive-panel">
                 <div className="aaa-passive-kicker">
-                  PASSIVA • {activeBoss.passiveName.toUpperCase()}
+                  Passiva · {activeBoss.passiveName}
                 </div>
                 <p className="aaa-passive-desc">{activeBoss.passiveDescription}</p>
               </div>
@@ -625,7 +647,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
                   onClick={() => handleClickStartBoss(activeBoss)}
                 >
                   {!isActiveAccessible
-                    ? '🔒 Bloqueado pela Estrada Anterior'
+                    ? 'Bloqueado pela etapa anterior'
                     : isActiveDefeated
                       ? 'Reenfrentar Soberano'
                       : 'Desafiar Soberano'}

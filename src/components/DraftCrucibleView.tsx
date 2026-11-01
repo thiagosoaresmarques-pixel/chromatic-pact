@@ -126,7 +126,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
         return;
       }
       if (gold < DRAFT_ENTRY_GOLD_COST) {
-        showToast(`⚠️ Ouro insuficiente (${gold}/${DRAFT_ENTRY_GOLD_COST} Ouro).`);
+        showToast(`Ouro insuficiente (${gold}/${DRAFT_ENTRY_GOLD_COST} Ouro).`);
         return;
       }
       onSpendEntryGold(DRAFT_ENTRY_GOLD_COST);
@@ -212,8 +212,8 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
     setRunState(createIdleDraftState());
     showToast(
       isGuest
-        ? '🏆 Provação concluída! Crie sua conta gratuita para acumular Ouro e Cartas no seu acervo.'
-        : `🏆 Recompensas do Crisol resgatadas (+${runState.pendingReward.gold} Ouro + ${runState.pendingReward.bonusCardIds.length} Cartas)!`
+        ? 'Provação concluída. Crie sua conta gratuita para acumular Ouro e Cartas no seu acervo.'
+        : `Recompensas do Crisol resgatadas (+${runState.pendingReward.gold} Ouro + ${runState.pendingReward.bonusCardIds.length} Cartas).`
     );
   };
 
@@ -285,10 +285,10 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
                 className="font-cinzel gold-gradient-text"
                 style={{ margin: '4px 0 6px', fontSize: '1.45rem' }}
               >
-                ⚖️ Crisol dos Cinco Selos (Modo Draft)
+                Crisol dos Cinco Selos
               </h2>
               <p style={{ margin: 0, fontSize: '0.84rem', color: '#cbd5e1', maxWidth: 740, lineHeight: 1.5 }}>
-                Entre de mãos vazias na forja planar: escolha <strong>1 Soberano Lendário entre 3</strong> e forje um Grimório tático inédito de <strong>40 cartas</strong> ao longo de <strong>20 escolhas de pares sinérgicos</strong>. Em seguida, enfrente desafiantes crescentes até conquistar <strong>7 Vitórias</strong> (ou sofrer 3 derrotas)!
+                Entre de mãos vazias na forja planar: escolha <strong>1 Soberano Lendário entre 3</strong> e forje um Grimório tático inédito de <strong>40 cartas</strong> ao longo de <strong>20 escolhas de pares sinérgicos</strong>. Em seguida, enfrente desafiantes crescentes até conquistar <strong>7 Vitórias</strong> (ou sofrer 3 derrotas).
               </p>
             </div>
 
@@ -316,7 +316,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
               <span>185 Ouro + 3 Cartas (1 Lenda)</span>
             </div>
             <div className="draft-tier-box is-grand">
-              <strong>🏆 7 Vitórias</strong>
+              <strong>7 Vitórias</strong>
               <span>260 Ouro + 4 Cartas (1 Lenda)</span>
             </div>
           </div>
@@ -329,8 +329,8 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
               onClick={handleEnterCrucible}
             >
               {isFreePassAvailable
-                ? '🎟️ Entrar no Crisol (1º Passe 100% Grátis!)'
-                : `⚖️ Forjar Nova Entrada (${DRAFT_ENTRY_GOLD_COST} Ouro)`}
+                ? 'Entrar no Crisol (1º Passe Grátis)'
+                : `Forjar Nova Entrada (${DRAFT_ENTRY_GOLD_COST} Ouro)`}
             </button>
             <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
               {isGuest
@@ -383,7 +383,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
                       style={{ width: '100%' }}
                       onClick={() => handleChooseSovereign(cid)}
                     >
-                      👑 Jurar Pacto a {card.name.split(',')[0]}
+                      Jurar Pacto a {card.name.split(',')[0]}
                     </button>
                   </div>
                 </div>
@@ -428,7 +428,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
                 className="aaa-btn aaa-btn-secondary"
                 onClick={() => setShowDeckDrawer((v) => !v)}
               >
-                📖 Ver Deck ({runState.draftedCardIds.length}/40)
+                Ver Grimório ({runState.draftedCardIds.length}/40)
               </button>
             </div>
           </div>
@@ -513,7 +513,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
                     }}
                     title={`Avaliação no Crisol: Grau ${p.tier} · Afinidade ${p.score.toFixed(1)}`}
                   >
-                    <span>🔮 Pick {p.tier}</span>
+                    <span>Grau {p.tier}</span>
                     <span style={{ opacity: 0.8 }}>({Math.round(p.score)})</span>
                   </div>
                 );
@@ -579,7 +579,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
                 ARENA DO CRISOL • DECK FORJADO (40 CARTAS)
               </span>
               <h3 className="font-cinzel gold-gradient-text" style={{ margin: '2px 0 0', fontSize: '1.25rem' }}>
-                ⚖️ Provação dos Sete Selos — {runState.wins}V / {runState.losses}D
+                Provação dos Sete Selos — {runState.wins}V / {runState.losses}D
               </h3>
             </div>
 
@@ -593,7 +593,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
                 className="aaa-btn aaa-btn-secondary"
                 onClick={() => setShowDeckDrawer((v) => !v)}
               >
-                📖 Deck ({runState.draftedCardIds.length})
+                Grimório ({runState.draftedCardIds.length})
               </button>
             </div>
           </div>
@@ -699,28 +699,19 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
                   <span
                     style={{
                       padding: '2px 7px',
-                      borderRadius: '999px',
+                      borderRadius: '6px',
                       background: 'rgba(15, 23, 42, 0.85)',
-                      border: '1px solid rgba(212, 175, 55, 0.45)',
+                      border: '1px solid rgba(212, 175, 55, 0.35)',
                       color: '#fde68a',
                       fontWeight: 700,
                     }}
                     title={nextTierSpec.description}
                   >
-                    🧠 {nextTierSpec.shortLabel} ({nextTierSpec.title})
+                    Grau {nextTierSpec.roman} ({nextTierSpec.title})
                   </span>
                   {nextStanding && (
-                    <span
-                      style={{
-                        padding: '2px 7px',
-                        borderRadius: '999px',
-                        background: 'rgba(30, 58, 138, 0.45)',
-                        border: '1px solid rgba(96, 165, 250, 0.45)',
-                        color: '#bfdbfe',
-                        fontWeight: 700,
-                      }}
-                    >
-                      🏆 #{nextStanding.rank}/44 [{nextStanding.tierBadge}] {nextStanding.name}
+                    <span style={{ color: '#94a3b8', fontWeight: 600 }}>
+                      · #{nextStanding.rank} no Ranking · {nextStanding.name}
                     </span>
                   )}
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
@@ -754,15 +745,15 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
               style={{ padding: '10px 24px', fontSize: '0.9rem' }}
               onClick={handleLaunchGauntletMatch}
             >
-              ⚔️ Iniciar {runState.wins + 1}ª Batalha do Crisol
+              Iniciar {runState.wins + 1}ª Batalha do Crisol
             </button>
             <button
               type="button"
               className="aaa-btn aaa-btn-secondary"
               onClick={() => setShowMatchupModal(true)}
-              title="Abrir dossiê tático do Oráculo de Guerra contra este Campeão"
+              title="Abrir dossiê tático do Oráculo de Guerra contra este Soberano"
             >
-              📊 Matchup
+              Matchup
             </button>
             <button
               type="button"
@@ -770,7 +761,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
               onClick={handleRetireRun}
               title="Encerrar jornada atual e resgatar recompensas proporcionais às suas vitórias"
             >
-              Encerrar & Resgatar ({runState.wins}V)
+              Encerrar e Resgatar ({runState.wins}V)
             </button>
           </div>
         </div>
@@ -815,7 +806,7 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
               style={{ padding: '10px 24px', fontSize: '0.9rem' }}
               onClick={handleClaimChest}
             >
-              🎁 Resgatar Espólios do Crisol
+              Resgatar Espólios do Crisol
             </button>
           </div>
         </div>

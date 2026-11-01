@@ -146,7 +146,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                         const rec = w + l > 0 ? ` (${w}V/${l}D)` : '';
                         return (
                           <option key={cd.id} value={cd.id}>
-                            ★ {cd.name}
+                            {cd.name}
                             {rec}
                           </option>
                         );
@@ -171,10 +171,10 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                   setTierSelection(val === 'auto' ? 'auto' : (Number(val) as 3 | 4 | 5));
                 }}
               >
-                <option value="auto">Automático por Progressão (T3 → T5)</option>
-                <option value="3">Tier III • Veterano (+15 Ouro)</option>
-                <option value="4">Tier IV • Mestre (+20 Ouro)</option>
-                <option value="5">Tier V • Grão-Mestre (+25 Ouro)</option>
+                <option value="auto">Automático por Progressão (Grau III → V)</option>
+                <option value="3">Grau III · Veterano (+15 Ouro)</option>
+                <option value="4">Grau IV · Mestre (+20 Ouro)</option>
+                <option value="5">Grau V · Grão-Mestre (+25 Ouro)</option>
               </select>
             </div>
 
@@ -277,7 +277,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                 <div className="rift-title-wrap">
                   <div className="rift-kicker-row">
                     <span className="rift-kicker">{rift.kicker}</span>
-                    {isWeekly && <span className="rift-featured-pill">★ SEMANAL</span>}
+                    {isWeekly && <span className="rift-featured-pill">Semanal</span>}
                   </div>
                   <h3 className="font-cinzel rift-card-title">{rift.name}</h3>
                 </div>
@@ -300,7 +300,7 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                 )}
                 <div className="rift-challenger-copy">
                   <span className="rift-challenger-label">
-                    GUARDIÃO ({rift.challengerHp + hpScale} PV • +{tierGold} OURO)
+                    Guardião · {rift.challengerHp + hpScale} PV · +{tierGold} Ouro
                   </span>
                   <strong>{rift.challengerName}</strong>
                   <small>{rift.challengerTitle}</small>
@@ -309,30 +309,18 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
                       display: 'flex',
                       flexWrap: 'wrap',
                       alignItems: 'center',
-                      gap: '5px',
+                      gap: '6px',
                       marginTop: '4px',
                       fontSize: '0.68rem',
+                      color: '#94a3b8',
                     }}
                     title={tSpec.description}
                   >
-                    <span
-                      style={{
-                        padding: '1px 6px',
-                        borderRadius: 4,
-                        background: 'rgba(15, 23, 42, 0.85)',
-                        border: '1px solid rgba(212, 175, 55, 0.45)',
-                        color: '#fde68a',
-                        fontWeight: 700,
-                      }}
-                    >
-                      🧠 {tSpec.shortLabel}
+                    <span style={{ color: '#e2e8f0', fontWeight: 600 }}>
+                      Grau {tSpec.roman} ({tSpec.title})
                     </span>
-                    <span style={{ color: '#e2e8f0', fontWeight: 600 }}>{champTitle}</span>
-                    {standing && (
-                      <span style={{ color: '#93c5fd', fontWeight: 700 }}>
-                        • #{standing.rank}/44 [Tier {standing.tierBadge}]
-                      </span>
-                    )}
+                    <span>· {champTitle}</span>
+                    {standing && <span>· #{standing.rank} no Ranking</span>}
                     <span style={{ display: 'inline-flex', gap: 3 }}>
                       {rift.domains.map((domKey) => (
                         <i

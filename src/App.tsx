@@ -19,23 +19,12 @@ import type { CustomSavedDeck } from './components/BattleArena';
 import type { ConquestBattleOutcome } from './components/ConquestView';
 import type { ConquestFactionId } from './data/vaeloriaConquestData';
 import type { AccountModalTab } from './components/MultiplayerView';
-import { TACTICAL_PROBLEMS, type TacticalProblem } from './data/problems';
+import type { TacticalProblem } from './data/problems';
 import {
   NAVIGATE_TO_POEM_EVENT,
   NavigateToPoemDetail,
 } from './data/epicPoemEvents';
-import { buildGeographicBattleModifiers } from './data/vaeloriaMultimapData';
-import { consumePendingOverworldBuff } from './data/vaeloriaOverworldEvents';
-import { applyEquippedRelicToModifiers } from './data/sovereignRelics';
 import type { DraftBattleOutcome, DraftRewardSummary } from './data/vaeloriaDraftData';
-import {
-  buildRiftBattleEncounter,
-  FRACTURE_RIFTS_BY_ID,
-  recordRiftVictory,
-  STANDARD_RIFT_WIN_GOLD,
-  WEEKLY_RIFT_GOLD_BONUS,
-  WEEKLY_RIFT_SHARDS_BONUS,
-} from './data/fractureRiftsData';
 import {
   craftSingleCardCopy,
   resolvePackDuplicatesWithShards,
@@ -968,7 +957,7 @@ export const App: React.FC = () => {
     }
   }, [activeTab]);
 
-  const handleStartBossBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
+  const handleStartBossBattle = async (boss: CampaignBoss, playerDeckIds: string[]) => {
     trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: false });
     import('./data/vaeloriaGrandCampaign').then((m) =>
       m.saveCampaignReturnFromBossDuel(boss.id, { didWin: false, forceExpanded: true })
@@ -978,6 +967,12 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    const [{ consumePendingOverworldBuff }, { buildGeographicBattleModifiers }, { applyEquippedRelicToModifiers }] =
+      await Promise.all([
+        import('./data/vaeloriaOverworldEvents'),
+        import('./data/vaeloriaMultimapData'),
+        import('./data/sovereignRelics'),
+      ]);
     const owBuff = consumePendingOverworldBuff('campaign');
     const geoMods = applyEquippedRelicToModifiers(
       buildGeographicBattleModifiers({
@@ -1050,7 +1045,7 @@ export const App: React.FC = () => {
     await handleStartRankedSovereignDuel(matched, playerDeckIds, playerDeckId);
   };
 
-  const handleStartExpeditionBattle = (
+  const handleStartExpeditionBattle = async (
     boss: CampaignBoss,
     playerDeckIds: string[],
     blessingId?: string | null
@@ -1061,6 +1056,12 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    const [{ consumePendingOverworldBuff }, { buildGeographicBattleModifiers }, { applyEquippedRelicToModifiers }] =
+      await Promise.all([
+        import('./data/vaeloriaOverworldEvents'),
+        import('./data/vaeloriaMultimapData'),
+        import('./data/sovereignRelics'),
+      ]);
     const owBuff = consumePendingOverworldBuff('expedition');
     const geoMods = applyEquippedRelicToModifiers(
       buildGeographicBattleModifiers({
@@ -1084,7 +1085,7 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
-  const handleStartConquestBattle = (params: {
+  const handleStartConquestBattle = async (params: {
     boss: CampaignBoss;
     playerDeckCardIds: string[];
     modifiers: ConquestBattleModifiers;
@@ -1098,6 +1099,7 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    const { applyEquippedRelicToModifiers } = await import('./data/sovereignRelics');
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setActiveRankedSovereign(null);
@@ -1117,7 +1119,7 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
-  const handleStartDraftBattle = (
+  const handleStartDraftBattle = async (
     boss: CampaignBoss,
     draftedDeckIds: string[],
     modifiers: ConquestBattleModifiers | null
@@ -1128,6 +1130,7 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    const { applyEquippedRelicToModifiers } = await import('./data/sovereignRelics');
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setActiveRankedSovereign(null);
@@ -1142,7 +1145,7 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
-  const handleStartRiftBattle = (
+  const handleStartRiftBattle = async (
     riftId: RiftMutatorId,
     playerDeckCardIds: string[],
     aiSkillTier?: AiSkillTier
@@ -1153,6 +1156,10 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    const [{ buildRiftBattleEncounter }, { applyEquippedRelicToModifiers }] = await Promise.all([
+      import('./data/fractureRiftsData'),
+      import('./data/sovereignRelics'),
+    ]);
     const { boss, modifiers } = buildRiftBattleEncounter(riftId, aiSkillTier);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
@@ -1195,29 +1202,32 @@ export const App: React.FC = () => {
     }
 
     if (activeRiftId) {
-      const { awardedWeeklyBonus } = recordRiftVictory(activeRiftId);
-      const riftDef = FRACTURE_RIFTS_BY_ID[activeRiftId];
-      const baseRiftGold = boss.rewardGold ?? STANDARD_RIFT_WIN_GOLD;
-      const goldEarned =
-        baseRiftGold + (awardedWeeklyBonus ? WEEKLY_RIFT_GOLD_BONUS : 0);
-      const shardsEarned = awardedWeeklyBonus ? WEEKLY_RIFT_SHARDS_BONUS : 0;
+      const capturedRiftId = activeRiftId;
+      import('./data/fractureRiftsData').then((riftMod) => {
+        const { awardedWeeklyBonus } = riftMod.recordRiftVictory(capturedRiftId);
+        const riftDef = riftMod.FRACTURE_RIFTS_BY_ID[capturedRiftId];
+        const baseRiftGold = boss.rewardGold ?? riftMod.STANDARD_RIFT_WIN_GOLD;
+        const goldEarned =
+          baseRiftGold + (awardedWeeklyBonus ? riftMod.WEEKLY_RIFT_GOLD_BONUS : 0);
+        const shardsEarned = awardedWeeklyBonus ? riftMod.WEEKLY_RIFT_SHARDS_BONUS : 0;
 
-      if (!isGuest) {
-        updateCurrentUserProgression((prev) => ({
-          gold: (prev.gold ?? 0) + goldEarned,
-          astralShards: (prev.astralShards ?? 0) + shardsEarned,
-          arenaWins: (prev.arenaWins ?? 0) + 1,
-        }));
-        pushNotification({
-          kicker: 'FENDA DA FRATURA EXPURGADA',
-          title: `${riftDef ? `${riftDef.icon} ${riftDef.name}` : boss.name} Subjugada!`,
-          message: awardedWeeklyBonus
-            ? `Bônus Semanal conquistado: +${goldEarned} Ouro e +${shardsEarned} 💎 Estilhaços Astrais!`
-            : `Vitória em Fenda: +${goldEarned} Ouro creditados ao seu tesouro.`,
-          actionLabel: shardsEarned > 0 ? 'Forjar Cartas' : 'Abrir Relicário',
-          actionTarget: shardsEarned > 0 ? 'deckbuilder' : 'packs',
-        });
-      }
+        if (!isGuest) {
+          updateCurrentUserProgression((prev) => ({
+            gold: (prev.gold ?? 0) + goldEarned,
+            astralShards: (prev.astralShards ?? 0) + shardsEarned,
+            arenaWins: (prev.arenaWins ?? 0) + 1,
+          }));
+          pushNotification({
+            kicker: 'Fenda da Fratura',
+            title: `${riftDef ? riftDef.name : boss.name} Subjugada`,
+            message: awardedWeeklyBonus
+              ? `Bônus Semanal conquistado: +${goldEarned} Ouro e +${shardsEarned} Estilhaços Astrais.`
+              : `Vitória em Fenda: +${goldEarned} Ouro creditados ao seu tesouro.`,
+            actionLabel: shardsEarned > 0 ? 'Forjar Cartas' : 'Abrir Relicário',
+            actionTarget: shardsEarned > 0 ? 'deckbuilder' : 'packs',
+          });
+        }
+      });
       return;
     }
 
@@ -2174,11 +2184,14 @@ export const App: React.FC = () => {
                       type="button"
                       className="nav-notif-mini-btn"
                       onClick={() => {
-                        const prob =
-                          TACTICAL_PROBLEMS.find((p) => p.id === dailyPopoverState.dailyProblemId) ??
-                          TACTICAL_PROBLEMS[0];
                         setIsNotifOpen(false);
-                        handleStartProblem(prob);
+                        import('./data/problems').then(({ TACTICAL_PROBLEMS }) => {
+                          const prob =
+                            TACTICAL_PROBLEMS.find(
+                              (p) => p.id === dailyPopoverState.dailyProblemId
+                            ) ?? TACTICAL_PROBLEMS[0];
+                          if (prob) handleStartProblem(prob);
+                        });
                       }}
                     >
                       Problema do Dia{' '}

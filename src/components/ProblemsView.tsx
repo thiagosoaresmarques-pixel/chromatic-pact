@@ -156,7 +156,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                       : undefined,
                 }}
               >
-                <span>{tp.isCompleted ? '✓' : tp.unlocked ? '•' : '🔒'}</span>
+                <span>{tp.isCompleted ? '✓' : tp.unlocked ? '·' : '—'}</span>
                 <span>{tp.meta.label.split('•')[0].trim()}</span>
                 <span style={{ fontSize: '0.65rem', color: '#94a3b8' }}>
                   ({tp.solvedCount}/{tp.total})
@@ -193,7 +193,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
             onClick={() => setIsDailyPanelMinimized((prev) => !prev)}
           >
             Diárias ({completedQuestsCount}/3)
-            {unclaimedCompletedCount > 0 ? ` • +${unclaimedCompletedCount}` : ''}
+            {unclaimedCompletedCount > 0 ? ` · +${unclaimedCompletedCount}` : ''}
           </button>
 
           {nextTrailProblem && (
@@ -203,7 +203,7 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
               style={{ padding: '4px 10px', fontSize: '0.72rem' }}
               onClick={() => onSelectProblem(nextTrailProblem)}
             >
-              ⚔️ Continuar #{String(nextTrailProblem.number).padStart(2, '0')}
+              Continuar #{String(nextTrailProblem.number).padStart(2, '0')}
             </button>
           )}
         </div>
@@ -339,25 +339,25 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
         >
           <div>
             <strong className="font-cinzel" style={{ color: '#fde047', marginRight: 6 }}>
-              🏆 PROBLEMAS DOS GRÃO-SOBERANOS (#111–#116):
+              Problemas dos Grão-Soberanos (#111–#116):
             </strong>
             <span>
               Quebra-cabeças letais em 1 turno inspirados nas sequências de combate dos
-              Grão-Soberanos de Vaeloria. Desbloqueados desde o início!
+              Grão-Soberanos de Vaeloria. Desbloqueados desde o início.
             </span>
           </div>
           <span
             style={{
               padding: '3px 9px',
               borderRadius: 999,
-              background: 'rgba(234, 179, 8, 0.18)',
-              border: '1px solid rgba(250, 204, 21, 0.45)',
+              background: 'rgba(234, 179, 8, 0.14)',
+              border: '1px solid rgba(250, 204, 21, 0.35)',
               color: '#fde68a',
-              fontWeight: 800,
+              fontWeight: 700,
               fontSize: '0.7rem',
             }}
           >
-            +12 🪙 Ouro cada
+            +12 Ouro cada
           </span>
         </div>
       )}

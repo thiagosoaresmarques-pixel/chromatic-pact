@@ -6861,24 +6861,24 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="font-cinzel"
                       style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fde047' }}
                     >
-                      🏆 RANKING GERAL DE VAELORIA
+                      Ranking Geral de Vaeloria
                     </span>
                     <span
                       style={{
                         padding: '2px 8px',
-                        borderRadius: '999px',
+                        borderRadius: '6px',
                         fontSize: '0.66rem',
-                        fontWeight: 800,
+                        fontWeight: 700,
                         color: div.color,
                         background: div.bgRgba,
                         border: `1px solid ${div.borderRgba}`,
                       }}
                     >
-                      {div.icon} {div.label}
+                      {div.label}
                     </span>
                   </div>
                   <div style={{ fontSize: '0.86rem', color: '#f8fafc', fontWeight: 800 }}>
-                    Rating: {prevElo} ➔ {newElo} ELO (
+                    Rating: {prevElo} → {newElo} ELO (
                     <span style={{ color: delta >= 0 ? '#6ee7b7' : '#fca5a5' }}>
                       {delta >= 0 ? `+${delta}` : delta} ELO
                     </span>
@@ -6886,7 +6886,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#cbd5e1', marginTop: '2px' }}>
                     Oponente: {rankedDuelContext.opponentEntry.sovereignName} (
-                    {rankedDuelContext.opponentEntry.eloRating} ELO • Tier{' '}
+                    {rankedDuelContext.opponentEntry.eloRating} ELO · Grau{' '}
                     {rankedDuelContext.opponentEntry.skillTier})
                   </div>
                 </div>
@@ -6915,11 +6915,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     </div>
                   </div>
                   <div className="gmd-metrics-strip">
-                    <span>⏱️ {dossier.turnsPlayed} Turnos</span>
-                    <span>⚔️ {dossier.playerUnitsSummoned} Invocações</span>
-                    <span>✨ {dossier.playerSpellsAndReactions} Magias</span>
+                    <span>{dossier.turnsPlayed} turnos</span>
+                    <span>{dossier.playerUnitsSummoned} invocações</span>
+                    <span>{dossier.playerSpellsAndReactions} magias</span>
                     <span>
-                      ❤️ {dossier.playerFinalHp} vs {dossier.aiFinalHp} PV
+                      {dossier.playerFinalHp} vs {dossier.aiFinalHp} PV
                     </span>
                   </div>
                 </div>
@@ -7126,11 +7126,29 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   marginBottom: '1.15rem',
                 }}
               >
-                {tacticalProblem
-                  ? `${tacticalProblem.code} resolvido · +${tacticalProblem.goldReward} Ouro (1ª conclusão)`
-                  : isGuest
-                  ? 'Modo Visitante · Crie sua conta gratuita para salvar progresso e receber +160 Ouro iniciais'
-                  : `+${VICTORY_GOLD_REWARD} Ouro`}
+                {tacticalProblem ? (
+                  `${tacticalProblem.code} resolvido · +${tacticalProblem.goldReward} Ouro (1ª conclusão)`
+                ) : isGuest ? (
+                  'Modo Visitante · Crie sua conta gratuita para salvar progresso e receber +160 Ouro iniciais'
+                ) : campaignBoss ? (
+                  <div>
+                    <div>
+                      Espólio: +{Math.max(VICTORY_GOLD_REWARD, campaignBoss.rewardGold ?? VICTORY_GOLD_REWARD)} Ouro
+                      {campaignBoss.rewardShards ? ` · +${campaignBoss.rewardShards} Estilhaços` : ''}
+                    </div>
+                    {campaignBoss.rewardCardIds && campaignBoss.rewardCardIds.length > 0 && (
+                      <div style={{ fontSize: '0.74rem', color: '#cbd5e1', fontWeight: 500, marginTop: 3 }}>
+                        1ª vitória integra +1 cópia à coleção:{' '}
+                        {campaignBoss.rewardCardIds
+                          .map((cid) => CARDS_BY_ID[cid]?.name)
+                          .filter(Boolean)
+                          .join(', ')}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  `+${VICTORY_GOLD_REWARD} Ouro`
+                )}
               </div>
             )}
 
@@ -7146,10 +7164,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     onClick={() => onSelectProblem(nextProblem)}
                   >
                     {isCyclingUnsolvedInTier
-                      ? `⏭️ Resolver Pendente deste Grau: ${nextProblem.code} (Falta(m) ${pendingInCurrentTier} p/ novo Grau)`
+                      ? `Resolver pendente deste Grau: ${nextProblem.code} (faltam ${pendingInCurrentTier})`
                       : nextProblem.difficulty !== tacticalProblem.difficulty
-                        ? `🎉 Avançar ao Novo Grau: ${nextProblem.code}`
-                        : `⏭️ Próximo: ${nextProblem.code}`}
+                        ? `Avançar ao próximo Grau: ${nextProblem.code}`
+                        : `Próximo: ${nextProblem.code}`}
                   </button>
                 );
               })()}
@@ -7159,7 +7177,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   className="btn-fantasy btn-fantasy-primary"
                   onClick={rankedDuelContext.onExitLeaderboard}
                 >
-                  🏆 Voltar ao Ranking ELO
+                  Voltar ao Ranking ELO
                 </button>
               ) : (
                 campaignBoss &&
@@ -7170,7 +7188,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     className="btn-fantasy btn-fantasy-primary"
                     onClick={onExitCampaign}
                   >
-                    🗺️ Voltar ao Mapa
+                    Voltar ao Mapa
                   </button>
                 )
               )}
@@ -7185,15 +7203,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   onClick={() => startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId)}
                 >
                   {tacticalProblem
-                    ? '🔄 Repetir Problema'
+                    ? 'Repetir Problema'
                     : campaignBoss && gameState.winner === 'player'
-                      ? '⚔️ Reenfrentar'
-                      : '⚔️ Jogar Novamente'}
+                      ? 'Reenfrentar'
+                      : 'Jogar Novamente'}
                 </button>
               )}
               {tacticalProblem && onExitProblems && (
                 <button type="button" className="btn-fantasy" onClick={onExitProblems}>
-                  📋 Lista de Problemas
+                  Lista de Problemas
                 </button>
               )}
               {onlineMatch && (
@@ -7202,12 +7220,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   className="btn-fantasy btn-fantasy-primary"
                   onClick={onlineMatch.onExitPvp}
                 >
-                  🌐 Voltar ao Conclave 1×1
+                  Voltar ao Conclave 1×1
                 </button>
               )}
               {!rankedDuelContext && campaignBoss && onExitCampaign && gameState.winner !== 'player' && (
                 <button type="button" className="btn-fantasy" onClick={onExitCampaign}>
-                  🗺️ Voltar ao Mapa
+                  Voltar ao Mapa
                 </button>
               )}
               {!onlineMatch && !campaignBoss && !tacticalProblem && onExitArena && (

@@ -1959,19 +1959,19 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                   desc: 'Escolha 1 entre 6 Bênçãos Soberanas exclusivas (Coroa da Forja, Sangue Dracônico, Conclave Arcano, Falange Imortal, Juramento da Roda ou Esquadra das Seis Asas), monte um grimório ágil de 40 cartas em 20 rodadas de escolhas e enfrente uma escalada de 9 Chefes da Fenda, coletando saques e Ouro a cada etapa vencida.',
                 },
                 {
-                  tag: 'MODO 4 • CRISOL DOS CINCO SELOS (DRAFT)',
-                  title: '⚖️ 40 Cartas Sem Limite de Cópias • 7 Vitórias / 3 Derrotas',
-                  desc: 'Seu 1º Passe do Crisol é GRÁTIS (depois 100🪙). Escolha 1 de 3 Domínios sorteados e construa 40 cartas em 20 escolhas (2 cartas por rodada). Regra especial do Crisol: NÃO há limite de cópias 3×/2×/1× (você pode acumular quantas cópias aparecerem!). A jornada vai até 7 Vitórias (Glória Suprema: até 360🪙 + 125💎) ou 3 Derrotas.',
+                  tag: 'Modo 4 · Crisol dos Cinco Selos (Draft)',
+                  title: '40 Cartas Sem Limite de Cópias · 7 Vitórias ou 3 Derrotas',
+                  desc: 'Seu 1º Passe do Crisol é gratuito (depois 100 Ouro). Escolha 1 de 3 Soberanos sorteados e construa 40 cartas em 20 escolhas (2 cartas por rodada). Regra especial do Crisol: não há limite de cópias 3×/2×/1×. A jornada vai até 7 Vitórias (até 260 Ouro + Cartas) ou 3 Derrotas.',
                 },
                 {
-                  tag: 'MODO 5 • FENDAS DA FRATURA (6 MUTADORES)',
-                  title: '🌀 Regras Planares Simétricas & Bônus Semanal',
-                  desc: 'Duelos especiais onde uma anomalia altera as regras para AMBOS os lados: (1) Torrente Astral (+3⚡ iniciais); (2) Panteão Imortal (Lendárias custam -2⚡ e ganham +1/+1); (3) Trono de Vidro (Soberanos têm 20 PV e toda criatura ganha +2 ATQ e Ímpeto); (4) Noite do Sol Negro (todas as criaturas ganham Renascer); (5) Forja Viva (Relíquias custam -2⚡ e dão +1 ARM à coluna); (6) Cataclismo Mutante (Clima muda a cada rodada). A Fenda em Destaque Semanal paga +45🪙 e +25💎 extras!',
+                  tag: 'Modo 5 · Fendas da Fratura (6 Mutadores)',
+                  title: 'Regras Planares Simétricas e Bônus Semanal',
+                  desc: 'Duelos especiais onde uma anomalia altera as regras para ambos os lados: (1) Torrente Astral (+3 Essência inicial); (2) Panteão Imortal (Lendárias custam -2 Essência e ganham +1/+1); (3) Trono de Vidro (Soberanos têm 20 PV e toda criatura ganha +2 ATQ e Ímpeto); (4) Noite do Sol Negro (todas as criaturas ganham Renascer); (5) Forja Viva (Relíquias custam -2 Essência e dão +1 ARM à coluna); (6) Cataclismo Mutante (Clima muda a cada rodada). A Fenda em Destaque Semanal concede Ouro e Estilhaços extras.',
                 },
                 {
-                  tag: 'MODO 6 & 7 • ENIGMAS LETAIS & CONCLAVE 1×1',
-                  title: '🧩 Letal em 1 Turno, Arena Rápida & PvP Online',
-                  desc: 'Nos Desafios Táticos (Enigmas), você recebe uma mesa e mão fixas e deve descobrir a sequência exata de formação, movimentação e ataques para derrotar o rival em 1 único turno. Na Arena Rápida você testa grimórios contra os 30 arquétipos da IA, e no Conclave Online disputa partidas 1×1 ranqueadas (Fila Rápida ou Sala PACT-XXXX).',
+                  tag: 'Modos 6 e 7 · Enigmas Letais e Conclave 1×1',
+                  title: 'Letal em 1 Turno, Duelos de Treino e Conclave Online',
+                  desc: 'Nos Desafios Táticos (Enigmas), você recebe uma mesa e mão fixas e deve descobrir a sequência exata de formação, movimentação e ataques para derrotar o rival em 1 único turno. Na Arena você testa grimórios contra os Soberanos de Vaeloria, e no Conclave Online disputa partidas 1×1 ranqueadas (Fila Rápida ou Sala PACT-XXXX).',
                 },
               ].map((m, idx) => (
                 <div

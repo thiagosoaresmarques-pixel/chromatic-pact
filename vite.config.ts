@@ -107,6 +107,16 @@ export default defineConfig({
           ) {
             return 'ai-weights';
           }
+          if (
+            norm.includes('/src/utils/') ||
+            norm.includes('/src/data/problems') ||
+            norm.includes('epicPoemEvents') ||
+            norm.includes('eloDivisions') ||
+            norm.includes('legendaryCreaturesLore') ||
+            norm.includes('cardTextFormatter')
+          ) {
+            return 'app-utils';
+          }
           if (norm.includes('/src/engine/')) {
             return 'engine-core';
           }
@@ -127,8 +137,7 @@ export default defineConfig({
             norm.includes('/src/data/epicPoemData') ||
             norm.includes('/src/data/epicPoemPart') ||
             norm.includes('/src/data/epicPoemParallel') ||
-            norm.includes('/src/data/mythologyLore') ||
-            norm.includes('/src/components/MythologyAtlasView')
+            norm.includes('/src/data/mythologyLore')
           ) {
             return 'mythology-codex';
           }

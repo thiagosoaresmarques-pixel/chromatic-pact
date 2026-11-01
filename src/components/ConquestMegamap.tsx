@@ -157,7 +157,7 @@ export const ConquestMegamap: React.FC<ConquestMegamapProps> = ({
   onExploreLandmarkReward,
 }) => {
   const [mapScope, setMapScope] = useState<VaeloriaMapScope>('world');
-  const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(false);
+  const [isTheaterFullscreen, setIsTheaterFullscreen] = useState<boolean>(true);
   const [followPawn, setFollowPawn] = useState<boolean>(false);
   const [showMinimap, setShowMinimap] = useState<boolean>(false);
   const [portalBanner, setPortalBanner] = useState<string | null>(null);

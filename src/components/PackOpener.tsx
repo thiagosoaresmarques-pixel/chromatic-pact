@@ -127,7 +127,6 @@ function generateBoosterCards(domainFilter: Domain | 'all'): CardDefinition[] {
 
 export const PackOpener: React.FC<PackOpenerProps> = ({
   gold,
-  astralShards = 0,
   unlockedCardIds,
   onOpenPack,
   salvageableInfo,
@@ -209,17 +208,12 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
       <div className="aaa-collection-strip">
         <div className="aaa-rarity-counts">
           <span>
-            COLEÇÃO <strong>{collectionStats.uniqueUnlocked}/{collectionStats.totalCards}</strong>
+            Coleção <strong>{collectionStats.uniqueUnlocked}/{collectionStats.totalCards}</strong>
           </span>
-          <span>COMUNS <strong>{collectionStats.byRarity.common}</strong></span>
-          <span>INCOMUNS <strong>{collectionStats.byRarity.uncommon}</strong></span>
-          <span>RARAS <strong>{collectionStats.byRarity.rare}</strong></span>
-          <span>LENDÁRIAS <strong className="gold-text">{collectionStats.byRarity.legendary}</strong></span>
-          {!isGuest && (
-            <span className="astral-shards-pill" title="Estilhaços Astrais usados para forjar qualquer carta específica no Grimório">
-              💎 ESTILHAÇOS <strong>{astralShards.toLocaleString('pt-BR')}</strong>
-            </span>
-          )}
+          <span>Comuns <strong>{collectionStats.byRarity.common}</strong></span>
+          <span>Incomuns <strong>{collectionStats.byRarity.uncommon}</strong></span>
+          <span>Raras <strong>{collectionStats.byRarity.rare}</strong></span>
+          <span>Lendárias <strong className="gold-text">{collectionStats.byRarity.legendary}</strong></span>
           {!isGuest && salvageableInfo && salvageableInfo.totalShardsEarned > 0 && onSalvageDuplicates && (
             <button
               type="button"
@@ -231,7 +225,7 @@ export const PackOpener: React.FC<PackOpenerProps> = ({
               }}
               title={`Transmutar ${salvageableInfo.cardsSalvagedCount} cópias acima do limite de deck em Estilhaços Astrais`}
             >
-              💎 Transmutar {salvageableInfo.cardsSalvagedCount} Excedentes (+{salvageableInfo.totalShardsEarned} 💎)
+              Transmutar {salvageableInfo.cardsSalvagedCount} excedentes (+{salvageableInfo.totalShardsEarned} Estilhaços)
             </button>
           )}
         </div>

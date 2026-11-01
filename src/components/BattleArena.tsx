@@ -117,6 +117,7 @@ import {
   SovereignAiLeaderboardEntry,
 } from '../data/sovereignEloLadder';
 import type { LastRankedDuelSummary } from './GlobalLeaderboardView';
+import { getTournamentNowMs } from '../utils/tournamentEngine';
 
 const ARENA_COACHMARK_STEPS = [
   {
@@ -209,6 +210,21 @@ export interface BattleArenaProps {
     playerElo: number;
     lastResult?: LastRankedDuelSummary | null;
     onExitLeaderboard: () => void;
+  } | null;
+  tournamentContext?: {
+    tournamentTitle: string;
+    roundNumber: number;
+    totalRounds: number;
+    roundPlayDeadlineMs: number;
+    turnTimeLimitSec: number;
+    mulliganTimeLimitSec: number;
+    onExitTournament: () => void;
+    onTournamentMatchResult: (info: {
+      score: 1 | 0.5 | 0;
+      hpDiff: number;
+      turns: number;
+      reason: string;
+    }) => void;
   } | null;
 }
 
@@ -394,12 +410,25 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onMatchConcluded,
   onlineMatch,
   rankedDuelContext,
+  tournamentContext,
 }) => {
   const handleExitBattle = () => {
     try {
       localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
     } catch {
       // Ignore
+    }
+    if (tournamentContext) {
+      if (gameState.phase !== 'gameover') {
+        tournamentContext.onTournamentMatchResult({
+          score: 0,
+          hpDiff: -20,
+          turns: gameState.turn,
+          reason: 'Abandono de mesa durante a rodada',
+        });
+      }
+      tournamentContext.onExitTournament();
+      return;
     }
     if (onlineMatch) {
       onlineMatch.onExitPvp();
@@ -684,10 +713,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   );
   const [showProblemIncompleteModal, setShowProblemIncompleteModal] = useState(false);
   const [mulliganSwapIndices, setMulliganSwapIndices] = useState<number[]>([]);
-  const MULLIGAN_TIME_LIMIT_SECONDS = 30;
-  const TURN_TIME_LIMIT_SECONDS = 60;
+  const isTimedCompetitiveMatch = Boolean(
+    tournamentContext || onlineMatch || rankedDuelContext
+  );
+  const MULLIGAN_TIME_LIMIT_SECONDS = tournamentContext
+    ? tournamentContext.mulliganTimeLimitSec
+    : 30;
+  const TURN_TIME_LIMIT_SECONDS = tournamentContext
+    ? tournamentContext.turnTimeLimitSec
+    : 60;
   const [mulliganTimeLeft, setMulliganTimeLeft] = useState<number>(MULLIGAN_TIME_LIMIT_SECONDS);
   const [turnTimeLeft, setTurnTimeLeft] = useState<number>(TURN_TIME_LIMIT_SECONDS);
+  const [roundSecondsLeft, setRoundSecondsLeft] = useState<number>(() =>
+    tournamentContext
+      ? Math.max(0, Math.ceil((tournamentContext.roundPlayDeadlineMs - getTournamentNowMs()) / 1000))
+      : 0
+  );
   const [isHandPinnedOpen, setIsHandPinnedOpen] = useState(false);
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [isCommandDockMinimized, setIsCommandDockMinimized] = useState(false);
@@ -1729,18 +1770,75 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quickDuelNonce]);
 
-  // Reset Turn Timer (60s) whenever the turn number, active player, or Mulligan state changes
+  // Reset Turn Timer whenever the turn number, active player, or Mulligan state changes
   useEffect(() => {
     setTurnTimeLeft(TURN_TIME_LIMIT_SECONDS);
-  }, [gameState.turn, gameState.activePlayer, isMulliganOpen]);
+  }, [gameState.turn, gameState.activePlayer, isMulliganOpen, TURN_TIME_LIMIT_SECONDS]);
 
-  // 30-Second Mulligan Countdown Timer (Auto-confirms Mulligan at 0s so matches never stall)
+  // Tournament Round Deadline Referee: counts down round window and adjudicates unfinished boards at 0s
   useEffect(() => {
-    if (tacticalProblem || !isMulliganOpen || gameState.turn !== 1 || gameState.phase === 'gameover') {
+    if (!tournamentContext || gameState.phase === 'gameover') return;
+    const tick = () => {
+      const rem = Math.max(
+        0,
+        Math.ceil((tournamentContext.roundPlayDeadlineMs - getTournamentNowMs()) / 1000)
+      );
+      setRoundSecondsLeft(rem);
+      if (rem <= 0) {
+        setIsMulliganOpen(false);
+        setGameState((prev) => {
+          if (prev.phase === 'gameover') return prev;
+          const pBoard = getAllBoardUnits(prev.player).reduce(
+            (s, u) => s + u.currentAtk + u.currentHp,
+            0
+          );
+          const aBoard = getAllBoardUnits(prev.ai).reduce(
+            (s, u) => s + u.currentAtk + u.currentHp,
+            0
+          );
+          let winner: 'player' | 'ai' | null = null;
+          let winReason = 'Tempo regulamentar da rodada encerrado — empate técnico (0,5 pt).';
+          if (prev.player.hp > prev.ai.hp) {
+            winner = 'player';
+            winReason = `Tempo da rodada encerrado — vitória por saldo de Vida (${prev.player.hp} vs ${prev.ai.hp} PV).`;
+          } else if (prev.ai.hp > prev.player.hp) {
+            winner = 'ai';
+            winReason = `Tempo da rodada encerrado — vitória de ${prev.ai.name} por saldo de Vida (${prev.ai.hp} vs ${prev.player.hp} PV).`;
+          } else if (pBoard > aBoard) {
+            winner = 'player';
+            winReason = `Tempo da rodada encerrado com PV empatados — vitória por domínio de mesa (${pBoard} vs ${aBoard}).`;
+          } else if (aBoard > pBoard) {
+            winner = 'ai';
+            winReason = `Tempo da rodada encerrado com PV empatados — vitória de ${prev.ai.name} por domínio de mesa (${aBoard} vs ${pBoard}).`;
+          }
+          return {
+            ...prev,
+            phase: 'gameover',
+            winner,
+            winReason,
+          };
+        });
+      }
+    };
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [tournamentContext, gameState.phase]);
+
+  // Mulligan Countdown Timer (Active ONLY in competitive timed modes; Campaign & PvE have no timer!)
+  useEffect(() => {
+    if (
+      !isTimedCompetitiveMatch ||
+      tacticalProblem ||
+      !isMulliganOpen ||
+      gameState.turn !== 1 ||
+      gameState.phase === 'gameover'
+    ) {
       return;
     }
     if (
       !onlineMatch &&
+      !tournamentContext &&
       (showQuickRules || showTacticalAdvisor || arenaTutorialStep !== null || showSurrenderConfirm)
     ) {
       return;
@@ -1757,25 +1855,33 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     return () => window.clearTimeout(timer);
   }, [
+    isTimedCompetitiveMatch,
     tacticalProblem,
     isMulliganOpen,
     mulliganTimeLeft,
     gameState.turn,
     gameState.phase,
     onlineMatch,
+    tournamentContext,
     showQuickRules,
     showTacticalAdvisor,
     arenaTutorialStep,
     showSurrenderConfirm,
   ]);
 
-  // 60-Second Turn Countdown Timer ("Ampulheta do Turno") — Auto-passes turn at 0s to prevent monotony!
+  // Turn Countdown Timer (Active ONLY in competitive timed modes; Campaign & PvE are untimed!)
   useEffect(() => {
-    if (tacticalProblem || isMulliganOpen || gameState.phase === 'gameover') {
+    if (
+      !isTimedCompetitiveMatch ||
+      tacticalProblem ||
+      isMulliganOpen ||
+      gameState.phase === 'gameover'
+    ) {
       return;
     }
     if (
       !onlineMatch &&
+      !tournamentContext &&
       (showQuickRules || showTacticalAdvisor || arenaTutorialStep !== null || showSurrenderConfirm)
     ) {
       return;
@@ -1841,11 +1947,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     return () => window.clearTimeout(timer);
   }, [
+    isTimedCompetitiveMatch,
     isMulliganOpen,
     turnTimeLeft,
     gameState.phase,
     gameState.activePlayer,
     onlineMatch,
+    tournamentContext,
     showQuickRules,
     showTacticalAdvisor,
     arenaTutorialStep,
@@ -1987,7 +2095,23 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       setGameoverStage('cinematic');
       triggerScreenShake('heavy');
 
-      if (gameState.winner === 'player') {
+      if (tournamentContext) {
+        const score: 1 | 0.5 | 0 =
+          gameState.winner === 'player' ? 1 : gameState.winner === 'ai' ? 0 : 0.5;
+        playSfx(score === 1 ? 'victory' : 'defeat');
+        if (score === 1) {
+          recordDailyQuestEvent('match_won', 1);
+          if (onRewardGold) {
+            onRewardGold(15, `Vitória na Rodada ${tournamentContext.roundNumber} do Torneio`);
+          }
+        }
+        tournamentContext.onTournamentMatchResult({
+          score,
+          hpDiff: gameState.player.hp - gameState.ai.hp,
+          turns: gameState.turn,
+          reason: gameState.winReason || '',
+        });
+      } else if (gameState.winner === 'player') {
         playSfx('victory');
         if (tacticalProblem) {
           const solvedRes = markProblemAsSolved(tacticalProblem.id);
@@ -3166,14 +3290,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               >
                 ← Sair da Batalha
               </button>
-              <span
-                className={`mulligan-stat-pill ${
-                  mulliganTimeLeft <= 10 ? 'is-timer-urgent' : ''
-                }`}
-                title="Tempo restante para confirmar sua mão inicial"
-              >
-                ⏳ {Math.max(0, mulliganTimeLeft)}s
-              </span>
+              {isTimedCompetitiveMatch && (
+                <span
+                  className={`mulligan-stat-pill ${
+                    mulliganTimeLeft <= 10 ? 'is-timer-urgent' : ''
+                  }`}
+                  title="Tempo restante para confirmar sua mão inicial"
+                >
+                  ⏳ {Math.max(0, mulliganTimeLeft)}s
+                </span>
+              )}
               <button
                 type="button"
                 className="mulligan-quick-start-top-btn"
@@ -3251,13 +3377,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               >
                 ← Sair
               </button>
-              <span
-                className={`mulligan-stat-pill mulligan-mobile-timer show-on-mobile-inline ${
-                  mulliganTimeLeft <= 10 ? 'is-timer-urgent' : ''
-                }`}
-              >
-                ⏳ {Math.max(0, mulliganTimeLeft)}s
-              </span>
+              {isTimedCompetitiveMatch && (
+                <span
+                  className={`mulligan-stat-pill mulligan-mobile-timer show-on-mobile-inline ${
+                    mulliganTimeLeft <= 10 ? 'is-timer-urgent' : ''
+                  }`}
+                >
+                  ⏳ {Math.max(0, mulliganTimeLeft)}s
+                </span>
+              )}
               <button
                 type="button"
                 className="mulligan-confirm-btn"
@@ -6051,24 +6179,54 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         </button>
                       </div>
                     )}
+                    {tournamentContext && (
+                      <span
+                        className="hud-round-chip"
+                        style={{
+                          borderColor:
+                            roundSecondsLeft <= 60
+                              ? 'rgba(248, 113, 113, 0.55)'
+                              : 'rgba(212, 175, 55, 0.42)',
+                          color: roundSecondsLeft <= 60 ? '#fca5a5' : '#fef08a',
+                        }}
+                        title={`${tournamentContext.tournamentTitle} — Rodada ${tournamentContext.roundNumber} de ${tournamentContext.totalRounds}`}
+                      >
+                        <span>
+                          R{tournamentContext.roundNumber}/{tournamentContext.totalRounds}
+                        </span>
+                        <span className="hud-timer-sep">·</span>
+                        <span>
+                          {String(Math.floor(roundSecondsLeft / 60)).padStart(2, '0')}:
+                          {String(roundSecondsLeft % 60).padStart(2, '0')}
+                        </span>
+                      </span>
+                    )}
                     <span
-                      className={`hud-round-chip hud-turn-timer-chip ${
-                        turnTimeLeft <= 10
+                      className={`hud-round-chip ${
+                        isTimedCompetitiveMatch ? 'hud-turn-timer-chip' : ''
+                      } ${
+                        isTimedCompetitiveMatch && turnTimeLeft <= 10
                           ? 'is-critical'
-                          : turnTimeLeft <= 20
+                          : isTimedCompetitiveMatch && turnTimeLeft <= 20
                           ? 'is-warning'
                           : ''
                       }`}
-                      title={`Turno ${gameState.turn} • Limite de ${TURN_TIME_LIMIT_SECONDS}s por turno (${Math.max(
-                        0,
-                        turnTimeLeft
-                      )}s restantes)`}
+                      title={
+                        isTimedCompetitiveMatch
+                          ? `Turno ${gameState.turn} · Limite de ${TURN_TIME_LIMIT_SECONDS}s por turno (${Math.max(
+                              0,
+                              turnTimeLeft
+                            )}s restantes)`
+                          : `Turno ${gameState.turn} · Sem limite de tempo`
+                      }
                     >
                       <span>T{gameState.turn}</span>
-                      <span className="hud-timer-sep">•</span>
-                      <span className="hud-timer-val">
-                        {turnTimeLeft <= 10 ? '🔥' : '⏱️'} {Math.max(0, turnTimeLeft)}s
-                      </span>
+                      {isTimedCompetitiveMatch && (
+                        <>
+                          <span className="hud-timer-sep">•</span>
+                          <span className="hud-timer-val">{Math.max(0, turnTimeLeft)}s</span>
+                        </>
+                      )}
                     </span>
 
                     {isPlayerTurn && readyPlayerUnits.length > 0 && (
@@ -7171,7 +7329,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </button>
                 );
               })()}
-              {rankedDuelContext ? (
+              {tournamentContext ? (
+                <button
+                  type="button"
+                  className="btn-fantasy btn-fantasy-primary"
+                  onClick={tournamentContext.onExitTournament}
+                >
+                  Voltar ao Salão do Torneio
+                </button>
+              ) : rankedDuelContext ? (
                 <button
                   type="button"
                   className="btn-fantasy btn-fantasy-primary"
@@ -7192,7 +7358,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </button>
                 )
               )}
-              {!onlineMatch && (
+              {!onlineMatch && !tournamentContext && (
                 <button
                   type="button"
                   className={
@@ -7214,7 +7380,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   Lista de Problemas
                 </button>
               )}
-              {onlineMatch && (
+              {onlineMatch && !tournamentContext && (
                 <button
                   type="button"
                   className="btn-fantasy btn-fantasy-primary"
@@ -7223,14 +7389,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   Voltar ao Conclave 1×1
                 </button>
               )}
-              {!rankedDuelContext && campaignBoss && onExitCampaign && gameState.winner !== 'player' && (
-                <button type="button" className="btn-fantasy" onClick={onExitCampaign}>
-                  Voltar ao Mapa
-                </button>
-              )}
-              {!onlineMatch && !campaignBoss && !tacticalProblem && onExitArena && (
+              {!tournamentContext &&
+                !rankedDuelContext &&
+                campaignBoss &&
+                onExitCampaign &&
+                gameState.winner !== 'player' && (
+                  <button type="button" className="btn-fantasy" onClick={onExitCampaign}>
+                    Voltar ao Mapa
+                  </button>
+                )}
+              {!tournamentContext && !onlineMatch && !campaignBoss && !tacticalProblem && onExitArena && (
                 <button type="button" className="btn-fantasy" onClick={onExitArena}>
-                  🏠 Voltar ao Início
+                  Voltar ao Início
                 </button>
               )}
               <button
@@ -7269,14 +7439,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           <span className="font-cinzel gold-gradient-text" style={{ fontSize: '0.74rem', fontWeight: 800 }}>
             {gameState.winner === 'player' ? '🏆 VITÓRIA' : '💀 FIM DE PARTIDA'}
           </span>
-          {!onlineMatch && (
+          {!onlineMatch && !tournamentContext && (
             <button
               type="button"
               className="btn-fantasy btn-fantasy-primary"
               style={{ padding: '4px 10px', fontSize: '0.7rem' }}
               onClick={() => startNewQuickMatch(selectedPlayerDeckId, selectedAiDeckId)}
             >
-              ⚔️ Jogar Novamente
+              Jogar Novamente
             </button>
           )}
           <button
@@ -7285,7 +7455,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             style={{ padding: '4px 10px', fontSize: '0.7rem' }}
             onClick={handleExitBattle}
           >
-            {campaignBoss ? '🗺️ Voltar ao Mapa' : '🏠 Sair'}
+            {tournamentContext
+              ? 'Voltar ao Torneio'
+              : campaignBoss
+              ? 'Voltar ao Mapa'
+              : 'Sair'}
           </button>
         </div>
       )}
@@ -7352,8 +7526,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         </div>
       )}
 
-      {/* TURN TIMER ROPE WARNING BANNER (FINAL 15 SECONDS OF TURN) */}
-      {!isMulliganOpen && gameState.phase !== 'gameover' && turnTimeLeft <= 15 && (
+      {/* TURN TIMER ROPE WARNING BANNER (FINAL 15 SECONDS OF TURN — COMPETITIVE MODES ONLY) */}
+      {isTimedCompetitiveMatch &&
+        !isMulliganOpen &&
+        gameState.phase !== 'gameover' &&
+        turnTimeLeft <= 15 && (
         <div
           className={`turn-rope-warning-banner ${
             turnTimeLeft <= 6 ? 'is-critical' : ''

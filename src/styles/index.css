@@ -23377,3 +23377,551 @@ input:focus-visible,
     display: none;
   }
 }
+
+
+/* ==========================================================================
+   TORNEIOS SUÍÇOS DE VAELORIA (TournamentsView) — Clean & Sober Competitive UI
+   ========================================================================== */
+.tournaments-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0.9rem 1rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.trn-header-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.trn-header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 260px;
+  flex: 1;
+}
+
+.trn-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.trn-main-title {
+  margin: 0;
+  font-size: 1.24rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.01em;
+}
+
+.trn-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.trn-subtitle strong {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.trn-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+}
+
+.trn-status-live,
+.trn-status-upcoming {
+  border-color: rgba(212, 175, 55, 0.55);
+  color: #f3e3b0;
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.trn-status-break {
+  border-color: rgba(148, 163, 184, 0.35);
+  color: #cbd5e1;
+}
+
+.trn-status-finished {
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+.trn-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.trn-compact-btn {
+  padding: 6px 11px !important;
+  font-size: 0.75rem !important;
+}
+
+.trn-feedback-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  color: #f1f5f9;
+}
+
+.trn-dismiss-link {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.74rem;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.trn-action-strip,
+.trn-finished-banner {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 8px;
+  padding: 0.75rem 0.95rem;
+}
+
+.trn-enroll-row,
+.trn-my-table-row,
+.trn-finished-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.trn-enroll-info,
+.trn-my-table-left,
+.trn-finished-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 240px;
+}
+
+.trn-strip-title,
+.trn-finished-headline {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.trn-strip-title strong,
+.trn-finished-headline strong {
+  color: #f3e3b0;
+}
+
+.trn-strip-desc {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  line-height: 1.38;
+}
+
+.trn-enroll-controls,
+.trn-my-table-right {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.trn-deck-select {
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: #0b0f19;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  color: #e2e8f0;
+  font-size: 0.78rem;
+  min-width: 190px;
+}
+
+.trn-primary-cta {
+  padding: 7px 14px !important;
+  font-size: 0.78rem !important;
+}
+
+.trn-autostart-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.trn-kicker {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #d4af37;
+  letter-spacing: 0.03em;
+}
+
+.trn-prize-card-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.75rem;
+  background: #0b0f19;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.trn-prize-card-thumb {
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  object-fit: contain;
+  background: #050811;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+.trn-prize-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.trn-prize-card-name {
+  font-size: 0.84rem;
+  color: #f8fafc;
+}
+
+.trn-prize-card-sub {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.trn-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.trn-subtabs {
+  display: inline-flex;
+  background: #0b0f19;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.trn-subtab {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.trn-subtab.active {
+  background: rgba(212, 175, 55, 0.14);
+  color: #f3e3b0;
+}
+
+.trn-search-input {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: #0b0f19;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #e2e8f0;
+  font-size: 0.76rem;
+  min-width: 220px;
+}
+
+.trn-table-wrap {
+  background: #0b0f19;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.trn-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.trn-table th {
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  white-space: nowrap;
+}
+
+.trn-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  color: #e2e8f0;
+  vertical-align: middle;
+}
+
+.trn-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.trn-row-human {
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.trn-row-me {
+  background: rgba(212, 175, 55, 0.09);
+}
+
+.trn-rank-cell {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.trn-player-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.trn-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #050811;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  flex-shrink: 0;
+}
+
+.trn-player-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.trn-player-name-line {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.trn-player-name {
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.trn-human-tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: #f3e3b0;
+}
+
+.trn-player-sub {
+  font-size: 0.71rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 340px;
+}
+
+.trn-num-strong {
+  text-align: right;
+  font-weight: 700;
+  color: #f3e3b0;
+  font-variant-numeric: tabular-nums;
+}
+
+.trn-num-muted {
+  text-align: right;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+}
+
+.trn-ved-cell {
+  text-align: center;
+  color: #cbd5e1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.trn-pair-side {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.trn-pair-pts {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+.trn-score-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+}
+
+.trn-score-badge.live {
+  border-color: rgba(212, 175, 55, 0.5);
+  color: #f3e3b0;
+}
+
+.trn-empty-pairings {
+  padding: 1.5rem 1rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.trn-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.65rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.trn-page-indicator {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.trn-admin-details {
+  background: #0b0f19;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+}
+
+.trn-admin-summary {
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.trn-admin-form {
+  margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.trn-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.trn-field input,
+.trn-field select {
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  color: #f8fafc;
+  font-size: 0.76rem;
+}
+
+.trn-rules-modal {
+  width: min(94vw, 760px);
+  max-height: 86dvh;
+  background: #0b0f19;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.trn-rules-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  color: #f8fafc;
+}
+
+.trn-rules-body {
+  padding: 0.9rem 1rem 1.2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.trn-rules-sec h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.88rem;
+  color: #f3e3b0;
+}
+
+.trn-rules-sec p {
+  margin: 0 0 0.45rem;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.48;
+}
+
+.trn-bench-table {
+  margin-top: 0.4rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+}

@@ -95,7 +95,24 @@ const GlobalLeaderboardView = React.lazy(() =>
     default: m.GlobalLeaderboardView,
   }))
 );
+const TournamentsView = React.lazy(() =>
+  import('./components/TournamentsView').then((m) => ({
+    default: m.TournamentsView,
+  }))
+);
+import type { ActiveTournamentMatchLaunch } from './components/TournamentsView';
 import type { LastRankedDuelSummary } from './components/GlobalLeaderboardView';
+import {
+  buildTournamentSovereignBossEncounter,
+  computeTournamentSnapshot,
+  fetchActiveTournamentStateFromCloud,
+  getClaimedTournamentPrizeIds,
+  getTournamentNowMs,
+  HumanTournamentEntry,
+  markTournamentPrizeClaimedLocal,
+  publishTournamentDefinitionToCloud,
+  upsertHumanTournamentEntryToCloud,
+} from './utils/tournamentEngine';
 import { getEloDivisionMeta, INITIAL_PLAYER_ELO } from './data/eloDivisions';
 import type { SovereignAiLeaderboardEntry } from './data/sovereignEloLadderData';
 import {
@@ -140,6 +157,7 @@ export interface SovereignNotification {
 type ActiveTab =
   | 'home'
   | 'arena'
+  | 'tournaments'
   | 'draft'
   | 'rifts'
   | 'problems'
@@ -186,6 +204,12 @@ const NAV_PILLARS: NavPillarDef[] = [
     label: 'Batalhar',
     defaultTab: 'arena',
     items: [
+      {
+        tab: 'tournaments',
+        icon: '♛',
+        label: 'Torneios Suíços',
+        shortDesc: 'Copas com horário marcado, rodadas fixas e premiação',
+      },
       {
         tab: 'arena',
         icon: '⚔️',
@@ -304,6 +328,7 @@ function resolvePillarForTab(tab: ActiveTab): NavPillarId | null {
   switch (tab) {
     case 'home':
       return 'home';
+    case 'tournaments':
     case 'arena':
     case 'draft':
     case 'rifts':
@@ -564,6 +589,9 @@ export const App: React.FC = () => {
     room: MultiplayerRoom;
     role: 'host' | 'guest';
   } | null>(null);
+  const [activeTournamentMatch, setActiveTournamentMatch] =
+    useState<ActiveTournamentMatchLaunch | null>(null);
+  const notifiedTournamentRoundsRef = useRef<Set<string>>(new Set());
 
   // Sovereign Notification Center State
   const [notifications, setNotifications] = useState<SovereignNotification[]>(() => {
@@ -871,6 +899,7 @@ export const App: React.FC = () => {
 
   const handleOpenArenaSolo = () => {
     trackAdsEvent('start_duel', { mode: 'solo_arena', isGuest });
+    setActiveTournamentMatch(null);
     setActiveCampaignBoss(null);
     setActiveRankedSovereign(null);
     setActiveProblem(null);
@@ -893,6 +922,7 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    setActiveTournamentMatch(null);
     setActiveCampaignBoss(null);
     setActiveRankedSovereign(null);
     setActiveOnlineMatch(null);
@@ -904,6 +934,163 @@ export const App: React.FC = () => {
     setActiveProblem(problem);
     setActiveTab('arena');
   };
+
+  const handleStartTournamentSovereignMatch = (launch: ActiveTournamentMatchLaunch) => {
+    const sovEntry = launch.opponentStanding.sovereignEntry;
+    if (!sovEntry) return;
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+    const boss = buildTournamentSovereignBossEncounter(sovEntry, launch.roundNumber);
+    setActiveOnlineMatch(null);
+    setActiveProblem(null);
+    setActiveRankedSovereign(null);
+    setIsExpeditionBattle(false);
+    setIsDraftBattle(false);
+    setActiveRiftId(null);
+    setExpeditionBlessingId(null);
+    setActiveConquestContext(null);
+    setActiveGeoModifiers(null);
+    setActiveTournamentMatch(launch);
+    setActiveCampaignBoss(boss);
+    setCampaignPlayerDeckIds(launch.entry.deckCardIds);
+    setActiveTab('arena');
+  };
+
+  const handleStartTournamentPvpMatch = (
+    launch: ActiveTournamentMatchLaunch,
+    room: MultiplayerRoom,
+    role: 'host' | 'guest'
+  ) => {
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+    setActiveCampaignBoss(null);
+    setActiveRankedSovereign(null);
+    setActiveProblem(null);
+    setIsExpeditionBattle(false);
+    setIsDraftBattle(false);
+    setActiveRiftId(null);
+    setExpeditionBlessingId(null);
+    setActiveConquestContext(null);
+    setActiveGeoModifiers(null);
+    setActiveTournamentMatch(launch);
+    setActiveOnlineMatch({ room, role });
+    setActiveTab('arena');
+  };
+
+  // Background Tournament Supervisor: automatic round alerts, automatic finalization & Rare Card prize delivery
+  useEffect(() => {
+    let cancelled = false;
+
+    const superviseTournament = async () => {
+      const { definition: def, entries } = await fetchActiveTournamentStateFromCloud();
+      if (cancelled) return;
+      const snap = computeTournamentSnapshot(
+        def,
+        entries,
+        isGuest ? null : currentUser.username
+      );
+
+      // 1. Round-Start Alert if enrolled and browsing outside Arena / Tournaments
+      if (
+        !isGuest &&
+        snap.phase === 'round_active' &&
+        snap.myEntry &&
+        snap.myCurrentPairing &&
+        !snap.myEntry.resultsByRound?.[snap.currentRound] &&
+        activeTabLiveRef.current !== 'arena' &&
+        activeTabLiveRef.current !== 'tournaments'
+      ) {
+        const alertKey = `${def.id}::r${snap.currentRound}::${currentUser.username.toLowerCase()}`;
+        if (!notifiedTournamentRoundsRef.current.has(alertKey)) {
+          notifiedTournamentRoundsRef.current.add(alertKey);
+          pushNotification({
+            kicker: 'TORNEIO SUÍÇO AO VIVO',
+            title: `Rodada ${snap.currentRound}/${def.totalRounds} Iniciada`,
+            message: `Sua mesa da Rodada ${snap.currentRound} está aberta (${def.turnTimeLimitSec}s por turno).`,
+            actionLabel: 'Entrar na Mesa',
+            actionTarget: 'tournaments',
+          });
+        }
+      }
+
+      // 2. Automatic Finalization & Automatic Rare Card Delivery at Tournament End
+      if (snap.phase === 'finished' && snap.finalizedAward) {
+        const award = snap.finalizedAward;
+        if (!def.finalizedAward) {
+          void publishTournamentDefinitionToCloud({
+            ...def,
+            finalizedAward: award,
+          });
+        }
+
+        if (
+          !isGuest &&
+          currentUser.username.trim().toLowerCase() === award.winnerUsername.trim().toLowerCase()
+        ) {
+          const claimKey = `${def.id}::${currentUser.username.trim().toLowerCase()}`;
+          const alreadyClaimedLocal = getClaimedTournamentPrizeIds().has(claimKey);
+          const alreadyClaimedCloud = Boolean(snap.myEntry?.prizeClaimed);
+
+          if (!alreadyClaimedLocal && !alreadyClaimedCloud) {
+            markTournamentPrizeClaimedLocal(claimKey);
+            const prizeCard = award.cardId ? CARDS_BY_ID[award.cardId] : undefined;
+            const bonusGold = award.goldBonus ?? 0;
+            const bonusShards = award.shardsBonus ?? 0;
+
+            updateCurrentUserProgression((prev) => {
+              const nextExtra = { ...(prev.extraUnlockedCards ?? {}) };
+              if (prizeCard) {
+                nextExtra[prizeCard.id] = (nextExtra[prizeCard.id] ?? 0) + 1;
+              }
+              return {
+                gold: (prev.gold ?? 0) + bonusGold,
+                astralShards: (prev.astralShards ?? 0) + bonusShards,
+                extraUnlockedCards: nextExtra,
+              };
+            });
+
+            if (snap.myEntry) {
+              const claimedEntry: HumanTournamentEntry = {
+                ...snap.myEntry,
+                prizeClaimed: true,
+                claimedCardId: prizeCard?.id,
+                lastHeartbeatAtMs: getTournamentNowMs(),
+              };
+              void upsertHumanTournamentEntryToCloud(claimedEntry);
+            }
+
+            pushNotification({
+              kicker: 'PREMIAÇÃO OFICIAL DE TORNEIO',
+              title: prizeCard
+                ? `Carta Rara Conquistada: ${prizeCard.name}`
+                : `1º Humano Qualificado em ${def.title}`,
+              message: prizeCard
+                ? `Melhor humano qualificado (#${award.winnerGlobalRank} geral, ${award.winnerPoints} pts). "${prizeCard.name}" foi adicionada à sua coleção.`
+                : `Premiação homologada na classificação final (#${award.winnerGlobalRank} geral).`,
+              actionLabel: 'Ver no Grimório',
+              actionTarget: 'deckbuilder',
+            });
+          }
+        }
+      }
+    };
+
+    void superviseTournament();
+    const id = window.setInterval(() => {
+      void superviseTournament();
+    }, 15000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [isGuest, currentUser.username, pushNotification]);
 
   const handleToggleSound = () => {
     startAdaptiveMusic();
@@ -985,6 +1172,7 @@ export const App: React.FC = () => {
         overworldBuff: owBuff,
       })
     );
+    setActiveTournamentMatch(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setActiveRankedSovereign(null);
@@ -1017,6 +1205,7 @@ export const App: React.FC = () => {
     }
     const { buildRankedSovereignBossEncounter } = await import('./data/sovereignEloLadder');
     const boss = buildRankedSovereignBossEncounter(entry);
+    setActiveTournamentMatch(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setIsExpeditionBattle(false);
@@ -1704,6 +1893,7 @@ export const App: React.FC = () => {
 
   const effectiveNavTab: ActiveTab = useMemo(() => {
     if (activeTab === 'arena') {
+      if (activeTournamentMatch) return 'tournaments';
       if (activeOnlineMatch) return 'multiplayer';
       if (activeProblem) return 'problems';
       if (activeCampaignBoss && activeRankedSovereign) return 'leaderboard';
@@ -1717,6 +1907,7 @@ export const App: React.FC = () => {
     return activeTab;
   }, [
     activeTab,
+    activeTournamentMatch,
     activeOnlineMatch,
     activeProblem,
     activeCampaignBoss,
@@ -2479,6 +2670,20 @@ export const App: React.FC = () => {
             </div>
           }
         >
+        {activeTab === 'tournaments' && (
+          <TournamentsView
+            currentUser={currentUser}
+            customDecks={customDecks}
+            unlockedCardIds={unlockedCardIds}
+            isGuest={isGuest}
+            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireDeckSetup={() => setActiveTab('deckbuilder')}
+            onInspectCard={setShowcaseInspectCard}
+            onStartTournamentSovereignMatch={handleStartTournamentSovereignMatch}
+            onStartTournamentPvpMatch={handleStartTournamentPvpMatch}
+          />
+        )}
+
         {activeTab === 'leaderboard' && (
           <GlobalLeaderboardView
             currentUser={currentUser}
@@ -2581,6 +2786,8 @@ export const App: React.FC = () => {
             onCampaignVictory={handleCampaignVictory}
             onCampaignDefeat={handleCampaignDefeat}
             onExitArena={() => {
+              const wasTournament = Boolean(activeTournamentMatch);
+              setActiveTournamentMatch(null);
               setActiveCampaignBoss(null);
               setActiveRankedSovereign(null);
               setActiveProblem(null);
@@ -2590,9 +2797,16 @@ export const App: React.FC = () => {
               setActiveRiftId(null);
               setActiveConquestContext(null);
               setActiveGeoModifiers(null);
-              setActiveTab('home');
+              setActiveTab(wasTournament ? 'tournaments' : 'home');
             }}
             onExitCampaign={() => {
+              if (activeTournamentMatch) {
+                setActiveTournamentMatch(null);
+                setActiveCampaignBoss(null);
+                setActiveOnlineMatch(null);
+                setActiveTab('tournaments');
+                return;
+              }
               const wasRanked = Boolean(activeRankedSovereign);
               const wasRift = Boolean(activeRiftId);
               const wasDraft = isDraftBattle;
@@ -2634,6 +2848,81 @@ export const App: React.FC = () => {
             }}
             onRewardGold={handleRewardGold}
             onMatchConcluded={handleMatchConcluded}
+            tournamentContext={
+              activeTournamentMatch
+                ? {
+                    tournamentTitle: activeTournamentMatch.tournament.title,
+                    roundNumber: activeTournamentMatch.roundNumber,
+                    totalRounds: activeTournamentMatch.tournament.totalRounds,
+                    roundPlayDeadlineMs: activeTournamentMatch.roundPlayDeadlineMs,
+                    turnTimeLimitSec: activeTournamentMatch.tournament.turnTimeLimitSec,
+                    mulliganTimeLimitSec: activeTournamentMatch.tournament.mulliganTimeLimitSec,
+                    onExitTournament: () => {
+                      setActiveTournamentMatch(null);
+                      setActiveCampaignBoss(null);
+                      setActiveOnlineMatch(null);
+                      setActiveTab('tournaments');
+                    },
+                    onTournamentMatchResult: ({ score, hpDiff, turns, reason }) => {
+                      const ctx = activeTournamentMatch;
+                      const updatedEntry: HumanTournamentEntry = {
+                        ...ctx.entry,
+                        lastHeartbeatAtMs: getTournamentNowMs(),
+                        resultsByRound: {
+                          ...(ctx.entry.resultsByRound ?? {}),
+                          [ctx.roundNumber]: {
+                            round: ctx.roundNumber,
+                            opponentId: ctx.opponentStanding.participantId,
+                            opponentName: ctx.opponentStanding.displayName,
+                            opponentKind: ctx.opponentStanding.kind,
+                            score,
+                            hpDiff,
+                            turns,
+                            finishedAtMs: getTournamentNowMs(),
+                            reason,
+                          },
+                        },
+                      };
+                      void upsertHumanTournamentEntryToCloud(updatedEntry);
+
+                      if (
+                        !isGuest &&
+                        score !== 0.5 &&
+                        ctx.opponentStanding.sovereignEntry
+                      ) {
+                        const outcome = recordRankedSovereignDuelResult(
+                          currentUser,
+                          ctx.opponentStanding.sovereignEntry,
+                          score === 1,
+                          0
+                        );
+                        setCurrentUser(outcome.updatedProfile);
+                      } else if (!isGuest && score !== 0.5 && ctx.opponentStanding.kind === 'human') {
+                        const updated = recordPvpMatchResult(
+                          currentUser,
+                          score === 1,
+                          ctx.opponentStanding.eloRating,
+                          {
+                            name: ctx.opponentStanding.displayName,
+                            avatarCardId: ctx.opponentStanding.avatarCardId,
+                          }
+                        );
+                        setCurrentUser(updated);
+                      }
+
+                      const scoreLabel =
+                        score === 1 ? '+1,0 pt (Vitória)' : score === 0.5 ? '+0,5 pt (Empate)' : '0,0 pt';
+                      pushNotification({
+                        kicker: `RODADA ${ctx.roundNumber}/${ctx.tournament.totalRounds} HOMOLOGADA`,
+                        title: `${scoreLabel} contra ${ctx.opponentStanding.displayName}`,
+                        message: `Resultado sincronizado na classificação da ${ctx.tournament.title}.`,
+                        actionLabel: 'Voltar ao Salão do Torneio',
+                        actionTarget: 'tournaments',
+                      });
+                    },
+                  }
+                : null
+            }
             rankedDuelContext={
               activeRankedSovereign
                 ? {
@@ -2655,8 +2944,10 @@ export const App: React.FC = () => {
                     role: activeOnlineMatch.role,
                     currentUser,
                     onExitPvp: () => {
+                      const wasTournament = Boolean(activeTournamentMatch);
+                      setActiveTournamentMatch(null);
                       setActiveOnlineMatch(null);
-                      setActiveTab('multiplayer');
+                      setActiveTab(wasTournament ? 'tournaments' : 'multiplayer');
                     },
                     onPvpResult: (didWin) => {
                       const oppInfo =

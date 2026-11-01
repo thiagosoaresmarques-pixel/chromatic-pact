@@ -107,6 +107,9 @@ export default defineConfig({
           ) {
             return 'ai-weights';
           }
+          if (norm.includes('tournamentEngine')) {
+            return 'tournament-engine';
+          }
           if (
             norm.includes('/src/utils/') ||
             norm.includes('/src/data/problems') ||

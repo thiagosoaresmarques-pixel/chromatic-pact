@@ -8,7 +8,6 @@ import {
   getSupabaseConfig,
   SovereignUserProfile,
 } from './multiplayerEngine';
-import { buildRankedSovereignBossEncounter } from '../data/sovereignEloLadder';
 
 // ============================================================================
 // 1. TIME CONTROL EMPIRICAL BENCHMARKS & TOURNAMENT CADENCE PRESETS
@@ -1354,10 +1353,11 @@ export async function enrollHumanInTournament(params: {
  * Builds the symmetric 40 PV vs 40 PV encounter when a human faces a Sovereign in the Swiss Tournament.
  * Zero PvE passives, zero Overworld buffs — 100% symmetric tournament rules.
  */
-export function buildTournamentSovereignBossEncounter(
+export async function buildTournamentSovereignBossEncounter(
   sovereignEntry: SovereignAiLeaderboardEntry,
   round: number
-): CampaignBoss {
+): Promise<CampaignBoss> {
+  const { buildRankedSovereignBossEncounter } = await import('../data/sovereignEloLadder');
   const base = buildRankedSovereignBossEncounter(sovereignEntry);
   return {
     ...base,

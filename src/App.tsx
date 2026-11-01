@@ -935,7 +935,7 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
-  const handleStartTournamentSovereignMatch = (launch: ActiveTournamentMatchLaunch) => {
+  const handleStartTournamentSovereignMatch = async (launch: ActiveTournamentMatchLaunch) => {
     const sovEntry = launch.opponentStanding.sovereignEntry;
     if (!sovEntry) return;
     try {
@@ -943,7 +943,7 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
-    const boss = buildTournamentSovereignBossEncounter(sovEntry, launch.roundNumber);
+    const boss = await buildTournamentSovereignBossEncounter(sovEntry, launch.roundNumber);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setActiveRankedSovereign(null);

@@ -1,15 +1,17 @@
-const CACHE_VERSION = 'chromatic-pact-v10';
+const CACHE_VERSION = 'chromatic-pact-v11';
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
 const PRECACHE_URLS = [
   '/',
   '/manifest.webmanifest',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/icon-maskable-512.png',
-  '/icons/apple-touch-icon.png',
-  '/icons/icon-192.svg',
-  '/icons/icon-512.svg',
+  '/favicon.ico?v=11',
+  '/icons/brand-coroa-prisma.png',
+  '/icons/favicon-32.png?v=11',
+  '/icons/favicon-64.png?v=11',
+  '/icons/icon-192.png?v=11',
+  '/icons/icon-512.png?v=11',
+  '/icons/icon-maskable-512.png?v=11',
+  '/icons/apple-touch-icon.png?v=11',
 ];
 
 self.addEventListener('install', (event) => {

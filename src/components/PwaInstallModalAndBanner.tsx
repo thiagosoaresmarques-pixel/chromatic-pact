@@ -122,7 +122,7 @@ export const PwaInstallBanner: React.FC<PwaInstallBannerProps> = ({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 240, flex: 1 }}>
             <img
-              src="/icons/icon-192.png"
+              src="/icons/icon-192.png?v=11"
               alt="Chromatic Pact App"
               width={40}
               height={40}
@@ -305,7 +305,7 @@ export const PwaInstallGuideModal: React.FC<PwaInstallGuideModalProps> = ({
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <img
-              src="/icons/icon-192.png"
+              src="/icons/icon-192.png?v=11"
               alt="Chromatic Pact"
               width={48}
               height={48}

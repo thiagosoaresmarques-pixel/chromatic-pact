@@ -1828,7 +1828,15 @@ export const App: React.FC = () => {
           className="brand-logo"
           onClick={() => handleSelectSubTab('home')}
         >
-          <div className="brand-emblem">❖</div>
+          <div className="brand-emblem" aria-hidden="true">
+            <img
+              src="/icons/brand-coroa-prisma.png"
+              alt=""
+              width={32}
+              height={32}
+              className="brand-emblem-img"
+            />
+          </div>
           <div>
             <div className="brand-title gold-gradient-text">CHROMATIC PACT</div>
             <div className="brand-subtitle">DARK FANTASY TACTICAL CARD GAME</div>

@@ -1,20 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
-import {
-  UNIFIED_CHAMPION_STANDINGS,
-  UnifiedFormatKind,
-} from '../data/aiUnifiedTournamentData';
+import { UNIFIED_CHAMPION_STANDINGS } from '../data/aiUnifiedTournamentData';
 import { CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import {
-  ARCHETYPE_TIER_ELO_MAP,
   calculateFideRankedEloDelta,
   ELO_DIVISIONS,
   EloDivisionId,
   getEloDivisionMeta,
   SovereignAiLeaderboardEntry,
 } from '../data/sovereignEloLadder';
-import { AiSkillTier, CardDefinition, Domain } from '../types/game';
+import { CardDefinition, Domain } from '../types/game';
 import {
   fetchUnifiedPlatformLeaderboard,
   SovereignSavedDeck,
@@ -50,13 +45,6 @@ interface GlobalLeaderboardViewProps {
 }
 
 type LeaderboardTabScope = 'all' | 'humans' | 'sovereigns';
-
-const FORMAT_LABELS: Record<UnifiedFormatKind, string> = {
-  monocolor: 'Monocolor',
-  bicolor: 'Bicolor',
-  tricolor: 'Tricolor',
-  pentachromatic: 'Pentacromático',
-};
 
 const DOMAIN_OPTIONS: Array<{ id: Domain; label: string }> = [
   { id: 'red', label: 'Pyros (Vermelho)' },
@@ -833,8 +821,11 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                         {row.eloRating}
                       </div>
                       {row.totalGames > 0 && (
-                        <div style={{ fontSize: '0.67rem', color: '#64748b' }}>
-                          {row.winRate.toFixed(0)}%
+                        <div
+                          style={{ fontSize: '0.67rem', color: '#64748b' }}
+                          title={`Taxa de vitórias: ${Math.round(row.winRate * 100)}% (${row.wins.toLocaleString('pt-BR')} vitórias e ${row.losses.toLocaleString('pt-BR')} derrotas)`}
+                        >
+                          {Math.round(row.winRate * 100)}% vit.
                         </div>
                       )}
                     </div>
@@ -882,7 +873,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
       </section>
 
       {/* =====================================================================
-          PROGRESSIVE DISCLOSURE MODAL 1: SOVEREIGN DOSSIER & MATCHUP
+          PROGRESSIVE DISCLOSURE MODAL 1: SOVEREIGN PROFILE & MATCHUP GUIDE
           (Opened by clicking any Sovereign row)
           ===================================================================== */}
       {dossierSovereign && (
@@ -893,14 +884,14 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
         >
           <div
             className="modal-panel"
-            style={{ maxWidth: '640px', width: '94vw', padding: '1.35rem' }}
+            style={{ maxWidth: '620px', width: '94vw', padding: '1.35rem' }}
             onClick={(e) => e.stopPropagation()}
           >
             {(() => {
               const s = dossierSovereign;
               const standing = standingById.get(s.archetypeId);
-              const tierMatrix = ARCHETYPE_TIER_ELO_MAP[s.archetypeId];
               const div = getEloDivisionMeta(s.eloRating);
+              const winRatePct = Math.round(s.simulatedWinRate * 100);
               const winDelta = calculateFideRankedEloDelta({
                 playerElo,
                 opponentElo: s.eloRating,
@@ -918,6 +909,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
 
               return (
                 <>
+                  {/* Header: Identity, Archetype & Explicit Domain Colors */}
                   <div
                     style={{
                       display: 'flex',
@@ -932,15 +924,40 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                       <div>
                         <h3
                           className="font-cinzel"
-                          style={{ margin: 0, fontSize: '1.1rem', color: '#f8fafc' }}
+                          style={{ margin: 0, fontSize: '1.08rem', color: '#f8fafc' }}
                         >
                           {s.sovereignName}
                         </h3>
-                        <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '2px' }}>
-                          {s.archetypeName} · {FORMAT_LABELS[s.format]}
+                        <div style={{ fontSize: '0.8rem', color: '#cbd5e1', marginTop: '2px' }}>
+                          Grimório: {s.archetypeName}
                         </div>
-                        <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '2px' }}>
-                          {s.sovereignTitle}
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: '0.55rem',
+                            marginTop: '4px',
+                            fontSize: '0.73rem',
+                            color: '#94a3b8',
+                          }}
+                        >
+                          {s.domains.map((d) => (
+                            <span
+                              key={d}
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                            >
+                              <span
+                                style={{
+                                  width: '7px',
+                                  height: '7px',
+                                  borderRadius: '50%',
+                                  background: DOMAIN_META[d]?.color ?? '#94a3b8',
+                                }}
+                              />
+                              {DOMAIN_META[d]?.shortName ?? d}
+                            </span>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -950,18 +967,19 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                       className="aaa-btn aaa-btn-secondary"
                       style={{ padding: '4px 9px', fontSize: '0.75rem' }}
                       onClick={() => setDossierSovereign(null)}
+                      aria-label="Fechar"
                     >
                       ✕
                     </button>
                   </div>
 
-                  {/* Key Metrics Strip */}
+                  {/* 3 Self-Explanatory Summary Metrics */}
                   <div
                     style={{
                       display: 'grid',
-                      gridTemplateColumns: 'repeat(3, 1fr)',
-                      gap: '0.6rem',
-                      padding: '0.75rem',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(165px, 1fr))',
+                      gap: '0.75rem',
+                      padding: '0.85rem 0.95rem',
                       borderRadius: '8px',
                       background: 'rgba(15, 23, 42, 0.65)',
                       border: '1px solid rgba(148, 163, 184, 0.14)',
@@ -969,195 +987,245 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                     }}
                   >
                     <div>
-                      <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Rating Oficial</div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '2px' }}>
+                        Pontuação no ranking
+                      </div>
                       <div
                         style={{
-                          fontSize: '1rem',
+                          fontSize: '1.05rem',
                           fontWeight: 700,
                           color: '#f8fafc',
                           fontVariantNumeric: 'tabular-nums',
                         }}
                       >
-                        {s.eloRating}{' '}
-                        <span style={{ fontSize: '0.74rem', fontWeight: 500, color: div.color }}>
-                          {div.shortLabel}
-                        </span>
+                        {s.eloRating} ELO
+                      </div>
+                      <div
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '0.72rem',
+                          color: '#94a3b8',
+                          marginTop: '2px',
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: div.color,
+                          }}
+                        />
+                        Divisão {div.shortLabel}
                       </div>
                     </div>
 
                     <div>
-                      <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Histórico de Duelos</div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '2px' }}>
+                        Aproveitamento
+                      </div>
                       <div
                         style={{
-                          fontSize: '0.92rem',
-                          fontWeight: 600,
-                          color: '#e2e8f0',
+                          fontSize: '1.05rem',
+                          fontWeight: 700,
+                          color: '#f8fafc',
                           fontVariantNumeric: 'tabular-nums',
                         }}
                       >
-                        {s.simulatedWinRate.toFixed(1)}%{' '}
-                        <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 400 }}>
-                          ({s.simulatedWins}V/{s.simulatedLosses}D)
-                        </span>
+                        {winRatePct}% de vitórias
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.72rem',
+                          color: '#64748b',
+                          marginTop: '2px',
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
+                      >
+                        {s.simulatedWins.toLocaleString('pt-BR')} vitórias ·{' '}
+                        {s.simulatedLosses.toLocaleString('pt-BR')} derrotas
                       </div>
                     </div>
 
                     <div>
-                      <div style={{ fontSize: '0.68rem', color: '#64748b' }}>Impacto no seu ELO</div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '3px' }}>
+                        Valendo para o seu ELO
+                      </div>
                       <div
                         style={{
-                          fontSize: '0.92rem',
+                          fontSize: '0.8rem',
                           fontWeight: 600,
+                          color: '#6ee7b7',
                           fontVariantNumeric: 'tabular-nums',
                         }}
                       >
-                        <span style={{ color: '#6ee7b7' }}>+{winDelta}</span>
-                        <span style={{ color: '#64748b' }}> / </span>
-                        <span style={{ color: '#fca5a5' }}>{lossDelta}</span>
+                        Se vencer: +{winDelta} ELO
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          color: '#fca5a5',
+                          marginTop: '2px',
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
+                      >
+                        Se perder: {lossDelta} ELO
                       </div>
                     </div>
                   </div>
 
-                  {/* Tier I-V Curve */}
-                  {tierMatrix && (
-                    <div style={{ marginBottom: '1rem' }}>
+                  {/* Single-Perspective Matchup Guide (Player's win chance against this Sovereign) */}
+                  {standing && (
+                    <div style={{ marginBottom: '1.15rem' }}>
                       <div
                         style={{
-                          fontSize: '0.72rem',
-                          fontWeight: 600,
-                          color: '#94a3b8',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'baseline',
+                          flexWrap: 'wrap',
+                          gap: '0.4rem',
                           marginBottom: '0.45rem',
                         }}
                       >
-                        Progressão do arquétipo por grau de maestria
+                        <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e2e8f0' }}>
+                          Como enfrentar este Soberano
+                        </span>
+                        <span style={{ fontSize: '0.71rem', color: '#64748b' }}>
+                          Chance de vitória ao desafiá-lo com cada grimório
+                        </span>
                       </div>
+
                       <div
                         style={{
                           display: 'grid',
-                          gridTemplateColumns: 'repeat(5, 1fr)',
-                          gap: '0.4rem',
+                          gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+                          gap: '0.65rem',
                         }}
                       >
-                        {([1, 2, 3, 4, 5] as AiSkillTier[]).map((t) => {
-                          const cell = tierMatrix[t];
-                          const isCurrent = t === s.skillTier;
-                          return (
-                            <div
-                              key={t}
-                              style={{
-                                padding: '0.45rem',
-                                borderRadius: '6px',
-                                textAlign: 'center',
-                                background: isCurrent
-                                  ? 'rgba(234, 179, 8, 0.1)'
-                                  : 'rgba(15, 23, 42, 0.45)',
-                                border: isCurrent
-                                  ? '1px solid rgba(234, 179, 8, 0.45)'
-                                  : '1px solid rgba(148, 163, 184, 0.12)',
-                              }}
-                            >
-                              <div style={{ fontSize: '0.66rem', color: '#94a3b8' }}>
-                                Tier {AI_SKILL_TIER_SPECS[t].roman}
-                              </div>
+                        {/* Challenger's Best Decks = Sovereign's Worst Matchups */}
+                        <div
+                          style={{
+                            padding: '0.7rem 0.8rem',
+                            borderRadius: '8px',
+                            background: 'rgba(15, 23, 42, 0.45)',
+                            border: '1px solid rgba(148, 163, 184, 0.12)',
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              color: '#6ee7b7',
+                              marginBottom: '0.4rem',
+                            }}
+                          >
+                            Melhores escolhas contra ele
+                          </div>
+                          {standing.worstMatchups.slice(0, 3).map((m) => {
+                            const challengerWinPct = Math.max(
+                              0,
+                              Math.min(100, Math.round((1 - m.winRate) * 100))
+                            );
+                            return (
                               <div
+                                key={m.opponentId}
                                 style={{
-                                  fontSize: '0.86rem',
-                                  fontWeight: 700,
-                                  color: '#f8fafc',
-                                  fontVariantNumeric: 'tabular-nums',
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  fontSize: '0.76rem',
+                                  color: '#cbd5e1',
+                                  padding: '3px 0',
                                 }}
                               >
-                                {cell.elo}
+                                <span
+                                  style={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                  }}
+                                >
+                                  {standingById.get(m.opponentId)?.name ?? m.opponentId}
+                                </span>
+                                <span
+                                  style={{
+                                    color: '#6ee7b7',
+                                    fontWeight: 600,
+                                    fontVariantNumeric: 'tabular-nums',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {challengerWinPct}% de vitória
+                                </span>
                               </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
+                            );
+                          })}
+                        </div>
 
-                  {/* Matchups */}
-                  {standing && (
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                        gap: '0.65rem',
-                        marginBottom: '1.1rem',
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: '0.65rem 0.75rem',
-                          borderRadius: '8px',
-                          background: 'rgba(15, 23, 42, 0.45)',
-                          border: '1px solid rgba(148, 163, 184, 0.12)',
-                        }}
-                      >
+                        {/* Challenger's Worst Decks = Sovereign's Best Matchups */}
                         <div
                           style={{
-                            fontSize: '0.7rem',
-                            fontWeight: 600,
-                            color: '#94a3b8',
-                            marginBottom: '0.35rem',
+                            padding: '0.7rem 0.8rem',
+                            borderRadius: '8px',
+                            background: 'rgba(15, 23, 42, 0.45)',
+                            border: '1px solid rgba(148, 163, 184, 0.12)',
                           }}
                         >
-                          Forte contra
-                        </div>
-                        {standing.bestMatchups.slice(0, 3).map((m) => (
                           <div
-                            key={m.opponentId}
                             style={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              fontSize: '0.76rem',
-                              color: '#cbd5e1',
-                              padding: '2px 0',
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              color: '#fca5a5',
+                              marginBottom: '0.4rem',
                             }}
                           >
-                            <span>{standingById.get(m.opponentId)?.name ?? m.opponentId}</span>
-                            <span style={{ color: '#6ee7b7', fontVariantNumeric: 'tabular-nums' }}>
-                              {m.winRate.toFixed(0)}%
-                            </span>
+                            Grimórios em desvantagem (evite)
                           </div>
-                        ))}
-                      </div>
-
-                      <div
-                        style={{
-                          padding: '0.65rem 0.75rem',
-                          borderRadius: '8px',
-                          background: 'rgba(15, 23, 42, 0.45)',
-                          border: '1px solid rgba(148, 163, 184, 0.12)',
-                        }}
-                      >
-                        <div
-                          style={{
-                            fontSize: '0.7rem',
-                            fontWeight: 600,
-                            color: '#94a3b8',
-                            marginBottom: '0.35rem',
-                          }}
-                        >
-                          Vulnerável a (Counters)
+                          {standing.bestMatchups.slice(0, 3).map((m) => {
+                            const challengerWinPct = Math.max(
+                              0,
+                              Math.min(100, Math.round((1 - m.winRate) * 100))
+                            );
+                            return (
+                              <div
+                                key={m.opponentId}
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  gap: '0.5rem',
+                                  fontSize: '0.76rem',
+                                  color: '#cbd5e1',
+                                  padding: '3px 0',
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                  }}
+                                >
+                                  {standingById.get(m.opponentId)?.name ?? m.opponentId}
+                                </span>
+                                <span
+                                  style={{
+                                    color: '#fca5a5',
+                                    fontWeight: 600,
+                                    fontVariantNumeric: 'tabular-nums',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {challengerWinPct}% de vitória
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
-                        {standing.worstMatchups.slice(0, 3).map((m) => (
-                          <div
-                            key={m.opponentId}
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              fontSize: '0.76rem',
-                              color: '#cbd5e1',
-                              padding: '2px 0',
-                            }}
-                          >
-                            <span>{standingById.get(m.opponentId)?.name ?? m.opponentId}</span>
-                            <span style={{ color: '#fca5a5', fontVariantNumeric: 'tabular-nums' }}>
-                              {(100 - m.winRate).toFixed(0)}% p/ rival
-                            </span>
-                          </div>
-                        ))}
                       </div>
                     </div>
                   )}

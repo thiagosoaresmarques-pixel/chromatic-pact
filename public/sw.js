@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'chromatic-pact-v11';
+const CACHE_VERSION = 'chromatic-pact-v12';
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
 const PRECACHE_URLS = [
@@ -6,11 +6,12 @@ const PRECACHE_URLS = [
   '/manifest.webmanifest',
   '/favicon.ico?v=11',
   '/icons/brand-coroa-prisma.png',
-  '/icons/favicon-32.png?v=11',
-  '/icons/favicon-64.png?v=11',
-  '/icons/icon-192.png?v=11',
-  '/icons/icon-512.png?v=11',
-  '/icons/icon-maskable-512.png?v=11',
+  '/icons/favicon-32.png?v=12',
+  '/icons/favicon-64.png?v=12',
+  '/icons/icon-192.png?v=12',
+  '/icons/icon-256.png?v=12',
+  '/icons/icon-512.png?v=12',
+  '/icons/icon-maskable-512.png?v=12',
   '/icons/apple-touch-icon.png?v=11',
 ];
 

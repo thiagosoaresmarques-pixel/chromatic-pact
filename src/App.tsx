@@ -1411,7 +1411,6 @@ export const App: React.FC = () => {
     const nextGold = gold + amount;
     updateCurrentUserProgression((prev) => ({
       gold: (prev.gold ?? 0) + amount,
-      arenaWins: (prev.arenaWins ?? 0) + 1,
     }));
     pushNotification({
       kicker: 'ESPÓLIOS DE BATALHA',

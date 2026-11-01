@@ -11,7 +11,10 @@ import {
   SOVEREIGN_AI_LEADERBOARD_ROSTER,
   SOVEREIGN_ELO_CALIBRATION_SUMMARY,
 } from '../data/sovereignEloLadder';
-import { recalculateProfileEloFromInitialBase } from '../utils/multiplayerEngine';
+import {
+  recalculateProfileEloFromInitialBase,
+  resetCampaignProgressionForProfile,
+} from '../utils/multiplayerEngine';
 import {
   ASYMMETRIC_AUDIT_SUMMARY,
   DRAFT_CARD_PICK_TIERS,
@@ -935,6 +938,37 @@ function runAutomatedQA() {
   });
   if (migratedZero.profile.eloRating !== 1000 || !(migratedPlayed.profile.eloRating > 1030 && migratedPlayed.profile.eloRating < 1100)) {
     throw new Error('Retroactive ELO recalculation from base 1000 failed!');
+  }
+  const campaignResetCheck = resetCampaignProgressionForProfile({
+    id: 'sov_camp_reset_test',
+    username: 'CampResetTest',
+    title: 'Soberano',
+    avatarCardId: 'neutral_10_valkyra_pentacromatica',
+    eloRating: 1000,
+    pvpWins: 0,
+    pvpLosses: 0,
+    preferredDeckId: '',
+    gold: 156,
+    astralShards: 70,
+    arenaWins: 7,
+    defeatedBossIds: [
+      'gc_red_t1_pyros_01',
+      'gc_red_t1_pyros_02',
+      'gc_red_t1_pyros_03',
+      'gc_red_t2_pyros_04',
+      'gc_red_t2_pyros_05',
+    ],
+    extraUnlockedCards: { red_133_juggernaut_fornalha: 1 },
+  });
+  if (
+    !campaignResetCheck.wasReset ||
+    campaignResetCheck.profile.gold !== 20 ||
+    campaignResetCheck.profile.astralShards !== 0 ||
+    campaignResetCheck.profile.arenaWins !== 0 ||
+    (campaignResetCheck.profile.defeatedBossIds?.length ?? 0) !== 0 ||
+    Object.keys(campaignResetCheck.profile.extraUnlockedCards ?? {}).length !== 0
+  ) {
+    throw new Error('Campaign progression reset validation failed!');
   }
   console.log(
     `  OK — 220/220 ELO cells verified (T1=${dist[1].meanElo} < T2=${dist[2].meanElo} < T3=${dist[3].meanElo} < T4=${dist[4].meanElo} < T5=${dist[5].meanElo}), ${SOVEREIGN_AI_LEADERBOARD_ROSTER.length} Leaderboard Sovereigns, ${ASYMMETRIC_AUDIT_SUMMARY.totalAsymmetricMatches} Asymmetric Audit matches & 1,038 Draft Pick Tiers.`

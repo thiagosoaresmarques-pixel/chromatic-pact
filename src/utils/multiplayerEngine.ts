@@ -1,6 +1,6 @@
 import { AiSkillTier, CardDefinition, Domain, DomainExpansionState, GameState, PlayerState, PrebuiltDeck } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
-import { PREBUILT_DECKS } from '../data/decks';
+import { CAMPAIGN_BOSSES, PREBUILT_DECKS } from '../data/decks';
 import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
 import type { UnifiedFormatKind } from '../data/aiUnifiedTournamentData';
 import {
@@ -13,6 +13,7 @@ import type { SovereignAiLeaderboardEntry } from '../data/sovereignEloLadderData
 export const VICTORY_GOLD_REWARD = 10;
 export const STARTER_GOLD = 160;
 export const GRIMOIRE_REPLACEMENT_GOLD_COST = 100;
+export const CAMPAIGN_RESET_VERSION = 1;
 
 export const MONOCHROMATIC_STARTER_DECKS: PrebuiltDeck[] = PREBUILT_DECKS.filter(
   (d) => d.domains.length === 1
@@ -133,6 +134,7 @@ export interface SovereignUserProfile {
   avatarCardId: string;
   eloRating: number;
   eloBaseVersion?: number;
+  campaignResetVersion?: number;
   pvpWins: number;
   pvpLosses: number;
   rankedSovereignWins?: number;
@@ -256,9 +258,81 @@ const STORAGE_KEYS = {
   SUPABASE_URL: 'chromatic_pact_supabase_url_v1',
   SUPABASE_KEY: 'chromatic_pact_supabase_key_v1',
   GRIMOIRE_RESET_V4: 'chromatic_pact_grimoire_reset_v4',
+  CAMPAIGN_RESET_V1: 'chromatic_pact_campaign_reset_v1',
 };
 
-// Purge legacy v1 pre-seeded profiles and run one-time Grimoire Reset v4 for existing accounts (including tsm81)
+function estimateCampaignBossRewardGold(bossId: string): number {
+  const legacy = CAMPAIGN_BOSSES_GOLD_BY_ID.get(bossId);
+  if (legacy !== undefined) return legacy;
+  if (bossId.includes('_t1_')) return 16;
+  if (bossId.includes('_t2_')) return 24;
+  if (bossId.includes('_t3_')) return 35;
+  if (bossId.includes('_t4_')) return 50;
+  if (bossId.includes('_t5_')) return bossId.includes('capital_axial') ? 100 : 80;
+  return VICTORY_GOLD_REWARD;
+}
+
+const CAMPAIGN_BOSSES_GOLD_BY_ID: Map<string, number> = new Map(
+  CAMPAIGN_BOSSES.map((b) => [b.id, b.rewardGold ?? VICTORY_GOLD_REWARD])
+);
+
+/**
+ * Reseta integralmente o progresso de Campanha e todos os seus efeitos derivados
+ * (chefes vencidos, cartas desbloqueadas em campanha, ouro/estilhaços ganhos na campanha
+ * e vitórias de campanha/relíquias associadas) para perfis anteriores ao CAMPAIGN_RESET_VERSION.
+ */
+export function resetCampaignProgressionForProfile(
+  profile: SovereignUserProfile
+): { profile: SovereignUserProfile; wasReset: boolean } {
+  if (isUnregisteredProfile(profile)) {
+    return {
+      profile: {
+        ...profile,
+        campaignResetVersion: CAMPAIGN_RESET_VERSION,
+      },
+      wasReset: false,
+    };
+  }
+
+  if ((profile.campaignResetVersion ?? 0) >= CAMPAIGN_RESET_VERSION) {
+    return { profile, wasReset: false };
+  }
+
+  const prevBosses = profile.defeatedBossIds ?? [];
+  if (prevBosses.length === 0) {
+    return {
+      profile: {
+        ...profile,
+        defeatedBossIds: [],
+        campaignResetVersion: CAMPAIGN_RESET_VERSION,
+      },
+      wasReset: true,
+    };
+  }
+
+  let bossGoldEarned = 0;
+  for (const bid of prevBosses) {
+    bossGoldEarned += estimateCampaignBossRewardGold(bid);
+  }
+  const extraLandmarkEvents = Math.max(0, (profile.arenaWins ?? 0) - prevBosses.length);
+  const landmarkGoldEarned = extraLandmarkEvents * 20;
+  const nextGold = Math.max(0, (profile.gold ?? 0) - bossGoldEarned - landmarkGoldEarned);
+
+  return {
+    profile: {
+      ...profile,
+      gold: nextGold,
+      astralShards: 0,
+      arenaWins: 0,
+      defeatedBossIds: [],
+      extraUnlockedCards: {},
+      campaignResetVersion: CAMPAIGN_RESET_VERSION,
+    },
+    wasReset: true,
+  };
+}
+
+// Purge legacy v1 pre-seeded profiles, Grimoire Reset v4, and Campaign Full Reset v1
 if (typeof window !== 'undefined') {
   try {
     localStorage.removeItem('chromatic_pact_accounts_roster_v1');
@@ -293,6 +367,80 @@ if (typeof window !== 'undefined') {
         }
       }
       localStorage.setItem(STORAGE_KEYS.GRIMOIRE_RESET_V4, 'done');
+    }
+
+    if (localStorage.getItem(STORAGE_KEYS.CAMPAIGN_RESET_V1) !== 'done') {
+      // 1. Limpar todas as sessões de mapa, marcos visitados, bônus de campo, névoa e relíquias equipadas da Campanha
+      localStorage.removeItem('chromatic_pact_campaign_map_session_v1');
+      localStorage.removeItem('chromatic_pact_campaign_banner_v1');
+      localStorage.removeItem('chromatic_pact_ow_campaign_visited_v1');
+      localStorage.removeItem('chromatic_pact_ow_pending_buff_v1_campaign');
+      localStorage.removeItem('chromatic_pact_map_visited_realms_v1');
+      localStorage.removeItem('chromatic_pact_equipped_relic_v1');
+
+      // 2. Limpar eventual duelo de Campanha suspenso na navegação local
+      const rawNav = localStorage.getItem('chromatic_pact_app_nav_state_v1');
+      if (rawNav) {
+        try {
+          const nav = JSON.parse(rawNav) as Record<string, unknown>;
+          if (
+            nav &&
+            nav.activeCampaignBoss &&
+            !nav.isExpeditionBattle &&
+            !nav.isDraftBattle &&
+            !nav.activeRiftId &&
+            !nav.activeConquestContext &&
+            !nav.activeRankedSovereign
+          ) {
+            nav.activeCampaignBoss = null;
+            nav.campaignPlayerDeckIds = null;
+            nav.activeGeoModifiers = null;
+            if (nav.activeTab === 'arena') nav.activeTab = 'home';
+            localStorage.setItem('chromatic_pact_app_nav_state_v1', JSON.stringify(nav));
+            localStorage.removeItem('chromatic_pact_active_battle_v1');
+          }
+        } catch {
+          // Ignore malformed nav state
+        }
+      }
+
+      // 3. Remover notificações antigas de espólios da Campanha
+      const rawNotifs = localStorage.getItem('chromatic_pact_notifications_v1');
+      if (rawNotifs) {
+        try {
+          const parsedNotifs = JSON.parse(rawNotifs) as Array<{ kicker?: string }>;
+          if (Array.isArray(parsedNotifs)) {
+            const filtered = parsedNotifs.filter(
+              (n) =>
+                n?.kicker !== 'TERRITÓRIO PACIFICADO & ESPÓLIOS' &&
+                n?.kicker !== 'ESPÓLIOS DE BATALHA'
+            );
+            localStorage.setItem('chromatic_pact_notifications_v1', JSON.stringify(filtered));
+          }
+        } catch {
+          // Ignore
+        }
+      }
+
+      // 4. Resetar perfis salvos localmente em localStorage e sessionStorage
+      const rawRoster = localStorage.getItem(STORAGE_KEYS.ACCOUNTS_ROSTER);
+      if (rawRoster) {
+        const parsedRoster = JSON.parse(rawRoster) as SovereignUserProfile[];
+        if (Array.isArray(parsedRoster)) {
+          const cleaned = parsedRoster.map((acc) => resetCampaignProgressionForProfile(acc).profile);
+          localStorage.setItem(STORAGE_KEYS.ACCOUNTS_ROSTER, JSON.stringify(cleaned));
+        }
+      }
+      const rawTab = sessionStorage.getItem(STORAGE_KEYS.TAB_ACTIVE_USER);
+      if (rawTab) {
+        const parsedTab = JSON.parse(rawTab) as SovereignUserProfile;
+        if (parsedTab && typeof parsedTab === 'object') {
+          const cleanedTab = resetCampaignProgressionForProfile(parsedTab).profile;
+          sessionStorage.setItem(STORAGE_KEYS.TAB_ACTIVE_USER, JSON.stringify(cleanedTab));
+        }
+      }
+
+      localStorage.setItem(STORAGE_KEYS.CAMPAIGN_RESET_V1, 'done');
     }
   } catch {
     // Ignore
@@ -521,8 +669,10 @@ export function getSavedAccountsRoster(): SovereignUserProfile[] {
             const { cleaned, wasModified } = stripImposedStarterGrimoire(acc);
             const { profile: rebased, wasRecalculated } =
               recalculateProfileEloFromInitialBase(cleaned);
-            if (wasModified || wasRecalculated) anyCleaned = true;
-            return rebased;
+            const { profile: campClean, wasReset } =
+              resetCampaignProgressionForProfile(rebased);
+            if (wasModified || wasRecalculated || wasReset) anyCleaned = true;
+            return campClean;
           });
         if (anyCleaned) {
           try {
@@ -708,18 +858,19 @@ export function ensureStarterDeckForUser(profile: SovereignUserProfile): Soverei
   const shouldBeAdmin = isAdminProfile(profile);
   const { cleaned, wasModified } = stripImposedStarterGrimoire(profile);
   const { profile: rebased, wasRecalculated } = recalculateProfileEloFromInitialBase(cleaned);
-  if (wasModified || wasRecalculated || (shouldBeAdmin && !rebased.isAdmin)) {
+  const { profile: campClean, wasReset } = resetCampaignProgressionForProfile(rebased);
+  if (wasModified || wasRecalculated || wasReset || (shouldBeAdmin && !campClean.isAdmin)) {
     const updated: SovereignUserProfile = {
-      ...rebased,
+      ...campClean,
       isAdmin: shouldBeAdmin,
     };
     setActiveTabUserProfile(updated);
-    if (wasRecalculated) {
+    if (wasRecalculated || wasReset) {
       void syncProfileToSupabaseIfConfigured(updated);
     }
     return updated;
   }
-  return rebased;
+  return campClean;
 }
 
 /**
@@ -759,6 +910,7 @@ function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
     rhist: (profile.recentRankedOpponentIds ?? []).slice(-6),
     rmh: (profile.recentRankedHistory ?? []).slice(0, 8),
     ebv: profile.eloBaseVersion ?? ELO_SCHEMA_VERSION,
+    crv: profile.campaignResetVersion ?? CAMPAIGN_RESET_VERSION,
     pref: profile.preferredDeckId || '',
     adm: isAdminProfile(profile),
     ca: profile.createdAt ?? Date.now(),
@@ -785,13 +937,14 @@ function decodeCloudTitleMeta(
   recentRankedOpponentIds?: string[];
   recentRankedHistory?: RankedMatchHistoryItem[];
   eloBaseVersion?: number;
+  campaignResetVersion?: number;
   preferredDeckId?: string;
   isAdmin?: boolean;
   createdAt?: number;
   lastActiveAt?: number;
 } {
   const fallbackTitle = getAvatarHonorificTitle(avatarCardId);
-  if (!rawTitle) return { title: fallbackTitle, eloBaseVersion: 1 };
+  if (!rawTitle) return { title: fallbackTitle, eloBaseVersion: 1, campaignResetVersion: 0 };
   if (rawTitle.startsWith('{')) {
     try {
       const parsed = JSON.parse(rawTitle) as {
@@ -810,6 +963,7 @@ function decodeCloudTitleMeta(
         rhist?: string[];
         rmh?: RankedMatchHistoryItem[];
         ebv?: number;
+        crv?: number;
         pref?: string;
         adm?: boolean;
         ca?: number;
@@ -831,16 +985,17 @@ function decodeCloudTitleMeta(
         recentRankedOpponentIds: Array.isArray(parsed.rhist) ? parsed.rhist : undefined,
         recentRankedHistory: Array.isArray(parsed.rmh) ? parsed.rmh : undefined,
         eloBaseVersion: typeof parsed.ebv === 'number' ? parsed.ebv : 1,
+        campaignResetVersion: typeof parsed.crv === 'number' ? parsed.crv : 0,
         preferredDeckId: parsed.pref || undefined,
         isAdmin: Boolean(parsed.adm),
         createdAt: typeof parsed.ca === 'number' ? parsed.ca : undefined,
         lastActiveAt: typeof parsed.la === 'number' ? parsed.la : undefined,
       };
     } catch {
-      return { title: fallbackTitle, eloBaseVersion: 1 };
+      return { title: fallbackTitle, eloBaseVersion: 1, campaignResetVersion: 0 };
     }
   }
-  return { title: fallbackTitle, eloBaseVersion: 1 };
+  return { title: fallbackTitle, eloBaseVersion: 1, campaignResetVersion: 0 };
 }
 
 export function createNewSovereignAccount(params: {
@@ -862,6 +1017,7 @@ export function createNewSovereignAccount(params: {
     avatarCardId: chosenAvatar,
     eloRating: INITIAL_PLAYER_ELO,
     eloBaseVersion: ELO_SCHEMA_VERSION,
+    campaignResetVersion: CAMPAIGN_RESET_VERSION,
     pvpWins: 0,
     pvpLosses: 0,
     preferredDeckId: '',
@@ -1038,6 +1194,9 @@ function hydrateProfileFromRow(
   row: SupabaseProfileRow,
   localMatch?: SovereignUserProfile
 ): SovereignUserProfile {
+  const safeLocal = localMatch
+    ? resetCampaignProgressionForProfile(localMatch).profile
+    : undefined;
   const resolvedAvatar =
     row.avatar_card_id && CARDS_BY_ID[row.avatar_card_id]
       ? row.avatar_card_id
@@ -1047,40 +1206,42 @@ function hydrateProfileFromRow(
   const cleanName = (row.username || '').trim();
   const isMasterAdmin = MASTER_ADMIN_USERNAMES.includes(cleanName.toLowerCase());
   const rawProfile: SovereignUserProfile = {
-    id: localMatch?.id ?? `sov_${row.id}`,
+    id: safeLocal?.id ?? `sov_${row.id}`,
     username: row.username,
-    email: meta.email || localMatch?.email,
-    passwordHash: meta.passwordHash || localMatch?.passwordHash,
+    email: meta.email || safeLocal?.email,
+    passwordHash: meta.passwordHash || safeLocal?.passwordHash,
     title: meta.title,
     avatarCardId: resolvedAvatar,
     eloRating: row.elo_rating ?? INITIAL_PLAYER_ELO,
     eloBaseVersion: meta.eloBaseVersion ?? 1,
+    campaignResetVersion: meta.campaignResetVersion ?? 0,
     pvpWins: row.pvp_wins ?? 0,
     pvpLosses: row.pvp_losses ?? 0,
-    rankedSovereignWins: meta.rankedSovereignWins ?? localMatch?.rankedSovereignWins ?? 0,
-    rankedSovereignLosses: meta.rankedSovereignLosses ?? localMatch?.rankedSovereignLosses ?? 0,
+    rankedSovereignWins: meta.rankedSovereignWins ?? safeLocal?.rankedSovereignWins ?? 0,
+    rankedSovereignLosses: meta.rankedSovereignLosses ?? safeLocal?.rankedSovereignLosses ?? 0,
     recentRankedOpponentIds:
-      meta.recentRankedOpponentIds ?? localMatch?.recentRankedOpponentIds ?? [],
+      meta.recentRankedOpponentIds ?? safeLocal?.recentRankedOpponentIds ?? [],
     recentRankedHistory:
-      meta.recentRankedHistory ?? localMatch?.recentRankedHistory ?? [],
-    preferredDeckId: meta.preferredDeckId || localMatch?.preferredDeckId || '',
-    gold: meta.gold ?? row.gold ?? localMatch?.gold ?? 0,
-    astralShards: meta.astralShards ?? localMatch?.astralShards ?? 0,
-    customDecks: meta.customDecks ?? localMatch?.customDecks ?? [],
-    starterDeckCardIds: meta.starterDeckCardIds ?? localMatch?.starterDeckCardIds ?? [],
-    extraUnlockedCards: meta.extraUnlockedCards ?? localMatch?.extraUnlockedCards ?? {},
-    defeatedBossIds: meta.defeatedBossIds ?? localMatch?.defeatedBossIds ?? [],
+      meta.recentRankedHistory ?? safeLocal?.recentRankedHistory ?? [],
+    preferredDeckId: meta.preferredDeckId || safeLocal?.preferredDeckId || '',
+    gold: meta.gold ?? row.gold ?? safeLocal?.gold ?? 0,
+    astralShards: meta.astralShards ?? safeLocal?.astralShards ?? 0,
+    customDecks: meta.customDecks ?? safeLocal?.customDecks ?? [],
+    starterDeckCardIds: meta.starterDeckCardIds ?? safeLocal?.starterDeckCardIds ?? [],
+    extraUnlockedCards: meta.extraUnlockedCards ?? safeLocal?.extraUnlockedCards ?? {},
+    defeatedBossIds: meta.defeatedBossIds ?? safeLocal?.defeatedBossIds ?? [],
     arenaWins: meta.arenaWins ?? 0,
-    isAdmin: Boolean(isMasterAdmin || meta.isAdmin || localMatch?.isAdmin),
-    createdAt: meta.createdAt ?? localMatch?.createdAt ?? updatedMs,
-    lastActiveAt: meta.lastActiveAt ?? updatedMs ?? localMatch?.lastActiveAt,
+    isAdmin: Boolean(isMasterAdmin || meta.isAdmin || safeLocal?.isAdmin),
+    createdAt: meta.createdAt ?? safeLocal?.createdAt ?? updatedMs,
+    lastActiveAt: meta.lastActiveAt ?? updatedMs ?? safeLocal?.lastActiveAt,
   };
   const { cleaned, wasModified } = stripImposedStarterGrimoire(rawProfile);
   const { profile: rebased, wasRecalculated } = recalculateProfileEloFromInitialBase(cleaned);
-  if (wasModified || wasRecalculated) {
-    void syncProfileToSupabaseIfConfigured(rebased);
+  const { profile: campClean, wasReset } = resetCampaignProgressionForProfile(rebased);
+  if (wasModified || wasRecalculated || wasReset) {
+    void syncProfileToSupabaseIfConfigured(campClean);
   }
-  return rebased;
+  return campClean;
 }
 
 /**

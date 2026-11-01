@@ -47,8 +47,6 @@ interface GlobalLeaderboardViewProps {
   onInspectCard: (card: CardDefinition) => void;
 }
 
-type LeaderboardTabScope = 'all' | 'humans' | 'sovereigns';
-
 const DOMAIN_OPTIONS: Array<{ id: Domain; label: string }> = [
   { id: 'red', label: 'Pyros (Vermelho)' },
   { id: 'blue', label: 'Vórtex (Azul)' },
@@ -71,7 +69,6 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
 }) => {
   const [snapshot, setSnapshot] = useState<UnifiedLeaderboardSnapshot | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [scopeTab, setScopeTab] = useState<LeaderboardTabScope>('all');
   const [includeRegionalCommanders, setIncludeRegionalCommanders] = useState<boolean>(true);
   const [divisionFilter, setDivisionFilter] = useState<'all' | EloDivisionId>('all');
   const [domainFilter, setDomainFilter] = useState<'all' | Domain>('all');
@@ -83,7 +80,6 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const PAGE_SIZE = 50;
 
-  const totalRosterCount = SOVEREIGN_AI_LEADERBOARD_ROSTER.length;
   const grandSovereignsCount = useMemo(
     () => SOVEREIGN_AI_LEADERBOARD_ROSTER.filter((s) => s.isGrandSovereign).length,
     []
@@ -173,8 +169,6 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
     if (!snapshot) return [];
     const q = searchQuery.trim().toLowerCase();
     return snapshot.entries.filter((e) => {
-      if (scopeTab === 'humans' && e.kind !== 'human') return false;
-      if (scopeTab === 'sovereigns' && e.kind !== 'sovereign_ai') return false;
       if (divisionFilter !== 'all' && getEloDivisionMeta(e.eloRating).id !== divisionFilter) {
         return false;
       }
@@ -185,11 +179,11 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
       }
       return true;
     });
-  }, [snapshot, scopeTab, divisionFilter, domainFilter, searchQuery]);
+  }, [snapshot, divisionFilter, domainFilter, searchQuery]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [scopeTab, divisionFilter, domainFilter, searchQuery, includeRegionalCommanders]);
+  }, [divisionFilter, domainFilter, searchQuery, includeRegionalCommanders]);
 
   const totalPages = Math.max(1, Math.ceil(filteredEntries.length / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
@@ -500,59 +494,14 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
         }}
       >
         <div
-          role="tablist"
-          aria-label="Filtro de categoria"
           style={{
-            display: 'inline-flex',
-            padding: '3px',
-            borderRadius: '8px',
-            background: 'rgba(15, 23, 42, 0.65)',
-            border: '1px solid rgba(148, 163, 184, 0.15)',
+            fontSize: '0.77rem',
+            color: '#94a3b8',
+            fontVariantNumeric: 'tabular-nums',
           }}
         >
-          {(
-            [
-              {
-                id: 'all' as const,
-                label: 'Todos',
-                count: (snapshot?.humanCount ?? 0) + (snapshot?.sovereignCount ?? 0),
-              },
-              {
-                id: 'humans' as const,
-                label: 'Jogadores',
-                count: snapshot?.humanCount ?? 0,
-              },
-              {
-                id: 'sovereigns' as const,
-                label: 'Soberanos',
-                count: snapshot?.sovereignCount ?? 0,
-              },
-            ]
-          ).map((t) => {
-            const active = scopeTab === t.id;
-            return (
-              <button
-                key={t.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setScopeTab(t.id)}
-                style={{
-                  padding: '5px 11px',
-                  borderRadius: '6px',
-                  border: 'none',
-                  background: active ? 'rgba(255, 255, 255, 0.09)' : 'transparent',
-                  color: active ? '#f8fafc' : '#94a3b8',
-                  fontSize: '0.76rem',
-                  fontWeight: active ? 600 : 500,
-                  cursor: 'pointer',
-                }}
-              >
-                {t.label}{' '}
-                <span style={{ opacity: 0.6, fontVariantNumeric: 'tabular-nums' }}>{t.count}</span>
-              </button>
-            );
-          })}
+          Classificação Oficial ·{' '}
+          <strong style={{ color: '#e2e8f0' }}>{filteredEntries.length}</strong> Soberanos
         </div>
 
         <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -614,28 +563,26 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
             ))}
           </select>
 
-          {scopeTab !== 'humans' && (
-            <button
-              type="button"
-              onClick={() => setIncludeRegionalCommanders((v) => !v)}
-              style={{
-                padding: '6px 10px',
-                borderRadius: '7px',
-                background: !includeRegionalCommanders
-                  ? 'rgba(255, 255, 255, 0.09)'
-                  : 'rgba(15, 23, 42, 0.65)',
-                border: '1px solid rgba(148, 163, 184, 0.18)',
-                color: !includeRegionalCommanders ? '#f8fafc' : '#94a3b8',
-                fontSize: '0.75rem',
-                cursor: 'pointer',
-              }}
-              title={`Alternar entre todos os ${totalRosterCount} Soberanos ou apenas os ${grandSovereignsCount} Grão-Soberanos`}
-            >
-              {includeRegionalCommanders
-                ? `${totalRosterCount} Soberanos`
-                : `${grandSovereignsCount} Grão-Soberanos`}
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setIncludeRegionalCommanders((v) => !v)}
+            style={{
+              padding: '6px 10px',
+              borderRadius: '7px',
+              background: !includeRegionalCommanders
+                ? 'rgba(255, 255, 255, 0.09)'
+                : 'rgba(15, 23, 42, 0.65)',
+              border: '1px solid rgba(148, 163, 184, 0.18)',
+              color: !includeRegionalCommanders ? '#f8fafc' : '#94a3b8',
+              fontSize: '0.75rem',
+              cursor: 'pointer',
+            }}
+            title={`Alternar entre todos os Soberanos ou apenas os ${grandSovereignsCount} Grão-Soberanos`}
+          >
+            {includeRegionalCommanders
+              ? 'Todos os Soberanos'
+              : `${grandSovereignsCount} Grão-Soberanos`}
+          </button>
 
           {totalPages > 1 && safePage !== myTargetPage && (
             <button
@@ -799,20 +746,6 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                             }}
                           >
                             Você
-                          </span>
-                        )}
-                        {row.kind === 'human' && !isMe && (
-                          <span
-                            style={{
-                              fontSize: '0.64rem',
-                              padding: '1px 5px',
-                              borderRadius: '4px',
-                              background: 'rgba(56, 189, 248, 0.12)',
-                              color: '#7dd3fc',
-                              flexShrink: 0,
-                            }}
-                          >
-                            Jogador
                           </span>
                         )}
                       </div>
@@ -1527,7 +1460,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
             </div>
 
             <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.5, margin: '0 0 0.9rem' }}>
-              Jogadores e Soberanos de Vaeloria compartilham a mesma escala competitiva oficial.
+              Todos os Soberanos de Vaeloria compartilham a mesma escala competitiva oficial.
               Novos Soberanos iniciam em <strong style={{ color: '#e2e8f0' }}>{INITIAL_PLAYER_ELO} ELO</strong>{' '}
               (Ferro Axial), com calibração acelerada nas 10 primeiras partidas. Todos os duelos
               ranqueados são disputados em igualdade (40 PV vs 40 PV, grimórios de 100 cartas, sem

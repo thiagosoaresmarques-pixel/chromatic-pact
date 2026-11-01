@@ -172,6 +172,24 @@ export interface HumanTournamentEntry {
   claimedCardId?: string;
 }
 
+export interface ParticipantRoundHistoryItem {
+  round: number;
+  tableNumber: number;
+  opponentId: string; // '__BYE__' if Swiss Bye
+  opponentName: string;
+  opponentSubtitle: string;
+  opponentAvatarCardId: string;
+  opponentPrimaryDomain: Domain;
+  opponentElo: number;
+  opponentFinalRank: number;
+  opponentFinalPoints: number;
+  outcome: 'WIN' | 'DRAW' | 'LOSS' | 'BYE' | 'IN_PROGRESS';
+  scoreEarned: 1 | 0.5 | 0;
+  cumulativePoints: number;
+  hpDiff: number;
+  turns: number;
+}
+
 export interface ComputedTournamentStanding {
   participantId: string;
   kind: 'human' | 'sovereign';
@@ -189,6 +207,7 @@ export interface ComputedTournamentStanding {
   losses: number;
   roundsPlayed: number;
   opponentIds: string[];
+  matchHistory: ParticipantRoundHistoryItem[];
   sovereignEntry?: SovereignAiLeaderboardEntry;
   humanEntry?: HumanTournamentEntry;
 }
@@ -198,11 +217,14 @@ export interface ComputedRoundPairing {
   round: number;
   playerA: ComputedTournamentStanding;
   playerB: ComputedTournamentStanding | null; // null = Swiss Bye (1.0 pt)
+  pointsBeforeA: number;
+  pointsBeforeB: number;
   result: 'A_WIN' | 'B_WIN' | 'DRAW' | 'BYE' | 'IN_PROGRESS' | 'PENDING';
   hpDiffA: number;
   turns: number;
   roomCode?: string;
   isHumanTable: boolean;
+  isMyTable?: boolean;
 }
 
 export type TournamentPhaseStatus =
@@ -221,6 +243,7 @@ export interface ComputedTournamentSnapshot {
   roundEndsAtMs: number;
   standings: ComputedTournamentStanding[];
   currentRoundPairings: ComputedRoundPairing[];
+  roundsPairings: Record<number, ComputedRoundPairing[]>;
   myEntry: HumanTournamentEntry | null;
   myStanding: ComputedTournamentStanding | null;
   myCurrentPairing: ComputedRoundPairing | null;
@@ -229,8 +252,14 @@ export interface ComputedTournamentSnapshot {
   finalizedAward: TournamentAwardedPrize | null;
 }
 
+export interface TournamentCatalogData {
+  tournaments: SwissTournamentDefinition[];
+  entriesByTournament: Record<string, HumanTournamentEntry[]>;
+  primaryTournamentId: string;
+}
+
 // ============================================================================
-// 3. DEFAULT INAUGURAL TOURNAMENT TODAY (17:00 - 18:00 BRT) & CLOCK SYNC
+// 3. INAUGURAL EDITION & AUTOMATIC OFFICIAL WEEKLY SCHEDULE + CLOCK SYNC
 // ============================================================================
 
 export const INAUGURAL_TOURNAMENT_ID = 'copa_inaugural_2026_11_01_17h';
@@ -256,13 +285,120 @@ export const DEFAULT_INAUGURAL_TOURNAMENT: SwissTournamentDefinition = {
     kind: 'unowned_domain_rare_card',
     label: '1 Carta Rara Inédita (Cor do Grimório)',
     description:
-      'Concedida automaticamente ao jogador humano melhor classificado ao término da 6ª rodada, sorteada entre as cartas Raras da cor predominante do seu Grimório que ainda não pertençam à sua coleção.',
+      'Concedida automaticamente ao Campeão da edição ao término da 6ª rodada, sorteada entre as cartas Raras inéditas da cor predominante do seu Grimório (+50 Ouro).',
     goldBonus: 50,
   },
   createdBy: 'tsm81',
   createdAtMs: Date.parse('2026-11-01T16:15:00-03:00'),
   finalizedAward: null,
 };
+
+const BRT_OFFSET_MS = -3 * 3600 * 1000;
+
+/**
+ * Generates deterministic recurring official calendar tournaments (Tuesday 20:00 BRT & Sunday 17:00 BRT)
+ * so the Tournament Hub always presents upcoming open-registration events alongside historical editions.
+ */
+export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamentDefinition[] {
+  const results: SwissTournamentDefinition[] = [];
+  const brtNow = new Date(nowMs + BRT_OFFSET_MS);
+  const baseYear = brtNow.getUTCFullYear();
+  const baseMonth = brtNow.getUTCMonth();
+  const baseDate = brtNow.getUTCDate();
+
+  const makeBrtEpoch = (year: number, month0: number, day: number, hourBrt: number): number => {
+    // BRT is UTC-03:00 -> UTC = hourBrt + 3
+    return Date.UTC(year, month0, day, hourBrt + 3, 0, 0, 0);
+  };
+
+  const formatDateSlug = (epochMs: number): string => {
+    const d = new Date(epochMs + BRT_OFFSET_MS);
+    const y = d.getUTCFullYear();
+    const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    return `${y}_${m}_${day}`;
+  };
+
+  // Scan next 9 calendar days in BRT for the next Tuesday (day === 2) and next Sunday (day === 0)
+  let addedTuesday = false;
+  let addedSunday = false;
+
+  for (let offsetDays = 0; offsetDays <= 10; offsetDays += 1) {
+    const probeBrt = new Date(Date.UTC(baseYear, baseMonth, baseDate + offsetDays, 12, 0, 0));
+    const dow = probeBrt.getUTCDay();
+    const y = probeBrt.getUTCFullYear();
+    const m = probeBrt.getUTCMonth();
+    const d = probeBrt.getUTCDate();
+
+    if (dow === 2 && !addedTuesday) {
+      const startMs = makeBrtEpoch(y, m, d, 20);
+      const endMs = startMs + 60 * 60 * 1000;
+      if (endMs > nowMs) {
+        const slug = formatDateSlug(startMs);
+        results.push({
+          id: `terca_soberana_${slug}_20h`,
+          title: 'Terça Soberana — Circuito Suíço Oficial',
+          subtitle: 'Edição Semanal de Terça · 6 Rodadas · 45s / turno',
+          startsAtMs: startMs,
+          endsAtMs: endMs,
+          totalRounds: 6,
+          roundDurationMs: 10 * 60 * 1000,
+          playWindowMs: 9.5 * 60 * 1000,
+          timeControlId: 'rapid_45s',
+          turnTimeLimitSec: 45,
+          mulliganTimeLimitSec: 20,
+          includeAllSovereigns: true,
+          prizeSpec: {
+            kind: 'unowned_domain_rare_card',
+            label: '1 Carta Rara Inédita (Cor do Grimório)',
+            description:
+              'Concedida automaticamente ao Campeão ao término da 6ª rodada, sorteada entre as cartas Raras inéditas da cor predominante do Grimório inscrito (+50 Ouro).',
+            goldBonus: 50,
+          },
+          createdBy: 'Vaeloria',
+          createdAtMs: startMs - 7 * 24 * 3600 * 1000,
+          finalizedAward: null,
+        });
+        addedTuesday = true;
+      }
+    }
+
+    if (dow === 0 && !addedSunday) {
+      const startMs = makeBrtEpoch(y, m, d, 17);
+      const endMs = startMs + 60 * 60 * 1000;
+      if (startMs !== INAUGURAL_START_MS && endMs > nowMs) {
+        const slug = formatDateSlug(startMs);
+        results.push({
+          id: `copa_dominical_${slug}_17h`,
+          title: 'Copa Dominical de Vaeloria',
+          subtitle: 'Edição de Fim de Semana · 6 Rodadas · 45s / turno',
+          startsAtMs: startMs,
+          endsAtMs: endMs,
+          totalRounds: 6,
+          roundDurationMs: 10 * 60 * 1000,
+          playWindowMs: 9.5 * 60 * 1000,
+          timeControlId: 'rapid_45s',
+          turnTimeLimitSec: 45,
+          mulliganTimeLimitSec: 20,
+          includeAllSovereigns: true,
+          prizeSpec: {
+            kind: 'unowned_domain_rare_card',
+            label: '1 Carta Rara Inédita (Cor do Grimório)',
+            description:
+              'Concedida automaticamente ao Campeão ao término da 6ª rodada, sorteada entre as cartas Raras inéditas da cor predominante do Grimório inscrito (+50 Ouro).',
+            goldBonus: 50,
+          },
+          createdBy: 'Vaeloria',
+          createdAtMs: startMs - 7 * 24 * 3600 * 1000,
+          finalizedAward: null,
+        });
+        addedSunday = true;
+      }
+    }
+  }
+
+  return results;
+}
 
 let serverClockOffsetMs = 0;
 
@@ -276,6 +412,19 @@ export function updateServerClockOffsetFromHeader(dateHeader: string | null): vo
 
 export function getTournamentNowMs(): number {
   return Date.now() + serverClockOffsetMs;
+}
+
+/**
+ * Returns a discrete stage key for memoization so `computeTournamentSnapshot` only recomputes
+ * when a round boundary is crossed (instead of every 1,000ms clock tick).
+ */
+export function getTournamentStageKey(def: SwissTournamentDefinition, nowMs: number): string {
+  if (nowMs < def.startsAtMs) return 'registration';
+  if (nowMs >= def.endsAtMs) return 'finished';
+  const elapsed = nowMs - def.startsAtMs;
+  const rIdx = Math.min(def.totalRounds, Math.floor(elapsed / def.roundDurationMs) + 1);
+  const win = getRoundWindowTimestamps(def, rIdx);
+  return nowMs < win.playDeadlineMs ? `r${rIdx}_active` : `r${rIdx}_break`;
 }
 
 // ============================================================================
@@ -342,7 +491,7 @@ function resolveSovereignVsSovereignMatch(
   const uTurns = seededUnitFloat(`${tournamentId}::r${round}::trn::${canonicalPair}`);
 
   const expectedA = 1 / (1 + Math.pow(10, (eloB - eloA) / 400));
-  const drawProb = 0.03; // Rare simultaneous lethal / round-bell tie
+  const drawProb = 0.03; // Rare round-bell technical draw
   const winProbA = expectedA * (1 - drawProb);
   const turns = 4 + Math.floor(uTurns * 5); // 4..8 rounds
 
@@ -415,7 +564,6 @@ function pairParticipantsSwiss(
   round: number,
   eligible: ComputedTournamentStanding[]
 ): Array<{ a: ComputedTournamentStanding; b: ComputedTournamentStanding | null }> {
-  // Sort by Points DESC, then ELO DESC, then deterministic seed jitter for variety inside exact ties
   const ordered = [...eligible].sort((x, y) => {
     if (y.points !== x.points) return y.points - x.points;
     if (y.eloRating !== x.eloRating) return y.eloRating - x.eloRating;
@@ -427,7 +575,6 @@ function pairParticipantsSwiss(
   const used = new Set<string>();
   const pairs: Array<{ a: ComputedTournamentStanding; b: ComputedTournamentStanding | null }> = [];
 
-  // Choose Bye recipient first if odd count (lowest ranked player who hasn't had a Bye yet, preferring non-human so humans always get a real board!)
   let byeId: string | null = null;
   if (ordered.length % 2 === 1) {
     for (let i = ordered.length - 1; i >= 0; i -= 1) {
@@ -448,7 +595,6 @@ function pairParticipantsSwiss(
     if (used.has(pA.participantId)) continue;
     used.add(pA.participantId);
 
-    // Find best available opponent: closest score, never faced before, closest ELO
     let bestIdx = -1;
     for (let j = i + 1; j < ordered.length; j += 1) {
       const pB = ordered[j];
@@ -458,7 +604,6 @@ function pairParticipantsSwiss(
         break;
       }
     }
-    // Fallback if all remaining opponents were already faced (only possible in tiny fields)
     if (bestIdx === -1) {
       for (let j = i + 1; j < ordered.length; j += 1) {
         if (!used.has(ordered[j].participantId)) {
@@ -487,30 +632,26 @@ function pairParticipantsSwiss(
   return pairs;
 }
 
-/**
- * Deterministically picks a Sovereign challenger for a human who joined mid-round
- * so existing main-pool pairings never shift mid-round.
- */
 function pickMidRoundSovereignChallenger(
   def: SwissTournamentDefinition,
   round: number,
-  human: ComputedTournamentStanding,
+  challengerTarget: ComputedTournamentStanding,
   allSovereigns: ComputedTournamentStanding[]
 ): ComputedTournamentStanding {
   const candidates = allSovereigns
-    .filter((s) => !human.opponentIds.includes(s.participantId))
+    .filter((s) => !challengerTarget.opponentIds.includes(s.participantId))
     .sort((x, y) => {
-      const scDiffX = Math.abs(x.points - human.points);
-      const scDiffY = Math.abs(y.points - human.points);
+      const scDiffX = Math.abs(x.points - challengerTarget.points);
+      const scDiffY = Math.abs(y.points - challengerTarget.points);
       if (scDiffX !== scDiffY) return scDiffX - scDiffY;
-      const eloDiffX = Math.abs(x.eloRating - human.eloRating);
-      const eloDiffY = Math.abs(y.eloRating - human.eloRating);
+      const eloDiffX = Math.abs(x.eloRating - challengerTarget.eloRating);
+      const eloDiffY = Math.abs(y.eloRating - challengerTarget.eloRating);
       if (eloDiffX !== eloDiffY) return eloDiffX - eloDiffY;
       return x.participantId.localeCompare(y.participantId);
     });
   const pool = candidates.slice(0, Math.min(5, candidates.length));
   if (pool.length === 0) return allSovereigns[0];
-  const idx = hashSeed(`${def.id}::late::r${round}::${human.participantId}`) % pool.length;
+  const idx = hashSeed(`${def.id}::late::r${round}::${challengerTarget.participantId}`) % pool.length;
   return pool[idx];
 }
 
@@ -528,23 +669,18 @@ export function resolveUnownedDomainRareCardPrize(
 ): TournamentAwardedPrize {
   const primaryDomain = winnerEntry.primaryDomain || inferDeckPrimaryDomain(winnerEntry.deckCardIds);
   const ownedSet = new Set(winnerEntry.ownedCardIdsSnapshot ?? []);
+  const targetRarity = prizeSpec.kind === 'unowned_domain_legendary_card' ? 'legendary' : 'rare';
 
-  // 1st priority: Rare card of the exact primary domain of the winner's Grimoire NOT owned at all
   let pool: CardDefinition[] = ALL_CARDS.filter(
-    (c) => c.rarity === 'rare' && c.domain === primaryDomain && !ownedSet.has(c.id)
+    (c) => c.rarity === targetRarity && c.domain === primaryDomain && !ownedSet.has(c.id)
   );
-
-  // 2nd priority fallback: Any Rare card of that domain (if user already owns 1+ of every Rare in that color)
   if (pool.length === 0) {
-    pool = ALL_CARDS.filter((c) => c.rarity === 'rare' && c.domain === primaryDomain);
+    pool = ALL_CARDS.filter((c) => c.rarity === targetRarity && c.domain === primaryDomain);
+  }
+  if (pool.length === 0) {
+    pool = ALL_CARDS.filter((c) => c.rarity === targetRarity && !ownedSet.has(c.id));
   }
 
-  // 3rd priority fallback: Any unowned Rare card across all domains
-  if (pool.length === 0) {
-    pool = ALL_CARDS.filter((c) => c.rarity === 'rare' && !ownedSet.has(c.id));
-  }
-
-  // Sort deterministically by card id before applying seeded pick
   pool.sort((a, b) => a.id.localeCompare(b.id));
   const pickIdx =
     pool.length > 0
@@ -560,8 +696,14 @@ export function resolveUnownedDomainRareCardPrize(
     winnerGlobalRank,
     winnerPoints,
     primaryDomain,
-    cardId: chosenCard?.id,
-    cardName: chosenCard?.name,
+    cardId:
+      prizeSpec.kind === 'gold_and_shards'
+        ? undefined
+        : chosenCard?.id,
+    cardName:
+      prizeSpec.kind === 'gold_and_shards'
+        ? undefined
+        : chosenCard?.name,
     goldBonus: prizeSpec.goldBonus ?? 0,
     shardsBonus: prizeSpec.shardsBonus ?? 0,
     cashBrl: prizeSpec.cashBrl,
@@ -569,15 +711,29 @@ export function resolveUnownedDomainRareCardPrize(
   };
 }
 
+function sanitizeLegacyNonDiegeticDescription(desc: string): string {
+  return desc
+    .replace(/ao jogador humano melhor classificado/gi, 'ao Campeão da edição')
+    .replace(/do melhor jogador humano/gi, 'do Campeão da edição')
+    .replace(/do jogador humano melhor qualificado/gi, 'do Campeão da edição')
+    .replace(/ao campeão humano/gi, 'ao Campeão');
+}
+
 export function computeTournamentSnapshot(
-  def: SwissTournamentDefinition,
+  rawDef: SwissTournamentDefinition,
   humanEntries: HumanTournamentEntry[],
   currentUsername?: string | null,
   explicitNowMs?: number
 ): ComputedTournamentSnapshot {
   const nowMs = explicitNowMs ?? getTournamentNowMs();
+  const def: SwissTournamentDefinition = {
+    ...rawDef,
+    prizeSpec: {
+      ...rawDef.prizeSpec,
+      description: sanitizeLegacyNonDiegeticDescription(rawDef.prizeSpec.description),
+    },
+  };
 
-  // Deduplicate human entries by lowercase username
   const humanMap = new Map<string, HumanTournamentEntry>();
   for (const h of humanEntries) {
     if (!h?.username) continue;
@@ -593,7 +749,6 @@ export function computeTournamentSnapshot(
   }
   const uniqueHumans = Array.from(humanMap.values());
 
-  // Initialize participant map (276 Sovereigns + enrolled Humans)
   const participantMap = new Map<string, ComputedTournamentStanding>();
 
   if (def.includeAllSovereigns) {
@@ -616,6 +771,7 @@ export function computeTournamentSnapshot(
         losses: 0,
         roundsPlayed: 0,
         opponentIds: [],
+        matchHistory: [],
         sovereignEntry: sov,
       });
     }
@@ -640,11 +796,11 @@ export function computeTournamentSnapshot(
       losses: 0,
       roundsPlayed: 0,
       opponentIds: [],
+      matchHistory: [],
       humanEntry: hum,
     });
   }
 
-  // Determine current tournament phase & round
   let phase: TournamentPhaseStatus = 'registration';
   let currentRound = 0;
 
@@ -665,14 +821,14 @@ export function computeTournamentSnapshot(
     phase = nowMs < win.playDeadlineMs ? 'round_active' : 'round_break';
   }
 
-  let currentRoundPairings: ComputedRoundPairing[] = [];
+  const roundsPairings: Record<number, ComputedRoundPairing[]> = {};
+  const cleanCurrentUser = (currentUsername || '').trim().toLowerCase();
+  const myPid = cleanCurrentUser ? `hum::${cleanCurrentUser}` : '';
 
-  // Simulate / resolve Rounds 1..currentRound sequentially
   for (let r = 1; r <= currentRound; r += 1) {
     const rWin = getRoundWindowTimestamps(def, r);
     const isPastDeadline = nowMs >= rWin.playDeadlineMs || phase === 'finished';
 
-    // Main pool for round r: all Sovereigns + humans enrolled on or before round start
     const mainPool: ComputedTournamentStanding[] = [];
     const midRoundHumans: ComputedTournamentStanding[] = [];
     const allSovStandings: ComputedTournamentStanding[] = [];
@@ -694,42 +850,101 @@ export function computeTournamentSnapshot(
     const roundPairings: ComputedRoundPairing[] = [];
     let tableNum = 1;
 
-    const applyScore = (
+    const recordCompletedMatch = (
       st: ComputedTournamentStanding,
-      oppId: string,
+      opp: ComputedTournamentStanding | null,
+      tNum: number,
       pts: 1 | 0.5 | 0,
-      hpDelta: number
+      hpDelta: number,
+      turns: number,
+      explicitOutcome?: ParticipantRoundHistoryItem['outcome']
     ) => {
       st.points += pts;
       st.hpDiff += hpDelta;
       st.roundsPlayed += 1;
+      const oppId = opp ? opp.participantId : '__BYE__';
       st.opponentIds.push(oppId);
       if (pts === 1) st.wins += 1;
       else if (pts === 0.5) st.draws += 1;
       else st.losses += 1;
+
+      const outcome: ParticipantRoundHistoryItem['outcome'] =
+        explicitOutcome ??
+        (!opp ? 'BYE' : pts === 1 ? 'WIN' : pts === 0.5 ? 'DRAW' : 'LOSS');
+
+      st.matchHistory.push({
+        round: r,
+        tableNumber: tNum,
+        opponentId: oppId,
+        opponentName: opp ? opp.displayName : 'Bye Suíço',
+        opponentSubtitle: opp ? opp.subtitle : 'Folga regulamentar (+1,0 pt)',
+        opponentAvatarCardId: opp ? opp.avatarCardId : 'neutral_10_valkyra_pentacromatica',
+        opponentPrimaryDomain: opp ? opp.primaryDomain : 'neutral',
+        opponentElo: opp ? opp.eloRating : st.eloRating,
+        opponentFinalRank: 0,
+        opponentFinalPoints: 0,
+        outcome,
+        scoreEarned: pts,
+        cumulativePoints: st.points,
+        hpDiff: hpDelta,
+        turns,
+      });
+    };
+
+    const recordInProgressMatch = (
+      st: ComputedTournamentStanding,
+      opp: ComputedTournamentStanding,
+      tNum: number
+    ) => {
+      st.matchHistory.push({
+        round: r,
+        tableNumber: tNum,
+        opponentId: opp.participantId,
+        opponentName: opp.displayName,
+        opponentSubtitle: opp.subtitle,
+        opponentAvatarCardId: opp.avatarCardId,
+        opponentPrimaryDomain: opp.primaryDomain,
+        opponentElo: opp.eloRating,
+        opponentFinalRank: 0,
+        opponentFinalPoints: 0,
+        outcome: 'IN_PROGRESS',
+        scoreEarned: 0,
+        cumulativePoints: st.points,
+        hpDiff: 0,
+        turns: 0,
+      });
     };
 
     for (const pair of rawPairs) {
       const { a, b } = pair;
+      const currentTable = tableNum++;
+      const ptsBeforeA = a.points;
+      const ptsBeforeB = b ? b.points : 0;
+
       if (!b) {
-        applyScore(a, '__BYE__', 1, 10);
+        recordCompletedMatch(a, null, currentTable, 1, 10, 0, 'BYE');
         roundPairings.push({
-          tableNumber: tableNum++,
+          tableNumber: currentTable,
           round: r,
           playerA: { ...a },
           playerB: null,
+          pointsBeforeA: ptsBeforeA,
+          pointsBeforeB: 0,
           result: 'BYE',
           hpDiffA: 10,
           turns: 0,
           isHumanTable: a.kind === 'human',
+          isMyTable: Boolean(myPid && a.participantId === myPid),
         });
         continue;
       }
 
       const isHumanTable = a.kind === 'human' || b.kind === 'human';
+      const isMyTable = Boolean(
+        myPid && (a.participantId === myPid || b.participantId === myPid)
+      );
 
       if (!isHumanTable) {
-        // Sovereign vs Sovereign: resolved deterministically once round starts
         const res = resolveSovereignVsSovereignMatch(
           def.id,
           r,
@@ -739,27 +954,29 @@ export function computeTournamentSnapshot(
           b.eloRating
         );
         if (res.result === 'A_WIN') {
-          applyScore(a, b.participantId, 1, res.hpDiffA);
-          applyScore(b, a.participantId, 0, -res.hpDiffA);
+          recordCompletedMatch(a, b, currentTable, 1, res.hpDiffA, res.turns);
+          recordCompletedMatch(b, a, currentTable, 0, -res.hpDiffA, res.turns);
         } else if (res.result === 'B_WIN') {
-          applyScore(a, b.participantId, 0, res.hpDiffA);
-          applyScore(b, a.participantId, 1, -res.hpDiffA);
+          recordCompletedMatch(a, b, currentTable, 0, res.hpDiffA, res.turns);
+          recordCompletedMatch(b, a, currentTable, 1, -res.hpDiffA, res.turns);
         } else {
-          applyScore(a, b.participantId, 0.5, 0);
-          applyScore(b, a.participantId, 0.5, 0);
+          recordCompletedMatch(a, b, currentTable, 0.5, 0, res.turns);
+          recordCompletedMatch(b, a, currentTable, 0.5, 0, res.turns);
         }
         roundPairings.push({
-          tableNumber: tableNum++,
+          tableNumber: currentTable,
           round: r,
           playerA: { ...a },
           playerB: { ...b },
+          pointsBeforeA: ptsBeforeA,
+          pointsBeforeB: ptsBeforeB,
           result: res.result,
           hpDiffA: res.hpDiffA,
           turns: res.turns,
           isHumanTable: false,
+          isMyTable: false,
         });
       } else if (a.kind === 'human' && b.kind === 'human') {
-        // Human vs Human table
         const recA = a.humanEntry?.resultsByRound?.[r];
         const recB = b.humanEntry?.resultsByRound?.[r];
         const roomCode = buildDeterministicRoomCode(
@@ -771,96 +988,114 @@ export function computeTournamentSnapshot(
 
         if (recA) {
           const ptsB: 1 | 0.5 | 0 = recA.score === 1 ? 0 : recA.score === 0 ? 1 : 0.5;
-          applyScore(a, b.participantId, recA.score, recA.hpDiff);
-          applyScore(b, a.participantId, ptsB, -recA.hpDiff);
+          recordCompletedMatch(a, b, currentTable, recA.score, recA.hpDiff, recA.turns);
+          recordCompletedMatch(b, a, currentTable, ptsB, -recA.hpDiff, recA.turns);
           roundPairings.push({
-            tableNumber: tableNum++,
+            tableNumber: currentTable,
             round: r,
             playerA: { ...a },
             playerB: { ...b },
+            pointsBeforeA: ptsBeforeA,
+            pointsBeforeB: ptsBeforeB,
             result: recA.score === 1 ? 'A_WIN' : recA.score === 0 ? 'B_WIN' : 'DRAW',
             hpDiffA: recA.hpDiff,
             turns: recA.turns,
             roomCode,
             isHumanTable: true,
+            isMyTable,
           });
         } else if (recB) {
           const ptsA: 1 | 0.5 | 0 = recB.score === 1 ? 0 : recB.score === 0 ? 1 : 0.5;
-          applyScore(a, b.participantId, ptsA, -recB.hpDiff);
-          applyScore(b, a.participantId, recB.score, recB.hpDiff);
+          recordCompletedMatch(a, b, currentTable, ptsA, -recB.hpDiff, recB.turns);
+          recordCompletedMatch(b, a, currentTable, recB.score, recB.hpDiff, recB.turns);
           roundPairings.push({
-            tableNumber: tableNum++,
+            tableNumber: currentTable,
             round: r,
             playerA: { ...a },
             playerB: { ...b },
+            pointsBeforeA: ptsBeforeA,
+            pointsBeforeB: ptsBeforeB,
             result: ptsA === 1 ? 'A_WIN' : ptsA === 0 ? 'B_WIN' : 'DRAW',
             hpDiffA: -recB.hpDiff,
             turns: recB.turns,
             roomCode,
             isHumanTable: true,
+            isMyTable,
           });
         } else if (isPastDeadline) {
-          // Neither human recorded a result before round deadline -> double forfeit (0-0) unless one started
           const aStarted = a.humanEntry?.activeRoundStarted === r;
           const bStarted = b.humanEntry?.activeRoundStarted === r;
           if (aStarted && !bStarted) {
-            applyScore(a, b.participantId, 1, 15);
-            applyScore(b, a.participantId, 0, -15);
+            recordCompletedMatch(a, b, currentTable, 1, 15, 0);
+            recordCompletedMatch(b, a, currentTable, 0, -15, 0);
             roundPairings.push({
-              tableNumber: tableNum++,
+              tableNumber: currentTable,
               round: r,
               playerA: { ...a },
               playerB: { ...b },
+              pointsBeforeA: ptsBeforeA,
+              pointsBeforeB: ptsBeforeB,
               result: 'A_WIN',
               hpDiffA: 15,
               turns: 0,
               roomCode,
               isHumanTable: true,
+              isMyTable,
             });
           } else if (bStarted && !aStarted) {
-            applyScore(a, b.participantId, 0, -15);
-            applyScore(b, a.participantId, 1, 15);
+            recordCompletedMatch(a, b, currentTable, 0, -15, 0);
+            recordCompletedMatch(b, a, currentTable, 1, 15, 0);
             roundPairings.push({
-              tableNumber: tableNum++,
+              tableNumber: currentTable,
               round: r,
               playerA: { ...a },
               playerB: { ...b },
+              pointsBeforeA: ptsBeforeA,
+              pointsBeforeB: ptsBeforeB,
               result: 'B_WIN',
               hpDiffA: -15,
               turns: 0,
               roomCode,
               isHumanTable: true,
+              isMyTable,
             });
           } else {
-            applyScore(a, b.participantId, 0, 0);
-            applyScore(b, a.participantId, 0, 0);
+            recordCompletedMatch(a, b, currentTable, 0, 0, 0, 'LOSS');
+            recordCompletedMatch(b, a, currentTable, 0, 0, 0, 'LOSS');
             roundPairings.push({
-              tableNumber: tableNum++,
+              tableNumber: currentTable,
               round: r,
               playerA: { ...a },
               playerB: { ...b },
+              pointsBeforeA: ptsBeforeA,
+              pointsBeforeB: ptsBeforeB,
               result: 'DRAW',
               hpDiffA: 0,
               turns: 0,
               roomCode,
               isHumanTable: true,
+              isMyTable,
             });
           }
         } else {
+          recordInProgressMatch(a, b, currentTable);
+          recordInProgressMatch(b, a, currentTable);
           roundPairings.push({
-            tableNumber: tableNum++,
+            tableNumber: currentTable,
             round: r,
             playerA: { ...a },
             playerB: { ...b },
+            pointsBeforeA: ptsBeforeA,
+            pointsBeforeB: ptsBeforeB,
             result: 'IN_PROGRESS',
             hpDiffA: 0,
             turns: 0,
             roomCode,
             isHumanTable: true,
+            isMyTable,
           });
         }
       } else {
-        // Human vs Sovereign table
         const hum = a.kind === 'human' ? a : b;
         const sov = a.kind === 'sovereign' ? a : b;
         const humIsA = a.kind === 'human';
@@ -869,8 +1104,8 @@ export function computeTournamentSnapshot(
         if (rec) {
           const sovScore: 1 | 0.5 | 0 =
             rec.score === 1 ? 0 : rec.score === 0 ? 1 : 0.5;
-          applyScore(hum, sov.participantId, rec.score, rec.hpDiff);
-          applyScore(sov, hum.participantId, sovScore, -rec.hpDiff);
+          recordCompletedMatch(hum, sov, currentTable, rec.score, rec.hpDiff, rec.turns);
+          recordCompletedMatch(sov, hum, currentTable, sovScore, -rec.hpDiff, rec.turns);
           const resultCode =
             rec.score === 0.5
               ? 'DRAW'
@@ -878,95 +1113,117 @@ export function computeTournamentSnapshot(
               ? 'A_WIN'
               : 'B_WIN';
           roundPairings.push({
-            tableNumber: tableNum++,
+            tableNumber: currentTable,
             round: r,
             playerA: { ...a },
             playerB: { ...b },
+            pointsBeforeA: ptsBeforeA,
+            pointsBeforeB: ptsBeforeB,
             result: resultCode,
             hpDiffA: humIsA ? rec.hpDiff : -rec.hpDiff,
             turns: rec.turns,
             isHumanTable: true,
+            isMyTable,
           });
         } else if (isPastDeadline) {
-          // Human missed the round -> Sovereign wins by W.O.
-          applyScore(hum, sov.participantId, 0, -20);
-          applyScore(sov, hum.participantId, 1, 20);
+          recordCompletedMatch(hum, sov, currentTable, 0, -20, 0);
+          recordCompletedMatch(sov, hum, currentTable, 1, 20, 0);
           roundPairings.push({
-            tableNumber: tableNum++,
+            tableNumber: currentTable,
             round: r,
             playerA: { ...a },
             playerB: { ...b },
+            pointsBeforeA: ptsBeforeA,
+            pointsBeforeB: ptsBeforeB,
             result: humIsA ? 'B_WIN' : 'A_WIN',
             hpDiffA: humIsA ? -20 : 20,
             turns: 0,
             isHumanTable: true,
+            isMyTable,
           });
         } else {
+          recordInProgressMatch(hum, sov, currentTable);
+          recordInProgressMatch(sov, hum, currentTable);
           roundPairings.push({
-            tableNumber: tableNum++,
+            tableNumber: currentTable,
             round: r,
             playerA: { ...a },
             playerB: { ...b },
+            pointsBeforeA: ptsBeforeA,
+            pointsBeforeB: ptsBeforeB,
             result: 'IN_PROGRESS',
             hpDiffA: 0,
             turns: 0,
             isHumanTable: true,
+            isMyTable,
           });
         }
       }
     }
 
-    // Also pair any mid-round late-joining human immediately against a matching Sovereign challenger
     for (const lateHum of midRoundHumans) {
+      const currentTable = tableNum++;
+      const ptsBeforeA = lateHum.points;
       const challenger = pickMidRoundSovereignChallenger(
         def,
         r,
         lateHum,
         allSovStandings
       );
+      const ptsBeforeB = challenger.points;
+      const isMyTable = Boolean(myPid && lateHum.participantId === myPid);
       const rec = lateHum.humanEntry?.resultsByRound?.[r];
+
       if (rec) {
-        applyScore(lateHum, challenger.participantId, rec.score, rec.hpDiff);
+        recordCompletedMatch(lateHum, challenger, currentTable, rec.score, rec.hpDiff, rec.turns);
         roundPairings.push({
-          tableNumber: tableNum++,
+          tableNumber: currentTable,
           round: r,
           playerA: { ...lateHum },
           playerB: { ...challenger },
+          pointsBeforeA: ptsBeforeA,
+          pointsBeforeB: ptsBeforeB,
           result:
             rec.score === 1 ? 'A_WIN' : rec.score === 0 ? 'B_WIN' : 'DRAW',
           hpDiffA: rec.hpDiff,
           turns: rec.turns,
           isHumanTable: true,
+          isMyTable,
         });
       } else if (isPastDeadline) {
-        applyScore(lateHum, challenger.participantId, 0, -20);
+        recordCompletedMatch(lateHum, challenger, currentTable, 0, -20, 0);
         roundPairings.push({
-          tableNumber: tableNum++,
+          tableNumber: currentTable,
           round: r,
           playerA: { ...lateHum },
           playerB: { ...challenger },
+          pointsBeforeA: ptsBeforeA,
+          pointsBeforeB: ptsBeforeB,
           result: 'B_WIN',
           hpDiffA: -20,
           turns: 0,
           isHumanTable: true,
+          isMyTable,
         });
       } else {
+        recordInProgressMatch(lateHum, challenger, currentTable);
         roundPairings.push({
-          tableNumber: tableNum++,
+          tableNumber: currentTable,
           round: r,
           playerA: { ...lateHum },
           playerB: { ...challenger },
+          pointsBeforeA: ptsBeforeA,
+          pointsBeforeB: ptsBeforeB,
           result: 'IN_PROGRESS',
           hpDiffA: 0,
           turns: 0,
           isHumanTable: true,
+          isMyTable,
         });
       }
     }
 
-    if (r === currentRound) {
-      currentRoundPairings = roundPairings;
-    }
+    roundsPairings[r] = roundPairings;
   }
 
   // Compute Buchholz (sum of final/current points of all opponents faced)
@@ -983,23 +1240,35 @@ export function computeTournamentSnapshot(
   const standings = Array.from(participantMap.values());
   sortStandingsInPlace(standings);
 
-  // Refresh playerA/playerB ranks inside currentRoundPairings
   const rankLookup = new Map(standings.map((s) => [s.participantId, s]));
-  currentRoundPairings = currentRoundPairings
-    .map((p) => ({
-      ...p,
-      playerA: rankLookup.get(p.playerA.participantId) ?? p.playerA,
-      playerB: p.playerB
-        ? rankLookup.get(p.playerB.participantId) ?? p.playerB
-        : null,
-    }))
-    .sort((x, y) => {
-      if (x.isHumanTable !== y.isHumanTable) return x.isHumanTable ? -1 : 1;
-      return x.tableNumber - y.tableNumber;
-    });
 
-  const cleanCurrentUser = (currentUsername || '').trim().toLowerCase();
-  const myPid = cleanCurrentUser ? `hum::${cleanCurrentUser}` : '';
+  // Backfill opponentFinalRank & opponentFinalPoints into every participant's matchHistory
+  for (const st of standings) {
+    for (const item of st.matchHistory) {
+      if (item.opponentId === '__BYE__') continue;
+      const opp = rankLookup.get(item.opponentId);
+      if (opp) {
+        item.opponentFinalRank = opp.rank;
+        item.opponentFinalPoints = opp.points;
+      }
+    }
+  }
+
+  // Refresh playerA/playerB standings inside EVERY round's pairings, keeping authentic Swiss table order (#1, #2, #3...)
+  for (const rKey of Object.keys(roundsPairings)) {
+    const rNum = Number(rKey);
+    roundsPairings[rNum] = roundsPairings[rNum]
+      .map((p) => ({
+        ...p,
+        playerA: rankLookup.get(p.playerA.participantId) ?? p.playerA,
+        playerB: p.playerB
+          ? rankLookup.get(p.playerB.participantId) ?? p.playerB
+          : null,
+      }))
+      .sort((x, y) => x.tableNumber - y.tableNumber);
+  }
+
+  const currentRoundPairings = roundsPairings[currentRound] ?? [];
   const myStanding = myPid ? rankLookup.get(myPid) ?? null : null;
   const myEntry = myStanding?.humanEntry ?? null;
   const myCurrentPairing = myPid
@@ -1010,7 +1279,6 @@ export function computeTournamentSnapshot(
       ) ?? null
     : null;
 
-  // Determine Round Timestamps for UI countdowns
   let roundStartsAtMs = def.startsAtMs;
   let roundPlayDeadlineMs = def.startsAtMs + def.playWindowMs;
   let roundEndsAtMs = def.startsAtMs + def.roundDurationMs;
@@ -1021,26 +1289,16 @@ export function computeTournamentSnapshot(
     roundEndsAtMs = rw.endMs;
   }
 
-  // Automatic Prize Resolution once Tournament is Finished
+  // Automatic Prize Resolution once Tournament is Finished (Champion #1 receives the Champion Prize)
   let finalizedAward: TournamentAwardedPrize | null = def.finalizedAward ?? null;
   if (phase === 'finished' && !finalizedAward) {
-    // Best human participant who actually played at least 1 match (or fallback to any enrolled human if none finished)
-    const activeHumans = standings.filter(
-      (s) =>
-        s.kind === 'human' &&
-        s.humanEntry &&
-        Object.keys(s.humanEntry.resultsByRound ?? {}).length > 0
-    );
-    const bestHuman =
-      activeHumans[0] ??
-      standings.find((s) => s.kind === 'human' && Boolean(s.humanEntry));
-
-    if (bestHuman && bestHuman.humanEntry) {
+    const champion = standings[0];
+    if (champion && champion.kind === 'human' && champion.humanEntry) {
       finalizedAward = resolveUnownedDomainRareCardPrize(
         def.id,
-        bestHuman.humanEntry,
-        bestHuman.rank,
-        bestHuman.points,
+        champion.humanEntry,
+        champion.rank,
+        champion.points,
         def.prizeSpec,
         def.endsAtMs
       );
@@ -1057,6 +1315,7 @@ export function computeTournamentSnapshot(
     roundEndsAtMs,
     standings,
     currentRoundPairings,
+    roundsPairings,
     myEntry,
     myStanding,
     myCurrentPairing,
@@ -1067,10 +1326,10 @@ export function computeTournamentSnapshot(
 }
 
 // ============================================================================
-// 7. SUPABASE CLOUD PERSISTENCE & LOCAL CACHE (RACE-FREE PER-USER ROWS)
+// 7. SUPABASE CLOUD PERSISTENCE & MULTI-TOURNAMENT CATALOG CACHE
 // ============================================================================
 
-const LOCAL_TOURNAMENT_META_KEY = 'chromatic_pact_tournament_meta_v1';
+const LOCAL_TOURNAMENT_CATALOG_KEY = 'chromatic_pact_tournament_catalog_v2';
 const LOCAL_TOURNAMENT_ENTRIES_KEY = 'chromatic_pact_tournament_entries_v1';
 const CLAIMED_TOURNAMENT_PRIZES_KEY = 'chromatic_pact_claimed_tournaments_v1';
 
@@ -1108,18 +1367,18 @@ export function markTournamentPrizeClaimedLocal(claimKey: string): void {
   }
 }
 
-function readLocalTournamentState(): {
-  def: SwissTournamentDefinition;
+function readLocalCatalogCache(): {
+  defs: SwissTournamentDefinition[];
   entries: HumanTournamentEntry[];
 } {
-  let def = DEFAULT_INAUGURAL_TOURNAMENT;
+  let defs: SwissTournamentDefinition[] = [DEFAULT_INAUGURAL_TOURNAMENT];
   let entries: HumanTournamentEntry[] = [];
-  if (typeof window === 'undefined') return { def, entries };
+  if (typeof window === 'undefined') return { defs, entries };
   try {
-    const rawDef = localStorage.getItem(LOCAL_TOURNAMENT_META_KEY);
-    if (rawDef) {
-      const parsed = JSON.parse(rawDef) as SwissTournamentDefinition;
-      if (parsed && parsed.id) def = parsed;
+    const rawDefs = localStorage.getItem(LOCAL_TOURNAMENT_CATALOG_KEY);
+    if (rawDefs) {
+      const parsed = JSON.parse(rawDefs) as SwissTournamentDefinition[];
+      if (Array.isArray(parsed) && parsed.length > 0) defs = parsed;
     }
     const rawEntries = localStorage.getItem(LOCAL_TOURNAMENT_ENTRIES_KEY);
     if (rawEntries) {
@@ -1129,27 +1388,98 @@ function readLocalTournamentState(): {
   } catch {
     // Ignore
   }
-  return { def, entries };
+  return { defs, entries };
 }
 
-function saveLocalTournamentState(
-  def: SwissTournamentDefinition,
+function saveLocalCatalogCache(
+  defs: SwissTournamentDefinition[],
   entries: HumanTournamentEntry[]
 ): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(LOCAL_TOURNAMENT_META_KEY, JSON.stringify(def));
+    localStorage.setItem(LOCAL_TOURNAMENT_CATALOG_KEY, JSON.stringify(defs));
     localStorage.setItem(LOCAL_TOURNAMENT_ENTRIES_KEY, JSON.stringify(entries));
   } catch {
     // Ignore
   }
 }
 
+function assembleCatalogFromRaw(
+  cloudDefs: SwissTournamentDefinition[],
+  allEntries: HumanTournamentEntry[],
+  nowMs: number
+): TournamentCatalogData {
+  const defMap = new Map<string, SwissTournamentDefinition>();
+
+  // 1. Always include Inaugural Edition
+  defMap.set(DEFAULT_INAUGURAL_TOURNAMENT.id, DEFAULT_INAUGURAL_TOURNAMENT);
+
+  // 2. Include deterministic upcoming official calendar tournaments
+  for (const sched of buildScheduledOfficialTournaments(nowMs)) {
+    defMap.set(sched.id, sched);
+  }
+
+  // 3. Cloud / Admin definitions override or extend calendar definitions
+  for (const cd of cloudDefs) {
+    if (cd && cd.id) {
+      defMap.set(cd.id, {
+        ...cd,
+        prizeSpec: {
+          ...cd.prizeSpec,
+          description: sanitizeLegacyNonDiegeticDescription(cd.prizeSpec?.description ?? ''),
+        },
+      });
+    }
+  }
+
+  const tournaments = Array.from(defMap.values()).sort((a, b) => {
+    const aCat = nowMs >= a.startsAtMs && nowMs < a.endsAtMs ? 2 : nowMs < a.startsAtMs ? 1 : 0;
+    const bCat = nowMs >= b.startsAtMs && nowMs < b.endsAtMs ? 2 : nowMs < b.startsAtMs ? 1 : 0;
+    if (bCat !== aCat) return bCat - aCat;
+    // Among upcoming: soonest first; among finished: most recent first
+    if (aCat === 1) return a.startsAtMs - b.startsAtMs;
+    return b.startsAtMs - a.startsAtMs;
+  });
+
+  const entriesByTournament: Record<string, HumanTournamentEntry[]> = {};
+  for (const t of tournaments) {
+    entriesByTournament[t.id] = [];
+  }
+
+  for (const entry of allEntries) {
+    if (!entry?.tournamentId || !entry?.username) continue;
+    if (!entriesByTournament[entry.tournamentId]) {
+      entriesByTournament[entry.tournamentId] = [];
+    }
+    const list = entriesByTournament[entry.tournamentId];
+    const clean = entry.username.trim().toLowerCase();
+    const existingIdx = list.findIndex((x) => x.username.trim().toLowerCase() === clean);
+    if (existingIdx === -1) {
+      list.push(entry);
+    } else if (
+      Object.keys(entry.resultsByRound ?? {}).length >=
+      Object.keys(list[existingIdx].resultsByRound ?? {}).length
+    ) {
+      list[existingIdx] = entry;
+    }
+  }
+
+  const primaryTournamentId =
+    tournaments[0]?.id ?? DEFAULT_INAUGURAL_TOURNAMENT.id;
+
+  return {
+    tournaments,
+    entriesByTournament,
+    primaryTournamentId,
+  };
+}
+
 export async function publishTournamentDefinitionToCloud(
   def: SwissTournamentDefinition
 ): Promise<boolean> {
-  const local = readLocalTournamentState();
-  saveLocalTournamentState(def, local.entries);
+  const local = readLocalCatalogCache();
+  const nextDefs = [...local.defs.filter((d) => d.id !== def.id), def];
+  saveLocalCatalogCache(nextDefs, local.entries);
 
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return true;
@@ -1182,7 +1512,7 @@ export async function publishTournamentDefinitionToCloud(
 export async function upsertHumanTournamentEntryToCloud(
   entry: HumanTournamentEntry
 ): Promise<boolean> {
-  const local = readLocalTournamentState();
+  const local = readLocalCatalogCache();
   const cleanUser = entry.username.trim().toLowerCase();
   const filtered = local.entries.filter(
     (e) =>
@@ -1191,7 +1521,7 @@ export async function upsertHumanTournamentEntryToCloud(
         e.username.trim().toLowerCase() === cleanUser
       )
   );
-  saveLocalTournamentState(local.def, [...filtered, entry]);
+  saveLocalCatalogCache(local.defs, [...filtered, entry]);
 
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return true;
@@ -1221,26 +1551,27 @@ export async function upsertHumanTournamentEntryToCloud(
   }
 }
 
-export async function fetchActiveTournamentStateFromCloud(): Promise<{
-  definition: SwissTournamentDefinition;
-  entries: HumanTournamentEntry[];
-}> {
-  const local = readLocalTournamentState();
+export async function fetchTournamentCatalogFromCloud(): Promise<TournamentCatalogData> {
+  const local = readLocalCatalogCache();
   const cfg = getSupabaseConfig();
+  const now = getTournamentNowMs();
+
   if (!cfg.isConfigured) {
-    return { definition: local.def, entries: local.entries };
+    return assembleCatalogFromRaw(local.defs, local.entries, now);
   }
 
   try {
     const res = await fetch(
-      `${cfg.url}/rest/v1/sovereign_profiles?username=like.__tournament_*&select=username,title,updated_at&order=updated_at.desc&limit=200`,
+      `${cfg.url}/rest/v1/sovereign_profiles?username=like.__tournament_*&select=username,title,updated_at&order=updated_at.desc&limit=300`,
       {
         headers: getHeaders(cfg.anonKey),
       }
     );
     updateServerClockOffsetFromHeader(res.headers.get('date'));
+    const syncedNow = getTournamentNowMs();
+
     if (!res.ok) {
-      return { definition: local.def, entries: local.entries };
+      return assembleCatalogFromRaw(local.defs, local.entries, syncedNow);
     }
 
     const rows = (await res.json()) as Array<{
@@ -1249,15 +1580,15 @@ export async function fetchActiveTournamentStateFromCloud(): Promise<{
       updated_at: string;
     }>;
 
-    const defs: SwissTournamentDefinition[] = [];
-    const allEntries: HumanTournamentEntry[] = [];
+    const cloudDefs: SwissTournamentDefinition[] = [];
+    const cloudEntries: HumanTournamentEntry[] = [];
 
     for (const r of rows) {
       if (!r.username || !r.title) continue;
       if (r.username.startsWith(CLOUD_META_PREFIX)) {
         try {
           const parsed = JSON.parse(r.title) as SwissTournamentDefinition;
-          if (parsed && parsed.id) defs.push(parsed);
+          if (parsed && parsed.id) cloudDefs.push(parsed);
         } catch {
           // Ignore malformed row
         }
@@ -1265,7 +1596,7 @@ export async function fetchActiveTournamentStateFromCloud(): Promise<{
         try {
           const parsed = JSON.parse(r.title) as HumanTournamentEntry;
           if (parsed && parsed.tournamentId && parsed.username) {
-            allEntries.push(parsed);
+            cloudEntries.push(parsed);
           }
         } catch {
           // Ignore malformed row
@@ -1273,45 +1604,49 @@ export async function fetchActiveTournamentStateFromCloud(): Promise<{
       }
     }
 
-    // Pick active or most recent upcoming/live tournament (preferring live > upcoming > latest finished)
-    const now = getTournamentNowMs();
-    defs.sort((a, b) => {
-      const aLive = now >= a.startsAtMs && now < a.endsAtMs ? 2 : now < a.startsAtMs ? 1 : 0;
-      const bLive = now >= b.startsAtMs && now < b.endsAtMs ? 2 : now < b.startsAtMs ? 1 : 0;
-      if (bLive !== aLive) return bLive - aLive;
-      return b.startsAtMs - a.startsAtMs;
-    });
-
-    let activeDef = defs[0] ?? DEFAULT_INAUGURAL_TOURNAMENT;
-
-    // Seed the Inaugural Tournament to Cloud automatically if not yet stored
-    if (defs.length === 0) {
-      activeDef = DEFAULT_INAUGURAL_TOURNAMENT;
-      void publishTournamentDefinitionToCloud(activeDef);
+    if (cloudDefs.length === 0) {
+      void publishTournamentDefinitionToCloud(DEFAULT_INAUGURAL_TOURNAMENT);
     }
 
-    const relevantEntries = allEntries.filter((e) => e.tournamentId === activeDef.id);
-    // Merge with any local entry that has more recorded rounds (instant optimistic UI)
+    // Merge optimistic local entries if newer/more rounds recorded
+    const mergedEntries = [...cloudEntries];
     for (const loc of local.entries) {
-      if (loc.tournamentId !== activeDef.id) continue;
-      const idx = relevantEntries.findIndex(
-        (e) => e.username.trim().toLowerCase() === loc.username.trim().toLowerCase()
+      const idx = mergedEntries.findIndex(
+        (e) =>
+          e.tournamentId === loc.tournamentId &&
+          e.username.trim().toLowerCase() === loc.username.trim().toLowerCase()
       );
       if (idx === -1) {
-        relevantEntries.push(loc);
+        mergedEntries.push(loc);
       } else if (
         Object.keys(loc.resultsByRound ?? {}).length >
-        Object.keys(relevantEntries[idx].resultsByRound ?? {}).length
+        Object.keys(mergedEntries[idx].resultsByRound ?? {}).length
       ) {
-        relevantEntries[idx] = loc;
+        mergedEntries[idx] = loc;
       }
     }
 
-    saveLocalTournamentState(activeDef, relevantEntries);
-    return { definition: activeDef, entries: relevantEntries };
+    const catalog = assembleCatalogFromRaw(cloudDefs, mergedEntries, syncedNow);
+    saveLocalCatalogCache(catalog.tournaments, mergedEntries);
+    return catalog;
   } catch {
-    return { definition: local.def, entries: local.entries };
+    return assembleCatalogFromRaw(local.defs, local.entries, now);
   }
+}
+
+export async function fetchActiveTournamentStateFromCloud(): Promise<{
+  definition: SwissTournamentDefinition;
+  entries: HumanTournamentEntry[];
+}> {
+  const catalog = await fetchTournamentCatalogFromCloud();
+  const primary =
+    catalog.tournaments.find((t) => t.id === catalog.primaryTournamentId) ??
+    catalog.tournaments[0] ??
+    DEFAULT_INAUGURAL_TOURNAMENT;
+  return {
+    definition: primary,
+    entries: catalog.entriesByTournament[primary.id] ?? [],
+  };
 }
 
 export async function enrollHumanInTournament(params: {
@@ -1326,6 +1661,9 @@ export async function enrollHumanInTournament(params: {
   const ownedSnapshot = Object.entries(params.unlockedCardIds)
     .filter(([, count]) => count > 0)
     .map(([cid]) => cid);
+
+  // Ensure scheduled calendar tournament definition is persisted in Cloud on first enrollment
+  void publishTournamentDefinitionToCloud(params.tournament);
 
   const entry: HumanTournamentEntry = {
     tournamentId: params.tournament.id,
@@ -1350,7 +1688,7 @@ export async function enrollHumanInTournament(params: {
 }
 
 /**
- * Builds the symmetric 40 PV vs 40 PV encounter when a human faces a Sovereign in the Swiss Tournament.
+ * Builds the symmetric 40 PV vs 40 PV encounter for a Swiss Tournament round.
  * Zero PvE passives, zero Overworld buffs — 100% symmetric tournament rules.
  */
 export async function buildTournamentSovereignBossEncounter(

@@ -105,7 +105,7 @@ import type { LastRankedDuelSummary } from './components/GlobalLeaderboardView';
 import {
   buildTournamentSovereignBossEncounter,
   computeTournamentSnapshot,
-  fetchActiveTournamentStateFromCloud,
+  fetchTournamentCatalogFromCloud,
   getClaimedTournamentPrizeIds,
   getTournamentNowMs,
   HumanTournamentEntry,
@@ -988,94 +988,98 @@ export const App: React.FC = () => {
     let cancelled = false;
 
     const superviseTournament = async () => {
-      const { definition: def, entries } = await fetchActiveTournamentStateFromCloud();
+      const catalog = await fetchTournamentCatalogFromCloud();
       if (cancelled) return;
-      const snap = computeTournamentSnapshot(
-        def,
-        entries,
-        isGuest ? null : currentUser.username
-      );
 
-      // 1. Round-Start Alert if enrolled and browsing outside Arena / Tournaments
-      if (
-        !isGuest &&
-        snap.phase === 'round_active' &&
-        snap.myEntry &&
-        snap.myCurrentPairing &&
-        !snap.myEntry.resultsByRound?.[snap.currentRound] &&
-        activeTabLiveRef.current !== 'arena' &&
-        activeTabLiveRef.current !== 'tournaments'
-      ) {
-        const alertKey = `${def.id}::r${snap.currentRound}::${currentUser.username.toLowerCase()}`;
-        if (!notifiedTournamentRoundsRef.current.has(alertKey)) {
-          notifiedTournamentRoundsRef.current.add(alertKey);
-          pushNotification({
-            kicker: 'TORNEIO SUÍÇO AO VIVO',
-            title: `Rodada ${snap.currentRound}/${def.totalRounds} Iniciada`,
-            message: `Sua mesa da Rodada ${snap.currentRound} está aberta (${def.turnTimeLimitSec}s por turno).`,
-            actionLabel: 'Entrar na Mesa',
-            actionTarget: 'tournaments',
-          });
-        }
-      }
+      for (const def of catalog.tournaments) {
+        const entries = catalog.entriesByTournament[def.id] ?? [];
+        const snap = computeTournamentSnapshot(
+          def,
+          entries,
+          isGuest ? null : currentUser.username
+        );
 
-      // 2. Automatic Finalization & Automatic Rare Card Delivery at Tournament End
-      if (snap.phase === 'finished' && snap.finalizedAward) {
-        const award = snap.finalizedAward;
-        if (!def.finalizedAward) {
-          void publishTournamentDefinitionToCloud({
-            ...def,
-            finalizedAward: award,
-          });
-        }
-
+        // 1. Round-Start Alert if enrolled and browsing outside Arena / Tournaments
         if (
           !isGuest &&
-          currentUser.username.trim().toLowerCase() === award.winnerUsername.trim().toLowerCase()
+          snap.phase === 'round_active' &&
+          snap.myEntry &&
+          snap.myCurrentPairing &&
+          !snap.myEntry.resultsByRound?.[snap.currentRound] &&
+          activeTabLiveRef.current !== 'arena' &&
+          activeTabLiveRef.current !== 'tournaments'
         ) {
-          const claimKey = `${def.id}::${currentUser.username.trim().toLowerCase()}`;
-          const alreadyClaimedLocal = getClaimedTournamentPrizeIds().has(claimKey);
-          const alreadyClaimedCloud = Boolean(snap.myEntry?.prizeClaimed);
-
-          if (!alreadyClaimedLocal && !alreadyClaimedCloud) {
-            markTournamentPrizeClaimedLocal(claimKey);
-            const prizeCard = award.cardId ? CARDS_BY_ID[award.cardId] : undefined;
-            const bonusGold = award.goldBonus ?? 0;
-            const bonusShards = award.shardsBonus ?? 0;
-
-            updateCurrentUserProgression((prev) => {
-              const nextExtra = { ...(prev.extraUnlockedCards ?? {}) };
-              if (prizeCard) {
-                nextExtra[prizeCard.id] = (nextExtra[prizeCard.id] ?? 0) + 1;
-              }
-              return {
-                gold: (prev.gold ?? 0) + bonusGold,
-                astralShards: (prev.astralShards ?? 0) + bonusShards,
-                extraUnlockedCards: nextExtra,
-              };
-            });
-
-            if (snap.myEntry) {
-              const claimedEntry: HumanTournamentEntry = {
-                ...snap.myEntry,
-                prizeClaimed: true,
-                claimedCardId: prizeCard?.id,
-                lastHeartbeatAtMs: getTournamentNowMs(),
-              };
-              void upsertHumanTournamentEntryToCloud(claimedEntry);
-            }
-
+          const alertKey = `${def.id}::r${snap.currentRound}::${currentUser.username.toLowerCase()}`;
+          if (!notifiedTournamentRoundsRef.current.has(alertKey)) {
+            notifiedTournamentRoundsRef.current.add(alertKey);
             pushNotification({
-              kicker: 'PREMIAÇÃO OFICIAL DE TORNEIO',
-              title: prizeCard
-                ? `Carta Rara Conquistada: ${prizeCard.name}`
-                : `1º Humano Qualificado em ${def.title}`,
-              message: prizeCard
-                ? `Melhor humano qualificado (#${award.winnerGlobalRank} geral, ${award.winnerPoints} pts). "${prizeCard.name}" foi adicionada à sua coleção.`
-                : `Premiação homologada na classificação final (#${award.winnerGlobalRank} geral).`,
-              actionLabel: 'Ver no Grimório',
-              actionTarget: 'deckbuilder',
+              kicker: 'TORNEIO SUÍÇO AO VIVO',
+              title: `Rodada ${snap.currentRound}/${def.totalRounds} Iniciada`,
+              message: `Sua mesa da Rodada ${snap.currentRound} está aberta (${def.turnTimeLimitSec}s por turno).`,
+              actionLabel: 'Entrar na Mesa',
+              actionTarget: 'tournaments',
             });
+          }
+        }
+
+        // 2. Automatic Finalization & Automatic Prize Delivery at Tournament End
+        if (snap.phase === 'finished' && snap.finalizedAward) {
+          const award = snap.finalizedAward;
+          if (!def.finalizedAward) {
+            void publishTournamentDefinitionToCloud({
+              ...def,
+              finalizedAward: award,
+            });
+          }
+
+          if (
+            !isGuest &&
+            currentUser.username.trim().toLowerCase() === award.winnerUsername.trim().toLowerCase()
+          ) {
+            const claimKey = `${def.id}::${currentUser.username.trim().toLowerCase()}`;
+            const alreadyClaimedLocal = getClaimedTournamentPrizeIds().has(claimKey);
+            const alreadyClaimedCloud = Boolean(snap.myEntry?.prizeClaimed);
+
+            if (!alreadyClaimedLocal && !alreadyClaimedCloud) {
+              markTournamentPrizeClaimedLocal(claimKey);
+              const prizeCard = award.cardId ? CARDS_BY_ID[award.cardId] : undefined;
+              const bonusGold = award.goldBonus ?? 0;
+              const bonusShards = award.shardsBonus ?? 0;
+
+              updateCurrentUserProgression((prev) => {
+                const nextExtra = { ...(prev.extraUnlockedCards ?? {}) };
+                if (prizeCard) {
+                  nextExtra[prizeCard.id] = (nextExtra[prizeCard.id] ?? 0) + 1;
+                }
+                return {
+                  gold: (prev.gold ?? 0) + bonusGold,
+                  astralShards: (prev.astralShards ?? 0) + bonusShards,
+                  extraUnlockedCards: nextExtra,
+                };
+              });
+
+              if (snap.myEntry) {
+                const claimedEntry: HumanTournamentEntry = {
+                  ...snap.myEntry,
+                  prizeClaimed: true,
+                  claimedCardId: prizeCard?.id,
+                  lastHeartbeatAtMs: getTournamentNowMs(),
+                };
+                void upsertHumanTournamentEntryToCloud(claimedEntry);
+              }
+
+              pushNotification({
+                kicker: 'PREMIAÇÃO OFICIAL DE TORNEIO',
+                title: prizeCard
+                  ? `Carta Conquistada: ${prizeCard.name}`
+                  : `Campeão em ${def.title}`,
+                message: prizeCard
+                  ? `1º Lugar na classificação (${award.winnerPoints} pts). "${prizeCard.name}" foi adicionada à sua coleção.`
+                  : `Premiação homologada na classificação final (${award.winnerPoints} pts).`,
+                actionLabel: 'Ver no Grimório',
+                actionTarget: 'deckbuilder',
+              });
+            }
           }
         }
       }

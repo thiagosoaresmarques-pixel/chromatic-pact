@@ -3,6 +3,18 @@ import path from 'path';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS, CAMPAIGN_BOSSES } from '../data/decks';
 import {
+  ARCHETYPE_TIER_ELO_MAP,
+  buildRankedSovereignBossEncounter,
+  calculateFideRankedEloDelta,
+  getEloDivisionMeta,
+  SOVEREIGN_AI_LEADERBOARD_ROSTER,
+  SOVEREIGN_ELO_CALIBRATION_SUMMARY,
+} from '../data/sovereignEloLadder';
+import {
+  ASYMMETRIC_AUDIT_SUMMARY,
+  DRAFT_CARD_PICK_TIERS,
+} from '../data/asymmetricAuditData';
+import {
   applyEquippedRelicToModifiers,
   SOVEREIGN_RELICS,
 } from '../data/sovereignRelics';
@@ -725,7 +737,90 @@ function runAutomatedQA() {
     `  OK — Tier I–V Co-Evolved Champions verified across Campaign (44/44 archetypes), Conquest (48/48 provinces), and Fracture Rifts (6×3 Tiers).`
   );
 
-  console.log('\nALL 6-WAVE QA CHECKS & SIMULATIONS PASSED!');
+  // ============================================================================
+  // WAVE 7: BRADLEY-TERRY ELO LADDER, RANKED SOVEREIGN DUELS & ASYMMETRIC AUDIT
+  // ============================================================================
+  console.log('\n[Wave 7] Auditing Bradley-Terry ELO Calibration, 68 Sovereigns & Draft Pick Tiers...');
+  let calibratedCellsCount = 0;
+  for (const st of UNIFIED_CHAMPION_STANDINGS) {
+    const tierRow = ARCHETYPE_TIER_ELO_MAP[st.archetypeId];
+    if (!tierRow) {
+      throw new Error(`Missing calibrated ELO row for archetype ${st.archetypeId}`);
+    }
+    for (const t of [1, 2, 3, 4, 5] as const) {
+      const cell = tierRow[t];
+      if (!cell || cell.elo < 200 || cell.elo > 2800 || cell.games <= 0) {
+        throw new Error(`Invalid ELO cell for ${st.archetypeId} Tier ${t}`);
+      }
+      calibratedCellsCount += 1;
+    }
+  }
+  if (calibratedCellsCount !== 220) {
+    throw new Error(`Expected 220 calibrated ELO cells, found ${calibratedCellsCount}`);
+  }
+  const dist = SOVEREIGN_ELO_CALIBRATION_SUMMARY.tierEloDistribution;
+  if (
+    !(
+      dist[1].meanElo < dist[2].meanElo &&
+      dist[2].meanElo < dist[3].meanElo &&
+      dist[3].meanElo < dist[4].meanElo &&
+      dist[4].meanElo < dist[5].meanElo
+    )
+  ) {
+    throw new Error('Tier I–V mean ELO curve failed strict monotonicity check!');
+  }
+  if (dist[2].medianElo !== 1200) {
+    throw new Error(`Expected Tier II median ELO anchor at 1200, got ${dist[2].medianElo}`);
+  }
+
+  const grandSovereigns = SOVEREIGN_AI_LEADERBOARD_ROSTER.filter((s) => s.isGrandSovereign);
+  if (grandSovereigns.length !== 44) {
+    throw new Error(`Expected 44 Grand Sovereigns on ELO leaderboard, got ${grandSovereigns.length}`);
+  }
+  for (const sov of SOVEREIGN_AI_LEADERBOARD_ROSTER) {
+    if (!CARDS_BY_ID[sov.avatarCardId]) {
+      throw new Error(`Invalid avatarCardId ${sov.avatarCardId} on Sovereign ${sov.sovereignId}`);
+    }
+    const bossEnc = buildRankedSovereignBossEncounter(sov);
+    if (
+      bossEnc.startingHp !== 40 ||
+      !bossEnc.customDeckCardIds ||
+      bossEnc.customDeckCardIds.length !== 100
+    ) {
+      throw new Error(`Ranked Sovereign encounter invalid for ${sov.sovereignId}`);
+    }
+  }
+
+  if (Object.keys(DRAFT_CARD_PICK_TIERS).length !== ALL_CARDS.length) {
+    throw new Error(
+      `Draft Pick Tiers mismatch: ${Object.keys(DRAFT_CARD_PICK_TIERS).length} vs ${ALL_CARDS.length}`
+    );
+  }
+  const freshDelta = calculateFideRankedEloDelta({
+    playerElo: 1200,
+    opponentElo: 1600,
+    didWin: true,
+    recentOpponentIds: [],
+    opponentKey: 'sov_test',
+  });
+  const repeatDelta = calculateFideRankedEloDelta({
+    playerElo: 1200,
+    opponentElo: 1600,
+    didWin: true,
+    recentOpponentIds: ['sov_test', 'sov_test'],
+    opponentKey: 'sov_test',
+  });
+  if (!(freshDelta.delta > repeatDelta.delta && repeatDelta.delta > 0)) {
+    throw new Error('FIDE anti-farm K-factor decay validation failed!');
+  }
+  if (getEloDivisionMeta(1200).id !== 'ouro_solar' || getEloDivisionMeta(2050).id !== 'grao_mestre_penta') {
+    throw new Error('ELO Division threshold lookup validation failed!');
+  }
+  console.log(
+    `  OK — 220/220 ELO cells verified (T1=${dist[1].meanElo} < T2=${dist[2].meanElo} < T3=${dist[3].meanElo} < T4=${dist[4].meanElo} < T5=${dist[5].meanElo}), ${SOVEREIGN_AI_LEADERBOARD_ROSTER.length} Leaderboard Sovereigns, ${ASYMMETRIC_AUDIT_SUMMARY.totalAsymmetricMatches} Asymmetric Audit matches & 1,038 Draft Pick Tiers.`
+  );
+
+  console.log('\nALL 7-WAVE QA CHECKS & SIMULATIONS PASSED!');
 }
 
 runAutomatedQA();

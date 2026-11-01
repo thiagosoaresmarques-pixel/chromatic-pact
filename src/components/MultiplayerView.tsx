@@ -1399,6 +1399,7 @@ interface MultiplayerViewProps {
   onStartOnlineMatch: (room: MultiplayerRoom, role: 'host' | 'guest') => void;
   onOpenAccountModal: (tab: AccountModalTab) => void;
   onRequireDeckSetup?: () => void;
+  onOpenGlobalLeaderboard?: () => void;
 }
 
 function resolveDeckCards(cardIds: string[]) {
@@ -1420,6 +1421,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   onStartOnlineMatch,
   onOpenAccountModal,
   onRequireDeckSetup,
+  onOpenGlobalLeaderboard,
 }) => {
   const isGuest = isUnregisteredProfile(currentUser);
   const needsDeckSetup = !isGuest && customDecks.length === 0;
@@ -1745,6 +1747,16 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
             </div>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginLeft: 'auto' }}>
+              {onOpenGlobalLeaderboard && (
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-primary"
+                  onClick={onOpenGlobalLeaderboard}
+                  title="Ver sua posição na Escada Global unificada com os 44 Soberanos de Vaeloria"
+                >
+                  🏆 Ranking Geral ELO
+                </button>
+              )}
               <button
                 type="button"
                 className="aaa-btn aaa-btn-primary"

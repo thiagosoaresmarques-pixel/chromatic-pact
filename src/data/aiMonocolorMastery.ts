@@ -769,3 +769,73 @@ export function getTrainedMonocolorPrebuiltDecks(tier: AiSkillTier = 5): Prebuil
   return list;
 }
 
+/**
+ * Resolves the exact 100-card graduated grimoire and metadata for any of the 44 Unified Champions
+ * (16 Monocolor + 15 Bicolor + 10 Tricolor + 3 Pentachromatic) at Skill Tier I–V.
+ */
+export function resolveChampionDeckAndProfile(
+  archetypeId: string,
+  skillTier: AiSkillTier = 5
+): {
+  cardIds: string[];
+  archetypeId: MonocolorArchetypeId | BicolorArchetypeId | PolycolorArchetypeId;
+  name: string;
+  subtitle: string;
+  domains: Domain[];
+  coverCardId: string;
+  skillTier: AiSkillTier;
+} | null {
+  if (archetypeId in MONOCOLOR_ARCHETYPE_MASTERY) {
+    const m = MONOCOLOR_ARCHETYPE_MASTERY[archetypeId as MonocolorArchetypeId];
+    const tDeck = m?.tierDecks?.[skillTier] ?? m?.tierDecks?.[5];
+    if (m && tDeck && tDeck.cardIds.length === DECK_SIZE) {
+      return {
+        cardIds: tDeck.cardIds,
+        archetypeId: m.archetypeId,
+        name: m.name,
+        subtitle: m.subtitle,
+        domains: [m.domain],
+        coverCardId: m.coverCardId,
+        skillTier,
+      };
+    }
+  }
+
+  const biId = resolveBicolorArchetypeForDeckId(archetypeId);
+  if (biId) {
+    const bm = BICOLOR_ARCHETYPE_MASTERY[biId];
+    const tDeck = bm?.tierDecks?.[skillTier] ?? bm?.tierDecks?.[5];
+    if (bm && tDeck && tDeck.cardIds.length === DECK_SIZE) {
+      return {
+        cardIds: tDeck.cardIds,
+        archetypeId: bm.archetypeId,
+        name: bm.name,
+        subtitle: bm.subtitle,
+        domains: bm.domains,
+        coverCardId: bm.coverCardId,
+        skillTier,
+      };
+    }
+  }
+
+  const polyId = resolvePolycolorArchetypeForDeckId(archetypeId);
+  if (polyId) {
+    const pm = POLYCOLOR_ARCHETYPE_MASTERY[polyId];
+    const tDeck = pm?.tierDecks?.[skillTier] ?? pm?.tierDecks?.[5];
+    if (pm && tDeck && tDeck.cardIds.length === DECK_SIZE) {
+      return {
+        cardIds: tDeck.cardIds,
+        archetypeId: pm.archetypeId,
+        name: pm.name,
+        subtitle: pm.subtitle,
+        domains: pm.domains,
+        coverCardId: pm.coverCardId,
+        skillTier,
+      };
+    }
+  }
+
+  return null;
+}
+
+

@@ -20,6 +20,7 @@ import {
   saveDraftRunState,
 } from '../data/vaeloriaDraftData';
 import { CampaignBoss, CardDefinition, ConquestBattleModifiers, Domain } from '../types/game';
+import { getDraftCardPickRating } from '../data/asymmetricAuditData';
 import { CardInspectModal, CardView, DOMAIN_META } from './CardView';
 
 const DRAFT_DOMAIN_SORT: Record<Domain, number> = {
@@ -468,18 +469,83 @@ export const DraftCrucibleView: React.FC<DraftCrucibleViewProps> = ({
               const c1 = CARDS_BY_ID[bucket.cardIds[0]];
               const c2 = CARDS_BY_ID[bucket.cardIds[1]];
               if (!c1 || !c2) return null;
+              const p1 = getDraftCardPickRating(c1.id);
+              const p2 = getDraftCardPickRating(c2.id);
+              const avgScore = Math.round((p1.score + p2.score) / 2);
+              const renderPickPill = (p: ReturnType<typeof getDraftCardPickRating>) => {
+                const bg =
+                  p.tier === 'S'
+                    ? 'rgba(250, 204, 21, 0.22)'
+                    : p.tier === 'A'
+                    ? 'rgba(56, 189, 248, 0.2)'
+                    : p.tier === 'B'
+                    ? 'rgba(148, 163, 184, 0.18)'
+                    : 'rgba(100, 116, 139, 0.16)';
+                const fg =
+                  p.tier === 'S'
+                    ? '#fde047'
+                    : p.tier === 'A'
+                    ? '#7dd3fc'
+                    : p.tier === 'B'
+                    ? '#e2e8f0'
+                    : '#94a3b8';
+                const bd =
+                  p.tier === 'S'
+                    ? 'rgba(250, 204, 21, 0.6)'
+                    : p.tier === 'A'
+                    ? 'rgba(56, 189, 248, 0.5)'
+                    : 'rgba(148, 163, 184, 0.35)';
+                return (
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      marginBottom: '4px',
+                      padding: '1px 7px',
+                      borderRadius: '999px',
+                      background: bg,
+                      border: `1px solid ${bd}`,
+                      color: fg,
+                      fontSize: '0.62rem',
+                      fontWeight: 800,
+                      letterSpacing: '0.04em',
+                    }}
+                    title={`Nota do Oráculo no Crisol (3.600 duelos simulados): Tier ${p.tier} • Score ${p.score.toFixed(1)}`}
+                  >
+                    <span>🔮 Pick {p.tier}</span>
+                    <span style={{ opacity: 0.8 }}>({Math.round(p.score)})</span>
+                  </div>
+                );
+              };
               return (
                 <div key={bucket.id} className="draft-bucket-card">
-                  <div className="draft-bucket-title">{bucket.label}</div>
+                  <div
+                    className="draft-bucket-title"
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}
+                  >
+                    <span>{bucket.label}</span>
+                    <span
+                      style={{
+                        fontSize: '0.64rem',
+                        color: avgScore >= 70 ? '#fde047' : '#cbd5e1',
+                        fontWeight: 800,
+                      }}
+                    >
+                      Sinergia {avgScore}
+                    </span>
+                  </div>
                   <div className="draft-bucket-pair">
-                    <div className="draft-bucket-slot">
+                    <div className="draft-bucket-slot" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      {renderPickPill(p1)}
                       <CardView
                         card={c1}
                         mode="gallery"
                         onInspect={(c) => setInspectCard(c)}
                       />
                     </div>
-                    <div className="draft-bucket-slot">
+                    <div className="draft-bucket-slot" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      {renderPickPill(p2)}
                       <CardView
                         card={c2}
                         mode="gallery"

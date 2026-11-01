@@ -1,7 +1,13 @@
-import { CardDefinition, Domain, DomainExpansionState, GameState, PlayerState, PrebuiltDeck } from '../types/game';
+import { AiSkillTier, CardDefinition, Domain, DomainExpansionState, GameState, PlayerState, PrebuiltDeck } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
+import type { UnifiedFormatKind } from '../data/aiUnifiedTournamentData';
+import {
+  calculateFideRankedEloDelta,
+  SOVEREIGN_AI_LEADERBOARD_ROSTER,
+  SovereignAiLeaderboardEntry,
+} from '../data/sovereignEloLadder';
 
 export const VICTORY_GOLD_REWARD = 10;
 export const STARTER_GOLD = 160;
@@ -115,6 +121,9 @@ export interface SovereignUserProfile {
   eloRating: number;
   pvpWins: number;
   pvpLosses: number;
+  rankedSovereignWins?: number;
+  rankedSovereignLosses?: number;
+  recentRankedOpponentIds?: string[];
   preferredDeckId: string;
   gold?: number;
   astralShards?: number;
@@ -626,11 +635,15 @@ function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
     e: (profile.email || '').trim().toLowerCase(),
     p: profile.passwordHash || '',
     g: profile.gold ?? 0,
+    as: profile.astralShards ?? 0,
     d: profile.customDecks ?? [],
     s: profile.starterDeckCardIds ?? [],
     u: profile.extraUnlockedCards ?? {},
     b: profile.defeatedBossIds ?? [],
     w: profile.arenaWins ?? 0,
+    rsw: profile.rankedSovereignWins ?? 0,
+    rsl: profile.rankedSovereignLosses ?? 0,
+    rhist: (profile.recentRankedOpponentIds ?? []).slice(-6),
     pref: profile.preferredDeckId || '',
     adm: isAdminProfile(profile),
     ca: profile.createdAt ?? Date.now(),
@@ -646,11 +659,15 @@ function decodeCloudTitleMeta(
   email?: string;
   passwordHash?: string;
   gold?: number;
+  astralShards?: number;
   customDecks?: SovereignSavedDeck[];
   starterDeckCardIds?: string[];
   extraUnlockedCards?: Record<string, number>;
   defeatedBossIds?: string[];
   arenaWins?: number;
+  rankedSovereignWins?: number;
+  rankedSovereignLosses?: number;
+  recentRankedOpponentIds?: string[];
   preferredDeckId?: string;
   isAdmin?: boolean;
   createdAt?: number;
@@ -665,11 +682,15 @@ function decodeCloudTitleMeta(
         e?: string;
         p?: string;
         g?: number;
+        as?: number;
         d?: SovereignSavedDeck[];
         s?: string[];
         u?: Record<string, number>;
         b?: string[];
         w?: number;
+        rsw?: number;
+        rsl?: number;
+        rhist?: string[];
         pref?: string;
         adm?: boolean;
         ca?: number;
@@ -680,11 +701,15 @@ function decodeCloudTitleMeta(
         email: parsed.e || undefined,
         passwordHash: parsed.p || undefined,
         gold: typeof parsed.g === 'number' ? parsed.g : undefined,
+        astralShards: typeof parsed.as === 'number' ? parsed.as : undefined,
         customDecks: Array.isArray(parsed.d) ? parsed.d : undefined,
         starterDeckCardIds: Array.isArray(parsed.s) ? parsed.s : undefined,
         extraUnlockedCards: parsed.u && typeof parsed.u === 'object' ? parsed.u : undefined,
         defeatedBossIds: Array.isArray(parsed.b) ? parsed.b : undefined,
         arenaWins: typeof parsed.w === 'number' ? parsed.w : undefined,
+        rankedSovereignWins: typeof parsed.rsw === 'number' ? parsed.rsw : undefined,
+        rankedSovereignLosses: typeof parsed.rsl === 'number' ? parsed.rsl : undefined,
+        recentRankedOpponentIds: Array.isArray(parsed.rhist) ? parsed.rhist : undefined,
         preferredDeckId: parsed.pref || undefined,
         isAdmin: Boolean(parsed.adm),
         createdAt: typeof parsed.ca === 'number' ? parsed.ca : undefined,
@@ -765,6 +790,9 @@ export function updateSovereignAccountProfile(
     preferredDeckId: updates.preferredDeckId ?? currentProfile.preferredDeckId,
   };
   setActiveTabUserProfile(updated);
+  if (!isUnregisteredProfile(updated)) {
+    void adminSaveCloudProfile(updated);
+  }
   return updated;
 }
 
@@ -797,6 +825,9 @@ export function recordPvpMatchResult(
     pvpLosses: profile.pvpLosses + (didWin ? 0 : 1),
   };
   setActiveTabUserProfile(updated);
+  if (!isUnregisteredProfile(updated)) {
+    void adminSaveCloudProfile(updated);
+  }
   return updated;
 }
 
@@ -887,8 +918,13 @@ function hydrateProfileFromRow(
     eloRating: row.elo_rating ?? 1200,
     pvpWins: row.pvp_wins ?? 0,
     pvpLosses: row.pvp_losses ?? 0,
+    rankedSovereignWins: meta.rankedSovereignWins ?? localMatch?.rankedSovereignWins ?? 0,
+    rankedSovereignLosses: meta.rankedSovereignLosses ?? localMatch?.rankedSovereignLosses ?? 0,
+    recentRankedOpponentIds:
+      meta.recentRankedOpponentIds ?? localMatch?.recentRankedOpponentIds ?? [],
     preferredDeckId: meta.preferredDeckId || localMatch?.preferredDeckId || '',
     gold: meta.gold ?? row.gold ?? localMatch?.gold ?? 0,
+    astralShards: meta.astralShards ?? localMatch?.astralShards ?? 0,
     customDecks: meta.customDecks ?? localMatch?.customDecks ?? [],
     starterDeckCardIds: meta.starterDeckCardIds ?? localMatch?.starterDeckCardIds ?? [],
     extraUnlockedCards: meta.extraUnlockedCards ?? localMatch?.extraUnlockedCards ?? {},
@@ -1823,3 +1859,299 @@ export async function fetchGlobalAdminAnnouncement(): Promise<GlobalAdminAnnounc
     return null;
   }
 }
+
+// ============================================================================
+// 8. UNIFIED GLOBAL ELO LEADERBOARD (PLATFORM HUMAN USERS + AI SOVEREIGNS)
+// ============================================================================
+
+export type UnifiedLeaderboardEntryKind = 'human' | 'sovereign_ai';
+
+export interface UnifiedLeaderboardEntry {
+  entryId: string;
+  kind: UnifiedLeaderboardEntryKind;
+  globalRank: number;
+  categoryRank: number;
+  displayName: string;
+  subtitle: string;
+  realmOrOrigin: string;
+  avatarCardId: string;
+  eloRating: number;
+  eloRd?: number;
+  wins: number;
+  losses: number;
+  totalGames: number;
+  winRate: number;
+  domains: Domain[];
+  format?: UnifiedFormatKind;
+  skillTier?: AiSkillTier;
+  isGrandSovereign?: boolean;
+  isCurrentUser?: boolean;
+  isAdmin?: boolean;
+  sovereignEntry?: SovereignAiLeaderboardEntry;
+  humanProfile?: SovereignUserProfile;
+}
+
+export interface UnifiedLeaderboardSnapshot {
+  entries: UnifiedLeaderboardEntry[];
+  humanCount: number;
+  sovereignCount: number;
+  currentUserEntry: UnifiedLeaderboardEntry | null;
+  nextSovereignTarget: UnifiedLeaderboardEntry | null;
+  isCloudConnected: boolean;
+  latencyMs: number;
+  error?: string;
+}
+
+function inferHumanDomains(profile: SovereignUserProfile): Domain[] {
+  const prefDeck =
+    profile.customDecks?.find((d) => d.id === profile.preferredDeckId) ??
+    profile.customDecks?.[0];
+  if (prefDeck && prefDeck.cardIds.length > 0) {
+    const counts = new Map<Domain, number>();
+    for (const cid of prefDeck.cardIds) {
+      const c = CARDS_BY_ID[cid];
+      if (c && c.domain !== 'neutral') {
+        counts.set(c.domain, (counts.get(c.domain) ?? 0) + 1);
+      }
+    }
+    const sorted = Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([d]) => d);
+    if (sorted.length > 0) return sorted.slice(0, 3);
+  }
+  const avatarCard = CARDS_BY_ID[profile.avatarCardId];
+  return avatarCard ? [avatarCard.domain] : ['neutral'];
+}
+
+export async function fetchUnifiedPlatformLeaderboard(
+  currentUser?: SovereignUserProfile | null,
+  options?: { includeRegionalCommanders?: boolean }
+): Promise<UnifiedLeaderboardSnapshot> {
+  const includeCommanders = options?.includeRegionalCommanders ?? true;
+  const cfg = getSupabaseConfig();
+  const localRoster = getSavedAccountsRoster().filter((a) => !isUnregisteredProfile(a));
+  const startMs = performance.now();
+
+  let cloudProfiles: SovereignUserProfile[] = [];
+  let isCloudConnected = false;
+  let errorMsg: string | undefined;
+
+  if (cfg.isConfigured) {
+    try {
+      const res = await fetch(
+        `${cfg.url}/rest/v1/sovereign_profiles?select=*&order=elo_rating.desc&limit=500`,
+        {
+          headers: getSupabaseHeaders(cfg.anonKey),
+        }
+      );
+      if (res.ok) {
+        const rows = (await res.json()) as SupabaseProfileRow[];
+        isCloudConnected = true;
+        for (const r of rows) {
+          if (!r.username || r.username.startsWith('__')) continue;
+          const localMatch = localRoster.find(
+            (a) => a.username.toLowerCase() === r.username.toLowerCase()
+          );
+          cloudProfiles.push(hydrateProfileFromRow(r, localMatch));
+        }
+      } else {
+        errorMsg = `HTTP ${res.status}`;
+      }
+    } catch (err) {
+      errorMsg = err instanceof Error ? err.message : 'Modo local ativo';
+    }
+  }
+
+  const latencyMs = Math.round(performance.now() - startMs);
+
+  // Merge cloud + local + currentUser (so local active user always sees instant ELO updates)
+  const humanByUsername = new Map<string, SovereignUserProfile>();
+  for (const cp of cloudProfiles) {
+    humanByUsername.set(cp.username.toLowerCase(), cp);
+  }
+  for (const lp of localRoster) {
+    const key = lp.username.toLowerCase();
+    const existing = humanByUsername.get(key);
+    if (!existing || (lp.lastActiveAt ?? 0) >= (existing.lastActiveAt ?? 0)) {
+      humanByUsername.set(key, lp);
+    }
+  }
+  if (currentUser && !isUnregisteredProfile(currentUser)) {
+    humanByUsername.set(currentUser.username.toLowerCase(), currentUser);
+  }
+
+  const rawEntries: UnifiedLeaderboardEntry[] = [];
+  const currentUsernameLower =
+    currentUser && !isUnregisteredProfile(currentUser)
+      ? currentUser.username.toLowerCase()
+      : null;
+
+  for (const hp of humanByUsername.values()) {
+    const rankedWins = (hp.pvpWins ?? 0) + (hp.rankedSovereignWins ?? 0);
+    const rankedLosses = (hp.pvpLosses ?? 0) + (hp.rankedSovereignLosses ?? 0);
+    const totalGames = rankedWins + rankedLosses;
+    const winRate = totalGames > 0 ? rankedWins / totalGames : 0;
+    const isMe = currentUsernameLower !== null && hp.username.toLowerCase() === currentUsernameLower;
+
+    rawEntries.push({
+      entryId: `human_${hp.username.toLowerCase()}`,
+      kind: 'human',
+      globalRank: 0,
+      categoryRank: 0,
+      displayName: hp.username,
+      subtitle: hp.title || getAvatarHonorificTitle(hp.avatarCardId),
+      realmOrOrigin: isMe ? 'Sua Conta de Soberano' : 'Soberano da Plataforma',
+      avatarCardId:
+        hp.avatarCardId && CARDS_BY_ID[hp.avatarCardId]
+          ? hp.avatarCardId
+          : 'neutral_10_valkyra_pentacromatica',
+      eloRating: hp.eloRating ?? 1200,
+      wins: rankedWins,
+      losses: rankedLosses,
+      totalGames,
+      winRate,
+      domains: inferHumanDomains(hp),
+      isCurrentUser: isMe,
+      isAdmin: isAdminProfile(hp),
+      humanProfile: hp,
+    });
+  }
+
+  const aiSource = includeCommanders
+    ? SOVEREIGN_AI_LEADERBOARD_ROSTER
+    : SOVEREIGN_AI_LEADERBOARD_ROSTER.filter((s) => s.isGrandSovereign);
+
+  for (const s of aiSource) {
+    rawEntries.push({
+      entryId: `ai_${s.sovereignId}`,
+      kind: 'sovereign_ai',
+      globalRank: 0,
+      categoryRank: 0,
+      displayName: s.sovereignName,
+      subtitle: `${s.archetypeName} • ${s.sovereignTitle}`,
+      realmOrOrigin: s.realmOrigin,
+      avatarCardId:
+        s.avatarCardId && CARDS_BY_ID[s.avatarCardId]
+          ? s.avatarCardId
+          : 'neutral_10_valkyra_pentacromatica',
+      eloRating: s.eloRating,
+      eloRd: s.eloRd,
+      wins: s.simulatedWins,
+      losses: s.simulatedLosses,
+      totalGames: s.simulatedGames,
+      winRate: s.simulatedWinRate,
+      domains: s.domains,
+      format: s.format,
+      skillTier: s.skillTier,
+      isGrandSovereign: s.isGrandSovereign,
+      sovereignEntry: s,
+    });
+  }
+
+  rawEntries.sort((a, b) => {
+    if (b.eloRating !== a.eloRating) return b.eloRating - a.eloRating;
+    if (a.isCurrentUser && !b.isCurrentUser) return -1;
+    if (!a.isCurrentUser && b.isCurrentUser) return 1;
+    return b.winRate - a.winRate;
+  });
+
+  let humanIdx = 0;
+  let sovIdx = 0;
+  let currentUserEntry: UnifiedLeaderboardEntry | null = null;
+
+  for (let i = 0; i < rawEntries.length; i++) {
+    const e = rawEntries[i];
+    e.globalRank = i + 1;
+    if (e.kind === 'human') {
+      humanIdx += 1;
+      e.categoryRank = humanIdx;
+      if (e.isCurrentUser) currentUserEntry = e;
+    } else {
+      sovIdx += 1;
+      e.categoryRank = sovIdx;
+    }
+  }
+
+  const refElo = currentUserEntry?.eloRating ?? currentUser?.eloRating ?? 1200;
+  let nextSovereignTarget: UnifiedLeaderboardEntry | null = null;
+  for (let i = rawEntries.length - 1; i >= 0; i--) {
+    const e = rawEntries[i];
+    if (e.kind === 'sovereign_ai' && e.eloRating > refElo) {
+      nextSovereignTarget = e;
+      break;
+    }
+  }
+  if (!nextSovereignTarget) {
+    nextSovereignTarget = rawEntries.find((e) => e.kind === 'sovereign_ai') ?? null;
+  }
+
+  return {
+    entries: rawEntries,
+    humanCount: humanIdx,
+    sovereignCount: sovIdx,
+    currentUserEntry,
+    nextSovereignTarget,
+    isCloudConnected,
+    latencyMs,
+    error: errorMsg,
+  };
+}
+
+export interface RankedSovereignDuelUpdateResult {
+  updatedProfile: SovereignUserProfile;
+  previousElo: number;
+  newElo: number;
+  deltaElo: number;
+  kFactorUsed: number;
+  repeatCount: number;
+  goldEarned: number;
+}
+
+export function recordRankedSovereignDuelResult(
+  profile: SovereignUserProfile,
+  opponentEntry: SovereignAiLeaderboardEntry,
+  didWin: boolean,
+  victoryGoldBonus = 15
+): RankedSovereignDuelUpdateResult {
+  const previousElo = profile.eloRating ?? 1200;
+  const calc = calculateFideRankedEloDelta({
+    playerElo: previousElo,
+    opponentElo: opponentEntry.eloRating,
+    didWin,
+    recentOpponentIds: profile.recentRankedOpponentIds ?? [],
+    opponentKey: opponentEntry.sovereignId,
+  });
+
+  const newElo = Math.max(100, previousElo + calc.delta);
+  const goldEarned = !isUnregisteredProfile(profile) && didWin ? victoryGoldBonus : 0;
+  const nextHistory = [...(profile.recentRankedOpponentIds ?? []), opponentEntry.sovereignId].slice(
+    -6
+  );
+
+  const updatedProfile: SovereignUserProfile = {
+    ...profile,
+    eloRating: newElo,
+    rankedSovereignWins: (profile.rankedSovereignWins ?? 0) + (didWin ? 1 : 0),
+    rankedSovereignLosses: (profile.rankedSovereignLosses ?? 0) + (didWin ? 0 : 1),
+    recentRankedOpponentIds: nextHistory,
+    arenaWins: (profile.arenaWins ?? 0) + (didWin ? 1 : 0),
+    gold: isUnregisteredProfile(profile) ? 0 : (profile.gold ?? 0) + goldEarned,
+    lastActiveAt: Date.now(),
+  };
+
+  setActiveTabUserProfile(updatedProfile);
+  if (!isUnregisteredProfile(updatedProfile)) {
+    void adminSaveCloudProfile(updatedProfile);
+  }
+
+  return {
+    updatedProfile,
+    previousElo,
+    newElo,
+    deltaElo: newElo - previousElo,
+    kFactorUsed: calc.kFactorUsed,
+    repeatCount: calc.repeatCount,
+    goldEarned,
+  };
+}
+

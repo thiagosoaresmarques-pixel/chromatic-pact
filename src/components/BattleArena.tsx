@@ -111,6 +111,12 @@ import {
   recordDailyQuestEvent,
 } from '../utils/dailyQuestsEngine';
 import { computeMatchDossier } from '../utils/matchStatsTracker';
+import {
+  getEloDivisionMeta,
+  resolveCalibratedEloForArchetype,
+  SovereignAiLeaderboardEntry,
+} from '../data/sovereignEloLadder';
+import type { LastRankedDuelSummary } from './GlobalLeaderboardView';
 
 const ARENA_COACHMARK_STEPS = [
   {
@@ -197,6 +203,12 @@ export interface BattleArenaProps {
     currentUser: SovereignUserProfile;
     onExitPvp: () => void;
     onPvpResult: (didWin: boolean) => void;
+  } | null;
+  rankedDuelContext?: {
+    opponentEntry: SovereignAiLeaderboardEntry;
+    playerElo: number;
+    lastResult?: LastRankedDuelSummary | null;
+    onExitLeaderboard: () => void;
   } | null;
 }
 
@@ -381,6 +393,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onRewardGold,
   onMatchConcluded,
   onlineMatch,
+  rankedDuelContext,
 }) => {
   const handleExitBattle = () => {
     try {
@@ -390,6 +403,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
     if (onlineMatch) {
       onlineMatch.onExitPvp();
+    } else if (rankedDuelContext) {
+      rankedDuelContext.onExitLeaderboard();
     } else if (tacticalProblem && onExitProblems) {
       onExitProblems();
     } else if (campaignBoss && onExitCampaign) {
@@ -4218,24 +4233,28 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   {!onlineMatch && !tacticalProblem && (() => {
                     const activeAiTier = gameState.aiSkillTier ?? 3;
                     const tSpec = AI_SKILL_TIER_SPECS[activeAiTier];
-                    const champStanding = getUnifiedStandingForDeckId(
+                    const rawAiKey =
                       gameState.aiDeckId ??
-                        campaignBoss?.archetypeId ??
-                        campaignBoss?.deckId ??
-                        selectedAiDeckId
-                    );
+                      campaignBoss?.archetypeId ??
+                      campaignBoss?.deckId ??
+                      selectedAiDeckId;
+                    const champStanding = getUnifiedStandingForDeckId(rawAiKey);
+                    const calibratedElo =
+                      rankedDuelContext?.opponentEntry.eloRating ??
+                      resolveCalibratedEloForArchetype(rawAiKey, activeAiTier);
                     return (
                       <span
                         className="hud-pill-env-chip"
                         style={{
-                          borderColor:
-                            activeAiTier >= 5
+                          borderColor: rankedDuelContext
+                            ? 'rgba(250, 204, 21, 0.9)'
+                            : activeAiTier >= 5
                               ? 'rgba(250, 204, 21, 0.75)'
                               : activeAiTier >= 4
                                 ? 'rgba(192, 132, 252, 0.65)'
                                 : 'rgba(148, 163, 184, 0.45)',
                           color:
-                            activeAiTier >= 5
+                            rankedDuelContext || activeAiTier >= 5
                               ? '#fde047'
                               : activeAiTier >= 4
                                 ? '#e9d5ff'
@@ -4245,12 +4264,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           whiteSpace: 'nowrap',
                         }}
                         title={`${tSpec.shortLabel} (${tSpec.title})${
+                          calibratedElo ? ` • ${calibratedElo} ELO Calibrado` : ''
+                        }${
                           champStanding
                             ? ` • Campeão #${champStanding.rank}/44 [Tier ${champStanding.tierBadge}]: ${champStanding.name}`
                             : ''
                         } — ${tSpec.description}`}
                       >
-                        🧠 T{tSpec.roman}
+                        {rankedDuelContext ? '🏆 RANQUEADO ' : '🧠 '}T{tSpec.roman}
+                        {calibratedElo ? ` • ${calibratedElo} ELO` : ''}
                         {champStanding && (
                           <>
                             {' '}
@@ -6806,6 +6828,76 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               {gameState.winReason}
             </p>
 
+            {/* Official FIDE Ranked ELO Duel Outcome Card */}
+            {rankedDuelContext && (() => {
+              const res = rankedDuelContext.lastResult;
+              const newElo = res?.newElo ?? rankedDuelContext.playerElo;
+              const prevElo = res?.previousElo ?? rankedDuelContext.playerElo;
+              const delta = res?.deltaElo ?? 0;
+              const div = getEloDivisionMeta(newElo);
+              return (
+                <div
+                  style={{
+                    padding: '0.8rem 0.95rem',
+                    marginBottom: '0.9rem',
+                    borderRadius: '10px',
+                    textAlign: 'left',
+                    background:
+                      gameState.winner === 'player'
+                        ? 'linear-gradient(135deg, rgba(6, 78, 59, 0.72), rgba(15, 23, 42, 0.94))'
+                        : 'linear-gradient(135deg, rgba(127, 29, 29, 0.65), rgba(15, 23, 42, 0.94))',
+                    border:
+                      gameState.winner === 'player'
+                        ? '1.5px solid rgba(52, 211, 153, 0.7)'
+                        : '1.5px solid rgba(248, 113, 113, 0.6)',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '6px',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    <span
+                      className="font-cinzel"
+                      style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fde047' }}
+                    >
+                      🏆 RANKING GERAL ELO DE VAELORIA (FIDE)
+                    </span>
+                    <span
+                      style={{
+                        padding: '2px 8px',
+                        borderRadius: '999px',
+                        fontSize: '0.66rem',
+                        fontWeight: 800,
+                        color: div.color,
+                        background: div.bgRgba,
+                        border: `1px solid ${div.borderRgba}`,
+                      }}
+                    >
+                      {div.icon} {div.label}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.86rem', color: '#f8fafc', fontWeight: 800 }}>
+                    Rating: {prevElo} ➔ {newElo} ELO (
+                    <span style={{ color: delta >= 0 ? '#6ee7b7' : '#fca5a5' }}>
+                      {delta >= 0 ? `+${delta}` : delta} ELO
+                    </span>
+                    )
+                  </div>
+                  <div style={{ fontSize: '0.72rem', color: '#cbd5e1', marginTop: '2px' }}>
+                    Oponente: {rankedDuelContext.opponentEntry.sovereignName} (
+                    {rankedDuelContext.opponentEntry.eloRating} ELO • Tier{' '}
+                    {rankedDuelContext.opponentEntry.skillTier})
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Post-Match Tactical Dossier & MVP Card Spotlight */}
             {!tacticalProblem && (() => {
               const dossier = computeMatchDossier(gameState);
@@ -7132,14 +7224,26 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </button>
                 );
               })()}
-              {campaignBoss && onExitCampaign && gameState.winner === 'player' && (
+              {rankedDuelContext ? (
                 <button
                   type="button"
                   className="btn-fantasy btn-fantasy-primary"
-                  onClick={onExitCampaign}
+                  onClick={rankedDuelContext.onExitLeaderboard}
                 >
-                  🗺️ Voltar ao Mapa
+                  🏆 Voltar ao Ranking ELO
                 </button>
+              ) : (
+                campaignBoss &&
+                onExitCampaign &&
+                gameState.winner === 'player' && (
+                  <button
+                    type="button"
+                    className="btn-fantasy btn-fantasy-primary"
+                    onClick={onExitCampaign}
+                  >
+                    🗺️ Voltar ao Mapa
+                  </button>
+                )
               )}
               {!onlineMatch && (
                 <button
@@ -7172,7 +7276,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   🌐 Voltar ao Conclave 1×1
                 </button>
               )}
-              {campaignBoss && onExitCampaign && gameState.winner !== 'player' && (
+              {!rankedDuelContext && campaignBoss && onExitCampaign && gameState.winner !== 'player' && (
                 <button type="button" className="btn-fantasy" onClick={onExitCampaign}>
                   🗺️ Voltar ao Mapa
                 </button>

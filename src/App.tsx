@@ -93,6 +93,17 @@ const DraftCrucibleView = React.lazy(() =>
 const FractureRiftsView = React.lazy(() =>
   import('./components/FractureRiftsView').then((m) => ({ default: m.FractureRiftsView }))
 );
+const GlobalLeaderboardView = React.lazy(() =>
+  import('./components/GlobalLeaderboardView').then((m) => ({
+    default: m.GlobalLeaderboardView,
+  }))
+);
+import type { LastRankedDuelSummary } from './components/GlobalLeaderboardView';
+import {
+  buildRankedSovereignBossEncounter,
+  getEloDivisionMeta,
+  SovereignAiLeaderboardEntry,
+} from './data/sovereignEloLadder';
 import {
   adminSaveCloudProfile,
   ensureStarterDeckForUser,
@@ -104,6 +115,7 @@ import {
   isUnregisteredProfile,
   MultiplayerRoom,
   recordPvpMatchResult,
+  recordRankedSovereignDuelResult,
   setActiveTabUserProfile,
   SovereignUserProfile,
   subscribeMultiplayerBus,
@@ -138,6 +150,7 @@ type ActiveTab =
   | 'rifts'
   | 'problems'
   | 'multiplayer'
+  | 'leaderboard'
   | 'campaign'
   | 'expedition'
   | 'conquest'
@@ -196,6 +209,12 @@ const NAV_PILLARS: NavPillarDef[] = [
         icon: '🌀',
         label: 'Fendas',
         shortDesc: 'Eventos com mutadores de regra e bônus semanal',
+      },
+      {
+        tab: 'leaderboard',
+        icon: '🏆',
+        label: 'Ranking ELO',
+        shortDesc: 'Ranking Geral Unificado (Usuários da Plataforma + Soberanos IA)',
       },
       {
         tab: 'multiplayer',
@@ -294,6 +313,7 @@ function resolvePillarForTab(tab: ActiveTab): NavPillarId | null {
     case 'arena':
     case 'draft':
     case 'rifts':
+    case 'leaderboard':
     case 'multiplayer':
     case 'problems':
       return 'battle';
@@ -334,6 +354,7 @@ interface SavedAppNavState {
   expeditionBlessingId?: string | null;
   activeConquestContext?: ActiveConquestContext | null;
   activeGeoModifiers?: ConquestBattleModifiers | null;
+  activeRankedSovereign?: SovereignAiLeaderboardEntry | null;
   quickDuelDecks: {
     playerDeckId?: string;
     aiDeckId?: string;
@@ -361,6 +382,7 @@ function loadSavedAppNavState(): SavedAppNavState | null {
       expeditionBlessingId: parsed.expeditionBlessingId ?? null,
       activeConquestContext: parsed.activeConquestContext ?? null,
       activeGeoModifiers: parsed.activeGeoModifiers ?? null,
+      activeRankedSovereign: parsed.activeRankedSovereign ?? null,
       quickDuelDecks: parsed.quickDuelDecks ?? {},
     };
   } catch {
@@ -473,6 +495,12 @@ export const App: React.FC = () => {
   const [activeGeoModifiers, setActiveGeoModifiers] = useState<ConquestBattleModifiers | null>(
     () => initialNavState?.activeGeoModifiers ?? null
   );
+  const [activeRankedSovereign, setActiveRankedSovereign] =
+    useState<SovereignAiLeaderboardEntry | null>(
+      () => initialNavState?.activeRankedSovereign ?? null
+    );
+  const [lastRankedEloResult, setLastRankedEloResult] =
+    useState<LastRankedDuelSummary | null>(null);
   const [lastConquestOutcome, setLastConquestOutcome] = useState<ConquestBattleOutcome | null>(
     null
   );
@@ -513,6 +541,7 @@ export const App: React.FC = () => {
         expeditionBlessingId,
         activeConquestContext,
         activeGeoModifiers,
+        activeRankedSovereign,
         quickDuelDecks,
       };
       localStorage.setItem(APP_NAV_STATE_STORAGE_KEY, JSON.stringify(stateToSave));
@@ -838,6 +867,7 @@ export const App: React.FC = () => {
   const handleOpenArenaSolo = () => {
     trackAdsEvent('start_duel', { mode: 'solo_arena', isGuest });
     setActiveCampaignBoss(null);
+    setActiveRankedSovereign(null);
     setActiveProblem(null);
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
@@ -859,6 +889,7 @@ export const App: React.FC = () => {
       // Ignore
     }
     setActiveCampaignBoss(null);
+    setActiveRankedSovereign(null);
     setActiveOnlineMatch(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(false);
@@ -943,6 +974,7 @@ export const App: React.FC = () => {
     );
     setActiveOnlineMatch(null);
     setActiveProblem(null);
+    setActiveRankedSovereign(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(false);
     setActiveRiftId(null);
@@ -951,6 +983,39 @@ export const App: React.FC = () => {
     setActiveGeoModifiers(geoMods);
     setActiveCampaignBoss(boss);
     setCampaignPlayerDeckIds(playerDeckIds);
+    setActiveTab('arena');
+  };
+
+  const handleStartRankedSovereignDuel = (
+    entry: SovereignAiLeaderboardEntry,
+    playerDeckIds: string[],
+    playerDeckId: string
+  ) => {
+    trackAdsEvent('start_duel', {
+      mode: 'ranked_sovereign_elo',
+      sovereignId: entry.sovereignId,
+      opponentElo: entry.eloRating,
+      isGuest,
+    });
+    try {
+      localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+    const boss = buildRankedSovereignBossEncounter(entry);
+    setActiveOnlineMatch(null);
+    setActiveProblem(null);
+    setIsExpeditionBattle(false);
+    setIsDraftBattle(false);
+    setActiveRiftId(null);
+    setExpeditionBlessingId(null);
+    setActiveConquestContext(null);
+    setActiveGeoModifiers(null);
+    setLastRankedEloResult(null);
+    setActiveRankedSovereign(entry);
+    setActiveCampaignBoss(boss);
+    setCampaignPlayerDeckIds(playerDeckIds);
+    setQuickDuelDecks((prev) => ({ ...prev, playerDeckId }));
     setActiveTab('arena');
   };
 
@@ -976,6 +1041,7 @@ export const App: React.FC = () => {
     );
     setActiveOnlineMatch(null);
     setActiveProblem(null);
+    setActiveRankedSovereign(null);
     setIsExpeditionBattle(true);
     setIsDraftBattle(false);
     setActiveRiftId(null);
@@ -1003,6 +1069,7 @@ export const App: React.FC = () => {
     }
     setActiveOnlineMatch(null);
     setActiveProblem(null);
+    setActiveRankedSovereign(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(false);
     setActiveRiftId(null);
@@ -1032,6 +1099,7 @@ export const App: React.FC = () => {
     }
     setActiveOnlineMatch(null);
     setActiveProblem(null);
+    setActiveRankedSovereign(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(true);
     setActiveRiftId(null);
@@ -1057,6 +1125,7 @@ export const App: React.FC = () => {
     const { boss, modifiers } = buildRiftBattleEncounter(riftId, aiSkillTier);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
+    setActiveRankedSovereign(null);
     setIsExpeditionBattle(false);
     setIsDraftBattle(false);
     setActiveRiftId(riftId);
@@ -1069,6 +1138,31 @@ export const App: React.FC = () => {
   };
 
   const handleCampaignVictory = (boss: CampaignBoss) => {
+    if (activeRankedSovereign) {
+      const outcome = recordRankedSovereignDuelResult(currentUser, activeRankedSovereign, true, 15);
+      setCurrentUser(outcome.updatedProfile);
+      setLastRankedEloResult({
+        previousElo: outcome.previousElo,
+        newElo: outcome.newElo,
+        deltaElo: outcome.deltaElo,
+        opponentName: activeRankedSovereign.sovereignName,
+        opponentElo: activeRankedSovereign.eloRating,
+        didWin: true,
+      });
+      const div = getEloDivisionMeta(outcome.newElo);
+      const sign = outcome.deltaElo >= 0 ? `+${outcome.deltaElo}` : `${outcome.deltaElo}`;
+      pushNotification({
+        kicker: 'RANKING GERAL ELO DE VAELORIA',
+        title: `🏆 Vitória Ranqueada sobre ${activeRankedSovereign.sovereignName}! (${sign} ELO)`,
+        message: `Seu Rating subiu para ${outcome.newElo} ELO (${div.icon} ${div.label})${
+          outcome.goldEarned > 0 ? ` +${outcome.goldEarned} Ouro!` : '!'
+        }`,
+        actionLabel: 'Ver Ranking ELO',
+        actionTarget: 'leaderboard',
+      });
+      return;
+    }
+
     if (activeRiftId) {
       const { awardedWeeklyBonus } = recordRiftVictory(activeRiftId);
       const riftDef = FRACTURE_RIFTS_BY_ID[activeRiftId];
@@ -1199,6 +1293,32 @@ export const App: React.FC = () => {
   };
 
   const handleCampaignDefeat = (boss: CampaignBoss) => {
+    if (activeRankedSovereign) {
+      const outcome = recordRankedSovereignDuelResult(
+        currentUser,
+        activeRankedSovereign,
+        false,
+        0
+      );
+      setCurrentUser(outcome.updatedProfile);
+      setLastRankedEloResult({
+        previousElo: outcome.previousElo,
+        newElo: outcome.newElo,
+        deltaElo: outcome.deltaElo,
+        opponentName: activeRankedSovereign.sovereignName,
+        opponentElo: activeRankedSovereign.eloRating,
+        didWin: false,
+      });
+      const div = getEloDivisionMeta(outcome.newElo);
+      pushNotification({
+        kicker: 'RANKING GERAL ELO DE VAELORIA',
+        title: `⚔️ Fim de Duelo Ranqueado (${outcome.deltaElo} ELO)`,
+        message: `Rating atualizado para ${outcome.newElo} ELO (${div.icon} ${div.label}) após enfrentar ${activeRankedSovereign.sovereignName} (${activeRankedSovereign.eloRating} ELO).`,
+        actionLabel: 'Ver Ranking ELO',
+        actionTarget: 'leaderboard',
+      });
+      return;
+    }
     if (isDraftBattle) {
       setLastDraftOutcome({
         outcomeId: `dr_loss_${boss.id}_${Date.now()}`,
@@ -1544,6 +1664,7 @@ export const App: React.FC = () => {
     if (activeTab === 'arena') {
       if (activeOnlineMatch) return 'multiplayer';
       if (activeProblem) return 'problems';
+      if (activeCampaignBoss && activeRankedSovereign) return 'leaderboard';
       if (activeCampaignBoss && activeRiftId) return 'rifts';
       if (activeCampaignBoss && isDraftBattle) return 'draft';
       if (activeCampaignBoss && activeConquestContext) return 'conquest';
@@ -1557,6 +1678,7 @@ export const App: React.FC = () => {
     activeOnlineMatch,
     activeProblem,
     activeCampaignBoss,
+    activeRankedSovereign,
     activeRiftId,
     isDraftBattle,
     activeConquestContext,
@@ -1846,17 +1968,21 @@ export const App: React.FC = () => {
                   setActiveProblem(null);
                   setActiveTab('problems');
                 } else if (activeCampaignBoss) {
+                  const wasRanked = Boolean(activeRankedSovereign);
                   const wasRift = Boolean(activeRiftId);
                   const wasDraft = isDraftBattle;
                   const wasConquest = Boolean(activeConquestContext);
                   const wasExp = isExpeditionBattle;
                   setActiveCampaignBoss(null);
+                  setActiveRankedSovereign(null);
                   setActiveRiftId(null);
                   setIsDraftBattle(false);
                   setIsExpeditionBattle(false);
                   setActiveConquestContext(null);
                   setActiveTab(
-                    wasRift
+                    wasRanked
+                      ? 'leaderboard'
+                      : wasRift
                       ? 'rifts'
                       : wasDraft
                       ? 'draft'
@@ -1875,6 +2001,23 @@ export const App: React.FC = () => {
               ← Sair
             </button>
           )}
+
+          <button
+            type="button"
+            className={`btn-fantasy ${activeTab === 'leaderboard' ? 'active' : ''}`}
+            onClick={() => handleSelectSubTab('leaderboard')}
+            style={{
+              padding: '4px 9px',
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              borderColor: 'rgba(250, 204, 21, 0.55)',
+              color: '#fde047',
+            }}
+            title="Ranking Geral ELO Unificado (Usuários + Soberanos IA)"
+          >
+            <span>🏆</span>
+            <span className="hide-on-mobile"> ELO</span>
+          </button>
 
           <div
             className="gold-pill nav-account-pill"
@@ -2257,6 +2400,7 @@ export const App: React.FC = () => {
             <SovereignRoyalCommandStrip
               isGuest={isGuest}
               username={currentUser.username}
+              eloRating={currentUser.eloRating}
               gold={gold}
               astralShards={astralShards}
               defeatedBossCount={defeatedBossIds.length}
@@ -2295,6 +2439,20 @@ export const App: React.FC = () => {
             </div>
           }
         >
+        {activeTab === 'leaderboard' && (
+          <GlobalLeaderboardView
+            currentUser={currentUser}
+            customDecks={customDecks}
+            isGuest={isGuest}
+            lastRankedResult={lastRankedEloResult}
+            onChallengeSovereign={handleStartRankedSovereignDuel}
+            onOpenAccountModal={(tab) => setAccountModalState({ open: true, tab })}
+            onOpenPvpConclave={() => setActiveTab('multiplayer')}
+            onOpenDeckBuilder={() => setActiveTab('deckbuilder')}
+            onInspectCard={setShowcaseInspectCard}
+          />
+        )}
+
         {activeTab === 'multiplayer' && (
           <MultiplayerView
             customDecks={customDecks}
@@ -2305,8 +2463,10 @@ export const App: React.FC = () => {
             }}
             onOpenAccountModal={(tab) => setAccountModalState({ open: true, tab })}
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
+            onOpenGlobalLeaderboard={() => setActiveTab('leaderboard')}
             onStartOnlineMatch={(room, role) => {
               setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
               setIsExpeditionBattle(false);
               setIsDraftBattle(false);
               setActiveRiftId(null);
@@ -2379,6 +2539,7 @@ export const App: React.FC = () => {
             onCampaignDefeat={handleCampaignDefeat}
             onExitArena={() => {
               setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
               setActiveProblem(null);
               setActiveOnlineMatch(null);
               setIsExpeditionBattle(false);
@@ -2389,21 +2550,32 @@ export const App: React.FC = () => {
               setActiveTab('home');
             }}
             onExitCampaign={() => {
+              const wasRanked = Boolean(activeRankedSovereign);
               const wasRift = Boolean(activeRiftId);
               const wasDraft = isDraftBattle;
               const wasConquest = Boolean(activeConquestContext);
               const wasExp = isExpeditionBattle;
-              if (!wasRift && !wasDraft && !wasConquest && !wasExp && activeCampaignBoss) {
+              if (
+                !wasRanked &&
+                !wasRift &&
+                !wasDraft &&
+                !wasConquest &&
+                !wasExp &&
+                activeCampaignBoss
+              ) {
                 saveCampaignReturnFromBossDuel(activeCampaignBoss.id, { forceExpanded: true });
               }
               setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
               setActiveRiftId(null);
               setIsDraftBattle(false);
               setIsExpeditionBattle(false);
               setActiveConquestContext(null);
               setActiveGeoModifiers(null);
               setActiveTab(
-                wasRift
+                wasRanked
+                  ? 'leaderboard'
+                  : wasRift
                   ? 'rifts'
                   : wasDraft
                   ? 'draft'
@@ -2416,6 +2588,20 @@ export const App: React.FC = () => {
             }}
             onRewardGold={handleRewardGold}
             onMatchConcluded={handleMatchConcluded}
+            rankedDuelContext={
+              activeRankedSovereign
+                ? {
+                    opponentEntry: activeRankedSovereign,
+                    playerElo: currentUser.eloRating,
+                    lastResult: lastRankedEloResult,
+                    onExitLeaderboard: () => {
+                      setActiveCampaignBoss(null);
+                      setActiveRankedSovereign(null);
+                      setActiveTab('leaderboard');
+                    },
+                  }
+                : null
+            }
             onlineMatch={
               activeOnlineMatch
                 ? {
@@ -2511,6 +2697,7 @@ export const App: React.FC = () => {
                 // Ignore
               }
               setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
               setActiveProblem(null);
               setActiveOnlineMatch(null);
               setIsExpeditionBattle(false);

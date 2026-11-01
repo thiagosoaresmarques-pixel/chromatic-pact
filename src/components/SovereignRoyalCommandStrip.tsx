@@ -20,12 +20,14 @@ export type RoyalQuickDestination =
   | 'conquest'
   | 'draft'
   | 'rifts'
+  | 'leaderboard'
   | 'packs'
   | 'deckbuilder';
 
 export interface SovereignRoyalCommandStripProps {
   isGuest: boolean;
   username: string;
+  eloRating?: number;
   gold: number;
   astralShards: number;
   defeatedBossCount: number;
@@ -41,6 +43,7 @@ export interface SovereignRoyalCommandStripProps {
 export const SovereignRoyalCommandStrip: React.FC<SovereignRoyalCommandStripProps> = ({
   isGuest,
   username,
+  eloRating = 1200,
   gold,
   astralShards,
   defeatedBossCount,
@@ -227,6 +230,16 @@ export const SovereignRoyalCommandStrip: React.FC<SovereignRoyalCommandStripProp
               <span>🗺️ CONTINUAR JORNADA (1 CLIQUE)</span>
             </div>
             <div className="rcs-resume-pills">
+              <button
+                type="button"
+                className="rcs-resume-btn"
+                onClick={() => onNavigate('leaderboard')}
+                title="Ranking Geral ELO Unificado (Usuários da Plataforma + Soberanos Calibrados IA)"
+              >
+                <span>🏆 Ranking ELO</span>
+                <strong>{eloRating}</strong>
+              </button>
+
               <button
                 type="button"
                 className="rcs-resume-btn"

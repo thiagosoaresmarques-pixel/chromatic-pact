@@ -4,9 +4,9 @@ import type { BicolorArchetypeId } from './aiBicolorMasteryData';
 import type { PolycolorArchetypeId } from './aiPolycolorMasteryData';
 
 /**
- * GERADO AUTOMATICAMENTE POR src/scripts/runUnifiedTournament.ts (npm run tournament:unified)
- * Grande Torneio Unificado de Vaeloria (44 × 43 Campeões Tier V): 26440 duelos Beam Search (93.7s em 10 threads)
- * Margem de Erro Máxima IC 95% por Campeão: ±2.96%
+ * GERADO AUTOMATICAMENTE POR src/scripts/runEloCalibrationLeague.ts
+ * Grande Torneio Unificado de Vaeloria (44 × 43 Campeões Tier V): 45408 duelos Beam Search (189.4s em 10 threads)
+ * Margem de Erro Máxima IC 95% por Campeão: ±2.28%
  */
 
 export type UnifiedFormatKind = 'monocolor' | 'bicolor' | 'tricolor' | 'pentachromatic';
@@ -70,57 +70,57 @@ export interface UnifiedTournamentSummary {
 }
 
 export const UNIFIED_TOURNAMENT_SUMMARY: UnifiedTournamentSummary = {
-  "generatedAt": "2026-11-01T00:57:23.815Z",
+  "generatedAt": "2026-11-01T04:01:51.862Z",
   "totalChampions": 44,
   "totalUnorderedPairs": 946,
-  "totalMatchesSimulated": 26440,
+  "totalMatchesSimulated": 45408,
   "numWorkers": 10,
-  "elapsedSeconds": 93.7,
-  "maxChampionCi95HalfWidth": 0.0296,
+  "elapsedSeconds": 189.4,
+  "maxChampionCi95HalfWidth": 0.0228,
   "convergedByMargin": true,
   "tierCounts": {
-    "S": 17,
-    "A": 11,
-    "B": 16
+    "S": 18,
+    "A": 12,
+    "B": 14
   },
   "formatEcologyMatrix": {
     "monocolor": {
-      "overallWinRate": 0.3699,
-      "totalGames": 19128,
+      "overallWinRate": 0.3712,
+      "totalGames": 33024,
       "vsFormat": {
         "monocolor": 0.5,
-        "bicolor": 0.3038,
-        "tricolor": 0.2866,
-        "pentachromatic": 0.3333
+        "bicolor": 0.3153,
+        "tricolor": 0.2861,
+        "pentachromatic": 0.2899
       }
     },
     "bicolor": {
-      "overallWinRate": 0.5652,
-      "totalGames": 18000,
+      "overallWinRate": 0.5606,
+      "totalGames": 30960,
       "vsFormat": {
-        "monocolor": 0.6962,
+        "monocolor": 0.6847,
         "bicolor": 0.5,
-        "tricolor": 0.4661,
-        "pentachromatic": 0.5071
+        "tricolor": 0.4671,
+        "pentachromatic": 0.4931
       }
     },
     "tricolor": {
-      "overallWinRate": 0.5933,
-      "totalGames": 12128,
+      "overallWinRate": 0.5927,
+      "totalGames": 20640,
       "vsFormat": {
-        "monocolor": 0.7134,
-        "bicolor": 0.5339,
+        "monocolor": 0.7139,
+        "bicolor": 0.5329,
         "tricolor": 0.5,
-        "pentachromatic": 0.5376
+        "pentachromatic": 0.5229
       }
     },
     "pentachromatic": {
-      "overallWinRate": 0.5505,
-      "totalGames": 3624,
+      "overallWinRate": 0.5753,
+      "totalGames": 6192,
       "vsFormat": {
-        "monocolor": 0.6667,
-        "bicolor": 0.4929,
-        "tricolor": 0.4624,
+        "monocolor": 0.7101,
+        "bicolor": 0.5069,
+        "tricolor": 0.4771,
         "pentachromatic": 0.5
       }
     }
@@ -131,96 +131,96 @@ export const UNIFIED_TOURNAMENT_SUMMARY: UnifiedTournamentSummary = {
       "cardName": "Valkyra, Imperatriz Pentacromática",
       "domain": "neutral",
       "cost": 8,
-      "playedGames": 267,
-      "playedWinRate": 0.809
+      "playedGames": 431,
+      "playedWinRate": 0.8097
     },
     {
       "cardId": "red_76_salamandra_vapor",
       "cardName": "Serpente de Vapor Superaquecido",
       "domain": "red",
       "cost": 3,
-      "playedGames": 2084,
-      "playedWinRate": 0.4688
+      "playedGames": 3128,
+      "playedWinRate": 0.4696
     },
     {
       "cardId": "red_55_diabrete_forja",
       "cardName": "Diabrete Soprador de Brasas",
       "domain": "red",
       "cost": 1,
-      "playedGames": 5062,
-      "playedWinRate": 0.5798
+      "playedGames": 8687,
+      "playedWinRate": 0.575
     },
     {
       "cardId": "red_109_diabrete_fornalha",
       "cardName": "Diabrete da Fornalha",
       "domain": "red",
       "cost": 1,
-      "playedGames": 1158,
-      "playedWinRate": 0.5734
+      "playedGames": 2022,
+      "playedWinRate": 0.5554
     },
     {
       "cardId": "neutral_88_espada_voadora_runica",
       "cardName": "Gládio Levitante do Salão",
       "domain": "neutral",
       "cost": 1,
-      "playedGames": 388,
-      "playedWinRate": 0.7526
+      "playedGames": 713,
+      "playedWinRate": 0.7349
     },
     {
       "cardId": "neutral_52_mercenario_planar",
       "cardName": "Mercenário das Lâminas Planais",
       "domain": "neutral",
       "cost": 2,
-      "playedGames": 7673,
-      "playedWinRate": 0.578
+      "playedGames": 12294,
+      "playedWinRate": 0.5777
     },
     {
       "cardId": "gold_32_estandarte_imperial",
       "cardName": "Estandarte da Legião Dourada",
       "domain": "gold",
       "cost": 4,
-      "playedGames": 518,
-      "playedWinRate": 0.6892
+      "playedGames": 804,
+      "playedWinRate": 0.6592
     },
     {
       "cardId": "gold_04_armadura_conjurada",
       "cardName": "Sentinela de Elmo Arcano",
       "domain": "gold",
       "cost": 3,
-      "playedGames": 5235,
-      "playedWinRate": 0.5526
+      "playedGames": 8373,
+      "playedWinRate": 0.5491
     },
     {
       "cardId": "gold_02_gargula",
       "cardName": "Gárgula da Catedral Solar",
       "domain": "gold",
       "cost": 2,
-      "playedGames": 2672,
-      "playedWinRate": 0.5266
+      "playedGames": 4566,
+      "playedWinRate": 0.5112
     },
     {
       "cardId": "gold_157_dragao_soberano_alvorada",
       "cardName": "Aurelius, Soberano Dragão da Alvorada",
       "domain": "gold",
       "cost": 8,
-      "playedGames": 277,
-      "playedWinRate": 0.787
+      "playedGames": 489,
+      "playedWinRate": 0.8057
     },
     {
       "cardId": "blue_153_leviata_fenda_abissal",
       "cardName": "Zephyrus, Monarca do Ciclone",
       "domain": "blue",
       "cost": 6,
-      "playedGames": 2304,
-      "playedWinRate": 0.6224
+      "playedGames": 4169,
+      "playedWinRate": 0.6397
     },
     {
       "cardId": "green_68_zaratan_ilha",
       "cardName": "Chelonia, A Tartaruga-Continente",
       "domain": "green",
       "cost": 7,
-      "playedGames": 85,
-      "playedWinRate": 0.4471
+      "playedGames": 92,
+      "playedWinRate": 0.5109
     },
     {
       "cardId": "red_167_arauto_prisma_chama",
@@ -243,24 +243,24 @@ export const UNIFIED_TOURNAMENT_SUMMARY: UnifiedTournamentSummary = {
       "cardName": "Arauto do Eclipse Prismático",
       "domain": "purple",
       "cost": 5,
-      "playedGames": 80,
-      "playedWinRate": 0.4375
+      "playedGames": 152,
+      "playedWinRate": 0.4868
     },
     {
       "cardId": "green_167_arauto_prisma_selva",
       "cardName": "Arauto da Raiz Prismática",
       "domain": "green",
       "cost": 5,
-      "playedGames": 70,
-      "playedWinRate": 0.3857
+      "playedGames": 130,
+      "playedWinRate": 0.4308
     },
     {
       "cardId": "gold_167_arauto_prisma_sol",
       "cardName": "Arauto do Zênite Prismático",
       "domain": "gold",
       "cost": 5,
-      "playedGames": 83,
-      "playedWinRate": 0.2892
+      "playedGames": 137,
+      "playedWinRate": 0.4307
     },
     {
       "cardId": "neutral_167_arauto_prisma_matriz",
@@ -291,16 +291,16 @@ export const UNIFIED_TOURNAMENT_SUMMARY: UnifiedTournamentSummary = {
       "cardName": "Nosferatu, Soberano Carmesim",
       "domain": "purple",
       "cost": 5,
-      "playedGames": 114,
-      "playedWinRate": 0.5702
+      "playedGames": 141,
+      "playedWinRate": 0.6028
     },
     {
       "cardId": "purple_23_dracolich",
       "cardName": "Ossaurion, Dragão-Ossário Eterno",
       "domain": "purple",
       "cost": 7,
-      "playedGames": 53,
-      "playedWinRate": 0.7547
+      "playedGames": 170,
+      "playedWinRate": 0.8882
     },
     {
       "cardId": "purple_96_abominacao_costurada",
@@ -315,16 +315,16 @@ export const UNIFIED_TOURNAMENT_SUMMARY: UnifiedTournamentSummary = {
       "cardName": "Malphas, O Arquidemônio das Sombras",
       "domain": "purple",
       "cost": 5,
-      "playedGames": 99,
-      "playedWinRate": 0.4646
+      "playedGames": 180,
+      "playedWinRate": 0.4389
     },
     {
       "cardId": "green_75_druida_ciclos",
       "cardName": "Guardião das Quatro Estações",
       "domain": "green",
       "cost": 2,
-      "playedGames": 149,
-      "playedWinRate": 0.3624
+      "playedGames": 237,
+      "playedWinRate": 0.3038
     },
     {
       "cardId": "neutral_35_colosso_adamantina",
@@ -355,40 +355,40 @@ export const UNIFIED_TOURNAMENT_SUMMARY: UnifiedTournamentSummary = {
       "cardName": "Pactuário do Espírito Glacial",
       "domain": "blue",
       "cost": 4,
-      "playedGames": 82,
-      "playedWinRate": 0.3293
+      "playedGames": 205,
+      "playedWinRate": 0.3317
     },
     {
       "cardId": "blue_168_tecelao_feixe_gelo",
       "cardName": "Tecelão do Feixe Astral",
       "domain": "blue",
       "cost": 3,
-      "playedGames": 353,
-      "playedWinRate": 0.4419
+      "playedGames": 944,
+      "playedWinRate": 0.3845
     },
     {
       "cardId": "purple_20_tecelao_profano",
       "cardName": "Aracnomante das Cavernas",
       "domain": "purple",
       "cost": 4,
-      "playedGames": 326,
-      "playedWinRate": 0.4816
+      "playedGames": 711,
+      "playedWinRate": 0.5387
     },
     {
       "cardId": "blue_17_bruxa_mar",
       "cardName": "Megera da Escuma Negra",
       "domain": "blue",
       "cost": 3,
-      "playedGames": 622,
-      "playedWinRate": 0.5225
+      "playedGames": 1303,
+      "playedWinRate": 0.5257
     },
     {
       "cardId": "neutral_106_reen_assassino_relojoeiro",
       "cardName": "Reen, Ceifador de Engrenagens",
       "domain": "neutral",
       "cost": 4,
-      "playedGames": 1523,
-      "playedWinRate": 0.6802
+      "playedGames": 3974,
+      "playedWinRate": 0.695
     },
     {
       "cardId": "neutral_168_tecelao_feixe_matriz",
@@ -403,16 +403,16 @@ export const UNIFIED_TOURNAMENT_SUMMARY: UnifiedTournamentSummary = {
       "cardName": "Carvalho-Mestre de Mil Invernos",
       "domain": "green",
       "cost": 5,
-      "playedGames": 355,
-      "playedWinRate": 0.4789
+      "playedGames": 586,
+      "playedWinRate": 0.4608
     },
     {
       "cardId": "green_116_ent_espinheiro_anciao",
       "cardName": "Ent Espinheiro Ancião",
       "domain": "green",
       "cost": 5,
-      "playedGames": 89,
-      "playedWinRate": 0.4494
+      "playedGames": 123,
+      "playedWinRate": 0.3902
     }
   ]
 };
@@ -432,67 +432,67 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "coverCardId": "red_173_general_roda_chama",
     "classicDeckIds": [],
     "tierBadge": "S",
-    "overallWinRate": 0.7346,
-    "ci95HalfWidth": 0.0259,
-    "matchesPlayed": 1168,
+    "overallWinRate": 0.7476,
+    "ci95HalfWidth": 0.0193,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.8154,
-      "bicolor": 0.674,
-      "tricolor": 0.7097,
-      "pentachromatic": 0.6905
+      "monocolor": 0.8529,
+      "bicolor": 0.6861,
+      "tricolor": 0.6736,
+      "pentachromatic": 0.7153
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.9643,
-        "games": 28
+        "opponentId": "mono_green_roots",
+        "winRate": 0.9792,
+        "games": 48
       },
       {
-        "opponentId": "mono_green_roots",
+        "opponentId": "mono_red_dragon",
         "winRate": 0.9583,
-        "games": 24
+        "games": 48
       },
       {
         "opponentId": "mono_green_colossus",
-        "winRate": 0.9286,
-        "games": 28
+        "winRate": 0.9167,
+        "games": 48
       },
       {
-        "opponentId": "dual_blue_purple",
-        "winRate": 0.8929,
-        "games": 28
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.9167,
+        "games": 48
       },
       {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.875,
-        "games": 24
+        "opponentId": "mono_gold_celestial",
+        "winRate": 0.9167,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.375,
-        "games": 24
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.5,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_green",
-        "winRate": 0.4643,
-        "games": 28
+        "opponentId": "dual_green_neutral",
+        "winRate": 0.5208,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.5625,
+        "games": 48
       },
       {
         "opponentId": "tri_red_blue_green",
-        "winRate": 0.5,
-        "games": 28
+        "winRate": 0.5833,
+        "games": 48
       },
       {
-        "opponentId": "dual_blue_green",
-        "winRate": 0.5714,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_green_gold",
-        "winRate": 0.6071,
-        "games": 28
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.5833,
+        "games": 48
       }
     ]
   },
@@ -509,67 +509,67 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "coverCardId": "red_173_general_roda_chama",
     "classicDeckIds": [],
     "tierBadge": "S",
-    "overallWinRate": 0.7183,
-    "ci95HalfWidth": 0.0264,
-    "matchesPlayed": 1168,
+    "overallWinRate": 0.7156,
+    "ci95HalfWidth": 0.0201,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.8014,
-      "bicolor": 0.7005,
-      "tricolor": 0.6029,
-      "pentachromatic": 0.75
+      "monocolor": 0.8229,
+      "bicolor": 0.6637,
+      "tricolor": 0.6354,
+      "pentachromatic": 0.6528
     },
     "bestMatchups": [
       {
         "opponentId": "mono_blue_abyssal",
-        "winRate": 0.9583,
-        "games": 24
+        "winRate": 0.9375,
+        "games": 48
       },
       {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.8929,
-        "games": 28
+        "opponentId": "mono_green_roots",
+        "winRate": 0.9167,
+        "games": 48
       },
       {
         "opponentId": "mono_blue_chrono",
-        "winRate": 0.8929,
-        "games": 28
+        "winRate": 0.875,
+        "games": 48
       },
       {
-        "opponentId": "dual_blue_purple",
-        "winRate": 0.8929,
-        "games": 28
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.875,
+        "games": 48
       },
       {
-        "opponentId": "penta_prismatic_crater",
-        "winRate": 0.8929,
-        "games": 28
+        "opponentId": "mono_purple_umbral",
+        "winRate": 0.875,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.25,
-        "games": 24
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
+        "opponentId": "dual_purple_green",
         "winRate": 0.4583,
-        "games": 24
+        "games": 48
       },
       {
-        "opponentId": "dual_green_neutral",
+        "opponentId": "tri_purple_green_gold",
+        "winRate": 0.4792,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
         "winRate": 0.5,
-        "games": 24
-      },
-      {
-        "opponentId": "penta_wheel_convergence",
-        "winRate": 0.5357,
-        "games": 28
+        "games": 48
       },
       {
         "opponentId": "dual_purple_gold",
-        "winRate": 0.5357,
-        "games": 28
+        "winRate": 0.5,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.5208,
+        "games": 48
       }
     ]
   },
@@ -589,67 +589,67 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_tri_blood_moon"
     ],
     "tierBadge": "S",
-    "overallWinRate": 0.6849,
-    "ci95HalfWidth": 0.0272,
-    "matchesPlayed": 1168,
+    "overallWinRate": 0.6977,
+    "ci95HalfWidth": 0.0197,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.8154,
-      "bicolor": 0.5956,
-      "tricolor": 0.5927,
-      "pentachromatic": 0.7262
+      "monocolor": 0.7969,
+      "bicolor": 0.6472,
+      "tricolor": 0.6111,
+      "pentachromatic": 0.6806
     },
     "bestMatchups": [
       {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.9167,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.8958,
+        "games": 48
+      },
+      {
         "opponentId": "mono_purple_crypt",
-        "winRate": 0.9583,
-        "games": 24
+        "winRate": 0.875,
+        "games": 48
       },
       {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.8929,
-        "games": 28
+        "opponentId": "mono_green_roots",
+        "winRate": 0.8542,
+        "games": 48
       },
       {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.8929,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_chrono",
-        "winRate": 0.8929,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_celestial",
-        "winRate": 0.8929,
-        "games": 28
+        "opponentId": "mono_green_swarm",
+        "winRate": 0.8333,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3333,
-        "games": 24
+        "winRate": 0.4375,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.4167,
-        "games": 24
-      },
-      {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.4286,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_green_gold",
-        "winRate": 0.4286,
-        "games": 28
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.4792,
+        "games": 48
       },
       {
         "opponentId": "dual_red_neutral",
-        "winRate": 0.4583,
-        "games": 24
+        "winRate": 0.4792,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_gold_neutral",
+        "winRate": 0.5833,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_wheel_convergence",
+        "winRate": 0.6042,
+        "games": 48
       }
     ]
   },
@@ -669,67 +669,67 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_tri_crimson_sun"
     ],
     "tierBadge": "S",
-    "overallWinRate": 0.6584,
-    "ci95HalfWidth": 0.027,
-    "matchesPlayed": 1168,
+    "overallWinRate": 0.6667,
+    "ci95HalfWidth": 0.021,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.7453,
-      "bicolor": 0.6225,
-      "tricolor": 0.5766,
-      "pentachromatic": 0.631
+      "monocolor": 0.7956,
+      "bicolor": 0.5958,
+      "tricolor": 0.5671,
+      "pentachromatic": 0.6319
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.8929,
-        "games": 28
-      },
-      {
         "opponentId": "mono_purple_blood",
-        "winRate": 0.875,
-        "games": 24
+        "winRate": 0.9583,
+        "games": 48
       },
       {
-        "opponentId": "dual_blue_gold",
-        "winRate": 0.8571,
-        "games": 28
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.9167,
+        "games": 48
       },
       {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.8214,
-        "games": 28
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.8542,
+        "games": 48
       },
       {
-        "opponentId": "dual_blue_purple",
-        "winRate": 0.8214,
-        "games": 28
+        "opponentId": "mono_green_roots",
+        "winRate": 0.8333,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.8333,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.2917,
-        "games": 24
+        "opponentId": "dual_red_green",
+        "winRate": 0.375,
+        "games": 48
       },
       {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.3929,
-        "games": 28
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.4167,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.4167,
+        "games": 48
       },
       {
         "opponentId": "dual_red_gold",
-        "winRate": 0.4583,
-        "games": 24
+        "winRate": 0.4375,
+        "games": 48
       },
       {
-        "opponentId": "dual_green_gold",
-        "winRate": 0.4643,
-        "games": 28
-      },
-      {
-        "opponentId": "penta_prismatic_crater",
+        "opponentId": "tri_purple_green_gold",
         "winRate": 0.5,
-        "games": 28
+        "games": 48
       }
     ]
   },
@@ -748,67 +748,67 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_dual_draconic_pact"
     ],
     "tierBadge": "S",
-    "overallWinRate": 0.6413,
-    "ci95HalfWidth": 0.0279,
-    "matchesPlayed": 1168,
+    "overallWinRate": 0.6192,
+    "ci95HalfWidth": 0.0219,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.7617,
-      "bicolor": 0.5599,
-      "tricolor": 0.5772,
-      "pentachromatic": 0.6071
+      "monocolor": 0.7122,
+      "bicolor": 0.5789,
+      "tricolor": 0.5208,
+      "pentachromatic": 0.6389
     },
     "bestMatchups": [
       {
+        "opponentId": "dual_purple_neutral",
+        "winRate": 0.8542,
+        "games": 48
+      },
+      {
         "opponentId": "mono_green_roots",
-        "winRate": 0.9167,
-        "games": 24
-      },
-      {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.8929,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_crypt",
         "winRate": 0.8333,
-        "games": 24
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.8125,
+        "games": 48
       },
       {
         "opponentId": "mono_purple_blood",
-        "winRate": 0.8333,
-        "games": 24
+        "winRate": 0.8125,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_dragon",
+        "winRate": 0.7708,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "dual_red_neutral",
+        "opponentId": "tri_red_purple_green",
         "winRate": 0.2917,
-        "games": 24
+        "games": 48
       },
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3333,
-        "games": 24
+        "winRate": 0.375,
+        "games": 48
       },
       {
-        "opponentId": "dual_green_neutral",
-        "winRate": 0.4167,
-        "games": 24
+        "opponentId": "tri_purple_green_gold",
+        "winRate": 0.4375,
+        "games": 48
       },
       {
-        "opponentId": "dual_purple_gold",
-        "winRate": 0.4286,
-        "games": 28
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.4583,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_purple",
-        "winRate": 0.4286,
-        "games": 28
+        "opponentId": "dual_blue_green",
+        "winRate": 0.4792,
+        "games": 48
       }
     ]
   },
@@ -825,151 +825,72 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "coverCardId": "green_173_general_roda_selva",
     "classicDeckIds": [],
     "tierBadge": "S",
-    "overallWinRate": 0.6173,
-    "ci95HalfWidth": 0.0284,
-    "matchesPlayed": 1168,
+    "overallWinRate": 0.6066,
+    "ci95HalfWidth": 0.0218,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.7383,
-      "bicolor": 0.5885,
-      "tricolor": 0.4853,
-      "pentachromatic": 0.5595
+      "monocolor": 0.7227,
+      "bicolor": 0.5536,
+      "tricolor": 0.5208,
+      "pentachromatic": 0.5208
     },
     "bestMatchups": [
       {
         "opponentId": "mono_purple_umbral",
-        "winRate": 0.875,
-        "games": 24
+        "winRate": 0.8542,
+        "games": 48
       },
       {
-        "opponentId": "tri_blue_purple_green",
-        "winRate": 0.8571,
-        "games": 28
+        "opponentId": "mono_blue_chrono",
+        "winRate": 0.7917,
+        "games": 48
       },
       {
         "opponentId": "mono_blue_abyssal",
-        "winRate": 0.8333,
-        "games": 24
+        "winRate": 0.7917,
+        "games": 48
       },
       {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.8333,
-        "games": 24
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.7917,
+        "games": 48
       },
       {
         "opponentId": "mono_green_colossus",
-        "winRate": 0.8214,
-        "games": 28
+        "winRate": 0.7708,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.2917,
-        "games": 24
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.3125,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.3214,
-        "games": 28
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.375,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_purple_green_gold",
+        "winRate": 0.4167,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.4583,
+        "games": 48
       },
       {
         "opponentId": "tri_blue_green_gold",
-        "winRate": 0.3929,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_purple",
-        "winRate": 0.4286,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_purple_gold",
-        "winRate": 0.4286,
-        "games": 28
+        "winRate": 0.4583,
+        "games": 48
       }
     ]
   },
   {
     "rank": 7,
-    "archetypeId": "dual_red_green",
-    "name": "Pacto da Ruína Selvagem",
-    "subtitle": "Pacto Duplo 🔥+🌿 • Rampa Vulcânica, Ímpeto & Atropelar",
-    "format": "bicolor",
-    "domains": [
-      "red",
-      "green"
-    ],
-    "coverCardId": "red_173_general_roda_chama",
-    "classicDeckIds": [
-      "deck_dual_primal_fury"
-    ],
-    "tierBadge": "S",
-    "overallWinRate": 0.6142,
-    "ci95HalfWidth": 0.0279,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.7366,
-      "bicolor": 0.551,
-      "tricolor": 0.4965,
-      "pentachromatic": 0.6548
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.9286,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_celestial",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.8214,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_red_blue_green",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.3571,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_green",
-        "winRate": 0.3929,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.4286,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 8,
     "archetypeId": "tri_purple_green_gold",
     "name": "Armada do Zênite Umbral",
     "subtitle": "Tríade ☀️+🌿+💀 • Bastião Imortal, Regeneração & Renascer",
@@ -982,72 +903,72 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "coverCardId": "gold_172_armada_draconica_sol",
     "classicDeckIds": [],
     "tierBadge": "S",
-    "overallWinRate": 0.6118,
-    "ci95HalfWidth": 0.0286,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.5998,
+    "ci95HalfWidth": 0.0217,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.7366,
-      "bicolor": 0.5571,
-      "tricolor": 0.5117,
-      "pentachromatic": 0.5238
+      "monocolor": 0.7253,
+      "bicolor": 0.5556,
+      "tricolor": 0.4954,
+      "pentachromatic": 0.4653
     },
     "bestMatchups": [
       {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.8958,
+        "games": 48
+      },
+      {
         "opponentId": "mono_gold_judgment",
-        "winRate": 0.8929,
-        "games": 28
+        "winRate": 0.8542,
+        "games": 48
       },
       {
         "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.8214,
-        "games": 28
+        "winRate": 0.8333,
+        "games": 48
       },
       {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.8214,
-        "games": 28
+        "opponentId": "mono_green_roots",
+        "winRate": 0.7917,
+        "games": 48
       },
       {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_phalanx",
-        "winRate": 0.8214,
-        "games": 28
+        "opponentId": "mono_purple_umbral",
+        "winRate": 0.7917,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "penta_prismatic_crater",
-        "winRate": 0.4286,
-        "games": 28
+        "winRate": 0.3333,
+        "games": 48
       },
       {
         "opponentId": "tri_red_purple_green",
-        "winRate": 0.4286,
-        "games": 28
+        "winRate": 0.3333,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.4286,
-        "games": 28
+        "opponentId": "penta_wheel_convergence",
+        "winRate": 0.4375,
+        "games": 48
       },
       {
-        "opponentId": "dual_gold_neutral",
-        "winRate": 0.4286,
-        "games": 28
+        "opponentId": "tri_red_blue_green",
+        "winRate": 0.4375,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_green",
+        "winRate": 0.4375,
+        "games": 48
       }
     ]
   },
   {
-    "rank": 9,
+    "rank": 8,
     "archetypeId": "penta_prismatic_crater",
     "name": "Soberania da Cratera Prismática",
     "subtitle": "Ápice Pentacromático 🔥❄️💀🌿☀️ • Dragões do Prisma & Primeira Fratura",
@@ -1064,72 +985,308 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_spec_pentachromatic"
     ],
     "tierBadge": "S",
-    "overallWinRate": 0.6118,
-    "ci95HalfWidth": 0.0287,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.5984,
+    "ci95HalfWidth": 0.0218,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.7299,
-      "bicolor": 0.5429,
-      "tricolor": 0.5176,
-      "pentachromatic": 0.6607
+      "monocolor": 0.7057,
+      "bicolor": 0.5486,
+      "tricolor": 0.5188,
+      "pentachromatic": 0.5104
     },
     "bestMatchups": [
       {
         "opponentId": "mono_blue_abyssal",
-        "winRate": 0.9643,
-        "games": 28
+        "winRate": 0.8333,
+        "games": 48
       },
       {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.9286,
-        "games": 28
+        "opponentId": "mono_gold_celestial",
+        "winRate": 0.8333,
+        "games": 48
       },
       {
         "opponentId": "mono_green_colossus",
-        "winRate": 0.8571,
-        "games": 28
+        "winRate": 0.8125,
+        "games": 48
       },
       {
-        "opponentId": "dual_blue_purple",
-        "winRate": 0.8214,
-        "games": 28
+        "opponentId": "mono_green_roots",
+        "winRate": 0.8125,
+        "games": 48
       },
       {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.7857,
-        "games": 28
+        "opponentId": "mono_gold_phalanx",
+        "winRate": 0.7708,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.1071,
-        "games": 28
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.3125,
+        "games": 48
       },
       {
         "opponentId": "tri_red_purple_green",
-        "winRate": 0.3214,
-        "games": 28
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.375,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_gold",
+        "winRate": 0.375,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.4375,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 9,
+    "archetypeId": "dual_red_green",
+    "name": "Pacto da Ruína Selvagem",
+    "subtitle": "Pacto Duplo 🔥+🌿 • Rampa Vulcânica, Ímpeto & Atropelar",
+    "format": "bicolor",
+    "domains": [
+      "red",
+      "green"
+    ],
+    "coverCardId": "red_173_general_roda_chama",
+    "classicDeckIds": [
+      "deck_dual_primal_fury"
+    ],
+    "tierBadge": "S",
+    "overallWinRate": 0.5906,
+    "ci95HalfWidth": 0.0214,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.6966,
+      "bicolor": 0.5357,
+      "tricolor": 0.5104,
+      "pentachromatic": 0.5486
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_blue_chrono",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_umbral",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.7708,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_purple_neutral",
+        "winRate": 0.7708,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_green",
+        "winRate": 0.3333,
+        "games": 48
       },
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3571,
-        "games": 28
+        "winRate": 0.3958,
+        "games": 48
       },
       {
-        "opponentId": "dual_blue_neutral",
-        "winRate": 0.3929,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_green",
-        "winRate": 0.3929,
-        "games": 28
+        "opponentId": "dual_red_purple",
+        "winRate": 0.4167,
+        "games": 48
       }
     ]
   },
   {
     "rank": 10,
+    "archetypeId": "tri_red_blue_green",
+    "name": "Tempestade Elemental Primeva",
+    "subtitle": "Tríade 🔥+🌿+❄️ • Rampa Relâmpago, Leviatãs & Sopro Glacial",
+    "format": "tricolor",
+    "domains": [
+      "red",
+      "green",
+      "blue"
+    ],
+    "coverCardId": "green_173_general_roda_selva",
+    "classicDeckIds": [],
+    "tierBadge": "S",
+    "overallWinRate": 0.5833,
+    "ci95HalfWidth": 0.022,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.6797,
+      "bicolor": 0.5361,
+      "tricolor": 0.5116,
+      "pentachromatic": 0.5208
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.8333,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_swarm",
+        "winRate": 0.7708,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_phalanx",
+        "winRate": 0.75,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.7292,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_prismatic_crater",
+        "winRate": 0.4167,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.4167,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.4167,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 11,
+    "archetypeId": "dual_blue_green",
+    "name": "Pacto da Evolução Quimérica",
+    "subtitle": "Pacto Duplo ❄️+🌿 • Rampa Arcana, Compra & Leviatãs",
+    "format": "bicolor",
+    "domains": [
+      "blue",
+      "green"
+    ],
+    "coverCardId": "blue_173_general_roda_gelo",
+    "classicDeckIds": [
+      "deck_dual_wild_evolution"
+    ],
+    "tierBadge": "S",
+    "overallWinRate": 0.5814,
+    "ci95HalfWidth": 0.0224,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.6966,
+      "bicolor": 0.5238,
+      "tricolor": 0.5083,
+      "pentachromatic": 0.4792
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.9167,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.8542,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.8542,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.7917,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.25,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.2708,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_prismatic_crater",
+        "winRate": 0.3542,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_green",
+        "winRate": 0.375,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 12,
     "archetypeId": "tri_red_green_gold",
     "name": "Tríade dos Titãs da Forja Primordial",
     "subtitle": "Tríade 🔥+🌿+☀️ • Rampa Colossal, Escudo Divino & Sopro Dracônico",
@@ -1145,72 +1302,151 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_tri_primordial_forge"
     ],
     "tierBadge": "S",
-    "overallWinRate": 0.6002,
-    "ci95HalfWidth": 0.0286,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.5761,
+    "ci95HalfWidth": 0.0223,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.7254,
-      "bicolor": 0.5357,
-      "tricolor": 0.5078,
-      "pentachromatic": 0.5357
+      "monocolor": 0.7409,
+      "bicolor": 0.4931,
+      "tricolor": 0.4583,
+      "pentachromatic": 0.4653
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.8929,
-        "games": 28
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.8958,
+        "games": 48
       },
       {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.8571,
-        "games": 28
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.8333,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_neutral_axial",
+        "winRate": 0.8333,
+        "games": 48
       },
       {
         "opponentId": "mono_blue_abyssal",
-        "winRate": 0.8571,
-        "games": 28
+        "winRate": 0.8125,
+        "games": 48
       },
       {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_purple_neutral",
-        "winRate": 0.8571,
-        "games": 28
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.8125,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_gold_neutral",
-        "winRate": 0.2857,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_green",
-        "winRate": 0.3571,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_purple_gold",
-        "winRate": 0.3929,
-        "games": 28
+        "winRate": 0.2292,
+        "games": 48
       },
       {
         "opponentId": "dual_red_neutral",
-        "winRate": 0.4286,
-        "games": 28
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_gold",
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_green",
+        "winRate": 0.3542,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.375,
+        "games": 48
       }
     ]
   },
   {
-    "rank": 11,
+    "rank": 13,
+    "archetypeId": "dual_blue_gold",
+    "name": "Pacto da Forja do Zênite",
+    "subtitle": "Pacto Duplo ❄️+☀️ • Cidadela Cronomante & Escudo Celeste",
+    "format": "bicolor",
+    "domains": [
+      "blue",
+      "gold"
+    ],
+    "coverCardId": "blue_173_general_roda_gelo",
+    "classicDeckIds": [
+      "deck_dual_arcane_forge"
+    ],
+    "tierBadge": "S",
+    "overallWinRate": 0.5688,
+    "ci95HalfWidth": 0.0221,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.7044,
+      "bicolor": 0.5253,
+      "tricolor": 0.4562,
+      "pentachromatic": 0.4236
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.8958,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.875,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_blitz",
+        "winRate": 0.7708,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.75,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.3333,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_green",
+        "winRate": 0.3333,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_prismatic_crater",
+        "winRate": 0.3542,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 14,
     "archetypeId": "dual_gold_neutral",
     "name": "Aliança do Bastião Relojoeiro",
     "subtitle": "Aliança ☀️+⚙️ • Falange de Ferro Meteórico & Escudo Real",
@@ -1222,72 +1458,152 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "coverCardId": "gold_173_general_roda_sol",
     "classicDeckIds": [],
     "tierBadge": "S",
-    "overallWinRate": 0.5969,
-    "ci95HalfWidth": 0.0281,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.5688,
+    "ci95HalfWidth": 0.0225,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.75,
-      "bicolor": 0.5102,
-      "tricolor": 0.5176,
-      "pentachromatic": 0.4524
+      "monocolor": 0.7096,
+      "bicolor": 0.5134,
+      "tricolor": 0.4375,
+      "pentachromatic": 0.5139
     },
     "bestMatchups": [
       {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.875,
+        "games": 48
+      },
+      {
         "opponentId": "mono_green_roots",
-        "winRate": 0.8929,
-        "games": 28
+        "winRate": 0.875,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_phalanx",
+        "winRate": 0.8542,
+        "games": 48
       },
       {
         "opponentId": "mono_purple_blood",
-        "winRate": 0.8929,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_swarm",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.8571,
-        "games": 28
+        "winRate": 0.8333,
+        "games": 48
       },
       {
         "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.8214,
-        "games": 28
+        "winRate": 0.7292,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "dual_green_neutral",
-        "winRate": 0.2857,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_blue_purple_gold",
-        "winRate": 0.3125,
-        "games": 32
-      },
-      {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3214,
-        "games": 28
+        "winRate": 0.2708,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.3214,
-        "games": 28
+        "opponentId": "dual_blue_gold",
+        "winRate": 0.3125,
+        "games": 48
       },
       {
-        "opponentId": "penta_prismatic_crater",
-        "winRate": 0.3929,
-        "games": 28
+        "opponentId": "tri_red_blue_green",
+        "winRate": 0.3333,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_gold",
+        "winRate": 0.3542,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_green",
+        "winRate": 0.375,
+        "games": 48
       }
     ]
   },
   {
-    "rank": 12,
+    "rank": 15,
+    "archetypeId": "penta_wheel_convergence",
+    "name": "Convergência da Roda Horológica",
+    "subtitle": "Ápice Pentacromático ❄️☀️💀🔥🌿+⚙️ • Vaelkor & Generais da Roda",
+    "format": "pentachromatic",
+    "domains": [
+      "blue",
+      "gold",
+      "purple",
+      "red",
+      "green"
+    ],
+    "coverCardId": "neutral_173_general_roda_matriz",
+    "classicDeckIds": [],
+    "tierBadge": "S",
+    "overallWinRate": 0.5673,
+    "ci95HalfWidth": 0.0219,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.7005,
+      "bicolor": 0.5056,
+      "tricolor": 0.4667,
+      "pentachromatic": 0.4688
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_green_swarm",
+        "winRate": 0.8542,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.8333,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.7708,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.75,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.25,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_green",
+        "winRate": 0.3333,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_green",
+        "winRate": 0.3542,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 16,
     "archetypeId": "dual_purple_gold",
     "name": "Pacto da Inquisição Crepuscular",
     "subtitle": "Pacto Duplo 💀+☀️ • Dreno Solar, Renascer & Veredito",
@@ -1301,704 +1617,72 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_dual_iron_inquisition"
     ],
     "tierBadge": "S",
-    "overallWinRate": 0.5886,
-    "ci95HalfWidth": 0.0282,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.563,
+    "ci95HalfWidth": 0.0223,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.7344,
-      "bicolor": 0.5434,
-      "tricolor": 0.4648,
-      "pentachromatic": 0.4405
+      "monocolor": 0.6992,
+      "bicolor": 0.5119,
+      "tricolor": 0.4625,
+      "pentachromatic": 0.4097
     },
     "bestMatchups": [
       {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.8542,
+        "games": 48
+      },
+      {
         "opponentId": "mono_purple_blood",
-        "winRate": 0.9286,
-        "games": 28
+        "winRate": 0.8542,
+        "games": 48
       },
       {
         "opponentId": "mono_purple_crypt",
-        "winRate": 0.8571,
-        "games": 28
+        "winRate": 0.8125,
+        "games": 48
       },
       {
         "opponentId": "mono_green_swarm",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.7857,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3571,
-        "games": 28
-      },
-      {
-        "opponentId": "penta_prismatic_crater",
-        "winRate": 0.3929,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_green",
-        "winRate": 0.3929,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.3929,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 13,
-    "archetypeId": "dual_blue_green",
-    "name": "Pacto da Evolução Quimérica",
-    "subtitle": "Pacto Duplo ❄️+🌿 • Rampa Arcana, Compra & Leviatãs",
-    "format": "bicolor",
-    "domains": [
-      "blue",
-      "green"
-    ],
-    "coverCardId": "blue_173_general_roda_gelo",
-    "classicDeckIds": [
-      "deck_dual_wild_evolution"
-    ],
-    "tierBadge": "S",
-    "overallWinRate": 0.5877,
-    "ci95HalfWidth": 0.0287,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.721,
-      "bicolor": 0.5179,
-      "tricolor": 0.4824,
-      "pentachromatic": 0.5595
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.8929,
-        "games": 28
+        "winRate": 0.7917,
+        "games": 48
       },
       {
         "opponentId": "mono_gold_judgment",
-        "winRate": 0.8929,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.8214,
-        "games": 28
+        "winRate": 0.7917,
+        "games": 48
       }
     ],
     "worstMatchups": [
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.1786,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.25,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_purple",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.3571,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_blue",
-        "winRate": 0.3571,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 14,
-    "archetypeId": "dual_blue_neutral",
-    "name": "Aliança do Astrolábio Arcano",
-    "subtitle": "Aliança ❄️+⚙️ • Controle Horológico, Alcance & Voo",
-    "format": "bicolor",
-    "domains": [
-      "blue",
-      "neutral"
-    ],
-    "coverCardId": "blue_173_general_roda_gelo",
-    "classicDeckIds": [],
-    "tierBadge": "S",
-    "overallWinRate": 0.5836,
-    "ci95HalfWidth": 0.0284,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.7143,
-      "bicolor": 0.523,
-      "tricolor": 0.4542,
-      "pentachromatic": 0.6071
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.8929,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.8929,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.8214,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.1786,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.2857,
-        "games": 28
-      },
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_purple_gold",
-        "winRate": 0.3929,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 15,
-    "archetypeId": "tri_red_blue_green",
-    "name": "Tempestade Elemental Primeva",
-    "subtitle": "Tríade 🔥+🌿+❄️ • Rampa Relâmpago, Leviatãs & Sopro Glacial",
-    "format": "tricolor",
-    "domains": [
-      "red",
-      "green",
-      "blue"
-    ],
-    "coverCardId": "green_173_general_roda_selva",
-    "classicDeckIds": [],
-    "tierBadge": "S",
-    "overallWinRate": 0.577,
-    "ci95HalfWidth": 0.0294,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.7366,
-      "bicolor": 0.4929,
-      "tricolor": 0.4688,
-      "pentachromatic": 0.4762
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.9286,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_phalanx",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.7857,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.1786,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.3214,
-        "games": 28
+        "winRate": 0.2708,
+        "games": 48
       },
       {
         "opponentId": "tri_blue_green_gold",
-        "winRate": 0.3571,
-        "games": 28
+        "winRate": 0.3125,
+        "games": 48
       },
       {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.3929,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.3929,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 16,
-    "archetypeId": "tri_blue_green_gold",
-    "name": "Escamas do Horizonte Eterno",
-    "subtitle": "Tríade ☀️+🌿+❄️ • Falange Radiante, Rampa & Voo Astral",
-    "format": "tricolor",
-    "domains": [
-      "gold",
-      "green",
-      "blue"
-    ],
-    "coverCardId": "gold_100_dragao_imperial_ouro",
-    "classicDeckIds": [
-      "deck_tri_celestial_scales",
-      "deck_tri_eternal_horizon"
-    ],
-    "tierBadge": "S",
-    "overallWinRate": 0.5687,
-    "ci95HalfWidth": 0.0279,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.683,
-      "bicolor": 0.5167,
-      "tricolor": 0.4609,
-      "pentachromatic": 0.5476
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_phalanx",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.75,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.2143,
-        "games": 28
+        "opponentId": "penta_wheel_convergence",
+        "winRate": 0.3542,
+        "games": 48
       },
       {
         "opponentId": "tri_red_purple_green",
-        "winRate": 0.25,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.3214,
-        "games": 28
+        "winRate": 0.375,
+        "games": 48
       },
       {
         "opponentId": "penta_prismatic_crater",
-        "winRate": 0.3929,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_blue",
-        "winRate": 0.3929,
-        "games": 28
+        "winRate": 0.3958,
+        "games": 48
       }
     ]
   },
   {
     "rank": 17,
-    "archetypeId": "dual_green_gold",
-    "name": "Pacto da Aurora Silvestre",
-    "subtitle": "Pacto Duplo 🌿+☀️ • Falange dos Mil Escudos & Hinos Globais",
-    "format": "bicolor",
-    "domains": [
-      "green",
-      "gold"
-    ],
-    "coverCardId": "green_173_general_roda_selva",
-    "classicDeckIds": [
-      "deck_dual_solar_wild"
-    ],
-    "tierBadge": "S",
-    "overallWinRate": 0.5654,
-    "ci95HalfWidth": 0.0289,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.6741,
-      "bicolor": 0.5153,
-      "tricolor": 0.493,
-      "pentachromatic": 0.4643
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "dual_purple_neutral",
-        "winRate": 0.9286,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.8929,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.75,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "dual_blue_neutral",
-        "winRate": 0.2857,
-        "games": 28
-      },
-      {
-        "opponentId": "penta_prismatic_crater",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.3571,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3929,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 18,
-    "archetypeId": "tri_blue_purple_gold",
-    "name": "Relicário do Trono Eterno",
-    "subtitle": "Tríade ☀️+❄️+💀 • Cidadela de Relíquias, Cronomancia & Veredito",
-    "format": "tricolor",
-    "domains": [
-      "gold",
-      "blue",
-      "purple"
-    ],
-    "coverCardId": "gold_72_talisma_bem",
-    "classicDeckIds": [
-      "deck_tri_eternal_reliquary"
-    ],
-    "tierBadge": "A",
-    "overallWinRate": 0.5509,
-    "ci95HalfWidth": 0.028,
-    "matchesPlayed": 1376,
-    "vsFormatWinRates": {
-      "monocolor": 0.6816,
-      "bicolor": 0.4979,
-      "tricolor": 0.4375,
-      "pentachromatic": 0.4583
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.9688,
-        "games": 32
-      },
-      {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.9063,
-        "games": 32
-      },
-      {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.8438,
-        "games": 32
-      },
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.7813,
-        "games": 32
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.75,
-        "games": 32
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.25,
-        "games": 32
-      },
-      {
-        "opponentId": "penta_wheel_convergence",
-        "winRate": 0.2813,
-        "games": 32
-      },
-      {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.3125,
-        "games": 32
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.3125,
-        "games": 32
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.3438,
-        "games": 32
-      }
-    ]
-  },
-  {
-    "rank": 19,
-    "archetypeId": "dual_blue_gold",
-    "name": "Pacto da Forja do Zênite",
-    "subtitle": "Pacto Duplo ❄️+☀️ • Cidadela Cronomante & Escudo Celeste",
-    "format": "bicolor",
-    "domains": [
-      "blue",
-      "gold"
-    ],
-    "coverCardId": "blue_173_general_roda_gelo",
-    "classicDeckIds": [
-      "deck_dual_arcane_forge"
-    ],
-    "tierBadge": "A",
-    "overallWinRate": 0.5488,
-    "ci95HalfWidth": 0.0283,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.7009,
-      "bicolor": 0.4847,
-      "tricolor": 0.4155,
-      "pentachromatic": 0.4881
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_swarm",
-        "winRate": 0.7857,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.25,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.25,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.2857,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.3571,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 20,
-    "archetypeId": "dual_red_purple",
-    "name": "Pacto da Chama Sangrenta",
-    "subtitle": "Pacto Duplo 🔥+💀 • Blitz Sanguinária, Dreno & Último Suspiro",
-    "format": "bicolor",
-    "domains": [
-      "red",
-      "purple"
-    ],
-    "coverCardId": "red_173_general_roda_chama",
-    "classicDeckIds": [
-      "deck_dual_blood_flame"
-    ],
-    "tierBadge": "A",
-    "overallWinRate": 0.5406,
-    "ci95HalfWidth": 0.029,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.6652,
-      "bicolor": 0.4974,
-      "tricolor": 0.4401,
-      "pentachromatic": 0.4167
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_blue_chrono",
-        "winRate": 0.9286,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_celestial",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.7857,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_gold_neutral",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3571,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.3571,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 21,
     "archetypeId": "penta_free_city_sovereign",
     "name": "Concílio Supremo da Cidade Franca",
     "subtitle": "Ápice Pentacromático ☀️🌿🔥❄️💀+⚙️ • Valkyra & Torre dos Cinco Selos",
@@ -2014,153 +1698,231 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "classicDeckIds": [
       "deck_penta_valkyra_pact"
     ],
-    "tierBadge": "A",
-    "overallWinRate": 0.5257,
-    "ci95HalfWidth": 0.0296,
-    "matchesPlayed": 1208,
+    "tierBadge": "S",
+    "overallWinRate": 0.5601,
+    "ci95HalfWidth": 0.0225,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.6295,
-      "bicolor": 0.4881,
-      "tricolor": 0.4472,
-      "pentachromatic": 0.375
+      "monocolor": 0.724,
+      "bicolor": 0.4667,
+      "tricolor": 0.4458,
+      "pentachromatic": 0.5208
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.8214,
-        "games": 28
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.8542,
+        "games": 48
       },
       {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.8214,
-        "games": 28
+        "opponentId": "mono_green_swarm",
+        "winRate": 0.8125,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.8125,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.8125,
+        "games": 48
       },
       {
         "opponentId": "mono_green_roots",
-        "winRate": 0.7857,
-        "games": 28
+        "winRate": 0.7708,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.25,
+        "games": 48
       },
       {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.7857,
-        "games": 28
+        "opponentId": "dual_red_gold",
+        "winRate": 0.25,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_green",
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_gold_neutral",
+        "winRate": 0.3333,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 18,
+    "archetypeId": "tri_blue_green_gold",
+    "name": "Escamas do Horizonte Eterno",
+    "subtitle": "Tríade ☀️+🌿+❄️ • Falange Radiante, Rampa & Voo Astral",
+    "format": "tricolor",
+    "domains": [
+      "gold",
+      "green",
+      "blue"
+    ],
+    "coverCardId": "gold_100_dragao_imperial_ouro",
+    "classicDeckIds": [
+      "deck_tri_celestial_scales",
+      "deck_tri_eternal_horizon"
+    ],
+    "tierBadge": "S",
+    "overallWinRate": 0.5567,
+    "ci95HalfWidth": 0.022,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.6823,
+      "bicolor": 0.5,
+      "tricolor": 0.4861,
+      "pentachromatic": 0.3819
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_green_swarm",
+        "winRate": 0.8333,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.8333,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_celestial",
+        "winRate": 0.7708,
+        "games": 48
       },
       {
         "opponentId": "mono_purple_blood",
         "winRate": 0.75,
-        "games": 28
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
         "opponentId": "dual_red_neutral",
-        "winRate": 0.1786,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_blue_green_gold",
-        "winRate": 0.3214,
-        "games": 28
+        "winRate": 0.2292,
+        "games": 48
       },
       {
         "opponentId": "tri_red_purple_green",
-        "winRate": 0.3214,
-        "games": 28
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_wheel_convergence",
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.375,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_free_city_sovereign",
+        "winRate": 0.3958,
+        "games": 48
       }
     ]
   },
   {
-    "rank": 22,
-    "archetypeId": "penta_wheel_convergence",
-    "name": "Convergência da Roda Horológica",
-    "subtitle": "Ápice Pentacromático ❄️☀️💀🔥🌿+⚙️ • Vaelkor & Generais da Roda",
-    "format": "pentachromatic",
+    "rank": 19,
+    "archetypeId": "dual_blue_neutral",
+    "name": "Aliança do Astrolábio Arcano",
+    "subtitle": "Aliança ❄️+⚙️ • Controle Horológico, Alcance & Voo",
+    "format": "bicolor",
     "domains": [
       "blue",
-      "gold",
-      "purple",
-      "red",
-      "green"
+      "neutral"
     ],
-    "coverCardId": "neutral_173_general_roda_matriz",
+    "coverCardId": "blue_173_general_roda_gelo",
     "classicDeckIds": [],
     "tierBadge": "A",
-    "overallWinRate": 0.5141,
-    "ci95HalfWidth": 0.0286,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.5489,
+    "ci95HalfWidth": 0.0221,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.6406,
-      "bicolor": 0.4476,
-      "tricolor": 0.4225,
-      "pentachromatic": 0.4643
+      "monocolor": 0.6953,
+      "bicolor": 0.4747,
+      "tricolor": 0.4521,
+      "pentachromatic": 0.4375
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.8571,
-        "games": 28
+        "opponentId": "mono_green_roots",
+        "winRate": 0.9375,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.7917,
+        "games": 48
       },
       {
         "opponentId": "mono_purple_crypt",
-        "winRate": 0.8214,
-        "games": 28
+        "winRate": 0.75,
+        "games": 48
       },
       {
-        "opponentId": "mono_gold_phalanx",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_blue_purple_gold",
-        "winRate": 0.7188,
-        "games": 32
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.6786,
-        "games": 28
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.7083,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.1786,
-        "games": 28
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.2917,
+        "games": 48
       },
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.25,
-        "games": 28
-      },
-      {
-        "opponentId": "penta_prismatic_crater",
-        "winRate": 0.2857,
-        "games": 28
+        "winRate": 0.3542,
+        "games": 48
       },
       {
         "opponentId": "tri_red_purple_gold",
-        "winRate": 0.2857,
-        "games": 28
+        "winRate": 0.3542,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_green",
-        "winRate": 0.2857,
-        "games": 28
+        "opponentId": "dual_red_purple",
+        "winRate": 0.3542,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_free_city_sovereign",
+        "winRate": 0.375,
+        "games": 48
       }
     ]
   },
   {
-    "rank": 23,
+    "rank": 20,
     "archetypeId": "dual_red_blue",
     "name": "Pacto do Fogo Astral",
     "subtitle": "Pacto Duplo 🔥+❄️ • Artilharia Arcana, Voo & Tempestade",
@@ -2174,150 +1936,310 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_dual_storm_dragon"
     ],
     "tierBadge": "A",
-    "overallWinRate": 0.5124,
-    "ci95HalfWidth": 0.0285,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.5344,
+    "ci95HalfWidth": 0.0228,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.6384,
-      "bicolor": 0.4209,
-      "tricolor": 0.4577,
-      "pentachromatic": 0.4524
+      "monocolor": 0.6432,
+      "bicolor": 0.4762,
+      "tricolor": 0.4479,
+      "pentachromatic": 0.5139
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.75,
-        "games": 28
+        "opponentId": "mono_green_roots",
+        "winRate": 0.7917,
+        "games": 48
       },
       {
-        "opponentId": "mono_blue_frost",
+        "opponentId": "mono_red_pyroclasm",
         "winRate": 0.75,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.75,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.75,
-        "games": 28
+        "games": 48
       },
       {
         "opponentId": "mono_purple_blood",
         "winRate": 0.75,
-        "games": 28
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.75,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.7292,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "dual_blue_neutral",
-        "winRate": 0.1786,
-        "games": 28
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.2083,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.2292,
+        "games": 48
       },
       {
         "opponentId": "dual_red_neutral",
-        "winRate": 0.2143,
-        "games": 28
+        "winRate": 0.25,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_gold",
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.3333,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 21,
+    "archetypeId": "tri_blue_purple_gold",
+    "name": "Relicário do Trono Eterno",
+    "subtitle": "Tríade ☀️+❄️+💀 • Cidadela de Relíquias, Cronomancia & Veredito",
+    "format": "tricolor",
+    "domains": [
+      "gold",
+      "blue",
+      "purple"
+    ],
+    "coverCardId": "gold_72_talisma_bem",
+    "classicDeckIds": [
+      "deck_tri_eternal_reliquary"
+    ],
+    "tierBadge": "A",
+    "overallWinRate": 0.5344,
+    "ci95HalfWidth": 0.0227,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.6589,
+      "bicolor": 0.4806,
+      "tricolor": 0.4144,
+      "pentachromatic": 0.5
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.8542,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_blitz",
+        "winRate": 0.75,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.7292,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.25,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_green_gold",
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_green",
+        "winRate": 0.3333,
+        "games": 48
       },
       {
         "opponentId": "dual_green_neutral",
-        "winRate": 0.25,
-        "games": 28
+        "winRate": 0.3333,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.2857,
-        "games": 28
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.3542,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 22,
+    "archetypeId": "dual_green_gold",
+    "name": "Pacto da Aurora Silvestre",
+    "subtitle": "Pacto Duplo 🌿+☀️ • Falange dos Mil Escudos & Hinos Globais",
+    "format": "bicolor",
+    "domains": [
+      "green",
+      "gold"
+    ],
+    "coverCardId": "green_173_general_roda_selva",
+    "classicDeckIds": [
+      "deck_dual_solar_wild"
+    ],
+    "tierBadge": "A",
+    "overallWinRate": 0.5325,
+    "ci95HalfWidth": 0.0219,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.6706,
+      "bicolor": 0.4643,
+      "tricolor": 0.4229,
+      "pentachromatic": 0.4792
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.8333,
+        "games": 48
       },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.8125,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.7917,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.7708,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_umbral",
+        "winRate": 0.7708,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.3571,
-        "games": 28
+        "winRate": 0.2708,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_green",
+        "winRate": 0.3125,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.3333,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 23,
+    "archetypeId": "dual_red_purple",
+    "name": "Pacto da Chama Sangrenta",
+    "subtitle": "Pacto Duplo 🔥+💀 • Blitz Sanguinária, Dreno & Último Suspiro",
+    "format": "bicolor",
+    "domains": [
+      "red",
+      "purple"
+    ],
+    "coverCardId": "red_173_general_roda_chama",
+    "classicDeckIds": [
+      "deck_dual_blood_flame"
+    ],
+    "tierBadge": "A",
+    "overallWinRate": 0.5286,
+    "ci95HalfWidth": 0.0219,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.6484,
+      "bicolor": 0.4598,
+      "tricolor": 0.4375,
+      "pentachromatic": 0.5139
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_blue_chrono",
+        "winRate": 0.8958,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.875,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.7292,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_dragon",
+        "winRate": 0.7083,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_umbral",
+        "winRate": 0.7083,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_purple_gold",
+        "winRate": 0.2917,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_green_gold",
+        "winRate": 0.3333,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_purple_green_gold",
+        "winRate": 0.375,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.375,
+        "games": 48
       }
     ]
   },
   {
     "rank": 24,
-    "archetypeId": "mono_red_blitz",
-    "name": "Blitz Salamandra",
-    "subtitle": "Mono-Vermelho 🔥 • Ímpeto & Pele Incandescente",
-    "format": "monocolor",
-    "domains": [
-      "red"
-    ],
-    "coverCardId": "red_173_general_roda_chama",
-    "classicDeckIds": [
-      "deck_aggro_blitz"
-    ],
-    "tierBadge": "A",
-    "overallWinRate": 0.5099,
-    "ci95HalfWidth": 0.0282,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.6119,
-      "bicolor": 0.4714,
-      "tricolor": 0.4472,
-      "pentachromatic": 0.4048
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.8214,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_chrono",
-        "winRate": 0.7143,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.7143,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.6786,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "dual_green_gold",
-        "winRate": 0.2857,
-        "games": 28
-      },
-      {
-        "opponentId": "penta_wheel_convergence",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "penta_prismatic_crater",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.3214,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.3571,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 25,
     "archetypeId": "dual_purple_green",
     "name": "Pacto da Podridão Eterna",
     "subtitle": "Pacto Duplo 💀+🌿 • Cripta, Regeneração & Veneno",
@@ -2331,152 +2253,151 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_dual_eternal_rot"
     ],
     "tierBadge": "A",
-    "overallWinRate": 0.4925,
-    "ci95HalfWidth": 0.0293,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.5247,
+    "ci95HalfWidth": 0.0222,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.6696,
-      "bicolor": 0.3699,
-      "tricolor": 0.4155,
-      "pentachromatic": 0.381
+      "monocolor": 0.6615,
+      "bicolor": 0.4494,
+      "tricolor": 0.4271,
+      "pentachromatic": 0.4722
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.9286,
-        "games": 28
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.8333,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.8125,
+        "games": 48
       },
       {
         "opponentId": "mono_purple_blood",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_crypt",
         "winRate": 0.75,
-        "games": 28
+        "games": 48
       },
       {
-        "opponentId": "mono_green_swarm",
-        "winRate": 0.7143,
-        "games": 28
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.7292,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.6875,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "dual_red_green",
-        "winRate": 0.2143,
-        "games": 28
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.25,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.2143,
-        "games": 28
+        "opponentId": "dual_blue_green",
+        "winRate": 0.2917,
+        "games": 48
       },
       {
         "opponentId": "tri_red_blue_green",
-        "winRate": 0.2857,
-        "games": 28
+        "winRate": 0.3542,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.2857,
-        "games": 28
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.3542,
+        "games": 48
       },
       {
-        "opponentId": "dual_gold_neutral",
-        "winRate": 0.2857,
-        "games": 28
+        "opponentId": "dual_green_neutral",
+        "winRate": 0.3542,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 25,
+    "archetypeId": "dual_blue_purple",
+    "name": "Pacto da Tormenta Abissal",
+    "subtitle": "Pacto Duplo ❄️+💀 • Estase Glacial & Execução Umbral",
+    "format": "bicolor",
+    "domains": [
+      "blue",
+      "purple"
+    ],
+    "coverCardId": "blue_173_general_roda_gelo",
+    "classicDeckIds": [
+      "deck_dual_abyssal_storm"
+    ],
+    "tierBadge": "A",
+    "overallWinRate": 0.4889,
+    "ci95HalfWidth": 0.022,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.6094,
+      "bicolor": 0.4435,
+      "tricolor": 0.3812,
+      "pentachromatic": 0.4167
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.8333,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.75,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.6875,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_frost",
+        "winRate": 0.6875,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_phalanx",
+        "winRate": 0.6875,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.1875,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_purple_green_gold",
+        "winRate": 0.25,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_green",
+        "winRate": 0.3125,
+        "games": 48
       }
     ]
   },
   {
     "rank": 26,
-    "archetypeId": "tri_blue_purple_green",
-    "name": "Quimera da Fossa Abissal",
-    "subtitle": "Tríade ❄️+💀+🌿 • Evolução Necrótica, Estase & Cripta Viva",
-    "format": "tricolor",
-    "domains": [
-      "blue",
-      "purple",
-      "green"
-    ],
-    "coverCardId": "purple_100_dragao_necrotico",
-    "classicDeckIds": [
-      "deck_tri_abyssal_chimera"
-    ],
-    "tierBadge": "A",
-    "overallWinRate": 0.4868,
-    "ci95HalfWidth": 0.0291,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.6317,
-      "bicolor": 0.4262,
-      "tricolor": 0.3711,
-      "pentachromatic": 0.369
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.7143,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_phalanx",
-        "winRate": 0.7143,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_swarm",
-        "winRate": 0.6786,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.6786,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.6786,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "dual_green_neutral",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.25,
-        "games": 28
-      },
-      {
-        "opponentId": "penta_free_city_sovereign",
-        "winRate": 0.2857,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.2857,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 27,
     "archetypeId": "tri_red_blue_purple",
     "name": "Cataclismo da Convergência Astral",
     "subtitle": "Tríade ❄️+🔥+💀 • Estase, Fogo Piroclástico & Execução Umbral",
@@ -2492,151 +2413,308 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_tri_astral_cataclysm"
     ],
     "tierBadge": "A",
-    "overallWinRate": 0.476,
-    "ci95HalfWidth": 0.0288,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.4859,
+    "ci95HalfWidth": 0.0227,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.5781,
-      "bicolor": 0.4333,
-      "tricolor": 0.3828,
-      "pentachromatic": 0.4286
+      "monocolor": 0.6055,
+      "bicolor": 0.425,
+      "tricolor": 0.3912,
+      "pentachromatic": 0.4375
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.7708,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.7083,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.7083,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.6875,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.6667,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.25,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_prismatic_crater",
+        "winRate": 0.2708,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_green_neutral",
+        "winRate": 0.3333,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_green",
+        "winRate": 0.3333,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 27,
+    "archetypeId": "tri_blue_purple_green",
+    "name": "Quimera da Fossa Abissal",
+    "subtitle": "Tríade ❄️+💀+🌿 • Evolução Necrótica, Estase & Cripta Viva",
+    "format": "tricolor",
+    "domains": [
+      "blue",
+      "purple",
+      "green"
+    ],
+    "coverCardId": "purple_100_dragao_necrotico",
+    "classicDeckIds": [
+      "deck_tri_abyssal_chimera"
+    ],
+    "tierBadge": "A",
+    "overallWinRate": 0.4787,
+    "ci95HalfWidth": 0.0222,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.6016,
+      "bicolor": 0.4097,
+      "tricolor": 0.3912,
+      "pentachromatic": 0.4306
     },
     "bestMatchups": [
       {
         "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_swarm",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.75,
-        "games": 28
+        "winRate": 0.7083,
+        "games": 48
       },
       {
         "opponentId": "mono_blue_abyssal",
-        "winRate": 0.7143,
-        "games": 28
+        "winRate": 0.7083,
+        "games": 48
       },
       {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.6786,
-        "games": 28
+        "opponentId": "mono_green_roots",
+        "winRate": 0.6875,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.6875,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.6875,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.1429,
-        "games": 28
+        "winRate": 0.2083,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_green",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_green",
-        "winRate": 0.2857,
-        "games": 28
+        "opponentId": "tri_blue_green_gold",
+        "winRate": 0.25,
+        "games": 48
       },
       {
         "opponentId": "penta_prismatic_crater",
-        "winRate": 0.3214,
-        "games": 28
+        "winRate": 0.2708,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.3214,
-        "games": 28
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.2708,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_purple",
+        "winRate": 0.3125,
+        "games": 48
       }
     ]
   },
   {
     "rank": 28,
-    "archetypeId": "dual_blue_purple",
-    "name": "Pacto da Tormenta Abissal",
-    "subtitle": "Pacto Duplo ❄️+💀 • Estase Glacial & Execução Umbral",
-    "format": "bicolor",
+    "archetypeId": "mono_red_blitz",
+    "name": "Blitz Salamandra",
+    "subtitle": "Mono-Vermelho 🔥 • Ímpeto & Pele Incandescente",
+    "format": "monocolor",
     "domains": [
-      "blue",
-      "purple"
+      "red"
     ],
-    "coverCardId": "blue_173_general_roda_gelo",
+    "coverCardId": "red_173_general_roda_chama",
     "classicDeckIds": [
-      "deck_dual_abyssal_storm"
+      "deck_aggro_blitz"
     ],
     "tierBadge": "A",
-    "overallWinRate": 0.4487,
-    "ci95HalfWidth": 0.0288,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.4675,
+    "ci95HalfWidth": 0.0226,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.5804,
-      "bicolor": 0.3852,
-      "tricolor": 0.3556,
-      "pentachromatic": 0.3571
+      "monocolor": 0.6153,
+      "bicolor": 0.3972,
+      "tricolor": 0.3521,
+      "pentachromatic": 0.4653
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.7857,
-        "games": 28
+        "opponentId": "mono_blue_chrono",
+        "winRate": 0.9167,
+        "games": 48
       },
       {
-        "opponentId": "mono_gold_phalanx",
-        "winRate": 0.75,
-        "games": 28
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.7292,
+        "games": 48
       },
       {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.7143,
-        "games": 28
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.6875,
+        "games": 48
       },
       {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.6429,
-        "games": 28
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.6875,
+        "games": 48
       },
       {
         "opponentId": "mono_blue_frost",
-        "winRate": 0.6429,
-        "games": 28
+        "winRate": 0.6667,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
         "opponentId": "tri_red_blue_gold",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "penta_prismatic_crater",
-        "winRate": 0.1786,
-        "games": 28
+        "winRate": 0.1667,
+        "games": 48
       },
       {
         "opponentId": "tri_red_purple_gold",
-        "winRate": 0.1786,
-        "games": 28
+        "winRate": 0.2292,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_purple_green",
+        "opponentId": "dual_blue_gold",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_blue_purple_gold",
         "winRate": 0.25,
-        "games": 28
+        "games": 48
+      },
+      {
+        "opponentId": "dual_purple_gold",
+        "winRate": 0.2917,
+        "games": 48
       }
     ]
   },
   {
     "rank": 29,
+    "archetypeId": "mono_blue_frost",
+    "name": "Inverno Eterno",
+    "subtitle": "Mono-Azul ❄️ • Congelar & Estase Tática",
+    "format": "monocolor",
+    "domains": [
+      "blue"
+    ],
+    "coverCardId": "blue_80_senhor_tempo",
+    "classicDeckIds": [
+      "deck_blue_tempest"
+    ],
+    "tierBadge": "A",
+    "overallWinRate": 0.4482,
+    "ci95HalfWidth": 0.0225,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.5861,
+      "bicolor": 0.3778,
+      "tricolor": 0.3812,
+      "pentachromatic": 0.3333
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.75,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.7292,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.7083,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_dragon",
+        "winRate": 0.7083,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_phalanx",
+        "winRate": 0.6875,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.1458,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.2708,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.2708,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_green",
+        "winRate": 0.2708,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 30,
     "archetypeId": "mono_blue_chrono",
     "name": "Conclave Cronomante",
     "subtitle": "Mono-Azul ⚡ • Compra, Reações & Feitiços",
@@ -2648,146 +2726,68 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "classicDeckIds": [
       "deck_control_bastion"
     ],
-    "tierBadge": "B",
-    "overallWinRate": 0.4396,
-    "ci95HalfWidth": 0.0293,
-    "matchesPlayed": 1208,
+    "tierBadge": "A",
+    "overallWinRate": 0.4462,
+    "ci95HalfWidth": 0.0224,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.5381,
-      "bicolor": 0.3595,
-      "tricolor": 0.4014,
-      "pentachromatic": 0.4762
+      "monocolor": 0.5264,
+      "bicolor": 0.3833,
+      "tricolor": 0.4229,
+      "pentachromatic": 0.4375
     },
     "bestMatchups": [
-      {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.8571,
-        "games": 28
-      },
       {
         "opponentId": "mono_blue_abyssal",
         "winRate": 0.75,
-        "games": 28
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_celestial",
+        "winRate": 0.7083,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.6458,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.6458,
+        "games": 48
       },
       {
         "opponentId": "mono_gold_phalanx",
-        "winRate": 0.75,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.6786,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.6786,
-        "games": 28
+        "winRate": 0.6458,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
+        "opponentId": "mono_red_blitz",
+        "winRate": 0.0833,
+        "games": 48
+      },
+      {
         "opponentId": "dual_red_purple",
-        "winRate": 0.0714,
-        "games": 28
+        "winRate": 0.1042,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.125,
+        "games": 48
       },
       {
         "opponentId": "tri_red_purple_green",
-        "winRate": 0.1071,
-        "games": 28
+        "winRate": 0.1875,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_neutral",
-        "winRate": 0.25,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 30,
-    "archetypeId": "mono_neutral_axial",
-    "name": "Legião Axial Autômata",
-    "subtitle": "Mono-Neutro ⚙️ • Constructos, Relíquias & Matriz Horológica",
-    "format": "monocolor",
-    "domains": [
-      "neutral"
-    ],
-    "coverCardId": "neutral_24_dragao_astral",
-    "classicDeckIds": [
-      "deck_neutral_watch"
-    ],
-    "tierBadge": "B",
-    "overallWinRate": 0.4329,
-    "ci95HalfWidth": 0.0293,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.5738,
-      "bicolor": 0.3405,
-      "tricolor": 0.3592,
-      "pentachromatic": 0.4405
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.8571,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.6429,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_purple",
-        "winRate": 0.6429,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_blitz",
-        "winRate": 0.6071,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.1786,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.1786,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_neutral",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.2143,
-        "games": 28
+        "opponentId": "dual_green_neutral",
+        "winRate": 0.2083,
+        "games": 48
       }
     ]
   },
@@ -2804,224 +2804,150 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "coverCardId": "purple_173_general_roda_abismo",
     "classicDeckIds": [],
     "tierBadge": "B",
-    "overallWinRate": 0.4305,
-    "ci95HalfWidth": 0.0292,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.437,
+    "ci95HalfWidth": 0.0224,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.567,
-      "bicolor": 0.3393,
-      "tricolor": 0.3451,
-      "pentachromatic": 0.4167
+      "monocolor": 0.5781,
+      "bicolor": 0.3259,
+      "tricolor": 0.3854,
+      "pentachromatic": 0.375
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.7857,
-        "games": 28
-      },
-      {
         "opponentId": "mono_green_roots",
-        "winRate": 0.7143,
-        "games": 28
+        "winRate": 0.7708,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.7292,
+        "games": 48
       },
       {
         "opponentId": "mono_purple_umbral",
-        "winRate": 0.6786,
-        "games": 28
+        "winRate": 0.7083,
+        "games": 48
       },
       {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.6786,
-        "games": 28
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.6875,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_frost",
+        "winRate": 0.6458,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "dual_green_gold",
-        "winRate": 0.0714,
-        "games": 28
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.1458,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.1786,
-        "games": 28
+        "opponentId": "dual_red_gold",
+        "winRate": 0.1458,
+        "games": 48
       },
       {
         "opponentId": "dual_red_neutral",
-        "winRate": 0.1786,
-        "games": 28
+        "winRate": 0.2292,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.25,
-        "games": 28
+        "opponentId": "dual_red_green",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.2708,
+        "games": 48
       }
     ]
   },
   {
     "rank": 32,
-    "archetypeId": "mono_gold_celestial",
-    "name": "Legião Celeste",
-    "subtitle": "Mono-Dourado ☀️ • Escudo Divino, Voo & Ascensão",
+    "archetypeId": "mono_neutral_axial",
+    "name": "Legião Axial Autômata",
+    "subtitle": "Mono-Neutro ⚙️ • Constructos, Relíquias & Matriz Horológica",
     "format": "monocolor",
     "domains": [
-      "gold"
+      "neutral"
     ],
-    "coverCardId": "gold_99_serafim_coroado",
-    "classicDeckIds": [],
+    "coverCardId": "neutral_24_dragao_astral",
+    "classicDeckIds": [
+      "deck_neutral_watch"
+    ],
     "tierBadge": "B",
-    "overallWinRate": 0.4214,
-    "ci95HalfWidth": 0.0294,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.4249,
+    "ci95HalfWidth": 0.0223,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.6238,
-      "bicolor": 0.3262,
-      "tricolor": 0.2923,
-      "pentachromatic": 0.3214
+      "monocolor": 0.5597,
+      "bicolor": 0.3694,
+      "tricolor": 0.3292,
+      "pentachromatic": 0.3472
     },
     "bestMatchups": [
       {
+        "opponentId": "dual_purple_neutral",
+        "winRate": 0.7292,
+        "games": 48
+      },
+      {
         "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.75,
-        "games": 28
+        "winRate": 0.7083,
+        "games": 48
       },
       {
         "opponentId": "mono_red_dragon",
-        "winRate": 0.75,
-        "games": 28
+        "winRate": 0.7083,
+        "games": 48
       },
       {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.75,
-        "games": 28
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.7083,
+        "games": 48
       },
       {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.7143,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.7143,
-        "games": 28
+        "opponentId": "mono_blue_chrono",
+        "winRate": 0.6042,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_green",
-        "winRate": 0.1429,
-        "games": 28
+        "opponentId": "tri_red_green_gold",
+        "winRate": 0.1667,
+        "games": 48
       },
       {
         "opponentId": "dual_red_neutral",
-        "winRate": 0.1786,
-        "games": 28
+        "winRate": 0.2292,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_purple",
-        "winRate": 0.1786,
-        "games": 28
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.25,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.1786,
-        "games": 28
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.25,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_purple_gold",
+        "winRate": 0.25,
+        "games": 48
       }
     ]
   },
   {
     "rank": 33,
-    "archetypeId": "mono_green_swarm",
-    "name": "Enxame & Matilha Silvestre",
-    "subtitle": "Mono-Verde 🌿 • Aggro & Buff em Massa",
-    "format": "monocolor",
-    "domains": [
-      "green"
-    ],
-    "coverCardId": "green_09_hidra",
-    "classicDeckIds": [],
-    "tierBadge": "B",
-    "overallWinRate": 0.4056,
-    "ci95HalfWidth": 0.0281,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.5381,
-      "bicolor": 0.3333,
-      "tricolor": 0.3204,
-      "pentachromatic": 0.3929
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_blue_chrono",
-        "winRate": 0.6786,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.6429,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.6071,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.5714,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.5714,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "dual_gold_neutral",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.1786,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_purple",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_purple_gold",
-        "winRate": 0.2143,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 34,
     "archetypeId": "mono_gold_phalanx",
     "name": "Falange Impenetrável",
     "subtitle": "Mono-Dourado 🛡️ • Guardião, Armadura & Bastião",
@@ -3034,72 +2960,224 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_gold_radiant"
     ],
     "tierBadge": "B",
-    "overallWinRate": 0.4007,
-    "ci95HalfWidth": 0.0291,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.4176,
+    "ci95HalfWidth": 0.022,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.5405,
-      "bicolor": 0.3571,
-      "tricolor": 0.2711,
-      "pentachromatic": 0.3571
+      "monocolor": 0.5847,
+      "bicolor": 0.3431,
+      "tricolor": 0.3271,
+      "pentachromatic": 0.2569
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.7143,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.7143,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.6786,
-        "games": 28
-      },
-      {
         "opponentId": "mono_purple_crypt",
-        "winRate": 0.6786,
-        "games": 28
+        "winRate": 0.75,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.7292,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.7292,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.7083,
+        "games": 48
       },
       {
         "opponentId": "mono_green_swarm",
-        "winRate": 0.6071,
-        "games": 28
+        "winRate": 0.6458,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.1042,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_gold_neutral",
+        "winRate": 0.1458,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_free_city_sovereign",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_prismatic_crater",
+        "winRate": 0.2292,
+        "games": 48
+      },
+      {
         "opponentId": "tri_red_blue_green",
-        "winRate": 0.1429,
-        "games": 28
+        "winRate": 0.25,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 34,
+    "archetypeId": "mono_gold_celestial",
+    "name": "Legião Celeste",
+    "subtitle": "Mono-Dourado ☀️ • Escudo Divino, Voo & Ascensão",
+    "format": "monocolor",
+    "domains": [
+      "gold"
+    ],
+    "coverCardId": "gold_99_serafim_coroado",
+    "classicDeckIds": [],
+    "tierBadge": "B",
+    "overallWinRate": 0.3953,
+    "ci95HalfWidth": 0.0218,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.5319,
+      "bicolor": 0.3736,
+      "tricolor": 0.2646,
+      "pentachromatic": 0.2569
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.8333,
+        "games": 48
       },
       {
-        "opponentId": "penta_wheel_convergence",
-        "winRate": 0.1786,
-        "games": 28
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.7292,
+        "games": 48
       },
       {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.1786,
-        "games": 28
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.6875,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.1786,
-        "games": 28
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.625,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_purple_neutral",
+        "winRate": 0.6042,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.0833,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_prismatic_crater",
+        "winRate": 0.1667,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.1875,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_green_gold",
+        "winRate": 0.2083,
+        "games": 48
       },
       {
         "opponentId": "tri_blue_green_gold",
-        "winRate": 0.2143,
-        "games": 28
+        "winRate": 0.2292,
+        "games": 48
       }
     ]
   },
   {
     "rank": 35,
+    "archetypeId": "mono_green_swarm",
+    "name": "Enxame & Matilha Silvestre",
+    "subtitle": "Mono-Verde 🌿 • Aggro & Buff em Massa",
+    "format": "monocolor",
+    "domains": [
+      "green"
+    ],
+    "coverCardId": "green_09_hidra",
+    "classicDeckIds": [],
+    "tierBadge": "B",
+    "overallWinRate": 0.3905,
+    "ci95HalfWidth": 0.0217,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.5458,
+      "bicolor": 0.3486,
+      "tricolor": 0.275,
+      "pentachromatic": 0.2083
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.7292,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_chrono",
+        "winRate": 0.7083,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.6042,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_blitz",
+        "winRate": 0.5833,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_umbral",
+        "winRate": 0.5625,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.125,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_wheel_convergence",
+        "winRate": 0.1458,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_blue_green_gold",
+        "winRate": 0.1667,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.1667,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_free_city_sovereign",
+        "winRate": 0.1875,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 36,
     "archetypeId": "mono_red_dragon",
     "name": "Trono Dracônico",
     "subtitle": "Mono-Vermelho 🔥 • Voo, Sopro & Ascensão",
@@ -3112,72 +3190,72 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_red_inferno"
     ],
     "tierBadge": "B",
-    "overallWinRate": 0.3659,
-    "ci95HalfWidth": 0.0279,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.3876,
+    "ci95HalfWidth": 0.0215,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.4619,
-      "bicolor": 0.3,
-      "tricolor": 0.2958,
-      "pentachromatic": 0.4524
+      "monocolor": 0.5111,
+      "bicolor": 0.35,
+      "tricolor": 0.2833,
+      "pentachromatic": 0.3056
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.5714,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.5714,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.5714,
-        "games": 28
-      },
-      {
         "opponentId": "mono_green_roots",
-        "winRate": 0.5357,
-        "games": 28
+        "winRate": 0.6875,
+        "games": 48
       },
       {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.5357,
-        "games": 28
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.6667,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.6458,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_chrono",
+        "winRate": 0.6458,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.5833,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.1071,
-        "games": 28
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.0417,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.1429,
-        "games": 28
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.2083,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_purple_green_gold",
+        "winRate": 0.2292,
+        "games": 48
       },
       {
         "opponentId": "tri_red_purple_green",
-        "winRate": 0.2143,
-        "games": 28
+        "winRate": 0.2292,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.2143,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_purple",
-        "winRate": 0.2143,
-        "games": 28
+        "opponentId": "dual_red_gold",
+        "winRate": 0.2292,
+        "games": 48
       }
     ]
   },
   {
-    "rank": 36,
+    "rank": 37,
     "archetypeId": "mono_purple_umbral",
     "name": "Inquisição Umbral",
     "subtitle": "Mono-Roxo 🌑 • Destruição, Debuff & Controle",
@@ -3188,222 +3266,146 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "coverCardId": "purple_167_arauto_prisma_abismo",
     "classicDeckIds": [],
     "tierBadge": "B",
-    "overallWinRate": 0.3622,
-    "ci95HalfWidth": 0.0284,
-    "matchesPlayed": 1168,
+    "overallWinRate": 0.3784,
+    "ci95HalfWidth": 0.0216,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.4876,
-      "bicolor": 0.2966,
-      "tricolor": 0.3051,
-      "pentachromatic": 0.2619
+      "monocolor": 0.4833,
+      "bicolor": 0.3125,
+      "tricolor": 0.3292,
+      "pentachromatic": 0.3472
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.7143,
-        "games": 28
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.625,
+        "games": 48
       },
       {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.6667,
-        "games": 24
+        "opponentId": "mono_red_dragon",
+        "winRate": 0.5833,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_blue_purple_green",
+        "winRate": 0.5625,
+        "games": 48
       },
       {
         "opponentId": "mono_blue_chrono",
-        "winRate": 0.6071,
-        "games": 28
+        "winRate": 0.5417,
+        "games": 48
       },
       {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.6071,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_swarm",
-        "winRate": 0.5357,
-        "games": 28
+        "opponentId": "dual_blue_purple",
+        "winRate": 0.5417,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "tri_red_blue_gold",
+        "opponentId": "dual_red_neutral",
         "winRate": 0.125,
-        "games": 24
-      },
-      {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.125,
-        "games": 24
+        "games": 48
       },
       {
         "opponentId": "dual_green_neutral",
-        "winRate": 0.125,
-        "games": 24
+        "winRate": 0.1458,
+        "games": 48
       },
       {
-        "opponentId": "dual_blue_green",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_gold",
-        "winRate": 0.1429,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 37,
-    "archetypeId": "mono_red_pyroclasm",
-    "name": "Artilharia Piroclástica",
-    "subtitle": "Mono-Vermelho 🔥 • Queima Direta & Cataclismos",
-    "format": "monocolor",
-    "domains": [
-      "red"
-    ],
-    "coverCardId": "red_46_tirano_carmesim",
-    "classicDeckIds": [],
-    "tierBadge": "B",
-    "overallWinRate": 0.3609,
-    "ci95HalfWidth": 0.0288,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.5071,
-      "bicolor": 0.3214,
-      "tricolor": 0.1901,
-      "pentachromatic": 0.4048
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_blue_chrono",
-        "winRate": 0.75,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.6429,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.6429,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_blitz",
-        "winRate": 0.6071,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_green",
-        "winRate": 0.6071,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_blue_purple_gold",
-        "winRate": 0.0313,
-        "games": 32
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.0357,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_purple",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.1429,
-        "games": 28
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.1875,
+        "games": 48
       },
       {
         "opponentId": "tri_purple_green_gold",
-        "winRate": 0.1786,
-        "games": 28
+        "winRate": 0.2083,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.2083,
+        "games": 48
       }
     ]
   },
   {
     "rank": 38,
-    "archetypeId": "mono_green_colossus",
-    "name": "Colossos Primordiais",
-    "subtitle": "Mono-Verde 🌿 • Ramp & Atropelar",
+    "archetypeId": "mono_purple_crypt",
+    "name": "Culto da Cripta",
+    "subtitle": "Mono-Roxo 💀 • Renascer & Reanimação",
     "format": "monocolor",
     "domains": [
-      "green"
+      "purple"
     ],
-    "coverCardId": "green_09_hidra",
+    "coverCardId": "purple_65_principe_mortos",
     "classicDeckIds": [
-      "deck_green_wild",
-      "deck_midrange_beasts"
+      "deck_purple_shadow",
+      "deck_crypt_reanimator"
     ],
     "tierBadge": "B",
-    "overallWinRate": 0.3377,
-    "ci95HalfWidth": 0.0278,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.3435,
+    "ci95HalfWidth": 0.0214,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.4667,
-      "bicolor": 0.2738,
-      "tricolor": 0.2465,
-      "pentachromatic": 0.3214
+      "monocolor": 0.4625,
+      "bicolor": 0.2681,
+      "tricolor": 0.3063,
+      "pentachromatic": 0.25
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.6429,
-        "games": 28
-      },
-      {
         "opponentId": "mono_purple_blood",
-        "winRate": 0.6429,
-        "games": 28
+        "winRate": 0.7083,
+        "games": 48
       },
       {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.6071,
-        "games": 28
+        "opponentId": "mono_neutral_axial",
+        "winRate": 0.625,
+        "games": 48
       },
       {
-        "opponentId": "mono_blue_chrono",
-        "winRate": 0.5357,
-        "games": 28
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.5833,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.5625,
+        "games": 48
       },
       {
         "opponentId": "mono_blue_abyssal",
-        "winRate": 0.5,
-        "games": 28
+        "winRate": 0.5417,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.0714,
-        "games": 28
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.125,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_blue_green",
-        "winRate": 0.0714,
-        "games": 28
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.125,
+        "games": 48
+      },
+      {
+        "opponentId": "penta_free_city_sovereign",
+        "winRate": 0.1458,
+        "games": 48
       },
       {
         "opponentId": "tri_red_purple_gold",
-        "winRate": 0.1071,
-        "games": 28
+        "winRate": 0.1667,
+        "games": 48
       },
       {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_neutral",
-        "winRate": 0.1071,
-        "games": 28
+        "opponentId": "dual_green_gold",
+        "winRate": 0.1667,
+        "games": 48
       }
     ]
   },
@@ -3421,381 +3423,72 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "deck_relic_artificer"
     ],
     "tierBadge": "B",
-    "overallWinRate": 0.3361,
-    "ci95HalfWidth": 0.0276,
-    "matchesPlayed": 1208,
+    "overallWinRate": 0.3328,
+    "ci95HalfWidth": 0.0215,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.4857,
-      "bicolor": 0.2762,
-      "tricolor": 0.2324,
-      "pentachromatic": 0.2381
+      "monocolor": 0.4833,
+      "bicolor": 0.2819,
+      "tricolor": 0.2146,
+      "pentachromatic": 0.2292
     },
     "bestMatchups": [
       {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.6786,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.6429,
-        "games": 28
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.6458,
+        "games": 48
       },
       {
         "opponentId": "mono_purple_blood",
-        "winRate": 0.6429,
-        "games": 28
+        "winRate": 0.6458,
+        "games": 48
       },
       {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.6071,
-        "games": 28
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.6042,
+        "games": 48
       },
       {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.6071,
-        "games": 28
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.5625,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_frost",
+        "winRate": 0.5208,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
+        "opponentId": "tri_red_green_gold",
+        "winRate": 0.1042,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.1458,
+        "games": 48
+      },
+      {
         "opponentId": "tri_purple_green_gold",
-        "winRate": 0.1071,
-        "games": 28
+        "winRate": 0.1458,
+        "games": 48
       },
       {
         "opponentId": "dual_blue_green",
-        "winRate": 0.1071,
-        "games": 28
+        "winRate": 0.1458,
+        "games": 48
       },
       {
         "opponentId": "penta_wheel_convergence",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_blue_chrono",
-        "winRate": 0.1429,
-        "games": 28
+        "winRate": 0.1667,
+        "games": 48
       }
     ]
   },
   {
     "rank": 40,
-    "archetypeId": "mono_blue_frost",
-    "name": "Inverno Eterno",
-    "subtitle": "Mono-Azul ❄️ • Congelar & Estase Tática",
-    "format": "monocolor",
-    "domains": [
-      "blue"
-    ],
-    "coverCardId": "blue_80_senhor_tempo",
-    "classicDeckIds": [
-      "deck_blue_tempest"
-    ],
-    "tierBadge": "B",
-    "overallWinRate": 0.3303,
-    "ci95HalfWidth": 0.0281,
-    "matchesPlayed": 1208,
-    "vsFormatWinRates": {
-      "monocolor": 0.4476,
-      "bicolor": 0.2738,
-      "tricolor": 0.243,
-      "pentachromatic": 0.3214
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.6429,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.6071,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.6071,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.5714,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.5357,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_blue_purple_gold",
-        "winRate": 0.0938,
-        "games": 32
-      },
-      {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_neutral",
-        "winRate": 0.1429,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_purple_green_gold",
-        "winRate": 0.1786,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_neutral",
-        "winRate": 0.1786,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 41,
-    "archetypeId": "mono_purple_crypt",
-    "name": "Culto da Cripta",
-    "subtitle": "Mono-Roxo 💀 • Renascer & Reanimação",
-    "format": "monocolor",
-    "domains": [
-      "purple"
-    ],
-    "coverCardId": "purple_65_principe_mortos",
-    "classicDeckIds": [
-      "deck_purple_shadow",
-      "deck_crypt_reanimator"
-    ],
-    "tierBadge": "B",
-    "overallWinRate": 0.3134,
-    "ci95HalfWidth": 0.0271,
-    "matchesPlayed": 1168,
-    "vsFormatWinRates": {
-      "monocolor": 0.4406,
-      "bicolor": 0.25,
-      "tricolor": 0.2426,
-      "pentachromatic": 0.2381
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_blue_abyssal",
-        "winRate": 0.5833,
-        "games": 24
-      },
-      {
-        "opponentId": "dual_purple_neutral",
-        "winRate": 0.5714,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_blood",
-        "winRate": 0.5417,
-        "games": 24
-      },
-      {
-        "opponentId": "mono_red_blitz",
-        "winRate": 0.5357,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_neutral_axial",
-        "winRate": 0.5357,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_red_purple_green",
-        "winRate": 0.0417,
-        "games": 24
-      },
-      {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_green_gold",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.125,
-        "games": 24
-      },
-      {
-        "opponentId": "dual_gold_neutral",
-        "winRate": 0.1429,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 42,
-    "archetypeId": "mono_purple_blood",
-    "name": "Pacto Sanguíneo",
-    "subtitle": "Mono-Roxo 🩸 • Dreno de Vida & Toque Letal",
-    "format": "monocolor",
-    "domains": [
-      "purple"
-    ],
-    "coverCardId": "purple_46_noiva_vampira",
-    "classicDeckIds": [],
-    "tierBadge": "B",
-    "overallWinRate": 0.3065,
-    "ci95HalfWidth": 0.0275,
-    "matchesPlayed": 1168,
-    "vsFormatWinRates": {
-      "monocolor": 0.4208,
-      "bicolor": 0.2083,
-      "tricolor": 0.2831,
-      "pentachromatic": 0.3095
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_blue_frost",
-        "winRate": 0.6429,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.625,
-        "games": 24
-      },
-      {
-        "opponentId": "tri_red_blue_purple",
-        "winRate": 0.6071,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_green_roots",
-        "winRate": 0.5417,
-        "games": 24
-      },
-      {
-        "opponentId": "mono_red_dragon",
-        "winRate": 0.5357,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "dual_purple_gold",
-        "winRate": 0.0714,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_gold_neutral",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_blue_neutral",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.125,
-        "games": 24
-      },
-      {
-        "opponentId": "tri_red_purple_gold",
-        "winRate": 0.125,
-        "games": 24
-      }
-    ]
-  },
-  {
-    "rank": 43,
-    "archetypeId": "mono_green_roots",
-    "name": "Raízes Eternas",
-    "subtitle": "Mono-Verde 🌿 • Guardião & Regeneração",
-    "format": "monocolor",
-    "domains": [
-      "green"
-    ],
-    "coverCardId": "green_33_behemoth_primordial",
-    "classicDeckIds": [],
-    "tierBadge": "B",
-    "overallWinRate": 0.2979,
-    "ci95HalfWidth": 0.0274,
-    "matchesPlayed": 1168,
-    "vsFormatWinRates": {
-      "monocolor": 0.4233,
-      "bicolor": 0.2426,
-      "tricolor": 0.2243,
-      "pentachromatic": 0.2024
-    },
-    "bestMatchups": [
-      {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.5714,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_purple_crypt",
-        "winRate": 0.5417,
-        "games": 24
-      },
-      {
-        "opponentId": "mono_purple_umbral",
-        "winRate": 0.5417,
-        "games": 24
-      },
-      {
-        "opponentId": "mono_gold_phalanx",
-        "winRate": 0.5357,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_gold_judgment",
-        "winRate": 0.5357,
-        "games": 28
-      }
-    ],
-    "worstMatchups": [
-      {
-        "opponentId": "tri_red_blue_gold",
-        "winRate": 0.0417,
-        "games": 24
-      },
-      {
-        "opponentId": "penta_prismatic_crater",
-        "winRate": 0.0714,
-        "games": 28
-      },
-      {
-        "opponentId": "dual_red_gold",
-        "winRate": 0.0833,
-        "games": 24
-      },
-      {
-        "opponentId": "dual_gold_neutral",
-        "winRate": 0.1071,
-        "games": 28
-      },
-      {
-        "opponentId": "tri_red_green_gold",
-        "winRate": 0.1429,
-        "games": 28
-      }
-    ]
-  },
-  {
-    "rank": 44,
     "archetypeId": "mono_blue_abyssal",
     "name": "Frota Abissal",
     "subtitle": "Mono-Azul 🌊 • Voo, Alcance & Leviatãs",
@@ -3806,67 +3499,374 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "coverCardId": "blue_97_draco_relampago",
     "classicDeckIds": [],
     "tierBadge": "B",
-    "overallWinRate": 0.2885,
-    "ci95HalfWidth": 0.027,
-    "matchesPlayed": 1168,
+    "overallWinRate": 0.3217,
+    "ci95HalfWidth": 0.0207,
+    "matchesPlayed": 2064,
     "vsFormatWinRates": {
-      "monocolor": 0.4208,
-      "bicolor": 0.2206,
-      "tricolor": 0.2243,
-      "pentachromatic": 0.1905
+      "monocolor": 0.4583,
+      "bicolor": 0.2722,
+      "tricolor": 0.2229,
+      "pentachromatic": 0.2153
     },
     "bestMatchups": [
       {
         "opponentId": "mono_green_roots",
-        "winRate": 0.7917,
-        "games": 24
+        "winRate": 0.6875,
+        "games": 48
       },
       {
-        "opponentId": "mono_green_colossus",
-        "winRate": 0.5,
-        "games": 28
-      },
-      {
-        "opponentId": "mono_red_pyroclasm",
-        "winRate": 0.5,
-        "games": 28
+        "opponentId": "mono_gold_celestial",
+        "winRate": 0.5833,
+        "games": 48
       },
       {
         "opponentId": "mono_purple_blood",
-        "winRate": 0.5,
-        "games": 24
+        "winRate": 0.5625,
+        "games": 48
       },
       {
-        "opponentId": "mono_gold_phalanx",
-        "winRate": 0.5,
-        "games": 28
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.5417,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_dragon",
+        "winRate": 0.5417,
+        "games": 48
       }
     ],
     "worstMatchups": [
       {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.0625,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.0833,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.1042,
+        "games": 48
+      },
+      {
         "opponentId": "penta_prismatic_crater",
-        "winRate": 0.0357,
-        "games": 28
+        "winRate": 0.1667,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_green_gold",
+        "winRate": 0.1875,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 41,
+    "archetypeId": "mono_green_colossus",
+    "name": "Colossos Primordiais",
+    "subtitle": "Mono-Verde 🌿 • Ramp & Atropelar",
+    "format": "monocolor",
+    "domains": [
+      "green"
+    ],
+    "coverCardId": "green_09_hidra",
+    "classicDeckIds": [
+      "deck_green_wild",
+      "deck_midrange_beasts"
+    ],
+    "tierBadge": "B",
+    "overallWinRate": 0.3188,
+    "ci95HalfWidth": 0.0204,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.4347,
+      "bicolor": 0.2861,
+      "tricolor": 0.2188,
+      "pentachromatic": 0.2361
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.6042,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.5833,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.5417,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_crypt",
+        "winRate": 0.5,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_swarm",
+        "winRate": 0.4792,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.0833,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.0833,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_gold_neutral",
+        "winRate": 0.125,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_blue_purple_gold",
+        "winRate": 0.1458,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_purple_gold",
+        "winRate": 0.1458,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 42,
+    "archetypeId": "mono_red_pyroclasm",
+    "name": "Artilharia Piroclástica",
+    "subtitle": "Mono-Vermelho 🔥 • Queima Direta & Cataclismos",
+    "format": "monocolor",
+    "domains": [
+      "red"
+    ],
+    "coverCardId": "red_46_tirano_carmesim",
+    "classicDeckIds": [],
+    "tierBadge": "B",
+    "overallWinRate": 0.3164,
+    "ci95HalfWidth": 0.0208,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.4319,
+      "bicolor": 0.2625,
+      "tricolor": 0.2313,
+      "pentachromatic": 0.2917
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_green_colossus",
+        "winRate": 0.6667,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.625,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_umbral",
+        "winRate": 0.5625,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.5208,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_swarm",
+        "winRate": 0.4792,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_purple_green",
+        "winRate": 0.1042,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_purple",
+        "winRate": 0.125,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.1458,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_purple_gold",
+        "winRate": 0.1458,
+        "games": 48
       },
       {
         "opponentId": "dual_red_neutral",
+        "winRate": 0.1458,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 43,
+    "archetypeId": "mono_purple_blood",
+    "name": "Pacto Sanguíneo",
+    "subtitle": "Mono-Roxo 🩸 • Dreno de Vida & Toque Letal",
+    "format": "monocolor",
+    "domains": [
+      "purple"
+    ],
+    "coverCardId": "purple_46_noiva_vampira",
+    "classicDeckIds": [],
+    "tierBadge": "B",
+    "overallWinRate": 0.2771,
+    "ci95HalfWidth": 0.0195,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.3653,
+      "bicolor": 0.2319,
+      "tricolor": 0.2229,
+      "pentachromatic": 0.2431
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_purple_umbral",
+        "winRate": 0.5,
+        "games": 48
+      },
+      {
+        "opponentId": "tri_red_blue_purple",
+        "winRate": 0.5,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_roots",
+        "winRate": 0.4792,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_abyssal",
+        "winRate": 0.4375,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_blue_frost",
+        "winRate": 0.4167,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_purple_gold",
         "winRate": 0.0417,
-        "games": 24
+        "games": 48
       },
       {
-        "opponentId": "dual_purple_green",
-        "winRate": 0.0714,
-        "games": 28
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.0833,
+        "games": 48
       },
       {
-        "opponentId": "dual_red_green",
-        "winRate": 0.0714,
-        "games": 28
+        "opponentId": "tri_purple_green_gold",
+        "winRate": 0.1042,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_gold",
+        "winRate": 0.125,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_purple_gold",
+        "winRate": 0.1458,
+        "games": 48
+      }
+    ]
+  },
+  {
+    "rank": 44,
+    "archetypeId": "mono_green_roots",
+    "name": "Raízes Eternas",
+    "subtitle": "Mono-Verde 🌿 • Guardião & Regeneração",
+    "format": "monocolor",
+    "domains": [
+      "green"
+    ],
+    "coverCardId": "green_33_behemoth_primordial",
+    "classicDeckIds": [],
+    "tierBadge": "B",
+    "overallWinRate": 0.2718,
+    "ci95HalfWidth": 0.0201,
+    "matchesPlayed": 2064,
+    "vsFormatWinRates": {
+      "monocolor": 0.4194,
+      "bicolor": 0.1861,
+      "tricolor": 0.1958,
+      "pentachromatic": 0.2153
+    },
+    "bestMatchups": [
+      {
+        "opponentId": "mono_purple_blood",
+        "winRate": 0.5208,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_purple_umbral",
+        "winRate": 0.5,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_gold_judgment",
+        "winRate": 0.5,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_red_pyroclasm",
+        "winRate": 0.4792,
+        "games": 48
+      },
+      {
+        "opponentId": "mono_green_swarm",
+        "winRate": 0.4583,
+        "games": 48
+      }
+    ],
+    "worstMatchups": [
+      {
+        "opponentId": "tri_red_blue_gold",
+        "winRate": 0.0208,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_neutral",
+        "winRate": 0.0625,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_red_neutral",
+        "winRate": 0.0833,
+        "games": 48
       },
       {
         "opponentId": "dual_blue_green",
-        "winRate": 0.1071,
-        "games": 28
+        "winRate": 0.0833,
+        "games": 48
+      },
+      {
+        "opponentId": "dual_blue_gold",
+        "winRate": 0.1042,
+        "games": 48
       }
     ]
   }
@@ -3875,2026 +3875,2026 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
 export const UNIFIED_MATCHUP_MATRIX: Record<UnifiedChampionId, Record<UnifiedChampionId, number>> = {
   "mono_green_swarm": {
     "mono_green_swarm": 0.5,
-    "mono_green_colossus": 0.5714,
-    "mono_green_roots": 0.5714,
-    "mono_red_blitz": 0.5,
-    "mono_red_pyroclasm": 0.5357,
-    "mono_red_dragon": 0.6429,
-    "mono_blue_frost": 0.5714,
-    "mono_blue_chrono": 0.6786,
-    "mono_blue_abyssal": 0.5714,
-    "mono_purple_crypt": 0.6071,
-    "mono_purple_blood": 0.5714,
-    "mono_purple_umbral": 0.4643,
-    "mono_gold_phalanx": 0.3929,
-    "mono_gold_celestial": 0.3571,
-    "mono_gold_judgment": 0.5357,
-    "mono_neutral_axial": 0.5,
-    "dual_red_gold": 0.3214,
-    "dual_blue_purple": 0.3929,
-    "dual_red_green": 0.3214,
-    "dual_blue_gold": 0.2143,
-    "dual_purple_green": 0.2857,
-    "dual_red_purple": 0.4286,
-    "dual_blue_green": 0.3571,
-    "dual_green_gold": 0.4643,
-    "dual_purple_gold": 0.2143,
-    "dual_red_blue": 0.5357,
-    "dual_green_neutral": 0.3571,
-    "dual_red_neutral": 0.2143,
-    "dual_blue_neutral": 0.2857,
-    "dual_purple_neutral": 0.4643,
-    "dual_gold_neutral": 0.1429,
-    "tri_red_blue_purple": 0.2143,
-    "tri_red_green_gold": 0.2857,
-    "tri_blue_purple_gold": 0.4063,
-    "tri_red_purple_green": 0.1786,
-    "tri_blue_green_gold": 0.5357,
-    "tri_blue_purple_green": 0.3214,
-    "tri_red_purple_gold": 0.25,
-    "tri_purple_green_gold": 0.3929,
-    "tri_red_blue_green": 0.2857,
-    "tri_red_blue_gold": 0.3214,
-    "penta_prismatic_crater": 0.3571,
-    "penta_free_city_sovereign": 0.4643,
-    "penta_wheel_convergence": 0.3571
+    "mono_green_colossus": 0.5208,
+    "mono_green_roots": 0.5417,
+    "mono_red_blitz": 0.5833,
+    "mono_red_pyroclasm": 0.5208,
+    "mono_red_dragon": 0.5208,
+    "mono_blue_frost": 0.4167,
+    "mono_blue_chrono": 0.7083,
+    "mono_blue_abyssal": 0.5208,
+    "mono_purple_crypt": 0.7292,
+    "mono_purple_blood": 0.6042,
+    "mono_purple_umbral": 0.5625,
+    "mono_gold_phalanx": 0.3542,
+    "mono_gold_celestial": 0.5625,
+    "mono_gold_judgment": 0.5625,
+    "mono_neutral_axial": 0.4792,
+    "dual_red_gold": 0.2917,
+    "dual_blue_purple": 0.4583,
+    "dual_red_green": 0.4375,
+    "dual_blue_gold": 0.2917,
+    "dual_purple_green": 0.3542,
+    "dual_red_purple": 0.4167,
+    "dual_blue_green": 0.3542,
+    "dual_green_gold": 0.3333,
+    "dual_purple_gold": 0.2083,
+    "dual_red_blue": 0.5417,
+    "dual_green_neutral": 0.2708,
+    "dual_red_neutral": 0.1875,
+    "dual_blue_neutral": 0.375,
+    "dual_purple_neutral": 0.4167,
+    "dual_gold_neutral": 0.2917,
+    "tri_red_blue_purple": 0.4375,
+    "tri_red_green_gold": 0.25,
+    "tri_blue_purple_gold": 0.4792,
+    "tri_red_purple_green": 0.1667,
+    "tri_blue_green_gold": 0.1667,
+    "tri_blue_purple_green": 0.4583,
+    "tri_red_purple_gold": 0.2083,
+    "tri_purple_green_gold": 0.2292,
+    "tri_red_blue_green": 0.2292,
+    "tri_red_blue_gold": 0.125,
+    "penta_prismatic_crater": 0.2917,
+    "penta_free_city_sovereign": 0.1875,
+    "penta_wheel_convergence": 0.1458
   },
   "mono_green_colossus": {
-    "mono_green_swarm": 0.4286,
+    "mono_green_swarm": 0.4792,
     "mono_green_colossus": 0.5,
-    "mono_green_roots": 0.6429,
-    "mono_red_blitz": 0.3571,
-    "mono_red_pyroclasm": 0.3571,
-    "mono_red_dragon": 0.4286,
-    "mono_blue_frost": 0.6071,
-    "mono_blue_chrono": 0.5357,
-    "mono_blue_abyssal": 0.5,
+    "mono_green_roots": 0.5833,
+    "mono_red_blitz": 0.4167,
+    "mono_red_pyroclasm": 0.3333,
+    "mono_red_dragon": 0.3542,
+    "mono_blue_frost": 0.2708,
+    "mono_blue_chrono": 0.3542,
+    "mono_blue_abyssal": 0.5417,
     "mono_purple_crypt": 0.5,
-    "mono_purple_blood": 0.6429,
-    "mono_purple_umbral": 0.4643,
-    "mono_gold_phalanx": 0.3929,
-    "mono_gold_celestial": 0.2857,
-    "mono_gold_judgment": 0.3571,
-    "mono_neutral_axial": 0.5,
-    "dual_red_gold": 0.25,
-    "dual_blue_purple": 0.2857,
-    "dual_red_green": 0.3214,
-    "dual_blue_gold": 0.3929,
-    "dual_purple_green": 0.3929,
-    "dual_red_purple": 0.3929,
-    "dual_blue_green": 0.1786,
-    "dual_green_gold": 0.25,
-    "dual_purple_gold": 0.2857,
-    "dual_red_blue": 0.3929,
-    "dual_green_neutral": 0.1786,
-    "dual_red_neutral": 0.1071,
-    "dual_blue_neutral": 0.1071,
-    "dual_purple_neutral": 0.3571,
-    "dual_gold_neutral": 0.2143,
-    "tri_red_blue_purple": 0.4286,
-    "tri_red_green_gold": 0.3214,
-    "tri_blue_purple_gold": 0.375,
-    "tri_red_purple_green": 0.1071,
-    "tri_blue_green_gold": 0.2143,
-    "tri_blue_purple_green": 0.4286,
-    "tri_red_purple_gold": 0.1071,
-    "tri_purple_green_gold": 0.3214,
-    "tri_red_blue_green": 0.0714,
-    "tri_red_blue_gold": 0.0714,
-    "penta_prismatic_crater": 0.1429,
-    "penta_free_city_sovereign": 0.4643,
-    "penta_wheel_convergence": 0.3571
+    "mono_purple_blood": 0.6042,
+    "mono_purple_umbral": 0.4792,
+    "mono_gold_phalanx": 0.4167,
+    "mono_gold_celestial": 0.2708,
+    "mono_gold_judgment": 0.4375,
+    "mono_neutral_axial": 0.4792,
+    "dual_red_gold": 0.1875,
+    "dual_blue_purple": 0.3542,
+    "dual_red_green": 0.3333,
+    "dual_blue_gold": 0.3333,
+    "dual_purple_green": 0.2708,
+    "dual_red_purple": 0.4167,
+    "dual_blue_green": 0.1458,
+    "dual_green_gold": 0.3958,
+    "dual_purple_gold": 0.1458,
+    "dual_red_blue": 0.4792,
+    "dual_green_neutral": 0.2292,
+    "dual_red_neutral": 0.1875,
+    "dual_blue_neutral": 0.3125,
+    "dual_purple_neutral": 0.375,
+    "dual_gold_neutral": 0.125,
+    "tri_red_blue_purple": 0.3333,
+    "tri_red_green_gold": 0.2083,
+    "tri_blue_purple_gold": 0.1458,
+    "tri_red_purple_green": 0.2083,
+    "tri_blue_green_gold": 0.2083,
+    "tri_blue_purple_green": 0.4375,
+    "tri_red_purple_gold": 0.0833,
+    "tri_purple_green_gold": 0.2708,
+    "tri_red_blue_green": 0.2083,
+    "tri_red_blue_gold": 0.0833,
+    "penta_prismatic_crater": 0.1875,
+    "penta_free_city_sovereign": 0.1875,
+    "penta_wheel_convergence": 0.3333
   },
   "mono_green_roots": {
-    "mono_green_swarm": 0.4286,
-    "mono_green_colossus": 0.3571,
+    "mono_green_swarm": 0.4583,
+    "mono_green_colossus": 0.4167,
     "mono_green_roots": 0.5,
-    "mono_red_blitz": 0.3571,
-    "mono_red_pyroclasm": 0.5714,
-    "mono_red_dragon": 0.4643,
-    "mono_blue_frost": 0.3571,
-    "mono_blue_chrono": 0.3214,
-    "mono_blue_abyssal": 0.2083,
-    "mono_purple_crypt": 0.5417,
-    "mono_purple_blood": 0.4583,
-    "mono_purple_umbral": 0.5417,
-    "mono_gold_phalanx": 0.5357,
-    "mono_gold_celestial": 0.4643,
-    "mono_gold_judgment": 0.5357,
-    "mono_neutral_axial": 0.2143,
-    "dual_red_gold": 0.0833,
-    "dual_blue_purple": 0.3571,
-    "dual_red_green": 0.1786,
-    "dual_blue_gold": 0.1786,
-    "dual_purple_green": 0.2857,
-    "dual_red_purple": 0.4286,
-    "dual_blue_green": 0.1429,
-    "dual_green_gold": 0.3214,
-    "dual_purple_gold": 0.25,
-    "dual_red_blue": 0.3214,
-    "dual_green_neutral": 0.2083,
-    "dual_red_neutral": 0.2917,
-    "dual_blue_neutral": 0.1786,
-    "dual_purple_neutral": 0.2857,
-    "dual_gold_neutral": 0.1071,
-    "tri_red_blue_purple": 0.25,
-    "tri_red_green_gold": 0.1429,
-    "tri_blue_purple_gold": 0.25,
-    "tri_red_purple_green": 0.2083,
-    "tri_blue_green_gold": 0.25,
-    "tri_blue_purple_green": 0.3571,
-    "tri_red_purple_gold": 0.2917,
-    "tri_purple_green_gold": 0.2143,
-    "tri_red_blue_green": 0.2143,
-    "tri_red_blue_gold": 0.0417,
-    "penta_prismatic_crater": 0.0714,
-    "penta_free_city_sovereign": 0.2143,
-    "penta_wheel_convergence": 0.3214
+    "mono_red_blitz": 0.4375,
+    "mono_red_pyroclasm": 0.4792,
+    "mono_red_dragon": 0.3125,
+    "mono_blue_frost": 0.3333,
+    "mono_blue_chrono": 0.4583,
+    "mono_blue_abyssal": 0.3125,
+    "mono_purple_crypt": 0.4375,
+    "mono_purple_blood": 0.5208,
+    "mono_purple_umbral": 0.5,
+    "mono_gold_phalanx": 0.2917,
+    "mono_gold_celestial": 0.4167,
+    "mono_gold_judgment": 0.5,
+    "mono_neutral_axial": 0.4167,
+    "dual_red_gold": 0.1667,
+    "dual_blue_purple": 0.1667,
+    "dual_red_green": 0.2292,
+    "dual_blue_gold": 0.1042,
+    "dual_purple_green": 0.1875,
+    "dual_red_purple": 0.3958,
+    "dual_blue_green": 0.0833,
+    "dual_green_gold": 0.2292,
+    "dual_purple_gold": 0.2708,
+    "dual_red_blue": 0.2083,
+    "dual_green_neutral": 0.25,
+    "dual_red_neutral": 0.0833,
+    "dual_blue_neutral": 0.0625,
+    "dual_purple_neutral": 0.2292,
+    "dual_gold_neutral": 0.125,
+    "tri_red_blue_purple": 0.2292,
+    "tri_red_green_gold": 0.2292,
+    "tri_blue_purple_gold": 0.3125,
+    "tri_red_purple_green": 0.1458,
+    "tri_blue_green_gold": 0.1667,
+    "tri_blue_purple_green": 0.3125,
+    "tri_red_purple_gold": 0.1667,
+    "tri_purple_green_gold": 0.2083,
+    "tri_red_blue_green": 0.1667,
+    "tri_red_blue_gold": 0.0208,
+    "penta_prismatic_crater": 0.1875,
+    "penta_free_city_sovereign": 0.2292,
+    "penta_wheel_convergence": 0.2292
   },
   "mono_red_blitz": {
-    "mono_green_swarm": 0.5,
-    "mono_green_colossus": 0.6429,
-    "mono_green_roots": 0.6429,
+    "mono_green_swarm": 0.4167,
+    "mono_green_colossus": 0.5833,
+    "mono_green_roots": 0.5625,
     "mono_red_blitz": 0.5,
-    "mono_red_pyroclasm": 0.3929,
-    "mono_red_dragon": 0.7857,
-    "mono_blue_frost": 0.6429,
-    "mono_blue_chrono": 0.7143,
-    "mono_blue_abyssal": 0.8214,
-    "mono_purple_crypt": 0.4643,
-    "mono_purple_blood": 0.6786,
-    "mono_purple_umbral": 0.7143,
-    "mono_gold_phalanx": 0.6071,
-    "mono_gold_celestial": 0.5714,
-    "mono_gold_judgment": 0.6071,
-    "mono_neutral_axial": 0.3929,
-    "dual_red_gold": 0.4286,
-    "dual_blue_purple": 0.6071,
-    "dual_red_green": 0.4643,
-    "dual_blue_gold": 0.5357,
-    "dual_purple_green": 0.3929,
-    "dual_red_purple": 0.5357,
-    "dual_blue_green": 0.5357,
-    "dual_green_gold": 0.2857,
-    "dual_purple_gold": 0.3929,
-    "dual_red_blue": 0.5714,
+    "mono_red_pyroclasm": 0.6875,
+    "mono_red_dragon": 0.625,
+    "mono_blue_frost": 0.6667,
+    "mono_blue_chrono": 0.9167,
+    "mono_blue_abyssal": 0.6875,
+    "mono_purple_crypt": 0.6042,
+    "mono_purple_blood": 0.7292,
+    "mono_purple_umbral": 0.6458,
+    "mono_gold_phalanx": 0.4792,
+    "mono_gold_celestial": 0.5417,
+    "mono_gold_judgment": 0.625,
+    "mono_neutral_axial": 0.4583,
+    "dual_red_gold": 0.3333,
+    "dual_blue_purple": 0.5625,
+    "dual_red_green": 0.5208,
+    "dual_blue_gold": 0.2292,
+    "dual_purple_green": 0.4792,
+    "dual_red_purple": 0.3333,
+    "dual_blue_green": 0.3333,
+    "dual_green_gold": 0.3125,
+    "dual_purple_gold": 0.2917,
+    "dual_red_blue": 0.5625,
     "dual_green_neutral": 0.5,
-    "dual_red_neutral": 0.3214,
-    "dual_blue_neutral": 0.4643,
-    "dual_purple_neutral": 0.6786,
-    "dual_gold_neutral": 0.3571,
-    "tri_red_blue_purple": 0.6071,
-    "tri_red_green_gold": 0.3929,
-    "tri_blue_purple_gold": 0.5625,
-    "tri_red_purple_green": 0.3929,
-    "tri_blue_green_gold": 0.3571,
-    "tri_blue_purple_green": 0.3571,
-    "tri_red_purple_gold": 0.4286,
-    "tri_purple_green_gold": 0.3571,
-    "tri_red_blue_green": 0.6071,
-    "tri_red_blue_gold": 0.3929,
-    "penta_prismatic_crater": 0.3214,
-    "penta_free_city_sovereign": 0.5714,
-    "penta_wheel_convergence": 0.3214
+    "dual_red_neutral": 0.3333,
+    "dual_blue_neutral": 0.3542,
+    "dual_purple_neutral": 0.5,
+    "dual_gold_neutral": 0.3125,
+    "tri_red_blue_purple": 0.5208,
+    "tri_red_green_gold": 0.3125,
+    "tri_blue_purple_gold": 0.25,
+    "tri_red_purple_green": 0.3542,
+    "tri_blue_green_gold": 0.4167,
+    "tri_blue_purple_green": 0.4792,
+    "tri_red_purple_gold": 0.2292,
+    "tri_purple_green_gold": 0.3333,
+    "tri_red_blue_green": 0.4583,
+    "tri_red_blue_gold": 0.1667,
+    "penta_prismatic_crater": 0.5625,
+    "penta_free_city_sovereign": 0.3958,
+    "penta_wheel_convergence": 0.4375
   },
   "mono_red_pyroclasm": {
-    "mono_green_swarm": 0.4643,
-    "mono_green_colossus": 0.6429,
-    "mono_green_roots": 0.4286,
-    "mono_red_blitz": 0.6071,
+    "mono_green_swarm": 0.4792,
+    "mono_green_colossus": 0.6667,
+    "mono_green_roots": 0.5208,
+    "mono_red_blitz": 0.3125,
     "mono_red_pyroclasm": 0.5,
-    "mono_red_dragon": 0.4643,
-    "mono_blue_frost": 0.4643,
-    "mono_blue_chrono": 0.75,
-    "mono_blue_abyssal": 0.5,
-    "mono_purple_crypt": 0.5714,
-    "mono_purple_blood": 0.6429,
-    "mono_purple_umbral": 0.5357,
-    "mono_gold_phalanx": 0.2857,
-    "mono_gold_celestial": 0.25,
-    "mono_gold_judgment": 0.5,
-    "mono_neutral_axial": 0.5,
-    "dual_red_gold": 0.1429,
-    "dual_blue_purple": 0.4286,
-    "dual_red_green": 0.4643,
-    "dual_blue_gold": 0.1786,
-    "dual_purple_green": 0.3929,
-    "dual_red_purple": 0.3214,
-    "dual_blue_green": 0.6071,
-    "dual_green_gold": 0.2857,
-    "dual_purple_gold": 0.2143,
-    "dual_red_blue": 0.3214,
-    "dual_green_neutral": 0.2857,
-    "dual_red_neutral": 0.1786,
-    "dual_blue_neutral": 0.2857,
-    "dual_purple_neutral": 0.5357,
-    "dual_gold_neutral": 0.1786,
-    "tri_red_blue_purple": 0.1429,
-    "tri_red_green_gold": 0.25,
-    "tri_blue_purple_gold": 0.0313,
-    "tri_red_purple_green": 0.2143,
-    "tri_blue_green_gold": 0.2143,
-    "tri_blue_purple_green": 0.3571,
-    "tri_red_purple_gold": 0.2143,
-    "tri_purple_green_gold": 0.1786,
-    "tri_red_blue_green": 0.2857,
-    "tri_red_blue_gold": 0.0357,
-    "penta_prismatic_crater": 0.3214,
-    "penta_free_city_sovereign": 0.4643,
-    "penta_wheel_convergence": 0.4286
+    "mono_red_dragon": 0.4583,
+    "mono_blue_frost": 0.2917,
+    "mono_blue_chrono": 0.3542,
+    "mono_blue_abyssal": 0.4583,
+    "mono_purple_crypt": 0.4167,
+    "mono_purple_blood": 0.625,
+    "mono_purple_umbral": 0.5625,
+    "mono_gold_phalanx": 0.2708,
+    "mono_gold_celestial": 0.375,
+    "mono_gold_judgment": 0.3958,
+    "mono_neutral_axial": 0.2917,
+    "dual_red_gold": 0.2917,
+    "dual_blue_purple": 0.3125,
+    "dual_red_green": 0.25,
+    "dual_blue_gold": 0.2083,
+    "dual_purple_green": 0.3125,
+    "dual_red_purple": 0.125,
+    "dual_blue_green": 0.3125,
+    "dual_green_gold": 0.1875,
+    "dual_purple_gold": 0.3958,
+    "dual_red_blue": 0.25,
+    "dual_green_neutral": 0.3125,
+    "dual_red_neutral": 0.1458,
+    "dual_blue_neutral": 0.2917,
+    "dual_purple_neutral": 0.2708,
+    "dual_gold_neutral": 0.2708,
+    "tri_red_blue_purple": 0.2917,
+    "tri_red_green_gold": 0.1667,
+    "tri_blue_purple_gold": 0.2708,
+    "tri_red_purple_green": 0.1042,
+    "tri_blue_green_gold": 0.375,
+    "tri_blue_purple_green": 0.2917,
+    "tri_red_purple_gold": 0.1458,
+    "tri_purple_green_gold": 0.1667,
+    "tri_red_blue_green": 0.3542,
+    "tri_red_blue_gold": 0.1458,
+    "penta_prismatic_crater": 0.3125,
+    "penta_free_city_sovereign": 0.3542,
+    "penta_wheel_convergence": 0.2083
   },
   "mono_red_dragon": {
-    "mono_green_swarm": 0.3571,
-    "mono_green_colossus": 0.5714,
-    "mono_green_roots": 0.5357,
-    "mono_red_blitz": 0.2143,
-    "mono_red_pyroclasm": 0.5357,
+    "mono_green_swarm": 0.4792,
+    "mono_green_colossus": 0.6458,
+    "mono_green_roots": 0.6875,
+    "mono_red_blitz": 0.375,
+    "mono_red_pyroclasm": 0.5417,
     "mono_red_dragon": 0.5,
-    "mono_blue_frost": 0.3929,
-    "mono_blue_chrono": 0.5357,
-    "mono_blue_abyssal": 0.5357,
-    "mono_purple_crypt": 0.5714,
-    "mono_purple_blood": 0.4643,
-    "mono_purple_umbral": 0.5714,
-    "mono_gold_phalanx": 0.5,
-    "mono_gold_celestial": 0.25,
-    "mono_gold_judgment": 0.3929,
-    "mono_neutral_axial": 0.5,
-    "dual_red_gold": 0.1071,
-    "dual_blue_purple": 0.4643,
-    "dual_red_green": 0.2857,
-    "dual_blue_gold": 0.3571,
-    "dual_purple_green": 0.2143,
-    "dual_red_purple": 0.2143,
-    "dual_blue_green": 0.2857,
-    "dual_green_gold": 0.3929,
-    "dual_purple_gold": 0.25,
-    "dual_red_blue": 0.25,
-    "dual_green_neutral": 0.2857,
-    "dual_red_neutral": 0.25,
-    "dual_blue_neutral": 0.3929,
-    "dual_purple_neutral": 0.4643,
-    "dual_gold_neutral": 0.2857,
-    "tri_red_blue_purple": 0.3214,
-    "tri_red_green_gold": 0.2143,
-    "tri_blue_purple_gold": 0.2813,
-    "tri_red_purple_green": 0.2143,
-    "tri_blue_green_gold": 0.4643,
-    "tri_blue_purple_green": 0.3571,
-    "tri_red_purple_gold": 0.3571,
-    "tri_purple_green_gold": 0.3214,
-    "tri_red_blue_green": 0.2857,
-    "tri_red_blue_gold": 0.1429,
-    "penta_prismatic_crater": 0.3929,
-    "penta_free_city_sovereign": 0.4643,
-    "penta_wheel_convergence": 0.5
+    "mono_blue_frost": 0.2917,
+    "mono_blue_chrono": 0.6458,
+    "mono_blue_abyssal": 0.4583,
+    "mono_purple_crypt": 0.5625,
+    "mono_purple_blood": 0.6667,
+    "mono_purple_umbral": 0.4167,
+    "mono_gold_phalanx": 0.5208,
+    "mono_gold_celestial": 0.5,
+    "mono_gold_judgment": 0.5833,
+    "mono_neutral_axial": 0.2917,
+    "dual_red_gold": 0.2292,
+    "dual_blue_purple": 0.3542,
+    "dual_red_green": 0.3542,
+    "dual_blue_gold": 0.3333,
+    "dual_purple_green": 0.3333,
+    "dual_red_purple": 0.2917,
+    "dual_blue_green": 0.3125,
+    "dual_green_gold": 0.5208,
+    "dual_purple_gold": 0.5,
+    "dual_red_blue": 0.4583,
+    "dual_green_neutral": 0.3333,
+    "dual_red_neutral": 0.2083,
+    "dual_blue_neutral": 0.3333,
+    "dual_purple_neutral": 0.375,
+    "dual_gold_neutral": 0.3125,
+    "tri_red_blue_purple": 0.4167,
+    "tri_red_green_gold": 0.25,
+    "tri_blue_purple_gold": 0.3125,
+    "tri_red_purple_green": 0.2292,
+    "tri_blue_green_gold": 0.375,
+    "tri_blue_purple_green": 0.375,
+    "tri_red_purple_gold": 0.3125,
+    "tri_purple_green_gold": 0.2292,
+    "tri_red_blue_green": 0.2917,
+    "tri_red_blue_gold": 0.0417,
+    "penta_prismatic_crater": 0.25,
+    "penta_free_city_sovereign": 0.3542,
+    "penta_wheel_convergence": 0.3125
   },
   "mono_blue_frost": {
-    "mono_green_swarm": 0.4286,
-    "mono_green_colossus": 0.3929,
-    "mono_green_roots": 0.6429,
-    "mono_red_blitz": 0.3571,
-    "mono_red_pyroclasm": 0.5357,
-    "mono_red_dragon": 0.6071,
+    "mono_green_swarm": 0.5833,
+    "mono_green_colossus": 0.7292,
+    "mono_green_roots": 0.6667,
+    "mono_red_blitz": 0.3333,
+    "mono_red_pyroclasm": 0.7083,
+    "mono_red_dragon": 0.7083,
     "mono_blue_frost": 0.5,
-    "mono_blue_chrono": 0.3214,
-    "mono_blue_abyssal": 0.5357,
-    "mono_purple_crypt": 0.5714,
-    "mono_purple_blood": 0.3571,
-    "mono_purple_umbral": 0.2857,
-    "mono_gold_phalanx": 0.3214,
-    "mono_gold_celestial": 0.2857,
-    "mono_gold_judgment": 0.6071,
-    "mono_neutral_axial": 0.4643,
-    "dual_red_gold": 0.2857,
-    "dual_blue_purple": 0.3571,
-    "dual_red_green": 0.2857,
-    "dual_blue_gold": 0.3571,
-    "dual_purple_green": 0.4286,
-    "dual_red_purple": 0.2143,
-    "dual_blue_green": 0.1786,
-    "dual_green_gold": 0.4643,
-    "dual_purple_gold": 0.2143,
-    "dual_red_blue": 0.25,
-    "dual_green_neutral": 0.25,
-    "dual_red_neutral": 0.1786,
-    "dual_blue_neutral": 0.1429,
-    "dual_purple_neutral": 0.2143,
-    "dual_gold_neutral": 0.2857,
-    "tri_red_blue_purple": 0.4286,
-    "tri_red_green_gold": 0.2857,
-    "tri_blue_purple_gold": 0.0938,
-    "tri_red_purple_green": 0.1071,
-    "tri_blue_green_gold": 0.25,
-    "tri_blue_purple_green": 0.4286,
-    "tri_red_purple_gold": 0.25,
-    "tri_purple_green_gold": 0.1786,
-    "tri_red_blue_green": 0.2143,
-    "tri_red_blue_gold": 0.2143,
-    "penta_prismatic_crater": 0.2143,
-    "penta_free_city_sovereign": 0.4286,
-    "penta_wheel_convergence": 0.3214
+    "mono_blue_chrono": 0.4167,
+    "mono_blue_abyssal": 0.75,
+    "mono_purple_crypt": 0.5208,
+    "mono_purple_blood": 0.5833,
+    "mono_purple_umbral": 0.5625,
+    "mono_gold_phalanx": 0.6875,
+    "mono_gold_celestial": 0.5,
+    "mono_gold_judgment": 0.4792,
+    "mono_neutral_axial": 0.5625,
+    "dual_red_gold": 0.4792,
+    "dual_blue_purple": 0.3125,
+    "dual_red_green": 0.2708,
+    "dual_blue_gold": 0.375,
+    "dual_purple_green": 0.4792,
+    "dual_red_purple": 0.4375,
+    "dual_blue_green": 0.3542,
+    "dual_green_gold": 0.5625,
+    "dual_purple_gold": 0.375,
+    "dual_red_blue": 0.3958,
+    "dual_green_neutral": 0.3542,
+    "dual_red_neutral": 0.1458,
+    "dual_blue_neutral": 0.3542,
+    "dual_purple_neutral": 0.3542,
+    "dual_gold_neutral": 0.4167,
+    "tri_red_blue_purple": 0.4167,
+    "tri_red_green_gold": 0.5417,
+    "tri_blue_purple_gold": 0.4583,
+    "tri_red_purple_green": 0.2292,
+    "tri_blue_green_gold": 0.5417,
+    "tri_blue_purple_green": 0.3542,
+    "tri_red_purple_gold": 0.2708,
+    "tri_purple_green_gold": 0.3958,
+    "tri_red_blue_green": 0.3333,
+    "tri_red_blue_gold": 0.2708,
+    "penta_prismatic_crater": 0.375,
+    "penta_free_city_sovereign": 0.2917,
+    "penta_wheel_convergence": 0.3333
   },
   "mono_blue_chrono": {
-    "mono_green_swarm": 0.3214,
-    "mono_green_colossus": 0.4643,
-    "mono_green_roots": 0.6786,
-    "mono_red_blitz": 0.2857,
-    "mono_red_pyroclasm": 0.25,
-    "mono_red_dragon": 0.4643,
-    "mono_blue_frost": 0.6786,
+    "mono_green_swarm": 0.2917,
+    "mono_green_colossus": 0.6458,
+    "mono_green_roots": 0.5417,
+    "mono_red_blitz": 0.0833,
+    "mono_red_pyroclasm": 0.6458,
+    "mono_red_dragon": 0.3542,
+    "mono_blue_frost": 0.5833,
     "mono_blue_chrono": 0.5,
     "mono_blue_abyssal": 0.75,
-    "mono_purple_crypt": 0.6429,
-    "mono_purple_blood": 0.5,
-    "mono_purple_umbral": 0.3929,
-    "mono_gold_phalanx": 0.75,
-    "mono_gold_celestial": 0.6429,
-    "mono_gold_judgment": 0.8571,
-    "mono_neutral_axial": 0.3929,
-    "dual_red_gold": 0.3214,
-    "dual_blue_purple": 0.5714,
-    "dual_red_green": 0.25,
+    "mono_purple_crypt": 0.5833,
+    "mono_purple_blood": 0.5833,
+    "mono_purple_umbral": 0.4583,
+    "mono_gold_phalanx": 0.6458,
+    "mono_gold_celestial": 0.7083,
+    "mono_gold_judgment": 0.625,
+    "mono_neutral_axial": 0.3958,
+    "dual_red_gold": 0.2917,
+    "dual_blue_purple": 0.5833,
+    "dual_red_green": 0.2083,
     "dual_blue_gold": 0.5,
-    "dual_purple_green": 0.5357,
-    "dual_red_purple": 0.0714,
-    "dual_blue_green": 0.3571,
-    "dual_green_gold": 0.5357,
+    "dual_purple_green": 0.4375,
+    "dual_red_purple": 0.1042,
+    "dual_blue_green": 0.6042,
+    "dual_green_gold": 0.5208,
     "dual_purple_gold": 0.5,
-    "dual_red_blue": 0.3214,
-    "dual_green_neutral": 0.2857,
-    "dual_red_neutral": 0.1071,
-    "dual_blue_neutral": 0.25,
-    "dual_purple_neutral": 0.4643,
-    "dual_gold_neutral": 0.3214,
-    "tri_red_blue_purple": 0.5,
-    "tri_red_green_gold": 0.5,
-    "tri_blue_purple_gold": 0.5938,
-    "tri_red_purple_green": 0.1071,
-    "tri_blue_green_gold": 0.5,
-    "tri_blue_purple_green": 0.4643,
-    "tri_red_purple_gold": 0.2857,
-    "tri_purple_green_gold": 0.4643,
-    "tri_red_blue_green": 0.3571,
-    "tri_red_blue_gold": 0.2143,
-    "penta_prismatic_crater": 0.3571,
-    "penta_free_city_sovereign": 0.4643,
-    "penta_wheel_convergence": 0.6071
-  },
-  "mono_blue_abyssal": {
-    "mono_green_swarm": 0.4286,
-    "mono_green_colossus": 0.5,
-    "mono_green_roots": 0.7917,
-    "mono_red_blitz": 0.1786,
-    "mono_red_pyroclasm": 0.5,
-    "mono_red_dragon": 0.4643,
-    "mono_blue_frost": 0.4643,
-    "mono_blue_chrono": 0.25,
-    "mono_blue_abyssal": 0.5,
-    "mono_purple_crypt": 0.4167,
-    "mono_purple_blood": 0.5,
-    "mono_purple_umbral": 0.3333,
-    "mono_gold_phalanx": 0.5,
-    "mono_gold_celestial": 0.3214,
-    "mono_gold_judgment": 0.3214,
-    "mono_neutral_axial": 0.3929,
-    "dual_red_gold": 0.2083,
-    "dual_blue_purple": 0.4643,
-    "dual_red_green": 0.0714,
-    "dual_blue_gold": 0.3929,
-    "dual_purple_green": 0.0714,
-    "dual_red_purple": 0.25,
-    "dual_blue_green": 0.1071,
-    "dual_green_gold": 0.2143,
-    "dual_purple_gold": 0.2857,
-    "dual_red_blue": 0.25,
-    "dual_green_neutral": 0.1667,
-    "dual_red_neutral": 0.0417,
-    "dual_blue_neutral": 0.1786,
-    "dual_purple_neutral": 0.2143,
-    "dual_gold_neutral": 0.3571,
-    "tri_red_blue_purple": 0.2857,
-    "tri_red_green_gold": 0.1429,
-    "tri_blue_purple_gold": 0.3125,
-    "tri_red_purple_green": 0.125,
-    "tri_blue_green_gold": 0.3571,
-    "tri_blue_purple_green": 0.2857,
-    "tri_red_purple_gold": 0.2083,
-    "tri_purple_green_gold": 0.2143,
-    "tri_red_blue_green": 0.1429,
-    "tri_red_blue_gold": 0.125,
-    "penta_prismatic_crater": 0.0357,
-    "penta_free_city_sovereign": 0.1786,
-    "penta_wheel_convergence": 0.3571
-  },
-  "mono_purple_crypt": {
-    "mono_green_swarm": 0.3929,
-    "mono_green_colossus": 0.5,
-    "mono_green_roots": 0.4583,
-    "mono_red_blitz": 0.5357,
-    "mono_red_pyroclasm": 0.4286,
-    "mono_red_dragon": 0.4286,
-    "mono_blue_frost": 0.4286,
-    "mono_blue_chrono": 0.3571,
-    "mono_blue_abyssal": 0.5833,
-    "mono_purple_crypt": 0.5,
-    "mono_purple_blood": 0.5417,
-    "mono_purple_umbral": 0.5,
-    "mono_gold_phalanx": 0.3214,
-    "mono_gold_celestial": 0.25,
-    "mono_gold_judgment": 0.3929,
-    "mono_neutral_axial": 0.5357,
-    "dual_red_gold": 0.1667,
-    "dual_blue_purple": 0.4643,
-    "dual_red_green": 0.25,
-    "dual_blue_gold": 0.25,
-    "dual_purple_green": 0.25,
-    "dual_red_purple": 0.2857,
-    "dual_blue_green": 0.25,
-    "dual_green_gold": 0.1071,
-    "dual_purple_gold": 0.1429,
-    "dual_red_blue": 0.25,
-    "dual_green_neutral": 0.1667,
-    "dual_red_neutral": 0.25,
-    "dual_blue_neutral": 0.1786,
-    "dual_purple_neutral": 0.5714,
-    "dual_gold_neutral": 0.1429,
-    "tri_red_blue_purple": 0.5357,
-    "tri_red_green_gold": 0.1071,
-    "tri_blue_purple_gold": 0.25,
-    "tri_red_purple_green": 0.0417,
-    "tri_blue_green_gold": 0.25,
-    "tri_blue_purple_green": 0.4286,
-    "tri_red_purple_gold": 0.25,
-    "tri_purple_green_gold": 0.1786,
-    "tri_red_blue_green": 0.2143,
-    "tri_red_blue_gold": 0.125,
-    "penta_prismatic_crater": 0.3214,
-    "penta_free_city_sovereign": 0.2143,
-    "penta_wheel_convergence": 0.1786
-  },
-  "mono_purple_blood": {
-    "mono_green_swarm": 0.4286,
-    "mono_green_colossus": 0.3571,
-    "mono_green_roots": 0.5417,
-    "mono_red_blitz": 0.3214,
-    "mono_red_pyroclasm": 0.3571,
-    "mono_red_dragon": 0.5357,
-    "mono_blue_frost": 0.6429,
-    "mono_blue_chrono": 0.5,
-    "mono_blue_abyssal": 0.5,
-    "mono_purple_crypt": 0.4583,
-    "mono_purple_blood": 0.5,
-    "mono_purple_umbral": 0.625,
-    "mono_gold_phalanx": 0.2857,
-    "mono_gold_celestial": 0.3214,
-    "mono_gold_judgment": 0.3571,
-    "mono_neutral_axial": 0.1429,
-    "dual_red_gold": 0.1667,
-    "dual_blue_purple": 0.5,
-    "dual_red_green": 0.2143,
-    "dual_blue_gold": 0.1786,
-    "dual_purple_green": 0.1429,
-    "dual_red_purple": 0.2143,
-    "dual_blue_green": 0.3214,
-    "dual_green_gold": 0.1429,
-    "dual_purple_gold": 0.0714,
-    "dual_red_blue": 0.25,
+    "dual_red_blue": 0.3542,
     "dual_green_neutral": 0.2083,
     "dual_red_neutral": 0.125,
-    "dual_blue_neutral": 0.1071,
-    "dual_purple_neutral": 0.3571,
-    "dual_gold_neutral": 0.1071,
-    "tri_red_blue_purple": 0.6071,
-    "tri_red_green_gold": 0.25,
-    "tri_blue_purple_gold": 0.375,
-    "tri_red_purple_green": 0.25,
-    "tri_blue_green_gold": 0.25,
-    "tri_blue_purple_green": 0.3214,
-    "tri_red_purple_gold": 0.125,
-    "tri_purple_green_gold": 0.2143,
-    "tri_red_blue_green": 0.25,
-    "tri_red_blue_gold": 0.125,
-    "penta_prismatic_crater": 0.2857,
-    "penta_free_city_sovereign": 0.25,
-    "penta_wheel_convergence": 0.3929
+    "dual_blue_neutral": 0.3958,
+    "dual_purple_neutral": 0.4792,
+    "dual_gold_neutral": 0.4375,
+    "tri_red_blue_purple": 0.5208,
+    "tri_red_green_gold": 0.4167,
+    "tri_blue_purple_gold": 0.6042,
+    "tri_red_purple_green": 0.1875,
+    "tri_blue_green_gold": 0.5833,
+    "tri_blue_purple_green": 0.4583,
+    "tri_red_purple_gold": 0.2292,
+    "tri_purple_green_gold": 0.4792,
+    "tri_red_blue_green": 0.4792,
+    "tri_red_blue_gold": 0.2708,
+    "penta_prismatic_crater": 0.2708,
+    "penta_free_city_sovereign": 0.4583,
+    "penta_wheel_convergence": 0.5833
   },
-  "mono_purple_umbral": {
-    "mono_green_swarm": 0.5357,
-    "mono_green_colossus": 0.5357,
-    "mono_green_roots": 0.4583,
-    "mono_red_blitz": 0.2857,
-    "mono_red_pyroclasm": 0.4643,
-    "mono_red_dragon": 0.4286,
-    "mono_blue_frost": 0.7143,
-    "mono_blue_chrono": 0.6071,
-    "mono_blue_abyssal": 0.6667,
-    "mono_purple_crypt": 0.5,
-    "mono_purple_blood": 0.375,
-    "mono_purple_umbral": 0.5,
-    "mono_gold_phalanx": 0.4643,
-    "mono_gold_celestial": 0.3214,
-    "mono_gold_judgment": 0.6071,
-    "mono_neutral_axial": 0.3571,
-    "dual_red_gold": 0.375,
-    "dual_blue_purple": 0.4643,
-    "dual_red_green": 0.1786,
-    "dual_blue_gold": 0.1429,
-    "dual_purple_green": 0.3214,
-    "dual_red_purple": 0.4286,
-    "dual_blue_green": 0.1429,
-    "dual_green_gold": 0.25,
-    "dual_purple_gold": 0.2857,
-    "dual_red_blue": 0.5,
-    "dual_green_neutral": 0.125,
-    "dual_red_neutral": 0.1667,
-    "dual_blue_neutral": 0.5,
-    "dual_purple_neutral": 0.3214,
-    "dual_gold_neutral": 0.2143,
-    "tri_red_blue_purple": 0.5,
-    "tri_red_green_gold": 0.3571,
-    "tri_blue_purple_gold": 0.2188,
-    "tri_red_purple_green": 0.125,
-    "tri_blue_green_gold": 0.3929,
-    "tri_blue_purple_green": 0.3214,
-    "tri_red_purple_gold": 0.25,
-    "tri_purple_green_gold": 0.4286,
-    "tri_red_blue_green": 0.2857,
-    "tri_red_blue_gold": 0.125,
-    "penta_prismatic_crater": 0.2857,
-    "penta_free_city_sovereign": 0.1786,
-    "penta_wheel_convergence": 0.3214
-  },
-  "mono_gold_phalanx": {
-    "mono_green_swarm": 0.6071,
-    "mono_green_colossus": 0.6071,
-    "mono_green_roots": 0.4643,
-    "mono_red_blitz": 0.3929,
-    "mono_red_pyroclasm": 0.7143,
-    "mono_red_dragon": 0.5,
-    "mono_blue_frost": 0.6786,
+  "mono_blue_abyssal": {
+    "mono_green_swarm": 0.4792,
+    "mono_green_colossus": 0.4583,
+    "mono_green_roots": 0.6875,
+    "mono_red_blitz": 0.3125,
+    "mono_red_pyroclasm": 0.5417,
+    "mono_red_dragon": 0.5417,
+    "mono_blue_frost": 0.25,
     "mono_blue_chrono": 0.25,
     "mono_blue_abyssal": 0.5,
-    "mono_purple_crypt": 0.6786,
-    "mono_purple_blood": 0.7143,
-    "mono_purple_umbral": 0.5357,
+    "mono_purple_crypt": 0.4583,
+    "mono_purple_blood": 0.5625,
+    "mono_purple_umbral": 0.375,
+    "mono_gold_phalanx": 0.4167,
+    "mono_gold_celestial": 0.5833,
+    "mono_gold_judgment": 0.5417,
+    "mono_neutral_axial": 0.4167,
+    "dual_red_gold": 0.25,
+    "dual_blue_purple": 0.4167,
+    "dual_red_green": 0.2083,
+    "dual_blue_gold": 0.3333,
+    "dual_purple_green": 0.3333,
+    "dual_red_purple": 0.3125,
+    "dual_blue_green": 0.2708,
+    "dual_green_gold": 0.3125,
+    "dual_purple_gold": 0.2708,
+    "dual_red_blue": 0.2708,
+    "dual_green_neutral": 0.2083,
+    "dual_red_neutral": 0.0625,
+    "dual_blue_neutral": 0.2083,
+    "dual_purple_neutral": 0.3125,
+    "dual_gold_neutral": 0.3125,
+    "tri_red_blue_purple": 0.3125,
+    "tri_red_green_gold": 0.1875,
+    "tri_blue_purple_gold": 0.2083,
+    "tri_red_purple_green": 0.0833,
+    "tri_blue_green_gold": 0.2917,
+    "tri_blue_purple_green": 0.2917,
+    "tri_red_purple_gold": 0.2083,
+    "tri_purple_green_gold": 0.2708,
+    "tri_red_blue_green": 0.2708,
+    "tri_red_blue_gold": 0.1042,
+    "penta_prismatic_crater": 0.1667,
+    "penta_free_city_sovereign": 0.2292,
+    "penta_wheel_convergence": 0.25
+  },
+  "mono_purple_crypt": {
+    "mono_green_swarm": 0.2708,
+    "mono_green_colossus": 0.5,
+    "mono_green_roots": 0.5625,
+    "mono_red_blitz": 0.3958,
+    "mono_red_pyroclasm": 0.5833,
+    "mono_red_dragon": 0.4375,
+    "mono_blue_frost": 0.4792,
+    "mono_blue_chrono": 0.4167,
+    "mono_blue_abyssal": 0.5417,
+    "mono_purple_crypt": 0.5,
+    "mono_purple_blood": 0.7083,
+    "mono_purple_umbral": 0.5,
+    "mono_gold_phalanx": 0.25,
+    "mono_gold_celestial": 0.3125,
+    "mono_gold_judgment": 0.3542,
+    "mono_neutral_axial": 0.625,
+    "dual_red_gold": 0.2708,
+    "dual_blue_purple": 0.4167,
+    "dual_red_green": 0.2708,
+    "dual_blue_gold": 0.375,
+    "dual_purple_green": 0.1667,
+    "dual_red_purple": 0.3125,
+    "dual_blue_green": 0.2083,
+    "dual_green_gold": 0.1667,
+    "dual_purple_gold": 0.1875,
+    "dual_red_blue": 0.3125,
+    "dual_green_neutral": 0.2917,
+    "dual_red_neutral": 0.125,
+    "dual_blue_neutral": 0.25,
+    "dual_purple_neutral": 0.3958,
+    "dual_gold_neutral": 0.2708,
+    "tri_red_blue_purple": 0.4375,
+    "tri_red_green_gold": 0.2708,
+    "tri_blue_purple_gold": 0.4792,
+    "tri_red_purple_green": 0.125,
+    "tri_blue_green_gold": 0.2917,
+    "tri_blue_purple_green": 0.5208,
+    "tri_red_purple_gold": 0.1667,
+    "tri_purple_green_gold": 0.2917,
+    "tri_red_blue_green": 0.2917,
+    "tri_red_blue_gold": 0.1875,
+    "penta_prismatic_crater": 0.3125,
+    "penta_free_city_sovereign": 0.1458,
+    "penta_wheel_convergence": 0.2917
+  },
+  "mono_purple_blood": {
+    "mono_green_swarm": 0.3958,
+    "mono_green_colossus": 0.3958,
+    "mono_green_roots": 0.4792,
+    "mono_red_blitz": 0.2708,
+    "mono_red_pyroclasm": 0.375,
+    "mono_red_dragon": 0.3333,
+    "mono_blue_frost": 0.4167,
+    "mono_blue_chrono": 0.4167,
+    "mono_blue_abyssal": 0.4375,
+    "mono_purple_crypt": 0.2917,
+    "mono_purple_blood": 0.5,
+    "mono_purple_umbral": 0.5,
+    "mono_gold_phalanx": 0.3542,
+    "mono_gold_celestial": 0.1667,
+    "mono_gold_judgment": 0.3542,
+    "mono_neutral_axial": 0.2917,
+    "dual_red_gold": 0.1875,
+    "dual_blue_purple": 0.3958,
+    "dual_red_green": 0.2708,
+    "dual_blue_gold": 0.125,
+    "dual_purple_green": 0.25,
+    "dual_red_purple": 0.2708,
+    "dual_blue_green": 0.2083,
+    "dual_green_gold": 0.2083,
+    "dual_purple_gold": 0.1458,
+    "dual_red_blue": 0.25,
+    "dual_green_neutral": 0.2083,
+    "dual_red_neutral": 0.1667,
+    "dual_blue_neutral": 0.2083,
+    "dual_purple_neutral": 0.4167,
+    "dual_gold_neutral": 0.1667,
+    "tri_red_blue_purple": 0.5,
+    "tri_red_green_gold": 0.1875,
+    "tri_blue_purple_gold": 0.2708,
+    "tri_red_purple_green": 0.1875,
+    "tri_blue_green_gold": 0.25,
+    "tri_blue_purple_green": 0.3125,
+    "tri_red_purple_gold": 0.0417,
+    "tri_purple_green_gold": 0.1042,
+    "tri_red_blue_green": 0.2917,
+    "tri_red_blue_gold": 0.0833,
+    "penta_prismatic_crater": 0.2917,
+    "penta_free_city_sovereign": 0.1875,
+    "penta_wheel_convergence": 0.25
+  },
+  "mono_purple_umbral": {
+    "mono_green_swarm": 0.4375,
+    "mono_green_colossus": 0.5208,
+    "mono_green_roots": 0.5,
+    "mono_red_blitz": 0.3542,
+    "mono_red_pyroclasm": 0.4375,
+    "mono_red_dragon": 0.5833,
+    "mono_blue_frost": 0.4375,
+    "mono_blue_chrono": 0.5417,
+    "mono_blue_abyssal": 0.625,
+    "mono_purple_crypt": 0.5,
+    "mono_purple_blood": 0.5,
+    "mono_purple_umbral": 0.5,
+    "mono_gold_phalanx": 0.4583,
+    "mono_gold_celestial": 0.4583,
+    "mono_gold_judgment": 0.5,
+    "mono_neutral_axial": 0.3958,
+    "dual_red_gold": 0.5208,
+    "dual_blue_purple": 0.5417,
+    "dual_red_green": 0.2083,
+    "dual_blue_gold": 0.3333,
+    "dual_purple_green": 0.3333,
+    "dual_red_purple": 0.2917,
+    "dual_blue_green": 0.4167,
+    "dual_green_gold": 0.2292,
+    "dual_purple_gold": 0.2917,
+    "dual_red_blue": 0.3542,
+    "dual_green_neutral": 0.1458,
+    "dual_red_neutral": 0.125,
+    "dual_blue_neutral": 0.2917,
+    "dual_purple_neutral": 0.2917,
+    "dual_gold_neutral": 0.3125,
+    "tri_red_blue_purple": 0.4375,
+    "tri_red_green_gold": 0.25,
+    "tri_blue_purple_gold": 0.4167,
+    "tri_red_purple_green": 0.2083,
+    "tri_blue_green_gold": 0.2917,
+    "tri_blue_purple_green": 0.5625,
+    "tri_red_purple_gold": 0.1875,
+    "tri_purple_green_gold": 0.2083,
+    "tri_red_blue_green": 0.4583,
+    "tri_red_blue_gold": 0.2708,
+    "penta_prismatic_crater": 0.4792,
+    "penta_free_city_sovereign": 0.2708,
+    "penta_wheel_convergence": 0.2917
+  },
+  "mono_gold_phalanx": {
+    "mono_green_swarm": 0.6458,
+    "mono_green_colossus": 0.5833,
+    "mono_green_roots": 0.7083,
+    "mono_red_blitz": 0.5208,
+    "mono_red_pyroclasm": 0.7292,
+    "mono_red_dragon": 0.4792,
+    "mono_blue_frost": 0.3125,
+    "mono_blue_chrono": 0.3542,
+    "mono_blue_abyssal": 0.5833,
+    "mono_purple_crypt": 0.75,
+    "mono_purple_blood": 0.6458,
+    "mono_purple_umbral": 0.5417,
     "mono_gold_phalanx": 0.5,
-    "mono_gold_celestial": 0.3571,
-    "mono_gold_judgment": 0.6071,
-    "mono_neutral_axial": 0.5,
-    "dual_red_gold": 0.3214,
-    "dual_blue_purple": 0.25,
-    "dual_red_green": 0.3929,
-    "dual_blue_gold": 0.3214,
-    "dual_purple_green": 0.3571,
-    "dual_red_purple": 0.4286,
-    "dual_blue_green": 0.2857,
-    "dual_green_gold": 0.5,
-    "dual_purple_gold": 0.3929,
-    "dual_red_blue": 0.3214,
-    "dual_green_neutral": 0.3214,
-    "dual_red_neutral": 0.25,
-    "dual_blue_neutral": 0.5,
-    "dual_purple_neutral": 0.4643,
-    "dual_gold_neutral": 0.25,
-    "tri_red_blue_purple": 0.3929,
-    "tri_red_green_gold": 0.2857,
-    "tri_blue_purple_gold": 0.4063,
-    "tri_red_purple_green": 0.1786,
-    "tri_blue_green_gold": 0.2143,
-    "tri_blue_purple_green": 0.2857,
-    "tri_red_purple_gold": 0.2857,
-    "tri_purple_green_gold": 0.1786,
-    "tri_red_blue_green": 0.1429,
-    "tri_red_blue_gold": 0.3214,
-    "penta_prismatic_crater": 0.3214,
-    "penta_free_city_sovereign": 0.5714,
-    "penta_wheel_convergence": 0.1786
+    "mono_gold_celestial": 0.625,
+    "mono_gold_judgment": 0.7292,
+    "mono_neutral_axial": 0.5625,
+    "dual_red_gold": 0.2917,
+    "dual_blue_purple": 0.3125,
+    "dual_red_green": 0.3333,
+    "dual_blue_gold": 0.2917,
+    "dual_purple_green": 0.3958,
+    "dual_red_purple": 0.4792,
+    "dual_blue_green": 0.3542,
+    "dual_green_gold": 0.3125,
+    "dual_purple_gold": 0.4375,
+    "dual_red_blue": 0.2917,
+    "dual_green_neutral": 0.2708,
+    "dual_red_neutral": 0.2708,
+    "dual_blue_neutral": 0.3958,
+    "dual_purple_neutral": 0.5625,
+    "dual_gold_neutral": 0.1458,
+    "tri_red_blue_purple": 0.3333,
+    "tri_red_green_gold": 0.3958,
+    "tri_blue_purple_gold": 0.4167,
+    "tri_red_purple_green": 0.2708,
+    "tri_blue_green_gold": 0.25,
+    "tri_blue_purple_green": 0.3958,
+    "tri_red_purple_gold": 0.4167,
+    "tri_purple_green_gold": 0.4375,
+    "tri_red_blue_green": 0.25,
+    "tri_red_blue_gold": 0.1042,
+    "penta_prismatic_crater": 0.2292,
+    "penta_free_city_sovereign": 0.2292,
+    "penta_wheel_convergence": 0.3125
   },
   "mono_gold_celestial": {
-    "mono_green_swarm": 0.6429,
-    "mono_green_colossus": 0.7143,
-    "mono_green_roots": 0.5357,
-    "mono_red_blitz": 0.4286,
-    "mono_red_pyroclasm": 0.75,
-    "mono_red_dragon": 0.75,
-    "mono_blue_frost": 0.7143,
-    "mono_blue_chrono": 0.3571,
-    "mono_blue_abyssal": 0.6786,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.6786,
-    "mono_purple_umbral": 0.6786,
-    "mono_gold_phalanx": 0.6429,
+    "mono_green_swarm": 0.4375,
+    "mono_green_colossus": 0.7292,
+    "mono_green_roots": 0.5833,
+    "mono_red_blitz": 0.4583,
+    "mono_red_pyroclasm": 0.625,
+    "mono_red_dragon": 0.5,
+    "mono_blue_frost": 0.5,
+    "mono_blue_chrono": 0.2917,
+    "mono_blue_abyssal": 0.4167,
+    "mono_purple_crypt": 0.6875,
+    "mono_purple_blood": 0.8333,
+    "mono_purple_umbral": 0.5417,
+    "mono_gold_phalanx": 0.375,
     "mono_gold_celestial": 0.5,
-    "mono_gold_judgment": 0.4643,
-    "mono_neutral_axial": 0.5714,
-    "dual_red_gold": 0.1786,
-    "dual_blue_purple": 0.4643,
-    "dual_red_green": 0.1429,
-    "dual_blue_gold": 0.25,
-    "dual_purple_green": 0.4286,
-    "dual_red_purple": 0.1786,
-    "dual_blue_green": 0.3214,
-    "dual_green_gold": 0.3214,
-    "dual_purple_gold": 0.2857,
-    "dual_red_blue": 0.3929,
-    "dual_green_neutral": 0.2857,
-    "dual_red_neutral": 0.1786,
-    "dual_blue_neutral": 0.4286,
-    "dual_purple_neutral": 0.6786,
-    "dual_gold_neutral": 0.3571,
-    "tri_red_blue_purple": 0.3214,
-    "tri_red_green_gold": 0.3571,
-    "tri_blue_purple_gold": 0.375,
-    "tri_red_purple_green": 0.1071,
-    "tri_blue_green_gold": 0.3214,
-    "tri_blue_purple_green": 0.3214,
-    "tri_red_purple_gold": 0.25,
-    "tri_purple_green_gold": 0.25,
-    "tri_red_blue_green": 0.3214,
-    "tri_red_blue_gold": 0.2857,
-    "penta_prismatic_crater": 0.3214,
-    "penta_free_city_sovereign": 0.25,
-    "penta_wheel_convergence": 0.3929
+    "mono_gold_judgment": 0.5208,
+    "mono_neutral_axial": 0.4792,
+    "dual_red_gold": 0.25,
+    "dual_blue_purple": 0.3542,
+    "dual_red_green": 0.375,
+    "dual_blue_gold": 0.3958,
+    "dual_purple_green": 0.3958,
+    "dual_red_purple": 0.4792,
+    "dual_blue_green": 0.3125,
+    "dual_green_gold": 0.3542,
+    "dual_purple_gold": 0.3333,
+    "dual_red_blue": 0.3542,
+    "dual_green_neutral": 0.3125,
+    "dual_red_neutral": 0.2708,
+    "dual_blue_neutral": 0.3958,
+    "dual_purple_neutral": 0.6042,
+    "dual_gold_neutral": 0.4167,
+    "tri_red_blue_purple": 0.3542,
+    "tri_red_green_gold": 0.2083,
+    "tri_blue_purple_gold": 0.2708,
+    "tri_red_purple_green": 0.2917,
+    "tri_blue_green_gold": 0.2292,
+    "tri_blue_purple_green": 0.3958,
+    "tri_red_purple_gold": 0.1875,
+    "tri_purple_green_gold": 0.2708,
+    "tri_red_blue_green": 0.3542,
+    "tri_red_blue_gold": 0.0833,
+    "penta_prismatic_crater": 0.1667,
+    "penta_free_city_sovereign": 0.2917,
+    "penta_wheel_convergence": 0.3125
   },
   "mono_gold_judgment": {
-    "mono_green_swarm": 0.4643,
-    "mono_green_colossus": 0.6429,
-    "mono_green_roots": 0.4643,
-    "mono_red_blitz": 0.3929,
-    "mono_red_pyroclasm": 0.5,
-    "mono_red_dragon": 0.6071,
-    "mono_blue_frost": 0.3929,
-    "mono_blue_chrono": 0.1429,
-    "mono_blue_abyssal": 0.6786,
-    "mono_purple_crypt": 0.6071,
-    "mono_purple_blood": 0.6429,
-    "mono_purple_umbral": 0.3929,
-    "mono_gold_phalanx": 0.3929,
-    "mono_gold_celestial": 0.5357,
+    "mono_green_swarm": 0.4375,
+    "mono_green_colossus": 0.5625,
+    "mono_green_roots": 0.5,
+    "mono_red_blitz": 0.375,
+    "mono_red_pyroclasm": 0.6042,
+    "mono_red_dragon": 0.4167,
+    "mono_blue_frost": 0.5208,
+    "mono_blue_chrono": 0.375,
+    "mono_blue_abyssal": 0.4583,
+    "mono_purple_crypt": 0.6458,
+    "mono_purple_blood": 0.6458,
+    "mono_purple_umbral": 0.5,
+    "mono_gold_phalanx": 0.2708,
+    "mono_gold_celestial": 0.4792,
     "mono_gold_judgment": 0.5,
-    "mono_neutral_axial": 0.4286,
+    "mono_neutral_axial": 0.4583,
     "dual_red_gold": 0.25,
-    "dual_blue_purple": 0.2143,
-    "dual_red_green": 0.1786,
-    "dual_blue_gold": 0.2143,
-    "dual_purple_green": 0.3214,
-    "dual_red_purple": 0.5714,
-    "dual_blue_green": 0.1071,
-    "dual_green_gold": 0.2857,
-    "dual_purple_gold": 0.2143,
-    "dual_red_blue": 0.3214,
+    "dual_blue_purple": 0.25,
+    "dual_red_green": 0.2708,
+    "dual_blue_gold": 0.25,
+    "dual_purple_green": 0.3125,
+    "dual_red_purple": 0.375,
+    "dual_blue_green": 0.1458,
+    "dual_green_gold": 0.2917,
+    "dual_purple_gold": 0.2083,
+    "dual_red_blue": 0.25,
     "dual_green_neutral": 0.25,
-    "dual_red_neutral": 0.2857,
-    "dual_blue_neutral": 0.3571,
-    "dual_purple_neutral": 0.3214,
-    "dual_gold_neutral": 0.25,
-    "tri_red_blue_purple": 0.5714,
-    "tri_red_green_gold": 0.1429,
-    "tri_blue_purple_gold": 0.1563,
-    "tri_red_purple_green": 0.1786,
-    "tri_blue_green_gold": 0.1786,
-    "tri_blue_purple_green": 0.3571,
-    "tri_red_purple_gold": 0.1786,
-    "tri_purple_green_gold": 0.1071,
-    "tri_red_blue_green": 0.2857,
-    "tri_red_blue_gold": 0.1786,
-    "penta_prismatic_crater": 0.25,
-    "penta_free_city_sovereign": 0.3214,
-    "penta_wheel_convergence": 0.1429
+    "dual_red_neutral": 0.1667,
+    "dual_blue_neutral": 0.3125,
+    "dual_purple_neutral": 0.4375,
+    "dual_gold_neutral": 0.4583,
+    "tri_red_blue_purple": 0.2917,
+    "tri_red_green_gold": 0.1042,
+    "tri_blue_purple_gold": 0.2083,
+    "tri_red_purple_green": 0.1667,
+    "tri_blue_green_gold": 0.3125,
+    "tri_blue_purple_green": 0.3125,
+    "tri_red_purple_gold": 0.1667,
+    "tri_purple_green_gold": 0.1458,
+    "tri_red_blue_green": 0.2917,
+    "tri_red_blue_gold": 0.1458,
+    "penta_prismatic_crater": 0.2708,
+    "penta_free_city_sovereign": 0.25,
+    "penta_wheel_convergence": 0.1667
   },
   "mono_neutral_axial": {
-    "mono_green_swarm": 0.5,
-    "mono_green_colossus": 0.5,
-    "mono_green_roots": 0.7857,
-    "mono_red_blitz": 0.6071,
-    "mono_red_pyroclasm": 0.5,
-    "mono_red_dragon": 0.5,
-    "mono_blue_frost": 0.5357,
-    "mono_blue_chrono": 0.6071,
-    "mono_blue_abyssal": 0.6071,
-    "mono_purple_crypt": 0.4643,
-    "mono_purple_blood": 0.8571,
-    "mono_purple_umbral": 0.6429,
-    "mono_gold_phalanx": 0.5,
-    "mono_gold_celestial": 0.4286,
-    "mono_gold_judgment": 0.5714,
+    "mono_green_swarm": 0.5208,
+    "mono_green_colossus": 0.5208,
+    "mono_green_roots": 0.5833,
+    "mono_red_blitz": 0.5417,
+    "mono_red_pyroclasm": 0.7083,
+    "mono_red_dragon": 0.7083,
+    "mono_blue_frost": 0.4375,
+    "mono_blue_chrono": 0.6042,
+    "mono_blue_abyssal": 0.5833,
+    "mono_purple_crypt": 0.375,
+    "mono_purple_blood": 0.7083,
+    "mono_purple_umbral": 0.6042,
+    "mono_gold_phalanx": 0.4375,
+    "mono_gold_celestial": 0.5208,
+    "mono_gold_judgment": 0.5417,
     "mono_neutral_axial": 0.5,
-    "dual_red_gold": 0.1786,
-    "dual_blue_purple": 0.4286,
-    "dual_red_green": 0.2143,
-    "dual_blue_gold": 0.3214,
-    "dual_purple_green": 0.4643,
-    "dual_red_purple": 0.3929,
-    "dual_blue_green": 0.2857,
-    "dual_green_gold": 0.3929,
+    "dual_red_gold": 0.3125,
+    "dual_blue_purple": 0.4583,
+    "dual_red_green": 0.3125,
+    "dual_blue_gold": 0.25,
+    "dual_purple_green": 0.375,
+    "dual_red_purple": 0.5833,
+    "dual_blue_green": 0.4375,
+    "dual_green_gold": 0.3333,
     "dual_purple_gold": 0.25,
-    "dual_red_blue": 0.5357,
-    "dual_green_neutral": 0.25,
-    "dual_red_neutral": 0.2143,
-    "dual_blue_neutral": 0.2143,
-    "dual_purple_neutral": 0.5357,
-    "dual_gold_neutral": 0.4286,
-    "tri_red_blue_purple": 0.6429,
-    "tri_red_green_gold": 0.3571,
-    "tri_blue_purple_gold": 0.4063,
-    "tri_red_purple_green": 0.3929,
-    "tri_blue_green_gold": 0.3214,
-    "tri_blue_purple_green": 0.5,
-    "tri_red_purple_gold": 0.3214,
-    "tri_purple_green_gold": 0.2143,
-    "tri_red_blue_green": 0.25,
-    "tri_red_blue_gold": 0.1786,
-    "penta_prismatic_crater": 0.3214,
-    "penta_free_city_sovereign": 0.4286,
-    "penta_wheel_convergence": 0.5714
+    "dual_red_blue": 0.375,
+    "dual_green_neutral": 0.2917,
+    "dual_red_neutral": 0.2292,
+    "dual_blue_neutral": 0.3333,
+    "dual_purple_neutral": 0.7292,
+    "dual_gold_neutral": 0.2708,
+    "tri_red_blue_purple": 0.4792,
+    "tri_red_green_gold": 0.1667,
+    "tri_blue_purple_gold": 0.3542,
+    "tri_red_purple_green": 0.2917,
+    "tri_blue_green_gold": 0.3333,
+    "tri_blue_purple_green": 0.4167,
+    "tri_red_purple_gold": 0.25,
+    "tri_purple_green_gold": 0.3542,
+    "tri_red_blue_green": 0.3958,
+    "tri_red_blue_gold": 0.25,
+    "penta_prismatic_crater": 0.3542,
+    "penta_free_city_sovereign": 0.3542,
+    "penta_wheel_convergence": 0.3333
   },
   "dual_red_gold": {
-    "mono_green_swarm": 0.6786,
-    "mono_green_colossus": 0.75,
-    "mono_green_roots": 0.9167,
-    "mono_red_blitz": 0.5714,
-    "mono_red_pyroclasm": 0.8571,
-    "mono_red_dragon": 0.8929,
-    "mono_blue_frost": 0.7143,
-    "mono_blue_chrono": 0.6786,
-    "mono_blue_abyssal": 0.7917,
-    "mono_purple_crypt": 0.8333,
-    "mono_purple_blood": 0.8333,
-    "mono_purple_umbral": 0.625,
-    "mono_gold_phalanx": 0.6786,
-    "mono_gold_celestial": 0.8214,
-    "mono_gold_judgment": 0.75,
-    "mono_neutral_axial": 0.8214,
-    "dual_red_gold": 0.5,
-    "dual_blue_purple": 0.75,
-    "dual_red_green": 0.4643,
-    "dual_blue_gold": 0.75,
-    "dual_purple_green": 0.7857,
-    "dual_red_purple": 0.4286,
-    "dual_blue_green": 0.5,
-    "dual_green_gold": 0.5,
-    "dual_purple_gold": 0.4286,
-    "dual_red_blue": 0.7143,
-    "dual_green_neutral": 0.4167,
-    "dual_red_neutral": 0.2917,
-    "dual_blue_neutral": 0.6071,
-    "dual_purple_neutral": 0.6786,
-    "dual_gold_neutral": 0.4643,
-    "tri_red_blue_purple": 0.6429,
-    "tri_red_green_gold": 0.5714,
-    "tri_blue_purple_gold": 0.5938,
-    "tri_red_purple_green": 0.5833,
-    "tri_blue_green_gold": 0.5357,
-    "tri_blue_purple_green": 0.6786,
-    "tri_red_purple_gold": 0.5417,
-    "tri_purple_green_gold": 0.5714,
-    "tri_red_blue_green": 0.6786,
-    "tri_red_blue_gold": 0.3333,
-    "penta_prismatic_crater": 0.4643,
-    "penta_free_city_sovereign": 0.6786,
-    "penta_wheel_convergence": 0.6786
-  },
-  "dual_blue_purple": {
-    "mono_green_swarm": 0.6071,
-    "mono_green_colossus": 0.7143,
-    "mono_green_roots": 0.6429,
-    "mono_red_blitz": 0.3929,
-    "mono_red_pyroclasm": 0.5714,
-    "mono_red_dragon": 0.5357,
-    "mono_blue_frost": 0.6429,
-    "mono_blue_chrono": 0.4286,
-    "mono_blue_abyssal": 0.5357,
-    "mono_purple_crypt": 0.5357,
-    "mono_purple_blood": 0.5,
-    "mono_purple_umbral": 0.5357,
-    "mono_gold_phalanx": 0.75,
-    "mono_gold_celestial": 0.5357,
-    "mono_gold_judgment": 0.7857,
-    "mono_neutral_axial": 0.5714,
-    "dual_red_gold": 0.25,
-    "dual_blue_purple": 0.5,
-    "dual_red_green": 0.4286,
-    "dual_blue_gold": 0.3929,
-    "dual_purple_green": 0.6429,
-    "dual_red_purple": 0.3214,
-    "dual_blue_green": 0.3214,
-    "dual_green_gold": 0.2857,
-    "dual_purple_gold": 0.5,
-    "dual_red_blue": 0.3929,
-    "dual_green_neutral": 0.3929,
-    "dual_red_neutral": 0.1071,
-    "dual_blue_neutral": 0.3214,
-    "dual_purple_neutral": 0.5,
-    "dual_gold_neutral": 0.5357,
-    "tri_red_blue_purple": 0.4286,
-    "tri_red_green_gold": 0.3571,
-    "tri_blue_purple_gold": 0.3438,
-    "tri_red_purple_green": 0.25,
-    "tri_blue_green_gold": 0.4643,
-    "tri_blue_purple_green": 0.5,
-    "tri_red_purple_gold": 0.1786,
-    "tri_purple_green_gold": 0.4286,
-    "tri_red_blue_green": 0.5,
-    "tri_red_blue_gold": 0.1071,
-    "penta_prismatic_crater": 0.1786,
-    "penta_free_city_sovereign": 0.2857,
-    "penta_wheel_convergence": 0.6071
-  },
-  "dual_red_green": {
-    "mono_green_swarm": 0.6786,
-    "mono_green_colossus": 0.6786,
-    "mono_green_roots": 0.8214,
-    "mono_red_blitz": 0.5357,
-    "mono_red_pyroclasm": 0.5357,
-    "mono_red_dragon": 0.7143,
-    "mono_blue_frost": 0.7143,
-    "mono_blue_chrono": 0.75,
-    "mono_blue_abyssal": 0.9286,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.7857,
-    "mono_purple_umbral": 0.8214,
-    "mono_gold_phalanx": 0.6071,
-    "mono_gold_celestial": 0.8571,
-    "mono_gold_judgment": 0.8214,
-    "mono_neutral_axial": 0.7857,
-    "dual_red_gold": 0.5357,
-    "dual_blue_purple": 0.5714,
-    "dual_red_green": 0.5,
-    "dual_blue_gold": 0.5357,
-    "dual_purple_green": 0.7857,
-    "dual_red_purple": 0.4643,
-    "dual_blue_green": 0.3929,
-    "dual_green_gold": 0.5714,
-    "dual_purple_gold": 0.6071,
-    "dual_red_blue": 0.5714,
-    "dual_green_neutral": 0.5714,
-    "dual_red_neutral": 0.3214,
-    "dual_blue_neutral": 0.5357,
-    "dual_purple_neutral": 0.7143,
-    "dual_gold_neutral": 0.5357,
-    "tri_red_blue_purple": 0.7857,
-    "tri_red_green_gold": 0.4643,
-    "tri_blue_purple_gold": 0.5625,
-    "tri_red_purple_green": 0.3571,
-    "tri_blue_green_gold": 0.4643,
-    "tri_blue_purple_green": 0.5714,
-    "tri_red_purple_gold": 0.4286,
-    "tri_purple_green_gold": 0.4643,
-    "tri_red_blue_green": 0.3214,
-    "tri_red_blue_gold": 0.5357,
-    "penta_prismatic_crater": 0.6071,
-    "penta_free_city_sovereign": 0.6429,
-    "penta_wheel_convergence": 0.7143
-  },
-  "dual_blue_gold": {
-    "mono_green_swarm": 0.7857,
-    "mono_green_colossus": 0.6071,
-    "mono_green_roots": 0.8214,
-    "mono_red_blitz": 0.4643,
-    "mono_red_pyroclasm": 0.8214,
-    "mono_red_dragon": 0.6429,
-    "mono_blue_frost": 0.6429,
-    "mono_blue_chrono": 0.5,
-    "mono_blue_abyssal": 0.6071,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.8214,
-    "mono_purple_umbral": 0.8571,
-    "mono_gold_phalanx": 0.6786,
+    "mono_green_swarm": 0.7083,
+    "mono_green_colossus": 0.8125,
+    "mono_green_roots": 0.8333,
+    "mono_red_blitz": 0.6667,
+    "mono_red_pyroclasm": 0.7083,
+    "mono_red_dragon": 0.7708,
+    "mono_blue_frost": 0.5208,
+    "mono_blue_chrono": 0.7083,
+    "mono_blue_abyssal": 0.75,
+    "mono_purple_crypt": 0.7292,
+    "mono_purple_blood": 0.8125,
+    "mono_purple_umbral": 0.4792,
+    "mono_gold_phalanx": 0.7083,
     "mono_gold_celestial": 0.75,
-    "mono_gold_judgment": 0.7857,
-    "mono_neutral_axial": 0.6786,
-    "dual_red_gold": 0.25,
-    "dual_blue_purple": 0.6071,
-    "dual_red_green": 0.4643,
-    "dual_blue_gold": 0.5,
-    "dual_purple_green": 0.6429,
-    "dual_red_purple": 0.6071,
-    "dual_blue_green": 0.3571,
-    "dual_green_gold": 0.5714,
-    "dual_purple_gold": 0.3929,
-    "dual_red_blue": 0.5357,
-    "dual_green_neutral": 0.4643,
-    "dual_red_neutral": 0.4286,
-    "dual_blue_neutral": 0.3571,
-    "dual_purple_neutral": 0.6429,
-    "dual_gold_neutral": 0.4643,
-    "tri_red_blue_purple": 0.5357,
-    "tri_red_green_gold": 0.2857,
-    "tri_blue_purple_gold": 0.5938,
-    "tri_red_purple_green": 0.3571,
-    "tri_blue_green_gold": 0.4286,
-    "tri_blue_purple_green": 0.6429,
-    "tri_red_purple_gold": 0.1429,
-    "tri_purple_green_gold": 0.3929,
-    "tri_red_blue_green": 0.5,
-    "tri_red_blue_gold": 0.25,
-    "penta_prismatic_crater": 0.3929,
-    "penta_free_city_sovereign": 0.4643,
-    "penta_wheel_convergence": 0.6071
-  },
-  "dual_purple_green": {
-    "mono_green_swarm": 0.7143,
-    "mono_green_colossus": 0.6071,
-    "mono_green_roots": 0.7143,
-    "mono_red_blitz": 0.6071,
-    "mono_red_pyroclasm": 0.6071,
-    "mono_red_dragon": 0.7857,
-    "mono_blue_frost": 0.5714,
-    "mono_blue_chrono": 0.4643,
-    "mono_blue_abyssal": 0.9286,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.8571,
-    "mono_purple_umbral": 0.6786,
-    "mono_gold_phalanx": 0.6429,
-    "mono_gold_celestial": 0.5714,
-    "mono_gold_judgment": 0.6786,
-    "mono_neutral_axial": 0.5357,
-    "dual_red_gold": 0.2143,
-    "dual_blue_purple": 0.3571,
-    "dual_red_green": 0.2143,
-    "dual_blue_gold": 0.3571,
-    "dual_purple_green": 0.5,
-    "dual_red_purple": 0.3929,
-    "dual_blue_green": 0.2857,
-    "dual_green_gold": 0.4286,
-    "dual_purple_gold": 0.3214,
-    "dual_red_blue": 0.5714,
-    "dual_green_neutral": 0.2857,
-    "dual_red_neutral": 0.3214,
-    "dual_blue_neutral": 0.4643,
-    "dual_purple_neutral": 0.6786,
-    "dual_gold_neutral": 0.2857,
-    "tri_red_blue_purple": 0.4286,
-    "tri_red_green_gold": 0.2857,
-    "tri_blue_purple_gold": 0.5625,
-    "tri_red_purple_green": 0.3214,
-    "tri_blue_green_gold": 0.4286,
-    "tri_blue_purple_green": 0.5,
-    "tri_red_purple_gold": 0.4643,
-    "tri_purple_green_gold": 0.5357,
-    "tri_red_blue_green": 0.2857,
-    "tri_red_blue_gold": 0.3214,
-    "penta_prismatic_crater": 0.3214,
-    "penta_free_city_sovereign": 0.3214,
-    "penta_wheel_convergence": 0.5
-  },
-  "dual_red_purple": {
-    "mono_green_swarm": 0.5714,
-    "mono_green_colossus": 0.6071,
-    "mono_green_roots": 0.5714,
-    "mono_red_blitz": 0.4643,
-    "mono_red_pyroclasm": 0.6786,
-    "mono_red_dragon": 0.7857,
-    "mono_blue_frost": 0.7857,
-    "mono_blue_chrono": 0.9286,
-    "mono_blue_abyssal": 0.75,
-    "mono_purple_crypt": 0.7143,
-    "mono_purple_blood": 0.7857,
-    "mono_purple_umbral": 0.5714,
-    "mono_gold_phalanx": 0.5714,
-    "mono_gold_celestial": 0.8214,
-    "mono_gold_judgment": 0.4286,
-    "mono_neutral_axial": 0.6071,
-    "dual_red_gold": 0.5714,
-    "dual_blue_purple": 0.6786,
-    "dual_red_green": 0.5357,
-    "dual_blue_gold": 0.3929,
-    "dual_purple_green": 0.6071,
-    "dual_red_purple": 0.5,
-    "dual_blue_green": 0.6786,
-    "dual_green_gold": 0.3929,
-    "dual_purple_gold": 0.4643,
-    "dual_red_blue": 0.5,
-    "dual_green_neutral": 0.4286,
-    "dual_red_neutral": 0.3571,
-    "dual_blue_neutral": 0.4286,
-    "dual_purple_neutral": 0.6071,
-    "dual_gold_neutral": 0.3214,
-    "tri_red_blue_purple": 0.6071,
-    "tri_red_green_gold": 0.5,
-    "tri_blue_purple_gold": 0.375,
-    "tri_red_purple_green": 0.4286,
-    "tri_blue_green_gold": 0.6071,
-    "tri_blue_purple_green": 0.5357,
-    "tri_red_purple_gold": 0.3214,
-    "tri_purple_green_gold": 0.2143,
-    "tri_red_blue_green": 0.4643,
-    "tri_red_blue_gold": 0.3571,
-    "penta_prismatic_crater": 0.3929,
-    "penta_free_city_sovereign": 0.4286,
-    "penta_wheel_convergence": 0.4286
-  },
-  "dual_blue_green": {
-    "mono_green_swarm": 0.6429,
-    "mono_green_colossus": 0.8214,
-    "mono_green_roots": 0.8571,
-    "mono_red_blitz": 0.4643,
-    "mono_red_pyroclasm": 0.3929,
-    "mono_red_dragon": 0.7143,
-    "mono_blue_frost": 0.8214,
-    "mono_blue_chrono": 0.6429,
-    "mono_blue_abyssal": 0.8929,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.6786,
-    "mono_purple_umbral": 0.8571,
-    "mono_gold_phalanx": 0.7143,
-    "mono_gold_celestial": 0.6786,
-    "mono_gold_judgment": 0.8929,
-    "mono_neutral_axial": 0.7143,
-    "dual_red_gold": 0.5,
-    "dual_blue_purple": 0.6786,
-    "dual_red_green": 0.6071,
-    "dual_blue_gold": 0.6429,
-    "dual_purple_green": 0.7143,
-    "dual_red_purple": 0.3214,
-    "dual_blue_green": 0.5,
-    "dual_green_gold": 0.5714,
-    "dual_purple_gold": 0.5,
-    "dual_red_blue": 0.3571,
-    "dual_green_neutral": 0.4643,
-    "dual_red_neutral": 0.1786,
-    "dual_blue_neutral": 0.6071,
-    "dual_purple_neutral": 0.5357,
-    "dual_gold_neutral": 0.5714,
-    "tri_red_blue_purple": 0.4643,
-    "tri_red_green_gold": 0.6429,
-    "tri_blue_purple_gold": 0.5313,
-    "tri_red_purple_green": 0.3571,
-    "tri_blue_green_gold": 0.6071,
-    "tri_blue_purple_green": 0.5714,
-    "tri_red_purple_gold": 0.25,
-    "tri_purple_green_gold": 0.4643,
-    "tri_red_blue_green": 0.5,
-    "tri_red_blue_gold": 0.4286,
-    "penta_prismatic_crater": 0.6071,
-    "penta_free_city_sovereign": 0.5,
-    "penta_wheel_convergence": 0.5714
-  },
-  "dual_green_gold": {
-    "mono_green_swarm": 0.5357,
-    "mono_green_colossus": 0.75,
-    "mono_green_roots": 0.6786,
-    "mono_red_blitz": 0.7143,
-    "mono_red_pyroclasm": 0.7143,
-    "mono_red_dragon": 0.6071,
-    "mono_blue_frost": 0.5357,
-    "mono_blue_chrono": 0.4643,
-    "mono_blue_abyssal": 0.7857,
-    "mono_purple_crypt": 0.8929,
-    "mono_purple_blood": 0.8571,
-    "mono_purple_umbral": 0.75,
-    "mono_gold_phalanx": 0.5,
-    "mono_gold_celestial": 0.6786,
-    "mono_gold_judgment": 0.7143,
-    "mono_neutral_axial": 0.6071,
-    "dual_red_gold": 0.5,
-    "dual_blue_purple": 0.7143,
-    "dual_red_green": 0.4286,
-    "dual_blue_gold": 0.4286,
-    "dual_purple_green": 0.5714,
-    "dual_red_purple": 0.6071,
-    "dual_blue_green": 0.4286,
-    "dual_green_gold": 0.5,
-    "dual_purple_gold": 0.6071,
-    "dual_red_blue": 0.3929,
-    "dual_green_neutral": 0.3929,
-    "dual_red_neutral": 0.3571,
-    "dual_blue_neutral": 0.2857,
-    "dual_purple_neutral": 0.9286,
-    "dual_gold_neutral": 0.5714,
-    "tri_red_blue_purple": 0.5357,
-    "tri_red_green_gold": 0.5357,
-    "tri_blue_purple_gold": 0.5313,
-    "tri_red_purple_green": 0.5714,
-    "tri_blue_green_gold": 0.4643,
-    "tri_blue_purple_green": 0.5357,
-    "tri_red_purple_gold": 0.5357,
-    "tri_purple_green_gold": 0.3214,
-    "tri_red_blue_green": 0.5,
-    "tri_red_blue_gold": 0.3929,
-    "penta_prismatic_crater": 0.3214,
-    "penta_free_city_sovereign": 0.4643,
-    "penta_wheel_convergence": 0.6071
-  },
-  "dual_purple_gold": {
-    "mono_green_swarm": 0.7857,
-    "mono_green_colossus": 0.7143,
-    "mono_green_roots": 0.75,
-    "mono_red_blitz": 0.6071,
-    "mono_red_pyroclasm": 0.7857,
-    "mono_red_dragon": 0.75,
-    "mono_blue_frost": 0.7857,
-    "mono_blue_chrono": 0.5,
-    "mono_blue_abyssal": 0.7143,
-    "mono_purple_crypt": 0.8571,
-    "mono_purple_blood": 0.9286,
-    "mono_purple_umbral": 0.7143,
-    "mono_gold_phalanx": 0.6071,
-    "mono_gold_celestial": 0.7143,
-    "mono_gold_judgment": 0.7857,
-    "mono_neutral_axial": 0.75,
-    "dual_red_gold": 0.5714,
-    "dual_blue_purple": 0.5,
-    "dual_red_green": 0.3929,
-    "dual_blue_gold": 0.6071,
-    "dual_purple_green": 0.6786,
-    "dual_red_purple": 0.5357,
-    "dual_blue_green": 0.5,
-    "dual_green_gold": 0.3929,
-    "dual_purple_gold": 0.5,
-    "dual_red_blue": 0.5357,
-    "dual_green_neutral": 0.5714,
-    "dual_red_neutral": 0.4643,
-    "dual_blue_neutral": 0.6071,
-    "dual_purple_neutral": 0.6429,
-    "dual_gold_neutral": 0.6071,
-    "tri_red_blue_purple": 0.6071,
-    "tri_red_green_gold": 0.6071,
-    "tri_blue_purple_gold": 0.5625,
-    "tri_red_purple_green": 0.3929,
-    "tri_blue_green_gold": 0.4286,
-    "tri_blue_purple_green": 0.4643,
-    "tri_red_purple_gold": 0.5,
-    "tri_purple_green_gold": 0.3214,
-    "tri_red_blue_green": 0.3929,
-    "tri_red_blue_gold": 0.3571,
-    "penta_prismatic_crater": 0.3929,
-    "penta_free_city_sovereign": 0.4643,
-    "penta_wheel_convergence": 0.4643
-  },
-  "dual_red_blue": {
-    "mono_green_swarm": 0.4643,
-    "mono_green_colossus": 0.6071,
-    "mono_green_roots": 0.6786,
-    "mono_red_blitz": 0.4286,
-    "mono_red_pyroclasm": 0.6786,
-    "mono_red_dragon": 0.75,
-    "mono_blue_frost": 0.75,
-    "mono_blue_chrono": 0.6786,
-    "mono_blue_abyssal": 0.75,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.75,
-    "mono_purple_umbral": 0.5,
-    "mono_gold_phalanx": 0.6786,
-    "mono_gold_celestial": 0.6071,
-    "mono_gold_judgment": 0.6786,
-    "mono_neutral_axial": 0.4643,
-    "dual_red_gold": 0.2857,
-    "dual_blue_purple": 0.6071,
-    "dual_red_green": 0.4286,
-    "dual_blue_gold": 0.4643,
-    "dual_purple_green": 0.4286,
-    "dual_red_purple": 0.5,
-    "dual_blue_green": 0.6429,
-    "dual_green_gold": 0.6071,
-    "dual_purple_gold": 0.4643,
-    "dual_red_blue": 0.5,
-    "dual_green_neutral": 0.25,
-    "dual_red_neutral": 0.2143,
-    "dual_blue_neutral": 0.1786,
-    "dual_purple_neutral": 0.4643,
-    "dual_gold_neutral": 0.3571,
-    "tri_red_blue_purple": 0.5,
-    "tri_red_green_gold": 0.5,
-    "tri_blue_purple_gold": 0.5,
-    "tri_red_purple_green": 0.3571,
-    "tri_blue_green_gold": 0.6071,
-    "tri_blue_purple_green": 0.5,
-    "tri_red_purple_gold": 0.3929,
-    "tri_purple_green_gold": 0.5,
-    "tri_red_blue_green": 0.3571,
-    "tri_red_blue_gold": 0.3571,
-    "penta_prismatic_crater": 0.3929,
-    "penta_free_city_sovereign": 0.3929,
-    "penta_wheel_convergence": 0.5714
-  },
-  "dual_green_neutral": {
-    "mono_green_swarm": 0.6429,
-    "mono_green_colossus": 0.8214,
-    "mono_green_roots": 0.7917,
-    "mono_red_blitz": 0.5,
-    "mono_red_pyroclasm": 0.7143,
-    "mono_red_dragon": 0.7143,
-    "mono_blue_frost": 0.75,
-    "mono_blue_chrono": 0.7143,
-    "mono_blue_abyssal": 0.8333,
-    "mono_purple_crypt": 0.8333,
-    "mono_purple_blood": 0.7917,
-    "mono_purple_umbral": 0.875,
-    "mono_gold_phalanx": 0.6786,
-    "mono_gold_celestial": 0.7143,
     "mono_gold_judgment": 0.75,
-    "mono_neutral_axial": 0.75,
-    "dual_red_gold": 0.5833,
-    "dual_blue_purple": 0.6071,
-    "dual_red_green": 0.4286,
-    "dual_blue_gold": 0.5357,
-    "dual_purple_green": 0.7143,
-    "dual_red_purple": 0.5714,
-    "dual_blue_green": 0.5357,
-    "dual_green_gold": 0.6071,
-    "dual_purple_gold": 0.4286,
-    "dual_red_blue": 0.75,
-    "dual_green_neutral": 0.5,
-    "dual_red_neutral": 0.5,
-    "dual_blue_neutral": 0.5714,
-    "dual_purple_neutral": 0.6786,
-    "dual_gold_neutral": 0.7143,
-    "tri_red_blue_purple": 0.4286,
-    "tri_red_green_gold": 0.3214,
-    "tri_blue_purple_gold": 0.5,
-    "tri_red_purple_green": 0.4583,
-    "tri_blue_green_gold": 0.3929,
-    "tri_blue_purple_green": 0.8571,
-    "tri_red_purple_gold": 0.5,
-    "tri_purple_green_gold": 0.5,
-    "tri_red_blue_green": 0.5714,
-    "tri_red_blue_gold": 0.2917,
-    "penta_prismatic_crater": 0.5,
-    "penta_free_city_sovereign": 0.6786,
-    "penta_wheel_convergence": 0.5
-  },
-  "dual_red_neutral": {
-    "mono_green_swarm": 0.7857,
-    "mono_green_colossus": 0.8929,
-    "mono_green_roots": 0.7083,
-    "mono_red_blitz": 0.6786,
-    "mono_red_pyroclasm": 0.8214,
-    "mono_red_dragon": 0.75,
-    "mono_blue_frost": 0.8214,
-    "mono_blue_chrono": 0.8929,
-    "mono_blue_abyssal": 0.9583,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.875,
-    "mono_purple_umbral": 0.8333,
-    "mono_gold_phalanx": 0.75,
-    "mono_gold_celestial": 0.8214,
-    "mono_gold_judgment": 0.7143,
-    "mono_neutral_axial": 0.7857,
-    "dual_red_gold": 0.7083,
-    "dual_blue_purple": 0.8929,
-    "dual_red_green": 0.6786,
-    "dual_blue_gold": 0.5714,
-    "dual_purple_green": 0.6786,
-    "dual_red_purple": 0.6429,
-    "dual_blue_green": 0.8214,
-    "dual_green_gold": 0.6429,
-    "dual_purple_gold": 0.5357,
-    "dual_red_blue": 0.7857,
-    "dual_green_neutral": 0.5,
-    "dual_red_neutral": 0.5,
-    "dual_blue_neutral": 0.8214,
-    "dual_purple_neutral": 0.8214,
-    "dual_gold_neutral": 0.6786,
-    "tri_red_blue_purple": 0.6786,
-    "tri_red_green_gold": 0.5714,
-    "tri_blue_purple_gold": 0.6875,
-    "tri_red_purple_green": 0.5417,
-    "tri_blue_green_gold": 0.5714,
-    "tri_blue_purple_green": 0.7857,
-    "tri_red_purple_gold": 0.4583,
-    "tri_purple_green_gold": 0.5714,
-    "tri_red_blue_green": 0.8214,
-    "tri_red_blue_gold": 0.25,
-    "penta_prismatic_crater": 0.8929,
-    "penta_free_city_sovereign": 0.8214,
-    "penta_wheel_convergence": 0.5357
-  },
-  "dual_blue_neutral": {
-    "mono_green_swarm": 0.7143,
-    "mono_green_colossus": 0.8929,
-    "mono_green_roots": 0.8214,
-    "mono_red_blitz": 0.5357,
-    "mono_red_pyroclasm": 0.7143,
-    "mono_red_dragon": 0.6071,
-    "mono_blue_frost": 0.8571,
-    "mono_blue_chrono": 0.75,
-    "mono_blue_abyssal": 0.8214,
-    "mono_purple_crypt": 0.8214,
-    "mono_purple_blood": 0.8929,
-    "mono_purple_umbral": 0.5,
-    "mono_gold_phalanx": 0.5,
-    "mono_gold_celestial": 0.5714,
-    "mono_gold_judgment": 0.6429,
-    "mono_neutral_axial": 0.7857,
-    "dual_red_gold": 0.3929,
-    "dual_blue_purple": 0.6786,
-    "dual_red_green": 0.4643,
-    "dual_blue_gold": 0.6429,
-    "dual_purple_green": 0.5357,
-    "dual_red_purple": 0.5714,
-    "dual_blue_green": 0.3929,
-    "dual_green_gold": 0.7143,
-    "dual_purple_gold": 0.3929,
-    "dual_red_blue": 0.8214,
-    "dual_green_neutral": 0.4286,
-    "dual_red_neutral": 0.1786,
-    "dual_blue_neutral": 0.5,
-    "dual_purple_neutral": 0.6071,
-    "dual_gold_neutral": 0.5,
-    "tri_red_blue_purple": 0.6429,
-    "tri_red_green_gold": 0.4643,
-    "tri_blue_purple_gold": 0.5,
-    "tri_red_purple_green": 0.2857,
-    "tri_blue_green_gold": 0.5357,
-    "tri_blue_purple_green": 0.4643,
-    "tri_red_purple_gold": 0.3214,
-    "tri_purple_green_gold": 0.4643,
-    "tri_red_blue_green": 0.5357,
-    "tri_red_blue_gold": 0.3214,
-    "penta_prismatic_crater": 0.6071,
-    "penta_free_city_sovereign": 0.6786,
-    "penta_wheel_convergence": 0.5357
-  },
-  "dual_purple_neutral": {
-    "mono_green_swarm": 0.5357,
-    "mono_green_colossus": 0.6429,
-    "mono_green_roots": 0.7143,
-    "mono_red_blitz": 0.3214,
-    "mono_red_pyroclasm": 0.4643,
-    "mono_red_dragon": 0.5357,
-    "mono_blue_frost": 0.7857,
-    "mono_blue_chrono": 0.5357,
-    "mono_blue_abyssal": 0.7857,
-    "mono_purple_crypt": 0.4286,
-    "mono_purple_blood": 0.6429,
-    "mono_purple_umbral": 0.6786,
-    "mono_gold_phalanx": 0.5357,
-    "mono_gold_celestial": 0.3214,
-    "mono_gold_judgment": 0.6786,
-    "mono_neutral_axial": 0.4643,
-    "dual_red_gold": 0.3214,
-    "dual_blue_purple": 0.5,
-    "dual_red_green": 0.2857,
-    "dual_blue_gold": 0.3571,
-    "dual_purple_green": 0.3214,
-    "dual_red_purple": 0.3929,
-    "dual_blue_green": 0.4643,
-    "dual_green_gold": 0.0714,
-    "dual_purple_gold": 0.3571,
-    "dual_red_blue": 0.5357,
-    "dual_green_neutral": 0.3214,
-    "dual_red_neutral": 0.1786,
-    "dual_blue_neutral": 0.3929,
-    "dual_purple_neutral": 0.5,
-    "dual_gold_neutral": 0.25,
-    "tri_red_blue_purple": 0.5357,
-    "tri_red_green_gold": 0.1429,
-    "tri_blue_purple_gold": 0.375,
-    "tri_red_purple_green": 0.3929,
-    "tri_blue_green_gold": 0.3214,
-    "tri_blue_purple_green": 0.3214,
-    "tri_red_purple_gold": 0.1786,
-    "tri_purple_green_gold": 0.3214,
-    "tri_red_blue_green": 0.6071,
-    "tri_red_blue_gold": 0.25,
-    "penta_prismatic_crater": 0.3929,
-    "penta_free_city_sovereign": 0.3214,
-    "penta_wheel_convergence": 0.5357
-  },
-  "dual_gold_neutral": {
-    "mono_green_swarm": 0.8571,
-    "mono_green_colossus": 0.7857,
-    "mono_green_roots": 0.8929,
-    "mono_red_blitz": 0.6429,
-    "mono_red_pyroclasm": 0.8214,
-    "mono_red_dragon": 0.7143,
-    "mono_blue_frost": 0.7143,
-    "mono_blue_chrono": 0.6786,
-    "mono_blue_abyssal": 0.6429,
-    "mono_purple_crypt": 0.8571,
-    "mono_purple_blood": 0.8929,
-    "mono_purple_umbral": 0.7857,
-    "mono_gold_phalanx": 0.75,
-    "mono_gold_celestial": 0.6429,
-    "mono_gold_judgment": 0.75,
-    "mono_neutral_axial": 0.5714,
-    "dual_red_gold": 0.5357,
-    "dual_blue_purple": 0.4643,
-    "dual_red_green": 0.4643,
-    "dual_blue_gold": 0.5357,
-    "dual_purple_green": 0.7143,
-    "dual_red_purple": 0.6786,
-    "dual_blue_green": 0.4286,
-    "dual_green_gold": 0.4286,
-    "dual_purple_gold": 0.3929,
-    "dual_red_blue": 0.6429,
-    "dual_green_neutral": 0.2857,
-    "dual_red_neutral": 0.3214,
-    "dual_blue_neutral": 0.5,
-    "dual_purple_neutral": 0.75,
-    "dual_gold_neutral": 0.5,
-    "tri_red_blue_purple": 0.6786,
-    "tri_red_green_gold": 0.7143,
-    "tri_blue_purple_gold": 0.3125,
-    "tri_red_purple_green": 0.4643,
-    "tri_blue_green_gold": 0.3929,
-    "tri_blue_purple_green": 0.6786,
-    "tri_red_purple_gold": 0.5,
-    "tri_purple_green_gold": 0.5714,
-    "tri_red_blue_green": 0.5714,
-    "tri_red_blue_gold": 0.3214,
-    "penta_prismatic_crater": 0.3929,
-    "penta_free_city_sovereign": 0.5357,
-    "penta_wheel_convergence": 0.4286
-  },
-  "tri_red_blue_purple": {
-    "mono_green_swarm": 0.7857,
-    "mono_green_colossus": 0.5714,
-    "mono_green_roots": 0.75,
-    "mono_red_blitz": 0.3929,
-    "mono_red_pyroclasm": 0.8571,
-    "mono_red_dragon": 0.6786,
-    "mono_blue_frost": 0.5714,
-    "mono_blue_chrono": 0.5,
-    "mono_blue_abyssal": 0.7143,
-    "mono_purple_crypt": 0.4643,
-    "mono_purple_blood": 0.3929,
-    "mono_purple_umbral": 0.5,
-    "mono_gold_phalanx": 0.6071,
-    "mono_gold_celestial": 0.6786,
-    "mono_gold_judgment": 0.4286,
-    "mono_neutral_axial": 0.3571,
-    "dual_red_gold": 0.3571,
-    "dual_blue_purple": 0.5714,
-    "dual_red_green": 0.2143,
-    "dual_blue_gold": 0.4643,
-    "dual_purple_green": 0.5714,
-    "dual_red_purple": 0.3929,
-    "dual_blue_green": 0.5357,
-    "dual_green_gold": 0.4643,
-    "dual_purple_gold": 0.3929,
-    "dual_red_blue": 0.5,
-    "dual_green_neutral": 0.5714,
-    "dual_red_neutral": 0.3214,
-    "dual_blue_neutral": 0.3571,
-    "dual_purple_neutral": 0.4643,
-    "dual_gold_neutral": 0.3214,
-    "tri_red_blue_purple": 0.5,
-    "tri_red_green_gold": 0.3929,
-    "tri_blue_purple_gold": 0.5,
-    "tri_red_purple_green": 0.3214,
-    "tri_blue_green_gold": 0.3929,
-    "tri_blue_purple_green": 0.6429,
-    "tri_red_purple_gold": 0.3214,
-    "tri_purple_green_gold": 0.4286,
-    "tri_red_blue_green": 0.2857,
-    "tri_red_blue_gold": 0.1429,
-    "penta_prismatic_crater": 0.3214,
-    "penta_free_city_sovereign": 0.4286,
-    "penta_wheel_convergence": 0.5357
-  },
-  "tri_red_green_gold": {
-    "mono_green_swarm": 0.7143,
-    "mono_green_colossus": 0.6786,
-    "mono_green_roots": 0.8571,
-    "mono_red_blitz": 0.6071,
-    "mono_red_pyroclasm": 0.75,
-    "mono_red_dragon": 0.7857,
-    "mono_blue_frost": 0.7143,
-    "mono_blue_chrono": 0.5,
-    "mono_blue_abyssal": 0.8571,
-    "mono_purple_crypt": 0.8929,
-    "mono_purple_blood": 0.75,
-    "mono_purple_umbral": 0.6429,
-    "mono_gold_phalanx": 0.7143,
-    "mono_gold_celestial": 0.6429,
-    "mono_gold_judgment": 0.8571,
-    "mono_neutral_axial": 0.6429,
-    "dual_red_gold": 0.4286,
-    "dual_blue_purple": 0.6429,
-    "dual_red_green": 0.5357,
-    "dual_blue_gold": 0.7143,
-    "dual_purple_green": 0.7143,
-    "dual_red_purple": 0.5,
-    "dual_blue_green": 0.3571,
-    "dual_green_gold": 0.4643,
-    "dual_purple_gold": 0.3929,
-    "dual_red_blue": 0.5,
-    "dual_green_neutral": 0.6786,
-    "dual_red_neutral": 0.4286,
-    "dual_blue_neutral": 0.5357,
-    "dual_purple_neutral": 0.8571,
-    "dual_gold_neutral": 0.2857,
-    "tri_red_blue_purple": 0.6071,
-    "tri_red_green_gold": 0.5,
-    "tri_blue_purple_gold": 0.4375,
-    "tri_red_purple_green": 0.5714,
-    "tri_blue_green_gold": 0.5357,
-    "tri_blue_purple_green": 0.6429,
-    "tri_red_purple_gold": 0.5,
-    "tri_purple_green_gold": 0.5714,
-    "tri_red_blue_green": 0.5,
-    "tri_red_blue_gold": 0.2143,
-    "penta_prismatic_crater": 0.5357,
-    "penta_free_city_sovereign": 0.5357,
-    "penta_wheel_convergence": 0.5357
-  },
-  "tri_blue_purple_gold": {
-    "mono_green_swarm": 0.5938,
-    "mono_green_colossus": 0.625,
-    "mono_green_roots": 0.75,
-    "mono_red_blitz": 0.4375,
-    "mono_red_pyroclasm": 0.9688,
-    "mono_red_dragon": 0.7188,
-    "mono_blue_frost": 0.9063,
-    "mono_blue_chrono": 0.4063,
-    "mono_blue_abyssal": 0.6875,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.625,
-    "mono_purple_umbral": 0.7813,
-    "mono_gold_phalanx": 0.5938,
-    "mono_gold_celestial": 0.625,
-    "mono_gold_judgment": 0.8438,
-    "mono_neutral_axial": 0.5938,
-    "dual_red_gold": 0.4063,
-    "dual_blue_purple": 0.6563,
-    "dual_red_green": 0.4375,
-    "dual_blue_gold": 0.4063,
-    "dual_purple_green": 0.4375,
-    "dual_red_purple": 0.625,
-    "dual_blue_green": 0.4688,
-    "dual_green_gold": 0.4688,
-    "dual_purple_gold": 0.4375,
-    "dual_red_blue": 0.5,
-    "dual_green_neutral": 0.5,
-    "dual_red_neutral": 0.3125,
-    "dual_blue_neutral": 0.5,
-    "dual_purple_neutral": 0.625,
-    "dual_gold_neutral": 0.6875,
-    "tri_red_blue_purple": 0.5,
-    "tri_red_green_gold": 0.5625,
-    "tri_blue_purple_gold": 0.5,
-    "tri_red_purple_green": 0.4688,
-    "tri_blue_green_gold": 0.4688,
-    "tri_blue_purple_green": 0.5938,
-    "tri_red_purple_gold": 0.3438,
-    "tri_purple_green_gold": 0.3125,
-    "tri_red_blue_green": 0.4375,
-    "tri_red_blue_gold": 0.25,
-    "penta_prismatic_crater": 0.5,
-    "penta_free_city_sovereign": 0.5938,
-    "penta_wheel_convergence": 0.2813
-  },
-  "tri_red_purple_green": {
-    "mono_green_swarm": 0.8214,
-    "mono_green_colossus": 0.8929,
-    "mono_green_roots": 0.7917,
-    "mono_red_blitz": 0.6071,
-    "mono_red_pyroclasm": 0.7857,
-    "mono_red_dragon": 0.7857,
-    "mono_blue_frost": 0.8929,
-    "mono_blue_chrono": 0.8929,
-    "mono_blue_abyssal": 0.875,
-    "mono_purple_crypt": 0.9583,
-    "mono_purple_blood": 0.75,
-    "mono_purple_umbral": 0.875,
-    "mono_gold_phalanx": 0.8214,
-    "mono_gold_celestial": 0.8929,
-    "mono_gold_judgment": 0.8214,
-    "mono_neutral_axial": 0.6071,
-    "dual_red_gold": 0.4167,
-    "dual_blue_purple": 0.75,
-    "dual_red_green": 0.6429,
-    "dual_blue_gold": 0.6429,
-    "dual_purple_green": 0.6786,
-    "dual_red_purple": 0.5714,
-    "dual_blue_green": 0.6429,
-    "dual_green_gold": 0.4286,
-    "dual_purple_gold": 0.6071,
-    "dual_red_blue": 0.6429,
+    "mono_neutral_axial": 0.6875,
+    "dual_red_gold": 0.5,
+    "dual_blue_purple": 0.5208,
+    "dual_red_green": 0.5833,
+    "dual_blue_gold": 0.6042,
+    "dual_purple_green": 0.6458,
+    "dual_red_purple": 0.5208,
+    "dual_blue_green": 0.4792,
+    "dual_green_gold": 0.5833,
+    "dual_purple_gold": 0.5417,
+    "dual_red_blue": 0.5625,
     "dual_green_neutral": 0.5417,
     "dual_red_neutral": 0.4583,
-    "dual_blue_neutral": 0.7143,
-    "dual_purple_neutral": 0.6071,
-    "dual_gold_neutral": 0.5357,
-    "tri_red_blue_purple": 0.6786,
-    "tri_red_green_gold": 0.4286,
-    "tri_blue_purple_gold": 0.5313,
-    "tri_red_purple_green": 0.5,
-    "tri_blue_green_gold": 0.75,
-    "tri_blue_purple_green": 0.7143,
-    "tri_red_purple_gold": 0.7083,
-    "tri_purple_green_gold": 0.5714,
-    "tri_red_blue_green": 0.6071,
-    "tri_red_blue_gold": 0.3333,
-    "penta_prismatic_crater": 0.6786,
-    "penta_free_city_sovereign": 0.6786,
-    "penta_wheel_convergence": 0.8214
-  },
-  "tri_blue_green_gold": {
-    "mono_green_swarm": 0.4643,
-    "mono_green_colossus": 0.7857,
-    "mono_green_roots": 0.75,
-    "mono_red_blitz": 0.6429,
-    "mono_red_pyroclasm": 0.7857,
-    "mono_red_dragon": 0.5357,
-    "mono_blue_frost": 0.75,
-    "mono_blue_chrono": 0.5,
-    "mono_blue_abyssal": 0.6429,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.75,
-    "mono_purple_umbral": 0.6071,
-    "mono_gold_phalanx": 0.7857,
-    "mono_gold_celestial": 0.6786,
-    "mono_gold_judgment": 0.8214,
-    "mono_neutral_axial": 0.6786,
-    "dual_red_gold": 0.4643,
-    "dual_blue_purple": 0.5357,
-    "dual_red_green": 0.5357,
-    "dual_blue_gold": 0.5714,
-    "dual_purple_green": 0.5714,
-    "dual_red_purple": 0.3929,
-    "dual_blue_green": 0.3929,
-    "dual_green_gold": 0.5357,
-    "dual_purple_gold": 0.5714,
-    "dual_red_blue": 0.3929,
-    "dual_green_neutral": 0.6071,
-    "dual_red_neutral": 0.4286,
-    "dual_blue_neutral": 0.4643,
-    "dual_purple_neutral": 0.6786,
-    "dual_gold_neutral": 0.6071,
-    "tri_red_blue_purple": 0.6071,
-    "tri_red_green_gold": 0.4643,
-    "tri_blue_purple_gold": 0.5313,
-    "tri_red_purple_green": 0.25,
-    "tri_blue_green_gold": 0.5,
-    "tri_blue_purple_green": 0.5714,
-    "tri_red_purple_gold": 0.3214,
-    "tri_purple_green_gold": 0.5357,
-    "tri_red_blue_green": 0.6429,
-    "tri_red_blue_gold": 0.2143,
-    "penta_prismatic_crater": 0.3929,
-    "penta_free_city_sovereign": 0.6786,
-    "penta_wheel_convergence": 0.5714
-  },
-  "tri_blue_purple_green": {
-    "mono_green_swarm": 0.6786,
-    "mono_green_colossus": 0.5714,
-    "mono_green_roots": 0.6429,
-    "mono_red_blitz": 0.6429,
-    "mono_red_pyroclasm": 0.6429,
-    "mono_red_dragon": 0.6429,
-    "mono_blue_frost": 0.5714,
-    "mono_blue_chrono": 0.5357,
-    "mono_blue_abyssal": 0.7143,
-    "mono_purple_crypt": 0.5714,
-    "mono_purple_blood": 0.6786,
-    "mono_purple_umbral": 0.6786,
-    "mono_gold_phalanx": 0.7143,
-    "mono_gold_celestial": 0.6786,
-    "mono_gold_judgment": 0.6429,
-    "mono_neutral_axial": 0.5,
-    "dual_red_gold": 0.3214,
-    "dual_blue_purple": 0.5,
-    "dual_red_green": 0.4286,
-    "dual_blue_gold": 0.3571,
-    "dual_purple_green": 0.5,
-    "dual_red_purple": 0.4643,
-    "dual_blue_green": 0.4286,
-    "dual_green_gold": 0.4643,
-    "dual_purple_gold": 0.5357,
-    "dual_red_blue": 0.5,
-    "dual_green_neutral": 0.1429,
-    "dual_red_neutral": 0.2143,
-    "dual_blue_neutral": 0.5357,
-    "dual_purple_neutral": 0.6786,
-    "dual_gold_neutral": 0.3214,
-    "tri_red_blue_purple": 0.3571,
-    "tri_red_green_gold": 0.3571,
-    "tri_blue_purple_gold": 0.4063,
-    "tri_red_purple_green": 0.2857,
-    "tri_blue_green_gold": 0.4286,
-    "tri_blue_purple_green": 0.5,
-    "tri_red_purple_gold": 0.2857,
-    "tri_purple_green_gold": 0.3571,
-    "tri_red_blue_green": 0.6071,
-    "tri_red_blue_gold": 0.25,
-    "penta_prismatic_crater": 0.3571,
-    "penta_free_city_sovereign": 0.2857,
-    "penta_wheel_convergence": 0.4643
-  },
-  "tri_red_purple_gold": {
-    "mono_green_swarm": 0.75,
-    "mono_green_colossus": 0.8929,
-    "mono_green_roots": 0.7083,
-    "mono_red_blitz": 0.5714,
-    "mono_red_pyroclasm": 0.7857,
-    "mono_red_dragon": 0.6429,
-    "mono_blue_frost": 0.75,
-    "mono_blue_chrono": 0.7143,
-    "mono_blue_abyssal": 0.7917,
-    "mono_purple_crypt": 0.75,
-    "mono_purple_blood": 0.875,
-    "mono_purple_umbral": 0.75,
-    "mono_gold_phalanx": 0.7143,
-    "mono_gold_celestial": 0.75,
-    "mono_gold_judgment": 0.8214,
-    "mono_neutral_axial": 0.6786,
-    "dual_red_gold": 0.4583,
-    "dual_blue_purple": 0.8214,
-    "dual_red_green": 0.5714,
-    "dual_blue_gold": 0.8571,
-    "dual_purple_green": 0.5357,
-    "dual_red_purple": 0.6786,
-    "dual_blue_green": 0.75,
-    "dual_green_gold": 0.4643,
-    "dual_purple_gold": 0.5,
-    "dual_red_blue": 0.6071,
-    "dual_green_neutral": 0.5,
-    "dual_red_neutral": 0.5417,
-    "dual_blue_neutral": 0.6786,
-    "dual_purple_neutral": 0.8214,
-    "dual_gold_neutral": 0.5,
-    "tri_red_blue_purple": 0.6786,
-    "tri_red_green_gold": 0.5,
-    "tri_blue_purple_gold": 0.6563,
+    "dual_blue_neutral": 0.5625,
+    "dual_purple_neutral": 0.8542,
+    "dual_gold_neutral": 0.6458,
+    "tri_red_blue_purple": 0.6667,
+    "tri_red_green_gold": 0.6875,
+    "tri_blue_purple_gold": 0.5417,
     "tri_red_purple_green": 0.2917,
-    "tri_blue_green_gold": 0.6786,
-    "tri_blue_purple_green": 0.7143,
-    "tri_red_purple_gold": 0.5,
-    "tri_purple_green_gold": 0.3929,
-    "tri_red_blue_green": 0.6071,
-    "tri_red_blue_gold": 0.625,
-    "penta_prismatic_crater": 0.5,
-    "penta_free_city_sovereign": 0.6786,
-    "penta_wheel_convergence": 0.7143
-  },
-  "tri_purple_green_gold": {
-    "mono_green_swarm": 0.6071,
-    "mono_green_colossus": 0.6786,
-    "mono_green_roots": 0.7857,
-    "mono_red_blitz": 0.6429,
-    "mono_red_pyroclasm": 0.8214,
-    "mono_red_dragon": 0.6786,
-    "mono_blue_frost": 0.8214,
-    "mono_blue_chrono": 0.5357,
-    "mono_blue_abyssal": 0.7857,
-    "mono_purple_crypt": 0.8214,
-    "mono_purple_blood": 0.7857,
-    "mono_purple_umbral": 0.5714,
-    "mono_gold_phalanx": 0.8214,
-    "mono_gold_celestial": 0.75,
-    "mono_gold_judgment": 0.8929,
-    "mono_neutral_axial": 0.7857,
-    "dual_red_gold": 0.4286,
-    "dual_blue_purple": 0.5714,
-    "dual_red_green": 0.5357,
-    "dual_blue_gold": 0.6071,
-    "dual_purple_green": 0.4643,
-    "dual_red_purple": 0.7857,
-    "dual_blue_green": 0.5357,
-    "dual_green_gold": 0.6786,
-    "dual_purple_gold": 0.6786,
-    "dual_red_blue": 0.5,
-    "dual_green_neutral": 0.5,
-    "dual_red_neutral": 0.4286,
-    "dual_blue_neutral": 0.5357,
-    "dual_purple_neutral": 0.6786,
-    "dual_gold_neutral": 0.4286,
-    "tri_red_blue_purple": 0.5714,
-    "tri_red_green_gold": 0.4286,
-    "tri_blue_purple_gold": 0.6875,
-    "tri_red_purple_green": 0.4286,
-    "tri_blue_green_gold": 0.4643,
-    "tri_blue_purple_green": 0.6429,
-    "tri_red_purple_gold": 0.6071,
-    "tri_purple_green_gold": 0.5,
-    "tri_red_blue_green": 0.6071,
-    "tri_red_blue_gold": 0.1429,
-    "penta_prismatic_crater": 0.4286,
-    "penta_free_city_sovereign": 0.5,
-    "penta_wheel_convergence": 0.6429
-  },
-  "tri_red_blue_green": {
-    "mono_green_swarm": 0.7143,
-    "mono_green_colossus": 0.9286,
-    "mono_green_roots": 0.7857,
-    "mono_red_blitz": 0.3929,
-    "mono_red_pyroclasm": 0.7143,
-    "mono_red_dragon": 0.7143,
-    "mono_blue_frost": 0.7857,
-    "mono_blue_chrono": 0.6429,
-    "mono_blue_abyssal": 0.8571,
-    "mono_purple_crypt": 0.7857,
-    "mono_purple_blood": 0.75,
-    "mono_purple_umbral": 0.7143,
-    "mono_gold_phalanx": 0.8571,
-    "mono_gold_celestial": 0.6786,
-    "mono_gold_judgment": 0.7143,
-    "mono_neutral_axial": 0.75,
-    "dual_red_gold": 0.3214,
-    "dual_blue_purple": 0.5,
-    "dual_red_green": 0.6786,
-    "dual_blue_gold": 0.5,
-    "dual_purple_green": 0.7143,
-    "dual_red_purple": 0.5357,
-    "dual_blue_green": 0.5,
-    "dual_green_gold": 0.5,
-    "dual_purple_gold": 0.6071,
-    "dual_red_blue": 0.6429,
-    "dual_green_neutral": 0.4286,
-    "dual_red_neutral": 0.1786,
-    "dual_blue_neutral": 0.4643,
-    "dual_purple_neutral": 0.3929,
-    "dual_gold_neutral": 0.4286,
-    "tri_red_blue_purple": 0.7143,
-    "tri_red_green_gold": 0.5,
-    "tri_blue_purple_gold": 0.5625,
-    "tri_red_purple_green": 0.3929,
-    "tri_blue_green_gold": 0.3571,
-    "tri_blue_purple_green": 0.3929,
-    "tri_red_purple_gold": 0.3929,
-    "tri_purple_green_gold": 0.3929,
+    "tri_blue_green_gold": 0.5,
+    "tri_blue_purple_green": 0.6458,
+    "tri_red_purple_gold": 0.5625,
+    "tri_purple_green_gold": 0.4375,
     "tri_red_blue_green": 0.5,
-    "tri_red_blue_gold": 0.5,
-    "penta_prismatic_crater": 0.4643,
-    "penta_free_city_sovereign": 0.4643,
+    "tri_red_blue_gold": 0.375,
+    "penta_prismatic_crater": 0.625,
+    "penta_free_city_sovereign": 0.75,
+    "penta_wheel_convergence": 0.5417
+  },
+  "dual_blue_purple": {
+    "mono_green_swarm": 0.5417,
+    "mono_green_colossus": 0.6458,
+    "mono_green_roots": 0.8333,
+    "mono_red_blitz": 0.4375,
+    "mono_red_pyroclasm": 0.6875,
+    "mono_red_dragon": 0.6458,
+    "mono_blue_frost": 0.6875,
+    "mono_blue_chrono": 0.4167,
+    "mono_blue_abyssal": 0.5833,
+    "mono_purple_crypt": 0.5833,
+    "mono_purple_blood": 0.6042,
+    "mono_purple_umbral": 0.4583,
+    "mono_gold_phalanx": 0.6875,
+    "mono_gold_celestial": 0.6458,
+    "mono_gold_judgment": 0.75,
+    "mono_neutral_axial": 0.5417,
+    "dual_red_gold": 0.4792,
+    "dual_blue_purple": 0.5,
+    "dual_red_green": 0.3125,
+    "dual_blue_gold": 0.3542,
+    "dual_purple_green": 0.5208,
+    "dual_red_purple": 0.4792,
+    "dual_blue_green": 0.5208,
+    "dual_green_gold": 0.5417,
+    "dual_purple_gold": 0.5833,
+    "dual_red_blue": 0.3958,
+    "dual_green_neutral": 0.4792,
+    "dual_red_neutral": 0.1875,
+    "dual_blue_neutral": 0.4167,
+    "dual_purple_neutral": 0.4792,
+    "dual_gold_neutral": 0.4583,
+    "tri_red_blue_purple": 0.5417,
+    "tri_red_green_gold": 0.4167,
+    "tri_blue_purple_gold": 0.4167,
+    "tri_red_purple_green": 0.2292,
+    "tri_blue_green_gold": 0.4167,
+    "tri_blue_purple_green": 0.4167,
+    "tri_red_purple_gold": 0.3958,
+    "tri_purple_green_gold": 0.25,
+    "tri_red_blue_green": 0.5,
+    "tri_red_blue_gold": 0.2292,
+    "penta_prismatic_crater": 0.3333,
+    "penta_free_city_sovereign": 0.5,
+    "penta_wheel_convergence": 0.4167
+  },
+  "dual_red_green": {
+    "mono_green_swarm": 0.5625,
+    "mono_green_colossus": 0.6667,
+    "mono_green_roots": 0.7708,
+    "mono_red_blitz": 0.4792,
+    "mono_red_pyroclasm": 0.75,
+    "mono_red_dragon": 0.6458,
+    "mono_blue_frost": 0.7292,
+    "mono_blue_chrono": 0.7917,
+    "mono_blue_abyssal": 0.7917,
+    "mono_purple_crypt": 0.7292,
+    "mono_purple_blood": 0.7292,
+    "mono_purple_umbral": 0.7917,
+    "mono_gold_phalanx": 0.6667,
+    "mono_gold_celestial": 0.625,
+    "mono_gold_judgment": 0.7292,
+    "mono_neutral_axial": 0.6875,
+    "dual_red_gold": 0.4167,
+    "dual_blue_purple": 0.6875,
+    "dual_red_green": 0.5,
+    "dual_blue_gold": 0.6042,
+    "dual_purple_green": 0.5833,
+    "dual_red_purple": 0.4167,
+    "dual_blue_green": 0.625,
+    "dual_green_gold": 0.6458,
+    "dual_purple_gold": 0.5625,
+    "dual_red_blue": 0.5,
+    "dual_green_neutral": 0.4375,
+    "dual_red_neutral": 0.2917,
+    "dual_blue_neutral": 0.5,
+    "dual_purple_neutral": 0.7708,
+    "dual_gold_neutral": 0.4583,
+    "tri_red_blue_purple": 0.6458,
+    "tri_red_green_gold": 0.5417,
+    "tri_blue_purple_gold": 0.5208,
+    "tri_red_purple_green": 0.2917,
+    "tri_blue_green_gold": 0.5625,
+    "tri_blue_purple_green": 0.6667,
+    "tri_red_purple_gold": 0.625,
+    "tri_purple_green_gold": 0.5208,
+    "tri_red_blue_green": 0.3333,
+    "tri_red_blue_gold": 0.3958,
+    "penta_prismatic_crater": 0.4375,
+    "penta_free_city_sovereign": 0.7083,
     "penta_wheel_convergence": 0.5
   },
-  "tri_red_blue_gold": {
-    "mono_green_swarm": 0.6786,
-    "mono_green_colossus": 0.9286,
-    "mono_green_roots": 0.9583,
-    "mono_red_blitz": 0.6071,
-    "mono_red_pyroclasm": 0.9643,
-    "mono_red_dragon": 0.8571,
-    "mono_blue_frost": 0.7857,
-    "mono_blue_chrono": 0.7857,
-    "mono_blue_abyssal": 0.875,
-    "mono_purple_crypt": 0.875,
+  "dual_blue_gold": {
+    "mono_green_swarm": 0.7083,
+    "mono_green_colossus": 0.6667,
+    "mono_green_roots": 0.8958,
+    "mono_red_blitz": 0.7708,
+    "mono_red_pyroclasm": 0.7917,
+    "mono_red_dragon": 0.6667,
+    "mono_blue_frost": 0.625,
+    "mono_blue_chrono": 0.5,
+    "mono_blue_abyssal": 0.6667,
+    "mono_purple_crypt": 0.625,
     "mono_purple_blood": 0.875,
+    "mono_purple_umbral": 0.6667,
+    "mono_gold_phalanx": 0.7083,
+    "mono_gold_celestial": 0.6042,
+    "mono_gold_judgment": 0.75,
+    "mono_neutral_axial": 0.75,
+    "dual_red_gold": 0.3958,
+    "dual_blue_purple": 0.6458,
+    "dual_red_green": 0.3958,
+    "dual_blue_gold": 0.5,
+    "dual_purple_green": 0.5,
+    "dual_red_purple": 0.625,
+    "dual_blue_green": 0.6042,
+    "dual_green_gold": 0.4375,
+    "dual_purple_gold": 0.5,
+    "dual_red_blue": 0.6875,
+    "dual_green_neutral": 0.3958,
+    "dual_red_neutral": 0.2917,
+    "dual_blue_neutral": 0.5,
+    "dual_purple_neutral": 0.6875,
+    "dual_gold_neutral": 0.6875,
+    "tri_red_blue_purple": 0.5625,
+    "tri_red_green_gold": 0.4375,
+    "tri_blue_purple_gold": 0.5417,
+    "tri_red_purple_green": 0.3125,
+    "tri_blue_green_gold": 0.5208,
+    "tri_blue_purple_green": 0.625,
+    "tri_red_purple_gold": 0.4167,
+    "tri_purple_green_gold": 0.4792,
+    "tri_red_blue_green": 0.3333,
+    "tri_red_blue_gold": 0.3333,
+    "penta_prismatic_crater": 0.3542,
+    "penta_free_city_sovereign": 0.3958,
+    "penta_wheel_convergence": 0.5208
+  },
+  "dual_purple_green": {
+    "mono_green_swarm": 0.6458,
+    "mono_green_colossus": 0.7292,
+    "mono_green_roots": 0.8125,
+    "mono_red_blitz": 0.5208,
+    "mono_red_pyroclasm": 0.6875,
+    "mono_red_dragon": 0.6667,
+    "mono_blue_frost": 0.5208,
+    "mono_blue_chrono": 0.5625,
+    "mono_blue_abyssal": 0.6667,
+    "mono_purple_crypt": 0.8333,
+    "mono_purple_blood": 0.75,
+    "mono_purple_umbral": 0.6667,
+    "mono_gold_phalanx": 0.6042,
+    "mono_gold_celestial": 0.6042,
+    "mono_gold_judgment": 0.6875,
+    "mono_neutral_axial": 0.625,
+    "dual_red_gold": 0.3542,
+    "dual_blue_purple": 0.4792,
+    "dual_red_green": 0.4167,
+    "dual_blue_gold": 0.5,
+    "dual_purple_green": 0.5,
+    "dual_red_purple": 0.6042,
+    "dual_blue_green": 0.2917,
+    "dual_green_gold": 0.4583,
+    "dual_purple_gold": 0.3958,
+    "dual_red_blue": 0.375,
+    "dual_green_neutral": 0.3542,
+    "dual_red_neutral": 0.5417,
+    "dual_blue_neutral": 0.4583,
+    "dual_purple_neutral": 0.6458,
+    "dual_gold_neutral": 0.4167,
+    "tri_red_blue_purple": 0.5208,
+    "tri_red_green_gold": 0.4167,
+    "tri_blue_purple_gold": 0.375,
+    "tri_red_purple_green": 0.375,
+    "tri_blue_green_gold": 0.5,
+    "tri_blue_purple_green": 0.625,
+    "tri_red_purple_gold": 0.3542,
+    "tri_purple_green_gold": 0.5,
+    "tri_red_blue_green": 0.3542,
+    "tri_red_blue_gold": 0.25,
+    "penta_prismatic_crater": 0.4583,
+    "penta_free_city_sovereign": 0.5417,
+    "penta_wheel_convergence": 0.4167
+  },
+  "dual_red_purple": {
+    "mono_green_swarm": 0.5833,
+    "mono_green_colossus": 0.5833,
+    "mono_green_roots": 0.6042,
+    "mono_red_blitz": 0.6667,
+    "mono_red_pyroclasm": 0.875,
+    "mono_red_dragon": 0.7083,
+    "mono_blue_frost": 0.5625,
+    "mono_blue_chrono": 0.8958,
+    "mono_blue_abyssal": 0.6875,
+    "mono_purple_crypt": 0.6875,
+    "mono_purple_blood": 0.7292,
+    "mono_purple_umbral": 0.7083,
+    "mono_gold_phalanx": 0.5208,
+    "mono_gold_celestial": 0.5208,
+    "mono_gold_judgment": 0.625,
+    "mono_neutral_axial": 0.4167,
+    "dual_red_gold": 0.4792,
+    "dual_blue_purple": 0.5208,
+    "dual_red_green": 0.5833,
+    "dual_blue_gold": 0.375,
+    "dual_purple_green": 0.3958,
+    "dual_red_purple": 0.5,
+    "dual_blue_green": 0.4583,
+    "dual_green_gold": 0.3958,
+    "dual_purple_gold": 0.2917,
+    "dual_red_blue": 0.5208,
+    "dual_green_neutral": 0.375,
+    "dual_red_neutral": 0.3958,
+    "dual_blue_neutral": 0.6458,
+    "dual_purple_neutral": 0.625,
+    "dual_gold_neutral": 0.375,
+    "tri_red_blue_purple": 0.5625,
+    "tri_red_green_gold": 0.3333,
+    "tri_blue_purple_gold": 0.4375,
+    "tri_red_purple_green": 0.375,
+    "tri_blue_green_gold": 0.5208,
+    "tri_blue_purple_green": 0.6875,
+    "tri_red_purple_gold": 0.375,
+    "tri_purple_green_gold": 0.375,
+    "tri_red_blue_green": 0.4792,
+    "tri_red_blue_gold": 0.2292,
+    "penta_prismatic_crater": 0.5625,
+    "penta_free_city_sovereign": 0.4792,
+    "penta_wheel_convergence": 0.5
+  },
+  "dual_blue_green": {
+    "mono_green_swarm": 0.6458,
+    "mono_green_colossus": 0.8542,
+    "mono_green_roots": 0.9167,
+    "mono_red_blitz": 0.6667,
+    "mono_red_pyroclasm": 0.6875,
+    "mono_red_dragon": 0.6875,
+    "mono_blue_frost": 0.6458,
+    "mono_blue_chrono": 0.3958,
+    "mono_blue_abyssal": 0.7292,
+    "mono_purple_crypt": 0.7917,
+    "mono_purple_blood": 0.7917,
+    "mono_purple_umbral": 0.5833,
+    "mono_gold_phalanx": 0.6458,
+    "mono_gold_celestial": 0.6875,
+    "mono_gold_judgment": 0.8542,
+    "mono_neutral_axial": 0.5625,
+    "dual_red_gold": 0.5208,
+    "dual_blue_purple": 0.4792,
+    "dual_red_green": 0.375,
+    "dual_blue_gold": 0.3958,
+    "dual_purple_green": 0.7083,
+    "dual_red_purple": 0.5417,
+    "dual_blue_green": 0.5,
+    "dual_green_gold": 0.6875,
+    "dual_purple_gold": 0.5417,
+    "dual_red_blue": 0.5625,
+    "dual_green_neutral": 0.5417,
+    "dual_red_neutral": 0.2708,
+    "dual_blue_neutral": 0.4583,
+    "dual_purple_neutral": 0.625,
+    "dual_gold_neutral": 0.625,
+    "tri_red_blue_purple": 0.6667,
+    "tri_red_green_gold": 0.6458,
+    "tri_blue_purple_gold": 0.6458,
+    "tri_red_purple_green": 0.3125,
+    "tri_blue_green_gold": 0.5208,
+    "tri_blue_purple_green": 0.5208,
+    "tri_red_purple_gold": 0.25,
+    "tri_purple_green_gold": 0.5625,
+    "tri_red_blue_green": 0.5625,
+    "tri_red_blue_gold": 0.3958,
+    "penta_prismatic_crater": 0.3542,
+    "penta_free_city_sovereign": 0.4375,
+    "penta_wheel_convergence": 0.6458
+  },
+  "dual_green_gold": {
+    "mono_green_swarm": 0.6667,
+    "mono_green_colossus": 0.6042,
+    "mono_green_roots": 0.7708,
+    "mono_red_blitz": 0.6875,
+    "mono_red_pyroclasm": 0.8125,
+    "mono_red_dragon": 0.4792,
+    "mono_blue_frost": 0.4375,
+    "mono_blue_chrono": 0.4792,
+    "mono_blue_abyssal": 0.6875,
+    "mono_purple_crypt": 0.8333,
+    "mono_purple_blood": 0.7917,
+    "mono_purple_umbral": 0.7708,
+    "mono_gold_phalanx": 0.6875,
+    "mono_gold_celestial": 0.6458,
+    "mono_gold_judgment": 0.7083,
+    "mono_neutral_axial": 0.6667,
+    "dual_red_gold": 0.4167,
+    "dual_blue_purple": 0.4583,
+    "dual_red_green": 0.3542,
+    "dual_blue_gold": 0.5625,
+    "dual_purple_green": 0.5417,
+    "dual_red_purple": 0.6042,
+    "dual_blue_green": 0.3125,
+    "dual_green_gold": 0.5,
+    "dual_purple_gold": 0.4375,
+    "dual_red_blue": 0.5,
+    "dual_green_neutral": 0.4583,
+    "dual_red_neutral": 0.2917,
+    "dual_blue_neutral": 0.5,
+    "dual_purple_neutral": 0.6667,
+    "dual_gold_neutral": 0.3958,
+    "tri_red_blue_purple": 0.4792,
+    "tri_red_green_gold": 0.4792,
+    "tri_blue_purple_gold": 0.7083,
+    "tri_red_purple_green": 0.3125,
+    "tri_blue_green_gold": 0.4167,
+    "tri_blue_purple_green": 0.5208,
+    "tri_red_purple_gold": 0.3333,
+    "tri_purple_green_gold": 0.3542,
+    "tri_red_blue_green": 0.3542,
+    "tri_red_blue_gold": 0.2708,
+    "penta_prismatic_crater": 0.4583,
+    "penta_free_city_sovereign": 0.5417,
+    "penta_wheel_convergence": 0.4375
+  },
+  "dual_purple_gold": {
+    "mono_green_swarm": 0.7917,
+    "mono_green_colossus": 0.8542,
+    "mono_green_roots": 0.7292,
+    "mono_red_blitz": 0.7083,
+    "mono_red_pyroclasm": 0.6042,
+    "mono_red_dragon": 0.5,
+    "mono_blue_frost": 0.625,
+    "mono_blue_chrono": 0.5,
+    "mono_blue_abyssal": 0.7292,
+    "mono_purple_crypt": 0.8125,
+    "mono_purple_blood": 0.8542,
+    "mono_purple_umbral": 0.7083,
+    "mono_gold_phalanx": 0.5625,
+    "mono_gold_celestial": 0.6667,
+    "mono_gold_judgment": 0.7917,
+    "mono_neutral_axial": 0.75,
+    "dual_red_gold": 0.4583,
+    "dual_blue_purple": 0.4167,
+    "dual_red_green": 0.4375,
+    "dual_blue_gold": 0.5,
+    "dual_purple_green": 0.6042,
+    "dual_red_purple": 0.7083,
+    "dual_blue_green": 0.4583,
+    "dual_green_gold": 0.5625,
+    "dual_purple_gold": 0.5,
+    "dual_red_blue": 0.4375,
+    "dual_green_neutral": 0.3958,
+    "dual_red_neutral": 0.5,
+    "dual_blue_neutral": 0.5833,
+    "dual_purple_neutral": 0.6875,
+    "dual_gold_neutral": 0.4167,
+    "tri_red_blue_purple": 0.5833,
+    "tri_red_green_gold": 0.4792,
+    "tri_blue_purple_gold": 0.4375,
+    "tri_red_purple_green": 0.375,
+    "tri_blue_green_gold": 0.3125,
+    "tri_blue_purple_green": 0.6458,
+    "tri_red_purple_gold": 0.4167,
+    "tri_purple_green_gold": 0.5417,
+    "tri_red_blue_green": 0.5625,
+    "tri_red_blue_gold": 0.2708,
+    "penta_prismatic_crater": 0.3958,
+    "penta_free_city_sovereign": 0.4792,
+    "penta_wheel_convergence": 0.3542
+  },
+  "dual_red_blue": {
+    "mono_green_swarm": 0.4583,
+    "mono_green_colossus": 0.5208,
+    "mono_green_roots": 0.7917,
+    "mono_red_blitz": 0.4375,
+    "mono_red_pyroclasm": 0.75,
+    "mono_red_dragon": 0.5417,
+    "mono_blue_frost": 0.6042,
+    "mono_blue_chrono": 0.6458,
+    "mono_blue_abyssal": 0.7292,
+    "mono_purple_crypt": 0.6875,
+    "mono_purple_blood": 0.75,
+    "mono_purple_umbral": 0.6458,
+    "mono_gold_phalanx": 0.7083,
+    "mono_gold_celestial": 0.6458,
+    "mono_gold_judgment": 0.75,
+    "mono_neutral_axial": 0.625,
+    "dual_red_gold": 0.4375,
+    "dual_blue_purple": 0.6042,
+    "dual_red_green": 0.5,
+    "dual_blue_gold": 0.3125,
+    "dual_purple_green": 0.625,
+    "dual_red_purple": 0.4792,
+    "dual_blue_green": 0.4375,
+    "dual_green_gold": 0.5,
+    "dual_purple_gold": 0.5625,
+    "dual_red_blue": 0.5,
+    "dual_green_neutral": 0.4375,
+    "dual_red_neutral": 0.25,
+    "dual_blue_neutral": 0.4583,
+    "dual_purple_neutral": 0.625,
+    "dual_gold_neutral": 0.4375,
+    "tri_red_blue_purple": 0.4792,
+    "tri_red_green_gold": 0.5208,
+    "tri_blue_purple_gold": 0.5417,
+    "tri_red_purple_green": 0.3333,
+    "tri_blue_green_gold": 0.5208,
+    "tri_blue_purple_green": 0.625,
+    "tri_red_purple_gold": 0.2292,
+    "tri_purple_green_gold": 0.4792,
+    "tri_red_blue_green": 0.5417,
+    "tri_red_blue_gold": 0.2083,
+    "penta_prismatic_crater": 0.4792,
+    "penta_free_city_sovereign": 0.5208,
+    "penta_wheel_convergence": 0.5417
+  },
+  "dual_green_neutral": {
+    "mono_green_swarm": 0.7292,
+    "mono_green_colossus": 0.7708,
+    "mono_green_roots": 0.75,
+    "mono_red_blitz": 0.5,
+    "mono_red_pyroclasm": 0.6875,
+    "mono_red_dragon": 0.6667,
+    "mono_blue_frost": 0.6458,
+    "mono_blue_chrono": 0.7917,
+    "mono_blue_abyssal": 0.7917,
+    "mono_purple_crypt": 0.7083,
+    "mono_purple_blood": 0.7917,
+    "mono_purple_umbral": 0.8542,
+    "mono_gold_phalanx": 0.7292,
+    "mono_gold_celestial": 0.6875,
+    "mono_gold_judgment": 0.75,
+    "mono_neutral_axial": 0.7083,
+    "dual_red_gold": 0.4583,
+    "dual_blue_purple": 0.5208,
+    "dual_red_green": 0.5625,
+    "dual_blue_gold": 0.6042,
+    "dual_purple_green": 0.6458,
+    "dual_red_purple": 0.625,
+    "dual_blue_green": 0.4583,
+    "dual_green_gold": 0.5417,
+    "dual_purple_gold": 0.6042,
+    "dual_red_blue": 0.5625,
+    "dual_green_neutral": 0.5,
+    "dual_red_neutral": 0.3125,
+    "dual_blue_neutral": 0.6042,
+    "dual_purple_neutral": 0.7292,
+    "dual_gold_neutral": 0.5208,
+    "tri_red_blue_purple": 0.6667,
+    "tri_red_green_gold": 0.5625,
+    "tri_blue_purple_gold": 0.6667,
+    "tri_red_purple_green": 0.375,
+    "tri_blue_green_gold": 0.4583,
+    "tri_blue_purple_green": 0.5625,
+    "tri_red_purple_gold": 0.4583,
+    "tri_purple_green_gold": 0.4167,
+    "tri_red_blue_green": 0.5625,
+    "tri_red_blue_gold": 0.4792,
+    "penta_prismatic_crater": 0.5,
+    "penta_free_city_sovereign": 0.5417,
+    "penta_wheel_convergence": 0.5208
+  },
+  "dual_red_neutral": {
+    "mono_green_swarm": 0.8125,
+    "mono_green_colossus": 0.8125,
+    "mono_green_roots": 0.9167,
+    "mono_red_blitz": 0.6667,
+    "mono_red_pyroclasm": 0.8542,
+    "mono_red_dragon": 0.7917,
+    "mono_blue_frost": 0.8542,
+    "mono_blue_chrono": 0.875,
+    "mono_blue_abyssal": 0.9375,
+    "mono_purple_crypt": 0.875,
+    "mono_purple_blood": 0.8333,
     "mono_purple_umbral": 0.875,
-    "mono_gold_phalanx": 0.6786,
-    "mono_gold_celestial": 0.7143,
-    "mono_gold_judgment": 0.8214,
-    "mono_neutral_axial": 0.8214,
-    "dual_red_gold": 0.6667,
-    "dual_blue_purple": 0.8929,
-    "dual_red_green": 0.4643,
-    "dual_blue_gold": 0.75,
-    "dual_purple_green": 0.6786,
-    "dual_red_purple": 0.6429,
-    "dual_blue_green": 0.5714,
-    "dual_green_gold": 0.6071,
-    "dual_purple_gold": 0.6429,
-    "dual_red_blue": 0.6429,
-    "dual_green_neutral": 0.7083,
-    "dual_red_neutral": 0.75,
-    "dual_blue_neutral": 0.6786,
-    "dual_purple_neutral": 0.75,
-    "dual_gold_neutral": 0.6786,
-    "tri_red_blue_purple": 0.8571,
-    "tri_red_green_gold": 0.7857,
-    "tri_blue_purple_gold": 0.75,
-    "tri_red_purple_green": 0.6667,
-    "tri_blue_green_gold": 0.7857,
+    "mono_gold_phalanx": 0.7292,
+    "mono_gold_celestial": 0.7292,
+    "mono_gold_judgment": 0.8333,
+    "mono_neutral_axial": 0.7708,
+    "dual_red_gold": 0.5417,
+    "dual_blue_purple": 0.8125,
+    "dual_red_green": 0.7083,
+    "dual_blue_gold": 0.7083,
+    "dual_purple_green": 0.4583,
+    "dual_red_purple": 0.6042,
+    "dual_blue_green": 0.7292,
+    "dual_green_gold": 0.7083,
+    "dual_purple_gold": 0.5,
+    "dual_red_blue": 0.75,
+    "dual_green_neutral": 0.6875,
+    "dual_red_neutral": 0.5,
+    "dual_blue_neutral": 0.7083,
+    "dual_purple_neutral": 0.7708,
+    "dual_gold_neutral": 0.6042,
+    "tri_red_blue_purple": 0.7708,
+    "tri_red_green_gold": 0.6875,
+    "tri_blue_purple_gold": 0.625,
+    "tri_red_purple_green": 0.5208,
+    "tri_blue_green_gold": 0.7708,
+    "tri_blue_purple_green": 0.7292,
+    "tri_red_purple_gold": 0.5833,
+    "tri_purple_green_gold": 0.4792,
+    "tri_red_blue_green": 0.6875,
+    "tri_red_blue_gold": 0.5,
+    "penta_prismatic_crater": 0.625,
+    "penta_free_city_sovereign": 0.6458,
+    "penta_wheel_convergence": 0.6875
+  },
+  "dual_blue_neutral": {
+    "mono_green_swarm": 0.625,
+    "mono_green_colossus": 0.6875,
+    "mono_green_roots": 0.9375,
+    "mono_red_blitz": 0.6458,
+    "mono_red_pyroclasm": 0.7083,
+    "mono_red_dragon": 0.6667,
+    "mono_blue_frost": 0.6458,
+    "mono_blue_chrono": 0.6042,
+    "mono_blue_abyssal": 0.7917,
+    "mono_purple_crypt": 0.75,
+    "mono_purple_blood": 0.7917,
+    "mono_purple_umbral": 0.7083,
+    "mono_gold_phalanx": 0.6042,
+    "mono_gold_celestial": 0.6042,
+    "mono_gold_judgment": 0.6875,
+    "mono_neutral_axial": 0.6667,
+    "dual_red_gold": 0.4375,
+    "dual_blue_purple": 0.5833,
+    "dual_red_green": 0.5,
+    "dual_blue_gold": 0.5,
+    "dual_purple_green": 0.5417,
+    "dual_red_purple": 0.3542,
+    "dual_blue_green": 0.5417,
+    "dual_green_gold": 0.5,
+    "dual_purple_gold": 0.4167,
+    "dual_red_blue": 0.5417,
+    "dual_green_neutral": 0.3958,
+    "dual_red_neutral": 0.2917,
+    "dual_blue_neutral": 0.5,
+    "dual_purple_neutral": 0.5417,
+    "dual_gold_neutral": 0.5,
+    "tri_red_blue_purple": 0.375,
+    "tri_red_green_gold": 0.6042,
+    "tri_blue_purple_gold": 0.4792,
+    "tri_red_purple_green": 0.3958,
+    "tri_blue_green_gold": 0.4792,
+    "tri_blue_purple_green": 0.6667,
+    "tri_red_purple_gold": 0.3542,
+    "tri_purple_green_gold": 0.4167,
+    "tri_red_blue_green": 0.3958,
+    "tri_red_blue_gold": 0.3542,
+    "penta_prismatic_crater": 0.375,
+    "penta_free_city_sovereign": 0.375,
+    "penta_wheel_convergence": 0.5625
+  },
+  "dual_purple_neutral": {
+    "mono_green_swarm": 0.5833,
+    "mono_green_colossus": 0.625,
+    "mono_green_roots": 0.7708,
+    "mono_red_blitz": 0.5,
+    "mono_red_pyroclasm": 0.7292,
+    "mono_red_dragon": 0.625,
+    "mono_blue_frost": 0.6458,
+    "mono_blue_chrono": 0.5208,
+    "mono_blue_abyssal": 0.6875,
+    "mono_purple_crypt": 0.6042,
+    "mono_purple_blood": 0.5833,
+    "mono_purple_umbral": 0.7083,
+    "mono_gold_phalanx": 0.4375,
+    "mono_gold_celestial": 0.3958,
+    "mono_gold_judgment": 0.5625,
+    "mono_neutral_axial": 0.2708,
+    "dual_red_gold": 0.1458,
+    "dual_blue_purple": 0.5208,
+    "dual_red_green": 0.2292,
+    "dual_blue_gold": 0.3125,
+    "dual_purple_green": 0.3542,
+    "dual_red_purple": 0.375,
+    "dual_blue_green": 0.375,
+    "dual_green_gold": 0.3333,
+    "dual_purple_gold": 0.3125,
+    "dual_red_blue": 0.375,
+    "dual_green_neutral": 0.2708,
+    "dual_red_neutral": 0.2292,
+    "dual_blue_neutral": 0.4583,
+    "dual_purple_neutral": 0.5,
+    "dual_gold_neutral": 0.2708,
+    "tri_red_blue_purple": 0.6042,
+    "tri_red_green_gold": 0.2708,
+    "tri_blue_purple_gold": 0.4375,
+    "tri_red_purple_green": 0.375,
+    "tri_blue_green_gold": 0.5833,
+    "tri_blue_purple_green": 0.3125,
+    "tri_red_purple_gold": 0.2708,
+    "tri_purple_green_gold": 0.3958,
+    "tri_red_blue_green": 0.4583,
+    "tri_red_blue_gold": 0.1458,
+    "penta_prismatic_crater": 0.375,
+    "penta_free_city_sovereign": 0.4167,
+    "penta_wheel_convergence": 0.3333
+  },
+  "dual_gold_neutral": {
+    "mono_green_swarm": 0.7083,
+    "mono_green_colossus": 0.875,
+    "mono_green_roots": 0.875,
+    "mono_red_blitz": 0.6875,
+    "mono_red_pyroclasm": 0.7292,
+    "mono_red_dragon": 0.6875,
+    "mono_blue_frost": 0.5833,
+    "mono_blue_chrono": 0.5625,
+    "mono_blue_abyssal": 0.6875,
+    "mono_purple_crypt": 0.7292,
+    "mono_purple_blood": 0.8333,
+    "mono_purple_umbral": 0.6875,
+    "mono_gold_phalanx": 0.8542,
+    "mono_gold_celestial": 0.5833,
+    "mono_gold_judgment": 0.5417,
+    "mono_neutral_axial": 0.7292,
+    "dual_red_gold": 0.3542,
+    "dual_blue_purple": 0.5417,
+    "dual_red_green": 0.5417,
+    "dual_blue_gold": 0.3125,
+    "dual_purple_green": 0.5833,
+    "dual_red_purple": 0.625,
+    "dual_blue_green": 0.375,
+    "dual_green_gold": 0.6042,
+    "dual_purple_gold": 0.5833,
+    "dual_red_blue": 0.5625,
+    "dual_green_neutral": 0.4792,
+    "dual_red_neutral": 0.3958,
+    "dual_blue_neutral": 0.5,
+    "dual_purple_neutral": 0.7292,
+    "dual_gold_neutral": 0.5,
+    "tri_red_blue_purple": 0.5,
+    "tri_red_green_gold": 0.5208,
+    "tri_blue_purple_gold": 0.4167,
+    "tri_red_purple_green": 0.4167,
+    "tri_blue_green_gold": 0.4167,
+    "tri_blue_purple_green": 0.6042,
+    "tri_red_purple_gold": 0.4375,
+    "tri_purple_green_gold": 0.4583,
+    "tri_red_blue_green": 0.3333,
+    "tri_red_blue_gold": 0.2708,
+    "penta_prismatic_crater": 0.4375,
+    "penta_free_city_sovereign": 0.6667,
+    "penta_wheel_convergence": 0.4375
+  },
+  "tri_red_blue_purple": {
+    "mono_green_swarm": 0.5625,
+    "mono_green_colossus": 0.6667,
+    "mono_green_roots": 0.7708,
+    "mono_red_blitz": 0.4792,
+    "mono_red_pyroclasm": 0.7083,
+    "mono_red_dragon": 0.5833,
+    "mono_blue_frost": 0.5833,
+    "mono_blue_chrono": 0.4792,
+    "mono_blue_abyssal": 0.6875,
+    "mono_purple_crypt": 0.5625,
+    "mono_purple_blood": 0.5,
+    "mono_purple_umbral": 0.5625,
+    "mono_gold_phalanx": 0.6667,
+    "mono_gold_celestial": 0.6458,
+    "mono_gold_judgment": 0.7083,
+    "mono_neutral_axial": 0.5208,
+    "dual_red_gold": 0.3333,
+    "dual_blue_purple": 0.4583,
+    "dual_red_green": 0.3542,
+    "dual_blue_gold": 0.4375,
+    "dual_purple_green": 0.4792,
+    "dual_red_purple": 0.4375,
+    "dual_blue_green": 0.3333,
+    "dual_green_gold": 0.5208,
+    "dual_purple_gold": 0.4167,
+    "dual_red_blue": 0.5208,
+    "dual_green_neutral": 0.3333,
+    "dual_red_neutral": 0.2292,
+    "dual_blue_neutral": 0.625,
+    "dual_purple_neutral": 0.3958,
+    "dual_gold_neutral": 0.5,
+    "tri_red_blue_purple": 0.5,
+    "tri_red_green_gold": 0.4792,
+    "tri_blue_purple_gold": 0.3542,
+    "tri_red_purple_green": 0.375,
+    "tri_blue_green_gold": 0.375,
+    "tri_blue_purple_green": 0.4375,
+    "tri_red_purple_gold": 0.3958,
+    "tri_purple_green_gold": 0.4375,
+    "tri_red_blue_green": 0.4167,
+    "tri_red_blue_gold": 0.25,
+    "penta_prismatic_crater": 0.2708,
+    "penta_free_city_sovereign": 0.5208,
+    "penta_wheel_convergence": 0.5208
+  },
+  "tri_red_green_gold": {
+    "mono_green_swarm": 0.75,
+    "mono_green_colossus": 0.7917,
+    "mono_green_roots": 0.7708,
+    "mono_red_blitz": 0.6875,
+    "mono_red_pyroclasm": 0.8333,
+    "mono_red_dragon": 0.75,
+    "mono_blue_frost": 0.4583,
+    "mono_blue_chrono": 0.5833,
+    "mono_blue_abyssal": 0.8125,
+    "mono_purple_crypt": 0.7292,
+    "mono_purple_blood": 0.8125,
+    "mono_purple_umbral": 0.75,
+    "mono_gold_phalanx": 0.6042,
+    "mono_gold_celestial": 0.7917,
+    "mono_gold_judgment": 0.8958,
+    "mono_neutral_axial": 0.8333,
+    "dual_red_gold": 0.3125,
+    "dual_blue_purple": 0.5833,
+    "dual_red_green": 0.4583,
+    "dual_blue_gold": 0.5625,
+    "dual_purple_green": 0.5833,
+    "dual_red_purple": 0.6667,
+    "dual_blue_green": 0.3542,
+    "dual_green_gold": 0.5208,
+    "dual_purple_gold": 0.5208,
+    "dual_red_blue": 0.4792,
+    "dual_green_neutral": 0.4375,
+    "dual_red_neutral": 0.3125,
+    "dual_blue_neutral": 0.3958,
+    "dual_purple_neutral": 0.7292,
+    "dual_gold_neutral": 0.4792,
+    "tri_red_blue_purple": 0.5208,
+    "tri_red_green_gold": 0.5,
+    "tri_blue_purple_gold": 0.5,
+    "tri_red_purple_green": 0.3958,
+    "tri_blue_green_gold": 0.5833,
+    "tri_blue_purple_green": 0.625,
+    "tri_red_purple_gold": 0.375,
+    "tri_purple_green_gold": 0.4583,
+    "tri_red_blue_green": 0.4375,
+    "tri_red_blue_gold": 0.2292,
+    "penta_prismatic_crater": 0.4167,
+    "penta_free_city_sovereign": 0.5625,
+    "penta_wheel_convergence": 0.4167
+  },
+  "tri_blue_purple_gold": {
+    "mono_green_swarm": 0.5208,
+    "mono_green_colossus": 0.8542,
+    "mono_green_roots": 0.6875,
+    "mono_red_blitz": 0.75,
+    "mono_red_pyroclasm": 0.7292,
+    "mono_red_dragon": 0.6875,
+    "mono_blue_frost": 0.5417,
+    "mono_blue_chrono": 0.3958,
+    "mono_blue_abyssal": 0.7917,
+    "mono_purple_crypt": 0.5208,
+    "mono_purple_blood": 0.7292,
+    "mono_purple_umbral": 0.5833,
+    "mono_gold_phalanx": 0.5833,
+    "mono_gold_celestial": 0.7292,
+    "mono_gold_judgment": 0.7917,
+    "mono_neutral_axial": 0.6458,
+    "dual_red_gold": 0.4583,
+    "dual_blue_purple": 0.5833,
+    "dual_red_green": 0.4792,
+    "dual_blue_gold": 0.4583,
+    "dual_purple_green": 0.625,
+    "dual_red_purple": 0.5625,
+    "dual_blue_green": 0.3542,
+    "dual_green_gold": 0.2917,
+    "dual_purple_gold": 0.5625,
+    "dual_red_blue": 0.4583,
+    "dual_green_neutral": 0.3333,
+    "dual_red_neutral": 0.375,
+    "dual_blue_neutral": 0.5208,
+    "dual_purple_neutral": 0.5625,
+    "dual_gold_neutral": 0.5833,
+    "tri_red_blue_purple": 0.6458,
+    "tri_red_green_gold": 0.5,
+    "tri_blue_purple_gold": 0.5,
+    "tri_red_purple_green": 0.3542,
+    "tri_blue_green_gold": 0.4375,
+    "tri_blue_purple_green": 0.3958,
+    "tri_red_purple_gold": 0.3958,
+    "tri_purple_green_gold": 0.4167,
+    "tri_red_blue_green": 0.3333,
+    "tri_red_blue_gold": 0.25,
+    "penta_prismatic_crater": 0.5625,
+    "penta_free_city_sovereign": 0.5625,
+    "penta_wheel_convergence": 0.375
+  },
+  "tri_red_purple_green": {
+    "mono_green_swarm": 0.8333,
+    "mono_green_colossus": 0.7917,
+    "mono_green_roots": 0.8542,
+    "mono_red_blitz": 0.6458,
+    "mono_red_pyroclasm": 0.8958,
+    "mono_red_dragon": 0.7708,
+    "mono_blue_frost": 0.7708,
+    "mono_blue_chrono": 0.8125,
+    "mono_blue_abyssal": 0.9167,
+    "mono_purple_crypt": 0.875,
+    "mono_purple_blood": 0.8125,
+    "mono_purple_umbral": 0.7917,
+    "mono_gold_phalanx": 0.7292,
+    "mono_gold_celestial": 0.7083,
+    "mono_gold_judgment": 0.8333,
+    "mono_neutral_axial": 0.7083,
+    "dual_red_gold": 0.7083,
+    "dual_blue_purple": 0.7708,
+    "dual_red_green": 0.7083,
+    "dual_blue_gold": 0.6875,
+    "dual_purple_green": 0.625,
+    "dual_red_purple": 0.625,
+    "dual_blue_green": 0.6875,
+    "dual_green_gold": 0.6875,
+    "dual_purple_gold": 0.625,
+    "dual_red_blue": 0.6667,
+    "dual_green_neutral": 0.625,
+    "dual_red_neutral": 0.4792,
+    "dual_blue_neutral": 0.6042,
+    "dual_purple_neutral": 0.625,
+    "dual_gold_neutral": 0.5833,
+    "tri_red_blue_purple": 0.625,
+    "tri_red_green_gold": 0.6042,
+    "tri_blue_purple_gold": 0.6458,
+    "tri_red_purple_green": 0.5,
+    "tri_blue_green_gold": 0.7083,
+    "tri_blue_purple_green": 0.625,
+    "tri_red_purple_gold": 0.4792,
+    "tri_purple_green_gold": 0.6667,
+    "tri_red_blue_green": 0.7083,
+    "tri_red_blue_gold": 0.4375,
+    "penta_prismatic_crater": 0.6875,
+    "penta_free_city_sovereign": 0.75,
+    "penta_wheel_convergence": 0.6042
+  },
+  "tri_blue_green_gold": {
+    "mono_green_swarm": 0.8333,
+    "mono_green_colossus": 0.7917,
+    "mono_green_roots": 0.8333,
+    "mono_red_blitz": 0.5833,
+    "mono_red_pyroclasm": 0.625,
+    "mono_red_dragon": 0.625,
+    "mono_blue_frost": 0.4583,
+    "mono_blue_chrono": 0.4167,
+    "mono_blue_abyssal": 0.7083,
+    "mono_purple_crypt": 0.7083,
+    "mono_purple_blood": 0.75,
+    "mono_purple_umbral": 0.7083,
+    "mono_gold_phalanx": 0.75,
+    "mono_gold_celestial": 0.7708,
+    "mono_gold_judgment": 0.6875,
+    "mono_neutral_axial": 0.6667,
+    "dual_red_gold": 0.5,
+    "dual_blue_purple": 0.5833,
+    "dual_red_green": 0.4375,
+    "dual_blue_gold": 0.4792,
+    "dual_purple_green": 0.5,
+    "dual_red_purple": 0.4792,
+    "dual_blue_green": 0.4792,
+    "dual_green_gold": 0.5833,
+    "dual_purple_gold": 0.6875,
+    "dual_red_blue": 0.4792,
+    "dual_green_neutral": 0.5417,
+    "dual_red_neutral": 0.2292,
+    "dual_blue_neutral": 0.5208,
+    "dual_purple_neutral": 0.4167,
+    "dual_gold_neutral": 0.5833,
+    "tri_red_blue_purple": 0.625,
+    "tri_red_green_gold": 0.4167,
+    "tri_blue_purple_gold": 0.5625,
+    "tri_red_purple_green": 0.2917,
+    "tri_blue_green_gold": 0.5,
     "tri_blue_purple_green": 0.75,
     "tri_red_purple_gold": 0.375,
-    "tri_purple_green_gold": 0.8571,
+    "tri_purple_green_gold": 0.4792,
+    "tri_red_blue_green": 0.4792,
+    "tri_red_blue_gold": 0.3958,
+    "penta_prismatic_crater": 0.4375,
+    "penta_free_city_sovereign": 0.3958,
+    "penta_wheel_convergence": 0.3125
+  },
+  "tri_blue_purple_green": {
+    "mono_green_swarm": 0.5417,
+    "mono_green_colossus": 0.5625,
+    "mono_green_roots": 0.6875,
+    "mono_red_blitz": 0.5208,
+    "mono_red_pyroclasm": 0.7083,
+    "mono_red_dragon": 0.625,
+    "mono_blue_frost": 0.6458,
+    "mono_blue_chrono": 0.5417,
+    "mono_blue_abyssal": 0.7083,
+    "mono_purple_crypt": 0.4792,
+    "mono_purple_blood": 0.6875,
+    "mono_purple_umbral": 0.4375,
+    "mono_gold_phalanx": 0.6042,
+    "mono_gold_celestial": 0.6042,
+    "mono_gold_judgment": 0.6875,
+    "mono_neutral_axial": 0.5833,
+    "dual_red_gold": 0.3542,
+    "dual_blue_purple": 0.5833,
+    "dual_red_green": 0.3333,
+    "dual_blue_gold": 0.375,
+    "dual_purple_green": 0.375,
+    "dual_red_purple": 0.3125,
+    "dual_blue_green": 0.4792,
+    "dual_green_gold": 0.4792,
+    "dual_purple_gold": 0.3542,
+    "dual_red_blue": 0.375,
+    "dual_green_neutral": 0.4375,
+    "dual_red_neutral": 0.2708,
+    "dual_blue_neutral": 0.3333,
+    "dual_purple_neutral": 0.6875,
+    "dual_gold_neutral": 0.3958,
+    "tri_red_blue_purple": 0.5625,
+    "tri_red_green_gold": 0.375,
+    "tri_blue_purple_gold": 0.6042,
+    "tri_red_purple_green": 0.375,
+    "tri_blue_green_gold": 0.25,
+    "tri_blue_purple_green": 0.5,
+    "tri_red_purple_gold": 0.375,
+    "tri_purple_green_gold": 0.3542,
+    "tri_red_blue_green": 0.4167,
+    "tri_red_blue_gold": 0.2083,
+    "penta_prismatic_crater": 0.2708,
+    "penta_free_city_sovereign": 0.5417,
+    "penta_wheel_convergence": 0.4792
+  },
+  "tri_red_purple_gold": {
+    "mono_green_swarm": 0.7917,
+    "mono_green_colossus": 0.9167,
+    "mono_green_roots": 0.8333,
+    "mono_red_blitz": 0.7708,
+    "mono_red_pyroclasm": 0.8542,
+    "mono_red_dragon": 0.6875,
+    "mono_blue_frost": 0.7292,
+    "mono_blue_chrono": 0.7708,
+    "mono_blue_abyssal": 0.7917,
+    "mono_purple_crypt": 0.8333,
+    "mono_purple_blood": 0.9583,
+    "mono_purple_umbral": 0.8125,
+    "mono_gold_phalanx": 0.5833,
+    "mono_gold_celestial": 0.8125,
+    "mono_gold_judgment": 0.8333,
+    "mono_neutral_axial": 0.75,
+    "dual_red_gold": 0.4375,
+    "dual_blue_purple": 0.6042,
+    "dual_red_green": 0.375,
+    "dual_blue_gold": 0.5833,
+    "dual_purple_green": 0.6458,
+    "dual_red_purple": 0.625,
+    "dual_blue_green": 0.75,
+    "dual_green_gold": 0.6667,
+    "dual_purple_gold": 0.5833,
+    "dual_red_blue": 0.7708,
+    "dual_green_neutral": 0.5417,
+    "dual_red_neutral": 0.4167,
+    "dual_blue_neutral": 0.6458,
+    "dual_purple_neutral": 0.7292,
+    "dual_gold_neutral": 0.5625,
+    "tri_red_blue_purple": 0.6042,
+    "tri_red_green_gold": 0.625,
+    "tri_blue_purple_gold": 0.6042,
+    "tri_red_purple_green": 0.5208,
+    "tri_blue_green_gold": 0.625,
+    "tri_blue_purple_green": 0.625,
+    "tri_red_purple_gold": 0.5,
+    "tri_purple_green_gold": 0.5,
+    "tri_red_blue_green": 0.5833,
+    "tri_red_blue_gold": 0.4167,
+    "penta_prismatic_crater": 0.5625,
+    "penta_free_city_sovereign": 0.5625,
+    "penta_wheel_convergence": 0.7708
+  },
+  "tri_purple_green_gold": {
+    "mono_green_swarm": 0.7708,
+    "mono_green_colossus": 0.7292,
+    "mono_green_roots": 0.7917,
+    "mono_red_blitz": 0.6667,
+    "mono_red_pyroclasm": 0.8333,
+    "mono_red_dragon": 0.7708,
+    "mono_blue_frost": 0.6042,
+    "mono_blue_chrono": 0.5208,
+    "mono_blue_abyssal": 0.7292,
+    "mono_purple_crypt": 0.7083,
+    "mono_purple_blood": 0.8958,
+    "mono_purple_umbral": 0.7917,
+    "mono_gold_phalanx": 0.5625,
+    "mono_gold_celestial": 0.7292,
+    "mono_gold_judgment": 0.8542,
+    "mono_neutral_axial": 0.6458,
+    "dual_red_gold": 0.5625,
+    "dual_blue_purple": 0.75,
+    "dual_red_green": 0.4792,
+    "dual_blue_gold": 0.5208,
+    "dual_purple_green": 0.5,
+    "dual_red_purple": 0.625,
+    "dual_blue_green": 0.4375,
+    "dual_green_gold": 0.6458,
+    "dual_purple_gold": 0.4583,
+    "dual_red_blue": 0.5208,
+    "dual_green_neutral": 0.5833,
+    "dual_red_neutral": 0.5208,
+    "dual_blue_neutral": 0.5833,
+    "dual_purple_neutral": 0.6042,
+    "dual_gold_neutral": 0.5417,
+    "tri_red_blue_purple": 0.5625,
+    "tri_red_green_gold": 0.5417,
+    "tri_blue_purple_gold": 0.5833,
+    "tri_red_purple_green": 0.3333,
+    "tri_blue_green_gold": 0.5208,
+    "tri_blue_purple_green": 0.6458,
+    "tri_red_purple_gold": 0.5,
+    "tri_purple_green_gold": 0.5,
+    "tri_red_blue_green": 0.4375,
+    "tri_red_blue_gold": 0.3333,
+    "penta_prismatic_crater": 0.5,
+    "penta_free_city_sovereign": 0.4583,
+    "penta_wheel_convergence": 0.4375
+  },
+  "tri_red_blue_green": {
+    "mono_green_swarm": 0.7708,
+    "mono_green_colossus": 0.7917,
+    "mono_green_roots": 0.8333,
+    "mono_red_blitz": 0.5417,
+    "mono_red_pyroclasm": 0.6458,
+    "mono_red_dragon": 0.7083,
+    "mono_blue_frost": 0.6667,
+    "mono_blue_chrono": 0.5208,
+    "mono_blue_abyssal": 0.7292,
+    "mono_purple_crypt": 0.7083,
+    "mono_purple_blood": 0.7083,
+    "mono_purple_umbral": 0.5417,
+    "mono_gold_phalanx": 0.75,
+    "mono_gold_celestial": 0.6458,
+    "mono_gold_judgment": 0.7083,
+    "mono_neutral_axial": 0.6042,
+    "dual_red_gold": 0.5,
+    "dual_blue_purple": 0.5,
+    "dual_red_green": 0.6667,
+    "dual_blue_gold": 0.6667,
+    "dual_purple_green": 0.6458,
+    "dual_red_purple": 0.5208,
+    "dual_blue_green": 0.4375,
+    "dual_green_gold": 0.6458,
+    "dual_purple_gold": 0.4375,
+    "dual_red_blue": 0.4583,
+    "dual_green_neutral": 0.4375,
+    "dual_red_neutral": 0.3125,
+    "dual_blue_neutral": 0.6042,
+    "dual_purple_neutral": 0.5417,
+    "dual_gold_neutral": 0.6667,
+    "tri_red_blue_purple": 0.5833,
+    "tri_red_green_gold": 0.5625,
+    "tri_blue_purple_gold": 0.6667,
+    "tri_red_purple_green": 0.2917,
+    "tri_blue_green_gold": 0.5208,
+    "tri_blue_purple_green": 0.5833,
+    "tri_red_purple_gold": 0.4167,
+    "tri_purple_green_gold": 0.5625,
     "tri_red_blue_green": 0.5,
+    "tri_red_blue_gold": 0.4167,
+    "penta_prismatic_crater": 0.4167,
+    "penta_free_city_sovereign": 0.4792,
+    "penta_wheel_convergence": 0.6667
+  },
+  "tri_red_blue_gold": {
+    "mono_green_swarm": 0.875,
+    "mono_green_colossus": 0.9167,
+    "mono_green_roots": 0.9792,
+    "mono_red_blitz": 0.8333,
+    "mono_red_pyroclasm": 0.8542,
+    "mono_red_dragon": 0.9583,
+    "mono_blue_frost": 0.7292,
+    "mono_blue_chrono": 0.7292,
+    "mono_blue_abyssal": 0.8958,
+    "mono_purple_crypt": 0.8125,
+    "mono_purple_blood": 0.9167,
+    "mono_purple_umbral": 0.7292,
+    "mono_gold_phalanx": 0.8958,
+    "mono_gold_celestial": 0.9167,
+    "mono_gold_judgment": 0.8542,
+    "mono_neutral_axial": 0.75,
+    "dual_red_gold": 0.625,
+    "dual_blue_purple": 0.7708,
+    "dual_red_green": 0.6042,
+    "dual_blue_gold": 0.6667,
+    "dual_purple_green": 0.75,
+    "dual_red_purple": 0.7708,
+    "dual_blue_green": 0.6042,
+    "dual_green_gold": 0.7292,
+    "dual_purple_gold": 0.7292,
+    "dual_red_blue": 0.7917,
+    "dual_green_neutral": 0.5208,
+    "dual_red_neutral": 0.5,
+    "dual_blue_neutral": 0.6458,
+    "dual_purple_neutral": 0.8542,
+    "dual_gold_neutral": 0.7292,
+    "tri_red_blue_purple": 0.75,
+    "tri_red_green_gold": 0.7708,
+    "tri_blue_purple_gold": 0.75,
+    "tri_red_purple_green": 0.5625,
+    "tri_blue_green_gold": 0.6042,
+    "tri_blue_purple_green": 0.7917,
+    "tri_red_purple_gold": 0.5833,
+    "tri_purple_green_gold": 0.6667,
+    "tri_red_blue_green": 0.5833,
     "tri_red_blue_gold": 0.5,
-    "penta_prismatic_crater": 0.6429,
-    "penta_free_city_sovereign": 0.6786,
+    "penta_prismatic_crater": 0.6875,
+    "penta_free_city_sovereign": 0.7083,
     "penta_wheel_convergence": 0.75
   },
   "penta_prismatic_crater": {
-    "mono_green_swarm": 0.6429,
-    "mono_green_colossus": 0.8571,
-    "mono_green_roots": 0.9286,
-    "mono_red_blitz": 0.6786,
-    "mono_red_pyroclasm": 0.6786,
-    "mono_red_dragon": 0.6071,
-    "mono_blue_frost": 0.7857,
-    "mono_blue_chrono": 0.6429,
-    "mono_blue_abyssal": 0.9643,
-    "mono_purple_crypt": 0.6786,
-    "mono_purple_blood": 0.7143,
-    "mono_purple_umbral": 0.7143,
-    "mono_gold_phalanx": 0.6786,
-    "mono_gold_celestial": 0.6786,
-    "mono_gold_judgment": 0.75,
-    "mono_neutral_axial": 0.6786,
-    "dual_red_gold": 0.5357,
-    "dual_blue_purple": 0.8214,
-    "dual_red_green": 0.3929,
-    "dual_blue_gold": 0.6071,
-    "dual_purple_green": 0.6786,
-    "dual_red_purple": 0.6071,
-    "dual_blue_green": 0.3929,
-    "dual_green_gold": 0.6786,
-    "dual_purple_gold": 0.6071,
-    "dual_red_blue": 0.6071,
+    "mono_green_swarm": 0.7083,
+    "mono_green_colossus": 0.8125,
+    "mono_green_roots": 0.8125,
+    "mono_red_blitz": 0.4375,
+    "mono_red_pyroclasm": 0.6875,
+    "mono_red_dragon": 0.75,
+    "mono_blue_frost": 0.625,
+    "mono_blue_chrono": 0.7292,
+    "mono_blue_abyssal": 0.8333,
+    "mono_purple_crypt": 0.6875,
+    "mono_purple_blood": 0.7083,
+    "mono_purple_umbral": 0.5208,
+    "mono_gold_phalanx": 0.7708,
+    "mono_gold_celestial": 0.8333,
+    "mono_gold_judgment": 0.7292,
+    "mono_neutral_axial": 0.6458,
+    "dual_red_gold": 0.375,
+    "dual_blue_purple": 0.6667,
+    "dual_red_green": 0.5625,
+    "dual_blue_gold": 0.6458,
+    "dual_purple_green": 0.5417,
+    "dual_red_purple": 0.4375,
+    "dual_blue_green": 0.6458,
+    "dual_green_gold": 0.5417,
+    "dual_purple_gold": 0.6042,
+    "dual_red_blue": 0.5208,
     "dual_green_neutral": 0.5,
-    "dual_red_neutral": 0.1071,
-    "dual_blue_neutral": 0.3929,
-    "dual_purple_neutral": 0.6071,
-    "dual_gold_neutral": 0.6071,
-    "tri_red_blue_purple": 0.6786,
-    "tri_red_green_gold": 0.4643,
-    "tri_blue_purple_gold": 0.5,
-    "tri_red_purple_green": 0.3214,
-    "tri_blue_green_gold": 0.6071,
-    "tri_blue_purple_green": 0.6429,
-    "tri_red_purple_gold": 0.5,
-    "tri_purple_green_gold": 0.5714,
-    "tri_red_blue_green": 0.5357,
-    "tri_red_blue_gold": 0.3571,
+    "dual_red_neutral": 0.375,
+    "dual_blue_neutral": 0.625,
+    "dual_purple_neutral": 0.625,
+    "dual_gold_neutral": 0.5625,
+    "tri_red_blue_purple": 0.7292,
+    "tri_red_green_gold": 0.5833,
+    "tri_blue_purple_gold": 0.4375,
+    "tri_red_purple_green": 0.3125,
+    "tri_blue_green_gold": 0.5625,
+    "tri_blue_purple_green": 0.7292,
+    "tri_red_purple_gold": 0.4375,
+    "tri_purple_green_gold": 0.5,
+    "tri_red_blue_green": 0.5833,
+    "tri_red_blue_gold": 0.3125,
     "penta_prismatic_crater": 0.5,
-    "penta_free_city_sovereign": 0.6071,
-    "penta_wheel_convergence": 0.7143
+    "penta_free_city_sovereign": 0.4792,
+    "penta_wheel_convergence": 0.5417
   },
   "penta_free_city_sovereign": {
-    "mono_green_swarm": 0.5357,
-    "mono_green_colossus": 0.5357,
-    "mono_green_roots": 0.7857,
-    "mono_red_blitz": 0.4286,
-    "mono_red_pyroclasm": 0.5357,
-    "mono_red_dragon": 0.5357,
-    "mono_blue_frost": 0.5714,
-    "mono_blue_chrono": 0.5357,
-    "mono_blue_abyssal": 0.8214,
-    "mono_purple_crypt": 0.7857,
-    "mono_purple_blood": 0.75,
-    "mono_purple_umbral": 0.8214,
-    "mono_gold_phalanx": 0.4286,
-    "mono_gold_celestial": 0.75,
-    "mono_gold_judgment": 0.6786,
-    "mono_neutral_axial": 0.5714,
-    "dual_red_gold": 0.3214,
-    "dual_blue_purple": 0.7143,
-    "dual_red_green": 0.3571,
-    "dual_blue_gold": 0.5357,
-    "dual_purple_green": 0.6786,
-    "dual_red_purple": 0.5714,
-    "dual_blue_green": 0.5,
-    "dual_green_gold": 0.5357,
-    "dual_purple_gold": 0.5357,
-    "dual_red_blue": 0.6071,
-    "dual_green_neutral": 0.3214,
-    "dual_red_neutral": 0.1786,
-    "dual_blue_neutral": 0.3214,
-    "dual_purple_neutral": 0.6786,
-    "dual_gold_neutral": 0.4643,
-    "tri_red_blue_purple": 0.5714,
-    "tri_red_green_gold": 0.4643,
-    "tri_blue_purple_gold": 0.4063,
-    "tri_red_purple_green": 0.3214,
-    "tri_blue_green_gold": 0.3214,
-    "tri_blue_purple_green": 0.7143,
-    "tri_red_purple_gold": 0.3214,
-    "tri_purple_green_gold": 0.5,
-    "tri_red_blue_green": 0.5357,
-    "tri_red_blue_gold": 0.3214,
-    "penta_prismatic_crater": 0.3929,
+    "mono_green_swarm": 0.8125,
+    "mono_green_colossus": 0.8125,
+    "mono_green_roots": 0.7708,
+    "mono_red_blitz": 0.6042,
+    "mono_red_pyroclasm": 0.6458,
+    "mono_red_dragon": 0.6458,
+    "mono_blue_frost": 0.7083,
+    "mono_blue_chrono": 0.5417,
+    "mono_blue_abyssal": 0.7708,
+    "mono_purple_crypt": 0.8542,
+    "mono_purple_blood": 0.8125,
+    "mono_purple_umbral": 0.7292,
+    "mono_gold_phalanx": 0.7708,
+    "mono_gold_celestial": 0.7083,
+    "mono_gold_judgment": 0.75,
+    "mono_neutral_axial": 0.6458,
+    "dual_red_gold": 0.25,
+    "dual_blue_purple": 0.5,
+    "dual_red_green": 0.2917,
+    "dual_blue_gold": 0.6042,
+    "dual_purple_green": 0.4583,
+    "dual_red_purple": 0.5208,
+    "dual_blue_green": 0.5625,
+    "dual_green_gold": 0.4583,
+    "dual_purple_gold": 0.5208,
+    "dual_red_blue": 0.4792,
+    "dual_green_neutral": 0.4583,
+    "dual_red_neutral": 0.3542,
+    "dual_blue_neutral": 0.625,
+    "dual_purple_neutral": 0.5833,
+    "dual_gold_neutral": 0.3333,
+    "tri_red_blue_purple": 0.4792,
+    "tri_red_green_gold": 0.4375,
+    "tri_blue_purple_gold": 0.4375,
+    "tri_red_purple_green": 0.25,
+    "tri_blue_green_gold": 0.6042,
+    "tri_blue_purple_green": 0.4583,
+    "tri_red_purple_gold": 0.4375,
+    "tri_purple_green_gold": 0.5417,
+    "tri_red_blue_green": 0.5208,
+    "tri_red_blue_gold": 0.2917,
+    "penta_prismatic_crater": 0.5208,
     "penta_free_city_sovereign": 0.5,
-    "penta_wheel_convergence": 0.3571
+    "penta_wheel_convergence": 0.5208
   },
   "penta_wheel_convergence": {
-    "mono_green_swarm": 0.6429,
-    "mono_green_colossus": 0.6429,
-    "mono_green_roots": 0.6786,
-    "mono_red_blitz": 0.6786,
-    "mono_red_pyroclasm": 0.5714,
-    "mono_red_dragon": 0.5,
-    "mono_blue_frost": 0.6786,
-    "mono_blue_chrono": 0.3929,
-    "mono_blue_abyssal": 0.6429,
-    "mono_purple_crypt": 0.8214,
-    "mono_purple_blood": 0.6071,
-    "mono_purple_umbral": 0.6786,
-    "mono_gold_phalanx": 0.8214,
-    "mono_gold_celestial": 0.6071,
-    "mono_gold_judgment": 0.8571,
-    "mono_neutral_axial": 0.4286,
-    "dual_red_gold": 0.3214,
-    "dual_blue_purple": 0.3929,
-    "dual_red_green": 0.2857,
-    "dual_blue_gold": 0.3929,
-    "dual_purple_green": 0.5,
-    "dual_red_purple": 0.5714,
-    "dual_blue_green": 0.4286,
-    "dual_green_gold": 0.3929,
-    "dual_purple_gold": 0.5357,
-    "dual_red_blue": 0.4286,
-    "dual_green_neutral": 0.5,
-    "dual_red_neutral": 0.4643,
-    "dual_blue_neutral": 0.4643,
-    "dual_purple_neutral": 0.4643,
-    "dual_gold_neutral": 0.5714,
-    "tri_red_blue_purple": 0.4643,
-    "tri_red_green_gold": 0.4643,
-    "tri_blue_purple_gold": 0.7188,
-    "tri_red_purple_green": 0.1786,
-    "tri_blue_green_gold": 0.4286,
-    "tri_blue_purple_green": 0.5357,
-    "tri_red_purple_gold": 0.2857,
-    "tri_purple_green_gold": 0.3571,
-    "tri_red_blue_green": 0.5,
+    "mono_green_swarm": 0.8542,
+    "mono_green_colossus": 0.6667,
+    "mono_green_roots": 0.7708,
+    "mono_red_blitz": 0.5625,
+    "mono_red_pyroclasm": 0.7917,
+    "mono_red_dragon": 0.6875,
+    "mono_blue_frost": 0.6667,
+    "mono_blue_chrono": 0.4167,
+    "mono_blue_abyssal": 0.75,
+    "mono_purple_crypt": 0.7083,
+    "mono_purple_blood": 0.75,
+    "mono_purple_umbral": 0.7083,
+    "mono_gold_phalanx": 0.6875,
+    "mono_gold_celestial": 0.6875,
+    "mono_gold_judgment": 0.8333,
+    "mono_neutral_axial": 0.6667,
+    "dual_red_gold": 0.4583,
+    "dual_blue_purple": 0.5833,
+    "dual_red_green": 0.5,
+    "dual_blue_gold": 0.4792,
+    "dual_purple_green": 0.5833,
+    "dual_red_purple": 0.5,
+    "dual_blue_green": 0.3542,
+    "dual_green_gold": 0.5625,
+    "dual_purple_gold": 0.6458,
+    "dual_red_blue": 0.4583,
+    "dual_green_neutral": 0.4792,
+    "dual_red_neutral": 0.3125,
+    "dual_blue_neutral": 0.4375,
+    "dual_purple_neutral": 0.6667,
+    "dual_gold_neutral": 0.5625,
+    "tri_red_blue_purple": 0.4792,
+    "tri_red_green_gold": 0.5833,
+    "tri_blue_purple_gold": 0.625,
+    "tri_red_purple_green": 0.3958,
+    "tri_blue_green_gold": 0.6875,
+    "tri_blue_purple_green": 0.5208,
+    "tri_red_purple_gold": 0.2292,
+    "tri_purple_green_gold": 0.5625,
+    "tri_red_blue_green": 0.3333,
     "tri_red_blue_gold": 0.25,
-    "penta_prismatic_crater": 0.2857,
-    "penta_free_city_sovereign": 0.6429,
+    "penta_prismatic_crater": 0.4583,
+    "penta_free_city_sovereign": 0.4792,
     "penta_wheel_convergence": 0.5
   }
 };

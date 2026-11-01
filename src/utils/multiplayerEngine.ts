@@ -3,11 +3,8 @@ import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
 import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
 import type { UnifiedFormatKind } from '../data/aiUnifiedTournamentData';
-import {
-  calculateFideRankedEloDelta,
-  SOVEREIGN_AI_LEADERBOARD_ROSTER,
-  SovereignAiLeaderboardEntry,
-} from '../data/sovereignEloLadder';
+import { calculateFideRankedEloDelta } from '../data/eloDivisions';
+import type { SovereignAiLeaderboardEntry } from '../data/sovereignEloLadderData';
 
 export const VICTORY_GOLD_REWARD = 10;
 export const STARTER_GOLD = 160;
@@ -111,6 +108,18 @@ export function getStarterCollection(): Record<string, number> {
   return initial;
 }
 
+export interface RankedMatchHistoryItem {
+  id: string;
+  timestamp: number;
+  opponentName: string;
+  opponentElo: number;
+  opponentAvatarCardId?: string;
+  mode: 'sovereign' | 'pvp';
+  didWin: boolean;
+  deltaElo: number;
+  newElo: number;
+}
+
 export interface SovereignUserProfile {
   id: string;
   username: string;
@@ -124,6 +133,7 @@ export interface SovereignUserProfile {
   rankedSovereignWins?: number;
   rankedSovereignLosses?: number;
   recentRankedOpponentIds?: string[];
+  recentRankedHistory?: RankedMatchHistoryItem[];
   preferredDeckId: string;
   gold?: number;
   astralShards?: number;
@@ -644,6 +654,7 @@ function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
     rsw: profile.rankedSovereignWins ?? 0,
     rsl: profile.rankedSovereignLosses ?? 0,
     rhist: (profile.recentRankedOpponentIds ?? []).slice(-6),
+    rmh: (profile.recentRankedHistory ?? []).slice(0, 8),
     pref: profile.preferredDeckId || '',
     adm: isAdminProfile(profile),
     ca: profile.createdAt ?? Date.now(),
@@ -668,6 +679,7 @@ function decodeCloudTitleMeta(
   rankedSovereignWins?: number;
   rankedSovereignLosses?: number;
   recentRankedOpponentIds?: string[];
+  recentRankedHistory?: RankedMatchHistoryItem[];
   preferredDeckId?: string;
   isAdmin?: boolean;
   createdAt?: number;
@@ -691,6 +703,7 @@ function decodeCloudTitleMeta(
         rsw?: number;
         rsl?: number;
         rhist?: string[];
+        rmh?: RankedMatchHistoryItem[];
         pref?: string;
         adm?: boolean;
         ca?: number;
@@ -710,6 +723,7 @@ function decodeCloudTitleMeta(
         rankedSovereignWins: typeof parsed.rsw === 'number' ? parsed.rsw : undefined,
         rankedSovereignLosses: typeof parsed.rsl === 'number' ? parsed.rsl : undefined,
         recentRankedOpponentIds: Array.isArray(parsed.rhist) ? parsed.rhist : undefined,
+        recentRankedHistory: Array.isArray(parsed.rmh) ? parsed.rmh : undefined,
         preferredDeckId: parsed.pref || undefined,
         isAdmin: Boolean(parsed.adm),
         createdAt: typeof parsed.ca === 'number' ? parsed.ca : undefined,
@@ -815,14 +829,29 @@ export function calculateReputationDelta(
 export function recordPvpMatchResult(
   profile: SovereignUserProfile,
   didWin: boolean,
-  opponentRating = 1200
+  opponentRating = 1200,
+  opponentMeta?: { name?: string; avatarCardId?: string }
 ): SovereignUserProfile {
-  const reputationDelta = calculateReputationDelta(profile.eloRating, opponentRating, didWin, 32);
+  const prevElo = profile.eloRating ?? 1200;
+  const reputationDelta = calculateReputationDelta(prevElo, opponentRating, didWin, 32);
+  const newElo = Math.max(100, prevElo + reputationDelta);
+  const entry: RankedMatchHistoryItem = {
+    id: `pvp_${Date.now()}`,
+    timestamp: Date.now(),
+    opponentName: opponentMeta?.name || 'Jogador Online',
+    opponentElo: opponentRating,
+    opponentAvatarCardId: opponentMeta?.avatarCardId,
+    mode: 'pvp',
+    didWin,
+    deltaElo: newElo - prevElo,
+    newElo,
+  };
   const updated: SovereignUserProfile = {
     ...profile,
-    eloRating: Math.max(100, profile.eloRating + reputationDelta),
+    eloRating: newElo,
     pvpWins: profile.pvpWins + (didWin ? 1 : 0),
     pvpLosses: profile.pvpLosses + (didWin ? 0 : 1),
+    recentRankedHistory: [entry, ...(profile.recentRankedHistory ?? [])].slice(0, 10),
   };
   setActiveTabUserProfile(updated);
   if (!isUnregisteredProfile(updated)) {
@@ -922,6 +951,8 @@ function hydrateProfileFromRow(
     rankedSovereignLosses: meta.rankedSovereignLosses ?? localMatch?.rankedSovereignLosses ?? 0,
     recentRankedOpponentIds:
       meta.recentRankedOpponentIds ?? localMatch?.recentRankedOpponentIds ?? [],
+    recentRankedHistory:
+      meta.recentRankedHistory ?? localMatch?.recentRankedHistory ?? [],
     preferredDeckId: meta.preferredDeckId || localMatch?.preferredDeckId || '',
     gold: meta.gold ?? row.gold ?? localMatch?.gold ?? 0,
     astralShards: meta.astralShards ?? localMatch?.astralShards ?? 0,
@@ -2017,6 +2048,7 @@ export async function fetchUnifiedPlatformLeaderboard(
     });
   }
 
+  const { SOVEREIGN_AI_LEADERBOARD_ROSTER } = await import('../data/sovereignEloLadderData');
   const aiSource = includeCommanders
     ? SOVEREIGN_AI_LEADERBOARD_ROSTER
     : SOVEREIGN_AI_LEADERBOARD_ROSTER.filter((s) => s.isGrandSovereign);
@@ -2127,6 +2159,17 @@ export function recordRankedSovereignDuelResult(
   const nextHistory = [...(profile.recentRankedOpponentIds ?? []), opponentEntry.sovereignId].slice(
     -6
   );
+  const historyItem: RankedMatchHistoryItem = {
+    id: `sov_${opponentEntry.sovereignId}_${Date.now()}`,
+    timestamp: Date.now(),
+    opponentName: opponentEntry.sovereignName,
+    opponentElo: opponentEntry.eloRating,
+    opponentAvatarCardId: opponentEntry.avatarCardId,
+    mode: 'sovereign',
+    didWin,
+    deltaElo: newElo - previousElo,
+    newElo,
+  };
 
   const updatedProfile: SovereignUserProfile = {
     ...profile,
@@ -2134,6 +2177,7 @@ export function recordRankedSovereignDuelResult(
     rankedSovereignWins: (profile.rankedSovereignWins ?? 0) + (didWin ? 1 : 0),
     rankedSovereignLosses: (profile.rankedSovereignLosses ?? 0) + (didWin ? 0 : 1),
     recentRankedOpponentIds: nextHistory,
+    recentRankedHistory: [historyItem, ...(profile.recentRankedHistory ?? [])].slice(0, 10),
     arenaWins: (profile.arenaWins ?? 0) + (didWin ? 1 : 0),
     gold: isUnregisteredProfile(profile) ? 0 : (profile.gold ?? 0) + goldEarned,
     lastActiveAt: Date.now(),

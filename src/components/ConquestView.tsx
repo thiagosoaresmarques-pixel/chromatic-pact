@@ -1115,22 +1115,21 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
           <div className="conquest-setup-header">
             <div>
               <span className="vwm-territory-kicker">
-                GUERRA CONTINENTAL 2.0 • {CONQUEST_PROVINCES.length} PROVÍNCIAS • 13 MAPAS • LINHAS DE SUPRIMENTO
+                Conquista Continental · {CONQUEST_PROVINCES.length} Províncias · 13 Mapas
               </span>
               <h2 className="font-cinzel gold-gradient-text" style={{ margin: '2px 0 4px', fontSize: '1.35rem' }}>
                 Escolha o Trono que Unificará Vaeloria
               </h2>
               <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1' }}>
-                Lidere um dos 6 Impérios através da Superfície e das 6 Fronteiras Profundas. Conquiste a{' '}
-                <strong>Torre dos Cinco Selos</strong>, <strong>3 Capitais</strong> e <strong>22 Províncias</strong> para proclamar Hegemonia (+180 Ouro & +15💎) ou unifique todas as{' '}
-                <strong>{CONQUEST_PROVINCES.length} províncias</strong> (+450 Ouro & +40💎)!
+                Controle a <strong>Torre dos Cinco Selos</strong>, <strong>3 Capitais</strong> e <strong>22 Províncias</strong> para Hegemonia (+180 Ouro e +15 Estilhaços) ou unifique todas as{' '}
+                <strong>{CONQUEST_PROVINCES.length} províncias</strong> (+450 Ouro e +40 Estilhaços).
               </p>
             </div>
 
             {!isGuest && customDecks.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={{ fontSize: '0.68rem', color: '#94a3b8', fontWeight: 700 }}>
-                  SEU GRIMÓRIO DE GUERRA:
+                <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600 }}>
+                  Grimório de guerra
                 </span>
                 <select
                   value={runState.selectedDeckId}
@@ -1142,7 +1141,7 @@ export const ConquestView: React.FC<ConquestViewProps> = ({
                 >
                   {customDecks.map((cd) => (
                     <option key={cd.id} value={cd.id}>
-                      ★ {cd.name}
+                      {cd.name}
                     </option>
                   ))}
                 </select>

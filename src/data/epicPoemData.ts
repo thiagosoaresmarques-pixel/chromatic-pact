@@ -247,19 +247,13 @@ export const EPIC_POEM_APPEARANCES_BY_CARD_ID: Record<string, CardPoemAppearance
   return byCard;
 })();
 
-export interface NavigateToPoemDetail {
-  cardId: string;
-  cantoId: string;
-  chapterId: string;
-  nodeId: string;
-}
-
-export const NAVIGATE_TO_POEM_EVENT = 'chromatic-pact:navigate-poem';
-
-export function dispatchNavigateToPoem(detail: NavigateToPoemDetail): void {
-  if (typeof window === 'undefined') return;
-  window.dispatchEvent(new CustomEvent<NavigateToPoemDetail>(NAVIGATE_TO_POEM_EVENT, { detail }));
-}
+import {
+  dispatchNavigateToPoem,
+  NAVIGATE_TO_POEM_EVENT,
+  NavigateToPoemDetail,
+} from './epicPoemEvents';
+export { dispatchNavigateToPoem, NAVIGATE_TO_POEM_EVENT };
+export type { NavigateToPoemDetail };
 
 const LEGENDARY_CREATURE_CARD_IDS = new Set(
   ALL_CARDS.filter((c) => c.type === 'creature' && c.rarity === 'legendary').map((c) => c.id)

@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { CARDS_BY_ID } from '../data/cards';
-import {
-  EPIC_POEM_APPEARANCES_BY_CARD_ID,
-  PARALLEL_CANTOS_BY_PARENT_ID,
-  dispatchNavigateToPoem,
-} from '../data/epicPoemData';
-import { getCardChronicleAndSong } from '../data/mythologyLore';
+import type { CardPoemAppearance } from '../data/epicPoemData';
+import { dispatchNavigateToPoem } from '../data/epicPoemEvents';
+import type { CardMythologyEntry } from '../data/mythologyLore';
 import {
   formatCardDetailedRules,
   formatCardFaceDescription,
@@ -768,12 +765,34 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
 }) => {
   const card = CARDS_BY_ID[rawCard.id] ?? rawCard;
   const domainInfo = DOMAIN_META[card.domain] || DOMAIN_META.neutral;
-  const poemAppearances = EPIC_POEM_APPEARANCES_BY_CARD_ID[card.id] ?? [];
+  const [poemState, setPoemState] = useState<{
+    appearances: CardPoemAppearance[];
+    fallbackChronicle: CardMythologyEntry | null;
+    parallelByParent: typeof import('../data/epicPoemData').PARALLEL_CANTOS_BY_PARENT_ID | null;
+  }>({ appearances: [], fallbackChronicle: null, parallelByParent: null });
+
+  React.useEffect(() => {
+    let cancelled = false;
+    Promise.all([import('../data/epicPoemData'), import('../data/mythologyLore')])
+      .then(([poemMod, loreMod]) => {
+        if (cancelled) return;
+        const apps = poemMod.EPIC_POEM_APPEARANCES_BY_CARD_ID[card.id] ?? [];
+        const fallback = apps[0] ? null : loreMod.getCardChronicleAndSong(card);
+        setPoemState({
+          appearances: apps,
+          fallbackChronicle: fallback,
+          parallelByParent: poemMod.PARALLEL_CANTOS_BY_PARENT_ID,
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [card]);
+
+  const poemAppearances = poemState.appearances;
   const primaryPoem = poemAppearances[0] ?? null;
-  const fallbackChronicle = React.useMemo(
-    () => (primaryPoem ? null : getCardChronicleAndSong(card)),
-    [card, primaryPoem]
-  );
+  const fallbackChronicle = poemState.fallbackChronicle;
 
   const resolveEraCantoId = (eraTitle: string): string => {
     if (eraTitle.startsWith('Era Zero')) return 'canto_1_vigilia';
@@ -1056,7 +1075,7 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
                     className="btn-fantasy inspect-poem-jump-btn"
                     onClick={() => {
                       const targetCantoId = resolveEraCantoId(fallbackChronicle.eraTitle);
-                      const chapters = PARALLEL_CANTOS_BY_PARENT_ID[targetCantoId] || [];
+                      const chapters = poemState.parallelByParent?.[targetCantoId] || [];
                       const domainMatch =
                         chapters.find((ch) =>
                           ch.nodes.some((n) => n.domain === card.domain)

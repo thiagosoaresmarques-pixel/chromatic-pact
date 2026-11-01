@@ -7,6 +7,7 @@ import {
   ELO_DIVISIONS,
   EloDivisionId,
   getEloDivisionMeta,
+  getSignatureCardsForSovereign,
   SovereignAiLeaderboardEntry,
 } from '../data/sovereignEloLadder';
 import { CardDefinition, Domain } from '../types/game';
@@ -76,6 +77,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
   const [dossierSovereign, setDossierSovereign] =
     useState<SovereignAiLeaderboardEntry | null>(null);
   const [showRulesModal, setShowRulesModal] = useState<boolean>(false);
+  const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
 
   const availableDecks = useMemo(() => {
     const list: Array<{ id: string; label: string; cardIds: string[]; isCustom: boolean }> = [];
@@ -126,16 +128,17 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
   }, [loadLeaderboard]);
 
   useEffect(() => {
-    if (!dossierSovereign && !showRulesModal) return;
+    if (!dossierSovereign && !showRulesModal && !showHistoryModal) return;
     const onKeyDown = (ev: KeyboardEvent) => {
       if (ev.key === 'Escape') {
         setDossierSovereign(null);
         setShowRulesModal(false);
+        setShowHistoryModal(false);
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [dossierSovereign, showRulesModal]);
+  }, [dossierSovereign, showRulesModal, showHistoryModal]);
 
   const activeDeck = useMemo(
     () => availableDecks.find((d) => d.id === selectedDeckId) ?? availableDecks[0] ?? null,
@@ -363,6 +366,27 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
               {playerDiv.shortLabel}
               {snapshot?.currentUserEntry ? ` · #${snapshot.currentUserEntry.globalRank} geral` : ''}
               {playerWins + playerLosses > 0 ? ` · ${playerWins}V ${playerLosses}D` : ''}
+              {(currentUser.recentRankedHistory?.length ?? 0) > 0 && (
+                <>
+                  {' · '}
+                  <button
+                    type="button"
+                    onClick={() => setShowHistoryModal(true)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      color: '#cbd5e1',
+                      fontSize: '0.74rem',
+                      textDecoration: 'underline',
+                      textUnderlineOffset: '2px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Histórico ({currentUser.recentRankedHistory!.length})
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -1230,6 +1254,100 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                     </div>
                   )}
 
+                  {/* Progressive Disclosure: Signature Cards of this Sovereign's Grimoire */}
+                  {(() => {
+                    const sigCards = getSignatureCardsForSovereign(s, 8);
+                    if (sigCards.length === 0) return null;
+                    return (
+                      <details
+                        style={{
+                          marginBottom: '1.1rem',
+                          borderRadius: '8px',
+                          background: 'rgba(15, 23, 42, 0.45)',
+                          border: '1px solid rgba(148, 163, 184, 0.12)',
+                          padding: '0.55rem 0.8rem',
+                        }}
+                      >
+                        <summary
+                          style={{
+                            fontSize: '0.76rem',
+                            fontWeight: 600,
+                            color: '#cbd5e1',
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                          }}
+                        >
+                          Ver cartas principais deste grimório ({sigCards.length} cartas)
+                        </summary>
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(215px, 1fr))',
+                            gap: '0.45rem',
+                            marginTop: '0.65rem',
+                          }}
+                        >
+                          {sigCards.map((c) => (
+                            <button
+                              key={c.id}
+                              type="button"
+                              onClick={() => onInspectCard(c)}
+                              title={`Inspecionar carta: ${c.name}`}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.55rem',
+                                padding: '5px 8px',
+                                borderRadius: '6px',
+                                background: 'rgba(11, 15, 25, 0.72)',
+                                border: '1px solid rgba(148, 163, 184, 0.14)',
+                                color: '#e2e8f0',
+                                textAlign: 'left',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {c.imagePath ? (
+                                <img
+                                  src={c.imagePath}
+                                  alt={c.name}
+                                  loading="lazy"
+                                  style={{
+                                    width: '28px',
+                                    height: '28px',
+                                    borderRadius: '4px',
+                                    objectFit: 'cover',
+                                    flexShrink: 0,
+                                  }}
+                                />
+                              ) : null}
+                              <span
+                                style={{
+                                  flex: 1,
+                                  fontSize: '0.74rem',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {c.name}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: '0.7rem',
+                                  color: '#94a3b8',
+                                  fontVariantNumeric: 'tabular-nums',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                Custo {c.cost}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </details>
+                    );
+                  })()}
+
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                     <button
                       type="button"
@@ -1350,6 +1468,121 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                 onClick={() => setShowRulesModal(false)}
               >
                 Entendi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          PROGRESSIVE DISCLOSURE MODAL 3: RECENT RANKED MATCH HISTORY
+          ===================================================================== */}
+      {showHistoryModal && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setShowHistoryModal(false)}
+          style={{ zIndex: 3200 }}
+        >
+          <div
+            className="modal-panel"
+            style={{ maxWidth: '520px', width: '94vw', padding: '1.35rem' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.85rem',
+              }}
+            >
+              <h3 className="font-cinzel" style={{ margin: 0, fontSize: '1.02rem', color: '#f8fafc' }}>
+                Histórico Recente de Duelos Ranqueados
+              </h3>
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-secondary"
+                style={{ padding: '4px 9px', fontSize: '0.75rem' }}
+                onClick={() => setShowHistoryModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div
+              style={{
+                borderRadius: '8px',
+                border: '1px solid rgba(148, 163, 184, 0.14)',
+                overflow: 'hidden',
+                marginBottom: '1rem',
+              }}
+            >
+              {(currentUser.recentRankedHistory ?? []).map((h, idx, arr) => (
+                <div
+                  key={h.id}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.55rem 0.85rem',
+                    borderBottom:
+                      idx < arr.length - 1 ? '1px solid rgba(148, 163, 184, 0.08)' : 'none',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0 }}>
+                    {h.opponentAvatarCardId
+                      ? renderPortrait(h.opponentAvatarCardId, 30, false)
+                      : null}
+                    <div style={{ minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          color: '#f1f5f9',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {h.opponentName}
+                      </div>
+                      <div style={{ fontSize: '0.69rem', color: '#64748b' }}>
+                        {h.opponentElo} ELO · {h.didWin ? 'Vitória' : 'Derrota'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      textAlign: 'right',
+                      fontVariantNumeric: 'tabular-nums',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        color: h.deltaElo >= 0 ? '#6ee7b7' : '#fca5a5',
+                      }}
+                    >
+                      {h.deltaElo >= 0 ? `+${h.deltaElo}` : h.deltaElo} ELO
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>{h.newElo} final</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-secondary"
+                style={{ padding: '6px 14px', fontSize: '0.76rem' }}
+                onClick={() => setShowHistoryModal(false)}
+              >
+                Fechar
               </button>
             </div>
           </div>

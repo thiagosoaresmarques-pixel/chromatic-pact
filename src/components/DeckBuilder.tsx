@@ -350,48 +350,48 @@ const hasKeywordOrAscension = (c: CardDefinition, kw: Keyword): boolean =>
 
 const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
   // 1. Palavras-Chave de Combate (11)
-  { id: 'kw:Guardião', group: 'keywords', label: '🛡️ Guardião', matches: (c) => hasKeywordOrAscension(c, 'Guardião') },
-  { id: 'kw:Voo', group: 'keywords', label: '🪽 Voo', matches: (c) => hasKeywordOrAscension(c, 'Voo') },
-  { id: 'kw:Alcance', group: 'keywords', label: '🏹 Alcance', matches: (c) => hasKeywordOrAscension(c, 'Alcance') },
-  { id: 'kw:Ímpeto', group: 'keywords', label: '⚡ Ímpeto', matches: (c) => hasKeywordOrAscension(c, 'Ímpeto') },
-  { id: 'kw:Atropelar', group: 'keywords', label: '🦏 Atropelar', matches: (c) => hasKeywordOrAscension(c, 'Atropelar') },
-  { id: 'kw:Toque Letal', group: 'keywords', label: '☠️ Toque Letal', matches: (c) => hasKeywordOrAscension(c, 'Toque Letal') },
-  { id: 'kw:Escudo Divino', group: 'keywords', label: '✨ Escudo Divino', matches: (c) => hasKeywordOrAscension(c, 'Escudo Divino') },
-  { id: 'kw:Dreno de Vida', group: 'keywords', label: '🩸 Dreno de Vida', matches: (c) => hasKeywordOrAscension(c, 'Dreno de Vida') },
-  { id: 'kw:Renascer', group: 'keywords', label: '⚰️ Renascer', matches: (c) => hasKeywordOrAscension(c, 'Renascer') },
-  { id: 'kw:Pele Incandescente', group: 'keywords', label: '🌋 Pele Incandescente', matches: (c) => hasKeywordOrAscension(c, 'Pele Incandescente') },
-  { id: 'kw:Fúria Crescente', group: 'keywords', label: '🔥 Fúria Crescente', matches: (c) => hasKeywordOrAscension(c, 'Fúria Crescente') },
+  { id: 'kw:Guardião', group: 'keywords', label: 'Guardião', matches: (c) => hasKeywordOrAscension(c, 'Guardião') },
+  { id: 'kw:Voo', group: 'keywords', label: 'Voo', matches: (c) => hasKeywordOrAscension(c, 'Voo') },
+  { id: 'kw:Alcance', group: 'keywords', label: 'Alcance', matches: (c) => hasKeywordOrAscension(c, 'Alcance') },
+  { id: 'kw:Ímpeto', group: 'keywords', label: 'Ímpeto', matches: (c) => hasKeywordOrAscension(c, 'Ímpeto') },
+  { id: 'kw:Atropelar', group: 'keywords', label: 'Atropelar', matches: (c) => hasKeywordOrAscension(c, 'Atropelar') },
+  { id: 'kw:Toque Letal', group: 'keywords', label: 'Toque Letal', matches: (c) => hasKeywordOrAscension(c, 'Toque Letal') },
+  { id: 'kw:Escudo Divino', group: 'keywords', label: 'Escudo Divino', matches: (c) => hasKeywordOrAscension(c, 'Escudo Divino') },
+  { id: 'kw:Dreno de Vida', group: 'keywords', label: 'Dreno de Vida', matches: (c) => hasKeywordOrAscension(c, 'Dreno de Vida') },
+  { id: 'kw:Renascer', group: 'keywords', label: 'Renascer', matches: (c) => hasKeywordOrAscension(c, 'Renascer') },
+  { id: 'kw:Pele Incandescente', group: 'keywords', label: 'Pele Incandescente', matches: (c) => hasKeywordOrAscension(c, 'Pele Incandescente') },
+  { id: 'kw:Fúria Crescente', group: 'keywords', label: 'Fúria Crescente', matches: (c) => hasKeywordOrAscension(c, 'Fúria Crescente') },
 
   // 2. Atributos, Mecânicas & Fileira
   {
     id: 'mech:armor',
     group: 'mechanics',
-    label: '🧱 Armadura',
+    label: 'Armadura',
     matches: (c) =>
       c.armor > 0 ||
       (c.ascension?.newArmor ?? 0) > 0 ||
       c.effects.some((e) => e.type === 'shield_all_allies' && (e.secondaryValue ?? 0) > 0),
   },
-  { id: 'mech:regeneration', group: 'mechanics', label: '🌿 Regeneração', matches: (c) => (c.regeneration ?? 0) > 0 },
-  { id: 'mech:breath', group: 'mechanics', label: '🐉 Sopro Elemental', matches: (c) => (c.breathDamage ?? 0) > 0 },
-  { id: 'mech:ascension', group: 'mechanics', label: '★ Ascensão (Evolução)', matches: (c) => Boolean(c.ascension) },
+  { id: 'mech:regeneration', group: 'mechanics', label: 'Regeneração', matches: (c) => (c.regeneration ?? 0) > 0 },
+  { id: 'mech:breath', group: 'mechanics', label: 'Sopro Elemental', matches: (c) => (c.breathDamage ?? 0) > 0 },
+  { id: 'mech:ascension', group: 'mechanics', label: 'Ascensão (Evolução)', matches: (c) => Boolean(c.ascension) },
   {
     id: 'mech:break_domain',
     group: 'mechanics',
-    label: '☸ Quebra-Domínio',
+    label: 'Quebra-Domínio',
     matches: (c) => c.effects.some((e) => e.type === 'break_domain_expansion'),
   },
-  { id: 'mech:corruption', group: 'mechanics', label: '🩸 Custo de Corrupção', matches: (c) => (c.corruptionCost ?? 0) > 0 },
+  { id: 'mech:corruption', group: 'mechanics', label: 'Custo de Corrupção', matches: (c) => (c.corruptionCost ?? 0) > 0 },
   {
     id: 'row:vanguard',
     group: 'mechanics',
-    label: '⚔️ Fileira: Vanguarda',
+    label: 'Fileira: Vanguarda',
     matches: (c) => c.type === 'creature' && c.preferredRow === 'vanguard',
   },
   {
     id: 'row:rearguard',
     group: 'mechanics',
-    label: '🏹 Fileira: Retaguarda',
+    label: 'Fileira: Retaguarda',
     matches: (c) =>
       (c.type === 'creature' && c.preferredRow === 'rearguard') ||
       c.type === 'relic' ||
@@ -402,13 +402,13 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
   {
     id: 'eff:freeze',
     group: 'effects',
-    label: '❄️ Congelar',
+    label: 'Congelar',
     matches: (c) => c.effects.some((e) => e.type === 'freeze_enemy' || e.type === 'freeze_enemy_vanguard'),
   },
   {
     id: 'eff:aoe_damage',
     group: 'effects',
-    label: '💥 Dano em Área / Fileira',
+    label: 'Dano em Área / Fileira',
     matches: (c) =>
       (c.breathDamage ?? 0) > 0 ||
       c.effects.some((e) => e.type === 'damage_enemy_row' || e.type === 'damage_all_units'),
@@ -416,14 +416,14 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
   {
     id: 'eff:single_damage',
     group: 'effects',
-    label: '🎯 Dano Direto (Alvo / Soberano)',
+    label: 'Dano Direto (Alvo / Soberano)',
     matches: (c) =>
       c.effects.some((e) => e.type === 'damage_single_enemy' || e.type === 'damage_enemy_sovereign'),
   },
   {
     id: 'eff:removal',
     group: 'effects',
-    label: '🗡️ Destruir / Devolver / Roubar',
+    label: 'Destruir / Devolver / Roubar',
     matches: (c) =>
       c.effects.some(
         (e) => e.type === 'destroy_enemy' || e.type === 'bounce_enemy' || e.type === 'steal_small_enemy'
@@ -432,19 +432,19 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
   {
     id: 'eff:draw',
     group: 'effects',
-    label: '📖 Comprar Cartas',
+    label: 'Comprar Cartas',
     matches: (c) => c.effects.some((e) => e.type === 'draw_cards'),
   },
   {
     id: 'eff:essence',
     group: 'effects',
-    label: '⚡ Gerar Essência (+⚡)',
+    label: 'Gerar Essência',
     matches: (c) => c.effects.some((e) => e.type === 'grant_bonus_essence'),
   },
   {
     id: 'eff:heal',
     group: 'effects',
-    label: '💚 Cura / Restauração',
+    label: 'Cura / Restauração',
     matches: (c) =>
       c.effects.some(
         (e) => e.type === 'heal_sovereign' || e.type === 'heal_all_allies' || e.type === 'heal_target_ally'
@@ -453,7 +453,7 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
   {
     id: 'eff:buff',
     group: 'effects',
-    label: '🛡️ Fortalecer / Escudar Aliados',
+    label: 'Fortalecer / Escudar Aliados',
     matches: (c) =>
       c.effects.some(
         (e) => e.type === 'buff_target_ally' || e.type === 'buff_all_allies' || e.type === 'shield_all_allies'
@@ -462,19 +462,19 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
   {
     id: 'eff:debuff',
     group: 'effects',
-    label: '📉 Reduzir Ataque (-ATQ)',
+    label: 'Reduzir Ataque (-ATQ)',
     matches: (c) => c.effects.some((e) => e.type === 'debuff_enemy_vanguard_atk'),
   },
   {
     id: 'eff:revive',
     group: 'effects',
-    label: '💀 Reanimar da Cripta',
+    label: 'Reanimar da Cripta',
     matches: (c) => c.effects.some((e) => e.type === 'revive_from_crypt'),
   },
   {
     id: 'eff:summon',
     group: 'effects',
-    label: '🐾 Invocar Fichas',
+    label: 'Invocar Fichas',
     matches: (c) => c.effects.some((e) => e.type === 'summon_token'),
   },
 
@@ -482,31 +482,31 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
   {
     id: 'trig:on_enter',
     group: 'triggers',
-    label: '✨ Ao Entrar / Lançar',
+    label: 'Ao Entrar / Lançar',
     matches: (c) => c.effects.some((e) => e.trigger === 'on_enter'),
   },
   {
     id: 'trig:on_attack',
     group: 'triggers',
-    label: '⚔️ Ao Atacar',
+    label: 'Ao Atacar',
     matches: (c) => c.effects.some((e) => e.trigger === 'on_attack'),
   },
   {
     id: 'trig:on_death',
     group: 'triggers',
-    label: '⚰️ Ao Morrer (Último Suspiro)',
+    label: 'Ao Morrer (Último Suspiro)',
     matches: (c) => c.effects.some((e) => e.trigger === 'on_death'),
   },
   {
     id: 'trig:spell_cast',
     group: 'triggers',
-    label: '🔮 Ao Conjurar Feitiço',
+    label: 'Ao Conjurar Feitiço',
     matches: (c) => c.effects.some((e) => e.trigger === 'spell_cast'),
   },
   {
     id: 'trig:turn_cycle',
     group: 'triggers',
-    label: '⏳ Início / Fim do Turno',
+    label: 'Início / Fim do Turno',
     matches: (c) => c.effects.some((e) => e.trigger === 'turn_start' || e.trigger === 'turn_end'),
   },
 ];
@@ -1117,8 +1117,8 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       setDeckCardIds(accepted);
       setSaveBanner(
         accepted.length === 100
-          ? `✨ "${found.name}" (100/100 cartas da sua coleção) carregado na Forja!`
-          : `📥 "${found.name}": ${accepted.length}/100 cartas disponíveis na sua coleção carregadas. Clique em "Editar (${GRIMOIRE_REPLACEMENT_GOLD_COST} 🪙)" para liberar as 100 cartas completas deste Campeão!`
+          ? `"${found.name}" (100/100 cartas da sua coleção) carregado na Forja.`
+          : `"${found.name}": ${accepted.length}/100 cartas disponíveis na sua coleção carregadas. Clique em "Editar (${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)" para liberar as 100 cartas completas deste Soberano.`
       );
       setTimeout(() => setSaveBanner(null), 4500);
     },
@@ -1241,14 +1241,14 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     }
     const code = encodeDeckCode(deckName, deckCardIds);
     navigator.clipboard.writeText(code).catch(() => undefined);
-    setSaveBanner(`📋 Código do Grimório copiado (${deckCardIds.length} cartas)!`);
+    setSaveBanner(`Código do Grimório copiado (${deckCardIds.length} cartas).`);
     setTimeout(() => setSaveBanner(null), 3200);
   };
 
   const handleApplyImportedDeckCode = () => {
     const res = decodeDeckCode(importCodeInput);
     if (!res.ok) {
-      setSaveBanner(`⚠️ ${res.error}`);
+      setSaveBanner(res.error);
       setTimeout(() => setSaveBanner(null), 3500);
       return;
     }
@@ -1505,7 +1505,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                   if (e.target.checked) setOnlyUnlocked(false);
                 }}
               />
-              <span>⚒️ Forjáveis</span>
+              <span>Forjáveis</span>
             </label>
           )}
 
@@ -1516,7 +1516,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 className="astral-shards-pill"
                 title="Estilhaços Astrais disponíveis para forjar cartas específicas"
               >
-                💎 <strong>{astralShards.toLocaleString('pt-BR')}</strong>
+                <strong>{astralShards.toLocaleString('pt-BR')}</strong> Estilhaços
               </span>
             )}
             {!isGuest && salvageableInfo && salvageableInfo.totalShardsEarned > 0 && onSalvageDuplicates && (
@@ -1529,7 +1529,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 }}
                 title={`Transmutar ${salvageableInfo.cardsSalvagedCount} cópias excedentes em +${salvageableInfo.totalShardsEarned} Estilhaços Astrais`}
               >
-                <span>💎 +{salvageableInfo.totalShardsEarned}</span>
+                <span>+{salvageableInfo.totalShardsEarned} Estilhaços</span>
               </button>
             )}
             <span className="db-results-count">{filteredCards.length}</span>
@@ -1577,7 +1577,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                     )
                   }
                 >
-                  ✨ Ver {deckAnalysis.recommendedCardIds.size} Cartas Sugeridas
+                  Ver {deckAnalysis.recommendedCardIds.size} Cartas Sugeridas
                 </button>
                 <button
                   type="button"
@@ -1587,7 +1587,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                     setShowTacticalGuideModal(true);
                   }}
                 >
-                  ⚡ Compêndio de Combos (1–5 Cores)
+                  Compêndio de Combos (1–5 Cores)
                 </button>
               </div>
               <div style={{ marginTop: '0.45rem', display: 'flex', flexDirection: 'column', gap: '0.28rem' }}>
@@ -1836,28 +1836,28 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               <optgroup label="Grimórios de Soberanos Monocolores (16 Arquétipos)">
                 {getTrainedMonocolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}
+                    {d.name}
                   </option>
                 ))}
               </optgroup>
               <optgroup label="Grimórios de Soberanos Bicolores (15 Pactos)">
                 {getTrainedBicolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}
+                    {d.name}
                   </option>
                 ))}
               </optgroup>
               <optgroup label="Grimórios de Grão-Soberanos Tricolores & Pentacromáticos (13 Ápices)">
                 {getTrainedPolycolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}
+                    {d.name}
                   </option>
                 ))}
               </optgroup>
               <optgroup label="Grimórios Clássicos & Multicromáticos">
                 {PREBUILT_DECKS.map((d) => (
                   <option key={d.id} value={d.id}>
-                    {d.domains.map((dom) => DOMAIN_META[dom].icon).join('')} {d.name}
+                    {d.name}
                   </option>
                 ))}
               </optgroup>
@@ -1917,7 +1917,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               }
             >
               {isReplacingGrimoire
-                ? `Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST} 🪙)`
+                ? `Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)`
                 : deckCardIds.length === 100
                 ? 'Salvar (100)'
                 : `Salvar (${deckCardIds.length}/100)`}
@@ -1963,7 +1963,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 onClick={handleStartReplaceGrimoire}
                 title={`Editar ou substituir Grimório completo por ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro`}
               >
-                Editar ({GRIMOIRE_REPLACEMENT_GOLD_COST} 🪙)
+                Editar ({GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)
               </button>
             )}
             <button
@@ -1972,7 +1972,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               onClick={() => setIsMobileDeckListOpen((prev) => !prev)}
               title="Expandir ou recolher a lista de cartas do Grimório no smartphone"
             >
-              📋 Lista ({deckCardIds.length}) {isMobileDeckListOpen ? '▴' : '▾'}
+              Lista ({deckCardIds.length}) {isMobileDeckListOpen ? '▴' : '▾'}
             </button>
           </div>
 
@@ -1983,7 +1983,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               onClick={handleCopyDeckCode}
               title="Copiar código compacto deste Grimório para compartilhar"
             >
-              📤 Copiar Código
+              Copiar Código
             </button>
             <button
               type="button"
@@ -1991,7 +1991,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               onClick={() => setShowImportCodeBox((v) => !v)}
               title="Importar um Grimório colando um código CPDECK1-..."
             >
-              📥 {showImportCodeBox ? 'Fechar Importação' : 'Importar Código'}
+              {showImportCodeBox ? 'Fechar Importação' : 'Importar Código'}
             </button>
           </div>
 

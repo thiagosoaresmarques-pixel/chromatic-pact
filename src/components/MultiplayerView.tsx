@@ -47,12 +47,12 @@ interface AvatarCreaturePickerProps {
 
 const DOMAIN_FILTERS: Array<{ id: string; label: string }> = [
   { id: 'all', label: 'Todos' },
-  { id: 'red', label: '🔴 Fogo' },
-  { id: 'blue', label: '🔵 Gelo' },
-  { id: 'purple', label: '🟣 Sombra' },
-  { id: 'green', label: '🟢 Vida' },
-  { id: 'gold', label: '🟡 Sol' },
-  { id: 'neutral', label: '⚪ Neutro' },
+  { id: 'red', label: 'Chama' },
+  { id: 'blue', label: 'Tempestade' },
+  { id: 'purple', label: 'Abismo' },
+  { id: 'green', label: 'Selva' },
+  { id: 'gold', label: 'Ordem' },
+  { id: 'neutral', label: 'Axial' },
 ];
 
 const AvatarCreaturePicker: React.FC<AvatarCreaturePickerProps> = ({
@@ -110,7 +110,7 @@ const AvatarCreaturePicker: React.FC<AvatarCreaturePickerProps> = ({
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="aaa-stat-label" style={{ color: '#fde047' }}>
-            👑 TÍTULO HONORÍFICO (VINCULADO AUTOMATICAMENTE AO AVATAR)
+            Título honorífico vinculado ao avatar
           </div>
           <div
             className="font-cinzel gold-gradient-text"
@@ -134,7 +134,7 @@ const AvatarCreaturePicker: React.FC<AvatarCreaturePickerProps> = ({
           style={{ padding: '4px 10px', fontSize: '0.72rem' }}
           onClick={() => setPoolMode('legendary')}
         >
-          ★ Criaturas Lendárias
+          Criaturas Lendárias
         </button>
         <button
           type="button"
@@ -144,7 +144,7 @@ const AvatarCreaturePicker: React.FC<AvatarCreaturePickerProps> = ({
           style={{ padding: '4px 10px', fontSize: '0.72rem' }}
           onClick={() => setPoolMode('all_creatures')}
         >
-          🐉 Todas as Criaturas
+          Todas as Criaturas
         </button>
         <input
           type="text"
@@ -312,7 +312,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     playSfx('channel');
     setPortableFeedback({
       kind: 'ok',
-      text: '📋 Códice de Save copiado! Cole-o no seu smartphone ou outro navegador para sincronizar tudo.',
+      text: 'Códice de Save copiado. Cole-o no seu smartphone ou outro navegador para sincronizar tudo.',
     });
   };
 
@@ -380,7 +380,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     () =>
       customDecks.map((cd) => ({
         id: cd.id,
-        name: `★ ${cd.name}`,
+        name: cd.name,
         subtitle: 'Grimório Autoral (100 Cartas)',
       })),
     [customDecks]
@@ -624,8 +624,8 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                   }}
                 >
                   <div>
-                    <div style={{ fontSize: '0.68rem', fontWeight: 900, color: '#fde047', letterSpacing: '0.1em' }}>
-                      👑 CREDENCIAL DE ADMINISTRADOR ATIVA ({currentUser.username.toUpperCase()})
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#fde047' }}>
+                      Credencial de Administrador ({currentUser.username})
                     </div>
                     <div style={{ fontSize: '0.78rem', color: '#e2e8f0' }}>
                       Gerencie contas, Ouro, coleção de 500 cartas, visitantes e salas 1×1.
@@ -639,7 +639,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                       onOpenAdminPanel();
                     }}
                   >
-                    👑 Abrir Painel Admin →
+                    Abrir Painel Admin
                   </button>
                 </div>
               )}
@@ -670,7 +670,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
-                    🔒 NICKNAME (IMUTÁVEL)
+                    NICKNAME (IMUTÁVEL)
                   </label>
                   <input
                     type="text"
@@ -761,7 +761,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                         onNeedsDeckSetup?.();
                       }}
                     >
-                      ⚠️ Sem Grimório (0/100) — Escolher Meu 1º Grimório →
+                      Sem Grimório (0/100) — Escolher Meu 1º Grimório
                     </button>
                   )}
                 </div>
@@ -885,7 +885,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                       setShowRecoveryForm(true);
                     }}
                   >
-                    🔄 Esqueceu sua senha? Recuperar / Redefinir Senha
+                    Esqueceu sua senha? Recuperar / Redefinir
                   </button>
 
                   <button
@@ -893,7 +893,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                     className="aaa-btn aaa-btn-primary"
                     disabled={loginLoading}
                   >
-                    {loginLoading ? 'Autenticando...' : '🔑 Entrar na Conta →'}
+                    {loginLoading ? 'Autenticando...' : 'Entrar na Conta'}
                   </button>
                 </div>
               </form>
@@ -912,7 +912,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div className="aaa-kicker" style={{ color: '#fde047' }}>
-                    🔄 RECUPERAÇÃO E REDEFINIÇÃO DE SENHA
+                    RECUPERAÇÃO E REDEFINIÇÃO DE SENHA
                   </div>
                   <button
                     type="button"
@@ -1027,7 +1027,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                     textAlign: 'center',
                   }}
                 >
-                  Nenhum perfil salvo neste navegador. Clique em <strong>"✨ Criar Nova Conta"</strong> acima para criar seu perfil!
+                  Nenhum perfil salvo neste navegador. Clique em <strong>"Criar Nova Conta"</strong> acima para criar seu perfil.
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -1076,28 +1076,28 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                               {acc.username}{' '}
                               {isCurrent && (
                                 <span style={{ color: '#fde047', fontSize: '0.72rem' }}>
-                                  (ATIVO)
+                                  (Ativo)
                                 </span>
                               )}
                             </div>
                             <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
-                              {getAvatarHonorificTitle(acc.avatarCardId)} • 🏆 {acc.eloRating} Reputação (
+                              {getAvatarHonorificTitle(acc.avatarCardId)} · {acc.eloRating} ELO (
                               {acc.pvpWins}V / {acc.pvpLosses}D)
                             </div>
                           </div>
                         </div>
                         <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                           <span className="aaa-btn aaa-btn-secondary" style={{ padding: '4px 10px' }}>
-                            {isCurrent ? '✓ Conectado' : 'Usar Conta'}
+                            {isCurrent ? 'Conectado' : 'Usar Conta'}
                           </span>
                           <button
                             type="button"
                             className="aaa-btn aaa-btn-ghost"
-                            style={{ padding: '4px 8px', color: '#fca5a5' }}
+                            style={{ padding: '4px 8px', color: '#fca5a5', fontSize: '0.72rem' }}
                             title="Excluir este perfil"
                             onClick={(e) => handleDeleteAccount(acc, e)}
                           >
-                            🗑️
+                            Excluir
                           </button>
                         </div>
                       </div>
@@ -1114,33 +1114,24 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             onSubmit={handleCreateAccount}
             style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
           >
-            {/* Destaque Dourado de Bônus de Boas-Vindas */}
+            {/* Nota sóbria de Boas-Vindas */}
             <div
               style={{
-                padding: '0.75rem 0.95rem',
+                padding: '0.7rem 0.9rem',
                 borderRadius: '8px',
-                background:
-                  'linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(30, 18, 52, 0.92))',
-                border: '1.5px solid rgba(250, 204, 21, 0.65)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+                background: 'rgba(15, 23, 42, 0.72)',
+                border: '1px solid rgba(250, 204, 21, 0.3)',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
+                flexDirection: 'column',
+                gap: '2px',
               }}
             >
-              <span style={{ fontSize: '1.6rem', lineHeight: 1 }}>🎁</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                <div
-                  className="font-cinzel gold-gradient-text"
-                  style={{ fontSize: '0.88rem', fontWeight: 900 }}
-                >
-                  PRESENTE DE BOAS-VINDAS DO SOBERANO (100% GRÁTIS)
-                </div>
-                <div style={{ fontSize: '0.76rem', color: '#fef08a', lineHeight: 1.4 }}>
-                  Ao criar sua conta gratuita você recebe imediatamente{' '}
-                  <strong>+160 Ouro de Boas-Vindas (2 Pacotes no Relicário)</strong> +{' '}
-                  <strong>Grimório Inicial de 100 Cartas liberado para combate</strong>!
-                </div>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fde68a' }}>
+                Bônus inicial de Soberano
+              </div>
+              <div style={{ fontSize: '0.76rem', color: '#cbd5e1', lineHeight: 1.4 }}>
+                Inclui <strong>+160 Ouro inicial</strong> (2 pacotes no Relicário) e{' '}
+                <strong>1º Grimório de 100 cartas liberado</strong>.
               </div>
             </div>
 
@@ -1271,12 +1262,12 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
           <div className="portable-codex-top">
             <div>
               <div className="portable-codex-kicker">
-                📲 APP EM TELA CHEIA & SINCRONIA PORTÁTIL (PC ↔ SMARTPHONE)
+                Aplicativo & Sincronia Portátil (PC / Smartphone)
               </div>
               <div className="portable-codex-sub">
                 {pwaState.isStandalone
-                  ? '✓ Executando como Aplicativo Instalado em Tela Cheia.'
-                  : 'Transfira Ouro, coleção, Campanha, Conquista e Crisol entre dispositivos ou instale o jogo.'}
+                  ? 'Executando como aplicativo instalado em tela cheia.'
+                  : 'Transfira Ouro, coleção, Campanha, Conquista e Crisol entre dispositivos ou instale o aplicativo.'}
               </div>
             </div>
 
@@ -1298,7 +1289,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                     }
                   }}
                 >
-                  📲 Instalar App
+                  Instalar App
                 </button>
               )}
               {!isUnregistered && (
@@ -1309,7 +1300,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                     onClick={handleCopyPortableSave}
                     title="Copia o código completo de backup desta conta e campanhas locais"
                   >
-                    📋 Copiar Save
+                    Copiar Save
                   </button>
                   <button
                     type="button"
@@ -1318,12 +1309,12 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                       downloadSovereignSaveFile(currentUser);
                       setPortableFeedback({
                         kind: 'ok',
-                        text: '💾 Arquivo .cpsave.txt baixado com sucesso!',
+                        text: 'Arquivo .cpsave.txt baixado com sucesso.',
                       });
                     }}
                     title="Baixa um arquivo .cpsave.txt para guardar ou enviar ao celular"
                   >
-                    💾 Baixar .cpsave
+                    Baixar .cpsave
                   </button>
                 </>
               )}
@@ -1332,7 +1323,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                 className="aaa-btn aaa-btn-ghost"
                 onClick={() => setShowPortableRestore((v) => !v)}
               >
-                📥 {showPortableRestore ? 'Fechar Restauração' : 'Importar Save'}
+                {showPortableRestore ? 'Fechar Restauração' : 'Importar Save'}
               </button>
             </div>
           </div>
@@ -1354,7 +1345,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                 Restaurar Código
               </button>
               <label className="aaa-btn aaa-btn-secondary portable-file-label">
-                📂 Abrir .cpsave
+                Abrir .cpsave
                 <input
                   type="file"
                   accept=".txt,.cpsave,.json"
@@ -1383,7 +1374,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
               }}
               title="Acessar Painel Administrativo"
             >
-              👑 Painel Administrativo
+              Painel Administrativo
             </button>
           </div>
         )}
@@ -1400,6 +1391,7 @@ interface MultiplayerViewProps {
   onOpenAccountModal: (tab: AccountModalTab) => void;
   onRequireDeckSetup?: () => void;
   onOpenGlobalLeaderboard?: () => void;
+  onChallengeMatchedSovereign?: (playerDeckIds: string[], playerDeckId: string) => void;
 }
 
 function resolveDeckCards(cardIds: string[]) {
@@ -1422,6 +1414,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   onOpenAccountModal,
   onRequireDeckSetup,
   onOpenGlobalLeaderboard,
+  onChallengeMatchedSovereign,
 }) => {
   const isGuest = isUnregisteredProfile(currentUser);
   const needsDeckSetup = !isGuest && customDecks.length === 0;
@@ -1434,6 +1427,8 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   );
   const [joinCodeInput, setJoinCodeInput] = useState<string>('');
   const [hostedRoomCode, setHostedRoomCode] = useState<string | null>(null);
+  const [isSearchingQueue, setIsSearchingQueue] = useState<boolean>(false);
+  const [queueElapsedSec, setQueueElapsedSec] = useState<number>(0);
   const [statusBanner, setStatusBanner] = useState<string | null>(null);
 
   useEffect(() => {
@@ -1445,12 +1440,23 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     }
   }, [currentUser, customDecks, selectedDeckId]);
 
+  useEffect(() => {
+    if (!hostedRoomCode || !isSearchingQueue) {
+      setQueueElapsedSec(0);
+      return;
+    }
+    const timer = window.setInterval(() => {
+      setQueueElapsedSec((s) => s + 1);
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [hostedRoomCode, isSearchingQueue]);
+
   const allAvailableDecks = useMemo(
     () =>
       customDecks.length > 0
         ? customDecks.map((cd) => ({
             id: cd.id,
-            name: `★ ${cd.name}`,
+            name: cd.name,
             subtitle: 'Grimório Autoral (100 Cartas)',
             coverCardId: cd.cardIds[0] ?? 'neutral_10_valkyra_pentacromatica',
             cardIds: cd.cardIds,
@@ -1485,6 +1491,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
           r.host.id === currentUser.id &&
           (hostedRoomCode === r.code || r.host.username === currentUser.username)
         ) {
+          setIsSearchingQueue(false);
           playSfx('ascend');
           onStartOnlineMatch(r, 'host');
         }
@@ -1529,7 +1536,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     onUserChange(acc);
     setSelectedDeckId(acc.preferredDeckId || MONOCHROMATIC_STARTER_DECKS[0]?.id || '');
     playSfx('channel');
-    setStatusBanner(`Sessão alterada para ${acc.username} (${acc.eloRating} Reputação).`);
+    setStatusBanner(`Sessão alterada para ${acc.username} (${acc.eloRating} ELO).`);
     if (!acc.customDecks || acc.customDecks.length === 0) {
       onRequireDeckSetup?.();
     }
@@ -1537,16 +1544,19 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
 
   const handleCreateRoom = (isPublicQueue: boolean) => {
     if (isUnregisteredProfile(currentUser)) {
-      setStatusBanner('Crie ou entre na sua conta de Soberano antes de abrir uma sala 1x1!');
+      setStatusBanner('Crie ou entre na sua conta antes de iniciar um duelo 1×1.');
       onOpenAccountModal('create');
       return;
     }
     if (needsDeckSetup) {
-      setStatusBanner('Monte e salve seu Grimório de Combate (100 cartas) antes de duelar 1x1!');
+      setStatusBanner('Monte e salve seu Grimório de 100 cartas antes de duelar.');
       onRequireDeckSetup?.();
       return;
     }
     if (!selectedDeckObj) return;
+    if (hostedRoomCode) {
+      publishMpMessage({ type: 'ROOM_REMOVE', roomCode: hostedRoomCode });
+    }
     const code = generateRoomCode();
     const room: MultiplayerRoom = {
       code,
@@ -1566,23 +1576,22 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     };
 
     setHostedRoomCode(code);
+    setIsSearchingQueue(isPublicQueue);
     publishMpMessage({ type: 'ROOM_UPSERT', room });
     playSfx('summon');
-    setStatusBanner(
-      isPublicQueue
-        ? `Na Fila 1x1 (Sala ${code})! Aguardando desafiante ou envie o código a um amigo.`
-        : `Sala Privada ${code} criada! Envie o código ao seu oponente.`
-    );
+    if (!isPublicQueue) {
+      setStatusBanner(`Sala privada ${code} criada. Envie o código ao seu oponente.`);
+    }
   };
 
   const handleJoinRoom = (room: MultiplayerRoom) => {
     if (isUnregisteredProfile(currentUser)) {
-      setStatusBanner('Crie ou entre na sua conta de Soberano antes de aceitar um duelo 1x1!');
+      setStatusBanner('Crie ou entre na sua conta antes de aceitar um duelo 1×1.');
       onOpenAccountModal('create');
       return;
     }
     if (needsDeckSetup) {
-      setStatusBanner('Monte e salve seu Grimório de Combate (100 cartas) antes de aceitar um duelo 1x1!');
+      setStatusBanner('Monte e salve seu Grimório de 100 cartas antes de duelar.');
       onRequireDeckSetup?.();
       return;
     }
@@ -1590,7 +1599,7 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
 
     if (room.host.id === currentUser.id || room.host.username === currentUser.username) {
       setStatusBanner(
-        'Para testar contra si mesmo em outra aba, crie ou selecione um 2º usuário diferente do anfitrião!'
+        'Para testar contra si mesmo em outra aba, selecione ou crie uma segunda conta.'
       );
       onOpenAccountModal('create');
       return;
@@ -1603,10 +1612,10 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     const canonicalState = createInitialGameState(hostCards, guestCards, {
       playerName: room.host.username,
       aiName: activeGuest.username,
-      aiTitle: `${getAvatarHonorificTitle(activeGuest.avatarCardId)} (${activeGuest.eloRating} Reputação)`,
+      aiTitle: `${getAvatarHonorificTitle(activeGuest.avatarCardId)} (${activeGuest.eloRating} ELO)`,
       aiAvatarCardId: activeGuest.avatarCardId,
     });
-    canonicalState.player.title = `${getAvatarHonorificTitle(room.host.avatarCardId)} (${room.host.eloRating} Reputação)`;
+    canonicalState.player.title = `${getAvatarHonorificTitle(room.host.avatarCardId)} (${room.host.eloRating} ELO)`;
     canonicalState.player.avatarCardId = room.host.avatarCardId;
 
     const updatedRoom: MultiplayerRoom = {
@@ -1627,16 +1636,22 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     };
 
     publishMpMessage({ type: 'ROOM_UPSERT', room: updatedRoom });
+    setIsSearchingQueue(false);
     playSfx('ascend');
     onStartOnlineMatch(updatedRoom, 'guest');
   };
 
   const handleQuickMatchmaking = () => {
-    const waitingPublic = rooms.find(
-      (r) => r.status === 'waiting' && r.isPublicQueue && r.host.id !== currentUser.id
-    );
-    if (waitingPublic) {
-      handleJoinRoom(waitingPublic);
+    const myElo = currentUser.eloRating ?? 1200;
+    const candidates = rooms
+      .filter((r) => r.status === 'waiting' && r.isPublicQueue && r.host.id !== currentUser.id)
+      .sort(
+        (a, b) =>
+          Math.abs((a.host.eloRating ?? 1200) - myElo) -
+          Math.abs((b.host.eloRating ?? 1200) - myElo)
+      );
+    if (candidates.length > 0) {
+      handleJoinRoom(candidates[0]);
     } else {
       handleCreateRoom(true);
     }
@@ -1648,17 +1663,24 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
     if (!clean) return;
     const found = getRoomByCode(clean) ?? rooms.find((r) => r.code === clean);
     if (!found) {
-      setStatusBanner(`Sala "${clean}" não encontrada. Verifique o código ou crie uma nova sala.`);
+      setStatusBanner(`Sala "${clean}" não encontrada.`);
       return;
     }
     handleJoinRoom(found);
   };
 
   const handleCancelHostedRoom = () => {
-    if (!hostedRoomCode) return;
-    publishMpMessage({ type: 'ROOM_REMOVE', roomCode: hostedRoomCode });
+    if (hostedRoomCode) {
+      publishMpMessage({ type: 'ROOM_REMOVE', roomCode: hostedRoomCode });
+    }
     setHostedRoomCode(null);
-    setStatusBanner('Sala encerrada.');
+    setIsSearchingQueue(false);
+  };
+
+  const formatTimer = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${String(s).padStart(2, '0')}`;
   };
 
   const avatarCard = CARDS_BY_ID[currentUser.avatarCardId] ?? ALL_CARDS[0];
@@ -1666,17 +1688,76 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
   const waitingRooms = rooms.filter((r) => r.status === 'waiting');
 
   return (
-    <div className="aaa-page-shell">
+    <div
+      className="aaa-page-shell"
+      style={{ maxWidth: '1040px', margin: '0 auto', padding: '1.1rem 1rem 3rem' }}
+    >
+      {/* 1. CLEAN MINIMAL HEADER */}
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          marginBottom: '0.85rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <h1
+            className="font-cinzel"
+            style={{ fontSize: '1.35rem', fontWeight: 700, color: '#f8fafc', margin: 0 }}
+          >
+            Salas 1×1
+          </h1>
+          <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+            Duelos diretos entre jogadores valendo ELO
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}>
+          {onOpenGlobalLeaderboard && (
+            <button
+              type="button"
+              className="aaa-btn aaa-btn-secondary"
+              style={{ padding: '6px 11px', fontSize: '0.75rem' }}
+              onClick={onOpenGlobalLeaderboard}
+            >
+              Ranking Geral
+            </button>
+          )}
+          <button
+            type="button"
+            className="aaa-btn aaa-btn-secondary"
+            style={{ padding: '6px 11px', fontSize: '0.75rem' }}
+            onClick={() => setRooms(getActiveRoomsList())}
+          >
+            Atualizar
+          </button>
+        </div>
+      </header>
+
       {statusBanner && (
         <div
-          className="aaa-toast-banner"
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '0.75rem',
+            padding: '0.6rem 0.9rem',
+            marginBottom: '0.8rem',
+            borderRadius: '8px',
+            background: 'rgba(15, 23, 42, 0.78)',
+            border: '1px solid rgba(148, 163, 184, 0.22)',
+            fontSize: '0.78rem',
+            color: '#e2e8f0',
+          }}
         >
           <span>{statusBanner}</span>
           <button
             type="button"
             className="aaa-btn aaa-btn-ghost"
-            style={{ padding: '2px 8px', fontSize: '0.68rem' }}
+            style={{ padding: '2px 7px', fontSize: '0.7rem' }}
             onClick={() => setStatusBanner(null)}
           >
             ✕
@@ -1684,305 +1765,419 @@ export const MultiplayerView: React.FC<MultiplayerViewProps> = ({
         </div>
       )}
 
-      {/* Top Grid: [Active Sovereign User Card] | [Deck Picker & Matchmaking Actions] */}
-      <div className="tg-grid-layout">
-        {/* Left Panel: Sovereign Account */}
-        <div className="tg-panel">
-          <div
+      {/* 2. COMPACT SINGLE-LINE PROFILE & DECK BAR */}
+      <section
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.85rem',
+          padding: '0.75rem 1rem',
+          marginBottom: '0.9rem',
+          borderRadius: '10px',
+          background: 'rgba(15, 23, 42, 0.58)',
+          border: '1px solid rgba(148, 163, 184, 0.16)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: '210px' }}>
+          <button
+            type="button"
+            onClick={() => onOpenAccountModal('profile')}
+            title="Editar perfil e avatar"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '0.85rem',
-              padding: '0.85rem 1rem',
-              background: '#0b0f17',
-              border: '1px solid rgba(148, 163, 184, 0.18)',
-              borderRadius: '8px',
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              border: '1.5px solid rgba(234, 179, 8, 0.65)',
+              background: '#0f172a',
+              overflow: 'hidden',
+              padding: 0,
+              cursor: 'pointer',
+              flexShrink: 0,
             }}
           >
-            <div
-              onClick={() => onOpenAccountModal('profile')}
-              title="Clique para trocar seu Avatar"
-              style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '8px',
-                border: '1px solid rgba(212, 175, 55, 0.42)',
-                background: '#070a12',
-                overflow: 'hidden',
-                flexShrink: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-            >
-              {avatarCard?.imagePath && (
-                <img
-                  src={`${avatarCard.imagePath}?v=12`}
-                  alt={currentUser.username}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              )}
-            </div>
+            {avatarCard?.imagePath && (
+              <img
+                src={`${avatarCard.imagePath}?v=12`}
+                alt={currentUser.username}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
+            )}
+          </button>
 
-            <div style={{ flex: '1 1 165px', minWidth: 0 }}>
-              <div
-                className="font-cinzel"
-                style={{ fontSize: '1.05rem', fontWeight: 800, color: '#f1f5f9' }}
-              >
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc' }}>
                 {currentUser.username}
-              </div>
-              <div style={{ fontSize: '0.73rem', color: '#e6c875', marginBottom: '0.3rem' }}>
-                {currentHonorific}
-              </div>
-              <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
-                <span className="tg-role-pill" style={{ flex: 'none' }}>
-                  {currentUser.eloRating} Reputação
-                </span>
-                <span className="tg-cost-pill">
-                  {currentUser.pvpWins}V • {currentUser.pvpLosses}D
-                </span>
-              </div>
+              </span>
+              <span
+                style={{
+                  fontSize: '0.88rem',
+                  fontWeight: 700,
+                  color: '#eab308',
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                {currentUser.eloRating} ELO
+              </span>
             </div>
+            <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '1px' }}>
+              {currentHonorific} · {currentUser.pvpWins}V {currentUser.pvpLosses}D
+            </div>
+          </div>
+        </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginLeft: 'auto' }}>
-              {onOpenGlobalLeaderboard && (
-                <button
-                  type="button"
-                  className="aaa-btn aaa-btn-primary"
-                  onClick={onOpenGlobalLeaderboard}
-                  title="Ver sua posição na Escada Global unificada com os 44 Soberanos de Vaeloria"
-                >
-                  🏆 Ranking Geral ELO
-                </button>
-              )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <label
+            htmlFor="pvp-deck-select"
+            style={{ fontSize: '0.75rem', color: '#94a3b8', whiteSpace: 'nowrap' }}
+          >
+            Grimório:
+          </label>
+          <select
+            id="pvp-deck-select"
+            value={selectedDeckId}
+            onChange={(e) => {
+              setSelectedDeckId(e.target.value);
+              const nextProfile = { ...currentUser, preferredDeckId: e.target.value };
+              setActiveTabUserProfile(nextProfile);
+              onUserChange(nextProfile);
+            }}
+            style={{
+              padding: '6px 10px',
+              borderRadius: '7px',
+              background: '#0b0f19',
+              border: '1px solid rgba(148, 163, 184, 0.24)',
+              color: '#e2e8f0',
+              fontSize: '0.78rem',
+              maxWidth: '220px',
+            }}
+          >
+            {allAvailableDecks.map((d) => (
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+
+          <button
+            type="button"
+            className="aaa-btn aaa-btn-secondary"
+            style={{ padding: '6px 11px', fontSize: '0.75rem' }}
+            onClick={() => onOpenAccountModal('profile')}
+          >
+            Perfil
+          </button>
+          <button
+            type="button"
+            className="aaa-btn aaa-btn-secondary"
+            style={{ padding: '6px 11px', fontSize: '0.75rem' }}
+            onClick={() => onOpenAccountModal('login')}
+          >
+            Trocar Conta
+          </button>
+        </div>
+      </section>
+
+      {accountsRoster.length > 1 && (
+        <div
+          style={{
+            display: 'flex',
+            gap: '0.4rem',
+            flexWrap: 'wrap',
+            marginBottom: '0.85rem',
+          }}
+        >
+          {accountsRoster.map((acc) => {
+            const isCurrent = acc.id === currentUser.id;
+            return (
+              <button
+                key={acc.id}
+                type="button"
+                onClick={() => handleSwitchAccount(acc)}
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  background: isCurrent ? 'rgba(234, 179, 8, 0.14)' : 'rgba(15, 23, 42, 0.55)',
+                  border: isCurrent
+                    ? '1px solid rgba(234, 179, 8, 0.45)'
+                    : '1px solid rgba(148, 163, 184, 0.16)',
+                  color: isCurrent ? '#fef08a' : '#94a3b8',
+                  fontSize: '0.74rem',
+                  cursor: 'pointer',
+                }}
+              >
+                {acc.username} ({acc.eloRating})
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 3. 1-CLICK QUICK MATCH QUEUE & PRIVATE ROOM CONTROLS */}
+      <section
+        style={{
+          padding: '0.95rem 1.05rem',
+          marginBottom: '0.95rem',
+          borderRadius: '10px',
+          background: 'rgba(15, 23, 42, 0.58)',
+          border: '1px solid rgba(148, 163, 184, 0.16)',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+          }}
+        >
+          <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            {!hostedRoomCode ? (
               <button
                 type="button"
                 className="aaa-btn aaa-btn-primary"
-                onClick={() => onOpenAccountModal('profile')}
+                style={{ padding: '8px 18px', fontSize: '0.82rem' }}
+                onClick={handleQuickMatchmaking}
               >
-                Perfil
+                Buscar Oponente 1×1
               </button>
+            ) : (
               <button
                 type="button"
                 className="aaa-btn aaa-btn-secondary"
-                onClick={() => onOpenAccountModal('login')}
+                style={{ padding: '8px 14px', fontSize: '0.8rem' }}
+                onClick={handleCancelHostedRoom}
               >
-                Trocar Conta
+                Sair da Fila ({formatTimer(queueElapsedSec)})
               </button>
-            </div>
-          </div>
+            )}
 
-          {accountsRoster.length > 1 && (
-            <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', marginTop: '0.35rem' }}>
-              {accountsRoster.map((acc) => {
-                const isCurrent = acc.id === currentUser.id;
-                return (
-                  <button
-                    key={acc.id}
-                    type="button"
-                    className={`aaa-btn ${isCurrent ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
-                    onClick={() => handleSwitchAccount(acc)}
-                  >
-                    {isCurrent ? '✓ ' : ''}
-                    {acc.username} ({acc.eloRating})
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Right Panel: Deck Selection, Quick Queue & Room Creation */}
-        <div className="tg-panel">
-          <div className="aaa-deck-selector-box" style={{ padding: '0.5rem 0.75rem' }}>
-            <span className="aaa-stat-label">GRIMÓRIO ATIVO</span>
-            <select
-              className="aaa-select"
-              value={selectedDeckId}
-              onChange={(e) => {
-                setSelectedDeckId(e.target.value);
-                const nextProfile = { ...currentUser, preferredDeckId: e.target.value };
-                setActiveTabUserProfile(nextProfile);
-                onUserChange(nextProfile);
-              }}
-              style={{ fontSize: '0.86rem', padding: '4px 0' }}
-            >
-              {allAvailableDecks.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Primary 1v1 Matchmaking & Room Creation CTAs */}
-          <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
             <button
               type="button"
-              className="aaa-btn aaa-btn-primary aaa-btn-lg"
-              style={{ flex: 1 }}
-              onClick={handleQuickMatchmaking}
-            >
-              ⚔️ Buscar Partida 1×1
-            </button>
-            <button
-              type="button"
-              className="aaa-btn aaa-btn-secondary aaa-btn-lg"
+              className="aaa-btn aaa-btn-secondary"
+              style={{ padding: '8px 14px', fontSize: '0.78rem' }}
               onClick={() => handleCreateRoom(false)}
             >
               Criar Sala Privada
             </button>
           </div>
 
-          {/* Join by Room Code Form */}
           <form
             onSubmit={handleJoinByCode}
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-            }}
+            style={{ display: 'flex', gap: '0.45rem', alignItems: 'center' }}
           >
             <input
               type="text"
-              className="myth-search-compact"
-              placeholder="Código da sala (ex: PACT-4829)..."
+              placeholder="Código da sala (ex: PACT-4829)"
               value={joinCodeInput}
               onChange={(e) => setJoinCodeInput(e.target.value.toUpperCase())}
-              style={{ textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.06em' }}
+              style={{
+                padding: '7px 10px',
+                borderRadius: '7px',
+                background: '#0b0f19',
+                border: '1px solid rgba(148, 163, 184, 0.22)',
+                color: '#f8fafc',
+                fontSize: '0.76rem',
+                letterSpacing: '0.04em',
+                width: '205px',
+              }}
             />
-            <button type="submit" className="aaa-btn aaa-btn-primary">
+            <button
+              type="submit"
+              className="aaa-btn aaa-btn-secondary"
+              style={{ padding: '7px 12px', fontSize: '0.76rem' }}
+            >
               Entrar
             </button>
           </form>
+        </div>
 
-          {/* Active Hosted Room Waiting Banner */}
-          {hostedRoomCode && (
-            <div
-              style={{
-                padding: '0.75rem 0.95rem',
-                borderRadius: '8px',
-                background: '#0b0f17',
-                border: '1px solid rgba(212, 175, 55, 0.42)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '0.5rem',
-              }}
-            >
-              <span className="font-cinzel" style={{ color: '#e6c875', fontWeight: 800, fontSize: '0.84rem' }}>
-                Sala Aberta: <strong style={{ color: '#fff' }}>{hostedRoomCode}</strong>
-              </span>
-              <div style={{ display: 'flex', gap: '0.45rem' }}>
+        {/* Active Queue / Hosted Room Status Strip */}
+        {hostedRoomCode && (
+          <div
+            style={{
+              marginTop: '0.8rem',
+              paddingTop: '0.75rem',
+              borderTop: '1px solid rgba(148, 163, 184, 0.12)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.65rem',
+            }}
+          >
+            <div style={{ fontSize: '0.78rem', color: '#cbd5e1' }}>
+              {isSearchingQueue ? (
+                <>
+                  Procurando jogador online há{' '}
+                  <strong style={{ color: '#f8fafc', fontVariantNumeric: 'tabular-nums' }}>
+                    {formatTimer(queueElapsedSec)}
+                  </strong>{' '}
+                  · Código direto: <strong style={{ color: '#eab308' }}>{hostedRoomCode}</strong>
+                </>
+              ) : (
+                <>
+                  Sala privada aberta: <strong style={{ color: '#eab308' }}>{hostedRoomCode}</strong>{' '}
+                  · Aguardando convidado
+                </>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
+              {isSearchingQueue && onChallengeMatchedSovereign && selectedDeckObj && (
                 <button
                   type="button"
                   className="aaa-btn aaa-btn-primary"
-                  style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+                  style={{ padding: '5px 12px', fontSize: '0.74rem' }}
                   onClick={() => {
-                    navigator.clipboard?.writeText(hostedRoomCode);
-                    setStatusBanner(`Código ${hostedRoomCode} copiado!`);
+                    const deckIds = selectedDeckObj.cardIds;
+                    const deckId = selectedDeckObj.id;
+                    handleCancelHostedRoom();
+                    onChallengeMatchedSovereign(deckIds, deckId);
                   }}
                 >
-                  Copiar
+                  Desafiar Soberano de mesmo ELO agora
                 </button>
-                <button
-                  type="button"
-                  className="aaa-btn aaa-btn-ghost"
-                  style={{ padding: '4px 10px', fontSize: '0.72rem' }}
-                  onClick={handleCancelHostedRoom}
-                >
-                  Cancelar
-                </button>
-              </div>
+              )}
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-secondary"
+                style={{ padding: '5px 11px', fontSize: '0.74rem' }}
+                onClick={() => {
+                  navigator.clipboard?.writeText(hostedRoomCode);
+                  setStatusBanner(`Código ${hostedRoomCode} copiado para a área de transferência.`);
+                }}
+              >
+                Copiar código
+              </button>
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-secondary"
+                style={{ padding: '5px 11px', fontSize: '0.74rem' }}
+                onClick={handleCancelHostedRoom}
+              >
+                Encerrar sala
+              </button>
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Bottom Panel: Live Waiting Rooms List */}
-      <div className="tg-panel">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="aaa-kicker">
-            SALAS ABERTAS ({waitingRooms.length})
           </div>
-          <button
-            type="button"
-            className="aaa-btn aaa-btn-ghost"
-            style={{ padding: '4px 10px', fontSize: '0.68rem' }}
-            onClick={() => setRooms(getActiveRoomsList())}
-          >
-            Atualizar
-          </button>
+        )}
+      </section>
+
+      {/* 4. SINGLE CLEAN TABLE SURFACE FOR OPEN ROOMS */}
+      <section
+        aria-label="Salas abertas"
+        style={{
+          borderRadius: '10px',
+          background: 'rgba(11, 15, 25, 0.78)',
+          border: '1px solid rgba(148, 163, 184, 0.15)',
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '0.6rem 1rem',
+            borderBottom: '1px solid rgba(148, 163, 184, 0.12)',
+            fontSize: '0.7rem',
+            fontWeight: 600,
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            color: '#64748b',
+          }}
+        >
+          <span>Salas Abertas ({waitingRooms.length})</span>
+          <span>Ação</span>
         </div>
 
         {waitingRooms.length === 0 ? (
           <div
             style={{
-              padding: '1.1rem',
+              padding: '2rem 1rem',
               textAlign: 'center',
-              color: '#94a3b8',
-              border: '1px dashed rgba(255,255,255,0.1)',
-              borderRadius: '6px',
-              fontSize: '0.8rem',
+              color: '#64748b',
+              fontSize: '0.82rem',
             }}
           >
-            Nenhuma sala aberta no momento.
+            Nenhuma sala aguardando desafiante no momento. Clique em{' '}
+            <strong style={{ color: '#cbd5e1' }}>Buscar Oponente 1×1</strong> acima para iniciar.
           </div>
         ) : (
-          <div className="exp-achievements-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-            {waitingRooms.map((room) => {
+          <div>
+            {waitingRooms.map((room, idx) => {
               const hostAvatar = CARDS_BY_ID[room.host.avatarCardId] ?? ALL_CARDS[0];
               const isOwnRoom = room.host.id === currentUser.id;
               return (
                 <div
                   key={room.code}
-                  className="exp-achievement-card is-unlocked"
-                  style={{ justifyContent: 'space-between', padding: '1rem 1.15rem' }}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.65rem 1rem',
+                    borderBottom:
+                      idx < waitingRooms.length - 1
+                        ? '1px solid rgba(148, 163, 184, 0.08)'
+                        : 'none',
+                  }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-                    <img
-                      src={`${hostAvatar.imagePath}?v=12`}
-                      alt={room.host.username}
-                      style={{
-                        width: '48px',
-                        height: '48px',
-                        borderRadius: '50%',
-                        border: '1.5px solid #fde047',
-                        background: '#070a12',
-                        objectFit: 'contain',
-                      }}
-                    />
-                    <div>
-                      <div className="font-cinzel exp-ach-title" style={{ fontSize: '0.9rem' }}>
-                        Sala <span style={{ color: '#fff' }}>{room.code}</span> •{' '}
-                        {room.host.username}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0 }}>
+                    {hostAvatar.imagePath && (
+                      <img
+                        src={`${hostAvatar.imagePath}?v=12`}
+                        alt={room.host.username}
+                        style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
+                          border: '1px solid rgba(148, 163, 184, 0.28)',
+                          background: '#0f172a',
+                          objectFit: 'cover',
+                          flexShrink: 0,
+                        }}
+                      />
+                    )}
+                    <div style={{ minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: '0.86rem',
+                          fontWeight: 600,
+                          color: '#f1f5f9',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {room.host.username}{' '}
+                        <span style={{ color: '#eab308', fontVariantNumeric: 'tabular-nums' }}>
+                          ({room.host.eloRating} ELO)
+                        </span>
                       </div>
-                      <div className="exp-ach-desc">
-                        {getAvatarHonorificTitle(room.host.avatarCardId)} • 🏆 {room.host.eloRating}{' '}
-                        Reputação
-                      </div>
-                      <div className="exp-ach-prog">
-                        {room.isPublicQueue ? '🌐 Fila Pública 1x1' : '🔒 Sala com Código'}
+                      <div style={{ fontSize: '0.73rem', color: '#64748b', marginTop: '1px' }}>
+                        {room.isPublicQueue ? 'Fila rápida 1×1' : 'Sala privada'} · Código {room.code}
                       </div>
                     </div>
                   </div>
 
                   <button
                     type="button"
-                    className="aaa-btn aaa-btn-primary"
+                    className={isOwnRoom ? 'aaa-btn aaa-btn-secondary' : 'aaa-btn aaa-btn-primary'}
+                    style={{ padding: '6px 13px', fontSize: '0.75rem', flexShrink: 0 }}
                     onClick={() => handleJoinRoom(room)}
                   >
-                    {isOwnRoom ? '⚔️ Testar como P2 →' : '⚔️ Entrar no Duelo →'}
+                    {isOwnRoom ? 'Testar em 2ª conta' : 'Aceitar duelo'}
                   </button>
                 </div>
               );
             })}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 };

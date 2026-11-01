@@ -23,9 +23,8 @@ import { TACTICAL_PROBLEMS, type TacticalProblem } from './data/problems';
 import {
   NAVIGATE_TO_POEM_EVENT,
   NavigateToPoemDetail,
-} from './data/epicPoemData';
+} from './data/epicPoemEvents';
 import { buildGeographicBattleModifiers } from './data/vaeloriaMultimapData';
-import { saveCampaignReturnFromBossDuel } from './data/vaeloriaGrandCampaign';
 import { consumePendingOverworldBuff } from './data/vaeloriaOverworldEvents';
 import { applyEquippedRelicToModifiers } from './data/sovereignRelics';
 import type { DraftBattleOutcome, DraftRewardSummary } from './data/vaeloriaDraftData';
@@ -49,7 +48,12 @@ import {
   recordDailyQuestEvent,
 } from './utils/dailyQuestsEngine';
 import { CardInspectModal } from './components/CardView';
-import { HomeSimulatedDuelShowcase } from './components/HomeSimulatedDuelShowcase';
+
+const HomeSimulatedDuelShowcase = React.lazy(() =>
+  import('./components/HomeSimulatedDuelShowcase').then((m) => ({
+    default: m.HomeSimulatedDuelShowcase,
+  }))
+);
 
 // Lazy-loaded heavy modules for instant initial load & modular chunking (Onda 5)
 const BattleArena = React.lazy(() =>
@@ -103,11 +107,8 @@ const GlobalLeaderboardView = React.lazy(() =>
   }))
 );
 import type { LastRankedDuelSummary } from './components/GlobalLeaderboardView';
-import {
-  buildRankedSovereignBossEncounter,
-  getEloDivisionMeta,
-  SovereignAiLeaderboardEntry,
-} from './data/sovereignEloLadder';
+import { getEloDivisionMeta } from './data/eloDivisions';
+import type { SovereignAiLeaderboardEntry } from './data/sovereignEloLadderData';
 import {
   adminSaveCloudProfile,
   ensureStarterDeckForUser,
@@ -969,7 +970,9 @@ export const App: React.FC = () => {
 
   const handleStartBossBattle = (boss: CampaignBoss, playerDeckIds: string[]) => {
     trackAdsEvent('start_campaign_boss', { bossId: boss.id, isExpedition: false });
-    saveCampaignReturnFromBossDuel(boss.id, { didWin: false, forceExpanded: true });
+    import('./data/vaeloriaGrandCampaign').then((m) =>
+      m.saveCampaignReturnFromBossDuel(boss.id, { didWin: false, forceExpanded: true })
+    );
     try {
       localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
     } catch {
@@ -1001,7 +1004,7 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
-  const handleStartRankedSovereignDuel = (
+  const handleStartRankedSovereignDuel = async (
     entry: SovereignAiLeaderboardEntry,
     playerDeckIds: string[],
     playerDeckId: string
@@ -1017,6 +1020,7 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    const { buildRankedSovereignBossEncounter } = await import('./data/sovereignEloLadder');
     const boss = buildRankedSovereignBossEncounter(entry);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
@@ -1032,6 +1036,18 @@ export const App: React.FC = () => {
     setCampaignPlayerDeckIds(playerDeckIds);
     setQuickDuelDecks((prev) => ({ ...prev, playerDeckId }));
     setActiveTab('arena');
+  };
+
+  const handleQuickMatchSovereignFallback = async (
+    playerDeckIds: string[],
+    playerDeckId: string
+  ) => {
+    const { findClosestRankedSovereignForElo } = await import('./data/sovereignEloLadder');
+    const matched = findClosestRankedSovereignForElo(
+      currentUser.eloRating ?? 1200,
+      currentUser.recentRankedOpponentIds ?? []
+    );
+    await handleStartRankedSovereignDuel(matched, playerDeckIds, playerDeckId);
   };
 
   const handleStartExpeditionBattle = (
@@ -1168,9 +1184,9 @@ export const App: React.FC = () => {
       const sign = outcome.deltaElo >= 0 ? `+${outcome.deltaElo}` : `${outcome.deltaElo}`;
       pushNotification({
         kicker: 'RANKING GERAL ELO DE VAELORIA',
-        title: `🏆 Vitória Ranqueada sobre ${activeRankedSovereign.sovereignName}! (${sign} ELO)`,
-        message: `Seu Rating subiu para ${outcome.newElo} ELO (${div.icon} ${div.label})${
-          outcome.goldEarned > 0 ? ` +${outcome.goldEarned} Ouro!` : '!'
+        title: `Vitória Ranqueada sobre ${activeRankedSovereign.sovereignName} (${sign} ELO)`,
+        message: `Seu Rating subiu para ${outcome.newElo} ELO (${div.label})${
+          outcome.goldEarned > 0 ? ` +${outcome.goldEarned} Ouro.` : '.'
         }`,
         actionLabel: 'Ver Ranking ELO',
         actionTarget: 'leaderboard',
@@ -1239,7 +1255,9 @@ export const App: React.FC = () => {
         arenaWins: (prev.arenaWins ?? 0) + 1,
       }));
     } else {
-      saveCampaignReturnFromBossDuel(boss.id, { didWin: true, forceExpanded: true });
+      import('./data/vaeloriaGrandCampaign').then((m) =>
+        m.saveCampaignReturnFromBossDuel(boss.id, { didWin: true, forceExpanded: true })
+      );
       const wasAlreadyDefeated = defeatedBossIds.includes(boss.id);
       const goldGranted = wasAlreadyDefeated
         ? VICTORY_GOLD_REWARD
@@ -1327,8 +1345,8 @@ export const App: React.FC = () => {
       const div = getEloDivisionMeta(outcome.newElo);
       pushNotification({
         kicker: 'RANKING GERAL ELO DE VAELORIA',
-        title: `⚔️ Fim de Duelo Ranqueado (${outcome.deltaElo} ELO)`,
-        message: `Rating atualizado para ${outcome.newElo} ELO (${div.icon} ${div.label}) após enfrentar ${activeRankedSovereign.sovereignName} (${activeRankedSovereign.eloRating} ELO).`,
+        title: `Fim de Duelo Ranqueado (${outcome.deltaElo} ELO)`,
+        message: `Rating atualizado para ${outcome.newElo} ELO (${div.label}) após enfrentar ${activeRankedSovereign.sovereignName} (${activeRankedSovereign.eloRating} ELO).`,
         actionLabel: 'Ver Ranking ELO',
         actionTarget: 'leaderboard',
       });
@@ -2465,13 +2483,15 @@ export const App: React.FC = () => {
         {activeTab === 'home' && (
           <div className="aaa-page-shell aaa-home-lobby-shell">
             <div className="aaa-home-showcase-hero">
-              <HomeSimulatedDuelShowcase
-                onInspectCard={setShowcaseInspectCard}
-                onPlayDuelNow={handleOpenArenaSolo}
-                onOpenCombosCompendium={() => setActiveTab('tactics')}
-                soundMuted={soundMuted}
-                onToggleSound={handleToggleSound}
-              />
+              <Suspense fallback={<div style={{ minHeight: '72vh' }} />}>
+                <HomeSimulatedDuelShowcase
+                  onInspectCard={setShowcaseInspectCard}
+                  onPlayDuelNow={handleOpenArenaSolo}
+                  onOpenCombosCompendium={() => setActiveTab('tactics')}
+                  soundMuted={soundMuted}
+                  onToggleSound={handleToggleSound}
+                />
+              </Suspense>
             </div>
           </div>
         )}
@@ -2509,6 +2529,9 @@ export const App: React.FC = () => {
             onOpenAccountModal={(tab) => setAccountModalState({ open: true, tab })}
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onOpenGlobalLeaderboard={() => setActiveTab('leaderboard')}
+            onChallengeMatchedSovereign={(deckIds, deckId) => {
+              void handleQuickMatchSovereignFallback(deckIds, deckId);
+            }}
             onStartOnlineMatch={(room, role) => {
               setActiveCampaignBoss(null);
               setActiveRankedSovereign(null);
@@ -2608,7 +2631,10 @@ export const App: React.FC = () => {
                 !wasExp &&
                 activeCampaignBoss
               ) {
-                saveCampaignReturnFromBossDuel(activeCampaignBoss.id, { forceExpanded: true });
+                const cid = activeCampaignBoss.id;
+                import('./data/vaeloriaGrandCampaign').then((m) =>
+                  m.saveCampaignReturnFromBossDuel(cid, { forceExpanded: true })
+                );
               }
               setActiveCampaignBoss(null);
               setActiveRankedSovereign(null);
@@ -2658,23 +2684,27 @@ export const App: React.FC = () => {
                       setActiveTab('multiplayer');
                     },
                     onPvpResult: (didWin) => {
-                      const opponentRating =
+                      const oppInfo =
                         activeOnlineMatch.role === 'host'
-                          ? activeOnlineMatch.room.guest?.eloRating ?? 1200
-                          : activeOnlineMatch.room.host.eloRating ?? 1200;
+                          ? activeOnlineMatch.room.guest
+                          : activeOnlineMatch.room.host;
+                      const opponentRating = oppInfo?.eloRating ?? 1200;
                       const prevRating = currentUser.eloRating;
-                      const updated = recordPvpMatchResult(currentUser, didWin, opponentRating);
+                      const updated = recordPvpMatchResult(currentUser, didWin, opponentRating, {
+                        name: oppInfo?.username,
+                        avatarCardId: oppInfo?.avatarCardId,
+                      });
                       const delta = updated.eloRating - prevRating;
                       const sign = delta >= 0 ? `+${delta}` : `${delta}`;
                       setCurrentUser(updated);
                       pushNotification({
-                        kicker: 'RANKING DE REPUTAÇÃO 1×1',
+                        kicker: 'RANKING ELO 1×1',
                         title: didWin
-                          ? `Vitória no Conclave! (${sign} Reputação)`
-                          : `Fim de Duelo 1×1 (${sign} Reputação)`,
-                        message: `Sua Reputação agora é ${updated.eloRating} (${updated.pvpWins}V / ${updated.pvpLosses}D).`,
-                        actionLabel: 'Ver Conclave 1×1',
-                        actionTarget: 'multiplayer',
+                          ? `Vitória no Conclave! (${sign} ELO)`
+                          : `Fim de Duelo 1×1 (${sign} ELO)`,
+                        message: `Sua pontuação agora é ${updated.eloRating} ELO (${updated.pvpWins}V / ${updated.pvpLosses}D).`,
+                        actionLabel: 'Ver Ranking Geral',
+                        actionTarget: 'leaderboard',
                       });
                     },
                   }

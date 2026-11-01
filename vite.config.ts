@@ -94,15 +94,40 @@ export default defineConfig({
           if (norm.includes('node_modules')) {
             return 'vendor-react';
           }
-          if (norm.includes('/src/data/cards') || norm.includes('/src/data/decks')) {
-            return 'data-cards-decks';
+          if (norm.includes('/src/data/cards')) {
+            return 'data-cards';
+          }
+          if (norm.includes('/src/data/decks')) {
+            return 'data-decks';
+          }
+          if (
+            norm.includes('aiLearnedWeights') ||
+            norm.includes('aiLearnedProfiles') ||
+            norm.includes('aiValueMlpWeights')
+          ) {
+            return 'ai-weights';
           }
           if (norm.includes('/src/engine/')) {
             return 'engine-core';
           }
           if (
-            norm.includes('/src/data/epicPoem') ||
-            norm.includes('/src/data/lore') ||
+            norm.includes('aiMonocolorMasteryData') ||
+            norm.includes('aiBicolorMasteryData') ||
+            norm.includes('aiPolycolorMasteryData')
+          ) {
+            return 'data-ai-mastery';
+          }
+          if (
+            norm.includes('aiUnifiedTournamentData') ||
+            norm.includes('sovereignEloLadderData')
+          ) {
+            return 'data-elo-tournament';
+          }
+          if (
+            norm.includes('/src/data/epicPoemData') ||
+            norm.includes('/src/data/epicPoemPart') ||
+            norm.includes('/src/data/epicPoemParallel') ||
+            norm.includes('/src/data/mythologyLore') ||
             norm.includes('/src/components/MythologyAtlasView')
           ) {
             return 'mythology-codex';

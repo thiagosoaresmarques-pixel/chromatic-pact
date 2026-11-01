@@ -13,9 +13,12 @@ import {
   BICOLOR_ARCHETYPE_MASTERY,
   getTrainedBicolorPrebuiltDecks,
   getTrainedMonocolorPrebuiltDecks,
+  getTrainedPolycolorPrebuiltDecks,
   MONOCOLOR_ARCHETYPE_MASTERY,
   MonocolorArchetypeId,
+  POLYCOLOR_ARCHETYPE_MASTERY,
   resolveBicolorArchetypeForDeckId,
+  resolvePolycolorArchetypeForDeckId,
 } from '../data/aiMonocolorMastery';
 import { CardView, CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
@@ -610,6 +613,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
     return [
       ...getTrainedMonocolorPrebuiltDecks(5),
       ...getTrainedBicolorPrebuiltDecks(5),
+      ...getTrainedPolycolorPrebuiltDecks(5),
       ...PREBUILT_DECKS,
       ...customConverted,
     ];
@@ -677,6 +681,10 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
     if (biId && BICOLOR_ARCHETYPE_MASTERY[biId]?.learnedProfile) {
       return BICOLOR_ARCHETYPE_MASTERY[biId].learnedProfile;
     }
+    const polyId = resolvePolycolorArchetypeForDeckId(playerProfile.deck.id);
+    if (polyId && POLYCOLOR_ARCHETYPE_MASTERY[polyId]?.learnedProfile) {
+      return POLYCOLOR_ARCHETYPE_MASTERY[polyId].learnedProfile;
+    }
     const direct = AI_LEARNED_PROFILES[playerProfile.deck.id];
     if (direct) return direct;
 
@@ -685,6 +693,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
     const referenceDecks = [
       ...getTrainedMonocolorPrebuiltDecks(5),
       ...getTrainedBicolorPrebuiltDecks(5),
+      ...getTrainedPolycolorPrebuiltDecks(5),
       ...PREBUILT_DECKS,
     ];
     let bestId: string | null = null;
@@ -713,12 +722,33 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
     if (biMatch?.learnedProfile) {
       return biMatch.learnedProfile;
     }
+    const bestPolyId = resolvePolycolorArchetypeForDeckId(bestId);
+    const polyMatch = bestPolyId ? POLYCOLOR_ARCHETYPE_MASTERY[bestPolyId] : undefined;
+    if (polyMatch?.learnedProfile) {
+      return polyMatch.learnedProfile;
+    }
     return AI_LEARNED_PROFILES[bestId] ?? null;
   }, [playerProfile]);
 
-  const activeBicolorMastery = useMemo(() => {
+  const activeMultiDomainCombosMeta = useMemo(() => {
     const biId = resolveBicolorArchetypeForDeckId(playerProfile.deck.id);
-    return biId ? BICOLOR_ARCHETYPE_MASTERY[biId] ?? null : null;
+    if (biId && BICOLOR_ARCHETYPE_MASTERY[biId]) {
+      const m = BICOLOR_ARCHETYPE_MASTERY[biId];
+      return {
+        heading: `Sinergias Inter-Domínio Bicolores (WR vs Monocolor Tier V: ${(m.vsMonocolorWinRate * 100).toFixed(1)}%)`,
+        combos: m.crossDomainCombos,
+      };
+    }
+    const polyId = resolvePolycolorArchetypeForDeckId(playerProfile.deck.id);
+    if (polyId && POLYCOLOR_ARCHETYPE_MASTERY[polyId]) {
+      const m = POLYCOLOR_ARCHETYPE_MASTERY[polyId];
+      const tag = m.tierFormat === 'pentachromatic' ? 'Pentacromáticas' : 'Tricolores';
+      return {
+        heading: `Sinergias Inter-Domínio ${tag} (vs Mono T5: ${(m.vsMonocolorWinRate * 100).toFixed(1)}% • vs Bicolor T5: ${(m.vsBicolorWinRate * 100).toFixed(1)}%)`,
+        combos: m.crossDomainCombos,
+      };
+    }
+    return null;
   }, [playerProfile]);
 
   const fmtAiPct = (val: number) => (Math.abs(val) <= 1.5 ? val * 100 : val).toFixed(1);
@@ -1335,13 +1365,13 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                   </div>
                 )}
 
-                {activeBicolorMastery && activeBicolorMastery.crossDomainCombos.length > 0 && (
+                {activeMultiDomainCombosMeta && activeMultiDomainCombosMeta.combos.length > 0 && (
                   <div style={{ marginTop: '0.75rem' }}>
                     <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#38bdf8', marginBottom: '0.4rem' }}>
-                      Sinergias Inter-Domínio Bicolores (WR vs Monocolor Tier V: {fmtAiPct(activeBicolorMastery.vsMonocolorWinRate)}%)
+                      {activeMultiDomainCombosMeta.heading}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {activeBicolorMastery.crossDomainCombos.slice(0, 4).map((dc, idx) => {
+                      {activeMultiDomainCombosMeta.combos.slice(0, 4).map((dc, idx) => {
                         const cA = CARDS_BY_ID[dc.cardAId];
                         const cB = CARDS_BY_ID[dc.cardBId];
                         if (!cA || !cB) return null;

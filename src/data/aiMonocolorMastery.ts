@@ -23,9 +23,18 @@ import {
   resolveBicolorArchetypeForDeckId,
   resolveBicolorArchetypeForDomains,
 } from './aiBicolorMastery';
+import {
+  POLYCOLOR_ARCHETYPE_MASTERY,
+  POLYCOLOR_VALUE_NETWORKS,
+  PolycolorArchetypeId,
+  resolvePentachromaticArchetypeForBoss,
+  resolvePolycolorArchetypeForDeckId,
+  resolveTricolorArchetypeForDomains,
+} from './aiPolycolorMastery';
 
 export * from './aiMonocolorMasteryData';
 export * from './aiBicolorMastery';
+export * from './aiPolycolorMastery';
 
 const COPY_CAP_BY_RARITY: Record<Rarity, number> = {
   common: 3,
@@ -504,11 +513,11 @@ function inferClassicStageSkillTier(stage: number): AiSkillTier {
 
 /**
  * Resolves the exact 100-card graduated grimoire (Tier I..V), archetype ID, title, and AI skill tier
- * for any CampaignBoss in Vaeloria (Monocolor, Bicolor, or Multicolor/Prismatic).
+ * for any CampaignBoss in Vaeloria (Monocolor, Bicolor, Tricolor, or Pentachromatic Apex).
  */
 export function resolveCampaignBossGraduatedSetup(boss: CampaignBoss): {
   cardIds: string[];
-  archetypeId: MonocolorArchetypeId | BicolorArchetypeId;
+  archetypeId: MonocolorArchetypeId | BicolorArchetypeId | PolycolorArchetypeId;
   archetypeTitle: string;
   skillTier: AiSkillTier;
 } {
@@ -533,6 +542,38 @@ export function resolveCampaignBossGraduatedSetup(boss: CampaignBoss): {
           skillTier,
         };
       }
+    }
+  }
+
+  if (boss.domains.length === 3) {
+    const triArchId =
+      resolveTricolorArchetypeForDomains(boss.domains) ??
+      resolvePolycolorArchetypeForDeckId(boss.deckId);
+    if (triArchId) {
+      const triMastery = POLYCOLOR_ARCHETYPE_MASTERY[triArchId];
+      const triTierDeck = triMastery?.tierDecks?.[skillTier] ?? triMastery?.tierDecks?.[5];
+      if (triMastery && triTierDeck && triTierDeck.cardIds.length === DECK_SIZE) {
+        return {
+          cardIds: injectSignatureCardsInto100Deck(triTierDeck.cardIds, signatureIds),
+          archetypeId: triArchId,
+          archetypeTitle: triMastery.name,
+          skillTier,
+        };
+      }
+    }
+  }
+
+  if (boss.domains.length >= 4) {
+    const pentaArchId = resolvePentachromaticArchetypeForBoss(boss);
+    const pentaMastery = POLYCOLOR_ARCHETYPE_MASTERY[pentaArchId];
+    const pentaTierDeck = pentaMastery?.tierDecks?.[skillTier] ?? pentaMastery?.tierDecks?.[5];
+    if (pentaMastery && pentaTierDeck && pentaTierDeck.cardIds.length === DECK_SIZE) {
+      return {
+        cardIds: injectSignatureCardsInto100Deck(pentaTierDeck.cardIds, signatureIds),
+        archetypeId: pentaArchId,
+        archetypeTitle: pentaMastery.name,
+        skillTier,
+      };
     }
   }
 
@@ -568,7 +609,7 @@ export function resolveCampaignBossGraduatedSetup(boss: CampaignBoss): {
 }
 
 /**
- * Resolves the primary trained Domain or Bicolor Value MLP for `actor` in `O(1)`.
+ * Resolves the primary trained Monocolor, Bicolor, Tricolor, or Pentachromatic Value MLP for `actor` in `O(1)`.
  */
 export function resolveDomainValueMlpForActor(
   state: GameState,
@@ -578,6 +619,11 @@ export function resolveDomainValueMlpForActor(
   const deckId = actor === 'player' ? state.playerDeckId : state.aiDeckId;
 
   if (deckId) {
+    const polyArchId = resolvePolycolorArchetypeForDeckId(deckId);
+    if (polyArchId && POLYCOLOR_VALUE_NETWORKS[polyArchId]) {
+      return POLYCOLOR_VALUE_NETWORKS[polyArchId] ?? null;
+    }
+
     const biArchId = resolveBicolorArchetypeForDeckId(deckId);
     if (biArchId && BICOLOR_VALUE_NETWORKS[biArchId]) {
       return BICOLOR_VALUE_NETWORKS[biArchId] ?? null;
@@ -595,13 +641,26 @@ export function resolveDomainValueMlpForActor(
     if (deckId.includes('neutral')) return DOMAIN_VALUE_NETWORKS.neutral ?? null;
   }
 
-  // Fallback: inspect actor's active domain affinities (supports custom Bicolor & Monocolor decks)
+  // Fallback: inspect actor's active domain affinities (supports custom 1–5 color decks)
   const domains: Domain[] = ['green', 'red', 'blue', 'purple', 'gold'];
   const activeColored = domains
     .map((d) => ({ domain: d, val: side.affinities[d] ?? 0 }))
     .filter((x) => x.val > 0)
     .sort((a, b) => b.val - a.val);
 
+  if (activeColored.length >= 4 && POLYCOLOR_VALUE_NETWORKS.penta_free_city_sovereign) {
+    return POLYCOLOR_VALUE_NETWORKS.penta_free_city_sovereign ?? null;
+  }
+  if (activeColored.length === 3) {
+    const triFallback = resolveTricolorArchetypeForDomains([
+      activeColored[0].domain,
+      activeColored[1].domain,
+      activeColored[2].domain,
+    ]);
+    if (triFallback && POLYCOLOR_VALUE_NETWORKS[triFallback]) {
+      return POLYCOLOR_VALUE_NETWORKS[triFallback] ?? null;
+    }
+  }
   if (activeColored.length === 2) {
     const biFallback = resolveBicolorArchetypeForDomains([
       activeColored[0].domain,

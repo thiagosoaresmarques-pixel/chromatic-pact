@@ -18,10 +18,13 @@ import {
   BICOLOR_ARCHETYPE_MASTERY,
   getTrainedBicolorPrebuiltDecks,
   getTrainedMonocolorPrebuiltDecks,
+  getTrainedPolycolorPrebuiltDecks,
   MONOCOLOR_ARCHETYPE_MASTERY,
   MonocolorArchetypeId,
+  POLYCOLOR_ARCHETYPE_MASTERY,
   resolveBicolorArchetypeForDeckId,
   resolveCampaignBossGraduatedSetup,
+  resolvePolycolorArchetypeForDeckId,
 } from '../data/aiMonocolorMastery';
 import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
 import {
@@ -434,13 +437,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const allAvailableAiDecks = useMemo(() => {
     const trainedMono = getTrainedMonocolorPrebuiltDecks(selectedAiSkillTier);
     const trainedBi = getTrainedBicolorPrebuiltDecks(selectedAiSkillTier);
+    const trainedPoly = getTrainedPolycolorPrebuiltDecks(selectedAiSkillTier);
     const seen = new Set([
       ...trainedMono.map((d) => d.id),
       ...trainedBi.map((d) => d.id),
+      ...trainedPoly.map((d) => d.id),
     ]);
     return [
       ...trainedMono,
       ...trainedBi,
+      ...trainedPoly,
       ...PREBUILT_DECKS.filter((d) => !seen.has(d.id)),
     ];
   }, [selectedAiSkillTier]);
@@ -1541,6 +1547,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     const monoMastery = MONOCOLOR_ARCHETYPE_MASTERY[aDeckId as MonocolorArchetypeId];
     const biArchId = resolveBicolorArchetypeForDeckId(aDeckId);
     const biMastery = biArchId ? BICOLOR_ARCHETYPE_MASTERY[biArchId] : undefined;
+    const polyArchId = resolvePolycolorArchetypeForDeckId(aDeckId);
+    const polyMastery = polyArchId ? POLYCOLOR_ARCHETYPE_MASTERY[polyArchId] : undefined;
     const aDeck =
       allAvailableAiDecks.find((d) => d.id === aDeckId) ??
       PREBUILT_DECKS.find((d) => d.id === aDeckId) ??
@@ -1549,6 +1557,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     const aiCardIds =
       monoMastery?.tierDecks?.[tierToUse]?.cardIds ??
       biMastery?.tierDecks?.[tierToUse]?.cardIds ??
+      polyMastery?.tierDecks?.[tierToUse]?.cardIds ??
       aDeck?.cardIds ??
       [];
 

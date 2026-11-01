@@ -838,4 +838,213 @@ export function resolveChampionDeckAndProfile(
   return null;
 }
 
+const SIGNATURE_DECK_MEMO = new Map<string, string[]>();
+
+function hashCardSeed(seedStr: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seedStr.length; i++) {
+    h ^= seedStr.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/**
+ * Constrói deterministicamente o Grimório Assinatura individual de 100 cartas de qualquer
+ * Criatura Soberana (Lendária ou Rara), garantindo:
+ * - Presença obrigatória da própria carta (`1×` Lendária ou `2×` Rara);
+ * - Respeito estrito aos limites legais (`100` cartas, `<= 1×` Lendária, `<= 2×` Rara, `<= 3×` Comum/Incomum, teto de Lendárias do Grau);
+ * - Pacote sinérgico exclusivo (12–16 cartas) alinhado às palavras-chave, efeitos, curva e domínio do Soberano,
+ *   garantindo que cada um dos 276 Soberanos lidere seu próprio grimório distinto.
+ */
+export function buildIndividualSovereignSignatureDeck(
+  avatarCardId: string,
+  baseArchetypeId: string,
+  skillTier: AiSkillTier
+): string[] {
+  const memoKey = `${avatarCardId}::${baseArchetypeId}::${skillTier}`;
+  const cached = SIGNATURE_DECK_MEMO.get(memoKey);
+  if (cached) return cached;
+
+  const base =
+    resolveChampionDeckAndProfile(baseArchetypeId, skillTier) ??
+    resolveChampionDeckAndProfile('mono_neutral_axial', skillTier)!;
+  const avatarCard = CARDS_BY_ID[avatarCardId];
+  if (!avatarCard) {
+    SIGNATURE_DECK_MEMO.set(memoKey, base.cardIds);
+    return base.cardIds;
+  }
+
+  // Os 44 Campeões Canônicos no Grau V preservam seu grimório campeão co-evoluído intacto (desde que já contenha sua carta)
+  if (skillTier === 5 && base.coverCardId === avatarCardId && base.cardIds.includes(avatarCardId)) {
+    SIGNATURE_DECK_MEMO.set(memoKey, base.cardIds);
+    return base.cardIds;
+  }
+
+  const allowedDomains = new Set<Domain>([...base.domains, avatarCard.domain, 'neutral']);
+  const counts = new Map<string, number>();
+  for (const cid of base.cardIds) {
+    counts.set(cid, (counts.get(cid) ?? 0) + 1);
+  }
+
+  const seed = hashCardSeed(`${avatarCardId}#${base.archetypeId}#T${skillTier}`);
+  const avatarKeywords = new Set(avatarCard.keywords);
+  const avatarEffectTypes = new Set(avatarCard.effects.map((e) => e.type));
+  const hasBreath = (avatarCard.breathDamage ?? 0) > 0;
+
+  const scoreSynergy = (c: CardDefinition): number => {
+    let s = 0;
+    if (c.domain === avatarCard.domain && c.domain !== 'neutral') s += 18;
+    else if (base.domains.includes(c.domain)) s += 10;
+    for (const kw of c.keywords) {
+      if (avatarKeywords.has(kw)) s += 14;
+    }
+    for (const ef of c.effects) {
+      if (avatarEffectTypes.has(ef.type)) s += 12;
+    }
+    if (hasBreath && (c.breathDamage ?? 0) > 0) s += 12;
+    if (avatarCard.cost >= 6 && c.cost <= 3) s += 6;
+    if (avatarCard.cost <= 4 && c.cost <= 4) s += 6;
+    const tie = (hashCardSeed(`${seed}:${c.id}`) % 1000) / 50; // 0..20 deterministic signature flavor
+    return s + tie;
+  };
+
+  // Teto de Lendárias respeitando estritamente a raridade do Soberano e seu Grau:
+  // Comandantes Regionais (Raras) comandam guarnições Raras/Incomuns/Comuns (sem empilhar Grão-Soberanos Lendários),
+  // enquanto Grão-Soberanos (Lendárias) comandam hostes Lendárias completas escalonadas pelo Grau.
+  let baseLegCount = 0;
+  for (const [cid, cnt] of counts.entries()) {
+    if (CARDS_BY_ID[cid]?.rarity === 'legendary') baseLegCount += cnt;
+  }
+  const tierLegCap =
+    avatarCard.rarity !== 'legendary'
+      ? skillTier <= 2
+        ? 0
+        : skillTier === 3
+          ? 1
+          : 2
+      : skillTier === 1
+        ? 1
+        : skillTier === 2
+          ? Math.max(2, Math.min(3, baseLegCount))
+          : skillTier === 3
+            ? Math.max(5, Math.min(8, baseLegCount))
+            : skillTier === 4
+              ? Math.max(9, Math.min(12, baseLegCount))
+              : LEGENDARY_CAP;
+
+  const currentTotal = () => {
+    let t = 0;
+    for (const v of counts.values()) t += v;
+    return t;
+  };
+  const currentLegendaries = () => {
+    let t = 0;
+    for (const [cid, v] of counts.entries()) {
+      if (CARDS_BY_ID[cid]?.rarity === 'legendary') t += v;
+    }
+    return t;
+  };
+
+  const removeLowestSynergySlot = (preferRarity?: Rarity, requireLegendaryRemoval = false): boolean => {
+    let worstId: string | null = null;
+    let worstScore = Infinity;
+    for (const [cid, cnt] of counts.entries()) {
+      if (cnt <= 0 || cid === avatarCardId) continue;
+      const c = CARDS_BY_ID[cid];
+      if (!c) continue;
+      if (requireLegendaryRemoval && c.rarity !== 'legendary') continue;
+      if (!requireLegendaryRemoval && c.rarity === 'legendary' && preferRarity !== 'legendary') {
+        continue;
+      }
+      let sc = scoreSynergy(c);
+      if (preferRarity && c.rarity === preferRarity) sc -= 25;
+      if (cnt >= 3) sc -= 8;
+      if (sc < worstScore) {
+        worstScore = sc;
+        worstId = cid;
+      }
+    }
+    if (!worstId) return false;
+    const nextCnt = (counts.get(worstId) ?? 1) - 1;
+    if (nextCnt <= 0) counts.delete(worstId);
+    else counts.set(worstId, nextCnt);
+    return true;
+  };
+
+  // 0. Se o grimório base exceder o teto de Lendárias permitido para este Soberano, substituir excessos
+  while (currentLegendaries() > tierLegCap) {
+    if (!removeLowestSynergySlot('legendary', true)) break;
+  }
+
+  // 1. Garantir a própria carta do Soberano (1x se Lendária, 2x se Rara)
+  const targetAvatarCopies = avatarCard.rarity === 'legendary' ? 1 : 2;
+  while ((counts.get(avatarCardId) ?? 0) < targetAvatarCopies) {
+    const needLegRoom =
+      avatarCard.rarity === 'legendary' && currentLegendaries() >= Math.min(LEGENDARY_CAP, Math.max(1, tierLegCap));
+    if (!removeLowestSynergySlot(avatarCard.rarity, needLegRoom)) {
+      removeLowestSynergySlot(undefined, false);
+    }
+    counts.set(avatarCardId, (counts.get(avatarCardId) ?? 0) + 1);
+  }
+
+  // 2. Personalizar pacote assinatura de 14 cartas sinérgicas exclusivas deste Soberano
+  const pool = ALL_CARDS.filter(
+    (c) =>
+      c.id !== avatarCardId &&
+      allowedDomains.has(c.domain) &&
+      (c.rarity !== 'legendary' || skillTier >= 3)
+  ).sort((a, b) => scoreSynergy(b) - scoreSynergy(a));
+
+  let swapsRemaining = 14;
+  for (const cand of pool) {
+    if (swapsRemaining <= 0) break;
+    const cur = counts.get(cand.id) ?? 0;
+    const cap = COPY_CAP_BY_RARITY[cand.rarity];
+    if (cur >= cap) continue;
+    if (cand.rarity === 'legendary' && currentLegendaries() >= Math.min(LEGENDARY_CAP, tierLegCap)) {
+      continue;
+    }
+    // Se já está no grimório base no limite desejado, pular para trazer cartas novas de assinatura
+    if (cur > 0 && cand.rarity !== 'rare') continue;
+
+    const copiesToInject = cand.rarity === 'legendary' ? 1 : Math.min(2, cap - cur, swapsRemaining);
+    for (let k = 0; k < copiesToInject; k++) {
+      if (removeLowestSynergySlot(cand.rarity, false)) {
+        counts.set(cand.id, (counts.get(cand.id) ?? 0) + 1);
+        swapsRemaining -= 1;
+      }
+    }
+  }
+
+  // Garantir tamanho exato de 100 cartas
+  while (currentTotal() > DECK_SIZE) {
+    if (!removeLowestSynergySlot()) break;
+  }
+  if (currentTotal() < DECK_SIZE) {
+    for (const cand of pool) {
+      if (currentTotal() >= DECK_SIZE) break;
+      if (cand.rarity === 'legendary') continue;
+      const cap = COPY_CAP_BY_RARITY[cand.rarity];
+      while ((counts.get(cand.id) ?? 0) < cap && currentTotal() < DECK_SIZE) {
+        counts.set(cand.id, (counts.get(cand.id) ?? 0) + 1);
+      }
+    }
+  }
+
+  const finalIds: string[] = [];
+  // Coloca a carta assinatura do Soberano no topo do grimório
+  const avCnt = counts.get(avatarCardId) ?? 0;
+  for (let i = 0; i < avCnt; i++) finalIds.push(avatarCardId);
+  for (const [cid, cnt] of counts.entries()) {
+    if (cid === avatarCardId) continue;
+    for (let i = 0; i < cnt; i++) finalIds.push(cid);
+  }
+
+  const out = finalIds.slice(0, DECK_SIZE);
+  SIGNATURE_DECK_MEMO.set(memoKey, out);
+  return out;
+}
+
+
 

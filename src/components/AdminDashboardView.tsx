@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { CAMPAIGN_BOSSES } from '../data/decks';
 import { ELO_SCHEMA_VERSION, INITIAL_PLAYER_ELO } from '../data/eloDivisions';
+import { GRAND_CAMPAIGN_BOSSES } from '../data/vaeloriaGrandCampaign';
 import {
   adminDeleteCloudProfile,
   adminDeleteCloudRoom,
@@ -37,7 +38,9 @@ interface AdminDashboardViewProps {
 
 type AdminSectionTab = 'overview' | 'users' | 'telemetry' | 'rooms' | 'system';
 
-const ALL_CAMPAIGN_BOSS_IDS = CAMPAIGN_BOSSES.map((b) => b.id);
+const ALL_CAMPAIGN_BOSS_IDS = Array.from(
+  new Set([...CAMPAIGN_BOSSES.map((b) => b.id), ...GRAND_CAMPAIGN_BOSSES.map((b) => b.id)])
+);
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   currentUser,
@@ -1141,7 +1144,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.2rem' }}>
                     E-mail: <strong>{selectedUser.email || 'Não informado'}</strong> • Título:{' '}
                     {selectedUser.title} • Grimórios: {selectedUser.customDecks?.length ?? 0} • Chefes
-                    vencidos: {selectedUser.defeatedBossIds?.length ?? 0}/{CAMPAIGN_BOSSES.length}
+                    vencidos: {selectedUser.defeatedBossIds?.length ?? 0}
                   </div>
                 </div>
                 <button
@@ -1497,7 +1500,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                           {p.pvpWins ?? 0}V/{p.pvpLosses ?? 0}D PvP • {p.arenaWins ?? 0}V Soberanos
                         </td>
                         <td style={{ padding: '0.75rem', color: '#cbd5e1' }}>
-                          {p.customDecks?.length ?? 0} deck(s) • {p.defeatedBossIds?.length ?? 0}/{CAMPAIGN_BOSSES.length} chefes
+                          {p.customDecks?.length ?? 0} deck(s) • {p.defeatedBossIds?.length ?? 0} chefes vencidos
                         </td>
                         <td style={{ padding: '0.75rem', color: '#94a3b8', fontSize: '0.75rem' }}>
                           {p.lastActiveAt

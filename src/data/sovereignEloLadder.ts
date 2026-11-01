@@ -1,6 +1,9 @@
 import { AiSkillTier, CampaignBoss, CardDefinition, Rarity } from '../types/game';
 import { CARDS_BY_ID } from './cards';
-import { resolveChampionDeckAndProfile } from './aiMonocolorMastery';
+import {
+  buildIndividualSovereignSignatureDeck,
+  resolveChampionDeckAndProfile,
+} from './aiMonocolorMastery';
 import { getUnifiedStandingForDeckId } from './aiUnifiedTournament';
 import type { UnifiedChampionId } from './aiUnifiedTournamentData';
 import {
@@ -74,8 +77,15 @@ export function getSignatureCardsForSovereign(
   entry: SovereignAiLeaderboardEntry,
   limit = 8
 ): CardDefinition[] {
-  const resolved = resolveChampionDeckAndProfile(entry.archetypeId, entry.skillTier);
-  const cardIds = resolved?.cardIds ?? [];
+  const signatureIds = buildIndividualSovereignSignatureDeck(
+    entry.avatarCardId,
+    entry.archetypeId,
+    entry.skillTier
+  );
+  const cardIds =
+    signatureIds.length > 0
+      ? signatureIds
+      : (resolveChampionDeckAndProfile(entry.archetypeId, entry.skillTier)?.cardIds ?? []);
   const counts = new Map<string, number>();
   for (const cid of cardIds) {
     counts.set(cid, (counts.get(cid) ?? 0) + 1);
@@ -135,7 +145,15 @@ export function findClosestRankedSovereignForElo(
 export function buildRankedSovereignBossEncounter(
   entry: SovereignAiLeaderboardEntry
 ): CampaignBoss {
-  const resolved = resolveChampionDeckAndProfile(entry.archetypeId, entry.skillTier);
+  const signatureDeckIds = buildIndividualSovereignSignatureDeck(
+    entry.avatarCardId,
+    entry.archetypeId,
+    entry.skillTier
+  );
+  const resolved =
+    signatureDeckIds.length === 100
+      ? null
+      : resolveChampionDeckAndProfile(entry.archetypeId, entry.skillTier);
   const standing = getUnifiedStandingForDeckId(entry.archetypeId);
   const fallbackDeckId = standing?.classicDeckIds[0] ?? 'deck_red_inferno';
 
@@ -155,6 +173,6 @@ export function buildRankedSovereignBossEncounter(
     archetypeId: entry.archetypeId,
     archetypeTitle: entry.archetypeName,
     difficultyTier: entry.skillTier,
-    customDeckCardIds: resolved?.cardIds,
+    customDeckCardIds: signatureDeckIds.length === 100 ? signatureDeckIds : resolved?.cardIds,
   };
 }

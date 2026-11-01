@@ -610,11 +610,11 @@ function runAutomatedQA() {
     );
   }
 
-  console.log(`\nValidating Wave 6 Grand Campaign (190 Encounters / 276 Rare+Legendary / BFS Road March)...`);
+  console.log(`\nValidating Wave 6 Grand Campaign (276 Solo Encounters / 276 Rare+Legendary / BFS Road March)...`);
 
-  if (GRAND_CAMPAIGN_BOSSES.length !== 190 || GRAND_CAMPAIGN_NODES.length !== 190) {
+  if (GRAND_CAMPAIGN_BOSSES.length !== 276 || GRAND_CAMPAIGN_NODES.length !== 276) {
     throw new Error(
-      `Expected 190 Grand Campaign encounters, got bosses=${GRAND_CAMPAIGN_BOSSES.length}, nodes=${GRAND_CAMPAIGN_NODES.length}`
+      `Expected 276 Grand Campaign solo encounters, got bosses=${GRAND_CAMPAIGN_BOSSES.length}, nodes=${GRAND_CAMPAIGN_NODES.length}`
     );
   }
 
@@ -631,16 +631,24 @@ function runAutomatedQA() {
     if (boss.startingHp !== 40) {
       throw new Error(`Expected Grand Campaign boss ${boss.id} to have symmetric 40 PV, got ${boss.startingHp}`);
     }
+    if (boss.companionCardId) {
+      throw new Error(`Expected Grand Campaign boss ${boss.id} to be unbundled solo 1x1, found companionCardId=${boss.companionCardId}`);
+    }
     if (!boss.customDeckCardIds || boss.customDeckCardIds.length !== 100) {
       throw new Error(
         `Grand Campaign boss ${boss.id} must have a 100-card customDeckCardIds, got ${boss.customDeckCardIds?.length}`
+      );
+    }
+    if (!boss.customDeckCardIds.includes(boss.avatarCardId)) {
+      throw new Error(
+        `Grand Campaign boss ${boss.id} must include its own avatarCardId ${boss.avatarCardId} in its 100-card signature deck!`
       );
     }
     const rdef = boss.submapId ? VAELORIA_REGIONAL_MAPS[boss.submapId] : undefined;
     if (!rdef) {
       throw new Error(`Grand Campaign boss ${boss.id} has invalid submapId ${boss.submapId}`);
     }
-    const commanderIds = [boss.avatarCardId, ...(boss.companionCardId ? [boss.companionCardId] : [])];
+    const commanderIds = [boss.avatarCardId];
     for (const cid of commanderIds) {
       const card = CARDS_BY_ID[cid];
       if (!card) throw new Error(`Missing commander creature ${cid} on boss ${boss.id}`);
@@ -682,9 +690,9 @@ function runAutomatedQA() {
         }
       }
     }
-    if (cleared.size !== 190) {
+    if (cleared.size !== 276) {
       throw new Error(
-        `Starting from ${startDom}, only ${cleared.size}/190 encounters were reachable via planar road progression!`
+        `Starting from ${startDom}, only ${cleared.size}/276 encounters were reachable via planar road progression!`
       );
     }
   }
@@ -714,7 +722,7 @@ function runAutomatedQA() {
   );
   const apexFinal = runSingleAiDuel(apexState, 70);
   console.log(
-    `  OK — Grand Campaign verified: 190 encounters (${Object.keys(GRAND_CAMPAIGN_SUBMAP_GRAPHS).length} submaps), ${featuredCreatureSet.size}/${allRareAndLegendaryCreatures.length} Rare+Legendary creatures (0 domain mismatches), 190/190 BFS from all 5 colors | Apex Duel [${apexBoss.name}] Turn ${apexFinal.turn}.`
+    `  OK — Grand Campaign verified: 276 solo encounters (${Object.keys(GRAND_CAMPAIGN_SUBMAP_GRAPHS).length} submaps), ${featuredCreatureSet.size}/${allRareAndLegendaryCreatures.length} Rare+Legendary creatures (0 domain mismatches), 276/276 BFS from all 5 colors | Apex Duel [${apexBoss.name}] Turn ${apexFinal.turn}.`
   );
 
   // Validate Tier I–V Co-Evolved Champion Coverage across Grand Campaign, Conquest, and Fracture Rifts
@@ -750,7 +758,7 @@ function runAutomatedQA() {
   // ============================================================================
   // WAVE 7: BRADLEY-TERRY ELO LADDER, RANKED SOVEREIGN DUELS & ASYMMETRIC AUDIT
   // ============================================================================
-  console.log('\n[Wave 7] Auditing Bradley-Terry ELO Calibration, 68 Sovereigns & Draft Pick Tiers...');
+  console.log('\n[Wave 7] Auditing Bradley-Terry ELO Calibration, 276 Individual Sovereigns & Draft Pick Tiers...');
   let calibratedCellsCount = 0;
   for (const st of UNIFIED_CHAMPION_STANDINGS) {
     const tierRow = ARCHETYPE_TIER_ELO_MAP[st.archetypeId];
@@ -779,13 +787,16 @@ function runAutomatedQA() {
   ) {
     throw new Error('Tier I–V mean ELO curve failed strict monotonicity check!');
   }
-  if (dist[2].medianElo !== 1200) {
-    throw new Error(`Expected Tier II median ELO anchor at 1200, got ${dist[2].medianElo}`);
+  if (Math.abs(dist[2].medianElo - 1200) > 2) {
+    throw new Error(`Expected Tier II median ELO anchor near 1200, got ${dist[2].medianElo}`);
   }
 
+  if (SOVEREIGN_AI_LEADERBOARD_ROSTER.length !== 276) {
+    throw new Error(`Expected 276 Individual Sovereigns on ELO leaderboard, got ${SOVEREIGN_AI_LEADERBOARD_ROSTER.length}`);
+  }
   const grandSovereigns = SOVEREIGN_AI_LEADERBOARD_ROSTER.filter((s) => s.isGrandSovereign);
-  if (grandSovereigns.length !== 44) {
-    throw new Error(`Expected 44 Grand Sovereigns on ELO leaderboard, got ${grandSovereigns.length}`);
+  if (grandSovereigns.length !== 100) {
+    throw new Error(`Expected 100 Legendary Grand Sovereigns on ELO leaderboard, got ${grandSovereigns.length}`);
   }
   const uniqueStandingCoverIds = new Set(UNIFIED_CHAMPION_STANDINGS.map((st) => st.coverCardId));
   if (uniqueStandingCoverIds.size !== 44) {

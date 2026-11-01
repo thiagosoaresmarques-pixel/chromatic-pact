@@ -254,16 +254,16 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     stepNumber: 8,
     badge: 'TODOS OS MODOS & RELÍQUIAS DA COROA',
     title: 'Os 7 Modos de Jogo, 12 Relíquias da Coroa & Conclave 1×1',
-    subtitle: 'Campanha (190 confrontos), Conquista (48 províncias), Expedição, Draft, Fendas, Enigmas e PvP.',
+    subtitle: 'Campanha (276 confrontos), Conquista (48 províncias), Expedição, Draft, Fendas, Enigmas e PvP.',
     cardId: 'red_08_dragao_vermelho',
     summary:
       'Antes de iniciar batalhas na Campanha, Conquista, Expedição, Arena ou Fendas, equipe 1 das 12 Relíquias da Coroa Soberana desbloqueadas na sua conta para receber bônus permanentes de abertura!',
     keyPoints: [
       {
         tag: 'ESTRATÉGIA & ROGUELITE',
-        title: 'Campanha (190), Conquista (48) & Expedição (9)',
+        title: 'Campanha (276), Conquista (48) & Expedição (9)',
         detail:
-          'Grande Campanha (21 mapas em zoom 100% e 190 chefes); Conquista Continental (48 províncias, Suprimentos, 5 Edifícios, Diplomacia e Crises); e Expedição Roguelite (6 Bênçãos Soberanas, 40 cartas e 9 etapas).',
+          'Grande Campanha (21 mapas em zoom 100% e 276 duelos 1×1); Conquista Continental (48 províncias, Suprimentos, 5 Edifícios, Diplomacia e Crises); e Expedição Roguelite (6 Bênçãos Soberanas, 40 cartas e 9 etapas).',
       },
       {
         tag: 'DESAFIOS ESPECIAIS',
@@ -315,11 +315,11 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   {
     stepNumber: 10,
     badge: 'ATLAS & GRANDE CAMPANHA DE VAELORIA',
-    title: '21 Mapas (Zoom 100%), 190 Confrontos & Zona de Controle',
-    subtitle: 'Derrote todas as 276 criaturas Raras e Lendárias passo a passo pelas estradas e converta o continente à sua cor.',
+    title: '21 Mapas (Zoom 100%), 276 Confrontos 1×1 & Zona de Controle',
+    subtitle: 'Derrote todas as 276 criaturas Raras e Lendárias em duelos individuais passo a passo pelas estradas.',
     cardId: 'neutral_173_gorgonoth_devorador_continentes',
     summary:
-      'O Atlas de Vaeloria reúne 21 mapas 16:9 fixados em 100% de zoom e 100% visíveis na tela. Na Grande Campanha, você marcha passo a passo por 190 confrontos geográficos cobrindo 100% das criaturas Raras e Lendárias.',
+      'O Atlas de Vaeloria reúne 21 mapas 16:9 fixados em 100% de zoom e 100% visíveis na tela. Na Grande Campanha, você marcha passo a passo por 276 confrontos geográficos individuais (40 PV vs 40 PV), enfrentando cada criatura Rara e Lendária com seu próprio grimório.',
     keyPoints: [
       {
         tag: 'ZONA DE CONTROLE',
@@ -1945,8 +1945,8 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               {[
                 {
                   tag: 'MODO 1 • GRANDE CAMPANHA (21 MAPAS)',
-                  title: '🗺️ 190 Confrontos, Zona de Controle & Dominação',
-                  desc: '1 Mapa Continental + 20 Sub-Mapas em zoom 100%. Marche passo a passo pelas estradas: inimigos vivos bloqueiam caminhos e portais adiante (Zona de Controle), mas você pode recuar livremente para rotas vencidas ou migrar para outra cor. Vencer desbloqueia as cartas Raras/Lendárias daquele chefe (276 ao todo), ativa Pontos de Interesse no mapa e, em 100% do sub-mapa, converte todo o território à sua cor! (Inclui também a Trilha Clássica de 32 Chefes).',
+                  title: '🗺️ 276 Confrontos 1×1, Zona de Controle & Dominação',
+                  desc: '1 Mapa Continental + 20 Sub-Mapas em zoom 100%. Marche passo a passo pelas estradas em 276 duelos 1×1 simétricos (40 PV vs 40 PV): inimigos vivos bloqueiam caminhos e portais adiante (Zona de Controle), mas você pode recuar livremente para rotas vencidas ou migrar para outra cor. Vencer desbloqueia a carta Rara ou Lendária daquele Soberano (276 ao todo), ativa Pontos de Interesse no mapa e, em 100% do sub-mapa, converte todo o território à sua cor! (Inclui também a Trilha Clássica de 32 Chefes).',
                 },
                 {
                   tag: 'MODO 2 • CONQUISTA CONTINENTAL (48 PROVÍNCIAS)',

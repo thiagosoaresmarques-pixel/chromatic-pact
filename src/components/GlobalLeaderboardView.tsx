@@ -9,6 +9,7 @@ import {
   getEloDivisionMeta,
   getSignatureCardsForSovereign,
   INITIAL_PLAYER_ELO,
+  SOVEREIGN_AI_LEADERBOARD_ROSTER,
   SovereignAiLeaderboardEntry,
 } from '../data/sovereignEloLadder';
 import { CardDefinition, Domain } from '../types/game';
@@ -79,6 +80,14 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
     useState<SovereignAiLeaderboardEntry | null>(null);
   const [showRulesModal, setShowRulesModal] = useState<boolean>(false);
   const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const PAGE_SIZE = 50;
+
+  const totalRosterCount = SOVEREIGN_AI_LEADERBOARD_ROSTER.length;
+  const grandSovereignsCount = useMemo(
+    () => SOVEREIGN_AI_LEADERBOARD_ROSTER.filter((s) => s.isGrandSovereign).length,
+    []
+  );
 
   const availableDecks = useMemo(() => {
     const list: Array<{ id: string; label: string; cardIds: string[]; isCustom: boolean }> = [];
@@ -177,6 +186,33 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
       return true;
     });
   }, [snapshot, scopeTab, divisionFilter, domainFilter, searchQuery]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [scopeTab, divisionFilter, domainFilter, searchQuery, includeRegionalCommanders]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredEntries.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pageEntries = useMemo(() => {
+    const start = (safePage - 1) * PAGE_SIZE;
+    return filteredEntries.slice(start, start + PAGE_SIZE);
+  }, [filteredEntries, safePage]);
+
+  const myTargetPage = useMemo(() => {
+    if (filteredEntries.length === 0) return 1;
+    const meIdx = filteredEntries.findIndex((e) => e.isCurrentUser);
+    if (meIdx >= 0) return Math.floor(meIdx / PAGE_SIZE) + 1;
+    let bestIdx = 0;
+    let bestDiff = Infinity;
+    for (let i = 0; i < filteredEntries.length; i++) {
+      const diff = Math.abs(filteredEntries[i].eloRating - playerElo);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestIdx = i;
+      }
+    }
+    return Math.floor(bestIdx / PAGE_SIZE) + 1;
+  }, [filteredEntries, playerElo]);
 
   const standingById = useMemo(() => {
     const map = new Map<string, (typeof UNIFIED_CHAMPION_STANDINGS)[number]>();
@@ -593,9 +629,30 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                 fontSize: '0.75rem',
                 cursor: 'pointer',
               }}
-              title="Alternar entre todos os 68 Soberanos/Comandantes ou apenas os 44 Grão-Soberanos"
+              title={`Alternar entre todos os ${totalRosterCount} Soberanos ou apenas os ${grandSovereignsCount} Grão-Soberanos`}
             >
-              {includeRegionalCommanders ? '68 Soberanos' : '44 Grão-Soberanos'}
+              {includeRegionalCommanders
+                ? `${totalRosterCount} Soberanos`
+                : `${grandSovereignsCount} Grão-Soberanos`}
+            </button>
+          )}
+
+          {totalPages > 1 && safePage !== myTargetPage && (
+            <button
+              type="button"
+              onClick={() => setCurrentPage(myTargetPage)}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '7px',
+                background: 'rgba(15, 23, 42, 0.65)',
+                border: '1px solid rgba(234, 179, 8, 0.28)',
+                color: '#fde047',
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+              }}
+              title="Ir para a página da sua faixa atual de ELO"
+            >
+              Minha posição
             </button>
           )}
         </div>
@@ -647,7 +704,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
           </div>
         ) : (
           <div>
-            {filteredEntries.map((row: UnifiedLeaderboardEntry, idx: number) => {
+            {pageEntries.map((row: UnifiedLeaderboardEntry, idx: number) => {
               const div = getEloDivisionMeta(row.eloRating);
               const isMe = Boolean(row.isCurrentUser);
               const sov = row.sovereignEntry ?? null;
@@ -675,7 +732,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                     gap: '0.75rem',
                     padding: '0.62rem 1rem',
                     borderBottom:
-                      idx < filteredEntries.length - 1
+                      idx < pageEntries.length - 1 || totalPages > 1
                         ? '1px solid rgba(148, 163, 184, 0.08)'
                         : 'none',
                     background: isMe ? 'rgba(234, 179, 8, 0.06)' : 'transparent',
@@ -893,6 +950,59 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                 </div>
               );
             })}
+
+            {totalPages > 1 && (
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.65rem 1rem',
+                  background: 'rgba(15, 23, 42, 0.45)',
+                  borderTop: '1px solid rgba(148, 163, 184, 0.12)',
+                  fontSize: '0.75rem',
+                  color: '#94a3b8',
+                }}
+              >
+                <span>
+                  Exibindo {(safePage - 1) * PAGE_SIZE + 1}–
+                  {Math.min(safePage * PAGE_SIZE, filteredEntries.length)} de{' '}
+                  {filteredEntries.length} participantes
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary"
+                    disabled={safePage <= 1}
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: '0.73rem',
+                      opacity: safePage <= 1 ? 0.45 : 1,
+                    }}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  >
+                    Anterior
+                  </button>
+                  <span style={{ fontVariantNumeric: 'tabular-nums', color: '#cbd5e1' }}>
+                    Página {safePage} / {totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-secondary"
+                    disabled={safePage >= totalPages}
+                    style={{
+                      padding: '4px 10px',
+                      fontSize: '0.73rem',
+                      opacity: safePage >= totalPages ? 0.45 : 1,
+                    }}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  >
+                    Próxima
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </section>
@@ -917,12 +1027,14 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
               const standing = standingById.get(s.archetypeId);
               const div = getEloDivisionMeta(s.eloRating);
               const winRatePct = Math.round(s.simulatedWinRate * 100);
+              const totalPlayerGames = playerWins + playerLosses;
               const winDelta = calculateFideRankedEloDelta({
                 playerElo,
                 opponentElo: s.eloRating,
                 didWin: true,
                 recentOpponentIds: currentUser.recentRankedOpponentIds,
                 opponentKey: s.sovereignId,
+                totalRankedGamesPlayed: totalPlayerGames,
               }).delta;
               const lossDelta = calculateFideRankedEloDelta({
                 playerElo,
@@ -930,6 +1042,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                 didWin: false,
                 recentOpponentIds: currentUser.recentRankedOpponentIds,
                 opponentKey: s.sovereignId,
+                totalRankedGamesPlayed: totalPlayerGames,
               }).delta;
 
               return (

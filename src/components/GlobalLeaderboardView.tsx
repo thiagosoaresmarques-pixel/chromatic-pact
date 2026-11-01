@@ -629,7 +629,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                   handleLaunchChallenge(snapshot.nextSovereignTarget.sovereignEntry)
                 }
               >
-                ⚔️ Desafiar {snapshot.nextSovereignTarget.displayName.split(' ')[0]} pelo ELO
+                ⚔️ Desafiar {snapshot.nextSovereignTarget.displayName.split(/[, ]+/)[0]} pelo ELO
               </button>
             </div>
           )}

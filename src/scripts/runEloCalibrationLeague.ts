@@ -22,6 +22,10 @@ import {
 } from '../data/aiPolycolorMasteryData';
 import { ORDERED_POLYCOLOR_ARCHETYPE_IDS } from '../data/aiPolycolorMastery';
 import {
+  resolveCanonicalGrandSovereignIdentity,
+  resolveUniqueRegionalCommanderIdentity,
+} from '../data/sovereignCardBindings';
+import {
   AiProfileOverrides,
   chooseMulliganIndicesForActor,
   executeTurnStepForActor,
@@ -1578,16 +1582,18 @@ export const UNIFIED_MATCHUP_MATRIX: Record<UnifiedChampionId, Record<UnifiedCha
   for (const st of rawStandings) standingRankByArch.set(st.archetypeId, st.rank);
 
   const roster: SovereignAiRosterItem[] = [];
+  const usedRosterCardIds = new Set<string>();
 
-  // 1. All 44 Grand Sovereigns (Tier V)
+  // 1. All 44 Grand Sovereigns (Tier V) — each bound 1-to-1 to their own Legendary Creature card
   for (const c of champions) {
-    const lore = SOVEREIGN_LORE_BY_ARCHETYPE[c.id];
     const cell = archetypeTierEloMap[c.id][5];
+    const ident = resolveCanonicalGrandSovereignIdentity(c.id, c.tierCardIds[5]);
+    usedRosterCardIds.add(ident.avatarCardId);
     roster.push({
       sovereignId: `sov_t5_${c.id}`,
-      sovereignName: lore.sovereignName.trim(),
-      sovereignTitle: lore.sovereignTitle.trim(),
-      realmOrigin: lore.realmOrigin,
+      sovereignName: ident.sovereignName,
+      sovereignTitle: ident.sovereignTitle,
+      realmOrigin: ident.realmOrigin,
       archetypeId: c.id,
       archetypeName: c.name,
       archetypeSubtitle: c.subtitle,
@@ -1595,7 +1601,7 @@ export const UNIFIED_MATCHUP_MATRIX: Record<UnifiedChampionId, Record<UnifiedCha
       isGrandSovereign: true,
       format: c.format,
       domains: c.domains,
-      avatarCardId: c.coverCardId,
+      avatarCardId: ident.avatarCardId,
       eloRating: cell.elo,
       eloRd: cell.rd,
       simulatedGames: cell.games,
@@ -1606,46 +1612,49 @@ export const UNIFIED_MATCHUP_MATRIX: Record<UnifiedChampionId, Record<UnifiedCha
     });
   }
 
-  // 2. 24 Regional Commanders & Vanguard Wardens across Tiers I–IV (6 per tier)
-  const commanderPrefixes: Record<1 | 2 | 3 | 4, { prefix: string; roleTitle: string }> = {
-    1: { prefix: 'Sentinela', roleTitle: 'Guarnição de Fronteira (Tier I)' },
-    2: { prefix: 'Capitão', roleTitle: 'Veterano Regular da Ordem (Tier II)' },
-    3: { prefix: 'Comandante', roleTitle: 'Estrategista Regional (Tier III)' },
-    4: { prefix: 'Arconte', roleTitle: 'Mestre Tático do Conselho (Tier IV)' },
-  };
-
+  // 2. 24 Regional Commanders & Vanguard Wardens across Tiers I–IV (6 per tier), sorted by ELO so top commanders pick first
+  const commanderSeeds: Array<{ tier: 1 | 2 | 3 | 4; c: ChampionFullEntry }> = [];
   for (const tier of [4, 3, 2, 1] as const) {
     for (let pick = 0; pick < 6; pick++) {
       const cIdx = (pick * 7 + tier * 3) % N;
-      const c = champions[cIdx];
-      const lore = SOVEREIGN_LORE_BY_ARCHETYPE[c.id];
-      const cell = archetypeTierEloMap[c.id][tier];
-      const meta = commanderPrefixes[tier];
-      const baseFirstName = lore.sovereignName.trim().split(' ')[0];
-      const avatarCard =
-        c.tierCardIds[tier].find((cid) => CARDS_BY_ID[cid]?.type === 'creature') ?? c.coverCardId;
-
-      roster.push({
-        sovereignId: `sov_t${tier}_${c.id}`,
-        sovereignName: `${meta.prefix} de ${lore.realmOrigin} (${baseFirstName})`,
-        sovereignTitle: `${meta.roleTitle} • ${c.name}`,
-        realmOrigin: lore.realmOrigin,
-        archetypeId: c.id,
-        archetypeName: c.name,
-        archetypeSubtitle: c.subtitle,
-        skillTier: tier,
-        isGrandSovereign: false,
-        format: c.format,
-        domains: c.domains,
-        avatarCardId: avatarCard,
-        eloRating: cell.elo,
-        eloRd: cell.rd,
-        simulatedGames: cell.games,
-        simulatedWins: cell.wins,
-        simulatedLosses: cell.losses,
-        simulatedWinRate: cell.winRate,
-      });
+      commanderSeeds.push({ tier, c: champions[cIdx] });
     }
+  }
+  commanderSeeds.sort(
+    (a, b) =>
+      archetypeTierEloMap[b.c.id][b.tier].elo - archetypeTierEloMap[a.c.id][a.tier].elo
+  );
+
+  for (const { tier, c } of commanderSeeds) {
+    const cell = archetypeTierEloMap[c.id][tier];
+    const ident = resolveUniqueRegionalCommanderIdentity({
+      archetypeId: c.id,
+      skillTier: tier,
+      domains: c.domains,
+      deckCardIds: c.tierCardIds[tier],
+      usedCardIds: usedRosterCardIds,
+    });
+
+    roster.push({
+      sovereignId: `sov_t${tier}_${c.id}`,
+      sovereignName: ident.sovereignName,
+      sovereignTitle: ident.sovereignTitle,
+      realmOrigin: ident.realmOrigin,
+      archetypeId: c.id,
+      archetypeName: c.name,
+      archetypeSubtitle: c.subtitle,
+      skillTier: tier,
+      isGrandSovereign: false,
+      format: c.format,
+      domains: c.domains,
+      avatarCardId: ident.avatarCardId,
+      eloRating: cell.elo,
+      eloRd: cell.rd,
+      simulatedGames: cell.games,
+      simulatedWins: cell.wins,
+      simulatedLosses: cell.losses,
+      simulatedWinRate: cell.winRate,
+    });
   }
 
   roster.sort((a, b) => b.eloRating - a.eloRating || b.simulatedWinRate - a.simulatedWinRate);

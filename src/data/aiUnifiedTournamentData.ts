@@ -429,7 +429,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "red",
       "blue"
     ],
-    "coverCardId": "red_173_general_roda_chama",
+    "coverCardId": "gold_173_general_roda_sol",
     "classicDeckIds": [],
     "tierBadge": "S",
     "overallWinRate": 0.7476,
@@ -584,7 +584,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "purple",
       "green"
     ],
-    "coverCardId": "purple_65_principe_mortos",
+    "coverCardId": "purple_138_soberano_carnica",
     "classicDeckIds": [
       "deck_tri_blood_moon"
     ],
@@ -664,7 +664,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "red",
       "purple"
     ],
-    "coverCardId": "gold_99_serafim_coroado",
+    "coverCardId": "red_119_soberano_piroclasma",
     "classicDeckIds": [
       "deck_tri_crimson_sun"
     ],
@@ -743,7 +743,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "red",
       "gold"
     ],
-    "coverCardId": "red_173_general_roda_chama",
+    "coverCardId": "red_100_dragao_vulcanico_anciao",
     "classicDeckIds": [
       "deck_dual_draconic_pact"
     ],
@@ -822,7 +822,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "green",
       "neutral"
     ],
-    "coverCardId": "green_173_general_roda_selva",
+    "coverCardId": "neutral_54_dragao_etereo",
     "classicDeckIds": [],
     "tierBadge": "S",
     "overallWinRate": 0.6066,
@@ -900,7 +900,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "green",
       "purple"
     ],
-    "coverCardId": "gold_172_armada_draconica_sol",
+    "coverCardId": "gold_138_imperador_sol_supremo",
     "classicDeckIds": [],
     "tierBadge": "S",
     "overallWinRate": 0.5998,
@@ -1059,7 +1059,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "red",
       "green"
     ],
-    "coverCardId": "red_173_general_roda_chama",
+    "coverCardId": "red_46_tirano_carmesim",
     "classicDeckIds": [
       "deck_dual_primal_fury"
     ],
@@ -1139,7 +1139,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "green",
       "blue"
     ],
-    "coverCardId": "green_173_general_roda_selva",
+    "coverCardId": "red_47_arquiduque_ferro",
     "classicDeckIds": [],
     "tierBadge": "S",
     "overallWinRate": 0.5833,
@@ -1376,7 +1376,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "blue",
       "gold"
     ],
-    "coverCardId": "blue_173_general_roda_gelo",
+    "coverCardId": "gold_157_dragao_soberano_alvorada",
     "classicDeckIds": [
       "deck_dual_arcane_forge"
     ],
@@ -1455,7 +1455,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "gold",
       "neutral"
     ],
-    "coverCardId": "gold_173_general_roda_sol",
+    "coverCardId": "neutral_118_volothamp_cronista_mundos",
     "classicDeckIds": [],
     "tierBadge": "S",
     "overallWinRate": 0.5688,
@@ -1854,7 +1854,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "blue",
       "neutral"
     ],
-    "coverCardId": "blue_173_general_roda_gelo",
+    "coverCardId": "blue_81_arconte_cronos",
     "classicDeckIds": [],
     "tierBadge": "A",
     "overallWinRate": 0.5489,
@@ -1931,7 +1931,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "red",
       "blue"
     ],
-    "coverCardId": "red_173_general_roda_chama",
+    "coverCardId": "red_99_senhor_balor_fogo",
     "classicDeckIds": [
       "deck_dual_storm_dragon"
     ],
@@ -2011,7 +2011,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "blue",
       "purple"
     ],
-    "coverCardId": "gold_72_talisma_bem",
+    "coverCardId": "blue_97_draco_relampago",
     "classicDeckIds": [
       "deck_tri_eternal_reliquary"
     ],
@@ -2090,7 +2090,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "green",
       "gold"
     ],
-    "coverCardId": "green_173_general_roda_selva",
+    "coverCardId": "green_50_avatar_gaia",
     "classicDeckIds": [
       "deck_dual_solar_wild"
     ],
@@ -2169,7 +2169,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "red",
       "purple"
     ],
-    "coverCardId": "red_173_general_roda_chama",
+    "coverCardId": "purple_23_dracolich",
     "classicDeckIds": [
       "deck_dual_blood_flame"
     ],
@@ -2248,7 +2248,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "purple",
       "green"
     ],
-    "coverCardId": "purple_173_general_roda_abismo",
+    "coverCardId": "green_49_dragao_esmeralda",
     "classicDeckIds": [
       "deck_dual_eternal_rot"
     ],
@@ -2327,7 +2327,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "blue",
       "purple"
     ],
-    "coverCardId": "blue_173_general_roda_gelo",
+    "coverCardId": "blue_80_senhor_tempo",
     "classicDeckIds": [
       "deck_dual_abyssal_storm"
     ],
@@ -2488,7 +2488,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "purple",
       "green"
     ],
-    "coverCardId": "purple_100_dragao_necrotico",
+    "coverCardId": "purple_83_arquidemonio_tempo",
     "classicDeckIds": [
       "deck_tri_abyssal_chimera"
     ],
@@ -2566,7 +2566,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "red"
     ],
-    "coverCardId": "red_173_general_roda_chama",
+    "coverCardId": "red_157_dragao_tiamat_carmesim",
     "classicDeckIds": [
       "deck_aggro_blitz"
     ],
@@ -2644,7 +2644,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "blue"
     ],
-    "coverCardId": "blue_80_senhor_tempo",
+    "coverCardId": "blue_136_leviata_cronos",
     "classicDeckIds": [
       "deck_blue_tempest"
     ],
@@ -2801,7 +2801,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
       "purple",
       "neutral"
     ],
-    "coverCardId": "purple_173_general_roda_abismo",
+    "coverCardId": "purple_47_avatar_escuridao",
     "classicDeckIds": [],
     "tierBadge": "B",
     "overallWinRate": 0.437,
@@ -2877,7 +2877,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "neutral"
     ],
-    "coverCardId": "neutral_24_dragao_astral",
+    "coverCardId": "neutral_117_elminster_sabio_cinzento",
     "classicDeckIds": [
       "deck_neutral_watch"
     ],
@@ -2955,7 +2955,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "gold"
     ],
-    "coverCardId": "gold_99_serafim_coroado",
+    "coverCardId": "gold_83_forjado_ancestral",
     "classicDeckIds": [
       "deck_gold_radiant"
     ],
@@ -3109,7 +3109,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "green"
     ],
-    "coverCardId": "green_09_hidra",
+    "coverCardId": "green_141_soberano_fera_primordial",
     "classicDeckIds": [],
     "tierBadge": "B",
     "overallWinRate": 0.3905,
@@ -3185,7 +3185,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "red"
     ],
-    "coverCardId": "red_46_tirano_carmesim",
+    "coverCardId": "red_08_dragao_vermelho",
     "classicDeckIds": [
       "deck_red_inferno"
     ],
@@ -3263,7 +3263,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "purple"
     ],
-    "coverCardId": "purple_167_arauto_prisma_abismo",
+    "coverCardId": "purple_65_principe_mortos",
     "classicDeckIds": [],
     "tierBadge": "B",
     "overallWinRate": 0.3784,
@@ -3339,7 +3339,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "purple"
     ],
-    "coverCardId": "purple_65_principe_mortos",
+    "coverCardId": "purple_99_lorde_vampiro_anciao",
     "classicDeckIds": [
       "deck_purple_shadow",
       "deck_crypt_reanimator"
@@ -3418,7 +3418,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "gold"
     ],
-    "coverCardId": "gold_99_serafim_coroado",
+    "coverCardId": "gold_119_soberano_ordem_eterna",
     "classicDeckIds": [
       "deck_relic_artificer"
     ],
@@ -3496,7 +3496,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "blue"
     ],
-    "coverCardId": "blue_97_draco_relampago",
+    "coverCardId": "blue_06_dragao_azul",
     "classicDeckIds": [],
     "tierBadge": "B",
     "overallWinRate": 0.3217,
@@ -3572,7 +3572,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "green"
     ],
-    "coverCardId": "green_09_hidra",
+    "coverCardId": "green_173_general_roda_selva",
     "classicDeckIds": [
       "deck_green_wild",
       "deck_midrange_beasts"
@@ -3651,7 +3651,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "red"
     ],
-    "coverCardId": "red_46_tirano_carmesim",
+    "coverCardId": "red_138_colosso_vulcano_primordial",
     "classicDeckIds": [],
     "tierBadge": "B",
     "overallWinRate": 0.3164,
@@ -3803,7 +3803,7 @@ export const UNIFIED_CHAMPION_STANDINGS: UnifiedChampionStanding[] = [
     "domains": [
       "green"
     ],
-    "coverCardId": "green_33_behemoth_primordial",
+    "coverCardId": "green_86_tarrasque_desperto",
     "classicDeckIds": [],
     "tierBadge": "B",
     "overallWinRate": 0.2718,

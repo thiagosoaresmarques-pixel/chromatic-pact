@@ -777,10 +777,28 @@ function runAutomatedQA() {
   if (grandSovereigns.length !== 44) {
     throw new Error(`Expected 44 Grand Sovereigns on ELO leaderboard, got ${grandSovereigns.length}`);
   }
+  const uniqueStandingCoverIds = new Set(UNIFIED_CHAMPION_STANDINGS.map((st) => st.coverCardId));
+  if (uniqueStandingCoverIds.size !== 44) {
+    throw new Error(
+      `Expected 44 unique coverCardIds across UNIFIED_CHAMPION_STANDINGS, got ${uniqueStandingCoverIds.size}`
+    );
+  }
+  const seenSovereignCardIds = new Set<string>();
+  const seenSovereignImages = new Set<string>();
   for (const sov of SOVEREIGN_AI_LEADERBOARD_ROSTER) {
-    if (!CARDS_BY_ID[sov.avatarCardId]) {
-      throw new Error(`Invalid avatarCardId ${sov.avatarCardId} on Sovereign ${sov.sovereignId}`);
+    const card = CARDS_BY_ID[sov.avatarCardId];
+    if (!card || card.type !== 'creature') {
+      throw new Error(`Invalid creature avatarCardId ${sov.avatarCardId} on Sovereign ${sov.sovereignId}`);
     }
+    if (seenSovereignCardIds.has(sov.avatarCardId)) {
+      throw new Error(`Duplicate avatarCardId ${sov.avatarCardId} on Sovereign ${sov.sovereignId}`);
+    }
+    if (seenSovereignImages.has(card.imagePath)) {
+      throw new Error(`Duplicate imagePath ${card.imagePath} on Sovereign ${sov.sovereignId}`);
+    }
+    seenSovereignCardIds.add(sov.avatarCardId);
+    seenSovereignImages.add(card.imagePath);
+
     const bossEnc = buildRankedSovereignBossEncounter(sov);
     if (
       bossEnc.startingHp !== 40 ||
@@ -788,6 +806,11 @@ function runAutomatedQA() {
       bossEnc.customDeckCardIds.length !== 100
     ) {
       throw new Error(`Ranked Sovereign encounter invalid for ${sov.sovereignId}`);
+    }
+    if (!bossEnc.customDeckCardIds.includes(sov.avatarCardId)) {
+      throw new Error(
+        `Sovereign ${sov.sovereignId} (${sov.sovereignName}) must include their own card ${sov.avatarCardId} in their 100-card Ranked deck!`
+      );
     }
   }
 

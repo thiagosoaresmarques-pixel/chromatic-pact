@@ -3,10 +3,9 @@ import type { UnifiedChampionId, UnifiedFormatKind } from './aiUnifiedTournament
 
 /**
  * GERADO AUTOMATICAMENTE POR src/scripts/runEloCalibrationLeague.ts
- * Super-Liga de Calibração ELO FIDE / Bradley-Terry:
- * • 220 Perfis IA (44 Arquétipos × Tiers I–V)
- * • 70.004 Partidas Multi-Tier Simuladas (189.4s em 10 threads)
- * • Âncora Oficial: Mediana Tier II Regular = 1200 ELO
+ * Liga Oficial de Calibração ELO Multi-Tier (Bradley-Terry MLE + Escala FIDE).
+ * Âncora: Mediana Tier II Regular = 1200 ELO.
+ * Cada Grão-Soberano (44) e Comandante Regional (24) possui vínculo 1-para-1 exclusivo com sua própria carta.
  */
 
 export interface CalibratedArchetypeTierCell {
@@ -2176,8 +2175,8 @@ export const ARCHETYPE_TIER_ELO_MAP: Record<
 export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   {
     "sovereignId": "sov_t5_tri_red_blue_gold",
-    "sovereignName": "Vaelith Chama-Celeste",
-    "sovereignTitle": "Grão-Soberano do Conclave Empíreo",
+    "sovereignName": "Heliokar, General da Roda Celeste",
+    "sovereignTitle": "Grão-Soberano • Zimbório Dourado de Solária",
     "realmOrigin": "Tríade Pyros-Vórtex-Solária",
     "archetypeId": "tri_red_blue_gold",
     "archetypeName": "Conclave da Chama Celeste",
@@ -2190,7 +2189,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "blue"
     ],
-    "avatarCardId": "red_173_general_roda_chama",
+    "avatarCardId": "gold_173_general_roda_sol",
     "eloRating": 1788,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2201,8 +2200,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_red_neutral",
-    "sovereignName": "Kaelen Mercúrio-Rubro",
-    "sovereignTitle": "Grão-Artilheiro da Fornalha Axial",
+    "sovereignName": "Pyrrakon, General da Roda Vulcânica",
+    "sovereignTitle": "Grão-Soberano • Bigorna Suprema de Pyros",
     "realmOrigin": "Pacto Pyros-Axial",
     "archetypeId": "dual_red_neutral",
     "archetypeName": "Aliança da Artilharia de Mercúrio",
@@ -2225,8 +2224,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t4_tri_red_blue_gold",
-    "sovereignName": "Arconte de Tríade Pyros-Vórtex-Solária (Vaelith)",
-    "sovereignTitle": "Mestre Tático do Conselho (Tier IV) • Conclave da Chama Celeste",
+    "sovereignName": "Auronautilus, Dragão de Bronze",
+    "sovereignTitle": "Arconte Tático do Conselho (Tier IV) • Tríade Pyros-Vórtex-Solária",
     "realmOrigin": "Tríade Pyros-Vórtex-Solária",
     "archetypeId": "tri_red_blue_gold",
     "archetypeName": "Conclave da Chama Celeste",
@@ -2239,7 +2238,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "blue"
     ],
-    "avatarCardId": "red_173_general_roda_chama",
+    "avatarCardId": "blue_23_dragao_bronze",
     "eloRating": 1752,
     "eloRd": 25,
     "simulatedGames": 250,
@@ -2249,8 +2248,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_tri_red_purple_green",
-    "sovereignName": "Morgath Carnificina-Viva",
-    "sovereignTitle": "Senhor da Ruína Predatória",
+    "sovereignName": "Necrothor, Monarca do Trono de Ossos",
+    "sovereignTitle": "Grão-Soberano • Ossário Real do Vale do Eclipse",
     "realmOrigin": "Tríade Pyros-Eclipse-Veridia",
     "archetypeId": "tri_red_purple_green",
     "archetypeName": "Corte da Lua Sangrenta",
@@ -2263,7 +2262,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "purple",
       "green"
     ],
-    "avatarCardId": "purple_65_principe_mortos",
+    "avatarCardId": "purple_138_soberano_carnica",
     "eloRating": 1744,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2274,8 +2273,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_tri_red_purple_gold",
-    "sovereignName": "Bellatrix Trono-de-Cinzas",
-    "sovereignTitle": "Imperatriz do Sangue e Fogo Sagrado",
+    "sovereignName": "Pyroclasmos, Imperador das Chamas",
+    "sovereignTitle": "Grão-Soberano • Cidadela Superior de Pyros",
     "realmOrigin": "Tríade Pyros-Eclipse-Solária",
     "archetypeId": "tri_red_purple_gold",
     "archetypeName": "Eclipse do Sol Carmesim",
@@ -2288,7 +2287,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "purple"
     ],
-    "avatarCardId": "gold_99_serafim_coroado",
+    "avatarCardId": "red_119_soberano_piroclasma",
     "eloRating": 1719,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2299,8 +2298,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_red_gold",
-    "sovereignName": "Helios Forja-Ardente",
-    "sovereignTitle": "Cruzado da Alvorada Vulcânica",
+    "sovereignName": "Khorvath, O Dragão Vulcânico Ancião",
+    "sovereignTitle": "Grão-Soberano • Trono da Cratera Alta (Pyros)",
     "realmOrigin": "Aliança Pyros-Solária",
     "archetypeId": "dual_red_gold",
     "archetypeName": "Pacto das Escamas Imperiais",
@@ -2312,7 +2311,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "gold"
     ],
-    "avatarCardId": "red_173_general_roda_chama",
+    "avatarCardId": "red_100_dragao_vulcanico_anciao",
     "eloRating": 1681,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2323,8 +2322,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_green_neutral",
-    "sovereignName": "Briar Colosso-de-Aço",
-    "sovereignTitle": "Guardião Simbiótico da Fronteira",
+    "sovereignName": "Aetherion, O Dragão do Vácuo Astral",
+    "sovereignTitle": "Grão-Soberano • Horizonte Estelar da Fronteira Cinzenta",
     "realmOrigin": "Pacto Veridia-Axial",
     "archetypeId": "dual_green_neutral",
     "archetypeName": "Aliança dos Engenhos Silvestres",
@@ -2336,7 +2335,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "green",
       "neutral"
     ],
-    "avatarCardId": "green_173_general_roda_selva",
+    "avatarCardId": "neutral_54_dragao_etereo",
     "eloRating": 1672,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2347,8 +2346,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_tri_purple_green_gold",
-    "sovereignName": "Solarius Raiz-Imortal",
-    "sovereignTitle": "Hierofante da Cidadela Perene",
+    "sovereignName": "Hyperion, Deus-Imperador da Aurora",
+    "sovereignTitle": "Grão-Soberano • Cúpula Dourada de Solária",
     "realmOrigin": "Tríade Eclipse-Veridia-Solária",
     "archetypeId": "tri_purple_green_gold",
     "archetypeName": "Armada do Zênite Umbral",
@@ -2361,7 +2360,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "green",
       "purple"
     ],
-    "avatarCardId": "gold_172_armada_draconica_sol",
+    "avatarCardId": "gold_138_imperador_sol_supremo",
     "eloRating": 1668,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2372,8 +2371,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_penta_prismatic_crater",
-    "sovereignName": "Tiamat-Vael Cratera-Viva",
-    "sovereignTitle": "Progenitora Dracônica dos Cinco Sóis",
+    "sovereignName": "Matriz do Prisma Primordial",
+    "sovereignTitle": "Grão-Soberano • Eixo Partido do Zênite (Monte Axial)",
     "realmOrigin": "Cratera Prismática",
     "archetypeId": "penta_prismatic_crater",
     "archetypeName": "Soberania da Cratera Prismática",
@@ -2399,8 +2398,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_red_green",
-    "sovereignName": "Ragnar Presa-de-Brasa",
-    "sovereignTitle": "Cacique da Selva Incandescente",
+    "sovereignName": "Ignarok, o Devorador de Reinos",
+    "sovereignTitle": "Grão-Soberano • Planícies Calcinadas do Centro",
     "realmOrigin": "Aliança Pyros-Veridia",
     "archetypeId": "dual_red_green",
     "archetypeName": "Pacto da Ruína Selvagem",
@@ -2412,7 +2411,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "green"
     ],
-    "avatarCardId": "red_173_general_roda_chama",
+    "avatarCardId": "red_46_tirano_carmesim",
     "eloRating": 1663,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2423,8 +2422,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_tri_red_blue_green",
-    "sovereignName": "Tempestus Fúria-Elemental",
-    "sovereignTitle": "Arauto do Vórtice Primordial",
+    "sovereignName": "Belphegor, Regente da Cidadela Ardente",
+    "sovereignTitle": "Grão-Soberano • Bastilha de Ferro de Pyros",
     "realmOrigin": "Tríade Pyros-Vórtex-Veridia",
     "archetypeId": "tri_red_blue_green",
     "archetypeName": "Tempestade Elemental Primeva",
@@ -2437,7 +2436,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "green",
       "blue"
     ],
-    "avatarCardId": "green_173_general_roda_selva",
+    "avatarCardId": "red_47_arquiduque_ferro",
     "eloRating": 1656,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2448,8 +2447,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_blue_green",
-    "sovereignName": "Thalassa Maré-Silvestre",
-    "sovereignTitle": "Xamã das Correntes Esmeraldas",
+    "sovereignName": "Cryonax, General da Roda Astral",
+    "sovereignTitle": "Grão-Soberano • Câmara do Astrolábio Frio (Vórtex)",
     "realmOrigin": "Aliança Vórtex-Veridia",
     "archetypeId": "dual_blue_green",
     "archetypeName": "Pacto da Evolução Quimérica",
@@ -2472,8 +2471,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_tri_red_green_gold",
-    "sovereignName": "Drakonis Sol-Selvagem",
-    "sovereignTitle": "Soberano dos Titãs da Alvorada",
+    "sovereignName": "Rex Primordial da Cratera Perdida",
+    "sovereignTitle": "Grão-Soberano • Cratera Perdida do Sul de Veridia",
     "realmOrigin": "Tríade Pyros-Veridia-Solária",
     "archetypeId": "tri_red_green_gold",
     "archetypeName": "Tríade dos Titãs da Forja Primordial",
@@ -2497,8 +2496,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_blue_gold",
-    "sovereignName": "Orion Astrolábio-Real",
-    "sovereignTitle": "Chanceler da Ordem Cristalina",
+    "sovereignName": "Aurelius, Soberano Dragão da Alvorada",
+    "sovereignTitle": "Grão-Soberano • Catedral dos Sete Sóis (Solária)",
     "realmOrigin": "Aliança Vórtex-Solária",
     "archetypeId": "dual_blue_gold",
     "archetypeName": "Pacto da Forja do Zênite",
@@ -2510,7 +2509,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "blue",
       "gold"
     ],
-    "avatarCardId": "blue_173_general_roda_gelo",
+    "avatarCardId": "gold_157_dragao_soberano_alvorada",
     "eloRating": 1645,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2521,8 +2520,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_penta_wheel_convergence",
-    "sovereignName": "Valkyra Roda-do-Destino",
-    "sovereignTitle": "Imperatriz da Convergência Pentacromática",
+    "sovereignName": "Vaelkor, General da Roda Prismática",
+    "sovereignTitle": "Grão-Soberano • Átrio Axial da Torre dos Cinco Selos",
     "realmOrigin": "Ápice da Roda",
     "archetypeId": "penta_wheel_convergence",
     "archetypeName": "Convergência da Roda Horológica",
@@ -2548,8 +2547,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_gold_neutral",
-    "sovereignName": "Cassius Bastião-de-Adamantina",
-    "sovereignTitle": "Protetor Imortal do Trono Franco",
+    "sovereignName": "Aldous, Grande Cronista do Bestiário",
+    "sovereignTitle": "Grão-Soberano • Grande Biblioteca da Fronteira",
     "realmOrigin": "Pacto Solária-Axial",
     "archetypeId": "dual_gold_neutral",
     "archetypeName": "Aliança do Bastião Relojoeiro",
@@ -2561,7 +2560,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "gold",
       "neutral"
     ],
-    "avatarCardId": "gold_173_general_roda_sol",
+    "avatarCardId": "neutral_118_volothamp_cronista_mundos",
     "eloRating": 1644,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2572,8 +2571,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_purple_gold",
-    "sovereignName": "Inquisidor Vane Sol-Negro",
-    "sovereignTitle": "Pontífice do Crepúsculo Dourado",
+    "sovereignName": "Nyxaroth, General da Roda Fúnebre",
+    "sovereignTitle": "Grão-Soberano • Nave Sem Luz da Catedral de Obsidiana",
     "realmOrigin": "Aliança Eclipse-Solária",
     "archetypeId": "dual_purple_gold",
     "archetypeName": "Pacto da Inquisição Crepuscular",
@@ -2596,8 +2595,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_penta_free_city_sovereign",
-    "sovereignName": "Aethel-Vox Conselho-Supremo",
-    "sovereignTitle": "Soberano Pentacromático da Cidade Franca",
+    "sovereignName": "Valkyra, Imperatriz Pentacromática",
+    "sovereignTitle": "Grão-Soberano • Cume do Monte Axial (Fronteira Cinzenta)",
     "realmOrigin": "Cidade Franca Axial",
     "archetypeId": "penta_free_city_sovereign",
     "archetypeName": "Concílio Supremo da Cidade Franca",
@@ -2623,8 +2622,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_tri_blue_green_gold",
-    "sovereignName": "Lyra Horizonte-Celeste",
-    "sovereignTitle": "Oráculo da Harmonia Ascendente",
+    "sovereignName": "Aurion-Sol, O Dragão Imperial do Zênite",
+    "sovereignTitle": "Grão-Soberano • Trono Alto do Bastião dos Sete Sóis",
     "realmOrigin": "Tríade Vórtex-Veridia-Solária",
     "archetypeId": "tri_blue_green_gold",
     "archetypeName": "Escamas do Horizonte Eterno",
@@ -2648,8 +2647,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_blue_neutral",
-    "sovereignName": "Caelum Engrenagem-Fria",
-    "sovereignTitle": "Soberano Cronomante da Matriz",
+    "sovereignName": "Chronos, Guardião do Eixo Eterno",
+    "sovereignTitle": "Grão-Soberano • Pináculo Polar de Vórtex",
     "realmOrigin": "Pacto Vórtex-Axial",
     "archetypeId": "dual_blue_neutral",
     "archetypeName": "Aliança do Astrolábio Arcano",
@@ -2661,7 +2660,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "blue",
       "neutral"
     ],
-    "avatarCardId": "blue_173_general_roda_gelo",
+    "avatarCardId": "blue_81_arconte_cronos",
     "eloRating": 1632,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2672,8 +2671,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_tri_blue_purple_gold",
-    "sovereignName": "Arcturus Juízo-Eterno",
-    "sovereignTitle": "Supremo Magistrado do Conclave Tríplice",
+    "sovereignName": "Zephyros, O Dragão da Tempestade Astral",
+    "sovereignTitle": "Grão-Soberano • Estreito das Tempestades (Vórtex)",
     "realmOrigin": "Tríade Vórtex-Eclipse-Solária",
     "archetypeId": "tri_blue_purple_gold",
     "archetypeName": "Relicário do Trono Eterno",
@@ -2686,7 +2685,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "blue",
       "purple"
     ],
-    "avatarCardId": "gold_72_talisma_bem",
+    "avatarCardId": "blue_97_draco_relampago",
     "eloRating": 1623,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2697,8 +2696,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_green_gold",
-    "sovereignName": "Elowen Coroa-de-Carvalho",
-    "sovereignTitle": "Rainha-Druida dos Bosques Solares",
+    "sovereignName": "Sylvanor, o Coração do Mundo",
+    "sovereignTitle": "Grão-Soberano • Bosque Matriz de Veridia",
     "realmOrigin": "Aliança Veridia-Solária",
     "archetypeId": "dual_green_gold",
     "archetypeName": "Pacto da Aurora Silvestre",
@@ -2710,7 +2709,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "green",
       "gold"
     ],
-    "avatarCardId": "green_173_general_roda_selva",
+    "avatarCardId": "green_50_avatar_gaia",
     "eloRating": 1621,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2721,8 +2720,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_red_blue",
-    "sovereignName": "Zephyrus Trovão-Rubro",
-    "sovereignTitle": "Mestre da Tempestade Piro-Rúnica",
+    "sovereignName": "Bael-Khor, General do Chicote Ígneo",
+    "sovereignTitle": "Grão-Soberano • Fronteira de Basalto",
     "realmOrigin": "Aliança Pyros-Vórtex",
     "archetypeId": "dual_red_blue",
     "archetypeName": "Pacto do Fogo Astral",
@@ -2734,7 +2733,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "blue"
     ],
-    "avatarCardId": "red_173_general_roda_chama",
+    "avatarCardId": "red_99_senhor_balor_fogo",
     "eloRating": 1619,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2745,8 +2744,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_red_purple",
-    "sovereignName": "Carmilla Lua-Sangrenta",
-    "sovereignTitle": "Marquesa do Pacto Abissal-Rubro",
+    "sovereignName": "Ossaurion, Dragão-Ossário Eterno",
+    "sovereignTitle": "Grão-Soberano • Fenda Abissal do Vale do Eclipse",
     "realmOrigin": "Aliança Pyros-Eclipse",
     "archetypeId": "dual_red_purple",
     "archetypeName": "Pacto da Chama Sangrenta",
@@ -2758,7 +2757,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "purple"
     ],
-    "avatarCardId": "red_173_general_roda_chama",
+    "avatarCardId": "purple_23_dracolich",
     "eloRating": 1617,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2769,8 +2768,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_purple_green",
-    "sovereignName": "Nyxarion Esporo-Negro",
-    "sovereignTitle": "Arconte do Pântano Imortal",
+    "sovereignName": "Smaragda, Soberana da Selva Fechada",
+    "sovereignTitle": "Grão-Soberano • Copa Real de Veridia",
     "realmOrigin": "Aliança Eclipse-Veridia",
     "archetypeId": "dual_purple_green",
     "archetypeName": "Pacto da Podridão Eterna",
@@ -2782,7 +2781,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "purple",
       "green"
     ],
-    "avatarCardId": "purple_173_general_roda_abismo",
+    "avatarCardId": "green_49_dragao_esmeralda",
     "eloRating": 1615,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2793,8 +2792,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t3_tri_red_purple_gold",
-    "sovereignName": "Comandante de Tríade Pyros-Eclipse-Solária (Bellatrix)",
-    "sovereignTitle": "Estrategista Regional (Tier III) • Eclipse do Sol Carmesim",
+    "sovereignName": "General Angelical da Espada Solar",
+    "sovereignTitle": "Comandante Regional (Tier III) • Tríade Pyros-Eclipse-Solária",
     "realmOrigin": "Tríade Pyros-Eclipse-Solária",
     "archetypeId": "tri_red_purple_gold",
     "archetypeName": "Eclipse do Sol Carmesim",
@@ -2807,7 +2806,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "purple"
     ],
-    "avatarCardId": "gold_99_serafim_coroado",
+    "avatarCardId": "gold_155_arconte_lanca_solar",
     "eloRating": 1609,
     "eloRd": 22,
     "simulatedGames": 280,
@@ -2817,8 +2816,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t4_tri_blue_purple_gold",
-    "sovereignName": "Arconte de Tríade Vórtex-Eclipse-Solária (Arcturus)",
-    "sovereignTitle": "Mestre Tático do Conselho (Tier IV) • Relicário do Trono Eterno",
+    "sovereignName": "Soberano das Nuvens Altas",
+    "sovereignTitle": "Arconte Tático do Conselho (Tier IV) • Tríade Vórtex-Eclipse-Solária",
     "realmOrigin": "Tríade Vórtex-Eclipse-Solária",
     "archetypeId": "tri_blue_purple_gold",
     "archetypeName": "Relicário do Trono Eterno",
@@ -2831,7 +2830,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "blue",
       "purple"
     ],
-    "avatarCardId": "neutral_87_armadura_animada_vigia",
+    "avatarCardId": "blue_05_gigante_nuvens",
     "eloRating": 1594,
     "eloRd": 22,
     "simulatedGames": 250,
@@ -2841,8 +2840,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t4_dual_green_neutral",
-    "sovereignName": "Arconte de Pacto Veridia-Axial (Briar)",
-    "sovereignTitle": "Mestre Tático do Conselho (Tier IV) • Aliança dos Engenhos Silvestres",
+    "sovereignName": "Kongor, Rei de Costas Prateadas",
+    "sovereignTitle": "Arconte Tático do Conselho (Tier IV) • Pacto Veridia-Axial",
     "realmOrigin": "Pacto Veridia-Axial",
     "archetypeId": "dual_green_neutral",
     "archetypeName": "Aliança dos Engenhos Silvestres",
@@ -2854,7 +2853,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "green",
       "neutral"
     ],
-    "avatarCardId": "neutral_52_mercenario_planar",
+    "avatarCardId": "green_32_gorila_alfa",
     "eloRating": 1589,
     "eloRd": 22,
     "simulatedGames": 250,
@@ -2864,8 +2863,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_blue_purple",
-    "sovereignName": "Morpheus Nebulosa-Negra",
-    "sovereignTitle": "Tecelão dos Pesadelos Astrais",
+    "sovereignName": "Thaddeus, Senhor do Tempo",
+    "sovereignTitle": "Grão-Soberano • Câmara Horológica de Vórtex",
     "realmOrigin": "Aliança Vórtex-Eclipse",
     "archetypeId": "dual_blue_purple",
     "archetypeName": "Pacto da Tormenta Abissal",
@@ -2877,7 +2876,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "blue",
       "purple"
     ],
-    "avatarCardId": "blue_173_general_roda_gelo",
+    "avatarCardId": "blue_80_senhor_tempo",
     "eloRating": 1586,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2888,8 +2887,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_tri_red_blue_purple",
-    "sovereignName": "Azazel Estrela-Caída",
-    "sovereignTitle": "Imperador da Tríade do Cataclismo",
+    "sovereignName": "Aegirion, Soberano das Fendas Abissais",
+    "sovereignTitle": "Grão-Soberano • Muralha Marítima de Vórtex",
     "realmOrigin": "Tríade Pyros-Vórtex-Eclipse",
     "archetypeId": "tri_red_blue_purple",
     "archetypeName": "Cataclismo da Convergência Astral",
@@ -2913,8 +2912,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_tri_blue_purple_green",
-    "sovereignName": "Vorlag Abismo-Esmeralda",
-    "sovereignTitle": "Patriarca da Ressurreição Cíclica",
+    "sovereignName": "Mephistar, O Demônio do Pacto Eterno",
+    "sovereignTitle": "Grão-Soberano • Arquivo Negro da Catedral de Obsidiana",
     "realmOrigin": "Tríade Vórtex-Eclipse-Veridia",
     "archetypeId": "tri_blue_purple_green",
     "archetypeName": "Quimera da Fossa Abissal",
@@ -2927,7 +2926,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "purple",
       "green"
     ],
-    "avatarCardId": "purple_100_dragao_necrotico",
+    "avatarCardId": "purple_83_arquidemonio_tempo",
     "eloRating": 1583,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2938,8 +2937,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_red_blitz",
-    "sovereignName": "Kael Ignis-Voraz",
-    "sovereignTitle": "Marechal das Legiões de Cinza",
+    "sovereignName": "Vulcanis, Titã da Bigorna Primordial",
+    "sovereignTitle": "Grão-Soberano • Fornalha Axial de Pyros",
     "realmOrigin": "Pyros",
     "archetypeId": "mono_red_blitz",
     "archetypeName": "Blitz Salamandra",
@@ -2950,7 +2949,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "red"
     ],
-    "avatarCardId": "red_173_general_roda_chama",
+    "avatarCardId": "red_157_dragao_tiamat_carmesim",
     "eloRating": 1569,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -2961,8 +2960,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t4_dual_blue_gold",
-    "sovereignName": "Arconte de Aliança Vórtex-Solária (Orion)",
-    "sovereignTitle": "Mestre Tático do Conselho (Tier IV) • Pacto da Forja do Zênite",
+    "sovereignName": "Arcanjo Supremo das Seis Asas",
+    "sovereignTitle": "Arconte Tático do Conselho (Tier IV) • Aliança Vórtex-Solária",
     "realmOrigin": "Aliança Vórtex-Solária",
     "archetypeId": "dual_blue_gold",
     "archetypeName": "Pacto da Forja do Zênite",
@@ -2974,7 +2973,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "blue",
       "gold"
     ],
-    "avatarCardId": "neutral_87_armadura_animada_vigia",
+    "avatarCardId": "gold_156_serafim_coroa_radiante",
     "eloRating": 1559,
     "eloRd": 22,
     "simulatedGames": 250,
@@ -2984,8 +2983,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_blue_chrono",
-    "sovereignName": "Aetherion Relojoeiro-Astral",
-    "sovereignTitle": "Oráculo da Singularidade de Cristália",
+    "sovereignName": "Nereus, Soberano das Sete Marés",
+    "sovereignTitle": "Grão-Soberano • Trono Submerso de Vórtex",
     "realmOrigin": "Vórtex",
     "archetypeId": "mono_blue_chrono",
     "archetypeName": "Conclave Cronomante",
@@ -3007,8 +3006,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_blue_frost",
-    "sovereignName": "Glacius Véu-de-Inverno",
-    "sovereignTitle": "Regente da Cidadela Boreal",
+    "sovereignName": "Chronoleviatã, Soberano do Tempo",
+    "sovereignTitle": "Grão-Soberano • Fenda Temporal do Mar de Vórtex",
     "realmOrigin": "Vórtex",
     "archetypeId": "mono_blue_frost",
     "archetypeName": "Inverno Eterno",
@@ -3019,7 +3018,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "blue"
     ],
-    "avatarCardId": "blue_80_senhor_tempo",
+    "avatarCardId": "blue_136_leviata_cronos",
     "eloRating": 1555,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3030,8 +3029,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_dual_purple_neutral",
-    "sovereignName": "Reen Lâmina-Relojoeira",
-    "sovereignTitle": "Executor Silencioso da Cidade Franca",
+    "sovereignName": "Nocturnus, Avatar da Noite Sem Fim",
+    "sovereignTitle": "Grão-Soberano • Fenda Abissal do Vale do Eclipse",
     "realmOrigin": "Pacto Eclipse-Axial",
     "archetypeId": "dual_purple_neutral",
     "archetypeName": "Aliança da Guilda das Máscaras",
@@ -3043,7 +3042,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "purple",
       "neutral"
     ],
-    "avatarCardId": "purple_173_general_roda_abismo",
+    "avatarCardId": "purple_47_avatar_escuridao",
     "eloRating": 1548,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3054,8 +3053,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_neutral_axial",
-    "sovereignName": "Gorgonoth Matriz-Viva",
-    "sovereignTitle": "Arquiteto Primordial da Torre Axial",
+    "sovereignName": "Valerius, Arquimago dos Sete Selos",
+    "sovereignTitle": "Grão-Soberano • Torre dos Cinco Selos (Fronteira Cinzenta)",
     "realmOrigin": "Cidade Franca Axial",
     "archetypeId": "mono_neutral_axial",
     "archetypeName": "Legião Axial Autômata",
@@ -3066,7 +3065,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "neutral"
     ],
-    "avatarCardId": "neutral_24_dragao_astral",
+    "avatarCardId": "neutral_117_elminster_sabio_cinzento",
     "eloRating": 1544,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3077,8 +3076,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t3_dual_gold_neutral",
-    "sovereignName": "Comandante de Pacto Solária-Axial (Cassius)",
-    "sovereignTitle": "Estrategista Regional (Tier III) • Aliança do Bastião Relojoeiro",
+    "sovereignName": "Colosso de Mármore e Ouro",
+    "sovereignTitle": "Comandante Regional (Tier III) • Pacto Solária-Axial",
     "realmOrigin": "Pacto Solária-Axial",
     "archetypeId": "dual_gold_neutral",
     "archetypeName": "Aliança do Bastião Relojoeiro",
@@ -3090,7 +3089,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "gold",
       "neutral"
     ],
-    "avatarCardId": "gold_56_lanceiro_falange",
+    "avatarCardId": "gold_97_colosso_celestial",
     "eloRating": 1543,
     "eloRd": 22,
     "simulatedGames": 280,
@@ -3100,8 +3099,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_gold_phalanx",
-    "sovereignName": "Aurelius Escudo-Dourado",
-    "sovereignTitle": "Alto-Comandante de Aethelgard",
+    "sovereignName": "Aeternus, O Primeiro Forjado de Guerra",
+    "sovereignTitle": "Grão-Soberano • Fundação do Bastião de Solária",
     "realmOrigin": "Solária",
     "archetypeId": "mono_gold_phalanx",
     "archetypeName": "Falange Impenetrável",
@@ -3112,7 +3111,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "gold"
     ],
-    "avatarCardId": "gold_99_serafim_coroado",
+    "avatarCardId": "gold_83_forjado_ancestral",
     "eloRating": 1535,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3123,8 +3122,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_gold_celestial",
-    "sovereignName": "Seraphina Luz-Eterna",
-    "sovereignTitle": "Arcanja do Zênite Radiante",
+    "sovereignName": "Seraphiel, A Imperatriz das Seis Asas",
+    "sovereignTitle": "Grão-Soberano • Santuário Coral de Solária",
     "realmOrigin": "Solária",
     "archetypeId": "mono_gold_celestial",
     "archetypeName": "Legião Celeste",
@@ -3146,8 +3145,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t4_mono_red_blitz",
-    "sovereignName": "Arconte de Pyros (Kael)",
-    "sovereignTitle": "Mestre Tático do Conselho (Tier IV) • Blitz Salamandra",
+    "sovereignName": "Pyrokor, Monarca do Fogo Vivo",
+    "sovereignTitle": "Arconte Tático do Conselho (Tier IV) • Pyros",
     "realmOrigin": "Pyros",
     "archetypeId": "mono_red_blitz",
     "archetypeName": "Blitz Salamandra",
@@ -3158,7 +3157,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "red"
     ],
-    "avatarCardId": "red_111_predador_piroclastico",
+    "avatarCardId": "red_156_fenix_coroa_solar",
     "eloRating": 1521,
     "eloRd": 22,
     "simulatedGames": 250,
@@ -3168,8 +3167,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_red_dragon",
-    "sovereignName": "Ignarion Escama-Solar",
-    "sovereignTitle": "Imperador Dracônico de Vulcanor",
+    "sovereignName": "Igniskar, Tirano da Cratera",
+    "sovereignTitle": "Grão-Soberano • Grande Cratera de Pyros",
     "realmOrigin": "Pyros",
     "archetypeId": "mono_red_dragon",
     "archetypeName": "Trono Dracônico",
@@ -3180,7 +3179,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "red"
     ],
-    "avatarCardId": "red_46_tirano_carmesim",
+    "avatarCardId": "red_08_dragao_vermelho",
     "eloRating": 1512,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3191,8 +3190,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_green_swarm",
-    "sovereignName": "Sylvara Garra-Folha",
-    "sovereignTitle": "Matriarca da Alcateia de Galhada Viva",
+    "sovereignName": "Fenris-Gorgon, Imperador das Feras",
+    "sovereignTitle": "Grão-Soberano • Fronteira Selvagem de Veridia",
     "realmOrigin": "Veridia",
     "archetypeId": "mono_green_swarm",
     "archetypeName": "Enxame & Matilha Silvestre",
@@ -3203,7 +3202,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "green"
     ],
-    "avatarCardId": "green_09_hidra",
+    "avatarCardId": "green_141_soberano_fera_primordial",
     "eloRating": 1511,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3214,8 +3213,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_purple_umbral",
-    "sovereignName": "Nyxia Lâmina-do-Vazio",
-    "sovereignTitle": "Sussurro Letal da Catedral Umbral",
+    "sovereignName": "Malakor-Vael, Soberano da Não-Vida",
+    "sovereignTitle": "Grão-Soberano • Trono de Obsidiana do Eclipse",
     "realmOrigin": "Eclipse",
     "archetypeId": "mono_purple_umbral",
     "archetypeName": "Inquisição Umbral",
@@ -3226,7 +3225,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "purple"
     ],
-    "avatarCardId": "purple_167_arauto_prisma_abismo",
+    "avatarCardId": "purple_65_principe_mortos",
     "eloRating": 1503,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3237,8 +3236,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t4_mono_gold_phalanx",
-    "sovereignName": "Arconte de Solária (Aurelius)",
-    "sovereignTitle": "Mestre Tático do Conselho (Tier IV) • Falange Impenetrável",
+    "sovereignName": "Colosso da Cidadela Viva",
+    "sovereignTitle": "Arconte Tático do Conselho (Tier IV) • Solária",
     "realmOrigin": "Solária",
     "archetypeId": "mono_gold_phalanx",
     "archetypeName": "Falange Impenetrável",
@@ -3249,7 +3248,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "gold"
     ],
-    "avatarCardId": "gold_02_gargula",
+    "avatarCardId": "gold_137_colosso_cidadela_eterna",
     "eloRating": 1490,
     "eloRd": 21,
     "simulatedGames": 250,
@@ -3259,8 +3258,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t2_dual_red_neutral",
-    "sovereignName": "Capitão de Pacto Pyros-Axial (Kaelen)",
-    "sovereignTitle": "Veterano Regular da Ordem (Tier II) • Aliança da Artilharia de Mercúrio",
+    "sovereignName": "Draco de Escória Vulcânica",
+    "sovereignTitle": "Capitão Regular da Ordem (Tier II) • Pacto Pyros-Axial",
     "realmOrigin": "Pacto Pyros-Axial",
     "archetypeId": "dual_red_neutral",
     "archetypeName": "Aliança da Artilharia de Mercúrio",
@@ -3272,7 +3271,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "neutral"
     ],
-    "avatarCardId": "neutral_84_cao_guerra_encouracado",
+    "avatarCardId": "red_114_draco_escoria",
     "eloRating": 1489,
     "eloRd": 24,
     "simulatedGames": 280,
@@ -3282,8 +3281,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_purple_crypt",
-    "sovereignName": "Malakor Rei-Lich",
-    "sovereignTitle": "Senhor Supremo do Ossuário de Nocturnus",
+    "sovereignName": "Vladislaus, O Patriarca de Sangue",
+    "sovereignTitle": "Grão-Soberano • Cripta Real da Corte Carmesim",
     "realmOrigin": "Eclipse",
     "archetypeId": "mono_purple_crypt",
     "archetypeName": "Culto da Cripta",
@@ -3294,7 +3293,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "purple"
     ],
-    "avatarCardId": "purple_65_principe_mortos",
+    "avatarCardId": "purple_99_lorde_vampiro_anciao",
     "eloRating": 1479,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3305,8 +3304,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_gold_judgment",
-    "sovereignName": "Valerius Martelo-Real",
-    "sovereignTitle": "Grão-Juiz das Relíquias Solares",
+    "sovereignName": "Justinian, Soberano da Ordem Eterna",
+    "sovereignTitle": "Grão-Soberano • Salão do Tratado (Torre dos Cinco Selos)",
     "realmOrigin": "Solária",
     "archetypeId": "mono_gold_judgment",
     "archetypeName": "Julgamento Solar",
@@ -3317,7 +3316,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "gold"
     ],
-    "avatarCardId": "gold_99_serafim_coroado",
+    "avatarCardId": "gold_119_soberano_ordem_eterna",
     "eloRating": 1469,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3328,8 +3327,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_blue_abyssal",
-    "sovereignName": "Nereida Maré-Profunda",
-    "sovereignTitle": "Soberana das Fendas Abissais",
+    "sovereignName": "Vorthurion, Tempestade do Deserto",
+    "sovereignTitle": "Grão-Soberano • Deserto de Vidro ao Sul de Vórtex",
     "realmOrigin": "Vórtex",
     "archetypeId": "mono_blue_abyssal",
     "archetypeName": "Frota Abissal",
@@ -3340,7 +3339,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "blue"
     ],
-    "avatarCardId": "blue_97_draco_relampago",
+    "avatarCardId": "blue_06_dragao_azul",
     "eloRating": 1461,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3351,8 +3350,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_green_colossus",
-    "sovereignName": "Thornak Casca-Titã",
-    "sovereignTitle": "Senhor dos Behemoths Primordiais",
+    "sovereignName": "Sylvarok, General da Roda Primeva",
+    "sovereignTitle": "Grão-Soberano • Trono de Pau-Ferro (Veridia)",
     "realmOrigin": "Veridia",
     "archetypeId": "mono_green_colossus",
     "archetypeName": "Colossos Primordiais",
@@ -3363,7 +3362,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "green"
     ],
-    "avatarCardId": "green_09_hidra",
+    "avatarCardId": "green_173_general_roda_selva",
     "eloRating": 1459,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3374,8 +3373,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_red_pyroclasm",
-    "sovereignName": "Pyraxxia Vulcano",
-    "sovereignTitle": "Arquimaga do Cataclismo Rubro",
+    "sovereignName": "Vulcanor, Colosso da Caldeira Primordial",
+    "sovereignTitle": "Grão-Soberano • Caldeira Fumegante do Norte",
     "realmOrigin": "Pyros",
     "archetypeId": "mono_red_pyroclasm",
     "archetypeName": "Artilharia Piroclástica",
@@ -3386,7 +3385,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "red"
     ],
-    "avatarCardId": "red_46_tirano_carmesim",
+    "avatarCardId": "red_138_colosso_vulcano_primordial",
     "eloRating": 1457,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3397,8 +3396,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t3_mono_green_swarm",
-    "sovereignName": "Comandante de Veridia (Sylvara)",
-    "sovereignTitle": "Estrategista Regional (Tier III) • Enxame & Matilha Silvestre",
+    "sovereignName": "Khan Centauro da Estepe Verde",
+    "sovereignTitle": "Comandante Regional (Tier III) • Veridia",
     "realmOrigin": "Veridia",
     "archetypeId": "mono_green_swarm",
     "archetypeName": "Enxame & Matilha Silvestre",
@@ -3409,7 +3408,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "green"
     ],
-    "avatarCardId": "green_150_xama_raizes_antigas",
+    "avatarCardId": "green_44_centauro_chefe",
     "eloRating": 1435,
     "eloRd": 21,
     "simulatedGames": 280,
@@ -3419,8 +3418,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_purple_blood",
-    "sovereignName": "Vladmir Sangue-Nobre",
-    "sovereignTitle": "Príncipe Carmesim do Eclipse",
+    "sovereignName": "Carmilla, Condessa de Sangue e Ouro",
+    "sovereignTitle": "Grão-Soberano • Palácio Carmesim do Vale do Eclipse",
     "realmOrigin": "Eclipse",
     "archetypeId": "mono_purple_blood",
     "archetypeName": "Pacto Sanguíneo",
@@ -3442,8 +3441,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t3_mono_purple_crypt",
-    "sovereignName": "Comandante de Eclipse (Malakor)",
-    "sovereignTitle": "Estrategista Regional (Tier III) • Culto da Cripta",
+    "sovereignName": "Ceifador Gigante do Eclipse",
+    "sovereignTitle": "Comandante Regional (Tier III) • Eclipse",
     "realmOrigin": "Eclipse",
     "archetypeId": "mono_purple_crypt",
     "archetypeName": "Culto da Cripta",
@@ -3454,7 +3453,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "purple"
     ],
-    "avatarCardId": "purple_13_zumbi",
+    "avatarCardId": "purple_155_lorde_vampiro_soberano",
     "eloRating": 1422,
     "eloRd": 21,
     "simulatedGames": 280,
@@ -3464,8 +3463,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t5_mono_green_roots",
-    "sovereignName": "Yggdran, o Ancião Verdejante",
-    "sovereignTitle": "Guardião das Raízes do Mundo",
+    "sovereignName": "Kragmorth, O Devorador de Eras",
+    "sovereignTitle": "Grão-Soberano • Fenda Continental de Vaeloria",
     "realmOrigin": "Veridia",
     "archetypeId": "mono_green_roots",
     "archetypeName": "Raízes Eternas",
@@ -3476,7 +3475,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "green"
     ],
-    "avatarCardId": "green_33_behemoth_primordial",
+    "avatarCardId": "green_86_tarrasque_desperto",
     "eloRating": 1419,
     "eloRd": 12,
     "simulatedGames": 2152,
@@ -3487,8 +3486,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t3_dual_green_gold",
-    "sovereignName": "Comandante de Aliança Veridia-Solária (Elowen)",
-    "sovereignTitle": "Estrategista Regional (Tier III) • Pacto da Aurora Silvestre",
+    "sovereignName": "Esfinge Guardiã do Templo Dourado",
+    "sovereignTitle": "Comandante Regional (Tier III) • Aliança Veridia-Solária",
     "realmOrigin": "Aliança Veridia-Solária",
     "archetypeId": "dual_green_gold",
     "archetypeName": "Pacto da Aurora Silvestre",
@@ -3500,7 +3499,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "green",
       "gold"
     ],
-    "avatarCardId": "gold_37_escudeiro_solar",
+    "avatarCardId": "gold_63_esfinge_dourada",
     "eloRating": 1416,
     "eloRd": 21,
     "simulatedGames": 280,
@@ -3510,8 +3509,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t3_dual_red_gold",
-    "sovereignName": "Comandante de Aliança Pyros-Solária (Helios)",
-    "sovereignTitle": "Estrategista Regional (Tier III) • Pacto das Escamas Imperiais",
+    "sovereignName": "Dragão Tectônico de Lava",
+    "sovereignTitle": "Comandante Regional (Tier III) • Aliança Pyros-Solária",
     "realmOrigin": "Aliança Pyros-Solária",
     "archetypeId": "dual_red_gold",
     "archetypeName": "Pacto das Escamas Imperiais",
@@ -3523,7 +3522,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "gold"
     ],
-    "avatarCardId": "gold_02_gargula",
+    "avatarCardId": "red_155_senhor_efreeti_chama",
     "eloRating": 1354,
     "eloRd": 22,
     "simulatedGames": 280,
@@ -3533,8 +3532,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t2_tri_red_purple_green",
-    "sovereignName": "Capitão de Tríade Pyros-Eclipse-Veridia (Morgath)",
-    "sovereignTitle": "Veterano Regular da Ordem (Tier II) • Corte da Lua Sangrenta",
+    "sovereignName": "Draco de Impacto Meteórico",
+    "sovereignTitle": "Capitão Regular da Ordem (Tier II) • Tríade Pyros-Eclipse-Veridia",
     "realmOrigin": "Tríade Pyros-Eclipse-Veridia",
     "archetypeId": "tri_red_purple_green",
     "archetypeName": "Corte da Lua Sangrenta",
@@ -3547,7 +3546,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "purple",
       "green"
     ],
-    "avatarCardId": "purple_151_inquisidor_umbral",
+    "avatarCardId": "red_79_draco_meteoro",
     "eloRating": 1319,
     "eloRd": 22,
     "simulatedGames": 280,
@@ -3557,8 +3556,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t2_dual_purple_green",
-    "sovereignName": "Capitão de Aliança Eclipse-Veridia (Nyxarion)",
-    "sovereignTitle": "Veterano Regular da Ordem (Tier II) • Pacto da Podridão Eterna",
+    "sovereignName": "Ceifador Etéreo de Meia-Noite",
+    "sovereignTitle": "Capitão Regular da Ordem (Tier II) • Aliança Eclipse-Veridia",
     "realmOrigin": "Aliança Eclipse-Veridia",
     "archetypeId": "dual_purple_green",
     "archetypeName": "Pacto da Podridão Eterna",
@@ -3570,7 +3569,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "purple",
       "green"
     ],
-    "avatarCardId": "purple_13_zumbi",
+    "avatarCardId": "purple_61_sombra_assassina",
     "eloRating": 1267,
     "eloRd": 22,
     "simulatedGames": 280,
@@ -3580,8 +3579,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t2_penta_prismatic_crater",
-    "sovereignName": "Capitão de Cratera Prismática (Tiamat-Vael)",
-    "sovereignTitle": "Veterano Regular da Ordem (Tier II) • Soberania da Cratera Prismática",
+    "sovereignName": "Oráculo Esfinge do Pináculo",
+    "sovereignTitle": "Capitão Regular da Ordem (Tier II) • Cratera Prismática",
     "realmOrigin": "Cratera Prismática",
     "archetypeId": "penta_prismatic_crater",
     "archetypeName": "Soberania da Cratera Prismática",
@@ -3596,7 +3595,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "green",
       "gold"
     ],
-    "avatarCardId": "neutral_98_banderhobb_cacador",
+    "avatarCardId": "blue_03_esfinge",
     "eloRating": 1267,
     "eloRd": 22,
     "simulatedGames": 280,
@@ -3606,8 +3605,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t2_mono_blue_frost",
-    "sovereignName": "Capitão de Vórtex (Glacius)",
-    "sovereignTitle": "Veterano Regular da Ordem (Tier II) • Inverno Eterno",
+    "sovereignName": "Gigante Oráculo do Trovão",
+    "sovereignTitle": "Capitão Regular da Ordem (Tier II) • Vórtex",
     "realmOrigin": "Vórtex",
     "archetypeId": "mono_blue_frost",
     "archetypeName": "Inverno Eterno",
@@ -3618,7 +3617,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "blue"
     ],
-    "avatarCardId": "blue_40_naga_guardia",
+    "avatarCardId": "blue_151_draco_tempestade_astral",
     "eloRating": 1250,
     "eloRd": 22,
     "simulatedGames": 280,
@@ -3628,8 +3627,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t2_mono_gold_celestial",
-    "sovereignName": "Capitão de Solária (Seraphina)",
-    "sovereignTitle": "Veterano Regular da Ordem (Tier II) • Legião Celeste",
+    "sovereignName": "Arconte da Lança Celestial",
+    "sovereignTitle": "Capitão Regular da Ordem (Tier II) • Solária",
     "realmOrigin": "Solária",
     "archetypeId": "mono_gold_celestial",
     "archetypeName": "Legião Celeste",
@@ -3640,7 +3639,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "gold"
     ],
-    "avatarCardId": "gold_02_gargula",
+    "avatarCardId": "gold_61_arconte_justica",
     "eloRating": 1200,
     "eloRd": 21,
     "simulatedGames": 280,
@@ -3650,8 +3649,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t1_tri_purple_green_gold",
-    "sovereignName": "Sentinela de Tríade Eclipse-Veridia-Solária (Solarius)",
-    "sovereignTitle": "Guarnição de Fronteira (Tier I) • Armada do Zênite Umbral",
+    "sovereignName": "Arconte da Trombeta Dourada",
+    "sovereignTitle": "Sentinela de Fronteira (Tier I) • Tríade Eclipse-Veridia-Solária",
     "realmOrigin": "Tríade Eclipse-Veridia-Solária",
     "archetypeId": "tri_purple_green_gold",
     "archetypeName": "Armada do Zênite Umbral",
@@ -3664,7 +3663,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "green",
       "purple"
     ],
-    "avatarCardId": "gold_58_sacerdote_luz",
+    "avatarCardId": "gold_152_mestre_forja_celestial",
     "eloRating": 983,
     "eloRd": 27,
     "simulatedGames": 220,
@@ -3674,8 +3673,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t1_tri_red_blue_purple",
-    "sovereignName": "Sentinela de Tríade Pyros-Vórtex-Eclipse (Azazel)",
-    "sovereignTitle": "Guarnição de Fronteira (Tier I) • Cataclismo da Convergência Astral",
+    "sovereignName": "Jarl da Geleira Eterna",
+    "sovereignTitle": "Sentinela de Fronteira (Tier I) • Tríade Pyros-Vórtex-Eclipse",
     "realmOrigin": "Tríade Pyros-Vórtex-Eclipse",
     "archetypeId": "tri_red_blue_purple",
     "archetypeName": "Cataclismo da Convergência Astral",
@@ -3688,7 +3687,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "red",
       "purple"
     ],
-    "avatarCardId": "blue_42_serpente_marinha",
+    "avatarCardId": "blue_60_gigante_gelo_jarl",
     "eloRating": 972,
     "eloRd": 27,
     "simulatedGames": 220,
@@ -3698,8 +3697,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t1_dual_blue_purple",
-    "sovereignName": "Sentinela de Aliança Vórtex-Eclipse (Morpheus)",
-    "sovereignTitle": "Guarnição de Fronteira (Tier I) • Pacto da Tormenta Abissal",
+    "sovereignName": "Colosso de Carne Costurada",
+    "sovereignTitle": "Sentinela de Fronteira (Tier I) • Aliança Vórtex-Eclipse",
     "realmOrigin": "Aliança Vórtex-Eclipse",
     "archetypeId": "dual_blue_purple",
     "archetypeName": "Pacto da Tormenta Abissal",
@@ -3711,7 +3710,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "blue",
       "purple"
     ],
-    "avatarCardId": "blue_40_naga_guardia",
+    "avatarCardId": "purple_96_abominacao_costurada",
     "eloRating": 963,
     "eloRd": 27,
     "simulatedGames": 220,
@@ -3721,8 +3720,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t1_dual_purple_gold",
-    "sovereignName": "Sentinela de Aliança Eclipse-Solária (Inquisidor)",
-    "sovereignTitle": "Guarnição de Fronteira (Tier I) • Pacto da Inquisição Crepuscular",
+    "sovereignName": "Ceifador da Adaga Chorosa",
+    "sovereignTitle": "Sentinela de Fronteira (Tier I) • Aliança Eclipse-Solária",
     "realmOrigin": "Aliança Eclipse-Solária",
     "archetypeId": "dual_purple_gold",
     "archetypeName": "Pacto da Inquisição Crepuscular",
@@ -3734,7 +3733,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
       "purple",
       "gold"
     ],
-    "avatarCardId": "gold_37_escudeiro_solar",
+    "avatarCardId": "purple_79_assassino_lamento",
     "eloRating": 933,
     "eloRd": 26,
     "simulatedGames": 220,
@@ -3744,8 +3743,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t1_mono_purple_blood",
-    "sovereignName": "Sentinela de Eclipse (Vladmir)",
-    "sovereignTitle": "Guarnição de Fronteira (Tier I) • Pacto Sanguíneo",
+    "sovereignName": "Arcanista das Correntes Umbrosas",
+    "sovereignTitle": "Sentinela de Fronteira (Tier I) • Eclipse",
     "realmOrigin": "Eclipse",
     "archetypeId": "mono_purple_blood",
     "archetypeName": "Pacto Sanguíneo",
@@ -3756,7 +3755,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "purple"
     ],
-    "avatarCardId": "purple_37_acolito_oculto",
+    "avatarCardId": "purple_151_inquisidor_umbral",
     "eloRating": 553,
     "eloRd": 31,
     "simulatedGames": 220,
@@ -3766,8 +3765,8 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
   },
   {
     "sovereignId": "sov_t1_mono_red_blitz",
-    "sovereignName": "Sentinela de Pyros (Kael)",
-    "sovereignTitle": "Guarnição de Fronteira (Tier I) • Blitz Salamandra",
+    "sovereignName": "Berserker de Escama Carmesim",
+    "sovereignTitle": "Sentinela de Fronteira (Tier I) • Pyros",
     "realmOrigin": "Pyros",
     "archetypeId": "mono_red_blitz",
     "archetypeName": "Blitz Salamandra",
@@ -3778,7 +3777,7 @@ export const SOVEREIGN_AI_LEADERBOARD_ROSTER: SovereignAiLeaderboardEntry[] = [
     "domains": [
       "red"
     ],
-    "avatarCardId": "red_111_predador_piroclastico",
+    "avatarCardId": "red_94_berserker_draconico",
     "eloRating": 434,
     "eloRd": 35,
     "simulatedGames": 220,

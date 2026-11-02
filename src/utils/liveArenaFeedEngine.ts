@@ -1,9 +1,15 @@
-import {
-  SOVEREIGN_AI_LEADERBOARD_ROSTER,
-  SovereignAiLeaderboardEntry,
-} from '../data/sovereignEloLadderData';
+import type { SovereignAiLeaderboardEntry } from '../data/sovereignEloLadderData';
 import { Domain } from '../types/game';
 import { getActiveRoomsList, MultiplayerRoom } from './multiplayerEngine';
+import {
+  fetchHydratedLiveSovereignRoster,
+  getCachedHydratedLiveSovereignRoster,
+  resolveDeterministicRollingMatchup,
+  ROLLING_CYCLE_MS,
+  ROLLING_MATCH_SPAN_MS,
+  ROLLING_STAGGER_MS,
+  ROLLING_TABLE_COUNT,
+} from './sovereignLiveEloEngine';
 import {
   ComputedRoundPairing,
   ComputedTournamentStanding,
@@ -23,22 +29,8 @@ export interface LiveArenaFeedItem {
   livePvpRoom?: MultiplayerRoom | null;
 }
 
-const ROLLING_TABLE_COUNT = 8;
-const ROLLING_CYCLE_MS = 132_000; // 2m 12s per table cycle
-const ROLLING_MATCH_SPAN_MS = 116_000; // ~1m 56s active play (~1.8s–2.3s per real engine action)
-const ROLLING_STAGGER_MS = Math.floor(ROLLING_CYCLE_MS / ROLLING_TABLE_COUNT); // 16.5s stagger
-
 let cachedCloudCatalog: TournamentCatalogData | null = null;
 let lastCloudFetchAtMs = 0;
-
-function hashFeedSeed(input: string): number {
-  let h = 2166136261 >>> 0;
-  for (let i = 0; i < input.length; i += 1) {
-    h ^= input.charCodeAt(i);
-    h = Math.imul(h, 16777619) >>> 0;
-  }
-  return h >>> 0;
-}
 
 function buildStandingFromSovereign(
   entry: SovereignAiLeaderboardEntry,
@@ -74,20 +66,21 @@ function buildRollingSovereignTable(
   customStartOffsetMs?: number,
   explicitBucket?: number
 ): LiveArenaFeedItem | null {
-  const roster = SOVEREIGN_AI_LEADERBOARD_ROSTER;
-  if (roster.length < 2) return null;
-
   const slotOffset = slotIdx * ROLLING_STAGGER_MS;
   const bucket =
     explicitBucket !== undefined
       ? explicitBucket
       : Math.floor((nowMs - slotOffset) / ROLLING_CYCLE_MS);
+
+  const spec = resolveDeterministicRollingMatchup(bucket, slotIdx);
+  if (!spec) return null;
+
   const matchStartMs =
     explicitBucket !== undefined
-      ? bucket * ROLLING_CYCLE_MS + slotOffset
+      ? spec.matchStartMs
       : customStartOffsetMs !== undefined
       ? nowMs - customStartOffsetMs
-      : bucket * ROLLING_CYCLE_MS + slotOffset;
+      : spec.matchStartMs;
   const matchFinishMs = matchStartMs + ROLLING_MATCH_SPAN_MS;
 
   // Keep only tables currently mid-battle with >= 24s remaining so viewers never land at the very end
@@ -99,33 +92,13 @@ function buildRollingSovereignTable(
     return null;
   }
 
-  const seed = hashFeedSeed(`vaeloria_live_table_v1::b${bucket}::s${slotIdx}`);
-  // Spotlight high-mastery & diverse Sovereigns across all 276 entries (weighted toward top 120 + full roster)
-  const poolCap = slotIdx % 2 === 0 ? Math.min(90, roster.length) : roster.length;
-  const idxA = seed % poolCap;
-  const sovA = roster[idxA];
-  const domA = sovA.domains[0] ?? 'red';
+  const liveMap = getCachedHydratedLiveSovereignRoster(nowMs).byId;
+  const liveSovA = liveMap.get(spec.sovA.sovereignId) ?? spec.sovA;
+  const liveSovB = liveMap.get(spec.sovB.sovereignId) ?? spec.sovB;
 
-  // Find a close-ELO rival from a contrasting Domain so matchups are visually & tactically rich
-  let bestIdxB = (idxA + 7) % roster.length;
-  let bestScore = Number.POSITIVE_INFINITY;
-  for (let probe = 1; probe <= 28; probe += 1) {
-    const candIdx = (idxA + ((seed >>> 5) % 19) + probe * 5) % roster.length;
-    if (candIdx === idxA) continue;
-    const cand = roster[candIdx];
-    const eloGap = Math.abs(cand.eloRating - sovA.eloRating);
-    const samePrimaryPenalty = (cand.domains[0] ?? 'blue') === domA ? 140 : 0;
-    const score = eloGap + samePrimaryPenalty;
-    if (score < bestScore) {
-      bestScore = score;
-      bestIdxB = candIdx;
-    }
-  }
-  const sovB = roster[bestIdxB];
-
-  const standingA = buildStandingFromSovereign(sovA, idxA + 1);
-  const standingB = buildStandingFromSovereign(sovB, bestIdxB + 1);
-  const canonicalWinner: 'A_WIN' | 'B_WIN' = (seed & 1) === 0 ? 'A_WIN' : 'B_WIN';
+  const standingA = buildStandingFromSovereign(liveSovA, spec.idxA + 1);
+  const standingB = buildStandingFromSovereign(liveSovB, spec.idxB + 1);
+  const canonicalWinner = spec.canonicalWinner;
   const elapsedRatio = Math.max(0, Math.min(1, (nowMs - matchStartMs) / ROLLING_MATCH_SPAN_MS));
   const liveTurnEst = Math.max(1, Math.min(8, Math.floor(1 + elapsedRatio * 6)));
 
@@ -290,6 +263,7 @@ function buildPvpRoomLiveItem(room: MultiplayerRoom, nowMs: number): LiveArenaFe
 
 export async function refreshLiveArenaCloudPool(): Promise<void> {
   const now = getTournamentNowMs();
+  void fetchHydratedLiveSovereignRoster(now);
   if (now - lastCloudFetchAtMs < 12_000 && cachedCloudCatalog) return;
   lastCloudFetchAtMs = now;
   try {

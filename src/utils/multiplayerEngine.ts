@@ -9,6 +9,10 @@ import {
   INITIAL_PLAYER_ELO,
 } from '../data/eloDivisions';
 import type { SovereignAiLeaderboardEntry } from '../data/sovereignEloLadderData';
+import {
+  fetchHydratedLiveSovereignRoster,
+  recordHumanVsSovereignLiveMatch,
+} from './sovereignLiveEloEngine';
 
 export const VICTORY_GOLD_REWARD = 10;
 export const STARTER_GOLD = 160;
@@ -2209,6 +2213,7 @@ export interface UnifiedLeaderboardEntry {
   isAdmin?: boolean;
   sovereignEntry?: SovereignAiLeaderboardEntry;
   humanProfile?: SovereignUserProfile;
+  recentEloDelta?: number;
 }
 
 export interface UnifiedLeaderboardSnapshot {
@@ -2334,13 +2339,18 @@ export async function fetchUnifiedPlatformLeaderboard(
       isCurrentUser: isMe,
       isAdmin: isAdminProfile(hp),
       humanProfile: hp,
+      recentEloDelta:
+        hp.recentRankedHistory?.[0] &&
+        Date.now() - hp.recentRankedHistory[0].timestamp <= 15 * 60_000
+          ? hp.recentRankedHistory[0].deltaElo
+          : 0,
     });
   }
 
-  const { SOVEREIGN_AI_LEADERBOARD_ROSTER } = await import('../data/sovereignEloLadderData');
+  const liveSovereigns = await fetchHydratedLiveSovereignRoster();
   const aiSource = includeCommanders
-    ? SOVEREIGN_AI_LEADERBOARD_ROSTER
-    : SOVEREIGN_AI_LEADERBOARD_ROSTER.filter((s) => s.isGrandSovereign);
+    ? liveSovereigns.roster
+    : liveSovereigns.roster.filter((s) => s.isGrandSovereign);
 
   for (const s of aiSource) {
     rawEntries.push({
@@ -2366,6 +2376,7 @@ export async function fetchUnifiedPlatformLeaderboard(
       skillTier: s.skillTier,
       isGrandSovereign: s.isGrandSovereign,
       sovereignEntry: s,
+      recentEloDelta: liveSovereigns.recentDeltaById[s.sovereignId] ?? 0,
     });
   }
 
@@ -2482,6 +2493,11 @@ export function recordRankedSovereignDuelResult(
   setActiveTabUserProfile(updatedProfile);
   if (!isUnregisteredProfile(updatedProfile)) {
     void adminSaveCloudProfile(updatedProfile);
+    void recordHumanVsSovereignLiveMatch(
+      opponentEntry.sovereignId,
+      didWin,
+      Math.abs(newElo - previousElo)
+    );
   }
 
   return {

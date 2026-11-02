@@ -120,17 +120,31 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
     }
   }, [availableDecks, currentUser.preferredDeckId, selectedDeckId]);
 
-  const loadLeaderboard = useCallback(async () => {
-    setIsLoading(true);
-    const snap = await fetchUnifiedPlatformLeaderboard(currentUser, {
-      includeRegionalCommanders,
-    });
-    setSnapshot(snap);
-    setIsLoading(false);
-  }, [currentUser, includeRegionalCommanders]);
+  const loadLeaderboard = useCallback(
+    async (silent = false) => {
+      if (!silent) setIsLoading(true);
+      const snap = await fetchUnifiedPlatformLeaderboard(currentUser, {
+        includeRegionalCommanders,
+      });
+      setSnapshot(snap);
+      setDossierSovereign((prev) => {
+        if (!prev) return null;
+        const updated = snap.entries.find(
+          (e) => e.sovereignEntry?.sovereignId === prev.sovereignId
+        )?.sovereignEntry;
+        return updated ?? prev;
+      });
+      if (!silent) setIsLoading(false);
+    },
+    [currentUser, includeRegionalCommanders]
+  );
 
   useEffect(() => {
-    void loadLeaderboard();
+    void loadLeaderboard(false);
+    const timer = window.setInterval(() => {
+      void loadLeaderboard(true);
+    }, 18_000);
+    return () => window.clearInterval(timer);
   }, [loadLeaderboard]);
 
   useEffect(() => {
@@ -640,7 +654,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
             <span className="hide-on-mobile" style={{ width: '92px' }}>
               Divisão
             </span>
-            <span style={{ width: '68px', textAlign: 'right' }}>ELO</span>
+            <span style={{ width: '84px', textAlign: 'right' }}>ELO</span>
             <span style={{ width: '88px', textAlign: 'right' }}>Ação</span>
           </div>
         </div>
@@ -827,13 +841,37 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                     {/* ELO Rating */}
                     <div
                       style={{
-                        width: '68px',
+                        width: '84px',
                         textAlign: 'right',
                         fontVariantNumeric: 'tabular-nums',
                       }}
                     >
-                      <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f8fafc' }}>
-                        {row.eloRating}
+                      <div
+                        style={{
+                          fontSize: '0.92rem',
+                          fontWeight: 700,
+                          color: '#f8fafc',
+                          display: 'flex',
+                          justifyContent: 'flex-end',
+                          alignItems: 'baseline',
+                          gap: '4px',
+                        }}
+                      >
+                        {typeof row.recentEloDelta === 'number' && row.recentEloDelta !== 0 && (
+                          <span
+                            style={{
+                              fontSize: '0.66rem',
+                              fontWeight: 600,
+                              color: row.recentEloDelta > 0 ? '#10b981' : '#f87171',
+                            }}
+                            title="Variação recente nas últimas partidas oficiais"
+                          >
+                            {row.recentEloDelta > 0
+                              ? `+${row.recentEloDelta}`
+                              : row.recentEloDelta}
+                          </span>
+                        )}
+                        <span>{row.eloRating}</span>
                       </div>
                       {row.totalGames > 0 && (
                         <div

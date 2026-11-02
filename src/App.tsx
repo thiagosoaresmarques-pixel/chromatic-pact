@@ -124,6 +124,7 @@ import {
   fetchCommunityDiscordConfigFromCloud,
   getCommunityDiscordConfig,
 } from './utils/discordCommunityEngine';
+import { consolidateFinishedSwissTournamentLiveElo } from './utils/sovereignLiveEloEngine';
 import {
   buildPersonalReplaySpectatorContext,
   fetchSharedPersonalReplay,
@@ -1347,6 +1348,19 @@ export const App: React.FC = () => {
             snap.myEntry
           ) {
             deliverPersonalTournamentReward(snap.myPersonalReward, snap.myEntry);
+          }
+
+          if (snap.nowMs <= def.endsAtMs + 48 * 3600_000) {
+            const flatPairings = Object.values(snap.roundsPairings)
+              .flat()
+              .map((p) => ({
+                sovereignIdA: p.playerA.sovereignEntry?.sovereignId ?? null,
+                sovereignIdB: p.playerB?.sovereignEntry?.sovereignId ?? null,
+                humanEloA: p.playerA.kind === 'human' ? p.playerA.eloRating : null,
+                humanEloB: p.playerB?.kind === 'human' ? p.playerB.eloRating : null,
+                result: p.result,
+              }));
+            void consolidateFinishedSwissTournamentLiveElo(def.id, flatPairings);
           }
         }
 

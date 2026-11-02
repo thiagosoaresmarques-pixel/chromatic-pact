@@ -216,6 +216,13 @@ async function main() {
   console.log(`2/6 Configurando servidor "${targetGuild.name}" (${guildId})...`);
 
   const crownIcon = readCrownDataUri();
+  if (crownIcon && !botUser.avatar) {
+    try {
+      await discordReq('PATCH', '/users/@me', { avatar: crownIcon });
+    } catch {
+      // Ignora rate-limit eventual de avatar do bot
+    }
+  }
   await discordReq('PATCH', `/guilds/${guildId}`, {
     name: 'Pacto Cromático · Vaeloria',
     ...(crownIcon ? { icon: crownIcon } : {}),
@@ -296,6 +303,49 @@ async function main() {
     'Envio de protocolos PIX da Grande Copa Dominical, dúvidas e sugestões.'
   );
 
+  // Canal de voz limpo dentro de CONCLAVE
+  const existingVoice = existingChannels.find(
+    (c) => c.type === 2 && c.name.toLowerCase() === 'salão de voz'
+  );
+  if (!existingVoice) {
+    await discordReq('POST', `/guilds/${guildId}/channels`, {
+      name: 'Salão de Voz',
+      type: 2, // GUILD_VOICE
+      parent_id: catConclave.id,
+    });
+  }
+
+  // Define #boas-vindas-e-links como canal padrão de entrada sem spam de mensagens automáticas
+  await discordReq('PATCH', `/guilds/${guildId}`, {
+    system_channel_id: chWelcome.id,
+    system_channel_flags: 7,
+  });
+
+  // Remove canais padrão redundantes criados pelo template vazio do Discord
+  const boilerplateNames = new Set([
+    'geral',
+    'general',
+    'canais de texto',
+    'text channels',
+    'canais de voz',
+    'voice channels',
+  ]);
+  for (const ch of existingChannels) {
+    if (
+      boilerplateNames.has((ch.name || '').trim().toLowerCase()) &&
+      ch.id !== chWelcome.id &&
+      ch.id !== chTourneys.id &&
+      ch.id !== catOficial.id &&
+      ch.id !== catConclave.id
+    ) {
+      try {
+        await discordReq('DELETE', `/channels/${ch.id}`);
+      } catch {
+        // Ignora caso já tenha sido removido
+      }
+    }
+  }
+
   console.log('4/6 Publicando e fixando mensagem oficial de boas-vindas...');
   const existingPins = await discordReq('GET', `/channels/${chWelcome.id}/pins`);
   const alreadyPinned =
@@ -355,6 +405,35 @@ async function main() {
     });
   }
   const webhookUrl = `https://discord.com/api/webhooks/${webhook.id}/${webhook.token}`;
+
+  const existingTourneyMsgs = await discordReq('GET', `/channels/${chTourneys.id}/messages?limit=5`);
+  if (Array.isArray(existingTourneyMsgs) && existingTourneyMsgs.length === 0) {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'Arauto do Conclave',
+        embeds: [
+          {
+            title: 'Salão Oficial de Súmulas e Torneios Ativado',
+            description:
+              'Este canal recebe automaticamente as convocações **35 minutos antes da largada** e as **súmulas homologadas com link direto da reprise da Mesa #1** ao término de cada edição.',
+            color: 0xd97706,
+            fields: [
+              {
+                name: 'Próximas Edições',
+                value:
+                  '[Inscrever-se Agora em chromaticpact.com](https://chromaticpact.com/?tab=tournaments&utm_source=discord&utm_medium=webhook&utm_campaign=inauguracao_conclave)',
+                inline: false,
+              },
+            ],
+            footer: { text: 'Pacto Cromático · Conclave Oficial de Vaeloria' },
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      }),
+    });
+  }
 
   console.log('6/6 Salvando inviteUrl e webhookUrl diretamente no Supabase...');
   await saveToSupabase(inviteUrl, webhookUrl);

@@ -12,11 +12,11 @@ const LOCAL_COMMUNITY_CONFIG_KEY = 'chromatic_pact_community_discord_v1';
 const CLOUD_COMMUNITY_CONFIG_ROW = '__community_config__:global';
 
 export const DEFAULT_COMMUNITY_DISCORD_CONFIG: CommunityDiscordConfig = {
-  inviteUrl: '',
+  inviteUrl: 'https://discord.gg/nJQq56HzVW',
   webhookUrl: '',
   sundayPixBrl: 30,
   pixInstructions:
-    'Envie seu protocolo de súmula no canal #premiacoes do Discord Oficial para resgate via PIX.',
+    'Envie seu protocolo de súmula no canal #premiacoes-e-suporte do Discord Oficial para resgate via PIX.',
   updatedAtMs: 0,
 };
 
@@ -26,7 +26,10 @@ const listeners = new Set<CommunityConfigListener>();
 function normalizeConfig(raw?: Partial<CommunityDiscordConfig> | null): CommunityDiscordConfig {
   const pixNum = Number(raw?.sundayPixBrl);
   return {
-    inviteUrl: typeof raw?.inviteUrl === 'string' ? raw.inviteUrl.trim() : '',
+    inviteUrl:
+      typeof raw?.inviteUrl === 'string' && raw.inviteUrl.trim()
+        ? raw.inviteUrl.trim()
+        : DEFAULT_COMMUNITY_DISCORD_CONFIG.inviteUrl,
     webhookUrl: typeof raw?.webhookUrl === 'string' ? raw.webhookUrl.trim() : '',
     sundayPixBrl:
       Number.isFinite(pixNum) && pixNum >= 0

@@ -295,30 +295,30 @@ function main() {
   // 1. GA1 — Card Games e TCG Online (Preserva histórico e adiciona RSA V4 com Torneios Diários às 19h + 1.038 Cartas)
   var res1 = getOrCreateAdGroup(campaign, 'GA1 - Card Games e TCG Online', 2.50);
   if (res1.adGroup) {
-    if (!hasRsaWithPath2(res1.adGroup, 'Torneios19h')) {
+    if (!hasRsaWithPath2(res1.adGroup, 'Torneios')) {
       res1.adGroup.newAd().responsiveSearchAdBuilder()
         .withFinalUrl(finalUrl)
         .withPath1('CardGame')
-        .withPath2('Torneios19h')
+        .withPath2('Torneios')
         .withHeadlines([
           'Torneios Diários às 19h',
           'Chromatic Pact - Card Game',
-          'Inscrição Grátis • Sem Baixar',
-          'Suba no Ranking ELO Ao Vivo',
+          'Inscrição Grátis no Navegador',
+          'Suba no Ranking Elo Ao Vivo',
           'TCG Tático de Dark Fantasy',
           '1.038 Cartas Ilustradas',
-          'Torneio Suíço Valendo Cartas',
-          'Jogue Grátis no Navegador',
+          'Torneio Suíço Competitivo',
+          'Jogue Grátis Sem Download',
           'Monte Seu Grimório Lendário',
-          'Duelos Táticos 1v1 Ao Vivo',
-          'Alternativa a MTG e Yu-Gi-Oh',
+          'Duelos Táticos 1v1 Online',
+          '6 Domínios Elementais Épicos',
           'Card Game 100% em Português'
         ])
         .withDescriptions([
-          'Dispute Torneios Suíços diários às 19h valendo Cartas Lendárias. Inscrição 100% grátis!',
-          'Card game tático Dark Fantasy com 1.038 cartas no navegador (PC e celular), sem baixar!',
-          'Suba no Ranking ELO ao vivo, monte seu grimório em 6 domínios e desafie Grão-Soberanos!',
-          'Campanha solo com 190 confrontos, duelos 1v1 e torneios diários em chromaticpact.com!'
+          'Dispute torneios suíços diários às 19h valendo cartas lendárias com inscrição gratuita.',
+          'Card game tático de fantasia sombria com 1.038 cartas direto no navegador sem instalar.',
+          'Suba no ranking Elo ao vivo, monte seu grimório em 6 domínios e desafie Soberanos.',
+          'Campanha solo com 190 confrontos táticos, duelos 1v1 online e mesas ao vivo no PC.'
         ])
         .build();
       Logger.log('[GA1] Novo anúncio RSA V4 (Torneios Diários às 19h + 1.038 Cartas) adicionado.');
@@ -354,18 +354,18 @@ function main() {
           'Bestiário com 1.038 Cartas',
           'Jogue Grátis no Navegador',
           'Dragões, Lichs e Titãs Épicos',
-          'Para Fãs de D&D e Castlevania',
+          'Combate Tático e Magia',
           'Campanha com 190 Confrontos',
-          'Suba no Ranking ELO Ao Vivo',
+          'Suba no Ranking Elo Ao Vivo',
           'Estratégia em Turnos Online',
           'Explore a Lore de Vaeloria',
           '100% em Português e Gratuito'
         ])
         .withDescriptions([
-          'Enfrente dragões, arquimagos e titãs em um Card Game tático de fantasia sombria.',
-          '1.038 cartas com habilidades táticas, relíquias e armadilhas. Jogue sem baixar nada!',
-          'Campanha de 190 confrontos e Torneios Suíços diários às 19h com inscrição gratuita!',
-          'Acesso imediato no PC ou celular em chromaticpact.com. Comece sua jornada hoje!'
+          'Enfrente dragões, arquimagos e titãs em um card game tático de fantasia sombria.',
+          '1.038 cartas com habilidades táticas, relíquias e armadilhas direto no navegador.',
+          'Campanha de 190 confrontos e torneios suíços diários às 19h com inscrição gratuita.',
+          'Acesso imediato no PC ou celular sem instalar nada. Comece sua jornada em Vaeloria.'
         ])
         .build();
       Logger.log('[GA2] Novo anúncio RSA V4 (1.038 Cartas + Torneios 19h) adicionado.');
@@ -386,30 +386,30 @@ function main() {
   // 3. GA3 — Torneios de Card Game & Cenário Competitivo (Cai direto em ?tab=tournaments)
   var res3 = getOrCreateAdGroup(campaign, 'GA3 - Torneios de Card Game Online', 2.65);
   if (res3.adGroup) {
-    if (!hasRsaWithPath2(res3.adGroup, 'As-19h')) {
+    if (!hasRsaWithPath2(res3.adGroup, 'Diarios')) {
       res3.adGroup.newAd().responsiveSearchAdBuilder()
         .withFinalUrl(tournamentsUrl)
         .withPath1('Torneios')
-        .withPath2('As-19h')
+        .withPath2('Diarios')
         .withHeadlines([
           'Torneios Diários às 19h',
           'Torneio de Card Game Online',
-          'Inscrição 100% Gratuita',
+          'Inscrição Gratuita Todo Dia',
           'Formato Suíço Competitivo',
-          'Ganhe Cartas Lendárias',
-          'Ranking ELO Oficial Ao Vivo',
-          'Jogue no Navegador Sem Baixar',
-          'Chromatic Pact - TCG Tático',
-          '1.038 Cartas • 6 Domínios',
-          'Alternativa Competitiva a MTG',
+          'Conquiste Cartas Lendárias',
+          'Ranking Elo Oficial Ao Vivo',
+          'Jogue Grátis no Navegador',
+          'Chromatic Pact - Card Game',
+          '1.038 Cartas em 6 Domínios',
+          'Duelos Estratégicos em Turnos',
           'Assista às Mesas Ao Vivo',
-          'Entre Hoje na Rodada das 19h'
+          'Entre na Rodada das 19h'
         ])
         .withDescriptions([
-          'Participe dos Torneios Suíços todos os dias às 19h com inscrição grátis e ganhe Lendárias!',
-          'Suba no Ranking ELO ao vivo em um TCG tático com 1.038 cartas direto no navegador.',
-          'Monte seu grimório grátis sem baixar (PC e celular) e dispute o torneio de hoje às 19h!',
-          'Acompanhe duelos em tempo real, estude replays táticos e conquiste o topo de Vaeloria.'
+          'Participe dos torneios suíços todos os dias às 19h com inscrição gratuita no navegador.',
+          'Suba no ranking Elo ao vivo em um card game tático com 1.038 cartas ilustradas.',
+          'Monte seu grimório grátis sem instalar nada no PC ou celular e dispute a rodada de hoje.',
+          'Acompanhe duelos em tempo real, estude partidas táticas e conquiste cartas lendárias.'
         ])
         .build();
       Logger.log('[GA3] Grupo competitivo e RSA de Torneios Diários às 19h criados com sucesso.');

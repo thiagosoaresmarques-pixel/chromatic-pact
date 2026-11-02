@@ -38,9 +38,9 @@ import {
 } from './utils/dailyQuestsEngine';
 import { CardInspectModal } from './components/CardView';
 
-const HomeSimulatedDuelShowcase = React.lazy(() =>
-  import('./components/HomeSimulatedDuelShowcase').then((m) => ({
-    default: m.HomeSimulatedDuelShowcase,
+const HomeLiveArenaView = React.lazy(() =>
+  import('./components/HomeLiveArenaView').then((m) => ({
+    default: m.HomeLiveArenaView,
   }))
 );
 
@@ -2634,6 +2634,7 @@ export const App: React.FC = () => {
         )}
         {!isGuest &&
           customDecks.length === 0 &&
+          activeTab !== 'home' &&
           activeTab !== 'deckbuilder' &&
           activeTab !== 'draft' &&
           activeTab !== 'arena' &&
@@ -2671,7 +2672,7 @@ export const App: React.FC = () => {
             </div>
           )}
 
-        {activeTab !== 'arena' && pwaState.updateAvailable && (
+        {activeTab !== 'arena' && activeTab !== 'home' && pwaState.updateAvailable && (
           <div className="aaa-onboarding-shell" style={{ paddingBottom: 0 }}>
             <PwaInstallBanner
               pwaState={pwaState}
@@ -2681,19 +2682,13 @@ export const App: React.FC = () => {
         )}
 
         {activeTab === 'home' && (
-          <div className="aaa-page-shell aaa-home-lobby-shell">
-            <div className="aaa-home-showcase-hero">
-              <Suspense fallback={<div style={{ minHeight: '72vh' }} />}>
-                <HomeSimulatedDuelShowcase
-                  onInspectCard={setShowcaseInspectCard}
-                  onPlayDuelNow={handleOpenArenaSolo}
-                  onOpenCombosCompendium={() => setActiveTab('tactics')}
-                  soundMuted={soundMuted}
-                  onToggleSound={handleToggleSound}
-                />
-              </Suspense>
-            </div>
-          </div>
+          <Suspense fallback={<div style={{ minHeight: 'calc(100vh - 52px)' }} />}>
+            <HomeLiveArenaView
+              customDecks={customDecks}
+              isGuest={isGuest}
+              onPlayDuelNow={handleOpenArenaSolo}
+            />
+          </Suspense>
         )}
 
         <Suspense

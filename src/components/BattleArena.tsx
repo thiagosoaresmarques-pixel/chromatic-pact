@@ -129,6 +129,11 @@ import {
   subscribeTournamentTvUpdates,
   TournamentMatchReplayLog,
 } from '../utils/tournamentSpectatorEngine';
+import {
+  ActiveArenaVideoSession,
+  isArenaVideoCaptureSupported,
+  startArenaVideoCapture,
+} from '../utils/arenaVideoRecorder';
 
 const ARENA_COACHMARK_STEPS = [
   {
@@ -242,6 +247,11 @@ export interface BattleArenaProps {
     tournament: SwissTournamentDefinition;
     pairing: ComputedRoundPairing;
     onExitSpectator: () => void;
+    variant?: 'tournament' | 'home_live';
+    customTableBadge?: string;
+    livePvpRoom?: MultiplayerRoom | null;
+    onCycleNextLiveMatch?: () => void;
+    onPlayNowFromHome?: () => void;
   } | null;
 }
 
@@ -558,6 +568,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   const [gameState, setGameState] = useState<GameState>(() => {
     if (tournamentSpectatorContext) {
+      if (tournamentSpectatorContext.livePvpRoom?.canonicalState) {
+        return tournamentSpectatorContext.livePvpRoom.canonicalState;
+      }
       const initLog = getOrSynthesizeSovereignMatchLog(
         tournamentSpectatorContext.tournament,
         tournamentSpectatorContext.pairing
@@ -2018,12 +2031,64 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   ]);
 
   // =========================================================================
-  // REAL-TABLETOP TOURNAMENT SPECTATOR & REPLAY CONTROLLER
+  // REAL-TABLETOP TOURNAMENT & HOME LIVE SPECTATOR / REPLAY / VIDEO RECORDER
   // Drives BattleArena with 100% authentic lunges, spells, Domain Expansions,
-  // adaptive battle/climax music, and Sovereign finisher cutscenes!
+  // adaptive battle/climax music, Sovereign finisher cutscenes & MP4 export!
   // =========================================================================
+  const isHomeLiveShowcase = tournamentSpectatorContext?.variant === 'home_live';
+  const livePvpRoom = tournamentSpectatorContext?.livePvpRoom ?? null;
+  const livePvpCanonicalRef = useRef<GameState | null>(livePvpRoom?.canonicalState ?? null);
+  const arenaStageRef = useRef<HTMLDivElement | null>(null);
+  const videoSessionRef = useRef<ActiveArenaVideoSession | null>(null);
+  const [isRecordingVideo, setIsRecordingVideo] = useState<boolean>(false);
+  const [recordingElapsedSec, setRecordingElapsedSec] = useState<number>(0);
+  const canRecordVideo = useMemo(() => isArenaVideoCaptureSupported(), []);
+
+  useEffect(() => {
+    if (!isRecordingVideo) return;
+    const id = window.setInterval(() => {
+      setRecordingElapsedSec((prev) => prev + 1);
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [isRecordingVideo]);
+
+  useEffect(() => {
+    return () => {
+      videoSessionRef.current?.cancelWithoutDownload();
+      videoSessionRef.current = null;
+    };
+  }, []);
+
+  const handleToggleVideoRecording = async () => {
+    if (videoSessionRef.current) {
+      videoSessionRef.current.stopAndDownload();
+      return;
+    }
+    setShowLogSidebar(false);
+    setIsHandPinnedOpen(false);
+    setIsP1DrawerPinned(false);
+    setIsP2DrawerPinned(false);
+    setActiveRightDrawer(null);
+
+    const session = await startArenaVideoCapture({
+      stageElement: arenaStageRef.current,
+      southName: gameState.player.name,
+      northName: gameState.ai.name,
+      onAutoStopped: () => {
+        videoSessionRef.current = null;
+        setIsRecordingVideo(false);
+        setRecordingElapsedSec(0);
+      },
+    });
+    if (session) {
+      videoSessionRef.current = session;
+      setRecordingElapsedSec(0);
+      setIsRecordingVideo(true);
+    }
+  };
+
   const [specLog, setSpecLog] = useState<TournamentMatchReplayLog | null>(() =>
-    tournamentSpectatorContext
+    tournamentSpectatorContext && !tournamentSpectatorContext.livePvpRoom
       ? getOrSynthesizeSovereignMatchLog(
           tournamentSpectatorContext.tournament,
           tournamentSpectatorContext.pairing
@@ -2060,9 +2125,71 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     startAdaptiveMusic();
   }, [isSpectatorMode]);
 
+  // Live Conclave PvP Room spectator stream (when Home tunes into an active PvP room)
+  useEffect(() => {
+    if (!livePvpRoom) return;
+    if (livePvpRoom.canonicalState) {
+      livePvpCanonicalRef.current = livePvpRoom.canonicalState;
+      setGameState(
+        specFlipped
+          ? flipGameStatePerspective(livePvpRoom.canonicalState)
+          : livePvpRoom.canonicalState
+      );
+    }
+    const unsub = subscribeMultiplayerBus((msg) => {
+      if (msg.type === 'MATCH_STATE_SYNC' && msg.roomCode === livePvpRoom.code) {
+        livePvpCanonicalRef.current = msg.canonicalState;
+        playSfx('draw');
+        setGameState(
+          specFlipped ? flipGameStatePerspective(msg.canonicalState) : msg.canonicalState
+        );
+      } else if (
+        msg.type === 'ROOM_UPSERT' &&
+        msg.room.code === livePvpRoom.code &&
+        msg.room.canonicalState
+      ) {
+        livePvpCanonicalRef.current = msg.room.canonicalState;
+        setGameState(
+          specFlipped
+            ? flipGameStatePerspective(msg.room.canonicalState)
+            : msg.room.canonicalState
+        );
+      }
+    });
+    return () => unsub();
+  }, [livePvpRoom, specFlipped]);
+
+  // Auto-save recorded clip and/or tune into the next live table once the finisher cutscene completes
+  useEffect(() => {
+    if (!isSpectatorMode || gameState.phase !== 'gameover') return;
+    if (isRecordingVideo && videoSessionRef.current) {
+      const saveTimer = window.setTimeout(() => {
+        videoSessionRef.current?.stopAndDownload();
+        if (isHomeLiveShowcase && tournamentSpectatorContext?.onCycleNextLiveMatch) {
+          window.setTimeout(() => {
+            tournamentSpectatorContext.onCycleNextLiveMatch?.();
+          }, 700);
+        }
+      }, 3400);
+      return () => window.clearTimeout(saveTimer);
+    }
+    if (isHomeLiveShowcase && tournamentSpectatorContext?.onCycleNextLiveMatch) {
+      const nextTimer = window.setTimeout(() => {
+        tournamentSpectatorContext.onCycleNextLiveMatch?.();
+      }, 4200);
+      return () => window.clearTimeout(nextTimer);
+    }
+  }, [
+    isSpectatorMode,
+    gameState.phase,
+    isRecordingVideo,
+    isHomeLiveShowcase,
+    tournamentSpectatorContext,
+  ]);
+
   // Load / subscribe live human match telemetry when applicable
   useEffect(() => {
-    if (!tournamentSpectatorContext) {
+    if (!tournamentSpectatorContext || tournamentSpectatorContext.livePvpRoom) {
       setSpecLog(null);
       return;
     }
@@ -3816,6 +3943,29 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         </div>
       )}
 
+      {/* FLOATING VIDEO RECORDING CONTROL PILL (positioned outside cropped stage) */}
+      {isRecordingVideo && (
+        <div
+          className="arena-video-rec-floating-pill"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span className="arena-video-rec-dot" />
+          <span className="arena-video-rec-timer">
+            Gravando{' '}
+            {`${String(Math.floor(recordingElapsedSec / 60)).padStart(2, '0')}:${String(
+              recordingElapsedSec % 60
+            ).padStart(2, '0')}`}
+          </span>
+          <button
+            type="button"
+            className="arena-video-rec-save-btn"
+            onClick={() => void handleToggleVideoRecording()}
+          >
+            Baixar Vídeo
+          </button>
+        </div>
+      )}
+
       {/* LIVE SVG AIMING TRAJECTORY TETHER & ROTATING CROSSHAIR RETICLE */}
       {(() => {
         let sourceId: string | null = null;
@@ -4693,7 +4843,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
           return (
             <div
+              ref={arenaStageRef}
               className={`arena-fullscreen-stage ${isSpectatorMode ? 'is-spectator-arena' : ''} ${
+                isRecordingVideo ? 'is-video-recording-clean' : ''
+              } ${
                 gameState.conquestModifiers?.biomeRealm
                   ? `biome-realm-${gameState.conquestModifiers.biomeRealm}`
                   : ''
@@ -6243,16 +6396,28 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   ===================================================== */}
               <footer className="hud-unified-bottom-bar">
                 {/* SPECTATOR / REPLAY TIMELINE SCRUBBER BAR ON REAL COMBAT TABLETOP */}
-                {isSpectatorMode && tournamentSpectatorContext && specLog && (() => {
-                  const clampedIdx = Math.max(0, Math.min(specVisibleMaxIdx, specCursor));
-                  const curFrame = specLog.frames[clampedIdx];
+                {isSpectatorMode && tournamentSpectatorContext && (specLog || livePvpRoom) && (() => {
+                  const clampedIdx = specLog
+                    ? Math.max(0, Math.min(specVisibleMaxIdx, specCursor))
+                    : 0;
+                  const curFrame = specLog ? specLog.frames[clampedIdx] : null;
+                  const liveStatusFlag = Boolean(livePvpRoom || isSpecLiveMatch);
+                  const latestMoveText =
+                    curFrame?.summary ||
+                    gameState.combatLog.find((entry) => entry.category !== 'turn')?.message ||
+                    '';
+                  const badgeLabel =
+                    tournamentSpectatorContext.customTableBadge ||
+                    `Mesa #${tournamentSpectatorContext.pairing.tableNumber} · R${tournamentSpectatorContext.pairing.round}`;
                   return (
-                    <div className="arena-spec-scrubber-row" onClick={(e) => e.stopPropagation()}>
-                      <span className="arena-spec-table-tag">
-                        Mesa #{tournamentSpectatorContext.pairing.tableNumber} · R
-                        {tournamentSpectatorContext.pairing.round}
-                      </span>
-                      {isSpecLiveMatch ? (
+                    <div
+                      className={`arena-spec-scrubber-row ${
+                        isHomeLiveShowcase ? 'is-home-live-row' : ''
+                      }`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <span className="arena-spec-table-tag">{badgeLabel}</span>
+                      {liveStatusFlag ? (
                         <span className="arena-spec-live-badge">
                           <span className="trn-live-dot" />
                           Ao vivo
@@ -6260,28 +6425,37 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       ) : (
                         <span className="arena-spec-replay-badge">Reprise</span>
                       )}
-                      <input
-                        type="range"
-                        className="arena-spec-range"
-                        min={0}
-                        max={Math.max(1, specVisibleMaxIdx)}
-                        value={clampedIdx}
-                        onChange={(e) => {
-                          const v = Number(e.target.value);
-                          setSpecIsPlaying(false);
-                          if (isSpecLiveMatch) {
-                            setSpecFollowLive(v >= specVisibleMaxIdx);
-                          }
-                          setSpecCursor(v);
-                        }}
-                        aria-label="Linha do tempo da partida"
-                      />
-                      <span className="arena-spec-step-counter">
-                        {clampedIdx}/{specVisibleMaxIdx}
-                      </span>
-                      {curFrame?.summary && (
-                        <span className="arena-spec-move-summary" title={curFrame.summary}>
-                          {curFrame.summary}
+                      {!isHomeLiveShowcase && specLog && (
+                        <>
+                          <input
+                            type="range"
+                            className="arena-spec-range"
+                            min={0}
+                            max={Math.max(1, specVisibleMaxIdx)}
+                            value={clampedIdx}
+                            onChange={(e) => {
+                              const v = Number(e.target.value);
+                              setSpecIsPlaying(false);
+                              if (isSpecLiveMatch) {
+                                setSpecFollowLive(v >= specVisibleMaxIdx);
+                              }
+                              setSpecCursor(v);
+                            }}
+                            aria-label="Linha do tempo da partida"
+                          />
+                          <span className="arena-spec-step-counter">
+                            {clampedIdx}/{specVisibleMaxIdx}
+                          </span>
+                        </>
+                      )}
+                      {latestMoveText && (
+                        <span
+                          className={`arena-spec-move-summary ${
+                            isHomeLiveShowcase ? 'is-home-live-summary' : ''
+                          }`}
+                          title={latestMoveText}
+                        >
+                          {latestMoveText}
                         </span>
                       )}
                     </div>
@@ -6642,11 +6816,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="hud-phase-segment"
                       onMouseEnter={() => setIsHandHovered(false)}
                     >
-                    {isSpectatorMode && tournamentSpectatorContext && specLog ? (
+                    {isSpectatorMode && tournamentSpectatorContext && (specLog || livePvpRoom) ? (
                       (() => {
-                        const clampedIdx = Math.max(0, Math.min(specVisibleMaxIdx, specCursor));
-                        const curFrame = specLog.frames[clampedIdx];
-                        const nextUnseen = specLog.frames[clampedIdx + 1];
+                        const clampedIdx = specLog
+                          ? Math.max(0, Math.min(specVisibleMaxIdx, specCursor))
+                          : 0;
+                        const curFrame = specLog ? specLog.frames[clampedIdx] : null;
+                        const nextUnseen = specLog ? specLog.frames[clampedIdx + 1] : null;
                         const turnLim = tournamentSpectatorContext.tournament.turnTimeLimitSec || 45;
                         let liveClockSec =
                           curFrame?.activeSide === 'B'
@@ -6662,7 +6838,87 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             Math.floor((specNowMs - curFrame.atMs) / 1000)
                           );
                           liveClockSec = Math.max(1, baseStartClock - elapsedSinceCurSec);
+                        } else if (livePvpRoom) {
+                          liveClockSec = Math.max(1, 60 - (Math.floor(specNowMs / 1000) % 45));
                         }
+
+                        if (isHomeLiveShowcase) {
+                          return (
+                            <div className="arena-spec-controls">
+                              <span
+                                className="hud-round-chip hud-turn-timer-chip"
+                                title={`Turno ${gameState.turn} · Relógio de turno`}
+                              >
+                                <span>T{gameState.turn}</span>
+                                <span className="hud-timer-sep">•</span>
+                                <span className="hud-timer-val">{liveClockSec}s</span>
+                              </span>
+
+                              {tournamentSpectatorContext.onCycleNextLiveMatch && (
+                                <button
+                                  type="button"
+                                  className="arena-spec-btn"
+                                  onClick={() => {
+                                    startAdaptiveMusic();
+                                    tournamentSpectatorContext.onCycleNextLiveMatch?.();
+                                  }}
+                                  title="Sintonizar outra partida ao vivo em andamento"
+                                >
+                                  Outra Mesa
+                                </button>
+                              )}
+
+                              <button
+                                type="button"
+                                className={`arena-spec-btn ${specFlipped ? 'is-active' : ''}`}
+                                onClick={() => {
+                                  setSelectedHandIndex(null);
+                                  setFocusedBoardUnitId(null);
+                                  setSpecFlipped((f) => !f);
+                                }}
+                                title="Inverter perspectiva da mesa (ver mão do outro Soberano)"
+                              >
+                                ⇅<span className="hide-on-mobile"> Mesa</span>
+                              </button>
+
+                              {canRecordVideo && (
+                                <button
+                                  type="button"
+                                  className={`arena-spec-btn ${isRecordingVideo ? 'is-active' : ''}`}
+                                  onClick={() => void handleToggleVideoRecording()}
+                                  title="Gravar vídeo em alta definição desta partida para redes sociais"
+                                >
+                                  Gravar<span className="hide-on-mobile"> Vídeo</span>
+                                </button>
+                              )}
+
+                              <button
+                                type="button"
+                                className={`arena-spec-btn ${showLogSidebar ? 'is-active' : ''}`}
+                                onClick={() => setShowLogSidebar((p) => !p)}
+                                title="Abrir / ocultar histórico de lances"
+                              >
+                                📜
+                              </button>
+
+                              <button
+                                type="button"
+                                className="arena-spec-btn primary"
+                                onClick={() => {
+                                  startAdaptiveMusic();
+                                  const act =
+                                    tournamentSpectatorContext.onPlayNowFromHome ??
+                                    tournamentSpectatorContext.onExitSpectator;
+                                  act();
+                                }}
+                                title="Entrar em combate agora na Arena"
+                              >
+                                Jogar Agora
+                              </button>
+                            </div>
+                          );
+                        }
+
                         return (
                           <div className="arena-spec-controls">
                             <span
@@ -6793,6 +7049,17 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             >
                               ⇅<span className="hide-on-mobile"> Mesa</span>
                             </button>
+
+                            {canRecordVideo && (
+                              <button
+                                type="button"
+                                className={`arena-spec-btn ${isRecordingVideo ? 'is-active' : ''}`}
+                                onClick={() => void handleToggleVideoRecording()}
+                                title="Gravar vídeo desta partida para redes sociais"
+                              >
+                                Gravar<span className="hide-on-mobile"> Vídeo</span>
+                              </button>
+                            )}
 
                             <button
                               type="button"
@@ -8037,27 +8304,51 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 );
               })()}
               {tournamentSpectatorContext ? (
-                <>
-                  <button
-                    type="button"
-                    className="btn-fantasy btn-fantasy-primary"
-                    onClick={tournamentSpectatorContext.onExitSpectator}
-                  >
-                    ← Voltar ao Salão do Torneio
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-fantasy"
-                    onClick={() => {
-                      setGameoverStage('none');
-                      setRewardClaimed(false);
-                      setSpecCursor(0);
-                      setSpecIsPlaying(true);
-                    }}
-                  >
-                    ↻ Rever do Início
-                  </button>
-                </>
+                isHomeLiveShowcase ? (
+                  <>
+                    <button
+                      type="button"
+                      className="btn-fantasy btn-fantasy-primary"
+                      onClick={
+                        tournamentSpectatorContext.onPlayNowFromHome ??
+                        tournamentSpectatorContext.onExitSpectator
+                      }
+                    >
+                      Jogar Agora
+                    </button>
+                    {tournamentSpectatorContext.onCycleNextLiveMatch && (
+                      <button
+                        type="button"
+                        className="btn-fantasy"
+                        onClick={tournamentSpectatorContext.onCycleNextLiveMatch}
+                      >
+                        Outra Mesa Ao Vivo
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="btn-fantasy btn-fantasy-primary"
+                      onClick={tournamentSpectatorContext.onExitSpectator}
+                    >
+                      ← Voltar ao Salão do Torneio
+                    </button>
+                    <button
+                      type="button"
+                      className="btn-fantasy"
+                      onClick={() => {
+                        setGameoverStage('none');
+                        setRewardClaimed(false);
+                        setSpecCursor(0);
+                        setSpecIsPlaying(true);
+                      }}
+                    >
+                      ↻ Rever do Início
+                    </button>
+                  </>
+                )
               ) : tournamentContext ? (
                 <button
                   type="button"

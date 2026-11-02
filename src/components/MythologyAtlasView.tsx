@@ -29,7 +29,6 @@ import {
   VAELORIA_CAPITAL_DISTRICTS,
   VaeloriaGazetteerEntry,
   buildDistrictInspectionNote,
-  getVaeloriaGazetteerIndex,
 } from '../data/vaeloriaCapitalDistricts';
 import {
   AtlasLayerAndSearchHud,
@@ -38,7 +37,6 @@ import {
   CartographicScaleRuler,
   CartographicSvgLayer,
   GazetteerHighlightTarget,
-  MultiScaleScopeNavigator,
 } from './CartographicAtlasExtras';
 
 interface MythologyAtlasViewProps {
@@ -254,7 +252,6 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
   const [inspectedNote, setInspectedNote] = useState<CartographicInspectionNote | null>(null);
   const [gazetteerHighlight, setGazetteerHighlight] =
     useState<GazetteerHighlightTarget | null>(null);
-  const totalGazetteerCount = useMemo(() => getVaeloriaGazetteerIndex().length, []);
 
   const handleSelectGazetteerInMythology = useCallback(
     (entry: VaeloriaGazetteerEntry) => {
@@ -642,7 +639,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
                       : 'Salvar marcador de leitura neste capítulo'
                   }
                 >
-                  {isBookmarked ? '🔖 Marcado' : '🔖 Marcar'}
+                  {isBookmarked ? 'Marcado' : 'Marcar'}
                 </button>
               </div>
             </div>
@@ -740,7 +737,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
 
           <footer className="poem-canto-colophon">
             <span>
-              — ❖ FIM DO {parallelCanto.cantoNumber} ({parallelCanto.eraNumber}) ❖ —
+              — Fim do {parallelCanto.cantoNumber} ({parallelCanto.eraNumber}) —
             </span>
           </footer>
         </div>
@@ -748,616 +745,560 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
     );
   };
 
+  const regionalMapValues = Object.values(VAELORIA_REGIONAL_MAPS);
+
   return (
-    <div className="myth-atlas-shell">
-      {/* =====================================================================
-          BARRA DE FILTROS + PROGRESSO DE LEITURA + BÚSSOLA DE VAELORIA
-      ===================================================================== */}
-      <nav className="poem-sticky-Controls">
-        <div className="poem-controls-single-bar">
-          <div className="poem-filters-inline">
-            <select
-              className="myth-select-compact"
-              value={selectedCantoId}
-              onChange={(e) => handleSelectCantoDropdown(e.target.value)}
-              aria-label="Selecionar Canto"
-            >
-              <option value="all">
-                Todos os 7 Cantos ({PARALLEL_EPIC_POEM_CANTOS.length} Capítulos)
-              </option>
-              {CANTO_RULER_ITEMS.map((item) => {
-                const parallels = PARALLEL_CANTOS_BY_PARENT_ID[item.id] || [];
-                return (
-                  <React.Fragment key={item.id}>
-                    <option value={item.id}>
-                      Canto {item.roman} — {item.shortEra} ({item.yearMark})
-                    </option>
-                    {parallels.map((parallel) => (
-                      <option key={parallel.id} value={parallel.id}>
-                        {`   ↳ Cap. ${parallel.parallelCode}: ${parallel.shortTitle} (${parallel.periodLabel})`}
-                      </option>
-                    ))}
-                  </React.Fragment>
-                );
-              })}
-            </select>
-
-            <select
-              className="myth-select-compact"
-              value={selectedDomain}
-              onChange={(e) => setSelectedDomain(e.target.value as Domain | 'all')}
-              aria-label="Selecionar Domínio"
-            >
-              {(Object.keys(DOMAIN_LABELS) as Array<Domain | 'all'>).map((dom) => (
-                <option key={dom} value={dom}>
-                  {DOMAIN_LABELS[dom].label}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="myth-select-compact"
-              value={nodeFilterKind}
-              onChange={(e) => setNodeFilterKind(e.target.value as 'all' | 'creatures_only')}
-              aria-label="Filtrar Episódios"
-            >
-              <option value="all">Poema Completo</option>
-              <option value="creatures_only">Apenas Criaturas</option>
-            </select>
-
-            <input
-              type="text"
-              className="myth-search-compact"
-              placeholder="Buscar verso, lenda, local ou ano..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-
+    <div className={`myth-atlas-shell ${isCompassOpen ? 'is-atlas-only-mode' : ''}`}>
+      {/* Clean Single-Row Top Bar: Epopeia | Atlas Cartográfico + Contextual Controls */}
+      <nav
+        className="poem-sticky-Controls"
+        style={isCompassOpen ? { marginRight: 0 } : undefined}
+      >
+        <div
+          className="poem-controls-single-bar"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: 10,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <button
               type="button"
-              className={`myth-compass-toggle-btn ${isCompassOpen ? 'active' : ''}`}
-              onClick={() => setIsCompassOpen((prev) => !prev)}
-              title="Abrir Galeria Quadri-Escala dos 21 Mapas, Batalhas dos VII Cantos e Rosa dos Ventos"
+              className={`nav-tab-btn ${!isCompassOpen ? 'active' : ''}`}
+              style={{ textTransform: 'none', letterSpacing: '0.01em', padding: '6px 12px', fontSize: '0.8rem' }}
+              onClick={() => setIsCompassOpen(false)}
             >
-              🗺️ Atlas (21 Mapas)
+              Epopeia ({PARALLEL_EPIC_POEM_CANTOS.length} Capítulos)
             </button>
-
-            <div
-              className="myth-reading-progress-chip"
-              title={`${readChaptersCount} de ${EPIC_POEM_STATS.totalChapters} capítulos visitados (${readPct}%)`}
+            <button
+              type="button"
+              className={`nav-tab-btn ${isCompassOpen && compassSubMode === 'gallery21' ? 'active' : ''}`}
+              style={{ textTransform: 'none', letterSpacing: '0.01em', padding: '6px 12px', fontSize: '0.8rem' }}
+              onClick={() => {
+                setIsCompassOpen(true);
+                setCompassSubMode('gallery21');
+              }}
             >
-              <span>
-                📚 {readChaptersCount}/{EPIC_POEM_STATS.totalChapters}
-              </span>
-              <div className="myth-reading-progress-bar">
-                <div
-                  className="myth-reading-progress-fill"
-                  style={{ width: `${readPct}%` }}
-                />
-              </div>
-            </div>
-
-            {bookmarkedChapter && (
-              <button
-                type="button"
-                className="myth-resume-bookmark-btn"
-                onClick={() => handleJumpToParallelCanto(bookmarkedChapter)}
-                title={`Retomar leitura no Capítulo ${bookmarkedChapter.parallelCode}: ${bookmarkedChapter.title}`}
-              >
-                🔖 Cap. {bookmarkedChapter.parallelCode}
-              </button>
-            )}
+              Atlas Cartográfico (21 Mapas)
+            </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${isCompassOpen && compassSubMode === 'compass' ? 'active' : ''}`}
+              style={{ textTransform: 'none', letterSpacing: '0.01em', padding: '6px 12px', fontSize: '0.8rem' }}
+              onClick={() => {
+                setIsCompassOpen(true);
+                setCompassSubMode('compass');
+              }}
+            >
+              Rosa dos Ventos
+            </button>
           </div>
+
+          {!isCompassOpen ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <select
+                className="myth-select-compact"
+                value={selectedCantoId}
+                onChange={(e) => handleSelectCantoDropdown(e.target.value)}
+                aria-label="Selecionar Canto"
+              >
+                <option value="all">Todos os 7 Cantos</option>
+                {CANTO_RULER_ITEMS.map((item) => {
+                  const parallels = PARALLEL_CANTOS_BY_PARENT_ID[item.id] || [];
+                  return (
+                    <React.Fragment key={item.id}>
+                      <option value={item.id}>
+                        Canto {item.roman} — {item.shortEra} ({item.yearMark})
+                      </option>
+                      {parallels.map((parallel) => (
+                        <option key={parallel.id} value={parallel.id}>
+                          {`   Cap. ${parallel.parallelCode}: ${parallel.shortTitle}`}
+                        </option>
+                      ))}
+                    </React.Fragment>
+                  );
+                })}
+              </select>
+
+              <select
+                className="myth-select-compact"
+                value={selectedDomain}
+                onChange={(e) => setSelectedDomain(e.target.value as Domain | 'all')}
+                aria-label="Selecionar Domínio"
+              >
+                {(Object.keys(DOMAIN_LABELS) as Array<Domain | 'all'>).map((dom) => (
+                  <option key={dom} value={dom}>
+                    {DOMAIN_LABELS[dom].label}
+                  </option>
+                ))}
+              </select>
+
+              <input
+                type="text"
+                className="myth-search-compact"
+                placeholder="Buscar verso, lenda ou local..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+
+              <span
+                style={{ fontSize: '0.75rem', color: '#94a3b8', whiteSpace: 'nowrap' }}
+                title={`${readChaptersCount} de ${EPIC_POEM_STATS.totalChapters} capítulos lidos (${readPct}%)`}
+              >
+                {readChaptersCount}/{EPIC_POEM_STATS.totalChapters} lidos
+              </span>
+
+              {bookmarkedChapter && (
+                <button
+                  type="button"
+                  className="aaa-btn aaa-btn-secondary"
+                  style={{ padding: '4px 10px', fontSize: '0.74rem' }}
+                  onClick={() => handleJumpToParallelCanto(bookmarkedChapter)}
+                >
+                  Retomar {bookmarkedChapter.parallelCode}
+                </button>
+              )}
+            </div>
+          ) : compassSubMode === 'gallery21' ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <select
+                aria-label="Selecionar mapa"
+                className="myth-select-compact"
+                style={{ minWidth: 230 }}
+                value={selectedAtlasScope}
+                onChange={(e) => {
+                  setSelectedAtlasScope(e.target.value as VaeloriaMapScope);
+                  setAtlasZoom(1);
+                  setInspectedNote(null);
+                }}
+              >
+                <option value="world">Continente de Vaeloria ({CONQUEST_PROVINCES.length} províncias)</option>
+                <optgroup label="Reinos Cardeais (6)">
+                  {regionalMapValues
+                    .filter((m) => m.tier === 'cardinal_realm')
+                    .map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                </optgroup>
+                <optgroup label="Fronteiras Profundas (6)">
+                  {regionalMapValues
+                    .filter((m) => m.tier === 'deep_frontier')
+                    .map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                </optgroup>
+                <optgroup label="Corredores Transcontinentais (2)">
+                  {regionalMapValues
+                    .filter((m) => m.tier === 'transit_corridor')
+                    .map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                </optgroup>
+                <optgroup label="Capitais Imperiais (6)">
+                  {regionalMapValues
+                    .filter((m) => m.tier === 'imperial_capital')
+                    .map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                </optgroup>
+              </select>
+
+              <select
+                aria-label="Era histórica"
+                className="myth-select-compact"
+                value={atlasLayers.historicalEras ? eraFilter : 'off'}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === 'off') {
+                    setAtlasLayers((prev) => ({ ...prev, historicalEras: false }));
+                  } else {
+                    setAtlasLayers((prev) => ({ ...prev, historicalEras: true }));
+                    setEraFilter(val as VaeloriaHistoricalEraId);
+                  }
+                }}
+              >
+                <option value="off">Sem filtro de era</option>
+                {VAELORIA_HISTORICAL_ERAS.map((era) => (
+                  <option key={era.id} value={era.id}>
+                    {era.shortLabel}
+                  </option>
+                ))}
+              </select>
+
+              <AtlasLayerAndSearchHud
+                layers={atlasLayers}
+                onChangeLayers={setAtlasLayers}
+                eraFilter={eraFilter}
+                onChangeEraFilter={setEraFilter}
+                onSelectGazetteerEntry={handleSelectGazetteerInMythology}
+              />
+            </div>
+          ) : null}
         </div>
       </nav>
 
       {/* =====================================================================
-          ROSA DOS VENTOS INTERATIVA & ATLAS QUADRI-ESCALA DE VAELORIA (21 MAPAS)
+          MODE A: ATLAS CARTOGRÁFICO & ROSA DOS VENTOS (FULL CLEAN VIEWPORT)
       ===================================================================== */}
-      {isCompassOpen && (
-        <section className="vaeloria-compass-panel" aria-label="Atlas Cartográfico Quadri-Escala e Rosa dos Ventos de Vaeloria">
-          <div className="vaeloria-compass-inner">
-            <div className="vaeloria-compass-header">
-              <div>
-                <span className="vaeloria-compass-kicker">
-                  CARTOGRAFIA OFICIAL QUADRI-ESCALA • 21 MAPAS ILUSTRADOS, 120 MARCOS &amp; {totalGazetteerCount} LOCAIS
-                </span>
-                <h3 className="font-cinzel gold-gradient-text vaeloria-compass-title">
-                  {compassSubMode === 'gallery21'
-                    ? 'Atlas Interativo de Vaeloria (Continente, 6 Reinos, 6 Fronteiras, 2 Corredores & 6 Capitais)'
-                    : 'Rosa dos Ventos & Os Seis Territórios de Vaeloria'}
-                </h3>
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                <button
-                  type="button"
-                  className={`myth-compass-toggle-btn ${compassSubMode === 'gallery21' ? 'active' : ''}`}
-                  onClick={() => setCompassSubMode('gallery21')}
-                >
-                  🗺️ 21 Mapas &amp; VII Cantos
-                </button>
-                <button
-                  type="button"
-                  className={`myth-compass-toggle-btn ${compassSubMode === 'compass' ? 'active' : ''}`}
-                  onClick={() => setCompassSubMode('compass')}
-                >
-                  🧭 Rosa dos Ventos
-                </button>
-                <button
-                  type="button"
-                  className="myth-compass-close-btn"
-                  onClick={() => setIsCompassOpen(false)}
-                >
-                  ✕ Recolher
-                </button>
-              </div>
-            </div>
-
+      {isCompassOpen ? (
+        <section
+          aria-label="Atlas Cartográfico de Vaeloria"
+          style={{ maxWidth: 1220, margin: '12px auto 0', width: '100%' }}
+        >
+          <div
+            style={{
+              background: '#0b0f19',
+              border: '1px solid rgba(148, 163, 184, 0.12)',
+              borderRadius: 10,
+              padding: '18px 20px',
+            }}
+          >
             {compassSubMode === 'gallery21' ? (
-              <div className="myth-atlas-gallery-shell">
-                <MultiScaleScopeNavigator
-                  mapScope={selectedAtlasScope}
-                  onSelectScope={(nextScope) => {
-                    setSelectedAtlasScope(nextScope);
-                    setAtlasZoom(1);
-                    setInspectedNote(null);
-                  }}
-                  worldBadge={`${CONQUEST_PROVINCES.length} Prov.`}
-                  variant="overworld"
-                />
+              (() => {
+                const reg =
+                  selectedAtlasScope !== 'world'
+                    ? VAELORIA_REGIONAL_MAPS[selectedAtlasScope]
+                    : null;
+                const secondaryProj = reg ? SCOPE_PROVINCE_PROJECTIONS[reg.id] : undefined;
+                const provCount = reg
+                  ? CONQUEST_PROVINCES.filter(
+                      (p) =>
+                        PROVINCE_REGIONAL_COORDS[p.id]?.realm === reg.id ||
+                        Boolean(secondaryProj?.[p.id])
+                    ).length
+                  : CONQUEST_PROVINCES.length;
+                const capitalDistricts =
+                  reg && reg.tier === 'imperial_capital'
+                    ? VAELORIA_CAPITAL_DISTRICTS.filter((d) => d.capitalScope === reg.id)
+                    : [];
 
-                {/* Barra de Lentes Históricas dos VII Cantos + Almanaque Buscável + Nível de Detalhe (LOD) */}
-                <div className="myth-atlas-controls-strip">
-                  <div className="myth-atlas-eras-pills" role="group" aria-label="Eras Históricas dos VII Cantos">
-                    {VAELORIA_HISTORICAL_ERAS.map((era) => {
-                      const isEraActive = atlasLayers.historicalEras && eraFilter === era.id;
-                      return (
-                        <button
-                          key={era.id}
-                          type="button"
-                          className={`aaa-pill-tab ${isEraActive ? 'is-active' : ''}`}
-                          style={
-                            isEraActive
-                              ? { borderColor: era.accentColor, color: '#fef08a' }
-                              : undefined
-                          }
-                          onClick={() => {
-                            if (isEraActive) {
-                              setAtlasLayers((prev) => ({ ...prev, historicalEras: false }));
-                            } else {
-                              setAtlasLayers((prev) => ({ ...prev, historicalEras: true }));
-                              setEraFilter(era.id);
-                            }
-                          }}
-                          title={`${era.title} (${era.yearLabel}) — ${era.summary}`}
-                        >
-                          ⚔️ {era.shortLabel}
-                        </button>
-                      );
-                    })}
-                  </div>
+                return (
+                  <div className="myth-atlas-gallery-body">
+                    <div className="myth-atlas-preview-frame" style={{ position: 'relative' }}>
+                      <img
+                        src={reg ? reg.imagePath : VAELORIA_WORLD_MAP_IMAGE}
+                        alt={reg ? reg.name : 'Mapa Continental de Vaeloria'}
+                        loading="lazy"
+                      />
 
-                  <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span className="vwm-fixed-zoom-pill" title="Zoom fixado em 100% para nitidez máxima">
-                      Zoom 100%
-                    </span>
-
-                    <AtlasLayerAndSearchHud
-                      layers={atlasLayers}
-                      onChangeLayers={setAtlasLayers}
-                      eraFilter={eraFilter}
-                      onChangeEraFilter={setEraFilter}
-                      onSelectGazetteerEntry={handleSelectGazetteerInMythology}
-                    />
-                  </div>
-                </div>
-
-                {(() => {
-                  const reg =
-                    selectedAtlasScope !== 'world'
-                      ? VAELORIA_REGIONAL_MAPS[selectedAtlasScope]
-                      : null;
-                  const secondaryProj = reg ? SCOPE_PROVINCE_PROJECTIONS[reg.id] : undefined;
-                  const provCount = reg
-                    ? CONQUEST_PROVINCES.filter(
-                        (p) =>
-                          PROVINCE_REGIONAL_COORDS[p.id]?.realm === reg.id ||
-                          Boolean(secondaryProj?.[p.id])
-                      ).length
-                    : CONQUEST_PROVINCES.length;
-                  const capitalDistricts =
-                    reg && reg.tier === 'imperial_capital'
-                      ? VAELORIA_CAPITAL_DISTRICTS.filter((d) => d.capitalScope === reg.id)
-                      : [];
-
-                  return (
-                    <div className="myth-atlas-gallery-body">
-                      <div className="myth-atlas-preview-frame" style={{ position: 'relative' }}>
-                        <img
-                          src={reg ? reg.imagePath : VAELORIA_WORLD_MAP_IMAGE}
-                          alt={reg ? reg.name : 'Mapa Continental de Vaeloria'}
-                          loading="lazy"
-                        />
-
-                        <svg
-                          viewBox="0 0 1600 900"
-                          preserveAspectRatio="none"
-                          className="myth-atlas-svg-overlay"
-                        >
-                          <CartographicSvgLayer
-                            scope={selectedAtlasScope}
-                            zoom={atlasZoom}
-                            viewBoxWidth={1600}
-                            viewBoxHeight={900}
-                            layers={atlasLayers}
-                            idPrefix="myth_atlas_svg"
-                            onInspectNote={setInspectedNote}
-                          />
-                        </svg>
-
-                        <CartographicHtmlPinsLayer
+                      <svg
+                        viewBox="0 0 1600 900"
+                        preserveAspectRatio="none"
+                        className="myth-atlas-svg-overlay"
+                      >
+                        <CartographicSvgLayer
                           scope={selectedAtlasScope}
                           zoom={atlasZoom}
+                          viewBoxWidth={1600}
+                          viewBoxHeight={900}
                           layers={atlasLayers}
-                          eraFilter={eraFilter}
-                          showUnifiedSettlements={atlasZoom >= 1.8}
-                          highlightTarget={gazetteerHighlight}
-                          inspectedNoteId={inspectedNote?.id ?? null}
+                          idPrefix="myth_atlas_svg"
                           onInspectNote={setInspectedNote}
                         />
+                      </svg>
 
-                        <CartographicScaleRuler
-                          scope={selectedAtlasScope}
-                          zoom={atlasZoom}
-                        />
+                      <CartographicHtmlPinsLayer
+                        scope={selectedAtlasScope}
+                        zoom={atlasZoom}
+                        layers={atlasLayers}
+                        eraFilter={eraFilter}
+                        showUnifiedSettlements={atlasZoom >= 1.8}
+                        highlightTarget={gazetteerHighlight}
+                        inspectedNoteId={inspectedNote?.id ?? null}
+                        onInspectNote={setInspectedNote}
+                      />
 
-                        <CartographerInspectorCard
-                          note={inspectedNote}
-                          onClose={() => setInspectedNote(null)}
-                          onNavigateScope={(destScope) => {
-                            setSelectedAtlasScope(destScope);
-                          }}
-                        />
-                      </div>
+                      <CartographicScaleRuler scope={selectedAtlasScope} zoom={atlasZoom} />
 
-                      <div className="myth-atlas-info-card">
-                        <span
-                          className="vaeloria-compass-kicker"
-                          style={{ color: reg ? reg.accentColor : '#facc15' }}
-                        >
-                          {reg
-                            ? reg.cardinalTitle
-                            : 'ATLAS CONTINENTAL QUADRI-ESCALA • 21 MAPAS INTERCONECTADOS'}
-                        </span>
-                        <h4
-                          className="font-cinzel"
-                          style={{ margin: '0.25rem 0 0.4rem', fontSize: '1.15rem', color: '#f8fafc' }}
-                        >
-                          {reg
-                            ? `${reg.icon} ${reg.name}`
-                            : '🌍 Continente de Vaeloria, Corredores & Cidadelas Imperiais'}
-                        </h4>
-                        <p
-                          style={{
-                            margin: '0 0 0.75rem',
-                            fontSize: '0.84rem',
-                            color: '#cbd5e1',
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          {reg
-                            ? `${reg.subtitle}. Conectado por ${reg.portals.length} portais bidirecionais e pontuado por ${reg.localLandmarks.length} marcos narrativos exploráveis. Clique em qualquer rio, cordilheira, distrito ou batalha histórica sobre o mapa para abrir o Caderno do Cartógrafo Real.`
-                            : 'Visão macro-estratégica reunindo o Continente, 6 Reinos Cardeais, 6 Fronteiras Profundas, 2 Corredores Transcontinentais (Mar das Tormentas & Corredor das Nuvens) e as 6 Plantas Urbanas das Capitais Imperiais.'}
-                        </p>
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: '0.4rem',
-                            marginBottom: '0.75rem',
-                          }}
-                        >
-                          <span className="conquest-stat-chip">
-                            🏰 Províncias: <strong>{provCount}</strong>
-                          </span>
-                          <span className="conquest-stat-chip">
-                            📍 Marcos Vivos: <strong>{reg ? reg.localLandmarks.length : 120}</strong>
-                          </span>
-                          {capitalDistricts.length > 0 && (
-                            <span className="conquest-stat-chip">
-                              🏛️ Distritos Imperiais: <strong>{capitalDistricts.length}</strong>
-                            </span>
-                          )}
-                          {reg && (
-                            <span className="conquest-stat-chip">
-                              🌩️ Clima:{' '}
-                              <strong>
-                                {REALM_WEATHER_PRESETS[reg.id].icon}{' '}
-                                {REALM_WEATHER_PRESETS[reg.id].name}
-                              </strong>
-                            </span>
-                          )}
-                        </div>
-
-                        {capitalDistricts.length > 0 && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginBottom: '0.7rem' }}>
-                            <strong
-                              style={{
-                                fontSize: '0.73rem',
-                                color: '#fbbf24',
-                                letterSpacing: '0.06em',
-                              }}
-                            >
-                              🏛️ DISTRITOS URBANOS INTERATIVOS (CLIQUE PARA INSPECIONAR):
-                            </strong>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                              {capitalDistricts.map((dist) => (
-                                <button
-                                  key={dist.id}
-                                  type="button"
-                                  onClick={() => setInspectedNote(buildDistrictInspectionNote(dist))}
-                                  style={{
-                                    padding: '4px 9px',
-                                    borderRadius: 6,
-                                    fontSize: '0.73rem',
-                                    background: 'rgba(15, 23, 42, 0.92)',
-                                    border: `1px solid ${reg?.accentColor ?? '#facc15'}66`,
-                                    color: '#f8fafc',
-                                    cursor: 'pointer',
-                                  }}
-                                >
-                                  {dist.icon} {dist.name}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {reg && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                            <strong
-                              style={{
-                                fontSize: '0.74rem',
-                                color: '#94a3b8',
-                                letterSpacing: '0.06em',
-                              }}
-                            >
-                              MARCOS CARTOGRÁFICOS DESTE MAPA:
-                            </strong>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                              {reg.localLandmarks.map((lm) => (
-                                <span
-                                  key={lm.id}
-                                  style={{
-                                    padding: '3px 8px',
-                                    borderRadius: 6,
-                                    fontSize: '0.73rem',
-                                    background: 'rgba(15, 23, 42, 0.85)',
-                                    border: `1px solid ${reg.accentColor}44`,
-                                    color: '#e2e8f0',
-                                  }}
-                                >
-                                  ✦ {lm.name}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      <CartographerInspectorCard
+                        note={inspectedNote}
+                        onClose={() => setInspectedNote(null)}
+                        onNavigateScope={(destScope) => {
+                          setSelectedAtlasScope(destScope);
+                        }}
+                      />
                     </div>
-                  );
-                })()}
-              </div>
+
+                    <div className="myth-atlas-info-card">
+                      <span
+                        style={{
+                          fontSize: '0.74rem',
+                          fontWeight: 600,
+                          color: reg ? reg.accentColor : '#e5c97b',
+                        }}
+                      >
+                        {reg ? reg.cardinalTitle : 'Carta Continental de Vaeloria'}
+                      </span>
+                      <h3
+                        className="font-cinzel"
+                        style={{ margin: '4px 0 8px', fontSize: '1.12rem', color: '#f8fafc' }}
+                      >
+                        {reg ? reg.name : 'Continente de Vaeloria'}
+                      </h3>
+                      <p
+                        style={{
+                          margin: '0 0 12px',
+                          fontSize: '0.82rem',
+                          color: '#cbd5e1',
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {reg
+                          ? `${reg.subtitle}. Clique em qualquer rota, marco ou distrito sobre o mapa para abrir a nota cartográfica.`
+                          : 'Reúne os 6 Reinos Cardeais, 6 Fronteiras Profundas, 2 Corredores Transcontinentais e as 6 Capitais Imperiais.'}
+                      </p>
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: 12,
+                          fontSize: '0.76rem',
+                          color: '#94a3b8',
+                          paddingTop: 10,
+                          borderTop: '1px solid rgba(148, 163, 184, 0.1)',
+                          marginBottom: 12,
+                        }}
+                      >
+                        <span>
+                          Províncias: <strong style={{ color: '#f8fafc' }}>{provCount}</strong>
+                        </span>
+                        <span>
+                          Marcos: <strong style={{ color: '#f8fafc' }}>{reg ? reg.localLandmarks.length : 120}</strong>
+                        </span>
+                        {reg && (
+                          <span>
+                            Clima:{' '}
+                            <strong style={{ color: '#f8fafc' }}>
+                              {REALM_WEATHER_PRESETS[reg.id].name}
+                            </strong>
+                          </span>
+                        )}
+                      </div>
+
+                      {capitalDistricts.length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+                          <span style={{ fontSize: '0.74rem', fontWeight: 600, color: '#cbd5e1' }}>
+                            Distritos urbanos
+                          </span>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                            {capitalDistricts.map((dist) => (
+                              <button
+                                key={dist.id}
+                                type="button"
+                                onClick={() => setInspectedNote(buildDistrictInspectionNote(dist))}
+                                className="aaa-pill-tab"
+                              >
+                                {dist.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {reg && reg.localLandmarks.length > 0 && (
+                        <details style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
+                          <summary style={{ cursor: 'pointer', color: '#cbd5e1', userSelect: 'none' }}>
+                            Marcos cartográficos deste mapa ({reg.localLandmarks.length})
+                          </summary>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                            {reg.localLandmarks.map((lm) => (
+                              <span
+                                key={lm.id}
+                                style={{
+                                  padding: '3px 8px',
+                                  borderRadius: 6,
+                                  fontSize: '0.73rem',
+                                  background: 'rgba(15, 23, 42, 0.6)',
+                                  border: '1px solid rgba(148, 163, 184, 0.14)',
+                                  color: '#cbd5e1',
+                                }}
+                              >
+                                {lm.name}
+                              </span>
+                            ))}
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()
             ) : (
-            <div className="vaeloria-compass-layout">
-              {/* Grade Cardeal Interativa */}
-              <div className="vaeloria-compass-grid">
-                {VAELORIA_COMPASS_REGIONS.map((region) => {
-                  const isActive = region.domain === selectedCompassDomain;
-                  return (
-                    <button
-                      key={region.domain}
-                      type="button"
-                      className={`vaeloria-compass-node area-${region.gridArea} ${
-                        isActive ? 'is-selected' : ''
-                      }`}
-                      style={
-                        {
-                          '--region-color': region.color,
-                        } as React.CSSProperties
-                      }
-                      onClick={() => setSelectedCompassDomain(region.domain)}
-                    >
-                      <span className="compass-node-dir">{region.shortDir}</span>
-                      <span className="compass-node-icon">{region.icon}</span>
-                      <span className="compass-node-name">{region.name}</span>
-                      <span className="compass-node-sub">{region.epithet}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Detalhes do Território Selecionado + Atalhos de Capítulos */}
-              <div
-                className="vaeloria-compass-detail"
-                style={
-                  {
-                    '--region-color': activeCompassRegion.color,
-                  } as React.CSSProperties
-                }
-              >
-                <div className="compass-detail-top">
-                  <span className="compass-detail-dir">
-                    {activeCompassRegion.icon} {activeCompassRegion.direction}
-                  </span>
-                  <h4 className="font-cinzel compass-detail-name">
-                    {activeCompassRegion.name} — {activeCompassRegion.epithet}
-                  </h4>
-                  <div className="compass-detail-citadel">
-                    <strong>Bastião Canônico:</strong> {activeCompassRegion.citadel}
-                  </div>
-                  <div className="compass-detail-citadel">
-                    <strong>Vultos Históricos:</strong> {activeCompassRegion.champions}
-                  </div>
+              <div className="vaeloria-compass-layout">
+                <div className="vaeloria-compass-grid">
+                  {VAELORIA_COMPASS_REGIONS.map((region) => {
+                    const isActive = region.domain === selectedCompassDomain;
+                    return (
+                      <button
+                        key={region.domain}
+                        type="button"
+                        className={`vaeloria-compass-node area-${region.gridArea} ${
+                          isActive ? 'is-selected' : ''
+                        }`}
+                        style={{ '--region-color': region.color } as React.CSSProperties}
+                        onClick={() => setSelectedCompassDomain(region.domain)}
+                      >
+                        <span className="compass-node-dir">{region.shortDir}</span>
+                        <span className="compass-node-name">{region.name}</span>
+                        <span className="compass-node-sub">{region.epithet}</span>
+                      </button>
+                    );
+                  })}
                 </div>
 
-                <p className="compass-detail-summary">{activeCompassRegion.summary}</p>
-
-                <div className="compass-detail-chapters">
-                  <span className="compass-detail-chapters-label">
-                    Capítulos Fundamentais desta Região:
-                  </span>
-                  <div className="compass-detail-pills">
-                    {activeCompassRegion.keyChapterIds.map((chId) => {
-                      const ch = PARALLEL_EPIC_POEM_CANTOS.find((p) => p.id === chId);
-                      if (!ch) return null;
-                      return (
-                        <button
-                          key={ch.id}
-                          type="button"
-                          className="compass-chapter-pill"
-                          onClick={() => {
-                            setIsCompassOpen(false);
-                            handleJumpToParallelCanto(ch);
-                          }}
-                          title={`${ch.title} (${ch.periodLabel})`}
-                        >
-                          Cap. {ch.parallelCode} • {ch.shortTitle}
-                        </button>
-                      );
-                    })}
+                <div
+                  className="vaeloria-compass-detail"
+                  style={{ '--region-color': activeCompassRegion.color } as React.CSSProperties}
+                >
+                  <div className="compass-detail-top">
+                    <span className="compass-detail-dir">{activeCompassRegion.direction}</span>
+                    <h4 className="font-cinzel compass-detail-name">
+                      {activeCompassRegion.name} — {activeCompassRegion.epithet}
+                    </h4>
+                    <div className="compass-detail-citadel">
+                      <strong>Bastião:</strong> {activeCompassRegion.citadel}
+                    </div>
+                    <div className="compass-detail-citadel">
+                      <strong>Vultos:</strong> {activeCompassRegion.champions}
+                    </div>
                   </div>
-                </div>
 
-                <div className="compass-detail-actions">
-                  <button
-                    type="button"
-                    className="btn-fantasy compass-filter-domain-btn"
-                    onClick={() => {
-                      setSelectedDomain(
-                        selectedDomain === activeCompassRegion.domain
-                          ? 'all'
-                          : activeCompassRegion.domain
-                      );
-                    }}
-                  >
-                    {selectedDomain === activeCompassRegion.domain
-                      ? 'Mostrar Todos os Domínios'
-                      : `Filtrar Estrofes de ${activeCompassRegion.name}`}
-                  </button>
+                  <p className="compass-detail-summary">{activeCompassRegion.summary}</p>
+
+                  <div className="compass-detail-chapters">
+                    <span className="compass-detail-chapters-label">Capítulos fundamentais:</span>
+                    <div className="compass-detail-pills">
+                      {activeCompassRegion.keyChapterIds.map((chId) => {
+                        const ch = PARALLEL_EPIC_POEM_CANTOS.find((p) => p.id === chId);
+                        if (!ch) return null;
+                        return (
+                          <button
+                            key={ch.id}
+                            type="button"
+                            className="compass-chapter-pill"
+                            onClick={() => {
+                              setIsCompassOpen(false);
+                              handleJumpToParallelCanto(ch);
+                            }}
+                          >
+                            {ch.parallelCode} · {ch.shortTitle}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
             )}
           </div>
         </section>
-      )}
+      ) : (
+        <>
+          {/* Clean Right-Hand Chronological TOC (No Repetitive Arrow Soup) */}
+          <aside className="poem-lateral-ruler" aria-label="Linha do Tempo dos Sete Cantos">
+            {CANTO_RULER_ITEMS.map((item) => {
+              const parallels = PARALLEL_CANTOS_BY_PARENT_ID[item.id] || [];
+              const isCurrent =
+                selectedCantoId === item.id ||
+                (selectedCantoId === 'all' && activeScrollCantoId === item.id);
 
-      {/* =====================================================================
-          RÉGUA CRONOLÓGICA LATERAL FIXA (I a VII + Capítulos I-A a VII-K)
-      ===================================================================== */}
-      <aside className="poem-lateral-ruler" aria-label="Linha do Tempo dos Sete Cantos">
-        {CANTO_RULER_ITEMS.map((item) => {
-          const parallels = PARALLEL_CANTOS_BY_PARENT_ID[item.id] || [];
-          const isCurrent =
-            selectedCantoId === item.id ||
-            (selectedCantoId === 'all' && activeScrollCantoId === item.id);
-
-          return (
-            <div key={item.id} className="poem-ruler-group">
-              <button
-                type="button"
-                className={`poem-ruler-step ${isCurrent ? 'active' : ''}`}
-                onClick={() => handleJumpToCanto(item.id)}
-                title={`Ir para Canto ${item.roman} — ${item.shortEra} (${item.yearMark})`}
-              >
-                <span className="poem-ruler-roman">{item.roman}</span>
-                <span className="poem-ruler-meta">
-                  <span className="poem-ruler-era">{item.shortEra}</span>
-                  <span className="poem-ruler-year">{item.yearMark}</span>
-                </span>
-              </button>
-
-              {parallels.map((parallel) => {
-                const isParallelCurrent =
-                  selectedCantoId === parallel.id ||
-                  (selectedCantoId === 'all' && activeScrollCantoId === parallel.id);
-                const isBookmarked = readingProgress.bookmarkChapterId === parallel.id;
-                const isRead = readingProgress.readChapterIds.includes(parallel.id);
-                return (
+              return (
+                <div key={item.id} className="poem-ruler-group">
                   <button
-                    key={parallel.id}
                     type="button"
-                    className={`poem-ruler-substep is-expanded ${
-                      isParallelCurrent ? 'active' : ''
-                    } ${isBookmarked ? 'is-bookmarked' : ''} ${isRead ? 'is-read' : ''}`}
-                    onClick={() => handleJumpToParallelCanto(parallel)}
-                    title={`Ir para Capítulo ${parallel.parallelCode}: ${parallel.title}`}
+                    className={`poem-ruler-step ${isCurrent ? 'active' : ''}`}
+                    onClick={() => handleJumpToCanto(item.id)}
                   >
-                    <span className="poem-ruler-substep-arrow">
-                      {isBookmarked ? '🔖' : isRead ? '✓' : '↳'}
-                    </span>
-                    <span className="poem-ruler-substep-text">
-                      {parallel.parallelCode} • {parallel.shortTitle}
+                    <span className="poem-ruler-roman">{item.roman}</span>
+                    <span className="poem-ruler-meta">
+                      <span className="poem-ruler-era">{item.shortEra}</span>
+                      <span className="poem-ruler-year">{item.yearMark}</span>
                     </span>
                   </button>
-                );
-              })}
-            </div>
-          );
-        })}
-      </aside>
 
-      {/* =====================================================================
-          COLUNA ÚNICA DE LIVRO CLÁSSICO — CRÔNICA PRINCIPAL CONTÍNUA
-      ===================================================================== */}
-      <main className="poem-single-column-container">
-        {filteredCantos.length === 0 ? (
-          <div className="poem-empty-state">
-            Nenhuma estrofe encontrada para o filtro selecionado. Limpe a busca para contemplar o
-            poema completo.
-          </div>
-        ) : (
-          filteredCantos.map((canto) => (
-            <section key={canto.id} id={`poem-canto-${canto.id}`} className="poem-canto-section">
-              {/* FRONTISPÍCIO DA ERA / CANTO PRINCIPAL */}
-              <div
-                className="poem-canto-banner"
-                style={{
-                  borderColor: `${canto.accentColor}44`,
-                  backgroundImage: `linear-gradient(180deg, rgba(8, 10, 19, 0.9) 0%, rgba(7, 9, 16, 0.97) 100%), url('${canto.bannerImage}')`,
-                }}
-              >
-                <div className="poem-canto-meta-top">
-                  <span
-                    className="poem-canto-kicker"
-                    style={{ color: canto.accentColor }}
-                  >
-                    {canto.cantoNumber} • {canto.eraNumber} • {canto.periodLabel}
-                  </span>
+                  {parallels.map((parallel) => {
+                    const isParallelCurrent =
+                      selectedCantoId === parallel.id ||
+                      (selectedCantoId === 'all' && activeScrollCantoId === parallel.id);
+                    const isBookmarked = readingProgress.bookmarkChapterId === parallel.id;
+                    const isRead = readingProgress.readChapterIds.includes(parallel.id);
+                    return (
+                      <button
+                        key={parallel.id}
+                        type="button"
+                        className={`poem-ruler-substep is-expanded ${
+                          isParallelCurrent ? 'active' : ''
+                        } ${isBookmarked ? 'is-bookmarked' : ''} ${isRead ? 'is-read' : ''}`}
+                        onClick={() => handleJumpToParallelCanto(parallel)}
+                        title={`${parallel.parallelCode}: ${parallel.title}`}
+                      >
+                        <span className="poem-ruler-substep-text">
+                          {isRead ? '✓ ' : ''}
+                          {parallel.parallelCode} · {parallel.shortTitle}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
+              );
+            })}
+          </aside>
 
-                <h2 className="font-cinzel gold-gradient-text poem-canto-title">
-                  {canto.title}
-                </h2>
-                <p className="poem-canto-subtitle">{canto.subtitle}</p>
+          {/* Main Book Column */}
+          <main className="poem-single-column-container">
+            {filteredCantos.length === 0 ? (
+              <div className="poem-empty-state">
+                Nenhuma estrofe encontrada para o filtro selecionado.
               </div>
+            ) : (
+              filteredCantos.map((canto) => (
+                <section key={canto.id} id={`poem-canto-${canto.id}`} className="poem-canto-section">
+                  <div
+                    className="poem-canto-banner"
+                    style={{
+                      borderColor: `${canto.accentColor}44`,
+                      backgroundImage: `linear-gradient(180deg, rgba(8, 10, 19, 0.9) 0%, rgba(7, 9, 16, 0.97) 100%), url('${canto.bannerImage}')`,
+                    }}
+                  >
+                    <div className="poem-canto-meta-top">
+                      <span className="poem-canto-kicker" style={{ color: canto.accentColor }}>
+                        {canto.cantoNumber} · {canto.eraNumber} · {canto.periodLabel}
+                      </span>
+                    </div>
 
-              {/* CAPÍTULOS CONTÍNUOS DA CRÔNICA PRINCIPAL DESTA ERA */}
-              {canto.parallelCantos.map((chapter) =>
-                renderParallelCantoUnifiedCard(chapter, chapter.nodes)
-              )}
+                    <h2 className="font-cinzel gold-gradient-text poem-canto-title">
+                      {canto.title}
+                    </h2>
+                    <p className="poem-canto-subtitle">{canto.subtitle}</p>
+                  </div>
 
-              {/* COLOFÃO EDITORIAL DE FECHO DA ERA */}
-              <footer className="poem-canto-colophon">
-                <span>
-                  — ❖ FIM DO {canto.cantoNumber} ({canto.eraNumber}) ❖ —
-                </span>
-              </footer>
-            </section>
-          ))
-        )}
-      </main>
+                  {canto.parallelCantos.map((chapter) =>
+                    renderParallelCantoUnifiedCard(chapter, chapter.nodes)
+                  )}
+
+                  <footer className="poem-canto-colophon">
+                    <span>
+                      — Fim do {canto.cantoNumber} ({canto.eraNumber}) —
+                    </span>
+                  </footer>
+                </section>
+              ))
+            )}
+          </main>
+        </>
+      )}
     </div>
   );
 };

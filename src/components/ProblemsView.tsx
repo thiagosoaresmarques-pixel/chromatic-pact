@@ -106,33 +106,41 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
 
   return (
     <div className="aaa-page-shell">
-      {/* Single Compact Toolbar: 5-Grau Tabs + Filter Pills + Daily Toggle + Continue */}
+      {/* Single-Row Clean Toolbar */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 8,
+          gap: 10,
           flexWrap: 'wrap',
-          padding: '8px 12px',
-          background: '#0b0f17',
-          border: '1px solid rgba(148, 163, 184, 0.18)',
-          borderRadius: 8,
+          padding: '10px 14px',
+          background: 'rgba(15, 23, 42, 0.6)',
+          border: '1px solid rgba(148, 163, 184, 0.12)',
+          borderRadius: 10,
         }}
       >
-        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
           <button
             type="button"
             className={`nav-tab-btn ${selectedTier === 'all' ? 'active' : ''}`}
             onClick={() => setSelectedTier('all')}
-            style={{ padding: '4px 9px', fontSize: '0.72rem' }}
+            style={{
+              padding: '5px 10px',
+              fontSize: '0.76rem',
+              textTransform: 'none',
+              letterSpacing: '0.01em',
+            }}
           >
             Todos ({solvedIds.length}/{TACTICAL_PROBLEMS.length})
           </button>
 
           {tierProgress.map((tp) => {
             const isSelected = selectedTier === tp.tier;
-            const isChampTier = tp.tier === 'campeoes_torneio';
+            const cleanTierLabel = tp.meta.label
+              .split('•')[0]
+              .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+              .trim();
             return (
               <button
                 key={tp.tier}
@@ -140,52 +148,36 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                 className={`nav-tab-btn ${isSelected ? 'active' : ''}`}
                 onClick={() => setSelectedTier(tp.tier)}
                 style={{
-                  padding: '4px 9px',
-                  fontSize: '0.72rem',
-                  opacity: tp.unlocked ? 1 : 0.6,
+                  padding: '5px 10px',
+                  fontSize: '0.76rem',
+                  textTransform: 'none',
+                  letterSpacing: '0.01em',
+                  opacity: tp.unlocked ? 1 : 0.55,
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 5,
-                  borderColor:
-                    isChampTier && !isSelected
-                      ? 'rgba(250, 204, 21, 0.5)'
-                      : undefined,
-                  color:
-                    isChampTier && !isSelected
-                      ? '#fde047'
-                      : undefined,
                 }}
               >
-                <span>{tp.isCompleted ? '✓' : tp.unlocked ? '·' : '—'}</span>
-                <span>{tp.meta.label.split('•')[0].trim()}</span>
-                <span style={{ fontSize: '0.65rem', color: '#94a3b8' }}>
-                  ({tp.solvedCount}/{tp.total})
+                <span>{cleanTierLabel}</span>
+                <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+                  {tp.solvedCount}/{tp.total}
                 </span>
               </button>
             );
           })}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-          {(
-            [
-              { id: 'all', label: 'Todos' },
-              { id: 'pending', label: `Pendentes` },
-              { id: 'solved', label: `Resolvidos (${solvedIds.length})` },
-            ] as { id: HistoryFilterType; label: string }[]
-          ).map((hf) => {
-            const active = historyFilter === hf.id;
-            return (
-              <button
-                key={hf.id}
-                type="button"
-                className={`aaa-pill-tab ${active ? 'is-active' : ''}`}
-                onClick={() => setHistoryFilter(hf.id)}
-              >
-                {hf.label}
-              </button>
-            );
-          })}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <select
+            aria-label="Filtrar situação"
+            className="myth-select-compact"
+            value={historyFilter}
+            onChange={(e) => setHistoryFilter(e.target.value as HistoryFilterType)}
+          >
+            <option value="all">Todos os estados</option>
+            <option value="pending">Pendentes</option>
+            <option value="solved">Resolvidos ({solvedIds.length})</option>
+          </select>
 
           <button
             type="button"
@@ -199,8 +191,8 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
           {nextTrailProblem && (
             <button
               type="button"
-              className="aaa-btn aaa-btn-primary"
-              style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+              className="btn-fantasy btn-fantasy-primary"
+              style={{ padding: '5px 12px', fontSize: '0.76rem', textTransform: 'none' }}
               onClick={() => onSelectProblem(nextTrailProblem)}
             >
               Continuar #{String(nextTrailProblem.number).padStart(2, '0')}
@@ -379,12 +371,12 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
         </div>
       )}
 
-      {/* Clean Clickable Problems Grid (No redundant buttons or micro-text) */}
+      {/* Clean Clickable Problems Grid (Zero Title Truncation, Zero Emoji Clutter) */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-          gap: 8,
+          gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))',
+          gap: 10,
         }}
       >
         {filteredProblems.map((prob) => {
@@ -400,18 +392,18 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                 if (isTierUnlocked) onSelectProblem(prob);
               }}
               style={{
-                background: '#0b0f17',
+                background: '#0b0f19',
                 border: !isTierUnlocked
-                  ? '1px dashed rgba(148, 163, 184, 0.14)'
+                  ? '1px dashed rgba(148, 163, 184, 0.12)'
                   : isSolved
-                    ? '1px solid rgba(212, 175, 55, 0.42)'
-                    : '1px solid rgba(148, 163, 184, 0.18)',
+                    ? '1px solid rgba(212, 175, 55, 0.38)'
+                    : '1px solid rgba(148, 163, 184, 0.12)',
                 borderRadius: 8,
-                padding: '10px 12px',
+                padding: '11px 14px',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 10,
-                opacity: isTierUnlocked ? 1 : 0.55,
+                gap: 12,
+                opacity: isTierUnlocked ? 1 : 0.5,
                 cursor: isTierUnlocked ? 'pointer' : 'not-allowed',
                 transition: 'border-color 0.15s ease, background 0.15s ease',
               }}
@@ -421,11 +413,11 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                   src={avatarCard.imagePath}
                   alt={prob.title}
                   style={{
-                    width: 42,
-                    height: 42,
+                    width: 40,
+                    height: 40,
                     borderRadius: 6,
                     objectFit: 'cover',
-                    border: '1px solid rgba(212, 175, 55, 0.28)',
+                    border: '1px solid rgba(148, 163, 184, 0.2)',
                     flexShrink: 0,
                     filter: isTierUnlocked ? 'none' : 'grayscale(0.8)',
                   }}
@@ -439,29 +431,40 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: 6,
-                    marginBottom: 2,
+                    marginBottom: 3,
                   }}
                 >
                   <span
                     style={{
-                      fontSize: '0.68rem',
-                      fontWeight: 800,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      fontSize: '0.72rem',
                       color: '#94a3b8',
                     }}
                   >
-                    #{String(prob.number).padStart(2, '0')} • {domMeta.shortName}
+                    <i
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: '50%',
+                        background: domMeta.color,
+                        display: 'inline-block',
+                      }}
+                    />
+                    <span>
+                      #{String(prob.number).padStart(2, '0')} · {domMeta.shortName}
+                    </span>
                   </span>
 
                   {!isTierUnlocked ? (
-                    <span style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700 }}>
-                      🔒
-                    </span>
+                    <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Bloqueado</span>
                   ) : isSolved ? (
-                    <span style={{ fontSize: '0.7rem', color: '#e6c875', fontWeight: 800 }}>
-                      ✓
+                    <span style={{ fontSize: '0.72rem', color: '#e6c875', fontWeight: 600 }}>
+                      Resolvido
                     </span>
                   ) : (
-                    <span style={{ fontSize: '0.68rem', color: '#e6c875', fontWeight: 700 }}>
+                    <span style={{ fontSize: '0.72rem', color: '#e6c875' }}>
                       +{prob.goldReward} Ouro
                     </span>
                   )}
@@ -470,33 +473,13 @@ export const ProblemsView: React.FC<ProblemsViewProps> = ({ onSelectProblem, onR
                 <div
                   style={{
                     fontSize: '0.84rem',
-                    fontFamily: 'Cinzel, serif',
-                    fontWeight: 800,
+                    fontWeight: 600,
                     color: '#f1f5f9',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
+                    lineHeight: 1.32,
                   }}
-                  title={prob.title}
                 >
                   {prob.title}
                 </div>
-                {prob.difficulty === 'campeoes_torneio' && (
-                  <div
-                    style={{
-                      fontSize: '0.66rem',
-                      color: '#fde68a',
-                      fontWeight: 700,
-                      marginTop: 2,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                    title={prob.mechanicTag}
-                  >
-                    {prob.mechanicTag}
-                  </div>
-                )}
               </div>
             </div>
           );

@@ -4179,50 +4179,30 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           </div>
         </div>
       )}
-      {/* CINEMATIC FLOATING MULLIGAN HUD (7 Cards in a Panoramic Arc Over the Battlefield!) */}
+      {/* CINEMATIC FLOATING MULLIGAN HUD (7 Cards in a Panoramic Arc Over the Battlefield) */}
       {isMulliganOpen && gameState.turn === 1 && gameState.phase !== 'gameover' && (
         <div className="mulligan-modal-backdrop">
           <div className="mulligan-modal-panel">
-            {/* Top Instant Action & Exit Bar (Always visible at top of Smartphone & Desktop without scrolling) */}
-            <div className="mulligan-top-bar">
-              <button
-                type="button"
-                className="mulligan-exit-top-btn"
-                onClick={handleExitBattle}
+            <div className="mulligan-header" style={{ marginBottom: '0.6rem' }}>
+              <div
+                className="mulligan-title"
+                style={{ textTransform: 'none', letterSpacing: '0.02em', fontSize: '1.35rem' }}
               >
-                ← Sair da Batalha
-              </button>
-              {isTimedCompetitiveMatch && (
-                <span
-                  className={`mulligan-stat-pill ${
-                    mulliganTimeLeft <= 10 ? 'is-timer-urgent' : ''
-                  }`}
-                  title="Tempo restante para confirmar sua mão inicial"
-                >
-                  ⏳ {Math.max(0, mulliganTimeLeft)}s
-                </span>
-              )}
-              <button
-                type="button"
-                className="mulligan-quick-start-top-btn"
-                onClick={handleConfirmMulligan}
-              >
-                ⚔️ {mulliganSwapIndices.length === 0 ? 'Iniciar Batalha' : `Trocar (${mulliganSwapIndices.length}) & Jogar`}
-              </button>
-            </div>
-
-            <div className="mulligan-header">
-              <div className="mulligan-herald-crest">❖ PREPARAÇÃO DE BATALHA • ESCALA GUERRA TOTAL ❖</div>
-              <div className="mulligan-title">ESCOLHA SUA MÃO INICIAL</div>
-              <div className="mulligan-subtitle hide-on-mobile">
-                Turno 1: <span className="mulligan-stat-pill">⚡ 3 Essência</span>{' '}
-                <span className="mulligan-stat-pill">❤️ 40 Vida</span>{' '}
-                <span className="mulligan-stat-pill">🃏 7 Cartas</span> — Clique nas cartas que deseja{' '}
-                <strong>substituir no Grimório</strong> antes do combate começar.
+                Escolha sua mão inicial
               </div>
-              <div className="mulligan-subtitle show-on-mobile-inline">
-                Toque nas cartas que deseja trocar • <span className="mulligan-stat-pill">⚡ 3</span>{' '}
-                <span className="mulligan-stat-pill">❤️ 40</span>
+              <div className="mulligan-subtitle">
+                Selecione as cartas que deseja substituir antes do início do duelo.
+                {isTimedCompetitiveMatch && (
+                  <span
+                    className={`mulligan-stat-pill ${
+                      mulliganTimeLeft <= 10 ? 'is-timer-urgent' : ''
+                    }`}
+                    style={{ marginLeft: '0.5rem' }}
+                    title="Tempo restante para confirmar sua mão inicial"
+                  >
+                    {Math.max(0, mulliganTimeLeft)}s
+                  </span>
+                )}
               </div>
             </div>
 
@@ -4232,8 +4212,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 const total = gameState.player.hand.length;
                 const mid = (total - 1) / 2;
                 const offset = idx - mid;
-                const arcAngle = offset * 1.6;
-                const arcY = Math.abs(offset) * Math.abs(offset) * 2.2;
+                const arcAngle = offset * 1.4;
+                const arcY = Math.abs(offset) * Math.abs(offset) * 1.8;
 
                 return (
                   <div
@@ -4255,16 +4235,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       />
                       {isMarkedForSwap && (
                         <div className="mulligan-swap-slash-overlay">
-                          <span className="swap-slash-icon">🔄</span>
-                          <span className="swap-slash-text">SUBSTITUIR</span>
+                          <span className="swap-slash-text" style={{ textTransform: 'none' }}>
+                            Substituir
+                          </span>
                         </div>
                       )}
                     </div>
                     <button
                       type="button"
                       className={`mulligan-swap-badge ${isMarkedForSwap ? 'swap' : 'keep'}`}
+                      style={{ textTransform: 'none', letterSpacing: '0.02em' }}
                     >
-                      {isMarkedForSwap ? '🔄 TROCAR' : '✓ MANTER'}
+                      {isMarkedForSwap ? 'Trocar' : 'Manter'}
                     </button>
                   </div>
                 );
@@ -4274,35 +4256,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             <div className="mulligan-actions-row">
               <button
                 type="button"
-                className="mulligan-exit-btn hide-on-mobile"
+                className="mulligan-exit-btn"
                 onClick={handleExitBattle}
+                style={{ textTransform: 'none' }}
               >
-                ← Sair
+                Sair
               </button>
-              {isTimedCompetitiveMatch && (
-                <span
-                  className={`mulligan-stat-pill mulligan-mobile-timer show-on-mobile-inline ${
-                    mulliganTimeLeft <= 10 ? 'is-timer-urgent' : ''
-                  }`}
-                >
-                  ⏳ {Math.max(0, mulliganTimeLeft)}s
-                </span>
-              )}
               <button
                 type="button"
                 className="mulligan-confirm-btn"
                 onClick={handleConfirmMulligan}
+                style={{ textTransform: 'none', letterSpacing: '0.02em' }}
               >
-                <span className="mulligan-btn-gem">⚔️</span>
-                <span className="hide-on-mobile">
+                <span>
                   {mulliganSwapIndices.length === 0
-                    ? 'Confirmar Mão Inicial & Iniciar Batalha'
-                    : `Trocar ${mulliganSwapIndices.length} Carta(s) & Iniciar Batalha`}
-                </span>
-                <span className="show-on-mobile-inline">
-                  {mulliganSwapIndices.length === 0
-                    ? 'Confirmar Mão & Iniciar'
-                    : `Trocar (${mulliganSwapIndices.length}) & Iniciar`}
+                    ? 'Confirmar mão inicial'
+                    : `Trocar ${mulliganSwapIndices.length} e iniciar`}
                 </span>
               </button>
             </div>
@@ -5399,16 +5368,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       <span
                         className="hud-pill-env-chip"
                         style={{
-                          borderColor: 'rgba(212, 175, 55, 0.45)',
-                          color: '#fde68a',
-                          fontSize: '0.62rem',
-                          fontWeight: 700,
+                          borderColor: 'rgba(148, 163, 184, 0.25)',
+                          color: '#cbd5e1',
+                          fontSize: '0.64rem',
+                          fontWeight: 600,
                           whiteSpace: 'nowrap',
                         }}
                         title={`#${northSov.rank} na classificação · ${northSov.eloRating} ELO · ${northSov.subtitle}`}
                       >
                         #{northSov.rank} · {northSov.eloRating} ELO
-                        <span className="hide-on-mobile"> · {northSov.subtitle}</span>
                       </span>
                     );
                   })() : !onlineMatch && !tacticalProblem && (() => {
@@ -5428,20 +5396,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         className="hud-pill-env-chip"
                         style={{
                           borderColor: rankedDuelContext
-                            ? 'rgba(250, 204, 21, 0.9)'
-                            : activeAiTier >= 5
-                              ? 'rgba(250, 204, 21, 0.75)'
-                              : activeAiTier >= 4
-                                ? 'rgba(192, 132, 252, 0.65)'
-                                : 'rgba(148, 163, 184, 0.45)',
-                          color:
-                            rankedDuelContext || activeAiTier >= 5
-                              ? '#fde047'
-                              : activeAiTier >= 4
-                                ? '#e9d5ff'
-                                : '#cbd5e1',
-                          fontSize: '0.62rem',
-                          fontWeight: 800,
+                            ? 'rgba(212, 175, 55, 0.45)'
+                            : 'rgba(148, 163, 184, 0.25)',
+                          color: rankedDuelContext ? '#fde68a' : '#cbd5e1',
+                          fontSize: '0.64rem',
+                          fontWeight: 600,
                           whiteSpace: 'nowrap',
                         }}
                         title={`${tSpec.title}${
@@ -5454,21 +5413,17 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       >
                         {rankedDuelContext ? 'Ranqueado · ' : ''}
                         {calibratedElo ? `${calibratedElo} ELO` : tSpec.title}
-                        {champStanding && (
-                          <span className="hide-on-mobile"> · {champStanding.name}</span>
-                        )}
                       </span>
                     );
                   })()}
-                  <span className="hud-pill-stat hp">❤️ {gameState.ai.hp}</span>
-                  <span className="hud-pill-stat mana">
-                    ⚡ {gameState.ai.currentEssence}/{gameState.ai.maxEssence}
+                  <span className="hud-pill-stat hp" title="Pontos de Vida do oponente">
+                    {gameState.ai.hp} PV
                   </span>
-                  <span className="hud-pill-stat hand">
-                    🃏 {gameState.ai.hand.length}
+                  <span className="hud-pill-stat mana" title="Essência disponível do oponente">
+                    {gameState.ai.currentEssence}/{gameState.ai.maxEssence} Ess.
                   </span>
-                  <span className="hud-pill-stat deck">
-                    📚 {gameState.ai.deck.length} • 🪦 {gameState.ai.crypt.length}
+                  <span className="hud-pill-stat hand" title={`Mão: ${gameState.ai.hand.length} · Grimório: ${gameState.ai.deck.length} · Cripta: ${gameState.ai.crypt.length}`}>
+                    Mão {gameState.ai.hand.length}
                   </span>
 
                   {gameState.conquestModifiers?.equippedRelic && (
@@ -5476,7 +5431,6 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="hud-pill-env-chip relic-chip"
                       title={`Relíquia da Coroa — ${gameState.conquestModifiers.equippedRelic.name}: ${gameState.conquestModifiers.equippedRelic.shortBonus}`}
                     >
-                      {gameState.conquestModifiers.equippedRelic.icon}{' '}
                       <span className="hide-on-mobile">
                         {gameState.conquestModifiers.equippedRelic.name}
                       </span>
@@ -5488,7 +5442,6 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="hud-pill-env-chip rift-chip"
                       title={gameState.conquestModifiers.bannerSummary ?? 'Mutador de Fenda Ativo'}
                     >
-                      {gameState.conquestModifiers.riftIcon ?? '🌀'}{' '}
                       <span className="hide-on-mobile">
                         {gameState.conquestModifiers.riftName ?? 'Fenda'}
                       </span>
@@ -5500,7 +5453,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="hud-pill-env-chip geo-loc hide-on-mobile"
                       title={gameState.conquestModifiers.bannerSummary}
                     >
-                      📍 {gameState.conquestModifiers.landmarkLabel}
+                      {gameState.conquestModifiers.landmarkLabel}
                     </span>
                   )}
 
@@ -5509,7 +5462,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="hud-pill-env-chip"
                       title={`${gameState.weather.name}: ${gameState.weather.shortDesc}`}
                     >
-                      {gameState.weather.icon} {gameState.weather.turnsRemaining}t
+                      {gameState.weather.name} ({gameState.weather.turnsRemaining}t)
                     </span>
                   )}
                   {gameState.domainExpansion && (
@@ -5522,15 +5475,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       }
                     >
                       {gameState.domainExpansion.clashRival
-                        ? `⛩️⚔️ Disputa (${gameState.domainExpansion.turnsRemaining}r)`
-                        : `⛩️ ${gameState.domainExpansion.turnsRemaining}r`}
+                        ? `Disputa (${gameState.domainExpansion.turnsRemaining}r)`
+                        : `Domínio (${gameState.domainExpansion.turnsRemaining}r)`}
                     </span>
                   )}
 
                   <button
                     type="button"
                     className={`hud-pill-expand-btn ${isP2DrawerPinned ? 'active' : ''}`}
-                    style={{ width: 'auto', padding: '0 6px', gap: '3px', fontWeight: 800 }}
+                    style={{ width: 'auto', padding: '0 7px', gap: '3px', fontWeight: 600, textTransform: 'none' }}
                     onClick={(e) => {
                       e.stopPropagation();
                       setIsP2DrawerPinned((prev) => {
@@ -5548,7 +5501,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       });
                     }}
                   >
-                    {isP2DrawerPinned ? '▴ Ocultar' : '▾ Info'}
+                    {isP2DrawerPinned ? 'Ocultar' : 'Detalhes'}
                   </button>
 
                   {isAiSovereignTarget && (
@@ -7168,12 +7121,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       </div>
 
                       <span className="hud-pill-name player">{gameState.player.name}</span>
-                      <span className="hud-pill-stat hp">❤️ {gameState.player.hp}</span>
-                      <span className="hud-pill-stat mana">
-                        ⚡ {gameState.player.currentEssence}/{gameState.player.maxEssence}
+                      <span className="hud-pill-stat hp" title="Seus Pontos de Vida">
+                        {gameState.player.hp} PV
                       </span>
-                      <span className="hud-pill-stat deck">
-                        📚 {gameState.player.deck.length} • 🪦 {gameState.player.crypt.length}
+                      <span className="hud-pill-stat mana" title="Essência disponível">
+                        {gameState.player.currentEssence}/{gameState.player.maxEssence} Ess.
                       </span>
 
                       {!isSpectatorMode && (
@@ -7183,27 +7135,27 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           className="hud-ritual-chip"
                           disabled={!canPwr}
                           onClick={handleSovereignPower}
-                          title="Poder do Soberano (2⚡)"
+                          title="Poder do Soberano (2 Essência)"
                         >
-                          🔥 2⚡
+                          Poder (2)
                         </button>
                         <button
                           type="button"
                           className="hud-ritual-chip"
                           disabled={!canBlood}
                           onClick={handleBloodPact}
-                          title="Pacto de Sangue (-2❤️ por +1⚡)"
+                          title="Pacto de Sangue (-2 PV por +1 Essência)"
                         >
-                          🩸 +1⚡
+                          Pacto (+1)
                         </button>
                         <button
                           type="button"
                           className={`hud-ritual-chip ${domExpCheck.allowed ? 'ready' : ''}`}
                           disabled={!domExpCheck.allowed}
                           onClick={handleInvokeDomainExpansion}
-                          title="Expansão de Domínio (6 Afinidade + 3⚡)"
+                          title="Expansão de Domínio (6 Afinidade + 3 Essência)"
                         >
-                          ⛩️ {domExpCheck.affinity}/6
+                          Domínio {domExpCheck.affinity}/6
                         </button>
                         {gameState.domainExpansion?.owner === 'ai' && isPlayerTurn && (
                           <>
@@ -7212,18 +7164,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               className="hud-ritual-chip"
                               disabled={!simpleDomCheck}
                               onClick={handleActivateSimpleDomain}
-                              title="Domínio Simples: Anula Acerto Garantido inimigo por 2 turnos (2⚡)"
+                              title="Domínio Simples: Anula Acerto Garantido inimigo por 2 turnos (2 Essência)"
                             >
-                              💠 2⚡
+                              Simples (2)
                             </button>
                             <button
                               type="button"
                               className="hud-ritual-chip"
                               disabled={!canSacBreak}
                               onClick={handleOpenSacrificeBreakModal}
-                              title="Romper Domínio Inimigo (-10❤️)"
+                              title="Romper Domínio Inimigo (-10 PV)"
                             >
-                              💥 10❤️
+                              Romper (10 PV)
                             </button>
                           </>
                         )}
@@ -7233,7 +7185,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       <button
                         type="button"
                         className={`hud-pill-expand-btn ${isP1DrawerPinned ? 'active' : ''}`}
-                        style={{ width: 'auto', padding: '0 6px', gap: '3px', fontWeight: 800 }}
+                        style={{ width: 'auto', padding: '0 7px', gap: '3px', fontWeight: 600, textTransform: 'none' }}
+                        title={`Terrenos (${gameState.player.channeledCards.length}) · Grimório (${gameState.player.deck.length}) · Cripta (${gameState.player.crypt.length})`}
                         onClick={() =>
                           setIsP1DrawerPinned((prev) => {
                             const next = !prev;
@@ -7250,7 +7203,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           })
                         }
                       >
-                        {isP1DrawerPinned ? '▾ Ocultar' : '▴ Terrenos'}
+                        {isP1DrawerPinned ? 'Ocultar' : 'Terrenos'}
                       </button>
                     </div>
 
@@ -7262,6 +7215,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className={`hud-hand-trigger-btn ${
                         isHandPinnedOpen || isHandHovered ? 'active' : ''
                       }`}
+                      style={{ textTransform: 'none', letterSpacing: '0.02em' }}
                       onMouseEnter={() => {
                         if (
                           isDesktopHoverDevice() &&
@@ -7297,21 +7251,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         }
                       }}
                     >
-                      🃏 MÃO ({gameState.player.hand.length}){' '}
-                      {isHandPinnedOpen || isHandHovered ? (
-                        <>
-                          ▾<span className="hide-on-mobile"> Ocultar</span>
-                        </>
-                      ) : (
-                        <>
-                          ▴<span className="hide-on-mobile"> Mostrar</span>
-                        </>
-                      )}
+                      Mão ({gameState.player.hand.length}){' '}
+                      {isHandPinnedOpen || isHandHovered ? '▾' : '▴'}
                     </button>
 
                     <div className="hud-strip-divider" />
 
-                    {/* Right Segment: Phase Action & Single Gear Menu (Hover or click ⚙️ opens Menu & Guide!) */}
+                    {/* Right Segment: Phase Action & Single Gear Menu */}
                     <div
                       className="hud-phase-segment"
                       onMouseEnter={() => setIsHandHovered(false)}
@@ -7342,6 +7288,87 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           liveClockSec = Math.max(1, 60 - (Math.floor(specNowMs / 1000) % 45));
                         }
 
+                        const renderSecondarySpecPopover = () => (
+                          <details style={{ position: 'relative' }}>
+                            <summary
+                              className="arena-spec-btn"
+                              style={{
+                                listStyle: 'none',
+                                cursor: 'pointer',
+                                userSelect: 'none',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.25rem',
+                              }}
+                            >
+                              Mais ▾
+                            </summary>
+                            <div
+                              style={{
+                                position: 'absolute',
+                                bottom: 'calc(100% + 8px)',
+                                right: 0,
+                                zIndex: 240,
+                                minWidth: '185px',
+                                padding: '0.35rem',
+                                borderRadius: '8px',
+                                background: '#0b0f19',
+                                border: '1px solid rgba(148, 163, 184, 0.22)',
+                                boxShadow: '0 14px 32px rgba(0, 0, 0, 0.88)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.22rem',
+                              }}
+                            >
+                              <button
+                                type="button"
+                                className={`arena-spec-btn ${specFlipped ? 'is-active' : ''}`}
+                                style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                                onClick={() => {
+                                  setSelectedHandIndex(null);
+                                  setFocusedBoardUnitId(null);
+                                  setSpecFlipped((f) => !f);
+                                }}
+                              >
+                                Inverter mesa
+                              </button>
+                              <button
+                                type="button"
+                                className={`arena-spec-btn ${
+                                  specShareFeedback === 'copied' ? 'is-active' : ''
+                                }`}
+                                style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                                data-shared-url={lastSharedSpecUrl || undefined}
+                                onClick={() => void handleShareSpectatorLink()}
+                              >
+                                {specShareFeedback === 'copied'
+                                  ? 'Link copiado'
+                                  : specShareFeedback === 'sharing'
+                                  ? 'Gerando link...'
+                                  : 'Compartilhar partida'}
+                              </button>
+                              {canRecordVideo && (
+                                <button
+                                  type="button"
+                                  className={`arena-spec-btn ${isRecordingVideo ? 'is-active' : ''}`}
+                                  style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                                  onClick={() => void handleToggleVideoRecording()}
+                                >
+                                  {isRecordingVideo ? 'Parar gravação' : 'Gravar vídeo'}
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                className={`arena-spec-btn ${showLogSidebar ? 'is-active' : ''}`}
+                                style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                                onClick={() => setShowLogSidebar((p) => !p)}
+                              >
+                                {showLogSidebar ? 'Ocultar histórico' : 'Histórico de lances'}
+                              </button>
+                            </div>
+                          </details>
+                        );
+
                         if (isHomeLiveShowcase) {
                           return (
                             <div className="arena-spec-controls">
@@ -7350,7 +7377,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 title={`Turno ${gameState.turn} · Relógio de turno`}
                               >
                                 <span>T{gameState.turn}</span>
-                                <span className="hud-timer-sep">•</span>
+                                <span className="hud-timer-sep">·</span>
                                 <span className="hud-timer-val">{liveClockSec}s</span>
                               </span>
 
@@ -7364,65 +7391,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                   }}
                                   title="Sintonizar outra partida ao vivo em andamento"
                                 >
-                                  Outra Mesa
+                                  Outra mesa
                                 </button>
                               )}
-
-                              <button
-                                type="button"
-                                className={`arena-spec-btn ${specFlipped ? 'is-active' : ''}`}
-                                onClick={() => {
-                                  setSelectedHandIndex(null);
-                                  setFocusedBoardUnitId(null);
-                                  setSpecFlipped((f) => !f);
-                                }}
-                                title="Inverter perspectiva da mesa (ver mão do outro Soberano)"
-                              >
-                                ⇅<span className="hide-on-mobile"> Mesa</span>
-                              </button>
 
                               <button
                                 type="button"
                                 className={`arena-spec-btn ${specCinemaMode ? 'is-active' : ''}`}
                                 onClick={() => toggleSpecCinemaMode()}
-                                title="Modo Cinema: tela limpa 16:9 ou 9:16 (Reels/Shorts) ideal para gravar pelo Windows (Atalho: F)"
+                                title="Modo Cinema: tela limpa 16:9 ou 9:16 ideal para gravar (Atalho: F)"
                               >
                                 Cinema
                               </button>
 
-                              <button
-                                type="button"
-                                className={`arena-spec-btn ${
-                                  specShareFeedback === 'copied' ? 'is-active' : ''
-                                }`}
-                                data-shared-url={lastSharedSpecUrl || undefined}
-                                onClick={() => void handleShareSpectatorLink()}
-                                title="Copiar link direto para assistir esta partida"
-                              >
-                                {specShareFeedback === 'copied'
-                                  ? '✓ Link Copiado'
-                                  : 'Compartilhar'}
-                              </button>
-
-                              {canRecordVideo && (
-                                <button
-                                  type="button"
-                                  className={`arena-spec-btn ${isRecordingVideo ? 'is-active' : ''}`}
-                                  onClick={() => void handleToggleVideoRecording()}
-                                  title="Gravar vídeo em alta definição (28 Mbps) desta partida"
-                                >
-                                  Gravar
-                                </button>
-                              )}
-
-                              <button
-                                type="button"
-                                className={`arena-spec-btn ${showLogSidebar ? 'is-active' : ''}`}
-                                onClick={() => setShowLogSidebar((p) => !p)}
-                                title="Abrir / ocultar histórico de lances"
-                              >
-                                📜
-                              </button>
+                              {renderSecondarySpecPopover()}
 
                               <button
                                 type="button"
@@ -7436,7 +7418,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 }}
                                 title="Entrar em combate agora na Arena"
                               >
-                                Jogar Agora
+                                Jogar agora
                               </button>
                             </div>
                           );
@@ -7449,7 +7431,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               title={`Turno ${gameState.turn} · Relógio de turno`}
                             >
                               <span>T{gameState.turn}</span>
-                              <span className="hud-timer-sep">•</span>
+                              <span className="hud-timer-sep">·</span>
                               <span className="hud-timer-val">{liveClockSec}s</span>
                             </span>
 
@@ -7496,10 +7478,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 title="Reproduzir / Pausar reprise (Espaço)"
                               >
                                 {specIsPlaying
-                                  ? '⏸ Pausar'
+                                  ? 'Pausar'
                                   : clampedIdx >= specVisibleMaxIdx
-                                  ? '↻ Rever'
-                                  : '▶ Reproduzir'}
+                                  ? 'Rever'
+                                  : 'Reproduzir'}
                               </button>
                             ) : !specFollowLive ? (
                               <button
@@ -7511,7 +7493,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 }}
                                 title="Retornar ao tempo real da mesa"
                               >
-                                ● Ao vivo
+                                Ao vivo
                               </button>
                             ) : null}
 
@@ -7565,69 +7547,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 type="button"
                                 className="arena-spec-btn"
                                 onClick={handleJumpToNextSpecClimax}
-                                title="Saltar para o próximo momento épico / clímax da partida"
+                                title="Saltar para o próximo momento decisivo da partida"
                               >
-                                ✦<span className="hide-on-mobile"> Clímax</span>
+                                Clímax
                               </button>
                             )}
-
-                            <button
-                              type="button"
-                              className={`arena-spec-btn ${specFlipped ? 'is-active' : ''}`}
-                              onClick={() => {
-                                setSelectedHandIndex(null);
-                                setFocusedBoardUnitId(null);
-                                setSpecFlipped((f) => !f);
-                              }}
-                              title="Inverter perspectiva da mesa (ver mão do outro Soberano)"
-                            >
-                              ⇅<span className="hide-on-mobile"> Mesa</span>
-                            </button>
 
                             <button
                               type="button"
                               className={`arena-spec-btn ${specCinemaMode ? 'is-active' : ''}`}
                               onClick={() => toggleSpecCinemaMode()}
-                              title="Modo Cinema: tela limpa 16:9 ou 9:16 (Reels/Shorts) ideal para gravar pelo Windows (Atalho: F)"
+                              title="Modo Cinema: tela limpa 16:9 ou 9:16 ideal para gravar (Atalho: F)"
                             >
                               Cinema
                             </button>
 
-                            <button
-                              type="button"
-                              className={`arena-spec-btn ${
-                                specShareFeedback === 'copied' ? 'is-active' : ''
-                              }`}
-                              data-shared-url={lastSharedSpecUrl || undefined}
-                              onClick={() => void handleShareSpectatorLink()}
-                              title="Copiar link direto desta partida (no lance atual)"
-                            >
-                              {specShareFeedback === 'copied'
-                                ? '✓ Link Copiado'
-                                : specShareFeedback === 'sharing'
-                                ? 'Gerando...'
-                                : 'Compartilhar'}
-                            </button>
-
-                            {canRecordVideo && (
-                              <button
-                                type="button"
-                                className={`arena-spec-btn ${isRecordingVideo ? 'is-active' : ''}`}
-                                onClick={() => void handleToggleVideoRecording()}
-                                title="Gravar vídeo em alta definição (28 Mbps) desta partida"
-                              >
-                                Gravar
-                              </button>
-                            )}
-
-                            <button
-                              type="button"
-                              className={`arena-spec-btn ${showLogSidebar ? 'is-active' : ''}`}
-                              onClick={() => setShowLogSidebar((p) => !p)}
-                              title="Abrir / ocultar histórico de lances"
-                            >
-                              📜
-                            </button>
+                            {renderSecondarySpecPopover()}
 
                             <button
                               type="button"

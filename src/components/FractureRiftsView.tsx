@@ -1,16 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
-import {
-  AI_SKILL_TIER_SPECS,
-  BICOLOR_ARCHETYPE_MASTERY,
-  BicolorArchetypeId,
-  MONOCOLOR_ARCHETYPE_MASTERY,
-  MonocolorArchetypeId,
-  POLYCOLOR_ARCHETYPE_MASTERY,
-  PolycolorArchetypeId,
-} from '../data/aiMonocolorMastery';
-import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
+import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
 import {
   FRACTURE_RIFTS,
   FractureRiftDef,
@@ -44,14 +35,13 @@ export interface FractureRiftsViewProps {
   ) => void;
 }
 
-function getChampionTitle(archetypeId: string): string {
-  const mono = MONOCOLOR_ARCHETYPE_MASTERY[archetypeId as MonocolorArchetypeId];
-  if (mono) return mono.name;
-  const bi = BICOLOR_ARCHETYPE_MASTERY[archetypeId as BicolorArchetypeId];
-  if (bi) return bi.name;
-  const poly = POLYCOLOR_ARCHETYPE_MASTERY[archetypeId as PolycolorArchetypeId];
-  if (poly) return poly.name;
-  return archetypeId;
+function stripInlineEmojis(text: string): string {
+  return text
+    .replace(/⚡\s*de\s*Essência/gi, ' de Essência')
+    .replace(/⚡/g, ' Essência')
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\uFE0F]/gu, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 
 export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
@@ -73,15 +63,6 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
   const currentWeekKey = useMemo(() => getCurrentIsoWeekKey(), []);
   const riftProgress = useMemo(() => loadRiftProgress(), []);
   const isWeeklyClaimed = riftProgress.claimedWeekKeys.includes(currentWeekKey);
-
-  const totalRiftsCleared = useMemo(
-    () =>
-      Object.values(riftProgress.clearedRiftCounts).reduce(
-        (sum, count) => sum + (count ?? 0),
-        0
-      ),
-    [riftProgress.clearedRiftCounts]
-  );
 
   const resolveEffectiveTier = (rift: FractureRiftDef): AiSkillTier => {
     if (tierSelection !== 'auto') return tierSelection;
@@ -106,156 +87,123 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
   };
 
   return (
-    <div className="aaa-page-shell rifts-page-shell">
-      {/* Header & Weekly Spotlight */}
-      <header className="rifts-hero-banner">
-        <div className="rifts-hero-top">
-          <div>
-            <span className="aaa-kicker">EVENTOS TÁTICOS • MUTADORES DE REGRA</span>
-            <h1 className="font-cinzel gold-gradient-text rifts-hero-title">
-              Fendas da Fratura
-            </h1>
-            <p className="rifts-hero-sub">
-              Anomalias planares distorcem as leis da Essência, do Clima e da Cripta. Escolha seu
-              Grimório, equipe sua Relíquia da Coroa e subjugue os Arcontes de cada Fenda.
-            </p>
-          </div>
-
-          <div className="rifts-hero-controls">
-            <div className="rifts-deck-picker">
-              <label htmlFor="rift-deck-select">Grimório de Combate</label>
-              {!isGuest && customDecks.length === 0 ? (
+    <div className="aaa-page-shell" style={{ maxWidth: 1180, margin: '0 auto', gap: 16 }}>
+      {/* Clean Single-Row Header */}
+      <header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 14,
+          padding: '14px 18px',
+          background: 'rgba(15, 23, 42, 0.6)',
+          border: '1px solid rgba(148, 163, 184, 0.12)',
+          borderRadius: 10,
+        }}
+      >
+        <div>
+          <h1
+            className="font-cinzel"
+            style={{ margin: 0, fontSize: '1.25rem', color: '#f8fafc', fontWeight: 700 }}
+          >
+            Fendas da Fratura
+          </h1>
+          <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: '#94a3b8' }}>
+            Duelos com leis especiais de campo ·{' '}
+            {isWeeklyClaimed
+              ? `Bônus semanal concluído (+${STANDARD_RIFT_WIN_GOLD} Ouro por vitória)`
+              : `Destaque da semana rende +${WEEKLY_RIFT_GOLD_BONUS} Ouro e +${WEEKLY_RIFT_SHARDS_BONUS} Estilhaços extras`}
+            {isGuest && (
+              <>
+                {' · '}
                 <button
                   type="button"
-                  className="aaa-btn aaa-btn-primary"
-                  onClick={onRequireDeckSetup}
+                  onClick={onRequireAccount}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    color: '#e5c97b',
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                  }}
                 >
-                  Montar Grimório (100) →
+                  Criar conta para salvar recompensas
                 </button>
-              ) : (
-                <select
-                  id="rift-deck-select"
-                  className="rifts-select"
-                  value={selectedDeckId}
-                  onChange={(e) => setSelectedDeckId(e.target.value)}
-                >
-                  {customDecks.length > 0
-                    ? customDecks.map((cd) => {
-                        const w = cd.wins ?? 0;
-                        const l = cd.losses ?? 0;
-                        const rec = w + l > 0 ? ` (${w}V/${l}D)` : '';
-                        return (
-                          <option key={cd.id} value={cd.id}>
-                            {cd.name}
-                            {rec}
-                          </option>
-                        );
-                      })
-                    : PREBUILT_DECKS.filter((pd) => pd.domains.length === 1).map((pd) => (
-                        <option key={pd.id} value={pd.id}>
-                          {pd.name} (Visitante)
-                        </option>
-                      ))}
-                </select>
-              )}
-            </div>
-
-            <div className="rifts-deck-picker">
-              <label htmlFor="rift-tier-select">Maestria do Soberano</label>
-              <select
-                id="rift-tier-select"
-                className="rifts-select"
-                value={String(tierSelection)}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setTierSelection(val === 'auto' ? 'auto' : (Number(val) as 3 | 4 | 5));
-                }}
-              >
-                <option value="auto">Automático por Progressão (Grau III → V)</option>
-                <option value="3">Grau III · Veterano (+15 Ouro)</option>
-                <option value="4">Grau IV · Mestre (+20 Ouro)</option>
-                <option value="5">Grau V · Grão-Mestre (+25 Ouro)</option>
-              </select>
-            </div>
-
-            <div className="rifts-progress-pill">
-              <span>Vitórias em Fendas:</span>
-              <strong>{totalRiftsCleared}</strong>
-            </div>
-          </div>
+              </>
+            )}
+          </p>
         </div>
 
-        {/* Crown Relic Selector */}
-        <div style={{ marginTop: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          {!isGuest && customDecks.length === 0 ? (
+            <button
+              type="button"
+              className="aaa-btn aaa-btn-primary"
+              onClick={onRequireDeckSetup}
+            >
+              Montar Grimório
+            </button>
+          ) : (
+            <select
+              aria-label="Grimório de combate"
+              className="myth-select-compact"
+              style={{ minWidth: 190 }}
+              value={selectedDeckId}
+              onChange={(e) => setSelectedDeckId(e.target.value)}
+            >
+              {customDecks.length > 0
+                ? customDecks.map((cd) => (
+                    <option key={cd.id} value={cd.id}>
+                      {cd.name}
+                    </option>
+                  ))
+                : PREBUILT_DECKS.filter((pd) => pd.domains.length === 1).map((pd) => (
+                    <option key={pd.id} value={pd.id}>
+                      {pd.name}
+                    </option>
+                  ))}
+            </select>
+          )}
+
+          <select
+            aria-label="Grau de Maestria"
+            className="myth-select-compact"
+            value={String(tierSelection)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setTierSelection(val === 'auto' ? 'auto' : (Number(val) as 3 | 4 | 5));
+            }}
+          >
+            <option value="auto">Grau automático</option>
+            <option value="3">Grau III · Veterano (+15 Ouro)</option>
+            <option value="4">Grau IV · Mestre (+20 Ouro)</option>
+            <option value="5">Grau V · Grão-Mestre (+25 Ouro)</option>
+          </select>
+
           <SovereignRelicSelectorBar
             defeatedBossCount={defeatedBossCount}
             arenaWins={arenaWins}
           />
         </div>
-
-        {/* Weekly Featured Rift Spotlight */}
-        <div className="rifts-weekly-spotlight">
-          <div className="rifts-weekly-badge-col">
-            <span className="rifts-weekly-tag">
-              FENDA EM DESTAQUE DA SEMANA ({currentWeekKey})
-            </span>
-            <h2 className="font-cinzel rifts-weekly-name">
-              {weeklyRift.name}
-            </h2>
-            <p className="rifts-weekly-rule">{weeklyRift.detailedRule}</p>
-            <div className="rifts-weekly-tip">{weeklyRift.tacticalTip}</div>
-          </div>
-
-          <div className="rifts-weekly-cta-col">
-            <div className={`rifts-weekly-reward-box ${isWeeklyClaimed ? 'is-claimed' : ''}`}>
-              {isGuest ? (
-                <>
-                  <span className="rwr-label">MODO VISITANTE</span>
-                  <strong>Crie sua conta para ganhar +{WEEKLY_RIFT_GOLD_BONUS} Ouro • +{WEEKLY_RIFT_SHARDS_BONUS} Estilhaços!</strong>
-                  <button
-                    type="button"
-                    className="rifts-link-btn"
-                    onClick={onRequireAccount}
-                  >
-                    Criar Conta Gratuita →
-                  </button>
-                </>
-              ) : isWeeklyClaimed ? (
-                <>
-                  <span className="rwr-label">✓ BÔNUS SEMANAL CONQUISTADO</span>
-                  <strong>Recompensa padrão ativa: +{STANDARD_RIFT_WIN_GOLD} Ouro por vitória</strong>
-                </>
-              ) : (
-                <>
-                  <span className="rwr-label">1ª VITÓRIA NESTA SEMANA</span>
-                  <strong>
-                    +{STANDARD_RIFT_WIN_GOLD + WEEKLY_RIFT_GOLD_BONUS} Ouro • +{WEEKLY_RIFT_SHARDS_BONUS} Estilhaços
-                  </strong>
-                </>
-              )}
-            </div>
-
-            <button
-              type="button"
-              className="aaa-btn aaa-btn-primary rifts-enter-btn"
-              onClick={() => handleLaunchRift(weeklyRift)}
-            >
-              Desafiar Fenda Semanal →
-            </button>
-          </div>
-        </div>
       </header>
 
-      {/* All 6 Fracture Rifts Grid */}
-      <section className="rifts-grid">
+      {/* Clean 6-Card Grid (No Duplicate Weekly Banner, No Emoji Soup, 1 Action Button per Card) */}
+      <section
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+          gap: 14,
+        }}
+      >
         {FRACTURE_RIFTS.map((rift) => {
           const isWeekly = rift.id === weeklyRift.id;
           const clears = riftProgress.clearedRiftCounts[rift.id] ?? 0;
           const avatarCard = CARDS_BY_ID[rift.challengerAvatarId];
           const effTier = resolveEffectiveTier(rift);
           const tSpec = AI_SKILL_TIER_SPECS[effTier];
-          const standing = getUnifiedStandingForDeckId(rift.archetypeId);
-          const champTitle = getChampionTitle(rift.archetypeId);
           const hpScale =
             rift.id === 'glass_thrones'
               ? 0
@@ -269,100 +217,158 @@ export const FractureRiftsView: React.FC<FractureRiftsViewProps> = ({
           return (
             <article
               key={rift.id}
-              className={`rift-card ${isWeekly ? 'is-weekly-featured' : ''}`}
-              style={{ borderTop: `2px solid ${rift.accent}` }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: 12,
+                padding: '16px 18px',
+                background: '#0b0f19',
+                border: isWeekly
+                  ? '1px solid rgba(212, 175, 55, 0.42)'
+                  : '1px solid rgba(148, 163, 184, 0.12)',
+                borderRadius: 10,
+              }}
             >
-              <div className="rift-card-header">
-                <div className="rift-icon-medal">{rift.icon}</div>
-                <div className="rift-title-wrap">
-                  <div className="rift-kicker-row">
-                    <span className="rift-kicker">{rift.kicker}</span>
-                    {isWeekly && <span className="rift-featured-pill">Semanal</span>}
-                  </div>
-                  <h3 className="font-cinzel rift-card-title">{rift.name}</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 8,
+                  }}
+                >
+                  <h2
+                    className="font-cinzel"
+                    style={{ margin: 0, fontSize: '1.02rem', color: '#f8fafc', fontWeight: 700 }}
+                  >
+                    {rift.name}
+                  </h2>
+                  {isWeekly ? (
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 600,
+                        color: '#e5c97b',
+                        padding: '2px 8px',
+                        borderRadius: 999,
+                        border: '1px solid rgba(212, 175, 55, 0.35)',
+                        background: 'rgba(212, 175, 55, 0.08)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      Destaque semanal
+                    </span>
+                  ) : clears > 0 ? (
+                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                      Concluída {clears}×
+                    </span>
+                  ) : null}
                 </div>
-              </div>
 
-              <div className="rift-rule-box">
-                <strong>Lei da Fenda:</strong> {rift.shortRule}
-              </div>
+                <p style={{ margin: 0, fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.48 }}>
+                  {stripInlineEmojis(rift.shortRule)}
+                </p>
 
-              <p className="rift-tip-text">{rift.tacticalTip}</p>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    paddingTop: 10,
+                    borderTop: '1px solid rgba(148, 163, 184, 0.1)',
+                  }}
+                >
+                  {avatarCard?.imagePath && (
+                    <img
+                      src={avatarCard.imagePath}
+                      alt={rift.challengerName}
+                      loading="lazy"
+                      style={{
+                        width: 38,
+                        height: 38,
+                        borderRadius: 6,
+                        objectFit: 'cover',
+                        border: '1px solid rgba(148, 163, 184, 0.2)',
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        color: '#f1f5f9',
+                      }}
+                    >
+                      <span>{rift.challengerName}</span>
+                      <span style={{ display: 'inline-flex', gap: 3 }}>
+                        {rift.domains.map((domKey) => (
+                          <i
+                            key={domKey}
+                            title={DOMAIN_META[domKey].name}
+                            style={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: '50%',
+                              background: DOMAIN_META[domKey].color,
+                              display: 'inline-block',
+                            }}
+                          />
+                        ))}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: 1 }}>
+                      Grau {tSpec.roman} · {rift.challengerHp + hpScale} PV · +{tierGold} Ouro
+                    </div>
+                  </div>
+                </div>
 
-              <div className="rift-challenger-strip">
-                {avatarCard?.imagePath && (
-                  <img
-                    src={avatarCard.imagePath}
-                    alt={rift.challengerName}
-                    className="rift-challenger-thumb"
-                    loading="lazy"
-                  />
-                )}
-                <div className="rift-challenger-copy">
-                  <span className="rift-challenger-label">
-                    Guardião · {rift.challengerHp + hpScale} PV · +{tierGold} Ouro
-                  </span>
-                  <strong>{rift.challengerName}</strong>
-                  <small>{rift.challengerTitle}</small>
-                  <div
+                <details style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
+                  <summary
                     style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      alignItems: 'center',
-                      gap: '6px',
-                      marginTop: '4px',
-                      fontSize: '0.68rem',
+                      cursor: 'pointer',
                       color: '#94a3b8',
+                      userSelect: 'none',
+                      fontSize: '0.74rem',
                     }}
-                    title={tSpec.description}
                   >
-                    <span style={{ color: '#e2e8f0', fontWeight: 600 }}>
-                      Grau {tSpec.roman} ({tSpec.title})
-                    </span>
-                    <span>· {champTitle}</span>
-                    {standing && <span>· #{standing.rank} no Ranking</span>}
-                    <span style={{ display: 'inline-flex', gap: 3 }}>
-                      {rift.domains.map((domKey) => (
-                        <i
-                          key={domKey}
-                          title={DOMAIN_META[domKey].name}
-                          style={{
-                            width: 7,
-                            height: 7,
-                            borderRadius: '50%',
-                            background: DOMAIN_META[domKey].color,
-                            display: 'inline-block',
-                          }}
-                        />
-                      ))}
-                    </span>
+                    Dica tática e análise do guardião
+                  </summary>
+                  <div style={{ marginTop: 6, lineHeight: 1.45, color: '#cbd5e1' }}>
+                    <p style={{ margin: '0 0 6px' }}>{rift.tacticalTip}</p>
+                    <button
+                      type="button"
+                      onClick={() => setOracleOpponentId(rift.archetypeId)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        padding: 0,
+                        color: '#e5c97b',
+                        fontSize: '0.74rem',
+                        cursor: 'pointer',
+                        textDecoration: 'underline',
+                      }}
+                    >
+                      Abrir confronto no Oráculo →
+                    </button>
                   </div>
-                </div>
+                </details>
               </div>
 
-              <div className="rift-card-footer" style={{ gap: '0.45rem', flexWrap: 'wrap' }}>
-                <span className="rift-clears-chip">
-                  {clears > 0 ? `✓ Expurgada ${clears}×` : 'Ainda não expurgada'}
-                </span>
-                <div style={{ display: 'flex', gap: '0.4rem', marginLeft: 'auto' }}>
-                  <button
-                    type="button"
-                    className="aaa-btn aaa-btn-secondary"
-                    style={{ padding: '6px 10px', fontSize: '0.72rem' }}
-                    onClick={() => setOracleOpponentId(rift.archetypeId)}
-                    title="Consultar Matchup e contra-jogadas no Oráculo de Guerra"
-                  >
-                    Matchup
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-fantasy btn-fantasy-primary rift-card-btn"
-                    onClick={() => handleLaunchRift(rift)}
-                  >
-                    Entrar ({tSpec.roman}) →
-                  </button>
-                </div>
-              </div>
+              <button
+                type="button"
+                className="btn-fantasy btn-fantasy-primary"
+                style={{ width: '100%', justifyContent: 'center', padding: '8px 14px' }}
+                onClick={() => handleLaunchRift(rift)}
+              >
+                Desafiar Fenda
+              </button>
             </article>
           );
         })}

@@ -5,7 +5,6 @@ import { PREBUILT_DECKS, CAMPAIGN_BOSSES } from '../data/decks';
 import { DECK_TACTICAL_PROFILES, EMPIRICAL_WIN_RATES, getMatchupGuide } from '../data/tacticalGuide';
 import { TACTICAL_COMBOS_COMPENDIUM, ComboColorTier } from '../data/combosCompendium';
 import {
-  AI_LEAGUE_SUMMARY,
   AI_LEARNED_PROFILES,
   DeckLearnedAiProfile,
 } from '../data/aiLearnedProfiles';
@@ -26,10 +25,9 @@ import {
   getUnifiedStandingForDeckId,
   UNIFIED_CHAMPION_STANDINGS,
   UNIFIED_FORMAT_LABELS,
-  UNIFIED_TOURNAMENT_SUMMARY,
   UnifiedFormatKind,
 } from '../data/aiUnifiedTournament';
-import { CardView, CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
+import { CardInspectModal, DOMAIN_META, CARD_TYPE_LABELS } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 
 export interface TacticalGuideViewProps {
@@ -101,12 +99,12 @@ export interface MatchupGuideAnalysis {
 }
 
 const DOMAIN_EXPANSION_NAMES: Record<Domain, string> = {
-  red: 'Caldeira do Sol Carmesim (6/6 Afinidade + 3⚡: santuário vulcânico, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
-  blue: 'Vazio Infinito de Cronos (6/6 Afinidade + 3⚡: santuário glacial e tempestade astral, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
-  purple: 'Santuário Malevolente das Almas (6/6 Afinidade + 3⚡: necrópole gótica e névoa necrótica, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
-  green: 'Mar de Árvores Primordial (6/6 Afinidade + 3⚡: floresta primordial com raízes vivas, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
-  gold: 'Tribunal da Sentença Dourada (6/6 Afinidade + 3⚡: santuário imperial solar, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
-  neutral: 'Matriz Horológica do Ponto Zero (6/6 Afinidade Axial + 3⚡: santuário de engrenagens astrais e ferro meteórico, +1/+1, Ímpeto e Acerto Garantido por 3 rodadas)',
+  red: 'Caldeira do Sol Carmesim (6/6 Afinidade, custo 3)',
+  blue: 'Vazio Infinito de Cronos (6/6 Afinidade, custo 3)',
+  purple: 'Santuário Malevolente das Almas (6/6 Afinidade, custo 3)',
+  green: 'Mar de Árvores Primordial (6/6 Afinidade, custo 3)',
+  gold: 'Tribunal da Sentença Dourada (6/6 Afinidade, custo 3)',
+  neutral: 'Matriz Horológica do Ponto Zero (6/6 Afinidade, custo 3)',
 };
 
 export function buildDeckTacticalProfile(deck: PrebuiltDeck): DeckTacticalProfile {
@@ -286,10 +284,10 @@ export function buildDeckTacticalProfile(deck: PrebuiltDeck): DeckTacticalProfil
 
   const endgamePlan = curatedProfile
     ? curatedProfile.phasePlan.lateGame
-    : `Ative sua Expansão de Domínio (${domainExpansionText || '6/6 Afinidade, 3⚡'}) e finalize com ${finisherNames}.`;
+    : `Ative sua Expansão de Domínio (${domainExpansionText || '6/6 Afinidade, custo 3'}) e finalize com ${finisherNames}.`;
 
   const fodderList =
-    channelFodderCards.map((c) => `${c.name} (${c.cost}⚡)`).join(', ') ||
+    channelFodderCards.map((c) => `${c.name} (custo ${c.cost})`).join(', ') ||
     'cópias duplicadas de custo 5+';
   const channelingDoctrine = curatedProfile
     ? curatedProfile.channelingStrategy
@@ -455,74 +453,70 @@ export function analyzeMatchupPair(
     score = Math.round(Math.max(15, Math.min(85, score)));
   }
 
-  let favorabilityLabel = 'CONFRONTO EQUILIBRADO (50/50)';
-  let favorabilityColor = '#fde047';
+  let favorabilityLabel = 'Equilibrado · 50%';
+  let favorabilityColor = '#cbd5e1';
   if (score >= 58) {
-    favorabilityLabel = `DOMÍNIO TÁTICO (${score}/${100 - score})`;
-    favorabilityColor = '#22c55e';
-  } else if (score >= 53) {
-    favorabilityLabel = `FAVORÁVEL (${score}/${100 - score})`;
+    favorabilityLabel = `Vantagem clara · ${score}%`;
     favorabilityColor = '#4ade80';
-  } else if (score >= 51) {
-    favorabilityLabel = `LEVE VANTAGEM (${score}/${100 - score})`;
+  } else if (score >= 53) {
+    favorabilityLabel = `Favorável · ${score}%`;
     favorabilityColor = '#86efac';
+  } else if (score >= 51) {
+    favorabilityLabel = `Leve vantagem · ${score}%`;
+    favorabilityColor = '#bbf7d0';
   } else if (score <= 42) {
-    favorabilityLabel = `ALTO RISCO (${score}/${100 - score})`;
+    favorabilityLabel = `Desfavorável · ${score}%`;
     favorabilityColor = '#f87171';
   } else if (score <= 47) {
-    favorabilityLabel = `DESAFIADOR (${score}/${100 - score})`;
-    favorabilityColor = '#fb923c';
+    favorabilityLabel = `Desafiador · ${score}%`;
+    favorabilityColor = '#fbbf24';
   } else if (score !== 50) {
-    favorabilityLabel = `EQUILÍBRIO TÁTICO (${score}/${100 - score})`;
-    favorabilityColor = '#fde047';
+    favorabilityLabel = `Equilibrado · ${score}%`;
+    favorabilityColor = '#cbd5e1';
   }
 
-  const asymmetryHeadline = `Assimetria do Duelo: Seu Deck (${p.counts.creature} Criat. / ${
-    p.counts.spell
-  } Feit. / ${p.counts.reaction} Reaç. / ${p.counts.relic} Relíq.) vs ${e.deck.name} (${
-    e.counts.creature
-  } Criat. / ${e.counts.spell} Feit. / ${e.counts.reaction} Reaç. / ${e.counts.relic} Relíq.)`;
+  const asymmetryHeadline = `${p.counts.creature} Criaturas · ${p.counts.spell} Feitiços · ${p.counts.reaction} Reações · ${p.counts.relic} Relíquias`;
 
   // Determine Slot Stacking Rule for this specific opponent!
   const enemyAoECount = e.breathAndAoECards.length;
   let stackingRuleMode: 'spread_1x' | 'stack_3x' | 'selective_2x' = 'selective_2x';
-  let stackingRuleBadge = 'EMPILHAMENTO SELETIVO (MÁX. 2 UNIDADES / SLOT)';
+  let stackingRuleBadge = 'Formação seletiva (até 2 por slot)';
   let stackingRuleDetail = '';
 
   if (enemyAoECount >= 6) {
     stackingRuleMode = 'spread_1x';
-    stackingRuleBadge = 'EVITAR EMPILHAR 3× — ESPALHE 1 UNIDADE POR COLUNA';
+    stackingRuleBadge = 'Espalhar 1 unidade por coluna';
     const aoeNames = e.breathAndAoECards
       .slice(0, 3)
       .map((c) => c.name)
       .join(', ');
-    stackingRuleDetail = `O baralho inimigo possui alto poder de Dano em Área / Sopro / Atropelar (${enemyAoECount} cartas, incluindo ${aoeNames}). No sistema de Empilhamento 3x, ataques de Sopro e explosões atingem TODAS as cartas do mesmo slot simultaneamente! Portanto, espalhe suas tropas em 4 a 6 colunas separadas (1 unidade por slot) e jamais agrupe 3 unidades sem Escudo Divino.`;
+    stackingRuleDetail = `O baralho oponente conta com ${enemyAoECount} cartas de dano em área ou Sopro (${aoeNames}). Espalhe suas tropas em colunas separadas para evitar perder múltiplas unidades no mesmo slot.`;
   } else if (e.singleTargetKillCards.length >= 8 || e.counts.creature >= 50) {
     stackingRuleMode = 'stack_3x';
-    stackingRuleBadge = 'EMPILHAMENTO 3× RECOMENDADO (GUARDIÃO + 2 ATACANTES NO SLOT)';
+    stackingRuleBadge = 'Empilhar até 3 unidades no slot';
     const singleNames = e.singleTargetKillCards
       .slice(0, 3)
       .map((c) => c.name)
       .join(', ');
-    stackingRuleDetail = `O oponente depende de abates de alvo único ou pressão física (${
+    stackingRuleDetail = `O oponente depende de alvos únicos (${
       singleNames || 'golpes diretos'
-    }) e possui pouquíssimo dano em área (${enemyAoECount} fontes). Empilhe até 3 unidades na sua melhor coluna colocando 1 Guardião/Blindado na frente e 2 causadores de dano juntos: o inimigo só conseguirá atingir 1 carta por vez enquanto sua pilha inteira revida no turno seguinte!`;
+    }) e possui pouco dano em área. Concentre 1 Guardião com até 2 atacantes na mesma coluna para ganhar cobertura e revidar em conjunto.`;
   } else {
     stackingRuleMode = 'selective_2x';
-    stackingRuleBadge = 'FORMAÇÃO EM PARES (2× NA RETAGUARDA • 1× NA VANGUARDA)';
-    stackingRuleDetail = `Contra ${e.deck.name}, mantenha 1 bloqueador por coluna na Vanguarda para cobrir o campo e empilhe até 2 cartas (1 Relíquia + 1 Atirador/Suporte) na Retaguarda das colunas protegidas para ganhar +1 ATQ de Cobertura sem se expor a varreduras completas.`;
+    stackingRuleBadge = 'Formação em pares (2× na Retaguarda)';
+    stackingRuleDetail = `Contra ${e.deck.name}, mantenha 1 bloqueador por coluna na Vanguarda e agrupe até 2 cartas de suporte ou alcance na Retaguarda das colunas protegidas.`;
   }
 
   // General Tactics against enemy structure (100-card decks)
   let generalTactics = '';
   if (e.counts.creature >= 65) {
-    generalTactics = `${e.deck.name} joga com ${e.counts.creature} criaturas (${e.pcts.creature}% do baralho de 100 cartas) e apenas ${e.counts.spell} feitiços. Ele tentará inundar a Vanguarda [V] e ganhar +1 ATQ de Invasão. Não troque vida cedo: posicione bloqueadores com alta Armadura/HP, force o Soberano rival a empilhar 2–3 criaturas no mesmo slot e limpe a pilha inteira com Sopro, Atropelar ou feitiços de fileira!`;
+    generalTactics = `${e.deck.name} utiliza ${e.counts.creature} criaturas (${e.pcts.creature}% do grimório). Posicione bloqueadores resistentes cedo e guarde feitiços de área ou Sopro para punir colunas empilhadas.`;
   } else if (e.counts.spell + e.counts.reaction >= 38) {
-    generalTactics = `${e.deck.name} é um Grimório pesado em magias (${e.counts.spell} Feitiços e ${e.counts.reaction} Reações em 100 cartas) com menos criaturas (${e.counts.creature}). A fraqueza estrutural dele é a falta de corpos para bloquear todas as 6 colunas. Pressione 3 colunas diferentes ao mesmo tempo e teste as Emboscadas na Retaguarda [R] inimiga atacando primeiro com sua unidade mais barata antes de comprometer seu campeão principal.`;
+    generalTactics = `${e.deck.name} concentra ${e.counts.spell} Feitiços e ${e.counts.reaction} Reações, com menos bloqueadores em campo. Pressione múltiplas colunas e teste emboscadas atacando primeiro com unidades leves.`;
   } else if (e.counts.relic >= 18) {
-    generalTactics = `${e.deck.name} constrói uma fortaleza de longo prazo com ${e.counts.relic} Relíquias na Retaguarda [R] dentro das 100 cartas. Se o duelo passar do Turno 8 com a Retaguarda inimiga intacta, o valor contínuo dele será esmagador. Sua prioridade absoluta é abrir 1 ou 2 colunas na Vanguarda inimiga e invadir diretamente as Relíquias na Retaguarda dele antes que se acumulem!`;
+    generalTactics = `${e.deck.name} apoia seu jogo longo em ${e.counts.relic} Relíquias na Retaguarda. Abra rapidamente uma coluna na Vanguarda rival para destruir as Relíquias antes do Turno 8.`;
   } else {
-    generalTactics = `${e.deck.name} combina ${e.counts.creature} criaturas, ${e.counts.spell} feitiços, ${e.counts.reaction} reações e ${e.counts.relic} relíquias (100 cartas • custo médio ${e.avgCost}⚡). Dispute o controle das colunas centrais (Colunas 3 e 4), acumule 6/6 de Afinidade para ativar sua Expansão de Domínio (⛩️ 3⚡) — ou provocar um Choque de Domínios 50/50 se o rival expandir primeiro — e guarde suas remoções diretas para os campeões de custo 5+ dele.`;
+    generalTactics = `${e.deck.name} equilibra ${e.counts.creature} criaturas, ${e.counts.spell} feitiços, ${e.counts.reaction} reações e ${e.counts.relic} relíquias (custo médio ${e.avgCost}). Dispute as colunas centrais, alcance 6/6 de Afinidade para sua Expansão de Domínio e reserve remoções para ameaças de custo 5+.`;
   }
   if (curatedMatchup) {
     generalTactics = `${curatedMatchup.keyObjective} ${generalTactics}`;
@@ -540,55 +534,55 @@ export function analyzeMatchupPair(
       .map((c) => c.name)
       .join(' e ');
 
-  const mulliganAndChannelGuide = `Na Mão Inicial (7 cartas, com 40❤️ e 3⚡ inicial), busque ${keepNames}${
-    removalOrAoE ? ` e guarde ${removalOrAoE} como resposta chave` : ''
-  }. Nos Turnos 1 a 3, canalize ([C]) cartas lentas (${
+  const mulliganAndChannelGuide = `Na mão inicial (7 cartas, 40 PV e 3 de Essência), busque ${keepNames}${
+    removalOrAoE ? ` e guarde ${removalOrAoE} como resposta central` : ''
+  }. Nos Turnos 1 a 3, canalize ([C]) cartas pesadas (${
     p.channelFodderCards
       .slice(0, 2)
       .map((c) => c.name)
       .join(', ') || 'custo 6+'
-  }) para ganhar +1 Afinidade e comprar 1 carta de reposição (somando-se ao +1⚡ de Essência Máxima automático por turno), destravando suas cartas fortes e avançando rumo à Expansão de Domínio (⛩️ 6/6, 3⚡). ${
+  }) para ganhar +1 Afinidade e comprar 1 carta de reposição, avançando rumo à Expansão de Domínio (6/6 Afinidade). ${
     eEarly >= 11
-      ? 'Como o oponente é muito agressivo nos primeiros turnos, NÃO guarde mãos pesadas de custo 5+!'
-      : 'O oponente tem início cadenciado, permitindo canalizar até o Turno 5–6 para alcançar 6/6 de Afinidade com segurança.'
+      ? 'Como o oponente pressiona cedo, evite guardar cartas de custo 5+.'
+      : 'O oponente tem início cadenciado, permitindo canalizar até o Turno 5 com segurança.'
   }`;
 
   // Priority enemy targets
   const priorityTargets = e.keyThreats.slice(0, 4).map((card) => {
-    let reason = `Ameaça central (${card.cost}⚡) do grimório inimigo.`;
+    let reason = `Ameaça central (custo ${card.cost}) do grimório oponente.`;
     if (card.type === 'relic') {
-      reason = `Relíquia na Retaguarda [R]: gera vantagem todo turno se não for destruída.`;
+      reason = `Relíquia na Retaguarda: gera vantagem contínua se não for destruída.`;
     } else if ((card.breathDamage ?? 0) > 0) {
-      reason = `Sopro (-${card.breathDamage}🔥 na fileira): dizima slots empilhados ao entrar ou atacar!`;
+      reason = `Sopro (-${card.breathDamage} na fileira): atinge múltiplas cartas no mesmo slot.`;
     } else if (card.ascension) {
-      reason = `Perigo de Ascensão: evolui para ★ ${card.ascension.newName} (${card.ascension.newAtk}/${card.ascension.newMaxHp}) se sobreviver em campo.`;
+      reason = `Evolui por Ascensão para ${card.ascension.newName} (${card.ascension.newAtk}/${card.ascension.newMaxHp}) se permanecer em campo.`;
     } else if (
       card.keywords.includes('Toque Letal') ||
       card.keywords.includes('Dreno de Vida')
     ) {
-      reason = `Especialista de combate (${card.keywords.join(', ')}): elimine com feitiço ou Alcance sem sofrer revide.`;
+      reason = `Especialista de combate (${card.keywords.join(', ')}): priorize remover com feitiço ou Alcance.`;
     }
     return { card, reason };
   });
 
   const trapNames =
-    e.reactionCards.map((c) => `${c.name} (${c.cost}⚡)`).join(', ') ||
+    e.reactionCards.map((c) => `${c.name} (custo ${c.cost})`).join(', ') ||
     'Nenhuma reação pesada registrada';
   const aoeNames =
-    e.breathAndAoECards.map((c) => `${c.name} (${c.cost}⚡)`).join(', ') ||
+    e.breathAndAoECards.map((c) => `${c.name} (custo ${c.cost})`).join(', ') ||
     'Sem varreduras globais pesadas';
 
-  const criticalThreatTurn = `Turno Crítico Inimigo: Turnos 4 a 6 (6–8 de Essência e proximidade da Expansão de Domínio ⛩️ 6/6). Fique atento às Reações/Emboscadas deste deck (${trapNames}) armadas na Retaguarda [R] e às cartas de impacto em área (${aoeNames}).`;
+  const criticalThreatTurn = `Turnos 4 a 6 (6–8 de Essência e proximidade da Expansão de Domínio 6/6). Observe possíveis Reações na Retaguarda (${trapNames}) e cartas de área (${aoeNames}).`;
 
-  const winConditionPath = `Fechamento da Partida: Use ${
+  const winConditionPath = `Utilize ${
     p.keyThreats
       .slice(0, 2)
       .map((c) => c.name)
-      .join(' + ') || 'seus campeões principais'
-  } e invoque sua Expansão de Domínio (⛩️ 6/6 Afinidade e 3⚡) para transformar a mesa de madeira por 3 rodadas com +1/+1, Ímpeto e Acerto Garantido! ${
+      .join(' e ') || 'seus campeões principais'
+  } junto à Expansão de Domínio (6/6 Afinidade, custo 3) para fortalecer sua linha por 3 rodadas. ${
     stackingRuleMode === 'stack_3x'
-      ? 'Agrupe uma coluna 3x com Vanguarda invasora para somar +1 ATQ de Invasão em cada unidade da pilha e finalizar o Soberano inimigo em uma única investida.'
-      : 'Mantenha pressão distribuída em múltiplas colunas para que mesmo uma magia de área inimiga deixe atacantes prontos para o golpe letal.'
+      ? 'Concentre uma coluna protegida para abrir brecha e pressionar o Soberano rival.'
+      : 'Mantenha pressão em colunas distintas para preservar atacantes após remoções em área.'
   }`;
 
   return {
@@ -632,7 +626,7 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
       }
       return {
         id: cd.id,
-        name: `★ ${cd.name}`,
+        name: cd.name,
         subtitle: 'Grimório Personalizado do Jogador',
         domains: domainsSet.size > 0 ? Array.from(domainsSet) : ['neutral'],
         strategy: 'Grimório forjado sob medida no Construtor de Decks.',
@@ -772,29 +766,6 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
     return AI_LEARNED_PROFILES[bestId] ?? null;
   }, [playerProfile]);
 
-  const activeMultiDomainCombosMeta = useMemo(() => {
-    const biId = resolveBicolorArchetypeForDeckId(playerProfile.deck.id);
-    if (biId && BICOLOR_ARCHETYPE_MASTERY[biId]) {
-      const m = BICOLOR_ARCHETYPE_MASTERY[biId];
-      return {
-        heading: `Sinergias Inter-Domínio Bicolores (WR vs Monocolor Tier V: ${(m.vsMonocolorWinRate * 100).toFixed(1)}%)`,
-        combos: m.crossDomainCombos,
-      };
-    }
-    const polyId = resolvePolycolorArchetypeForDeckId(playerProfile.deck.id);
-    if (polyId && POLYCOLOR_ARCHETYPE_MASTERY[polyId]) {
-      const m = POLYCOLOR_ARCHETYPE_MASTERY[polyId];
-      const tag = m.tierFormat === 'pentachromatic' ? 'Pentacromáticas' : 'Tricolores';
-      return {
-        heading: `Sinergias Inter-Domínio ${tag} (vs Mono T5: ${(m.vsMonocolorWinRate * 100).toFixed(1)}% • vs Bicolor T5: ${(m.vsBicolorWinRate * 100).toFixed(1)}%)`,
-        combos: m.crossDomainCombos,
-      };
-    }
-    return null;
-  }, [playerProfile]);
-
-  const fmtAiPct = (val: number) => (Math.abs(val) <= 1.5 ? val * 100 : val).toFixed(1);
-
   const allMatchupsList = useMemo(() => {
     return allDecks
       .filter((d) => d.id !== playerProfile.deck.id)
@@ -815,780 +786,468 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
   const coverCardPlayer = CARDS_BY_ID[playerProfile.deck.coverCardId] ?? ALL_CARDS[0];
   const coverCardOpponent = CARDS_BY_ID[opponentProfile.deck.coverCardId] ?? ALL_CARDS[1];
 
+  const isTableSection = viewSection === 'matrix_all' || viewSection === 'global_tier_list';
+  const playerStanding = getUnifiedStandingForDeckId(playerProfile.deck.id);
+  const canImportPlayerDeck =
+    Boolean(onImportToDeckBuilder) && !customDeckIdSet.has(playerProfile.deck.id);
+
+  const renderDeckOptions = () => (
+    <>
+      <optgroup label="Grão-Soberanos Tricolores e Pentacromáticos">
+        {trainedPolyDecks.map((d) => (
+          <option key={d.id} value={d.id}>
+            {d.name}
+          </option>
+        ))}
+      </optgroup>
+      <optgroup label="Soberanos Bicolores">
+        {trainedBiDecks.map((d) => (
+          <option key={d.id} value={d.id}>
+            {d.name}
+          </option>
+        ))}
+      </optgroup>
+      <optgroup label="Soberanos Monocolores">
+        {trainedMonoDecks.map((d) => (
+          <option key={d.id} value={d.id}>
+            {d.name}
+          </option>
+        ))}
+      </optgroup>
+      <optgroup label="Grimórios Clássicos">
+        {PREBUILT_DECKS.map((d) => (
+          <option key={d.id} value={d.id}>
+            {d.name}
+          </option>
+        ))}
+      </optgroup>
+      {customDecks.length > 0 && (
+        <optgroup label="Grimórios Pessoais">
+          {customDecks.map((cd) => (
+            <option key={cd.id} value={cd.id}>
+              {cd.name}
+            </option>
+          ))}
+        </optgroup>
+      )}
+    </>
+  );
+
+  const renderDomainDots = (domains: Domain[]) => (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      {domains.map((dom) => (
+        <i
+          key={dom}
+          title={DOMAIN_META[dom].name}
+          style={{
+            width: 7,
+            height: 7,
+            borderRadius: '50%',
+            background: DOMAIN_META[dom].color,
+            display: 'inline-block',
+          }}
+        />
+      ))}
+    </span>
+  );
+
+  const openingRecommendedCards = useMemo(() => {
+    if (learnedAiProfile && learnedAiProfile.mulliganKeepIds.length > 0) {
+      const mapped = learnedAiProfile.mulliganKeepIds
+        .map((cid) => CARDS_BY_ID[cid])
+        .filter((c): c is CardDefinition => Boolean(c));
+      if (mapped.length > 0) return mapped.slice(0, 4);
+    }
+    return playerProfile.earlyKeepCards.slice(0, 4);
+  }, [learnedAiProfile, playerProfile.earlyKeepCards]);
+
+  const channelRecommendedCards = useMemo(() => {
+    if (learnedAiProfile && learnedAiProfile.channelPriorityIds.length > 0) {
+      const mapped = learnedAiProfile.channelPriorityIds
+        .map((cid) => CARDS_BY_ID[cid])
+        .filter((c): c is CardDefinition => Boolean(c));
+      if (mapped.length > 0) return mapped.slice(0, 4);
+    }
+    return playerProfile.channelFodderCards.slice(0, 4);
+  }, [learnedAiProfile, playerProfile.channelFodderCards]);
+
   const content = (
-    <div className={isModal ? 'tg-modal-inner' : 'aaa-page-shell'}>
-      {/* Compact Tab Bar + Contextual Combos Filter Row */}
-      <div
+    <div
+      className={isModal ? 'tg-modal-inner' : 'aaa-page-shell'}
+      style={{ maxWidth: 1180, margin: '0 auto', gap: 14 }}
+    >
+      {/* Clean Single-Row Top Navigation */}
+      <header
         style={{
           display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          padding: '8px 12px',
-          background: '#0b0f17',
-          border: '1px solid rgba(148, 163, 184, 0.18)',
-          borderRadius: 8,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 12,
+          padding: '12px 16px',
+          background: 'rgba(15, 23, 42, 0.6)',
+          border: '1px solid rgba(148, 163, 184, 0.12)',
+          borderRadius: 10,
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '0.5rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-            <button
-              type="button"
-              className={`nav-tab-btn ${viewSection === 'deck_mastery' ? 'active' : ''}`}
-              onClick={() => setViewSection('deck_mastery')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Manual do Grimório
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${viewSection === 'matchup_duel' ? 'active' : ''}`}
-              onClick={() => setViewSection('matchup_duel')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Confronto 1×1
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${viewSection === 'matrix_all' ? 'active' : ''}`}
-              onClick={() => setViewSection('matrix_all')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Matriz ({allDecks.length - 1})
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${viewSection === 'global_tier_list' ? 'active' : ''}`}
-              onClick={() => setViewSection('global_tier_list')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Ranking Global ({UNIFIED_TOURNAMENT_SUMMARY.totalChampions})
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${viewSection === 'combos_compendium' ? 'active' : ''}`}
-              onClick={() => setViewSection('combos_compendium')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Combos ({TACTICAL_COMBOS_COMPENDIUM.length})
-            </button>
-          </div>
-          {isModal && onClose && (
-            <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
-              Fechar
-            </button>
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className={`nav-tab-btn ${viewSection === 'deck_mastery' ? 'active' : ''}`}
+            onClick={() => setViewSection('deck_mastery')}
+            style={{ textTransform: 'none', letterSpacing: '0.01em', fontSize: '0.8rem', padding: '6px 12px' }}
+          >
+            Guia do Grimório
+          </button>
+          <button
+            type="button"
+            className={`nav-tab-btn ${viewSection === 'matchup_duel' ? 'active' : ''}`}
+            onClick={() => setViewSection('matchup_duel')}
+            style={{ textTransform: 'none', letterSpacing: '0.01em', fontSize: '0.8rem', padding: '6px 12px' }}
+          >
+            Confronto 1×1
+          </button>
+          <button
+            type="button"
+            className={`nav-tab-btn ${isTableSection ? 'active' : ''}`}
+            onClick={() => setViewSection('matrix_all')}
+            style={{ textTransform: 'none', letterSpacing: '0.01em', fontSize: '0.8rem', padding: '6px 12px' }}
+          >
+            Tabela de Confrontos
+          </button>
+          <button
+            type="button"
+            className={`nav-tab-btn ${viewSection === 'combos_compendium' ? 'active' : ''}`}
+            onClick={() => setViewSection('combos_compendium')}
+            style={{ textTransform: 'none', letterSpacing: '0.01em', fontSize: '0.8rem', padding: '6px 12px' }}
+          >
+            Combos ({TACTICAL_COMBOS_COMPENDIUM.length})
+          </button>
         </div>
 
-        {viewSection === 'combos_compendium' && (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '0.5rem',
-              paddingTop: '8px',
-              borderTop: '1px solid rgba(148, 163, 184, 0.14)',
-            }}
-          >
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-              {(
-                [
-                  { id: 'all', label: `Todos (${TACTICAL_COMBOS_COMPENDIUM.length})` },
-                  { id: 'mono', label: `1 Cor (${comboTierCounts.mono})` },
-                  { id: 'dual', label: `2 Cores (${comboTierCounts.dual})` },
-                  { id: 'tri', label: `3 Cores (${comboTierCounts.tri})` },
-                  { id: 'poly', label: `4–5 Cores (${comboTierCounts.poly})` },
-                ] as const
-              ).map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  className={`nav-tab-btn ${comboTierFilter === tab.id ? 'active' : ''}`}
-                  style={{ padding: '4px 9px', fontSize: '0.71rem' }}
-                  onClick={() => setComboTierFilter(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-              <input
-                type="text"
-                value={comboSearchQuery}
-                onChange={(e) => setComboSearchQuery(e.target.value)}
-                placeholder="Buscar combo ou carta..."
-                style={{
-                  padding: '0.3rem 0.65rem',
-                  borderRadius: '6px',
-                  background: '#111622',
-                  border: '1px solid rgba(148, 163, 184, 0.22)',
-                  color: '#f8fafc',
-                  fontSize: '0.73rem',
-                  minWidth: '175px',
-                }}
-              />
+        {/* Single-Deck Context Picker (shown when NOT on Confronto 1×1 or Combos) */}
+        {(viewSection === 'deck_mastery' || viewSection === 'matrix_all') && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <select
+              aria-label="Selecionar Grimório"
+              className="myth-select-compact"
+              style={{ minWidth: 220 }}
+              value={selectedPlayerDeckId}
+              onChange={(e) => setSelectedPlayerDeckId(e.target.value)}
+            >
+              {renderDeckOptions()}
+            </select>
+            {canImportPlayerDeck && (
               <button
                 type="button"
-                className={`aaa-pill-tab ${onlyInDeckCombos ? 'is-active' : ''}`}
-                onClick={() => setOnlyInDeckCombos((prev) => !prev)}
-                title="Exibir apenas combos que possuem cartas presentes no Grimório selecionado"
+                className="aaa-btn aaa-btn-secondary"
+                style={{ padding: '6px 12px', fontSize: '0.76rem' }}
+                onClick={() => onImportToDeckBuilder?.(playerProfile.deck.id)}
               >
-                ★ No Grimório
+                Abrir no Grimório
               </button>
-              <div className="db-domain-orbs">
-                <button
-                  type="button"
-                  className={`db-orb-btn orb-all ${domainFilter === 'all' ? 'is-active' : ''}`}
-                  onClick={() => setDomainFilter('all')}
-                >
-                  Todos
-                </button>
-                {(['red', 'blue', 'purple', 'green', 'gold', 'neutral'] as Domain[]).map((dom) => (
-                  <button
-                    key={dom}
-                    type="button"
-                    className={`db-orb-btn domain-${dom} ${domainFilter === dom ? 'is-active' : ''}`}
-                    onClick={() => setDomainFilter((prev) => (prev === dom ? 'all' : dom))}
-                  >
-                    <span className="db-orb-dot" style={{ background: DOMAIN_META[dom].color }} />
-                    <span>{DOMAIN_META[dom].shortName}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            )}
+            {onLaunchDuel && viewSection === 'deck_mastery' && (
+              <button
+                type="button"
+                className="btn-fantasy btn-fantasy-primary"
+                style={{ padding: '6px 14px', fontSize: '0.76rem' }}
+                onClick={() =>
+                  onLaunchDuel(
+                    resolvePlayerDeckForChallenge(selectedPlayerDeckId),
+                    selectedOpponentDeckId,
+                    challengeAiTier
+                  )
+                }
+              >
+                Praticar na Arena
+              </button>
+            )}
           </div>
         )}
-      </div>
 
-      {/* COMPACT DUAL DECK SELECTOR BAR */}
-      {viewSection !== 'combos_compendium' && viewSection !== 'global_tier_list' && (
-        <div className="tg-selector-banner">
-          <div className="tg-selector-card player-side">
-            <div className="tg-selector-thumb">
-              {coverCardPlayer?.imagePath && (
-                <img src={coverCardPlayer.imagePath} alt={playerProfile.deck.name} />
-              )}
-            </div>
-            <div className="tg-selector-body">
-              {(() => {
-                const st = getUnifiedStandingForDeckId(playerProfile.deck.id);
-                const canImportPlayerDeck =
-                  Boolean(onImportToDeckBuilder) && !customDeckIdSet.has(playerProfile.deck.id);
-                if (!st && !canImportPlayerDeck) return null;
-                return (
-                  <div
-                    className="tg-selector-kicker-row"
-                    style={{
-                      marginBottom: '3px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '6px',
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    {st ? (
-                      <span className="tg-selector-kicker" style={{ color: '#e5c97b' }}>
-                        #{st.rank}/44 • Tier {st.tierBadge} ({(st.overallWinRate * 100).toFixed(1)}% Global)
-                      </span>
-                    ) : (
-                      <span className="tg-selector-kicker" style={{ color: '#94a3b8' }}>
-                        Grimório Selecionado
-                      </span>
-                    )}
-                    {canImportPlayerDeck && (
-                      <button
-                        type="button"
-                        className="btn-fantasy"
-                        style={{ padding: '1px 7px', fontSize: '0.65rem' }}
-                        title="Abrir este Grimório na Forja de Grimórios (100 cartas)"
-                        onClick={() => onImportToDeckBuilder?.(playerProfile.deck.id)}
-                      >
-                        ⚒️ Abrir na Forja
-                      </button>
-                    )}
-                  </div>
-                );
-              })()}
-              <select
-                className="aaa-select tg-deck-select"
-                value={selectedPlayerDeckId}
-                onChange={(e) => setSelectedPlayerDeckId(e.target.value)}
-              >
-                <optgroup label="Grão-Soberanos Tricolores & Pentacromáticos (13 Ápices)">
-                  {trainedPolyDecks.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Soberanos Bicolores (15 Pactos)">
-                  {trainedBiDecks.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Soberanos Monocolores (16 Arquétipos)">
-                  {trainedMonoDecks.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Grimórios Oficiais Clássicos">
-                  {PREBUILT_DECKS.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </optgroup>
-                {customDecks.length > 0 && (
-                  <optgroup label="Grimórios Autorais">
-                    {customDecks.map((cd) => (
-                      <option key={cd.id} value={cd.id}>
-                        ★ {cd.name}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
-              </select>
-            </div>
-          </div>
-
-          <div className="tg-vs-center">
-            <button
-              type="button"
-              className="btn-fantasy"
-              onClick={() => {
-                const temp = selectedPlayerDeckId;
-                setSelectedPlayerDeckId(selectedOpponentDeckId);
-                setSelectedOpponentDeckId(temp);
-              }}
-              title="Inverter Grimórios"
-            >
-              ⇄ {activeMatchup.favorabilityScore}% vs {100 - activeMatchup.favorabilityScore}%
-            </button>
-            {onLaunchDuel && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <select
-                  className="aaa-select"
-                  style={{ padding: '4px 6px', fontSize: '0.68rem', minWidth: '86px' }}
-                  value={challengeAiTier}
-                  title={AI_SKILL_TIER_SPECS[challengeAiTier].description}
-                  onChange={(e) => setChallengeAiTier(Number(e.target.value) as AiSkillTier)}
-                >
-                  {([1, 2, 3, 4, 5] as AiSkillTier[]).map((t) => (
-                    <option key={t} value={t}>
-                      {AI_SKILL_TIER_SPECS[t].shortLabel}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  className="btn-fantasy btn-fantasy-primary"
-                  onClick={() =>
-                    onLaunchDuel(selectedPlayerDeckId, selectedOpponentDeckId, challengeAiTier)
-                  }
-                >
-                  ⚔️ Desafiar (T{AI_SKILL_TIER_SPECS[challengeAiTier].roman})
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className="tg-selector-card enemy-side">
-            <div className="tg-selector-thumb">
-              {coverCardOpponent?.imagePath && (
-                <img src={coverCardOpponent.imagePath} alt={opponentProfile.deck.name} />
-              )}
-            </div>
-            <div className="tg-selector-body">
-              {(() => {
-                const st = getUnifiedStandingForDeckId(opponentProfile.deck.id);
-                if (!st) return null;
-                return (
-                  <div className="tg-selector-kicker-row" style={{ marginBottom: '2px' }}>
-                    <span className="tg-selector-kicker" style={{ color: '#fca5a5' }}>
-                      #{st.rank}/44 • Tier {st.tierBadge} ({(st.overallWinRate * 100).toFixed(1)}% Global)
-                    </span>
-                  </div>
-                );
-              })()}
-              <select
-                className="aaa-select tg-deck-select"
-                value={selectedOpponentDeckId}
-                onChange={(e) => {
-                  setSelectedOpponentDeckId(e.target.value);
-                  if (viewSection === 'matrix_all') setViewSection('matchup_duel');
-                }}
-              >
-                <optgroup label="Grão-Soberanos Tricolores & Pentacromáticos (13 Ápices)">
-                  {trainedPolyDecks.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Soberanos Bicolores (15 Pactos)">
-                  {trainedBiDecks.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Soberanos Monocolores (16 Arquétipos)">
-                  {trainedMonoDecks.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="Grimórios Oficiais Clássicos">
-                  {PREBUILT_DECKS.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </optgroup>
-                {customDecks.length > 0 && (
-                  <optgroup label="Grimórios Autorais">
-                    {customDecks.map((cd) => (
-                      <option key={cd.id} value={cd.id}>
-                        ★ {cd.name}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
-              </select>
-            </div>
-          </div>
-        </div>
-      )}
+        {isModal && onClose && (
+          <button type="button" className="aaa-btn aaa-btn-secondary" onClick={onClose}>
+            Fechar
+          </button>
+        )}
+      </header>
 
       {/* =====================================================================
-          TAB 1: MANUAL DO DECK (COMPOSIÇÃO, ESTRATÉGIAS, TÁTICAS & COMBOS)
+          1. GUIA DO GRIMÓRIO (SINGLE DECK FOCUS — ZERO 1v1 CLUTTER, ZERO LAB NOISE)
           ===================================================================== */}
       {viewSection === 'deck_mastery' && (
-        <div className="tg-grid-layout">
-          {/* Left Column: Breakdown, Essence Curve & Phase Strategy */}
-          <div className="tg-panel">
-            <h2 className="font-cinzel tg-panel-title">{playerProfile.deck.name}</h2>
-            <p style={{ fontSize: '0.82rem', color: '#cbd5e1', margin: '0 0 0.75rem', lineHeight: 1.45 }}>
-              <strong style={{ color: '#fde68a' }}>{playerProfile.archetypeRole}:</strong> {playerProfile.deck.strategy}
-            </p>
-
-            <div className="tg-asymmetry-bars">
-              <div className="tg-asym-row">
-                <div className="tg-asym-label">
-                  <span><i className="dot-c" /> Criaturas (Vanguarda: {playerProfile.vanguardCount} • Retaguarda: {playerProfile.rearguardCount})</span>
-                  <strong>{playerProfile.counts.creature} ({playerProfile.pcts.creature}%)</strong>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Clean Identity Strip */}
+          <section
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 14,
+              padding: '16px 20px',
+              background: '#0b0f19',
+              border: '1px solid rgba(148, 163, 184, 0.12)',
+              borderRadius: 10,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, flex: 1 }}>
+              {coverCardPlayer?.imagePath && (
+                <img
+                  src={coverCardPlayer.imagePath}
+                  alt={playerProfile.deck.name}
+                  style={{
+                    width: 52,
+                    height: 52,
+                    borderRadius: 8,
+                    objectFit: 'cover',
+                    border: '1px solid rgba(212, 175, 55, 0.35)',
+                    flexShrink: 0,
+                  }}
+                />
+              )}
+              <div style={{ minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <h1
+                    className="font-cinzel"
+                    style={{ margin: 0, fontSize: '1.18rem', color: '#f8fafc', fontWeight: 700 }}
+                  >
+                    {playerProfile.deck.name}
+                  </h1>
+                  {renderDomainDots(playerProfile.deck.domains)}
+                  {playerStanding && (
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        color: '#e5c97b',
+                        padding: '1px 8px',
+                        borderRadius: 999,
+                        border: '1px solid rgba(212, 175, 55, 0.28)',
+                        background: 'rgba(212, 175, 55, 0.06)',
+                      }}
+                    >
+                      Tier {playerStanding.tierBadge} · #{playerStanding.rank}
+                    </span>
+                  )}
                 </div>
-                <div className="tg-asym-track">
-                  <div
-                    className="tg-asym-fill fill-creature"
-                    style={{ width: `${playerProfile.pcts.creature}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="tg-asym-row">
-                <div className="tg-asym-label">
-                  <span><i className="dot-s" /> Feitiços</span>
-                  <strong>{playerProfile.counts.spell} ({playerProfile.pcts.spell}%)</strong>
-                </div>
-                <div className="tg-asym-track">
-                  <div
-                    className="tg-asym-fill fill-spell"
-                    style={{ width: `${playerProfile.pcts.spell}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="tg-asym-row">
-                <div className="tg-asym-label">
-                  <span><i className="dot-r" /> Reações (Emboscadas)</span>
-                  <strong>{playerProfile.counts.reaction} ({playerProfile.pcts.reaction}%)</strong>
-                </div>
-                <div className="tg-asym-track">
-                  <div
-                    className="tg-asym-fill fill-reaction"
-                    style={{ width: `${playerProfile.pcts.reaction}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="tg-asym-row">
-                <div className="tg-asym-label">
-                  <span><i className="dot-l" /> Relíquias</span>
-                  <strong>{playerProfile.counts.relic} ({playerProfile.pcts.relic}%)</strong>
-                </div>
-                <div className="tg-asym-track">
-                  <div
-                    className="tg-asym-fill fill-relic"
-                    style={{ width: `${playerProfile.pcts.relic}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '0.85rem' }}>
-              <div className="aaa-kicker" style={{ marginBottom: '0.4rem' }}>
-                CURVA DE ESSÊNCIA (MÉDIA: {playerProfile.avgCost}⚡)
-              </div>
-              <div className="db-mini-curve" style={{ height: '72px' }}>
-                {[1, 2, 3, 4, 5, 6, 7].map((bucket) => {
-                  const cnt = playerProfile.curve[bucket] ?? 0;
-                  const hPct = Math.round((cnt / playerProfile.maxCurve) * 100);
-                  return (
-                    <div key={bucket} className="db-curve-col">
-                      <span className="db-curve-val">{cnt > 0 ? cnt : ''}</span>
-                      <div className="db-curve-track">
-                        <div
-                          className="db-curve-fill"
-                          style={{ height: `${cnt > 0 ? Math.max(14, hPct) : 0}%` }}
-                        />
-                      </div>
-                      <span className="db-curve-lbl">{bucket === 7 ? '7+' : `${bucket}⚡`}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Estratégia por Fase da Partida */}
-            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-              <div className="aaa-kicker">PLANO DE JOGO & ESTRATÉGIA POR FASE</div>
-              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.2rem' }}>
-                  I • Abertura (Turnos 1–3)
-                </div>
-                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
-                  {playerProfile.openingPlan}
-                </p>
-              </div>
-              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.2rem' }}>
-                  II • Meio de Jogo (Turnos 4–6)
-                </div>
-                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
-                  {playerProfile.midgamePlan}
-                </p>
-              </div>
-              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.2rem' }}>
-                  III • Fim de Jogo & Condição de Vitória (Turno 7+)
-                </div>
-                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
-                  {playerProfile.endgamePlan}
+                <p
+                  style={{
+                    margin: '4px 0 0',
+                    fontSize: '0.82rem',
+                    color: '#94a3b8',
+                    lineHeight: 1.45,
+                  }}
+                >
+                  {playerProfile.deck.strategy}
                 </p>
               </div>
             </div>
 
-            {/* Táticas de Canalização e Empilhamento */}
-            <div style={{ marginTop: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-              <div className="aaa-kicker">DOUTRINA TÁTICA DE CANALIZAÇÃO & FALANGE</div>
-              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e2e8f0', marginBottom: '0.2rem' }}>
-                  Canalização de Essência [C]
-                </div>
-                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
-                  {playerProfile.channelingDoctrine}
-                </p>
-              </div>
-              <div className="tg-combo-card" style={{ padding: '0.6rem 0.75rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e2e8f0', marginBottom: '0.2rem' }}>
-                  {playerProfile.stackingDoctrineTitle}
-                </div>
-                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.42 }}>
-                  {playerProfile.stackingDoctrineBody}
-                </p>
-              </div>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+                flexWrap: 'wrap',
+                fontSize: '0.78rem',
+                color: '#cbd5e1',
+              }}
+            >
+              <span>
+                <strong style={{ color: '#f8fafc' }}>{playerProfile.counts.creature}</strong> Criaturas
+              </span>
+              <span>
+                <strong style={{ color: '#f8fafc' }}>{playerProfile.counts.spell}</strong> Feitiços
+              </span>
+              <span>
+                <strong style={{ color: '#f8fafc' }}>{playerProfile.counts.reaction}</strong> Reações
+              </span>
+              <span>
+                <strong style={{ color: '#f8fafc' }}>{playerProfile.counts.relic}</strong> Relíquias
+              </span>
+              <span style={{ color: '#e5c97b' }}>Custo médio {playerProfile.avgCost}</span>
             </div>
-          </div>
+          </section>
 
-          {/* Right Column: Empirical AI Wisdom + Signature Combos & Synergies */}
-          <div className="tg-panel">
-            {learnedAiProfile && (
-              <div className="tg-ai-oracle-box">
-                <div className="tg-ai-oracle-header">
-                  <div>
-                    <div className="aaa-kicker" style={{ color: '#94a3b8', marginBottom: '0.15rem' }}>
-                      CONCLAVE DE VAELORIA ({AI_LEAGUE_SUMMARY.totalMatchesSimulated.toLocaleString('pt-BR')} DUELOS OFICIAIS)
-                    </div>
-                    <h3 className="font-cinzel" style={{ margin: 0, fontSize: '0.96rem', color: '#f8fafc' }}>
-                      Doutrina de Guerra do Soberano
-                    </h3>
-                  </div>
-                  <span className="tg-ai-oracle-badge">
-                    {learnedAiProfile.generationsTrained} Ciclos de Maestria
+          {/* Calm 2-Column Editorial Layout */}
+          <div className="tg-grid-layout" style={{ gap: 16 }}>
+            {/* Left Column: Curve + Phase Plan + Progressive Disclosure Details */}
+            <div
+              style={{
+                background: '#0b0f19',
+                border: '1px solid rgba(148, 163, 184, 0.12)',
+                borderRadius: 10,
+                padding: '18px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 8,
+                  }}
+                >
+                  <h2
+                    className="font-cinzel"
+                    style={{ margin: 0, fontSize: '0.96rem', color: '#f8fafc' }}
+                  >
+                    Curva de Essência
+                  </h2>
+                  <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                    Vanguarda {playerProfile.vanguardCount} · Retaguarda {playerProfile.rearguardCount}
                   </span>
                 </div>
-
-                <div className="tg-ai-kpi-strip">
-                  <div className="tg-ai-kpi-cell">
-                    <span className="tg-ai-kpi-label">Amostra do Grimório</span>
-                    <span className="tg-ai-kpi-value">
-                      {learnedAiProfile.matchesSimulated.toLocaleString('pt-BR')} Partidas
-                    </span>
-                  </div>
-                  <div className="tg-ai-kpi-cell">
-                    <span className="tg-ai-kpi-label">Taxa de Vitória</span>
-                    <span className="tg-ai-kpi-value" style={{ color: '#e5c97b' }}>
-                      {fmtAiPct(learnedAiProfile.baselineWinRate)}% → {fmtAiPct(learnedAiProfile.trainedWinRate)}%
-                    </span>
-                  </div>
-                  <div className="tg-ai-kpi-cell">
-                    <span className="tg-ai-kpi-label">Curva Mulligan / Pacto</span>
-                    <span className="tg-ai-kpi-value">
-                      ≤{learnedAiProfile.weights.mulliganCurveTarget.toFixed(1)} Ess. • ≥{learnedAiProfile.weights.bloodPactThresholdHp} PV
-                    </span>
-                  </div>
-                </div>
-
-                <div className="tg-ai-doctrine-grid">
-                  <div className="tg-ai-doctrine-item">
-                    <div className="tg-ai-doctrine-top">
-                      <span>Pressão Direta vs Troca</span>
-                      <strong>
-                        {learnedAiProfile.weights.aggroFaceBias >= learnedAiProfile.weights.tradeValueBias
-                          ? `Ofensiva (${learnedAiProfile.weights.aggroFaceBias.toFixed(2)}×)`
-                          : `Controle (${learnedAiProfile.weights.tradeValueBias.toFixed(2)}×)`}
-                      </strong>
-                    </div>
-                    <div className="tg-ai-doctrine-bar">
-                      <div
-                        className="tg-ai-doctrine-fill"
-                        style={{
-                          width: `${Math.min(
-                            100,
-                            Math.max(
-                              18,
-                              Math.round(
-                                (learnedAiProfile.weights.aggroFaceBias /
-                                  (learnedAiProfile.weights.aggroFaceBias +
-                                    learnedAiProfile.weights.tradeValueBias)) *
-                                  100
-                              )
-                            )
-                          )}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="tg-ai-doctrine-item">
-                    <div className="tg-ai-doctrine-top">
-                      <span>Falange 3× vs Dispersão 1×</span>
-                      <strong>
-                        {learnedAiProfile.weights.stackConsolidationBias >=
-                        learnedAiProfile.weights.antiAoeSpreadBias
-                          ? `Empilhar (${learnedAiProfile.weights.stackConsolidationBias.toFixed(2)}×)`
-                          : `Dispersar (${learnedAiProfile.weights.antiAoeSpreadBias.toFixed(2)}×)`}
-                      </strong>
-                    </div>
-                    <div className="tg-ai-doctrine-bar">
-                      <div
-                        className="tg-ai-doctrine-fill"
-                        style={{
-                          width: `${Math.min(
-                            100,
-                            Math.max(
-                              18,
-                              Math.round(
-                                (learnedAiProfile.weights.stackConsolidationBias /
-                                  (learnedAiProfile.weights.stackConsolidationBias +
-                                    learnedAiProfile.weights.antiAoeSpreadBias)) *
-                                  100
-                              )
-                            )
-                          )}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {learnedAiProfile.mulliganKeepIds.length > 0 && (
-                  <div style={{ marginBottom: '0.65rem' }}>
-                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.32rem' }}>
-                      Melhores Cartas para Manter no Mulligan (Empírico)
-                    </div>
-                    <div className="tg-combo-cards-row">
-                      {learnedAiProfile.mulliganKeepIds.slice(0, 4).map((cid) => {
-                        const c = CARDS_BY_ID[cid];
-                        if (!c) return null;
-                        return (
+                <div className="db-mini-curve" style={{ height: 64 }}>
+                  {[1, 2, 3, 4, 5, 6, 7].map((bucket) => {
+                    const cnt = playerProfile.curve[bucket] ?? 0;
+                    const hPct = Math.round((cnt / playerProfile.maxCurve) * 100);
+                    return (
+                      <div key={bucket} className="db-curve-col">
+                        <span className="db-curve-val">{cnt > 0 ? cnt : ''}</span>
+                        <div className="db-curve-track">
                           <div
-                            key={cid}
-                            className="tg-mini-card-pill"
-                            onClick={() => setInspectCard(c)}
-                          >
-                            {c.imagePath && <img src={c.imagePath} alt={c.name} />}
-                            <div>
-                              <div className="tg-mini-card-name">{c.name}</div>
-                              <div className="tg-mini-card-sub">
-                                Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {learnedAiProfile.channelPriorityIds.length > 0 && (
-                  <div style={{ marginBottom: '0.7rem' }}>
-                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#cbd5e1', marginBottom: '0.32rem' }}>
-                      Canalizações Seguras nos Turnos 1–4 [C]
-                    </div>
-                    <div className="tg-combo-cards-row">
-                      {learnedAiProfile.channelPriorityIds.slice(0, 4).map((cid) => {
-                        const c = CARDS_BY_ID[cid];
-                        if (!c) return null;
-                        return (
-                          <div
-                            key={cid}
-                            className="tg-mini-card-pill"
-                            onClick={() => setInspectCard(c)}
-                          >
-                            {c.imagePath && <img src={c.imagePath} alt={c.name} />}
-                            <div>
-                              <div className="tg-mini-card-name">{c.name}</div>
-                              <div className="tg-mini-card-sub">
-                                Custo {c.cost} • Canalizar [C]
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {learnedAiProfile.discoveredCombos.length > 0 && (
-                  <div>
-                    <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.4rem' }}>
-                      Combos Assinatura dos Soberanos
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {learnedAiProfile.discoveredCombos.slice(0, 4).map((dc, idx) => {
-                        const cA = CARDS_BY_ID[dc.cardAId];
-                        const cB = CARDS_BY_ID[dc.cardBId];
-                        if (!cA || !cB) return null;
-                        return (
-                          <div key={`${dc.cardAId}-${dc.cardBId}-${idx}`} className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.35rem' }}>
-                              <strong className="font-cinzel" style={{ fontSize: '0.8rem', color: '#f8fafc' }}>
-                                #{idx + 1} {cA.name} + {cB.name}
-                              </strong>
-                              <span className="tg-ai-combo-badge">
-                                {fmtAiPct(dc.coPlayWinRate)}% WR ({dc.liftOverBaseline >= 0 ? '+' : ''}
-                                {fmtAiPct(dc.liftOverBaseline)}% Lift • n={dc.sampleCount})
-                              </span>
-                            </div>
-                            <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '0 0 0.42rem', lineHeight: 1.4 }}>
-                              {dc.synergyNote}
-                            </p>
-                            <div className="tg-combo-cards-row">
-                              {[cA, cB].map((c) => (
-                                <div
-                                  key={c.id}
-                                  className="tg-mini-card-pill"
-                                  onClick={() => setInspectCard(c)}
-                                >
-                                  {c.imagePath && <img src={c.imagePath} alt={c.name} />}
-                                  <div>
-                                    <div className="tg-mini-card-name">{c.name}</div>
-                                    <div className="tg-mini-card-sub">
-                                      Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {activeMultiDomainCombosMeta && activeMultiDomainCombosMeta.combos.length > 0 && (
-                  <div style={{ marginTop: '0.75rem' }}>
-                    <div style={{ fontSize: '0.73rem', fontWeight: 800, color: '#38bdf8', marginBottom: '0.4rem' }}>
-                      {activeMultiDomainCombosMeta.heading}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                      {activeMultiDomainCombosMeta.combos.slice(0, 4).map((dc, idx) => {
-                        const cA = CARDS_BY_ID[dc.cardAId];
-                        const cB = CARDS_BY_ID[dc.cardBId];
-                        if (!cA || !cB) return null;
-                        return (
-                          <div key={`cross-${dc.cardAId}-${dc.cardBId}-${idx}`} className="tg-combo-card" style={{ padding: '0.65rem 0.8rem', borderColor: 'rgba(56, 189, 248, 0.3)' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.35rem' }}>
-                              <strong className="font-cinzel" style={{ fontSize: '0.8rem', color: '#f8fafc' }}>
-                                {DOMAIN_META[cA.domain].icon}+{DOMAIN_META[cB.domain].icon} {cA.name} + {cB.name}
-                              </strong>
-                              <span className="tg-ai-combo-badge">
-                                {fmtAiPct(dc.coPlayWinRate)}% WR ({dc.liftOverBaseline >= 0 ? '+' : ''}
-                                {fmtAiPct(dc.liftOverBaseline)}% Lift • n={dc.sampleCount})
-                              </span>
-                            </div>
-                            <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '0 0 0.42rem', lineHeight: 1.4 }}>
-                              {dc.synergyNote}
-                            </p>
-                            <div className="tg-combo-cards-row">
-                              {[cA, cB].map((c) => (
-                                <div
-                                  key={c.id}
-                                  className="tg-mini-card-pill"
-                                  onClick={() => setInspectCard(c)}
-                                >
-                                  {c.imagePath && <img src={c.imagePath} alt={c.name} />}
-                                  <div>
-                                    <div className="tg-mini-card-name">{c.name}</div>
-                                    <div className="tg-mini-card-sub">
-                                      Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                            className="db-curve-fill"
+                            style={{ height: `${cnt > 0 ? Math.max(14, hPct) : 0}%` }}
+                          />
+                        </div>
+                        <span className="db-curve-lbl">{bucket === 7 ? '7+' : String(bucket)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            )}
 
-            <h2 className="font-cinzel tg-panel-title">Combos & Sinergias do Grimório</h2>
-            <div className="tg-combos-list">
-              {playerProfile.signatureCombos.map((combo, idx) => (
-                <div key={idx} className="tg-combo-card">
-                  <div className="tg-combo-header">
-                    <h4 className="font-cinzel" style={{ color: '#e5c97b', fontSize: '0.88rem', margin: 0 }}>
-                      {combo.title}
-                    </h4>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                  paddingTop: 14,
+                  borderTop: '1px solid rgba(148, 163, 184, 0.12)',
+                }}
+              >
+                <h2
+                  className="font-cinzel"
+                  style={{ margin: 0, fontSize: '0.96rem', color: '#f8fafc' }}
+                >
+                  Plano por Fase
+                </h2>
+
+                <div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e5c97b', marginBottom: 3 }}>
+                    Abertura · Turnos 1 a 3
                   </div>
-                  <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.45, margin: '0.35rem 0 0.5rem' }}>
-                    {combo.explanation}
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.48 }}>
+                    {playerProfile.openingPlan}
                   </p>
-                  <div className="tg-combo-cards-row" style={{ marginTop: '0.45rem' }}>
-                    {combo.cards.map((c) => (
+                </div>
+
+                <div style={{ paddingTop: 10, borderTop: '1px solid rgba(148, 163, 184, 0.08)' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e5c97b', marginBottom: 3 }}>
+                    Meio de Jogo · Turnos 4 a 6
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.48 }}>
+                    {playerProfile.midgamePlan}
+                  </p>
+                </div>
+
+                <div style={{ paddingTop: 10, borderTop: '1px solid rgba(148, 163, 184, 0.08)' }}>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e5c97b', marginBottom: 3 }}>
+                    Fim de Jogo · Turno 7+
+                  </div>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.48 }}>
+                    {playerProfile.endgamePlan}
+                  </p>
+                </div>
+              </div>
+
+              {/* Progressive Disclosure for Channeling & Positioning Doctrine */}
+              <details
+                style={{
+                  paddingTop: 12,
+                  borderTop: '1px solid rgba(148, 163, 184, 0.12)',
+                  fontSize: '0.78rem',
+                  color: '#94a3b8',
+                }}
+              >
+                <summary
+                  style={{
+                    cursor: 'pointer',
+                    color: '#cbd5e1',
+                    fontWeight: 600,
+                    userSelect: 'none',
+                  }}
+                >
+                  Posicionamento de colunas e canalização [C]
+                </summary>
+                <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#e2e8f0', marginBottom: 2 }}>
+                      {playerProfile.stackingDoctrineTitle}
+                    </div>
+                    <p style={{ margin: 0, color: '#cbd5e1', lineHeight: 1.45 }}>
+                      {playerProfile.stackingDoctrineBody}
+                    </p>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#e2e8f0', marginBottom: 2 }}>
+                      Prioridade de Canalização [C]
+                    </div>
+                    <p style={{ margin: 0, color: '#cbd5e1', lineHeight: 1.45 }}>
+                      {playerProfile.channelingDoctrine}
+                    </p>
+                    {channelRecommendedCards.length > 0 && (
+                      <div className="tg-combo-cards-row" style={{ marginTop: 8 }}>
+                        {channelRecommendedCards.map((c) => (
+                          <div
+                            key={c.id}
+                            className="tg-mini-card-pill"
+                            onClick={() => setInspectCard(c)}
+                          >
+                            {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                            <div>
+                              <div className="tg-mini-card-name">{c.name}</div>
+                              <div className="tg-mini-card-sub">
+                                Custo {c.cost} · Canalizar [C]
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </details>
+            </div>
+
+            {/* Right Column: Recommended Opening Hand + Key Combos */}
+            <div
+              style={{
+                background: '#0b0f19',
+                border: '1px solid rgba(148, 163, 184, 0.12)',
+                borderRadius: 10,
+                padding: '18px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+              }}
+            >
+              {openingRecommendedCards.length > 0 && (
+                <div>
+                  <h2
+                    className="font-cinzel"
+                    style={{ margin: '0 0 8px', fontSize: '0.96rem', color: '#f8fafc' }}
+                  >
+                    Mão Inicial Recomendada
+                  </h2>
+                  <div className="tg-combo-cards-row">
+                    {openingRecommendedCards.map((c) => (
                       <div
                         key={c.id}
                         className="tg-mini-card-pill"
@@ -1598,470 +1257,554 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                         <div>
                           <div className="tg-mini-card-name">{c.name}</div>
                           <div className="tg-mini-card-sub">
-                            Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}
+                            Custo {c.cost} · {CARD_TYPE_LABELS[c.type]}
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-              ))}
+              )}
+
+              <div
+                style={{
+                  paddingTop: openingRecommendedCards.length > 0 ? 14 : 0,
+                  borderTop:
+                    openingRecommendedCards.length > 0
+                      ? '1px solid rgba(148, 163, 184, 0.12)'
+                      : 'none',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 14,
+                }}
+              >
+                <h2
+                  className="font-cinzel"
+                  style={{ margin: 0, fontSize: '0.96rem', color: '#f8fafc' }}
+                >
+                  Sinergias Principais
+                </h2>
+
+                {playerProfile.signatureCombos.slice(0, 3).map((combo, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      paddingTop: idx > 0 ? 12 : 0,
+                      borderTop: idx > 0 ? '1px solid rgba(148, 163, 184, 0.08)' : 'none',
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        color: '#e5c97b',
+                        marginBottom: 4,
+                      }}
+                    >
+                      {combo.title}
+                    </div>
+                    <p
+                      style={{
+                        fontSize: '0.79rem',
+                        color: '#cbd5e1',
+                        lineHeight: 1.46,
+                        margin: '0 0 8px',
+                      }}
+                    >
+                      {combo.explanation}
+                    </p>
+                    <div className="tg-combo-cards-row">
+                      {combo.cards.map((c) => (
+                        <div
+                          key={c.id}
+                          className="tg-mini-card-pill"
+                          onClick={() => setInspectCard(c)}
+                        >
+                          {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                          <div>
+                            <div className="tg-mini-card-name">{c.name}</div>
+                            <div className="tg-mini-card-sub">
+                              Custo {c.cost} · {CARD_TYPE_LABELS[c.type]}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       )}
 
       {/* =====================================================================
-          TAB 2: SIMULADOR DE MATCHUP 1×1 (ESTRATÉGIAS, TÁTICAS & COMBOS 1×1)
+          2. CONFRONTO 1×1 (ONLY HERE WE SHOW THE TWO-DECK COMPARISON BAR)
           ===================================================================== */}
       {viewSection === 'matchup_duel' && (
-        <div className="tg-grid-layout">
-          <div className="tg-panel">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <h2 className="font-cinzel tg-panel-title">
-                {playerProfile.deck.name} vs {opponentProfile.deck.name}
-              </h2>
-              <span
-                className="tg-favor-badge"
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <section
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr auto 1fr',
+              alignItems: 'center',
+              gap: 12,
+              padding: '14px 18px',
+              background: '#0b0f19',
+              border: '1px solid rgba(148, 163, 184, 0.12)',
+              borderRadius: 10,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+              {coverCardPlayer?.imagePath && (
+                <img
+                  src={coverCardPlayer.imagePath}
+                  alt={playerProfile.deck.name}
+                  style={{ width: 42, height: 42, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }}
+                />
+              )}
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginBottom: 3 }}>
+                  Seu Grimório
+                </div>
+                <select
+                  className="myth-select-compact"
+                  style={{ width: '100%', fontSize: '0.8rem' }}
+                  value={selectedPlayerDeckId}
+                  onChange={(e) => setSelectedPlayerDeckId(e.target.value)}
+                >
+                  {renderDeckOptions()}
+                </select>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 6,
+                padding: '0 8px',
+              }}
+            >
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-secondary"
+                style={{ padding: '4px 12px', fontSize: '0.76rem' }}
+                onClick={() => {
+                  const temp = selectedPlayerDeckId;
+                  setSelectedPlayerDeckId(selectedOpponentDeckId);
+                  setSelectedOpponentDeckId(temp);
+                }}
+                title="Inverter Grimórios"
+              >
+                {activeMatchup.favorabilityScore}% vs {100 - activeMatchup.favorabilityScore}% · Inverter
+              </button>
+              {onLaunchDuel && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <select
+                    aria-label="Grau do Soberano"
+                    className="myth-select-compact"
+                    style={{ padding: '4px 8px', fontSize: '0.73rem' }}
+                    value={challengeAiTier}
+                    onChange={(e) => setChallengeAiTier(Number(e.target.value) as AiSkillTier)}
+                  >
+                    {([1, 2, 3, 4, 5] as AiSkillTier[]).map((t) => (
+                      <option key={t} value={t}>
+                        Grau {AI_SKILL_TIER_SPECS[t].roman}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="btn-fantasy btn-fantasy-primary"
+                    style={{ padding: '5px 12px', fontSize: '0.75rem' }}
+                    onClick={() =>
+                      onLaunchDuel(
+                        resolvePlayerDeckForChallenge(selectedPlayerDeckId),
+                        selectedOpponentDeckId,
+                        challengeAiTier
+                      )
+                    }
+                  >
+                    Desafiar
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+              {coverCardOpponent?.imagePath && (
+                <img
+                  src={coverCardOpponent.imagePath}
+                  alt={opponentProfile.deck.name}
+                  style={{ width: 42, height: 42, borderRadius: 6, objectFit: 'cover', flexShrink: 0 }}
+                />
+              )}
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginBottom: 3 }}>
+                  Grimório Oponente
+                </div>
+                <select
+                  className="myth-select-compact"
+                  style={{ width: '100%', fontSize: '0.8rem' }}
+                  value={selectedOpponentDeckId}
+                  onChange={(e) => setSelectedOpponentDeckId(e.target.value)}
+                >
+                  {renderDeckOptions()}
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <div className="tg-grid-layout" style={{ gap: 16 }}>
+            <div
+              style={{
+                background: '#0b0f19',
+                border: '1px solid rgba(148, 163, 184, 0.12)',
+                borderRadius: 10,
+                padding: '18px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 14,
+              }}
+            >
+              <div
                 style={{
-                  borderColor: activeMatchup.favorabilityColor,
-                  color: activeMatchup.favorabilityColor,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 8,
                 }}
               >
-                {activeMatchup.favorabilityLabel}
-              </span>
-            </div>
+                <h2 className="font-cinzel" style={{ margin: 0, fontSize: '1rem', color: '#f8fafc' }}>
+                  Plano de Confronto
+                </h2>
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    color: activeMatchup.favorabilityColor,
+                  }}
+                >
+                  {activeMatchup.favorabilityLabel}
+                </span>
+              </div>
 
-            <div className={`tg-stack-directive mode-${activeMatchup.stackingRuleMode}`} style={{ marginBottom: '0.75rem' }}>
-              <div className="tg-stack-directive-title">{activeMatchup.stackingRuleBadge}</div>
-              <p style={{ margin: '0.25rem 0 0' }}>{activeMatchup.stackingRuleDetail}</p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-              <div className="aaa-kicker">ESTRATÉGIA & TÁTICA ESPECÍFICA DO CONFRONTO 1×1</div>
-              <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.22rem' }}>
-                  Diretriz Tática Central
+              <div>
+                <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e5c97b', marginBottom: 3 }}>
+                  {activeMatchup.stackingRuleBadge}
                 </div>
-                <p style={{ fontSize: '0.79rem', color: '#e2e8f0', margin: 0, lineHeight: 1.45 }}>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.48 }}>
+                  {activeMatchup.stackingRuleDetail}
+                </p>
+              </div>
+
+              <div style={{ paddingTop: 12, borderTop: '1px solid rgba(148, 163, 184, 0.08)' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e2e8f0', marginBottom: 3 }}>
+                  Diretriz Tática
+                </div>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.48 }}>
                   {activeMatchup.generalTactics}
                 </p>
               </div>
 
-              <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e2e8f0', marginBottom: '0.22rem' }}>
-                  Mulligan & O Que Canalizar [C] neste 1×1
+              <div style={{ paddingTop: 12, borderTop: '1px solid rgba(148, 163, 184, 0.08)' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e2e8f0', marginBottom: 3 }}>
+                  Mão Inicial e Canalização [C]
                 </div>
-                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.48 }}>
                   {activeMatchup.mulliganAndChannelGuide}
                 </p>
               </div>
 
-              <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fca5a5', marginBottom: '0.22rem' }}>
-                  Turno Crítico de Ameaça Inimiga
+              <div style={{ paddingTop: 12, borderTop: '1px solid rgba(148, 163, 184, 0.08)' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e2e8f0', marginBottom: 3 }}>
+                  Janela de Atenção e Vitória
                 </div>
-                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
-                  {activeMatchup.criticalThreatTurn}
-                </p>
-              </div>
-
-              <div className="tg-combo-card" style={{ padding: '0.65rem 0.8rem' }}>
-                <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b', marginBottom: '0.22rem' }}>
-                  Rota de Vitória no 1×1
-                </div>
-                <p style={{ fontSize: '0.78rem', color: '#cbd5e1', margin: 0, lineHeight: 1.45 }}>
-                  {activeMatchup.winConditionPath}
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#cbd5e1', lineHeight: 1.48 }}>
+                  {activeMatchup.criticalThreatTurn} {activeMatchup.winConditionPath}
                 </p>
               </div>
             </div>
-          </div>
 
-          <div className="tg-panel">
-            <h2 className="font-cinzel tg-panel-title">
-              Alvos Prioritários & Combos no 1×1
-            </h2>
+            <div
+              style={{
+                background: '#0b0f19',
+                border: '1px solid rgba(148, 163, 184, 0.12)',
+                borderRadius: 10,
+                padding: '18px 20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 14,
+              }}
+            >
+              <h2 className="font-cinzel" style={{ margin: 0, fontSize: '1rem', color: '#f8fafc' }}>
+                Alvos Prioritários Oponentes
+              </h2>
 
-            <div className="aaa-kicker" style={{ marginBottom: '0.4rem' }}>
-              ALVOS INIMIGOS QUE VOCÊ DEVE NEUTRALIZAR IMEDIATAMENTE
-            </div>
-            <div className="tg-targets-list">
-              {activeMatchup.priorityTargets.map(({ card, reason }) => (
-                <div
-                  key={card.id}
-                  className="tg-target-row"
-                  onClick={() => setInspectCard(card)}
-                >
-                  <div className="tg-target-art">
-                    {card.imagePath && <img src={card.imagePath} alt={card.name} />}
-                    <span className="tg-target-cost">{card.cost}</span>
-                  </div>
-                  <div className="tg-target-info">
-                    <div className="tg-target-name-line">
-                      <strong className="font-cinzel" style={{ color: '#f8fafc' }}>
-                        {card.name}
-                      </strong>
-                      <span className="tg-target-type">
-                        {DOMAIN_META[card.domain].shortName} • {CARD_TYPE_LABELS[card.type]}
-                      </span>
+              <div className="tg-targets-list">
+                {activeMatchup.priorityTargets.map(({ card, reason }) => (
+                  <div
+                    key={card.id}
+                    className="tg-target-row"
+                    onClick={() => setInspectCard(card)}
+                  >
+                    <div className="tg-target-art">
+                      {card.imagePath && <img src={card.imagePath} alt={card.name} />}
+                      <span className="tg-target-cost">{card.cost}</span>
                     </div>
-                    <p style={{ fontSize: '0.75rem', color: '#cbd5e1', margin: '0.22rem 0 0', lineHeight: 1.38 }}>
-                      {reason}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              <div className="aaa-kicker">COMBOS EM DUELO (SEU GRIMÓRIO vs OPONENTE)</div>
-              {playerProfile.signatureCombos.slice(0, 2).map((combo, idx) => (
-                <div key={`p-combo-${idx}`} className="tg-combo-card" style={{ padding: '0.6rem 0.75rem', borderLeft: '3px solid #d4af37' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#e5c97b' }}>
-                    Seu Combo Chave #{idx + 1}: {combo.title}
-                  </div>
-                  <p style={{ fontSize: '0.76rem', color: '#cbd5e1', margin: '0.22rem 0 0.4rem', lineHeight: 1.4 }}>
-                    {combo.explanation}
-                  </p>
-                  <div className="tg-combo-cards-row">
-                    {combo.cards.map((c) => (
-                      <div key={c.id} className="tg-mini-card-pill" onClick={() => setInspectCard(c)}>
-                        {c.imagePath && <img src={c.imagePath} alt={c.name} />}
-                        <div>
-                          <div className="tg-mini-card-name">{c.name}</div>
-                          <div className="tg-mini-card-sub">Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}</div>
-                        </div>
+                    <div className="tg-target-info">
+                      <div className="tg-target-name-line">
+                        <strong className="font-cinzel" style={{ color: '#f8fafc' }}>
+                          {card.name}
+                        </strong>
+                        <span className="tg-target-type">
+                          {DOMAIN_META[card.domain].shortName} · {CARD_TYPE_LABELS[card.type]}
+                        </span>
                       </div>
-                    ))}
+                      <p style={{ fontSize: '0.76rem', color: '#94a3b8', margin: '3px 0 0', lineHeight: 1.4 }}>
+                        {reason}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
 
-              {opponentProfile.signatureCombos.slice(0, 2).map((combo, idx) => (
-                <div key={`o-combo-${idx}`} className="tg-combo-card" style={{ padding: '0.6rem 0.75rem', borderLeft: '3px solid rgba(248, 113, 113, 0.65)' }}>
-                  <div style={{ fontSize: '0.74rem', fontWeight: 800, color: '#fca5a5' }}>
-                    Combo Inimigo p/ Sabotar #{idx + 1}: {combo.title}
-                  </div>
-                  <p style={{ fontSize: '0.76rem', color: '#cbd5e1', margin: '0.22rem 0 0.4rem', lineHeight: 1.4 }}>
-                    {combo.explanation}
-                  </p>
-                  <div className="tg-combo-cards-row">
-                    {combo.cards.map((c) => (
-                      <div key={c.id} className="tg-mini-card-pill" onClick={() => setInspectCard(c)}>
-                        {c.imagePath && <img src={c.imagePath} alt={c.name} />}
-                        <div>
-                          <div className="tg-mini-card-name">{c.name}</div>
-                          <div className="tg-mini-card-sub">Custo {c.cost} • {CARD_TYPE_LABELS[c.type]}</div>
-                        </div>
+              <details
+                style={{
+                  paddingTop: 12,
+                  borderTop: '1px solid rgba(148, 163, 184, 0.12)',
+                  fontSize: '0.78rem',
+                  color: '#94a3b8',
+                }}
+              >
+                <summary
+                  style={{
+                    cursor: 'pointer',
+                    color: '#cbd5e1',
+                    fontWeight: 600,
+                    userSelect: 'none',
+                  }}
+                >
+                  Sinergias para explorar e neutralizar neste duelo
+                </summary>
+                <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {playerProfile.signatureCombos.slice(0, 2).map((combo, idx) => (
+                    <div key={`p-c-${idx}`}>
+                      <div style={{ fontWeight: 600, color: '#e5c97b', marginBottom: 2 }}>
+                        Seu Grimório · {combo.title}
                       </div>
-                    ))}
-                  </div>
+                      <p style={{ margin: '0 0 6px', color: '#cbd5e1', lineHeight: 1.4 }}>
+                        {combo.explanation}
+                      </p>
+                    </div>
+                  ))}
+                  {opponentProfile.signatureCombos.slice(0, 2).map((combo, idx) => (
+                    <div key={`o-c-${idx}`} style={{ paddingTop: 8, borderTop: '1px solid rgba(148, 163, 184, 0.08)' }}>
+                      <div style={{ fontWeight: 600, color: '#fca5a5', marginBottom: 2 }}>
+                        Neutralizar · {combo.title}
+                      </div>
+                      <p style={{ margin: 0, color: '#cbd5e1', lineHeight: 1.4 }}>
+                        {combo.explanation}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </details>
             </div>
           </div>
         </div>
       )}
 
       {/* =====================================================================
-          TAB 3: MATRIZ COMPLETA CONTRA TODOS OS OUTROS GRIMÓRIOS
+          3. TABELA DE CONFRONTOS (CLEAN TABLE — 1 BUTTON PER ROW, ZERO EMOJIS)
           ===================================================================== */}
-      {viewSection === 'matrix_all' && (
-        <div className="tg-panel">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
-            <div>
-              <div className="aaa-kicker">TABELA TÁTICA COMPLETA DE CONFRONTOS</div>
-              <h2 className="font-cinzel tg-panel-title">
-                {playerProfile.deck.name} vs Todos os {allDecks.length - 1} Oponentes
-              </h2>
+      {isTableSection && (
+        <section
+          style={{
+            background: '#0b0f19',
+            border: '1px solid rgba(148, 163, 184, 0.12)',
+            borderRadius: 10,
+            padding: '16px 18px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 14,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 10,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className={`aaa-pill-tab ${viewSection === 'matrix_all' ? 'is-active' : ''}`}
+                onClick={() => setViewSection('matrix_all')}
+              >
+                Contra {playerProfile.deck.name}
+              </button>
+              <button
+                type="button"
+                className={`aaa-pill-tab ${viewSection === 'global_tier_list' ? 'is-active' : ''}`}
+                onClick={() => setViewSection('global_tier_list')}
+              >
+                Desempenho Geral ({UNIFIED_CHAMPION_STANDINGS.length} Grimórios)
+              </button>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-              {(['all', 'red', 'blue', 'purple', 'green', 'gold', 'neutral'] as const).map((dom) => (
-                <button
-                  key={dom}
-                  type="button"
-                  className={`nav-tab-btn ${domainFilter === dom ? 'active' : ''}`}
-                  style={{ padding: '0.3rem 0.65rem', fontSize: '0.72rem' }}
-                  onClick={() => setDomainFilter(dom)}
-                >
-                  {dom === 'all' ? 'Todos' : `${DOMAIN_META[dom].icon} ${DOMAIN_META[dom].shortName}`}
-                </button>
-              ))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              {viewSection === 'global_tier_list' && (
+                <>
+                  <select
+                    aria-label="Formato"
+                    className="myth-select-compact"
+                    value={unifiedFormatFilter}
+                    onChange={(e) =>
+                      setUnifiedFormatFilter(e.target.value as UnifiedFormatKind | 'all')
+                    }
+                  >
+                    <option value="all">Todos os formatos</option>
+                    <option value="monocolor">1 Domínio</option>
+                    <option value="bicolor">2 Domínios</option>
+                    <option value="tricolor">3 Domínios</option>
+                    <option value="pentachromatic">5 Domínios</option>
+                  </select>
+                  <select
+                    aria-label="Tier"
+                    className="myth-select-compact"
+                    value={unifiedTierFilter}
+                    onChange={(e) =>
+                      setUnifiedTierFilter(e.target.value as 'all' | 'S' | 'A' | 'B')
+                    }
+                  >
+                    <option value="all">Todos os Tiers</option>
+                    <option value="S">Tier S</option>
+                    <option value="A">Tier A</option>
+                    <option value="B">Tier B</option>
+                  </select>
+                </>
+              )}
+
+              <select
+                aria-label="Domínio"
+                className="myth-select-compact"
+                value={domainFilter}
+                onChange={(e) => setDomainFilter(e.target.value as Domain | 'all')}
+              >
+                <option value="all">Todos os domínios</option>
+                {(['red', 'blue', 'purple', 'green', 'gold', 'neutral'] as Domain[]).map((dom) => (
+                  <option key={dom} value={dom}>
+                    {DOMAIN_META[dom].shortName}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          <div className="tg-matrix-table-wrap">
-            <table className="tg-matrix-table">
-              <thead>
-                <tr>
-                  <th>Oponente / Chefe</th>
-                  <th>Assimetria Inimiga</th>
-                  <th>Favorabilidade</th>
-                  <th>Regra de Empilhamento (1x vs 3x)</th>
-                  <th>Alvo Prioritário</th>
-                  <th>Ação</th>
-                </tr>
-              </thead>
-              <tbody>
-                {allMatchupsList.map(({ deck, profile, analysis, bossUsingDeck }) => (
-                  <tr
-                    key={deck.id}
-                    onClick={() => {
-                      setSelectedOpponentDeckId(deck.id);
-                      setViewSection('matchup_duel');
-                    }}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <td>
-                      <div style={{ fontWeight: 700, color: '#f8fafc' }}>
-                        {deck.domains.map((d) => DOMAIN_META[d].icon).join('')} {deck.name}
-                      </div>
-                      <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
-                        {bossUsingDeck
-                          ? `Ato ${bossUsingDeck.stage}: ${bossUsingDeck.name}`
-                          : deck.subtitle}
-                      </div>
-                    </td>
-                    <td style={{ fontSize: '0.76rem', color: '#cbd5e1' }}>
-                      {profile.counts.creature}C / {profile.counts.spell}M / {profile.counts.reaction}R /{' '}
-                      {profile.counts.relic}Rel
-                    </td>
-                    <td>
-                      <span
-                        style={{
-                          color: analysis.favorabilityColor,
-                          fontWeight: 800,
-                          fontSize: '0.76rem',
-                        }}
-                      >
-                        {analysis.favorabilityLabel}
-                      </span>
-                    </td>
-                    <td style={{ fontSize: '0.75rem', color: '#fde68a' }}>
-                      {analysis.stackingRuleBadge}
-                    </td>
-                    <td style={{ fontSize: '0.76rem', color: '#fca5a5' }}>
-                      {analysis.priorityTargets[0]?.card.name ?? 'Campeão Rival'}
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                        {onLaunchDuel && (
-                          <button
-                            type="button"
-                            className="btn-fantasy btn-fantasy-primary"
-                            style={{ padding: '0.25rem 0.55rem', fontSize: '0.68rem' }}
-                            title={`Enfrentar ${deck.name} na Arena (${AI_SKILL_TIER_SPECS[challengeAiTier].shortLabel})`}
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              onLaunchDuel(
-                                resolvePlayerDeckForChallenge(selectedPlayerDeckId),
-                                deck.id,
-                                challengeAiTier
-                              );
-                            }}
-                          >
-                            ⚔️ T{AI_SKILL_TIER_SPECS[challengeAiTier].roman}
-                          </button>
-                        )}
+          {viewSection === 'matrix_all' ? (
+            <div className="tg-matrix-table-wrap">
+              <table className="tg-matrix-table">
+                <thead>
+                  <tr>
+                    <th>Grimório Oponente</th>
+                    <th>Domínio</th>
+                    <th>Tendência</th>
+                    <th>Formação Recomendada</th>
+                    <th>Alvo Prioritário</th>
+                    <th style={{ textAlign: 'right' }}>Ação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allMatchupsList.map(({ deck, analysis, bossUsingDeck }) => (
+                    <tr
+                      key={deck.id}
+                      onClick={() => {
+                        setSelectedOpponentDeckId(deck.id);
+                        setViewSection('matchup_duel');
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <td>
+                        <div style={{ fontWeight: 600, color: '#f8fafc' }}>{deck.name}</div>
+                        <div style={{ fontSize: '0.73rem', color: '#94a3b8' }}>
+                          {(bossUsingDeck ? bossUsingDeck.name : deck.subtitle)
+                            .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\uFE0F]/gu, '')
+                            .replace(/\s{2,}/g, ' ')
+                            .trim()}
+                        </div>
+                      </td>
+                      <td>{renderDomainDots(deck.domains)}</td>
+                      <td>
+                        <span
+                          style={{
+                            color: analysis.favorabilityColor,
+                            fontWeight: 600,
+                            fontSize: '0.78rem',
+                          }}
+                        >
+                          {analysis.favorabilityLabel}
+                        </span>
+                      </td>
+                      <td style={{ fontSize: '0.76rem', color: '#cbd5e1' }}>
+                        {analysis.stackingRuleBadge}
+                      </td>
+                      <td style={{ fontSize: '0.76rem', color: '#cbd5e1' }}>
+                        {analysis.priorityTargets[0]?.card.name ?? 'Campeão principal'}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
                         <button
                           type="button"
-                          className="btn-fantasy"
-                          style={{ padding: '0.25rem 0.55rem', fontSize: '0.68rem' }}
+                          className="aaa-btn aaa-btn-secondary"
+                          style={{ padding: '4px 10px', fontSize: '0.74rem' }}
                           onClick={(ev) => {
                             ev.stopPropagation();
                             setSelectedOpponentDeckId(deck.id);
                             setViewSection('matchup_duel');
                           }}
                         >
-                          Ver Tática →
+                          Analisar
                         </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* =====================================================================
-          TAB 3B: GRANDE TORNEIO UNIFICADO DE VAELORIA (44 × 43 CAMPEÕES TIER V)
-          ===================================================================== */}
-      {viewSection === 'global_tier_list' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {/* Ecology Overview Card */}
-          <div className="tg-panel">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.8rem' }}>
-              <div>
-                <div className="aaa-kicker">
-                  GRANDE TORNEIO UNIFICADO DE VAELORIA • {UNIFIED_TOURNAMENT_SUMMARY.totalMatchesSimulated.toLocaleString('pt-BR')} CONFRONTOS OFICIAIS
-                </div>
-                <h2 className="font-cinzel tg-panel-title">
-                  Tier List Oficial & Ecologia Inter-Formatos (1, 2, 3 e 5 Cores)
-                </h2>
-              </div>
-              <span
-                className="tg-ai-combo-badge"
-                style={{ fontSize: '0.72rem', padding: '4px 10px' }}
-              >
-                44 Grão-Soberanos de Vaeloria
-              </span>
-            </div>
-
-            <div className="tg-matrix-table-wrap" style={{ marginBottom: '0.5rem' }}>
-              <table className="tg-matrix-table">
-                <thead>
-                  <tr>
-                    <th>Formato de Grimório</th>
-                    <th>WR Global</th>
-                    <th>vs 1 Cor (Mono)</th>
-                    <th>vs 2 Cores (Bicolor)</th>
-                    <th>vs 3 Cores (Tríade)</th>
-                    <th>vs 5 Cores (Penta)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(['tricolor', 'bicolor', 'pentachromatic', 'monocolor'] as UnifiedFormatKind[]).map((fmt) => {
-                    const row = UNIFIED_TOURNAMENT_SUMMARY.formatEcologyMatrix[fmt];
-                    return (
-                      <tr key={fmt}>
-                        <td style={{ fontWeight: 800, color: '#f8fafc' }}>
-                          {UNIFIED_FORMAT_LABELS[fmt]}
-                        </td>
-                        <td style={{ fontWeight: 800, color: row.overallWinRate >= 0.5 ? '#4ade80' : '#fbbf24' }}>
-                          {(row.overallWinRate * 100).toFixed(1)}%
-                        </td>
-                        <td style={{ color: '#cbd5e1' }}>{(row.vsFormat.monocolor * 100).toFixed(1)}%</td>
-                        <td style={{ color: '#cbd5e1' }}>{(row.vsFormat.bicolor * 100).toFixed(1)}%</td>
-                        <td style={{ color: '#cbd5e1' }}>{(row.vsFormat.tricolor * 100).toFixed(1)}%</td>
-                        <td style={{ color: '#cbd5e1' }}>{(row.vsFormat.pentachromatic * 100).toFixed(1)}%</td>
-                      </tr>
-                    );
-                  })}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
-          </div>
-
-          {/* Full 44-Champion Standings Table */}
-          <div className="tg-panel">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.6rem', marginBottom: '0.9rem' }}>
-              <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                {(
-                  [
-                    { id: 'all', label: 'Todos (44)' },
-                    { id: 'monocolor', label: '1 Cor (16)' },
-                    { id: 'bicolor', label: '2 Cores (15)' },
-                    { id: 'tricolor', label: '3 Cores (10)' },
-                    { id: 'pentachromatic', label: '5 Cores (3)' },
-                  ] as const
-                ).map((f) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    className={`nav-tab-btn ${unifiedFormatFilter === f.id ? 'active' : ''}`}
-                    style={{ padding: '0.28rem 0.6rem', fontSize: '0.71rem' }}
-                    onClick={() => setUnifiedFormatFilter(f.id)}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                {(
-                  [
-                    { id: 'all', label: 'Todos os Tiers' },
-                    { id: 'S', label: `Tier S (${UNIFIED_TOURNAMENT_SUMMARY.tierCounts.S})` },
-                    { id: 'A', label: `Tier A (${UNIFIED_TOURNAMENT_SUMMARY.tierCounts.A})` },
-                    { id: 'B', label: `Tier B (${UNIFIED_TOURNAMENT_SUMMARY.tierCounts.B})` },
-                  ] as const
-                ).map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    className={`nav-tab-btn ${unifiedTierFilter === t.id ? 'active' : ''}`}
-                    style={{ padding: '0.28rem 0.6rem', fontSize: '0.71rem' }}
-                    onClick={() => setUnifiedTierFilter(t.id)}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                {(['all', 'red', 'blue', 'purple', 'green', 'gold', 'neutral'] as const).map((dom) => (
-                  <button
-                    key={dom}
-                    type="button"
-                    className={`nav-tab-btn ${domainFilter === dom ? 'active' : ''}`}
-                    style={{ padding: '0.28rem 0.55rem', fontSize: '0.71rem' }}
-                    onClick={() => setDomainFilter(dom)}
-                  >
-                    {dom === 'all' ? 'Todas Cores' : `${DOMAIN_META[dom].icon} ${DOMAIN_META[dom].shortName}`}
-                  </button>
-                ))}
-              </div>
-
-              {(onLaunchDuel || onImportToDeckBuilder) && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                  {onLaunchDuel && (
-                    <>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#e5c97b' }}>
-                        ⚔️ Grau ao Desafiar:
-                      </span>
-                      <select
-                        className="aaa-select"
-                        style={{ padding: '3px 7px', fontSize: '0.71rem' }}
-                        value={challengeAiTier}
-                        title={AI_SKILL_TIER_SPECS[challengeAiTier].description}
-                        onChange={(e) => setChallengeAiTier(Number(e.target.value) as AiSkillTier)}
-                      >
-                        {([1, 2, 3, 4, 5] as AiSkillTier[]).map((t) => (
-                          <option key={t} value={t}>
-                            {AI_SKILL_TIER_SPECS[t].shortLabel} — {AI_SKILL_TIER_SPECS[t].title}
-                          </option>
-                        ))}
-                      </select>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-
+          ) : (
             <div className="tg-matrix-table-wrap">
               <table className="tg-matrix-table">
                 <thead>
                   <tr>
                     <th>#</th>
+                    <th>Grimório Soberano</th>
+                    <th>Domínio</th>
                     <th>Tier</th>
-                    <th>Campeão Co-Evoluído (Tier V)</th>
-                    <th>WR Global (±IC 95%)</th>
-                    <th>Por Formato (1C / 2C / 3C / 5C)</th>
-                    <th>Melhor Matchup</th>
-                    <th>Principal Counter</th>
-                    <th>Ação</th>
+                    <th>Aproveitamento</th>
+                    <th>Confronto Favorável</th>
+                    <th style={{ textAlign: 'right' }}>Ação</th>
                   </tr>
                 </thead>
                 <tbody>
                   {UNIFIED_CHAMPION_STANDINGS.filter((st) => {
-                    if (unifiedFormatFilter !== 'all' && st.format !== unifiedFormatFilter) return false;
-                    if (unifiedTierFilter !== 'all' && st.tierBadge !== unifiedTierFilter) return false;
+                    if (unifiedFormatFilter !== 'all' && st.format !== unifiedFormatFilter)
+                      return false;
+                    if (unifiedTierFilter !== 'all' && st.tierBadge !== unifiedTierFilter)
+                      return false;
                     if (domainFilter !== 'all' && !st.domains.includes(domainFilter)) return false;
                     return true;
                   }).map((st) => {
                     const best = st.bestMatchups[0];
                     const worst = st.worstMatchups[0];
-                    const bestDeck = best ? getUnifiedStandingForDeckId(best.opponentId) : undefined;
-                    const worstDeck = worst ? getUnifiedStandingForDeckId(worst.opponentId) : undefined;
-                    const tierColor =
-                      st.tierBadge === 'S'
-                        ? '#facc15'
-                        : st.tierBadge === 'A'
-                          ? '#4ade80'
-                          : '#93c5fd';
+                    const bestDeck = best
+                      ? getUnifiedStandingForDeckId(best.opponentId)
+                      : undefined;
                     return (
                       <tr
                         key={st.archetypeId}
@@ -2069,107 +1812,37 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                         onClick={() => {
                           setSelectedPlayerDeckId(st.archetypeId);
                           if (worst) setSelectedOpponentDeckId(worst.opponentId);
-                          setViewSection('matchup_duel');
+                          setViewSection('deck_mastery');
                         }}
                       >
-                        <td style={{ fontWeight: 800, color: '#e2e8f0' }}>#{st.rank}</td>
+                        <td style={{ fontWeight: 600, color: '#94a3b8' }}>{st.rank}</td>
                         <td>
-                          <span
-                            style={{
-                              display: 'inline-block',
-                              padding: '2px 8px',
-                              borderRadius: '4px',
-                              fontWeight: 900,
-                              fontSize: '0.74rem',
-                              color: tierColor,
-                              border: `1px solid ${tierColor}`,
-                              background: 'rgba(15, 23, 42, 0.75)',
-                            }}
-                          >
-                            {st.tierBadge}
-                          </span>
-                        </td>
-                        <td>
-                          <div style={{ fontWeight: 700, color: '#f8fafc' }}>
-                            {st.domains.map((d) => DOMAIN_META[d].icon).join('')} {st.name}
-                          </div>
-                          <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
+                          <div style={{ fontWeight: 600, color: '#f8fafc' }}>{st.name}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
                             {UNIFIED_FORMAT_LABELS[st.format]}
                           </div>
                         </td>
-                        <td>
-                          <div style={{ fontWeight: 800, color: st.overallWinRate >= 0.5 ? '#4ade80' : '#fbbf24' }}>
-                            {(st.overallWinRate * 100).toFixed(1)}%
-                          </div>
-                          <div style={{ fontSize: '0.68rem', color: '#94a3b8' }}>
-                            ±{(st.ci95HalfWidth * 100).toFixed(2)}% • n={st.matchesPlayed}
-                          </div>
+                        <td>{renderDomainDots(st.domains)}</td>
+                        <td style={{ fontWeight: 600, color: '#e5c97b' }}>Tier {st.tierBadge}</td>
+                        <td style={{ fontWeight: 600, color: '#e2e8f0' }}>
+                          {(st.overallWinRate * 100).toFixed(1)}%
                         </td>
-                        <td style={{ fontSize: '0.73rem', color: '#cbd5e1', whiteSpace: 'nowrap' }}>
-                          {(st.vsFormatWinRates.monocolor * 100).toFixed(0)}% /{' '}
-                          {(st.vsFormatWinRates.bicolor * 100).toFixed(0)}% /{' '}
-                          {(st.vsFormatWinRates.tricolor * 100).toFixed(0)}% /{' '}
-                          {(st.vsFormatWinRates.pentachromatic * 100).toFixed(0)}%
+                        <td style={{ fontSize: '0.76rem', color: '#94a3b8' }}>
+                          {bestDeck ? bestDeck.name : '—'}
                         </td>
-                        <td style={{ fontSize: '0.73rem', color: '#86efac' }}>
-                          {best && bestDeck
-                            ? `${bestDeck.domains.map((d) => DOMAIN_META[d].icon).join('')} ${bestDeck.name} (${(best.winRate * 100).toFixed(0)}%)`
-                            : '—'}
-                        </td>
-                        <td style={{ fontSize: '0.73rem', color: '#fca5a5' }}>
-                          {worst && worstDeck
-                            ? `${worstDeck.domains.map((d) => DOMAIN_META[d].icon).join('')} ${worstDeck.name} (${(worst.winRate * 100).toFixed(0)}%)`
-                            : '—'}
-                        </td>
-                        <td>
-                          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', whiteSpace: 'nowrap' }}>
-                            {onLaunchDuel && (
-                              <button
-                                type="button"
-                                className="btn-fantasy btn-fantasy-primary"
-                                style={{ padding: '0.24rem 0.52rem', fontSize: '0.67rem' }}
-                                title={`Desafiar ${st.name} na Arena (${AI_SKILL_TIER_SPECS[challengeAiTier].shortLabel})`}
-                                onClick={(ev) => {
-                                  ev.stopPropagation();
-                                  onLaunchDuel(
-                                    resolvePlayerDeckForChallenge(selectedPlayerDeckId),
-                                    st.archetypeId,
-                                    challengeAiTier
-                                  );
-                                }}
-                              >
-                                ⚔️ Desafiar (T{AI_SKILL_TIER_SPECS[challengeAiTier].roman})
-                              </button>
-                            )}
-                            {onImportToDeckBuilder && (
-                              <button
-                                type="button"
-                                className="btn-fantasy"
-                                style={{ padding: '0.24rem 0.52rem', fontSize: '0.67rem' }}
-                                title={`Importar ${st.name} (100 cartas) para a Forja de Grimórios`}
-                                onClick={(ev) => {
-                                  ev.stopPropagation();
-                                  onImportToDeckBuilder(st.archetypeId);
-                                }}
-                              >
-                                ⚒️ Forja
-                              </button>
-                            )}
-                            <button
-                              type="button"
-                              className="btn-fantasy"
-                              style={{ padding: '0.24rem 0.52rem', fontSize: '0.67rem' }}
-                              title="Analisar Matchup 1×1, Counters e Guia Tático"
-                              onClick={(ev) => {
-                                ev.stopPropagation();
-                                setSelectedPlayerDeckId(st.archetypeId);
-                                if (worst) setSelectedOpponentDeckId(worst.opponentId);
-                                setViewSection('matchup_duel');
-                              }}
-                            >
-                              1×1 →
-                            </button>
-                          </div>
+                        <td style={{ textAlign: 'right' }}>
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-secondary"
+                            style={{ padding: '4px 10px', fontSize: '0.74rem' }}
+                            onClick={(ev) => {
+                              ev.stopPropagation();
+                              setSelectedPlayerDeckId(st.archetypeId);
+                              setViewSection('deck_mastery');
+                            }}
+                          >
+                            Ver guia
+                          </button>
                         </td>
                       </tr>
                     );
@@ -2177,15 +1850,83 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                 </tbody>
               </table>
             </div>
-          </div>
-        </div>
+          )}
+        </section>
       )}
 
       {/* =====================================================================
-          TAB 4: COMPÊNDIO DE COMBOS & REACÕES EM CADEIA (1, 2, 3 E 4–5 CORES)
+          4. COMPÊNDIO DE COMBOS (SINGLE-ROW TOOLBAR, CLEAN CARDS, ZERO EMOJI SOUP)
           ===================================================================== */}
       {viewSection === 'combos_compendium' && (
-        <div className="tg-grid-layout" style={{ alignItems: 'stretch' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 10,
+              padding: '10px 14px',
+              background: '#0b0f19',
+              border: '1px solid rgba(148, 163, 184, 0.12)',
+              borderRadius: 10,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <select
+                aria-label="Quantidade de domínios"
+                className="myth-select-compact"
+                value={comboTierFilter}
+                onChange={(e) => setComboTierFilter(e.target.value as ComboColorTier | 'all')}
+              >
+                <option value="all">Todas as combinações ({TACTICAL_COMBOS_COMPENDIUM.length})</option>
+                <option value="mono">1 Domínio ({comboTierCounts.mono})</option>
+                <option value="dual">2 Domínios ({comboTierCounts.dual})</option>
+                <option value="tri">3 Domínios ({comboTierCounts.tri})</option>
+                <option value="poly">4–5 Domínios ({comboTierCounts.poly})</option>
+              </select>
+
+              <select
+                aria-label="Filtrar domínio"
+                className="myth-select-compact"
+                value={domainFilter}
+                onChange={(e) => setDomainFilter(e.target.value as Domain | 'all')}
+              >
+                <option value="all">Todos os domínios</option>
+                {(['red', 'blue', 'purple', 'green', 'gold', 'neutral'] as Domain[]).map((dom) => (
+                  <option key={dom} value={dom}>
+                    {DOMAIN_META[dom].shortName}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                className={`aaa-pill-tab ${onlyInDeckCombos ? 'is-active' : ''}`}
+                onClick={() => setOnlyInDeckCombos((prev) => !prev)}
+              >
+                Presentes no grimório atual
+              </button>
+            </div>
+
+            <input
+              type="text"
+              value={comboSearchQuery}
+              onChange={(e) => setComboSearchQuery(e.target.value)}
+              placeholder="Buscar combo ou carta..."
+              style={{
+                padding: '6px 12px',
+                borderRadius: 6,
+                background: '#111622',
+                border: '1px solid rgba(148, 163, 184, 0.2)',
+                color: '#f8fafc',
+                fontSize: '0.78rem',
+                minWidth: 220,
+              }}
+            />
+          </div>
+
+          <div className="tg-grid-layout" style={{ alignItems: 'stretch', gap: 14 }}>
             {TACTICAL_COMBOS_COMPENDIUM.filter((combo) => {
               if (comboTierFilter !== 'all' && combo.tier !== comboTierFilter) return false;
               if (domainFilter !== 'all' && !combo.domains.includes(domainFilter)) return false;
@@ -2216,12 +1957,15 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
               return (
                 <div
                   key={combo.id}
-                  className="tg-combo-card"
                   style={{
+                    background: '#0b0f19',
+                    border: '1px solid rgba(148, 163, 184, 0.12)',
+                    borderRadius: 10,
+                    padding: '16px 18px',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    gap: '0.65rem',
+                    gap: 12,
                   }}
                 >
                   <div>
@@ -2230,94 +1974,60 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        flexWrap: 'wrap',
-                        gap: '0.4rem',
-                        marginBottom: '0.35rem',
+                        gap: 8,
+                        marginBottom: 6,
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexWrap: 'wrap' }}>
-                        {combo.domains.map((dom) => (
-                          <span
-                            key={dom}
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '0.22rem',
-                              fontSize: '0.66rem',
-                              fontWeight: 700,
-                              padding: '0.14rem 0.45rem',
-                              borderRadius: '4px',
-                              background: '#131926',
-                              color: '#cbd5e1',
-                              border: '1px solid rgba(148, 163, 184, 0.22)',
-                            }}
-                          >
-                            {DOMAIN_META[dom].icon} {DOMAIN_META[dom].shortName}
-                          </span>
-                        ))}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {renderDomainDots(combo.domains)}
+                        <span style={{ fontSize: '0.73rem', color: '#94a3b8' }}>
+                          {combo.domains.map((d) => DOMAIN_META[d].shortName).join(' · ')}
+                        </span>
                       </div>
-
                       {inDeckCount > 0 && (
-                        <span
-                          style={{
-                            fontSize: '0.66rem',
-                            fontWeight: 700,
-                            padding: '0.14rem 0.48rem',
-                            borderRadius: '4px',
-                            background: 'rgba(212, 175, 55, 0.12)',
-                            color: '#e6c875',
-                            border: '1px solid rgba(212, 175, 55, 0.35)',
-                          }}
-                        >
-                          {inDeckCount}/{comboCards.length} no Grimório
+                        <span style={{ fontSize: '0.72rem', color: '#e5c97b' }}>
+                          {inDeckCount}/{comboCards.length} no grimório
                         </span>
                       )}
                     </div>
 
-                    <h4 className="font-cinzel" style={{ color: '#f8fafc', fontSize: '0.92rem', margin: '0 0 0.25rem' }}>
+                    <h3
+                      className="font-cinzel"
+                      style={{ color: '#f8fafc', fontSize: '0.94rem', margin: '0 0 6px' }}
+                    >
                       {combo.title}
-                    </h4>
+                    </h3>
 
-                    <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.45, margin: 0 }}>
+                    <p style={{ fontSize: '0.79rem', color: '#cbd5e1', lineHeight: 1.46, margin: 0 }}>
                       {combo.mechanism}
                     </p>
-                    <p style={{ fontSize: '0.76rem', color: '#fde68a', lineHeight: 1.42, margin: '0.3rem 0 0' }}>
-                      <strong>Recompensa Tática:</strong> {combo.payoff}
+                    <p style={{ fontSize: '0.76rem', color: '#94a3b8', lineHeight: 1.44, margin: '6px 0 0' }}>
+                      <strong style={{ color: '#e5c97b', fontWeight: 600 }}>Impacto:</strong>{' '}
+                      {combo.payoff}
                     </p>
                   </div>
 
-                  <div className="tg-combo-cards-row" style={{ paddingTop: '0.25rem' }}>
-                    {comboCards.map((c) => {
-                      const isPresent = deckIdSet.has(c.id);
-                      return (
-                        <div
-                          key={c.id}
-                          className="tg-mini-card-pill"
-                          style={
-                            isPresent
-                              ? { borderColor: 'rgba(74, 222, 128, 0.55)' }
-                              : undefined
-                          }
-                          onClick={() => setInspectCard(c)}
-                          title="Clique para inspecionar a carta em tamanho real"
-                        >
-                          {c.imagePath && <img src={c.imagePath} alt={c.name} />}
-                          <div>
-                            <div className="tg-mini-card-name">
-                              {isPresent ? '✓ ' : ''}
-                              {c.name}
-                            </div>
-                            <div className="tg-mini-card-sub">
-                              {c.cost}⚡ • {DOMAIN_META[c.domain].shortName} • {CARD_TYPE_LABELS[c.type]}
-                            </div>
+                  <div className="tg-combo-cards-row">
+                    {comboCards.map((c) => (
+                      <div
+                        key={c.id}
+                        className="tg-mini-card-pill"
+                        onClick={() => setInspectCard(c)}
+                      >
+                        {c.imagePath && <img src={c.imagePath} alt={c.name} />}
+                        <div>
+                          <div className="tg-mini-card-name">{c.name}</div>
+                          <div className="tg-mini-card-sub">
+                            Custo {c.cost} · {CARD_TYPE_LABELS[c.type]}
                           </div>
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                   </div>
                 </div>
               );
             })}
+          </div>
         </div>
       )}
 
@@ -2332,15 +2042,15 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
       <div className="modal-backdrop" onClick={onClose}>
         <div
           className="modal-panel tg-modal-shell"
-          style={{ maxWidth: '1220px', width: '95vw', maxHeight: '90vh', overflowY: 'auto' }}
+          style={{ maxWidth: 1180, width: '95vw', maxHeight: '90vh', overflowY: 'auto' }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="modal-sticky-close-bar">
-            <span className="font-cinzel gold-gradient-text" style={{ fontSize: '0.78rem', fontWeight: 800 }}>
-              CONSELHEIRO TÁTICO DA PARTIDA
+            <span className="font-cinzel" style={{ fontSize: '0.84rem', fontWeight: 700, color: '#f8fafc' }}>
+              Oráculo Estratégico
             </span>
-            <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
-              ✕ Fechar Conselheiro
+            <button type="button" className="aaa-btn aaa-btn-secondary" onClick={onClose}>
+              Fechar
             </button>
           </div>
           {content}

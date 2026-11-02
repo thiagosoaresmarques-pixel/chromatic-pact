@@ -1855,29 +1855,44 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       <aside className="db-modern-sidebar">
         {/* Top Deck Header & Prebuilt Selector */}
         <div className="db-sidebar-top">
-          <div className="db-sidebar-title-row">
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.35rem',
+            }}
+          >
             <input
               type="text"
               className="db-deck-title-input"
               value={deckName}
               onChange={(e) => setDeckName(e.target.value)}
               placeholder="Nome do Grimório..."
+              style={{ width: '100%' }}
             />
-            <span
-              className="db-deck-counter-pill"
-              title="Máximo de 10 cartas Lendárias (1× cada) por Grimório de 100 cartas"
-              style={{ fontSize: '0.68rem', padding: '0.18rem 0.45rem' }}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.5rem',
+                fontSize: '0.73rem',
+                color: '#94a3b8',
+              }}
             >
-              Lendas {deckAnalysis.legendaryCount}/{MAX_LEGENDARIES_PER_DECK}
-            </span>
-            <span
-              className={`db-deck-counter-pill ${
-                deckCardIds.length === 100 ? 'is-complete' : ''
-              }`}
-              title={`${deckAnalysis.uniqueCount} cartas distintas (Comum/Incomum até 3×, Rara até 2×, Lendária 1×)`}
-            >
-              {deckCardIds.length}/100
-            </span>
+              <span title={`${deckAnalysis.uniqueCount} cartas distintas (Comum/Incomum até 3×, Rara até 2×, Lendária 1×)`}>
+                <strong style={{ color: deckCardIds.length === 100 ? '#fde68a' : '#e2e8f0' }}>
+                  {deckCardIds.length}/100
+                </strong>{' '}
+                cartas
+              </span>
+              <span title="Máximo de 10 cartas Lendárias (1× cada) por Grimório de 100 cartas">
+                Lendas{' '}
+                <strong style={{ color: '#cbd5e1' }}>
+                  {deckAnalysis.legendaryCount}/{MAX_LEGENDARIES_PER_DECK}
+                </strong>
+              </span>
+            </div>
           </div>
 
           <div className="db-deck-progress-wrap">
@@ -1900,30 +1915,30 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               }}
             >
               <option value="" disabled>
-                Carregar Modelo de Grimório (44 Soberanos + {PREBUILT_DECKS.length} Clássicos)...
+                Carregar modelo de grimório...
               </option>
-              <optgroup label="Grimórios de Soberanos Monocolores (16 Arquétipos)">
+              <optgroup label="Grimórios Monocolores (16)">
                 {getTrainedMonocolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name}
                   </option>
                 ))}
               </optgroup>
-              <optgroup label="Grimórios de Soberanos Bicolores (15 Pactos)">
+              <optgroup label="Grimórios Bicolores (15)">
                 {getTrainedBicolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name}
                   </option>
                 ))}
               </optgroup>
-              <optgroup label="Grimórios de Grão-Soberanos Tricolores & Pentacromáticos (13 Ápices)">
+              <optgroup label="Grimórios Tricolores e Pentacromáticos (13)">
                 {getTrainedPolycolorPrebuiltDecks(5).map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name}
                   </option>
                 ))}
               </optgroup>
-              <optgroup label="Grimórios Clássicos & Multicromáticos">
+              <optgroup label="Grimórios Clássicos">
                 {PREBUILT_DECKS.map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name}
@@ -1948,14 +1963,14 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                       onClick={() => handleLoadCustom(cd)}
                       title={
                         totalGames > 0
-                          ? `${cd.name} — Histórico: ${w} Vitórias / ${l} Derrotas (${wrPct}% WR)`
+                          ? `${cd.name} — Histórico: ${w} Vitórias / ${l} Derrotas (${wrPct}%)`
                           : cd.name
                       }
                     >
                       <span>{cd.name}</span>
                       {totalGames > 0 && (
                         <small className="db-deck-wr-badge">
-                          {w}V•{l}D ({wrPct}%)
+                          {wrPct}%
                         </small>
                       )}
                     </button>
@@ -1974,10 +1989,19 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             </div>
           )}
 
-          <div className="db-sidebar-actions">
+          <div
+            className="db-sidebar-actions"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              position: 'relative',
+            }}
+          >
             <button
               type="button"
               className="db-action-btn primary"
+              style={{ flex: 1 }}
               onClick={handleSaveCurrentDeck}
               title={
                 deckCardIds.length === 100
@@ -1988,53 +2012,113 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               {isReplacingGrimoire
                 ? `Confirmar (-${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)`
                 : deckCardIds.length === 100
-                ? 'Salvar (100)'
+                ? 'Salvar grimório'
                 : `Salvar (${deckCardIds.length}/100)`}
             </button>
-            <button
-              type="button"
-              className="db-action-btn"
-              onClick={handleAutoCompleteDeck}
-              disabled={deckCardIds.length >= 100}
-            >
-              Completar
-            </button>
-            {isReplacingGrimoire ? (
-              <>
-                <button
-                  type="button"
-                  className="db-action-btn subtle-danger"
-                  onClick={() => setDeckCardIds([])}
-                  title="Esvaziar cartas para montar do zero"
-                >
-                  Limpar
-                </button>
-                <button
-                  type="button"
-                  className="db-action-btn subtle-danger"
-                  onClick={handleCancelReplaceGrimoire}
-                >
-                  Cancelar
-                </button>
-              </>
-            ) : (isGuest || isFirstDeckSetup) ? (
-              <button
-                type="button"
-                className="db-action-btn subtle-danger"
-                onClick={() => setDeckCardIds([])}
-              >
-                Limpar
-              </button>
-            ) : (
-              <button
-                type="button"
+
+            <details style={{ position: 'relative' }}>
+              <summary
                 className="db-action-btn"
-                onClick={handleStartReplaceGrimoire}
-                title={`Editar ou substituir Grimório completo por ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro`}
+                style={{
+                  listStyle: 'none',
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  padding: '0.42rem 0.68rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.28rem',
+                }}
               >
-                Editar ({GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)
-              </button>
-            )}
+                Opções ▾
+              </summary>
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 6px)',
+                  right: 0,
+                  zIndex: 90,
+                  minWidth: '205px',
+                  padding: '0.4rem',
+                  borderRadius: '8px',
+                  background: '#0b0f19',
+                  border: '1px solid rgba(148, 163, 184, 0.22)',
+                  boxShadow: '0 14px 32px rgba(0, 0, 0, 0.85)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem',
+                }}
+              >
+                <button
+                  type="button"
+                  className="db-action-btn"
+                  style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                  onClick={handleAutoCompleteDeck}
+                  disabled={deckCardIds.length >= 100}
+                >
+                  Completar até 100 cartas
+                </button>
+                {isReplacingGrimoire ? (
+                  <>
+                    <button
+                      type="button"
+                      className="db-action-btn subtle-danger"
+                      style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                      onClick={() => setDeckCardIds([])}
+                    >
+                      Limpar cartas
+                    </button>
+                    <button
+                      type="button"
+                      className="db-action-btn subtle-danger"
+                      style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                      onClick={handleCancelReplaceGrimoire}
+                    >
+                      Cancelar edição
+                    </button>
+                  </>
+                ) : (isGuest || isFirstDeckSetup) ? (
+                  <button
+                    type="button"
+                    className="db-action-btn subtle-danger"
+                    style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                    onClick={() => setDeckCardIds([])}
+                  >
+                    Limpar cartas
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="db-action-btn"
+                    style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                    onClick={handleStartReplaceGrimoire}
+                    title={`Editar ou substituir Grimório completo por ${GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro`}
+                  >
+                    Editar grimório ({GRIMOIRE_REPLACEMENT_GOLD_COST} Ouro)
+                  </button>
+                )}
+                <div style={{ height: '1px', background: 'rgba(148, 163, 184, 0.12)', margin: '0.15rem 0' }} />
+                <button
+                  type="button"
+                  className="db-action-btn"
+                  style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                  data-shared-deck-url={lastSharedDeckUrl || undefined}
+                  onClick={() => void handleShareDeckLink()}
+                  title="Copiar link direto compartilhável deste Grimório"
+                >
+                  {deckLinkCopied ? 'Link copiado' : 'Compartilhar link'}
+                </button>
+                <button
+                  type="button"
+                  className="db-action-btn"
+                  style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                  onClick={() => setShowImportCodeBox((v) => !v)}
+                  title="Importar um Grimório colando um link ou código CPDECK1-..."
+                >
+                  {showImportCodeBox ? 'Ocultar importação' : 'Importar link ou código'}
+                </button>
+              </div>
+            </details>
+
             <button
               type="button"
               className="db-action-btn show-on-mobile-inline"
@@ -2042,26 +2126,6 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               title="Expandir ou recolher a lista de cartas do Grimório no smartphone"
             >
               Lista ({deckCardIds.length}) {isMobileDeckListOpen ? '▴' : '▾'}
-            </button>
-          </div>
-
-          <div className="db-deckcode-row">
-            <button
-              type="button"
-              className="db-action-btn"
-              data-shared-deck-url={lastSharedDeckUrl || undefined}
-              onClick={() => void handleShareDeckLink()}
-              title="Copiar link direto compartilhável deste Grimório"
-            >
-              {deckLinkCopied ? '✓ Link Copiado' : 'Compartilhar Link'}
-            </button>
-            <button
-              type="button"
-              className="db-action-btn"
-              onClick={() => setShowImportCodeBox((v) => !v)}
-              title="Importar um Grimório colando um link ou código CPDECK1-..."
-            >
-              {showImportCodeBox ? 'Fechar Importação' : 'Importar Link / Código'}
             </button>
           </div>
 

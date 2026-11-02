@@ -554,162 +554,111 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
   };
 
   const innerContent = (
-    <div className={isModal ? 'tg-modal-inner' : 'aaa-page-shell'}>
-      {/* Unified Navigation Header (Main Tabs + Contextual Sub-Tabs Aligned on Same Left Edge) */}
-      <div
+    <div
+      className={isModal ? 'tg-modal-inner' : 'aaa-page-shell'}
+      style={{ maxWidth: 1180, margin: '0 auto', gap: 14 }}
+    >
+      {/* Clean Single-Row Manual Header (Zero Multi-Row Pill Wall) */}
+      <header
         style={{
           display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          padding: '8px 12px',
-          background: '#0b0f17',
-          border: '1px solid rgba(148, 163, 184, 0.18)',
-          borderRadius: 8,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 10,
+          flexWrap: 'wrap',
+          padding: '10px 14px',
+          background: 'rgba(15, 23, 42, 0.6)',
+          border: '1px solid rgba(148, 163, 184, 0.12)',
+          borderRadius: 10,
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '0.5rem',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          {(
+            [
+              { id: 'walkthrough', label: 'Guia Rápido' },
+              { id: 'combat_rules', label: 'Combate e Fileiras' },
+              { id: 'board_stacking', label: 'Mesa 6×4' },
+              { id: 'domains', label: 'Domínios' },
+              { id: 'keywords', label: `Palavras-Chave (${KEYWORD_ENCYCLOPEDIA.length})` },
+            ] as const
+          ).map((sec) => (
             <button
+              key={sec.id}
               type="button"
-              className={`nav-tab-btn ${activeSection === 'walkthrough' ? 'active' : ''}`}
-              onClick={() => setActiveSection('walkthrough')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+              className={`nav-tab-btn ${activeSection === sec.id ? 'active' : ''}`}
+              onClick={() => setActiveSection(sec.id)}
+              style={{
+                padding: '6px 12px',
+                fontSize: '0.78rem',
+                textTransform: 'none',
+                letterSpacing: '0.01em',
+              }}
             >
-              Passo a Passo ({WALKTHROUGH_STEPS.length})
+              {sec.label}
             </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeSection === 'combat_rules' ? 'active' : ''}`}
-              onClick={() => setActiveSection('combat_rules')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+          ))}
+
+          <select
+            aria-label="Mais capítulos do manual"
+            className="myth-select-compact"
+            value={
+              ['deckbuilding', 'weather_runes', 'modes_economy', 'controls'].includes(activeSection)
+                ? activeSection
+                : ''
+            }
+            onChange={(e) => {
+              if (e.target.value) {
+                setActiveSection(e.target.value as typeof activeSection);
+              }
+            }}
+          >
+            <option value="">Mais capítulos...</option>
+            <option value="deckbuilding">Construção de Grimórios</option>
+            <option value="weather_runes">Expansão, Climas e Quebra</option>
+            <option value="modes_economy">Economia, Relíquias e Modos</option>
+            <option value="controls">Atalhos de Teclado</option>
+          </select>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          {activeSection === 'walkthrough' && (
+            <select
+              aria-label="Selecionar lição"
+              className="myth-select-compact"
+              style={{ minWidth: 205 }}
+              value={activeStepIndex}
+              onChange={(e) => setActiveStepIndex(Number(e.target.value))}
             >
-              Combate, Fileiras & Bloqueios
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeSection === 'board_stacking' ? 'active' : ''}`}
-              onClick={() => setActiveSection('board_stacking')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
+              {WALKTHROUGH_STEPS.map((st, idx) => (
+                <option key={st.stepNumber} value={idx}>
+                  {STEP_SHORT_LABELS[st.stepNumber] ?? `${st.stepNumber}. ${st.title}`}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {activeSection === 'keywords' && (
+            <select
+              aria-label="Filtrar categoria de palavra-chave"
+              className="myth-select-compact"
+              value={keywordFilter}
+              onChange={(e) => setKeywordFilter(e.target.value as typeof keywordFilter)}
             >
-              Mesa 6×4 & Formações
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeSection === 'deckbuilding' ? 'active' : ''}`}
-              onClick={() => setActiveSection('deckbuilding')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Construção de Grimórios
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeSection === 'domains' ? 'active' : ''}`}
-              onClick={() => setActiveSection('domains')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Os 5 Domínios
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeSection === 'weather_runes' ? 'active' : ''}`}
-              onClick={() => setActiveSection('weather_runes')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Expansão, Climas & Quebra
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeSection === 'modes_economy' ? 'active' : ''}`}
-              onClick={() => setActiveSection('modes_economy')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Economia, Relíquias & Modos
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeSection === 'keywords' ? 'active' : ''}`}
-              onClick={() => setActiveSection('keywords')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Palavras-Chave ({KEYWORD_ENCYCLOPEDIA.length})
-            </button>
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeSection === 'controls' ? 'active' : ''}`}
-              onClick={() => setActiveSection('controls')}
-              style={{ padding: '5px 10px', fontSize: '0.73rem' }}
-            >
-              Atalhos
-            </button>
-          </div>
+              <option value="all">Todas as categorias ({KEYWORD_ENCYCLOPEDIA.length})</option>
+              <option value="Ofensiva">Ofensiva</option>
+              <option value="Defensiva">Defensiva</option>
+              <option value="Mobilidade">Mobilidade</option>
+              <option value="Especial">Especial</option>
+            </select>
+          )}
+
           {isModal && onClose && (
-            <button type="button" className="btn-fantasy btn-fantasy-danger" onClick={onClose}>
+            <button type="button" className="aaa-btn aaa-btn-secondary" onClick={onClose}>
               Fechar
             </button>
           )}
         </div>
-
-        {activeSection === 'walkthrough' && (
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0.35rem',
-              alignItems: 'center',
-              paddingTop: '8px',
-              borderTop: '1px solid rgba(148, 163, 184, 0.14)',
-            }}
-          >
-            {WALKTHROUGH_STEPS.map((st, idx) => {
-              const isCurrent = idx === activeStepIndex;
-              return (
-                <button
-                  key={st.stepNumber}
-                  type="button"
-                  className={`nav-tab-btn ${isCurrent ? 'active' : ''}`}
-                  onClick={() => setActiveStepIndex(idx)}
-                  style={{ padding: '4px 9px', fontSize: '0.71rem' }}
-                >
-                  {STEP_SHORT_LABELS[st.stepNumber] ?? `${st.stepNumber}. ${st.title}`}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {activeSection === 'keywords' && (
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '0.35rem',
-              alignItems: 'center',
-              paddingTop: '8px',
-              borderTop: '1px solid rgba(148, 163, 184, 0.14)',
-            }}
-          >
-            {(['all', 'Ofensiva', 'Defensiva', 'Mobilidade', 'Especial'] as const).map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                className={`nav-tab-btn ${keywordFilter === cat ? 'active' : ''}`}
-                style={{ padding: '4px 9px', fontSize: '0.71rem' }}
-                onClick={() => setKeywordFilter(cat)}
-              >
-                {cat === 'all' ? `Todas (${KEYWORD_ENCYCLOPEDIA.length})` : cat}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      </header>
 
       {/* =====================================================================
           SECTION 1: INTERACTIVE STEP-BY-STEP WALKTHROUGH
@@ -969,10 +918,10 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                     Situação Tática
                   </th>
                   <th style={{ padding: '0.65rem 0.85rem', borderBottom: '1px solid rgba(148, 163, 184, 0.2)', width: '39%', color: '#f8fafc' }}>
-                    🛡️ Criatura na VANGUARDA (Frente)
+                    Criatura na Vanguarda (Frente)
                   </th>
                   <th style={{ padding: '0.65rem 0.85rem', borderBottom: '1px solid rgba(148, 163, 184, 0.2)', width: '39%', color: '#f8fafc' }}>
-                    🏹 Criatura na RETAGUARDA (Trás)
+                    Criatura na Retaguarda (Trás)
                   </th>
                 </tr>
               </thead>
@@ -1072,7 +1021,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               <tbody>
                 {[
                   {
-                    type: '🪽 Criatura com Voo',
+                    type: 'Criatura com Voo',
                     blockedBy:
                       'SOMENTE uma criatura inimiga que tenha GUARDIÃO + VOO juntos (em qualquer fileira ou coluna).',
                     notBlockedBy:
@@ -1081,7 +1030,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                       'Sofre contra-ataque normal ao bater em criaturas. No turno do rival, pode ser alvejada por unidades com Voo, unidades com Alcance ou Feitiços (antiaéreo ativo).',
                   },
                   {
-                    type: '🏹 Criatura com Alcance',
+                    type: 'Criatura com Alcance',
                     blockedBy:
                       'Qualquer criatura com GUARDIÃO posicionada na VANGUARDA inimiga (terrestre, voadora ou de alcance).',
                     notBlockedBy:
@@ -1090,7 +1039,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                       'Na RETAGUARDA: Disparo Livre — NÃO sofre dano de contra-ataque! Na VANGUARDA: luta engajada e sofre contra-ataque normal. Acerta alvos terrestres e com Voo.',
                   },
                   {
-                    type: '⚔️ Terrestre na Vanguarda (sem Voo/Alcance)',
+                    type: 'Terrestre na Vanguarda (sem Voo/Alcance)',
                     blockedBy:
                       '• Qualquer Guardião terrestre na Vanguarda rival (todas as colunas);\n• Guardião terrestre na Retaguarda rival até ±1 coluna;\n• Para proteger o Soberano: qualquer terrestre naquela mesma coluna.',
                     notBlockedBy:
@@ -1099,7 +1048,7 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                       'Sofre contra-ataque normal (salvo se tiver Ímpeto na Onda de Iniciativa e abater um alvo sem Ímpeto antes da resposta). Não acerta alvos com Voo.',
                   },
                   {
-                    type: '🗡️ Terrestre na Retaguarda (sem Voo/Alcance)',
+                    type: 'Terrestre na Retaguarda (sem Voo/Alcance)',
                     blockedBy:
                       '• Qualquer Guardião terrestre na Vanguarda rival;\n• Qualquer terrestre na Vanguarda rival impede ataques ao Soberano e às outras colunas da Retaguarda;\n• Terrestre na Retaguarda da mesma coluna protege o Soberano.',
                     notBlockedBy:

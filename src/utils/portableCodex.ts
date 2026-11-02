@@ -79,6 +79,15 @@ export function encodeDeckCode(name: string, cardIds: string[]): string {
   return `${DECK_CODE_PREFIX}${sum}-${utf8ToBase64Url(body)}`;
 }
 
+export function buildShareableDeckUrl(name: string, cardIds: string[]): string {
+  const code = encodeDeckCode(name, cardIds);
+  const base =
+    typeof window !== 'undefined' && window.location?.origin
+      ? `${window.location.origin}${window.location.pathname}`
+      : 'https://chromaticpact.com/';
+  return `${base}?deck=${encodeURIComponent(code)}`;
+}
+
 export function decodeDeckCode(rawInput: string): {
   ok: true;
   data: DecodedDeckPayload;
@@ -86,11 +95,23 @@ export function decodeDeckCode(rawInput: string): {
   ok: false;
   error: string;
 } {
-  const trimmed = (rawInput || '').trim();
+  let trimmed = (rawInput || '').trim();
+  const embeddedMatch = /CPDECK1-[A-Za-z0-9]{6}-[A-Za-z0-9_-]+/.exec(trimmed);
+  if (embeddedMatch) {
+    trimmed = embeddedMatch[0];
+  } else {
+    try {
+      const parsedUrl = new URL(trimmed);
+      const qp = parsedUrl.searchParams.get('deck');
+      if (qp) trimmed = qp.trim();
+    } catch {
+      // keep raw input
+    }
+  }
   if (!trimmed.startsWith(DECK_CODE_PREFIX)) {
     return {
       ok: false,
-      error: 'Código inválido: o código de Grimório deve começar com CPDECK1-.',
+      error: 'Código inválido: cole um link ou código de Grimório contendo CPDECK1-.',
     };
   }
   const rest = trimmed.slice(DECK_CODE_PREFIX.length);

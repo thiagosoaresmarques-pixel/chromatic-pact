@@ -22,7 +22,7 @@ import {
   GRIMOIRE_REPLACEMENT_GOLD_COST,
   MONOCHROMATIC_STARTER_DECKS,
 } from '../utils/multiplayerEngine';
-import { decodeDeckCode, encodeDeckCode } from '../utils/portableCodex';
+import { buildShareableDeckUrl, decodeDeckCode } from '../utils/portableCodex';
 import { canCraftCard, CRAFT_COST_BY_RARITY } from '../utils/craftingEngine';
 import { playSfx } from '../utils/soundEngine';
 
@@ -140,6 +140,8 @@ export interface DeckBuilderProps {
   onRequireAccount?: () => void;
   initialTemplateDeckId?: string | null;
   onConsumeInitialTemplate?: () => void;
+  initialSharedDeckCode?: string | null;
+  onConsumeInitialSharedDeck?: () => void;
 }
 
 interface GalleryCardCellProps {
@@ -536,6 +538,8 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   onRequireAccount,
   initialTemplateDeckId,
   onConsumeInitialTemplate,
+  initialSharedDeckCode,
+  onConsumeInitialSharedDeck,
 }) => {
   // First-time deck setup is 100% free; from the 2nd time onward, full editing/reforging costs 100 Gold
   const isFirstDeckSetup = !isGuest && customDecks.length === 0;
@@ -1232,57 +1236,122 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
   const [showImportCodeBox, setShowImportCodeBox] = useState<boolean>(false);
   const [importCodeInput, setImportCodeInput] = useState<string>('');
+  const [deckLinkCopied, setDeckLinkCopied] = useState<boolean>(false);
+  const [lastSharedDeckUrl, setLastSharedDeckUrl] = useState<string>('');
 
-  const handleCopyDeckCode = () => {
+  const handleShareDeckLink = async () => {
     if (deckCardIds.length === 0) {
-      setSaveBanner('Adicione cartas ao Grimório antes de copiar o código.');
+      setSaveBanner('Adicione cartas ao Grimório antes de gerar o link.');
       setTimeout(() => setSaveBanner(null), 2800);
       return;
     }
-    const code = encodeDeckCode(deckName, deckCardIds);
-    navigator.clipboard.writeText(code).catch(() => undefined);
-    setSaveBanner(`Código do Grimório copiado (${deckCardIds.length} cartas).`);
+    const shareUrl = buildShareableDeckUrl(deckName, deckCardIds);
+    setLastSharedDeckUrl(shareUrl);
+
+    let copiedOk = false;
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        copiedOk = true;
+      } catch {
+        copiedOk = false;
+      }
+    }
+    if (!copiedOk) {
+      const ta = document.createElement('textarea');
+      ta.value = shareUrl;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+
+    if (
+      typeof navigator.share === 'function' &&
+      typeof window !== 'undefined' &&
+      window.innerWidth <= 768
+    ) {
+      void navigator
+        .share({
+          title: `Grimório: ${deckName || 'Chromatic Pact'}`,
+          url: shareUrl,
+        })
+        .catch(() => {});
+    }
+
+    setDeckLinkCopied(true);
+    setTimeout(() => setDeckLinkCopied(false), 2400);
+    setSaveBanner(`Link compartilhável do Grimório copiado (${deckCardIds.length} cartas).`);
     setTimeout(() => setSaveBanner(null), 3200);
   };
 
-  const handleApplyImportedDeckCode = () => {
-    const res = decodeDeckCode(importCodeInput);
-    if (!res.ok) {
-      setSaveBanner(res.error);
-      setTimeout(() => setSaveBanner(null), 3500);
-      return;
-    }
-    const { name, cardIds } = res.data;
-    const enforceOwned = !isGuest && !isFirstDeckSetup && !isReplacingGrimoire;
-    const accepted: string[] = [];
-    const usedCounts: Record<string, number> = {};
-    let omitted = 0;
+  const applyDecodedDeckInput = useCallback(
+    (rawInput: string, source: 'manual' | 'link'): boolean => {
+      const res = decodeDeckCode(rawInput);
+      if (!res.ok) {
+        setSaveBanner(res.error);
+        setTimeout(() => setSaveBanner(null), 3500);
+        return false;
+      }
+      const { name, cardIds } = res.data;
+      const enforceOwnedOnLoad =
+        source === 'manual' && !isGuest && !isFirstDeckSetup && !isReplacingGrimoire;
+      const accepted: string[] = [];
+      const usedCounts: Record<string, number> = {};
+      let omitted = 0;
+      let missingFromCollection = 0;
 
-    for (const cid of cardIds) {
-      const card = CARDS_BY_ID[cid];
-      if (!card || accepted.length >= 100) continue;
-      const maxRarity = MAX_COPIES_BY_RARITY[card.rarity] ?? 2;
-      const cur = usedCounts[cid] ?? 0;
-      const owned = enforceOwned ? unlockedCardIds[cid] ?? 0 : maxRarity;
-      if (cur < maxRarity && cur < owned) {
+      for (const cid of cardIds) {
+        const card = CARDS_BY_ID[cid];
+        if (!card || accepted.length >= 100) continue;
+        const maxRarity = MAX_COPIES_BY_RARITY[card.rarity] ?? 2;
+        const cur = usedCounts[cid] ?? 0;
+        const owned = unlockedCardIds[cid] ?? 0;
+        if (cur >= maxRarity) {
+          omitted += 1;
+          continue;
+        }
+        if (enforceOwnedOnLoad && cur >= owned) {
+          omitted += 1;
+          continue;
+        }
+        if (!isGuest && !isFirstDeckSetup && !isReplacingGrimoire && cur >= owned) {
+          missingFromCollection += 1;
+        }
         accepted.push(cid);
         usedCounts[cid] = cur + 1;
-      } else {
-        omitted += 1;
       }
-    }
 
-    setDeckName(name);
-    setDeckCardIds(accepted);
-    setShowImportCodeBox(false);
-    setImportCodeInput('');
-    setSaveBanner(
-      omitted > 0
-        ? `📥 "${name}" importado com ${accepted.length} cartas disponíveis (${omitted} fora da sua coleção atual).`
-        : `📥 Grimório "${name}" (${accepted.length} cartas) importado com sucesso!`
-    );
-    setTimeout(() => setSaveBanner(null), 3800);
+      setDeckName(name);
+      setDeckCardIds(accepted);
+      setShowImportCodeBox(false);
+      setImportCodeInput('');
+      setSaveBanner(
+        source === 'link'
+          ? missingFromCollection > 0
+            ? `Grimório compartilhado "${name}" (${accepted.length} cartas) carregado (${missingFromCollection} fora da sua coleção atual).`
+            : `Grimório compartilhado "${name}" (${accepted.length} cartas) carregado com sucesso.`
+          : omitted > 0
+          ? `"${name}" importado com ${accepted.length} cartas disponíveis (${omitted} fora da sua coleção atual).`
+          : `Grimório "${name}" (${accepted.length} cartas) importado com sucesso.`
+      );
+      setTimeout(() => setSaveBanner(null), 4200);
+      return true;
+    },
+    [isGuest, isFirstDeckSetup, isReplacingGrimoire, unlockedCardIds]
+  );
+
+  const handleApplyImportedDeckCode = () => {
+    applyDecodedDeckInput(importCodeInput, 'manual');
   };
+
+  useEffect(() => {
+    if (!initialSharedDeckCode) return;
+    applyDecodedDeckInput(initialSharedDeckCode, 'link');
+    onConsumeInitialSharedDeck?.();
+  }, [initialSharedDeckCode, applyDecodedDeckInput, onConsumeInitialSharedDeck]);
 
   const promptCardsList = useMemo(() => {
     if (promptDomainFilter === 'all') return ALL_CARDS;
@@ -1980,18 +2049,19 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             <button
               type="button"
               className="db-action-btn"
-              onClick={handleCopyDeckCode}
-              title="Copiar código compacto deste Grimório para compartilhar"
+              data-shared-deck-url={lastSharedDeckUrl || undefined}
+              onClick={() => void handleShareDeckLink()}
+              title="Copiar link direto compartilhável deste Grimório"
             >
-              Copiar Código
+              {deckLinkCopied ? '✓ Link Copiado' : 'Compartilhar Link'}
             </button>
             <button
               type="button"
               className="db-action-btn"
               onClick={() => setShowImportCodeBox((v) => !v)}
-              title="Importar um Grimório colando um código CPDECK1-..."
+              title="Importar um Grimório colando um link ou código CPDECK1-..."
             >
-              {showImportCodeBox ? 'Fechar Importação' : 'Importar Código'}
+              {showImportCodeBox ? 'Fechar Importação' : 'Importar Link / Código'}
             </button>
           </div>
 
@@ -2000,7 +2070,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               <input
                 type="text"
                 className="db-modern-search"
-                placeholder="Cole aqui o código CPDECK1-..."
+                placeholder="Cole o link compartilhado ou código CPDECK1-..."
                 value={importCodeInput}
                 onChange={(e) => setImportCodeInput(e.target.value)}
               />

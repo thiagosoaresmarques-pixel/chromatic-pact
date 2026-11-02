@@ -130,7 +130,11 @@ import {
   subscribeTournamentTvUpdates,
   TournamentMatchReplayLog,
 } from '../utils/tournamentSpectatorEngine';
-import { recordPersonalMatchFrame } from '../utils/personalMatchHistoryEngine';
+import {
+  PersonalMatchHistoryEntry,
+  publishPersonalReplayShareToCloud,
+  recordPersonalMatchFrame,
+} from '../utils/personalMatchHistoryEngine';
 import {
   ActiveArenaVideoSession,
   isArenaVideoCaptureSupported,
@@ -252,6 +256,9 @@ export interface BattleArenaProps {
     onExitSpectator: () => void;
     variant?: 'tournament' | 'home_live' | 'personal_replay';
     preloadedReplayLog?: TournamentMatchReplayLog | null;
+    personalEntry?: PersonalMatchHistoryEntry | null;
+    initialSpecFrame?: number;
+    liveShareKey?: string;
     exitButtonLabel?: string;
     customTableBadge?: string;
     livePvpRoom?: MultiplayerRoom | null;
@@ -587,8 +594,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       const isLiveInit =
         tournamentSpectatorContext.variant !== 'personal_replay' &&
         (!initLog.isCompleted || nowInit < initLog.matchFinishMs);
-      let startIdx = 0;
-      if (isLiveInit) {
+      const requestedInitFrame =
+        typeof tournamentSpectatorContext.initialSpecFrame === 'number' &&
+        tournamentSpectatorContext.initialSpecFrame > 0
+          ? Math.max(
+              0,
+              Math.min(initLog.frames.length - 1, Math.floor(tournamentSpectatorContext.initialSpecFrame))
+            )
+          : null;
+      let startIdx = requestedInitFrame ?? 0;
+      if (requestedInitFrame === null && isLiveInit) {
         for (let i = 0; i < initLog.frames.length; i += 1) {
           if (initLog.frames[i].atMs <= nowInit) startIdx = i;
         }
@@ -2172,7 +2187,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const [specNowMs, setSpecNowMs] = useState<number>(() => getTournamentNowMs());
   const [specFlipped, setSpecFlipped] = useState<boolean>(false);
   const [specSpeed, setSpecSpeed] = useState<1 | 2 | 4>(1);
-  const [specFollowLive, setSpecFollowLive] = useState<boolean>(true);
+  const [specFollowLive, setSpecFollowLive] = useState<boolean>(() =>
+    !(
+      typeof tournamentSpectatorContext?.initialSpecFrame === 'number' &&
+      tournamentSpectatorContext.initialSpecFrame > 0
+    )
+  );
+  const [specShareFeedback, setSpecShareFeedback] = useState<'idle' | 'sharing' | 'copied'>('idle');
+  const [lastSharedSpecUrl, setLastSharedSpecUrl] = useState<string>('');
+  const specShareTimerRef = useRef<number | null>(null);
   const [specCinemaMode, setSpecCinemaMode] = useState<boolean>(false);
   const [specCinemaAspect, setSpecCinemaAspect] = useState<'16:9' | '9:16'>('16:9');
   const [specCinemaHudVisible, setSpecCinemaHudVisible] = useState<boolean>(false);
@@ -2227,6 +2250,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       if (cinemaHideTimerRef.current !== null) {
         window.clearTimeout(cinemaHideTimerRef.current);
       }
+      if (specShareTimerRef.current !== null) {
+        window.clearTimeout(specShareTimerRef.current);
+      }
     };
   }, []);
 
@@ -2247,6 +2273,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   );
   const [specCursor, setSpecCursor] = useState<number>(() => {
     if (!tournamentSpectatorContext || !specLog) return 0;
+    if (
+      typeof tournamentSpectatorContext.initialSpecFrame === 'number' &&
+      tournamentSpectatorContext.initialSpecFrame > 0
+    ) {
+      return Math.max(
+        0,
+        Math.min(specLog.frames.length - 1, Math.floor(tournamentSpectatorContext.initialSpecFrame))
+      );
+    }
     if (tournamentSpectatorContext.variant === 'personal_replay') return 0;
     const nowInit = getTournamentNowMs();
     const isLiveInit =
@@ -2262,6 +2297,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   });
   const [specIsPlaying, setSpecIsPlaying] = useState<boolean>(() => {
     if (!tournamentSpectatorContext || !specLog) return false;
+    if (
+      typeof tournamentSpectatorContext.initialSpecFrame === 'number' &&
+      tournamentSpectatorContext.initialSpecFrame > 0
+    ) {
+      return true;
+    }
     if (tournamentSpectatorContext.variant === 'personal_replay') return true;
     const nowInit = getTournamentNowMs();
     const isLiveInit =
@@ -2385,6 +2426,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (!hasHuman || !pairing.playerB) return;
 
     let cancelled = false;
+    let appliedCloudInitFrame = false;
     const loadCloud = async () => {
       const cloud = await fetchCloudTournamentMatchLog(
         tournament.id,
@@ -2394,6 +2436,19 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       );
       if (!cancelled && cloud && cloud.frames.length > 0) {
         setSpecLog(cloud);
+        if (
+          !appliedCloudInitFrame &&
+          typeof tournamentSpectatorContext.initialSpecFrame === 'number' &&
+          tournamentSpectatorContext.initialSpecFrame > 0
+        ) {
+          appliedCloudInitFrame = true;
+          setSpecCursor(
+            Math.max(
+              0,
+              Math.min(cloud.frames.length - 1, Math.floor(tournamentSpectatorContext.initialSpecFrame))
+            )
+          );
+        }
       }
     };
     void loadCloud();
@@ -2443,6 +2498,91 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setSpecFollowLive(false);
     setSpecCursor(nextMarker.leadInIndex);
     setSpecIsPlaying(true);
+  };
+
+  const handleShareSpectatorLink = async () => {
+    if (!tournamentSpectatorContext || specShareFeedback === 'sharing') return;
+    const base = `${window.location.origin}${window.location.pathname}`;
+    let shareUrl = base;
+
+    try {
+      if (
+        tournamentSpectatorContext.variant === 'personal_replay' &&
+        tournamentSpectatorContext.personalEntry
+      ) {
+        setSpecShareFeedback('sharing');
+        const shareId = await publishPersonalReplayShareToCloud(
+          tournamentSpectatorContext.personalEntry
+        );
+        const frameParam = specCursor > 0 ? `&tframe=${specCursor}` : '';
+        shareUrl = `${base}?replay=${encodeURIComponent(shareId)}${frameParam}`;
+      } else if (
+        tournamentSpectatorContext.liveShareKey &&
+        tournamentSpectatorContext.liveShareKey.startsWith('trn_')
+      ) {
+        const parts = tournamentSpectatorContext.liveShareKey.slice(4).split('__');
+        if (parts.length >= 3) {
+          shareUrl = `${base}?tid=${encodeURIComponent(parts[0])}&tround=${parts[1]}&ttable=${parts[2]}`;
+        }
+      } else if (tournamentSpectatorContext.liveShareKey) {
+        const frameParam = !isSpecLiveMatch && specCursor > 0 ? `&tframe=${specCursor}` : '';
+        shareUrl = `${base}?live=${encodeURIComponent(
+          tournamentSpectatorContext.liveShareKey
+        )}${frameParam}`;
+      } else {
+        const frameParam = !isSpecLiveMatch && specCursor > 0 ? `&tframe=${specCursor}` : '';
+        shareUrl = `${base}?tid=${encodeURIComponent(
+          tournamentSpectatorContext.tournament.id
+        )}&tround=${tournamentSpectatorContext.pairing.round}&ttable=${
+          tournamentSpectatorContext.pairing.tableNumber
+        }${frameParam}`;
+      }
+
+      setLastSharedSpecUrl(shareUrl);
+
+      let copiedOk = false;
+      if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          copiedOk = true;
+        } catch {
+          copiedOk = false;
+        }
+      }
+      if (!copiedOk) {
+        const ta = document.createElement('textarea');
+        ta.value = shareUrl;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+
+      if (
+        typeof navigator.share === 'function' &&
+        typeof window !== 'undefined' &&
+        window.innerWidth <= 768
+      ) {
+        void navigator
+          .share({
+            title: `${gameState.player.name} × ${gameState.ai.name} — Chromatic Pact`,
+            url: shareUrl,
+          })
+          .catch(() => {});
+      }
+
+      setSpecShareFeedback('copied');
+      if (specShareTimerRef.current !== null) {
+        window.clearTimeout(specShareTimerRef.current);
+      }
+      specShareTimerRef.current = window.setTimeout(() => {
+        setSpecShareFeedback('idle');
+      }, 2200);
+    } catch {
+      setSpecShareFeedback('idle');
+    }
   };
 
   const specVisibleMaxIdx = useMemo(() => {
@@ -7250,6 +7390,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 Cinema
                               </button>
 
+                              <button
+                                type="button"
+                                className={`arena-spec-btn ${
+                                  specShareFeedback === 'copied' ? 'is-active' : ''
+                                }`}
+                                data-shared-url={lastSharedSpecUrl || undefined}
+                                onClick={() => void handleShareSpectatorLink()}
+                                title="Copiar link direto para assistir esta partida"
+                              >
+                                {specShareFeedback === 'copied'
+                                  ? '✓ Link Copiado'
+                                  : 'Compartilhar'}
+                              </button>
+
                               {canRecordVideo && (
                                 <button
                                   type="button"
@@ -7257,7 +7411,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                   onClick={() => void handleToggleVideoRecording()}
                                   title="Gravar vídeo em alta definição (28 Mbps) desta partida"
                                 >
-                                  Gravar<span className="hide-on-mobile"> Vídeo</span>
+                                  Gravar
                                 </button>
                               )}
 
@@ -7439,6 +7593,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               Cinema
                             </button>
 
+                            <button
+                              type="button"
+                              className={`arena-spec-btn ${
+                                specShareFeedback === 'copied' ? 'is-active' : ''
+                              }`}
+                              data-shared-url={lastSharedSpecUrl || undefined}
+                              onClick={() => void handleShareSpectatorLink()}
+                              title="Copiar link direto desta partida (no lance atual)"
+                            >
+                              {specShareFeedback === 'copied'
+                                ? '✓ Link Copiado'
+                                : specShareFeedback === 'sharing'
+                                ? 'Gerando...'
+                                : 'Compartilhar'}
+                            </button>
+
                             {canRecordVideo && (
                               <button
                                 type="button"
@@ -7446,7 +7616,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 onClick={() => void handleToggleVideoRecording()}
                                 title="Gravar vídeo em alta definição (28 Mbps) desta partida"
                               >
-                                Gravar<span className="hide-on-mobile"> Vídeo</span>
+                                Gravar
                               </button>
                             )}
 

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BattleArena, CustomSavedDeck } from './BattleArena';
 import {
+  buildShareKeyForLiveFeedItem,
   LiveArenaFeedItem,
   pickRandomLiveArenaMatchSync,
   refreshLiveArenaCloudPool,
@@ -63,6 +64,7 @@ export const HomeLiveArenaView: React.FC<HomeLiveArenaViewProps> = ({
       variant: 'home_live' as const,
       customTableBadge: activeFeedItem.tableBadge,
       livePvpRoom: activeFeedItem.livePvpRoom ?? null,
+      liveShareKey: buildShareKeyForLiveFeedItem(activeFeedItem) ?? undefined,
       onExitSpectator: onPlayDuelNow,
       onCycleNextLiveMatch: handleCycleNextLiveMatch,
       onPlayNowFromHome: onPlayDuelNow,

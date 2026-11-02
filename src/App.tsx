@@ -119,6 +119,7 @@ import {
 } from './utils/tournamentEngine';
 import {
   buildPersonalReplaySpectatorContext,
+  fetchSharedPersonalReplay,
   getPersonalMatchHistory,
   PersonalMatchHistoryEntry,
 } from './utils/personalMatchHistoryEngine';
@@ -422,7 +423,10 @@ export const App: React.FC = () => {
   const initialNavState = useMemo(() => loadSavedAppNavState(), []);
   const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
     try {
-      const urlTab = new URLSearchParams(window.location.search).get('tab') as ActiveTab | null;
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get('deck')) return 'deckbuilder';
+      if (sp.get('tid') && !(sp.get('tround') && sp.get('ttable'))) return 'tournaments';
+      const urlTab = sp.get('tab') as ActiveTab | null;
       if (urlTab && resolvePillarForTab(urlTab) !== null) {
         return urlTab;
       }
@@ -547,6 +551,13 @@ export const App: React.FC = () => {
     nonce?: number;
   }>(() => initialNavState?.quickDuelDecks ?? {});
   const [pendingBuilderTemplateId, setPendingBuilderTemplateId] = useState<string | null>(null);
+  const [pendingSharedDeckCode, setPendingSharedDeckCode] = useState<string | null>(() => {
+    try {
+      return new URLSearchParams(window.location.search).get('deck') || null;
+    } catch {
+      return null;
+    }
+  });
   const [showcaseInspectCard, setShowcaseInspectCard] = useState<CardDefinition | null>(null);
   const [poemJumpTarget, setPoemJumpTarget] = useState<NavigateToPoemDetail | null>(null);
 
@@ -611,15 +622,161 @@ export const App: React.FC = () => {
   const [activeTournamentSpectate, setActiveTournamentSpectate] = useState<{
     tournament: SwissTournamentDefinition;
     pairing: ComputedRoundPairing;
+    initialSpecFrame?: number;
+    liveShareKey?: string;
+    customTableBadge?: string;
+    livePvpRoom?: MultiplayerRoom | null;
+    exitTargetTab?: ActiveTab;
+    exitButtonLabel?: string;
   } | null>(null);
   const [activePersonalReplay, setActivePersonalReplay] =
     useState<PersonalMatchHistoryEntry | null>(null);
+  const [activePersonalReplayInitFrame, setActivePersonalReplayInitFrame] =
+    useState<number | undefined>(undefined);
 
   useEffect(() => {
     if (activeTab !== 'arena') {
       setActivePersonalReplay(null);
+      setActivePersonalReplayInitFrame(undefined);
     }
   }, [activeTab]);
+
+  // Shareable Deep-Link Router (?deck=..., ?replay=..., ?live=..., ?tid=...&tround=...&ttable=...)
+  useEffect(() => {
+    let sp: URLSearchParams;
+    try {
+      sp = new URLSearchParams(window.location.search);
+    } catch {
+      return;
+    }
+
+    const deckParam = sp.get('deck');
+    const replayParam = sp.get('replay');
+    const liveParam = sp.get('live');
+    const tidParam = sp.get('tid');
+    const troundParam = sp.get('tround');
+    const ttableParam = sp.get('ttable');
+    const tframeRaw = sp.get('tframe');
+    const parsedFrame =
+      tframeRaw !== null && Number.isFinite(Number(tframeRaw)) && Number(tframeRaw) >= 0
+        ? Math.floor(Number(tframeRaw))
+        : undefined;
+
+    const cleanQueryKeys = (keys: string[]) => {
+      try {
+        const url = new URL(window.location.href);
+        let changed = false;
+        for (const k of keys) {
+          if (url.searchParams.has(k)) {
+            url.searchParams.delete(k);
+            changed = true;
+          }
+        }
+        if (changed) {
+          window.history.replaceState({}, '', url.toString());
+        }
+      } catch {
+        // ignore
+      }
+    };
+
+    if (deckParam) {
+      cleanQueryKeys(['deck']);
+      setPendingSharedDeckCode(deckParam);
+      setActiveTab('deckbuilder');
+      return;
+    }
+
+    if (replayParam) {
+      cleanQueryKeys(['replay', 'tframe']);
+      void (async () => {
+        const sharedEntry = await fetchSharedPersonalReplay(replayParam);
+        if (!sharedEntry) return;
+        setActiveTournamentSpectate(null);
+        setActiveTournamentMatch(null);
+        setActiveOnlineMatch(null);
+        setActiveCampaignBoss(null);
+        setActiveRankedSovereign(null);
+        setActiveProblem(null);
+        setActivePersonalReplayInitFrame(parsedFrame);
+        setActivePersonalReplay(sharedEntry);
+        setActiveTab('arena');
+      })();
+      return;
+    }
+
+    if (liveParam) {
+      cleanQueryKeys(['live', 'tframe']);
+      void (async () => {
+        const { resolveSharedLiveArenaFeedItem } = await import('./utils/liveArenaFeedEngine');
+        const item = resolveSharedLiveArenaFeedItem(liveParam);
+        if (!item) return;
+        setActivePersonalReplay(null);
+        setActiveTournamentMatch(null);
+        setActiveOnlineMatch(null);
+        setActiveCampaignBoss(null);
+        setActiveRankedSovereign(null);
+        setActiveProblem(null);
+        setActiveTournamentSpectate({
+          tournament: item.tournament,
+          pairing: item.pairing,
+          initialSpecFrame: parsedFrame,
+          liveShareKey: liveParam,
+          customTableBadge: item.tableBadge,
+          livePvpRoom: item.livePvpRoom ?? null,
+          exitTargetTab: 'home',
+          exitButtonLabel: 'Início',
+        });
+        setActiveTab('arena');
+      })();
+      return;
+    }
+
+    if (tidParam && troundParam && ttableParam) {
+      const roundNum = Math.floor(Number(troundParam));
+      const tableNum = Math.floor(Number(ttableParam));
+      if (Number.isFinite(roundNum) && roundNum >= 1 && Number.isFinite(tableNum) && tableNum >= 1) {
+        cleanQueryKeys(['tid', 'tround', 'ttable', 'tframe']);
+        try {
+          sessionStorage.setItem(
+            'chromatic_pact_tournament_nav_v1',
+            JSON.stringify({ tid: tidParam, tview: 'pairings', tround: roundNum })
+          );
+        } catch {
+          // ignore
+        }
+        void (async () => {
+          const catalog = await fetchTournamentCatalogFromCloud();
+          const def = catalog.tournaments.find((t) => t.id === tidParam);
+          if (!def) {
+            setActiveTab('tournaments');
+            return;
+          }
+          const entries = catalog.entriesByTournament[def.id] ?? [];
+          const snap = computeTournamentSnapshot(def, entries, null);
+          const pairing = (snap.roundsPairings[roundNum] ?? []).find(
+            (p) => p.tableNumber === tableNum
+          );
+          if (!pairing || !pairing.playerB || pairing.result === 'BYE') {
+            setActiveTab('tournaments');
+            return;
+          }
+          setActivePersonalReplay(null);
+          setActiveTournamentMatch(null);
+          setActiveOnlineMatch(null);
+          setActiveCampaignBoss(null);
+          setActiveRankedSovereign(null);
+          setActiveProblem(null);
+          setActiveTournamentSpectate({
+            tournament: def,
+            pairing,
+            initialSpecFrame: parsedFrame,
+          });
+          setActiveTab('arena');
+        })();
+      }
+    }
+  }, []);
   const notifiedTournamentRoundsRef = useRef<Set<string>>(new Set());
 
   // Sovereign Notification Center State
@@ -995,23 +1152,36 @@ export const App: React.FC = () => {
 
   const memoizedTournamentSpectatorContext = useMemo(() => {
     if (activePersonalReplay) {
-      return buildPersonalReplaySpectatorContext(activePersonalReplay, () => {
-        setActivePersonalReplay(null);
-        setActiveTab('home');
-        setAccountModalState({ open: true, tab: 'replays' });
-      });
+      return buildPersonalReplaySpectatorContext(
+        activePersonalReplay,
+        () => {
+          setActivePersonalReplay(null);
+          setActivePersonalReplayInitFrame(undefined);
+          setActiveTab('home');
+          if (!isGuest) {
+            setAccountModalState({ open: true, tab: 'replays' });
+          }
+        },
+        activePersonalReplayInitFrame
+      );
     }
     return activeTournamentSpectate
       ? {
           tournament: activeTournamentSpectate.tournament,
           pairing: activeTournamentSpectate.pairing,
+          initialSpecFrame: activeTournamentSpectate.initialSpecFrame,
+          liveShareKey: activeTournamentSpectate.liveShareKey,
+          customTableBadge: activeTournamentSpectate.customTableBadge,
+          livePvpRoom: activeTournamentSpectate.livePvpRoom ?? null,
+          exitButtonLabel: activeTournamentSpectate.exitButtonLabel,
           onExitSpectator: () => {
+            const target = activeTournamentSpectate.exitTargetTab ?? 'tournaments';
             setActiveTournamentSpectate(null);
-            setActiveTab('tournaments');
+            setActiveTab(target);
           },
         }
       : null;
-  }, [activePersonalReplay, activeTournamentSpectate]);
+  }, [activePersonalReplay, activePersonalReplayInitFrame, activeTournamentSpectate, isGuest]);
 
   const handleStartTournamentPvpMatch = (
     launch: ActiveTournamentMatchLaunch,
@@ -3206,6 +3376,8 @@ export const App: React.FC = () => {
             onSalvageDuplicates={handleSalvageExcessDuplicates}
             initialTemplateDeckId={pendingBuilderTemplateId}
             onConsumeInitialTemplate={() => setPendingBuilderTemplateId(null)}
+            initialSharedDeckCode={pendingSharedDeckCode}
+            onConsumeInitialSharedDeck={() => setPendingSharedDeckCode(null)}
           />
         )}
 

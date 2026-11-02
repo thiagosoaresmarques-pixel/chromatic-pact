@@ -21,6 +21,7 @@ import {
   DEFAULT_INAUGURAL_TOURNAMENT,
   enrollHumanInTournament,
   fetchTournamentCatalogFromCloud,
+  getInitialLocalTournamentCatalog,
   getTournamentNowMs,
   getTournamentStageKey,
   HumanTournamentEntry,
@@ -261,11 +262,9 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   onStartTournamentPvpMatch,
   onSpectateTournamentMatch,
 }) => {
-  const [catalog, setCatalog] = useState<TournamentCatalogData>(() => ({
-    tournaments: [DEFAULT_INAUGURAL_TOURNAMENT],
-    entriesByTournament: { [DEFAULT_INAUGURAL_TOURNAMENT.id]: [] },
-    primaryTournamentId: DEFAULT_INAUGURAL_TOURNAMENT.id,
-  }));
+  const [catalog, setCatalog] = useState<TournamentCatalogData>(() =>
+    getInitialLocalTournamentCatalog()
+  );
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(() => {
     try {
       const urlTid = new URLSearchParams(window.location.search).get('tid');

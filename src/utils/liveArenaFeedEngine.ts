@@ -71,21 +71,28 @@ function buildStandingFromSovereign(
 function buildRollingSovereignTable(
   slotIdx: number,
   nowMs: number,
-  customStartOffsetMs?: number
+  customStartOffsetMs?: number,
+  explicitBucket?: number
 ): LiveArenaFeedItem | null {
   const roster = SOVEREIGN_AI_LEADERBOARD_ROSTER;
   if (roster.length < 2) return null;
 
   const slotOffset = slotIdx * ROLLING_STAGGER_MS;
-  const bucket = Math.floor((nowMs - slotOffset) / ROLLING_CYCLE_MS);
+  const bucket =
+    explicitBucket !== undefined
+      ? explicitBucket
+      : Math.floor((nowMs - slotOffset) / ROLLING_CYCLE_MS);
   const matchStartMs =
-    customStartOffsetMs !== undefined
+    explicitBucket !== undefined
+      ? bucket * ROLLING_CYCLE_MS + slotOffset
+      : customStartOffsetMs !== undefined
       ? nowMs - customStartOffsetMs
       : bucket * ROLLING_CYCLE_MS + slotOffset;
   const matchFinishMs = matchStartMs + ROLLING_MATCH_SPAN_MS;
 
   // Keep only tables currently mid-battle with >= 24s remaining so viewers never land at the very end
   if (
+    explicitBucket === undefined &&
     customStartOffsetMs === undefined &&
     (nowMs < matchStartMs + 6_000 || nowMs > matchFinishMs - 24_000)
   ) {
@@ -150,6 +157,7 @@ function buildRollingSovereignTable(
     finalizedAward: null,
   };
 
+  const isCompletedAlready = explicitBucket !== undefined && nowMs >= matchFinishMs;
   const tableNumber = slotIdx + 1;
   const pairing: ComputedRoundPairing = {
     tableNumber,
@@ -158,8 +166,8 @@ function buildRollingSovereignTable(
     playerB: standingB,
     pointsBeforeA: 0,
     pointsBeforeB: 0,
-    result: 'IN_PROGRESS',
-    hpDiffA: 0,
+    result: isCompletedAlready ? canonicalWinner : 'IN_PROGRESS',
+    hpDiffA: isCompletedAlready ? (canonicalWinner === 'A_WIN' ? 14 : -14) : 0,
     turns: 7,
     liveTurnEstimate: liveTurnEst,
     matchStartMs,
@@ -376,4 +384,60 @@ export function pickRandomLiveArenaMatchSync(options?: {
   const pickList = weighted.length > 0 ? weighted : allLive;
   const randomIdx = Math.floor(Math.random() * pickList.length);
   return pickList[randomIdx];
+}
+
+export function buildShareKeyForLiveFeedItem(item: LiveArenaFeedItem): string | null {
+  if (item.sourceKind === 'pvp_room' && item.livePvpRoom?.code) {
+    return `pvp_${item.livePvpRoom.code}`;
+  }
+  if (item.sourceKind === 'tournament_live') {
+    return `trn_${item.tournament.id}__${item.pairing.round}__${item.pairing.tableNumber}`;
+  }
+  const matchRolling = /^live_arena_b(\d+)_s(\d+)$/.exec(item.tournament.id);
+  if (matchRolling) {
+    return `b${matchRolling[1]}_s${matchRolling[2]}`;
+  }
+  const matchInstant = /^live_arena_instant_(\d+)_s(\d+)$/.exec(item.tournament.id);
+  if (matchInstant) {
+    const startSec = Number(matchInstant[1]);
+    const slotIdx = Number(matchInstant[2]);
+    if (Number.isFinite(startSec) && Number.isFinite(slotIdx)) {
+      const slotOffset = slotIdx * ROLLING_STAGGER_MS;
+      const bucket = Math.floor((startSec * 1000 - slotOffset) / ROLLING_CYCLE_MS);
+      return `b${bucket}_s${slotIdx}`;
+    }
+  }
+  return null;
+}
+
+export function resolveSharedLiveArenaFeedItem(
+  shareKey: string,
+  nowMs = getTournamentNowMs()
+): LiveArenaFeedItem | null {
+  const clean = shareKey.trim();
+  if (!clean) return null;
+
+  if (clean.startsWith('pvp_')) {
+    const roomCode = clean.slice(4).trim().toUpperCase();
+    try {
+      const room = getActiveRoomsList().find((r) => r.code.toUpperCase() === roomCode);
+      if (room) {
+        const live = buildPvpRoomLiveItem(room, nowMs);
+        if (live) return live;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  }
+
+  const m = /^b(\d+)_s(\d+)$/.exec(clean);
+  if (m) {
+    const bucket = Number(m[1]);
+    const slotIdx = Math.max(0, Math.min(ROLLING_TABLE_COUNT - 1, Number(m[2])));
+    if (Number.isFinite(bucket) && Number.isFinite(slotIdx)) {
+      return buildRollingSovereignTable(slotIdx, nowMs, undefined, bucket);
+    }
+  }
+  return null;
 }

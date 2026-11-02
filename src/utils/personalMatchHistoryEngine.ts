@@ -1,5 +1,6 @@
 import { ALL_CARDS } from '../data/cards';
 import type { BoardUnit, Domain, GameState, PlayerState } from '../types/game';
+import { getSupabaseConfig } from './multiplayerEngine';
 import type {
   ComputedRoundPairing,
   ComputedTournamentStanding,
@@ -379,11 +380,14 @@ export function recordPersonalMatchFrame(
 
 export function buildPersonalReplaySpectatorContext(
   entry: PersonalMatchHistoryEntry,
-  onExit: () => void
+  onExit: () => void,
+  initialSpecFrame?: number
 ): {
   tournament: SwissTournamentDefinition;
   pairing: ComputedRoundPairing;
   preloadedReplayLog: TournamentMatchReplayLog;
+  personalEntry: PersonalMatchHistoryEntry;
+  initialSpecFrame?: number;
   variant: 'personal_replay';
   customTableBadge: string;
   exitButtonLabel: string;
@@ -476,9 +480,137 @@ export function buildPersonalReplaySpectatorContext(
     tournament,
     pairing,
     preloadedReplayLog: entry.replayLog,
+    personalEntry: entry,
+    initialSpecFrame,
     variant: 'personal_replay',
     customTableBadge: `${entry.modeLabel} · ${dateFmt}`,
     exitButtonLabel: 'Histórico',
     onExitSpectator: onExit,
   };
+}
+
+const SHARED_REPLAY_CLOUD_PREFIX = '__shared_replay__:';
+const SHARED_REPLAY_LOCAL_CACHE_KEY = 'chromatic_pact_shared_replays_v1';
+
+export function computePersonalReplayShareId(entry: PersonalMatchHistoryEntry): string {
+  const raw = `${entry.id}::${entry.playedAtMs}::${entry.playerName}::${entry.opponentName}`;
+  let h1 = 0x811c9dc5 >>> 0;
+  let h2 = 0x9e3779b9 >>> 0;
+  for (let i = 0; i < raw.length; i += 1) {
+    const c = raw.charCodeAt(i);
+    h1 ^= c;
+    h1 = Math.imul(h1, 0x01000193) >>> 0;
+    h2 ^= c + (i & 0xff);
+    h2 = Math.imul(h2, 0x85ebca6b) >>> 0;
+  }
+  return `${h1.toString(36)}${h2.toString(36)}`.slice(0, 11);
+}
+
+function saveSharedReplayLocalCache(shareId: string, entry: PersonalMatchHistoryEntry): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const raw = localStorage.getItem(SHARED_REPLAY_LOCAL_CACHE_KEY);
+    const map: Record<string, PersonalMatchHistoryEntry> = raw ? JSON.parse(raw) : {};
+    map[shareId] = entry;
+    const keys = Object.keys(map);
+    if (keys.length > 8) {
+      delete map[keys[0]];
+    }
+    localStorage.setItem(SHARED_REPLAY_LOCAL_CACHE_KEY, JSON.stringify(map));
+  } catch {
+    // ignore quota issues
+  }
+}
+
+function readSharedReplayLocalCache(shareId: string): PersonalMatchHistoryEntry | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const fromHistory = getPersonalMatchHistory().find(
+      (item) => computePersonalReplayShareId(item) === shareId || item.id === shareId
+    );
+    if (fromHistory) return fromHistory;
+
+    const raw = localStorage.getItem(SHARED_REPLAY_LOCAL_CACHE_KEY);
+    if (!raw) return null;
+    const map = JSON.parse(raw) as Record<string, PersonalMatchHistoryEntry>;
+    return map?.[shareId] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function publishPersonalReplayShareToCloud(
+  entry: PersonalMatchHistoryEntry
+): Promise<string> {
+  const shareId = computePersonalReplayShareId(entry);
+  saveSharedReplayLocalCache(shareId, entry);
+
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) return shareId;
+
+  try {
+    await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
+      method: 'POST',
+      headers: {
+        apikey: cfg.anonKey,
+        Authorization: `Bearer ${cfg.anonKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates',
+      },
+      body: JSON.stringify({
+        username: `${SHARED_REPLAY_CLOUD_PREFIX}${shareId}`,
+        title: JSON.stringify(entry),
+        avatar_card_id: entry.playerAvatarCardId || 'gold_01',
+        elo_rating: entry.playerElo || 1500,
+        pvp_wins: entry.didWin === true ? 1 : 0,
+        pvp_losses: entry.didWin === false ? 1 : 0,
+        gold: 0,
+        updated_at: new Date().toISOString(),
+      }),
+    });
+  } catch {
+    // Local cache still resolves in-browser if offline
+  }
+
+  return shareId;
+}
+
+export async function fetchSharedPersonalReplay(
+  shareId: string
+): Promise<PersonalMatchHistoryEntry | null> {
+  const cleanId = shareId.trim();
+  if (!cleanId) return null;
+
+  const localHit = readSharedReplayLocalCache(cleanId);
+  if (localHit && Array.isArray(localHit.replayLog?.frames) && localHit.replayLog.frames.length >= 2) {
+    return localHit;
+  }
+
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) return null;
+
+  try {
+    const encodedUser = encodeURIComponent(`${SHARED_REPLAY_CLOUD_PREFIX}${cleanId}`);
+    const res = await fetch(
+      `${cfg.url}/rest/v1/sovereign_profiles?username=eq.${encodedUser}&select=title&limit=1`,
+      {
+        headers: {
+          apikey: cfg.anonKey,
+          Authorization: `Bearer ${cfg.anonKey}`,
+        },
+      }
+    );
+    if (!res.ok) return null;
+    const rows = (await res.json()) as Array<{ title?: string }>;
+    const rawTitle = rows?.[0]?.title;
+    if (!rawTitle) return null;
+    const parsed = JSON.parse(rawTitle) as PersonalMatchHistoryEntry;
+    if (parsed && Array.isArray(parsed.replayLog?.frames) && parsed.replayLog.frames.length >= 2) {
+      saveSharedReplayLocalCache(cleanId, parsed);
+      return parsed;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
 }

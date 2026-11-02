@@ -2193,7 +2193,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       tournamentSpectatorContext.initialSpecFrame > 0
     )
   );
-  const [specShareFeedback, setSpecShareFeedback] = useState<'idle' | 'sharing' | 'copied'>('idle');
+  const [specShareFeedback, setSpecShareFeedback] = useState<
+    'idle' | 'sharing' | 'copied_url' | 'copied_discord'
+  >('idle');
   const [lastSharedSpecUrl, setLastSharedSpecUrl] = useState<string>('');
   const specShareTimerRef = useRef<number | null>(null);
   const [specCinemaMode, setSpecCinemaMode] = useState<boolean>(false);
@@ -2500,7 +2502,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setSpecIsPlaying(true);
   };
 
-  const handleShareSpectatorLink = async () => {
+  const handleShareSpectatorLink = async (mode: 'url' | 'discord' = 'url') => {
     if (!tournamentSpectatorContext || specShareFeedback === 'sharing') return;
     const base = `${window.location.origin}${window.location.pathname}`;
     let shareUrl = base;
@@ -2540,10 +2542,17 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
       setLastSharedSpecUrl(shareUrl);
 
+      const safeP1 = (gameState.player.name || 'Soberano').replace(/[[\]]/g, '').trim();
+      const safeP2 = (gameState.ai.name || 'Soberano').replace(/[[\]]/g, '').trim();
+      const clipboardText =
+        mode === 'discord'
+          ? `[Partida: ${safeP1} × ${safeP2}](${shareUrl})`
+          : shareUrl;
+
       let copiedOk = false;
       if (navigator.clipboard?.writeText) {
         try {
-          await navigator.clipboard.writeText(shareUrl);
+          await navigator.clipboard.writeText(clipboardText);
           copiedOk = true;
         } catch {
           copiedOk = false;
@@ -2551,7 +2560,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       }
       if (!copiedOk) {
         const ta = document.createElement('textarea');
-        ta.value = shareUrl;
+        ta.value = clipboardText;
         ta.style.position = 'fixed';
         ta.style.opacity = '0';
         document.body.appendChild(ta);
@@ -2561,6 +2570,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       }
 
       if (
+        mode === 'url' &&
         typeof navigator.share === 'function' &&
         typeof window !== 'undefined' &&
         window.innerWidth <= 768
@@ -2573,7 +2583,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           .catch(() => {});
       }
 
-      setSpecShareFeedback('copied');
+      setSpecShareFeedback(mode === 'discord' ? 'copied_discord' : 'copied_url');
       if (specShareTimerRef.current !== null) {
         window.clearTimeout(specShareTimerRef.current);
       }
@@ -7335,17 +7345,31 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               <button
                                 type="button"
                                 className={`arena-spec-btn ${
-                                  specShareFeedback === 'copied' ? 'is-active' : ''
+                                  specShareFeedback === 'copied_url' ? 'is-active' : ''
                                 }`}
                                 style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
                                 data-shared-url={lastSharedSpecUrl || undefined}
-                                onClick={() => void handleShareSpectatorLink()}
+                                onClick={() => void handleShareSpectatorLink('url')}
                               >
-                                {specShareFeedback === 'copied'
+                                {specShareFeedback === 'copied_url'
                                   ? 'Link copiado'
                                   : specShareFeedback === 'sharing'
                                   ? 'Gerando link...'
                                   : 'Compartilhar partida'}
+                              </button>
+                              <button
+                                type="button"
+                                className={`arena-spec-btn ${
+                                  specShareFeedback === 'copied_discord' ? 'is-active' : ''
+                                }`}
+                                style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                                onClick={() => void handleShareSpectatorLink('discord')}
+                              >
+                                {specShareFeedback === 'copied_discord'
+                                  ? 'Copiado p/ Discord'
+                                  : specShareFeedback === 'sharing'
+                                  ? 'Gerando link...'
+                                  : 'Copiar p/ Discord'}
                               </button>
                               {canRecordVideo && (
                                 <button

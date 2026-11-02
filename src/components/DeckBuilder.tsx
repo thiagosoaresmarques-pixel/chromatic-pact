@@ -1236,10 +1236,10 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
   const [showImportCodeBox, setShowImportCodeBox] = useState<boolean>(false);
   const [importCodeInput, setImportCodeInput] = useState<string>('');
-  const [deckLinkCopied, setDeckLinkCopied] = useState<boolean>(false);
+  const [deckLinkCopied, setDeckLinkCopied] = useState<'none' | 'url' | 'discord'>('none');
   const [lastSharedDeckUrl, setLastSharedDeckUrl] = useState<string>('');
 
-  const handleShareDeckLink = async () => {
+  const handleShareDeckLink = async (mode: 'url' | 'discord' = 'url') => {
     if (deckCardIds.length === 0) {
       setSaveBanner('Adicione cartas ao Grimório antes de gerar o link.');
       setTimeout(() => setSaveBanner(null), 2800);
@@ -1248,10 +1248,16 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     const shareUrl = buildShareableDeckUrl(deckName, deckCardIds);
     setLastSharedDeckUrl(shareUrl);
 
+    const safeTitle = (deckName || 'Grimório Cromático').replace(/[[\]]/g, '').trim();
+    const clipboardText =
+      mode === 'discord'
+        ? `[Grimório: ${safeTitle} (${deckCardIds.length} cartas)](${shareUrl})`
+        : shareUrl;
+
     let copiedOk = false;
     if (navigator.clipboard?.writeText) {
       try {
-        await navigator.clipboard.writeText(shareUrl);
+        await navigator.clipboard.writeText(clipboardText);
         copiedOk = true;
       } catch {
         copiedOk = false;
@@ -1259,7 +1265,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     }
     if (!copiedOk) {
       const ta = document.createElement('textarea');
-      ta.value = shareUrl;
+      ta.value = clipboardText;
       ta.style.position = 'fixed';
       ta.style.opacity = '0';
       document.body.appendChild(ta);
@@ -1269,6 +1275,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     }
 
     if (
+      mode === 'url' &&
       typeof navigator.share === 'function' &&
       typeof window !== 'undefined' &&
       window.innerWidth <= 768
@@ -1281,9 +1288,13 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
         .catch(() => {});
     }
 
-    setDeckLinkCopied(true);
-    setTimeout(() => setDeckLinkCopied(false), 2400);
-    setSaveBanner(`Link compartilhável do Grimório copiado (${deckCardIds.length} cartas).`);
+    setDeckLinkCopied(mode);
+    setTimeout(() => setDeckLinkCopied('none'), 2400);
+    setSaveBanner(
+      mode === 'discord'
+        ? 'Texto formatado para Discord copiado (sem URL exposta).'
+        : `Link compartilhável do Grimório copiado (${deckCardIds.length} cartas).`
+    );
     setTimeout(() => setSaveBanner(null), 3200);
   };
 
@@ -2102,10 +2113,19 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                   className="db-action-btn"
                   style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
                   data-shared-deck-url={lastSharedDeckUrl || undefined}
-                  onClick={() => void handleShareDeckLink()}
+                  onClick={() => void handleShareDeckLink('url')}
                   title="Copiar link direto compartilhável deste Grimório"
                 >
-                  {deckLinkCopied ? 'Link copiado' : 'Compartilhar link'}
+                  {deckLinkCopied === 'url' ? 'Link copiado' : 'Compartilhar link'}
+                </button>
+                <button
+                  type="button"
+                  className="db-action-btn"
+                  style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                  onClick={() => void handleShareDeckLink('discord')}
+                  title="Copiar título clicável para colar no Discord ocultando a URL longa"
+                >
+                  {deckLinkCopied === 'discord' ? 'Copiado p/ Discord' : 'Copiar p/ Discord'}
                 </button>
                 <button
                   type="button"

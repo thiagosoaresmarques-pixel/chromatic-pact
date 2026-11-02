@@ -101,6 +101,12 @@ export interface TournamentReplayFrame {
     domain: Domain;
     name: string;
     turnsRemaining: number;
+    clashRival?: {
+      owner: 'A' | 'B';
+      domain: Domain;
+      name: string;
+      icon: string;
+    } | null;
   } | null;
   sideA: CompactSideState;
   sideB: CompactSideState;
@@ -630,6 +636,16 @@ export function getOrSynthesizeSovereignMatchLog(
           domain: step.state.domainExpansion.domain,
           name: step.state.domainExpansion.name,
           turnsRemaining: step.state.domainExpansion.turnsRemaining,
+          clashRival: step.state.domainExpansion.clashRival
+            ? {
+                owner: (step.state.domainExpansion.clashRival.owner === 'player'
+                  ? 'A'
+                  : 'B') as 'A' | 'B',
+                domain: step.state.domainExpansion.clashRival.domain,
+                name: step.state.domainExpansion.clashRival.name,
+                icon: step.state.domainExpansion.clashRival.icon,
+              }
+            : null,
         }
       : null;
 
@@ -788,13 +804,21 @@ function reconstructArenaStateFromCompactFrame(
       sureHitDesc: spec.sureHitDesc,
       damageTakenByOwnerThisRound: 0,
       simpleDomainProtectedActor: null,
+      clashRival: frame.domainExpansion.clashRival
+        ? {
+            owner: frame.domainExpansion.clashRival.owner === 'A' ? 'player' : 'ai',
+            domain: frame.domainExpansion.clashRival.domain,
+            name: frame.domainExpansion.clashRival.name,
+            icon: frame.domainExpansion.clashRival.icon,
+          }
+        : null,
     };
   } else {
     base.domainExpansion = null;
   }
 
   const logs: CombatLogEntry[] = [];
-  for (let i = Math.max(0, safeIdx - 24); i <= safeIdx; i += 1) {
+  for (let i = safeIdx; i >= Math.max(0, safeIdx - 24); i -= 1) {
     const f = log.frames[i];
     logs.push({
       id: `tv-log-${i}`,
@@ -1040,8 +1064,9 @@ export function recordHumanTournamentMatchState(params: {
     (state.activePlayer === 'player') === (localPerspectiveRole === 'player_is_me');
   const activeSide: 'A' | 'B' = activeIsMe === meIsSideA ? 'A' : 'B';
 
-  const lastLog = state.combatLog[state.combatLog.length - 1];
-  const rawMessage = lastLog?.message || `Turno ${state.turn}`;
+  // In gameEngine.ts, addLog prepends entries, so combatLog[0] is the newest action!
+  const newestLog = state.combatLog[0];
+  const rawMessage = newestLog?.message || `Turno ${state.turn}`;
   const cleanMsg = sanitizeSummaryText(rawMessage);
 
   const existing = localHumanMatchLogs.get(matchKey);
@@ -1076,36 +1101,72 @@ export function recordHumanTournamentMatchState(params: {
     }
   }
 
+  let inferredCardId: string | undefined;
+  const bracketMatch = rawMessage.match(/\[([^\]]+)\]/);
+  if (bracketMatch?.[1]) {
+    const matchedCard = ALL_CARDS.find(
+      (c) => c.name === bracketMatch[1] || c.ascension?.newName === bracketMatch[1]
+    );
+    if (matchedCard) inferredCardId = matchedCard.id;
+  }
+
+  const mapActorOwnerToSide = (owner: 'player' | 'ai'): 'A' | 'B' =>
+    ((owner === 'player') === (localPerspectiveRole === 'player_is_me')) === meIsSideA
+      ? 'A'
+      : 'B';
+
+  const actorSideForFrame: 'A' | 'B' | 'SYSTEM' = isGameover
+    ? 'SYSTEM'
+    : newestLog && newestLog.actor !== 'system'
+    ? mapActorOwnerToSide(newestLog.actor)
+    : activeSide;
+
+  const resolvedKind: ReplayActionKind = isGameover
+    ? 'finish'
+    : prevFrames.length === 0
+    ? 'start'
+    : newestLog?.category === 'channel' || rawMessage.includes('canalizou')
+    ? 'channel'
+    : newestLog?.category === 'combat'
+    ? 'attack'
+    : rawMessage.includes('Expansão de Domínio') ||
+      rawMessage.includes('Domínio Simples') ||
+      rawMessage.includes('CHOQUE DE DOMÍNIOS')
+    ? 'domain'
+    : rawMessage.includes('ascendeu') || rawMessage.includes('ASCENSÃO')
+    ? 'ascend'
+    : rawMessage.includes('Poder do Soberano') || rawMessage.includes('Pacto de Sangue')
+    ? 'power'
+    : newestLog?.category === 'turn'
+    ? 'end_turn'
+    : 'play_card';
+
   const newFrame: TournamentReplayFrame = {
     index: prevFrames.length,
     atMs: nowMs,
     turn: state.turn,
     activeSide,
-    actorSide: isGameover ? 'SYSTEM' : activeSide,
-    kind: isGameover
-      ? 'finish'
-      : lastLog?.category === 'channel'
-      ? 'channel'
-      : lastLog?.category === 'combat'
-      ? 'attack'
-      : prevFrames.length === 0
-      ? 'start'
-      : 'play_card',
+    actorSide: actorSideForFrame,
+    kind: resolvedKind,
+    cardId: inferredCardId,
     summary: cleanMsg,
     clockSecA: activeSide === 'A' ? turnTimeLeftSec : limit,
     clockSecB: activeSide === 'B' ? turnTimeLeftSec : limit,
     thinkDurationMs: thinkMs,
     domainExpansion: state.domainExpansion
       ? {
-          owner:
-            ((state.domainExpansion.owner === 'player') ===
-              (localPerspectiveRole === 'player_is_me')) ===
-            meIsSideA
-              ? 'A'
-              : 'B',
+          owner: mapActorOwnerToSide(state.domainExpansion.owner),
           domain: state.domainExpansion.domain,
           name: state.domainExpansion.name,
           turnsRemaining: state.domainExpansion.turnsRemaining,
+          clashRival: state.domainExpansion.clashRival
+            ? {
+                owner: mapActorOwnerToSide(state.domainExpansion.clashRival.owner),
+                domain: state.domainExpansion.clashRival.domain,
+                name: state.domainExpansion.clashRival.name,
+                icon: state.domainExpansion.clashRival.icon,
+              }
+            : null,
         }
       : null,
     sideA: compressPlayerSide(sideAState, sideAMeta),

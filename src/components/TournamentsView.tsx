@@ -1266,7 +1266,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
           <div className="trn-top-bar-left">
             <h1 className="trn-page-heading">Torneios</h1>
             <span className="trn-page-sub">
-              Sistema Suíço de rodadas fixas · Pareamento automático
+              Seg a Sex 19h–20h · Sáb e Dom 14h–15h · Sistema Suíço
             </span>
           </div>
 
@@ -1357,7 +1357,8 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                         </span>
                         <span className="trn-event-date">
                           {formatBrtFriendlyDate(tSnap.definition.startsAtMs)} ·{' '}
-                          {formatBrtHourMinute(tSnap.definition.startsAtMs)}
+                          {formatBrtHourMinute(tSnap.definition.startsAtMs)}–
+                          {formatBrtHourMinute(tSnap.definition.endsAtMs)}
                         </span>
                       </div>
 

@@ -320,7 +320,7 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
   const brtShiftedNow = nowMs + BRT_OFFSET_MS;
   const todayBrtMidnightShifted = Math.floor(brtShiftedNow / DAY_MS) * DAY_MS;
 
-  const buildDayEditions = (dayOffset: number, onlySundayGrandCup = false) => {
+  const buildDayEdition = (dayOffset: number) => {
     const dayShiftedMs = todayBrtMidnightShifted + dayOffset * DAY_MS;
     const d = new Date(dayShiftedMs);
     const yyyy = d.getUTCFullYear();
@@ -328,143 +328,67 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
     const dd = pad2(d.getUTCDate());
     const dow = d.getUTCDay(); // 0 = Sunday .. 6 = Saturday
     const dateIsoPrefix = `${yyyy}-${mm}-${dd}`;
+    // Official Daily Schedule starts on 2026-11-02 (preserves 2026-11-01 inaugural 19h edition intact)
+    if (dateIsoPrefix < '2026-11-02') return;
+
     const dateSlug = `${yyyy}_${mm}_${dd}`;
     const createdAtMs = Date.parse(`${dateIsoPrefix}T00:05:00-03:00`);
+    const isWeekend = dow === 0 || dow === 6;
+    const startClockIso = isWeekend ? '14:00:00' : '19:00:00';
+    const hourSlug = isWeekend ? '14h' : '19h';
 
-    if (!onlySundayGrandCup) {
-      // 1. Daily 12:30 BRT — Copa Meridiana (5 rounds x 9m = 45m, Blitz 30s)
-      const noonStartMs = Date.parse(`${dateIsoPrefix}T12:30:00-03:00`);
-      const noonEndMs = noonStartMs + 5 * 9 * 60 * 1000;
-      const noonId = `copa_meridiana_${dateSlug}_12h30`;
-      out.set(noonId, {
-        id: noonId,
-        title: `Copa Meridiana`,
-        subtitle: `Sistema Suíço · 5 Rodadas · 30s / turno`,
-        startsAtMs: noonStartMs,
-        endsAtMs: noonEndMs,
-        totalRounds: 5,
-        roundDurationMs: 9 * 60 * 1000,
-        playWindowMs: 8.5 * 60 * 1000,
-        timeControlId: 'blitz_30s',
-        turnTimeLimitSec: 30,
-        mulliganTimeLimitSec: 20,
-        includeAllSovereigns: true,
-        prizeSpec: {
-          kind: 'gold_and_shards',
-          label: '80 Ouro + 60 Estilhaços',
-          description:
-            'Concedido automaticamente ao Campeão da edição meridiana ao término da 5ª rodada (+80 Ouro e +60 Estilhaços Astrais para Forja).',
-          goldBonus: 80,
-          shardsBonus: 60,
-        },
-        createdBy: 'conclave_oficial',
-        createdAtMs,
-        finalizedAward: null,
-      });
+    // Exact 60-minute window: 19h–20h (Mon–Fri) | 14h–15h (Sat–Sun) -> 6 rounds x 10m
+    const startsAtMs = Date.parse(`${dateIsoPrefix}T${startClockIso}-03:00`);
+    const endsAtMs = startsAtMs + 6 * 10 * 60 * 1000;
+    const id = `torneio_diario_vaeloria_${dateSlug}_${hourSlug}`;
 
-      // 2. Mon–Sat 20:00 BRT — Copa Suíça Noturna (6 rounds x 10m = 60m, Rapid 45s)
-      if (dow !== 0) {
-        const nightStartMs = Date.parse(`${dateIsoPrefix}T20:00:00-03:00`);
-        const nightEndMs = nightStartMs + 6 * 10 * 60 * 1000;
-        const nightId = `copa_noturna_${dateSlug}_20h`;
-        out.set(nightId, {
-          id: nightId,
-          title: `Copa Suíça Noturna`,
-          subtitle: `Sistema Suíço · 6 Rodadas · 45s / turno`,
-          startsAtMs: nightStartMs,
-          endsAtMs: nightEndMs,
-          totalRounds: 6,
-          roundDurationMs: 10 * 60 * 1000,
-          playWindowMs: 9.5 * 60 * 1000,
-          timeControlId: 'rapid_45s',
-          turnTimeLimitSec: 45,
-          mulliganTimeLimitSec: 20,
-          includeAllSovereigns: true,
-          prizeSpec: {
-            kind: 'unowned_domain_rare_card',
-            label: '1 Carta Rara Inédita + 50 Ouro',
-            description:
-              'Concedida automaticamente ao Campeão da edição noturna ao término da 6ª rodada, sorteada entre as cartas Raras inéditas da cor predominante do seu Grimório (+50 Ouro).',
-            goldBonus: 50,
-          },
-          createdBy: 'conclave_oficial',
-          createdAtMs,
-          finalizedAward: null,
-        });
-      }
-    }
-
-    // 3. Sunday 19:00 BRT — Grande Copa Dominical (7 rounds x 10m = 70m, Legendary Prize!)
-    if (dow === 0) {
-      const sunStartMs = Date.parse(`${dateIsoPrefix}T19:00:00-03:00`);
-      const sunEndMs = sunStartMs + 7 * 10 * 60 * 1000;
-      const sunId = `grande_copa_domingo_${dateSlug}_19h`;
-      // Avoid colliding with the historical 2026-11-01 19h inaugural test tournament
-      if (dateIsoPrefix !== '2026-11-01') {
-        out.set(sunId, {
-          id: sunId,
-          title: `Grande Copa Dominical`,
-          subtitle: `Sistema Suíço · 7 Rodadas · 45s / turno`,
-          startsAtMs: sunStartMs,
-          endsAtMs: sunEndMs,
-          totalRounds: 7,
-          roundDurationMs: 10 * 60 * 1000,
-          playWindowMs: 9.5 * 60 * 1000,
-          timeControlId: 'rapid_45s',
-          turnTimeLimitSec: 45,
-          mulliganTimeLimitSec: 25,
-          includeAllSovereigns: true,
-          prizeSpec: {
-            kind: 'unowned_domain_legendary_card',
-            label: '1 Carta Lendária Inédita + 120 Ouro',
-            description:
-              'Concedida automaticamente ao Grande Campeão de Domingo ao término da 7ª rodada, sorteada entre as cartas Lendárias inéditas da cor predominante do seu Grimório (+120 Ouro).',
-            goldBonus: 120,
-          },
-          createdBy: 'conclave_oficial',
-          createdAtMs,
-          finalizedAward: null,
-        });
-      }
-    }
+    out.set(id, {
+      id,
+      title: 'Torneio Diário de Vaeloria',
+      subtitle: 'Sistema Suíço · 6 Rodadas · 45s / turno',
+      startsAtMs,
+      endsAtMs,
+      totalRounds: 6,
+      roundDurationMs: 10 * 60 * 1000,
+      playWindowMs: 9.5 * 60 * 1000,
+      timeControlId: 'rapid_45s',
+      turnTimeLimitSec: 45,
+      mulliganTimeLimitSec: 20,
+      includeAllSovereigns: true,
+      prizeSpec: {
+        kind: 'unowned_domain_rare_card',
+        label: '1 Carta Rara Inédita + 50 Ouro',
+        description:
+          'Concedida automaticamente ao Campeão do Torneio Diário ao término da 6ª rodada, sorteada entre as cartas Raras inéditas da cor predominante do seu Grimório (+50 Ouro).',
+        goldBonus: 50,
+      },
+      createdBy: 'conclave_oficial',
+      createdAtMs,
+      finalizedAward: null,
+    });
   };
 
-  // Yesterday, Today, Tomorrow, +2d (in case tomorrow is Sunday and Monday is next Night Cup)
-  for (const offset of [-1, 0, 1, 2]) {
-    buildDayEditions(offset, false);
-  }
-  // Ensure the next upcoming Sunday Grand Cup is always visible on the schedule
-  for (let offset = 2; offset <= 7; offset += 1) {
-    const dayShiftedMs = todayBrtMidnightShifted + offset * DAY_MS;
-    if (new Date(dayShiftedMs).getUTCDay() === 0) {
-      buildDayEditions(offset, true);
-      break;
-    }
+  // Past 7 days (for completed daily archive) + Today + Tomorrow
+  for (let offset = -7; offset <= 1; offset += 1) {
+    buildDayEdition(offset);
   }
 
-  const minEndKeepMs = nowMs - 36 * 60 * 60 * 1000;
+  const minEndKeepMs = nowMs - 7 * DAY_MS;
   const candidates = Array.from(out.values()).sort((a, b) => a.startsAtMs - b.startsAtMs);
 
-  // Keep recent completed editions + ONLY the single next active/upcoming edition per series!
-  const seenUpcomingSeries = new Set<string>();
+  // Keep completed editions + ONLY the single next active/upcoming daily edition!
+  let addedNextUpcoming = false;
   const filtered: SwissTournamentDefinition[] = [];
   for (const def of candidates) {
     if (def.endsAtMs < minEndKeepMs) continue;
-    const isFinished = nowMs >= def.endsAtMs;
-    if (isFinished) {
+    if (nowMs >= def.endsAtMs) {
       filtered.push(def);
       continue;
     }
-    const seriesKey = def.id.startsWith('copa_meridiana_')
-      ? 'meridiana'
-      : def.id.startsWith('copa_noturna_')
-      ? 'noturna'
-      : def.id.startsWith('grande_copa_domingo_')
-      ? 'domingo'
-      : def.id;
-    if (seenUpcomingSeries.has(seriesKey)) continue;
-    seenUpcomingSeries.add(seriesKey);
-    filtered.push(def);
+    if (!addedNextUpcoming) {
+      addedNextUpcoming = true;
+      filtered.push(def);
+    }
   }
 
   return filtered;
@@ -1561,7 +1485,7 @@ export function computeTournamentSnapshot(
 // 7. SUPABASE CLOUD PERSISTENCE & MULTI-TOURNAMENT CATALOG CACHE
 // ============================================================================
 
-const LOCAL_TOURNAMENT_CATALOG_KEY = 'chromatic_pact_tournament_catalog_v4';
+const LOCAL_TOURNAMENT_CATALOG_KEY = 'chromatic_pact_tournament_catalog_v5';
 const LOCAL_TOURNAMENT_ENTRIES_KEY = 'chromatic_pact_tournament_entries_v2';
 const CLAIMED_TOURNAMENT_PRIZES_KEY = 'chromatic_pact_claimed_tournaments_v1';
 
@@ -1652,7 +1576,13 @@ function assembleCatalogFromRaw(
   }
 
   for (const cd of cloudDefs) {
-    if (cd && cd.id) {
+    if (
+      cd &&
+      cd.id &&
+      !cd.id.startsWith('copa_meridiana_') &&
+      !cd.id.startsWith('copa_noturna_') &&
+      !cd.id.startsWith('grande_copa_domingo_')
+    ) {
       defMap.set(cd.id, {
         ...cd,
         prizeSpec: {

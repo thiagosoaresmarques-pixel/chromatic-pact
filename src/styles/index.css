@@ -23573,7 +23573,7 @@ input:focus-visible,
 }
 
 .trn-upcoming-grid.count-1 {
-  grid-template-columns: minmax(0, 560px);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .trn-upcoming-grid.count-2,

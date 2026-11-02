@@ -36,7 +36,6 @@ import {
 } from '../utils/tournamentEngine';
 import type { CustomSavedDeck } from './BattleArena';
 import { DOMAIN_META } from './CardView';
-import { TournamentMatchViewerModal } from './TournamentMatchViewerModal';
 
 export interface ActiveTournamentMatchLaunch {
   tournament: SwissTournamentDefinition;
@@ -60,6 +59,10 @@ interface TournamentsViewProps {
     launch: ActiveTournamentMatchLaunch,
     room: MultiplayerRoom,
     role: 'host' | 'guest'
+  ) => void;
+  onSpectateTournamentMatch: (
+    tournament: SwissTournamentDefinition,
+    pairing: ComputedRoundPairing
   ) => void;
 }
 
@@ -213,6 +216,38 @@ function formatRoundChipLabel(item: ParticipantRoundHistoryItem): {
 
 const PAGE_SIZE = 50;
 const AUTO_START_PREF_KEY = 'chromatic_pact_tournament_autostart_v1';
+const TRN_NAV_SESSION_KEY = 'chromatic_pact_trn_nav_v1';
+
+interface SavedTournamentNavState {
+  tid: string | null;
+  tview: TournamentDetailTab;
+  tround: number;
+  pinnedRound: boolean;
+}
+
+function readSavedTournamentNav(): SavedTournamentNavState | null {
+  try {
+    const raw = sessionStorage.getItem(TRN_NAV_SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<SavedTournamentNavState>;
+    const tview: TournamentDetailTab =
+      parsed.tview === 'podium' || parsed.tview === 'standings' || parsed.tview === 'pairings'
+        ? parsed.tview
+        : 'standings';
+    const tround =
+      typeof parsed.tround === 'number' && Number.isFinite(parsed.tround) && parsed.tround >= 1
+        ? Math.floor(parsed.tround)
+        : 1;
+    return {
+      tid: typeof parsed.tid === 'string' && parsed.tid ? parsed.tid : null,
+      tview,
+      tround,
+      pinnedRound: Boolean(parsed.pinnedRound),
+    };
+  } catch {
+    return null;
+  }
+}
 
 export const TournamentsView: React.FC<TournamentsViewProps> = ({
   currentUser,
@@ -224,6 +259,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   onInspectCard,
   onStartTournamentSovereignMatch,
   onStartTournamentPvpMatch,
+  onSpectateTournamentMatch,
 }) => {
   const [catalog, setCatalog] = useState<TournamentCatalogData>(() => ({
     tournaments: [DEFAULT_INAUGURAL_TOURNAMENT],
@@ -232,10 +268,12 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   }));
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(() => {
     try {
-      return new URLSearchParams(window.location.search).get('tid') || null;
+      const urlTid = new URLSearchParams(window.location.search).get('tid');
+      if (urlTid) return urlTid;
     } catch {
-      return null;
+      // ignore
     }
+    return readSavedTournamentNav()?.tid ?? null;
   });
 
   const [nowMs, setNowMs] = useState<number>(() => getTournamentNowMs());
@@ -260,7 +298,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     } catch {
       // ignore
     }
-    return 'standings';
+    return readSavedTournamentNav()?.tview ?? 'standings';
   });
   const [selectedRoundTab, setSelectedRoundTab] = useState<number>(() => {
     try {
@@ -269,7 +307,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     } catch {
       // ignore
     }
-    return 1;
+    return readSavedTournamentNav()?.tround ?? 1;
   });
   const [standingsSearch, setStandingsSearch] = useState<string>('');
   const [domainFilter, setDomainFilter] = useState<'all' | Domain>('all');
@@ -434,9 +472,24 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   );
 
   const userPinnedRoundRef = useRef<boolean>(
-    typeof window !== 'undefined' && window.location.search.includes('tround=')
+    (typeof window !== 'undefined' && window.location.search.includes('tround=')) ||
+      Boolean(readSavedTournamentNav()?.pinnedRound)
   );
   const prevTrackedRoundRef = useRef<number>(0);
+
+  useEffect(() => {
+    try {
+      const payload: SavedTournamentNavState = {
+        tid: selectedTournamentId,
+        tview: detailTab,
+        tround: selectedRoundTab,
+        pinnedRound: userPinnedRoundRef.current,
+      };
+      sessionStorage.setItem(TRN_NAV_SESSION_KEY, JSON.stringify(payload));
+    } catch {
+      // ignore
+    }
+  }, [selectedTournamentId, detailTab, selectedRoundTab]);
 
   useEffect(() => {
     if (snapshot.currentRound <= 0) return;
@@ -861,6 +914,23 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     const list = snapshot.roundsPairings[watchedTable.round] ?? [];
     return list.find((p) => p.tableNumber === watchedTable.tableNumber) ?? null;
   }, [watchedTable, snapshot.roundsPairings]);
+
+  useEffect(() => {
+    if (!activeWatchedPairing || !activeWatchedPairing.playerB || activeWatchedPairing.result === 'BYE') {
+      return;
+    }
+    setWatchedTable(null);
+    try {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('tspectate')) {
+        url.searchParams.delete('tspectate');
+        window.history.replaceState({}, '', url.toString());
+      }
+    } catch {
+      // ignore
+    }
+    onSpectateTournamentMatch(snapshot.definition, activeWatchedPairing);
+  }, [activeWatchedPairing, onSpectateTournamentMatch, snapshot.definition]);
 
   const handleAdminPublishTournament = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1415,16 +1485,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             </div>
           )}
         </section>
-
-        {/* MODAL: TRANSMISSÃO AO VIVO & REPRISE DA PARTIDA */}
-      {activeWatchedPairing && (
-        <TournamentMatchViewerModal
-          tournament={snapshot.definition}
-          pairing={activeWatchedPairing}
-          onClose={() => setWatchedTable(null)}
-          onInspectCard={onInspectCard}
-        />
-      )}
 
       {renderSharedModals()}
       </div>
@@ -2184,12 +2244,10 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                             <button
                               type="button"
                               className={`trn-watch-btn ${isLiveTable ? 'is-live' : ''}`}
-                              onClick={() =>
-                                setWatchedTable({
-                                  round: pair.round,
-                                  tableNumber: pair.tableNumber,
-                                })
-                              }
+                              onClick={() => {
+                                userPinnedRoundRef.current = true;
+                                onSpectateTournamentMatch(snapshot.definition, pair);
+                              }}
                             >
                               {isLiveTable && <span className="trn-live-dot" />}
                               {isLiveTable ? 'Assistir' : 'Rever'}
@@ -2412,11 +2470,20 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                                 type="button"
                                 className={`trn-watch-btn ${isLiveRow ? 'is-live' : ''}`}
                                 onClick={() => {
+                                  const foundPairing = (
+                                    snapshot.roundsPairings[m.round] ?? []
+                                  ).find((p) => p.tableNumber === m.tableNumber);
                                   setInspectedParticipantId(null);
-                                  setWatchedTable({
-                                    round: m.round,
-                                    tableNumber: m.tableNumber,
-                                  });
+                                  userPinnedRoundRef.current = true;
+                                  setSelectedRoundTab(m.round);
+                                  if (foundPairing && foundPairing.playerB && foundPairing.result !== 'BYE') {
+                                    onSpectateTournamentMatch(snapshot.definition, foundPairing);
+                                  } else {
+                                    setWatchedTable({
+                                      round: m.round,
+                                      tableNumber: m.tableNumber,
+                                    });
+                                  }
                                 }}
                               >
                                 {isLiveRow && <span className="trn-live-dot" />}
@@ -2441,16 +2508,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             </div>
           </div>
         </div>
-      )}
-
-      {/* MODAL: TRANSMISSÃO AO VIVO & REPRISE DA PARTIDA */}
-      {activeWatchedPairing && (
-        <TournamentMatchViewerModal
-          tournament={snapshot.definition}
-          pairing={activeWatchedPairing}
-          onClose={() => setWatchedTable(null)}
-          onInspectCard={onInspectCard}
-        />
       )}
 
       {renderSharedModals()}

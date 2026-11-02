@@ -8,6 +8,7 @@ import {
   BOARD_COLS,
   cloneGameState,
   createInitialGameState,
+  getDomainExpansionSpec,
   getSlotUnits,
 } from '../engine/gameEngine';
 import {
@@ -15,11 +16,13 @@ import {
   AiSkillTier,
   BoardUnit,
   CardDefinition,
+  CombatLogEntry,
   Domain,
   GameState,
   PlayerState,
+  RowType,
 } from '../types/game';
-import { getSupabaseConfig } from './multiplayerEngine';
+import { flipGameStatePerspective, getSupabaseConfig } from './multiplayerEngine';
 import {
   computeCanonicalPairKey,
   ComputedRoundPairing,
@@ -320,8 +323,9 @@ function buildParticipantDeckCards(standing: ComputedTournamentStanding): {
 // 3. ON-DEMAND DETERMINISTIC MATCH SYNTHESIZER (LRU CACHED, ~8-15ms PER MATCH)
 // ============================================================================
 
-const SYNTH_CACHE_MAX = 32;
+const SYNTH_CACHE_MAX = 24;
 const synthesizedMatchCache = new Map<string, TournamentMatchReplayLog>();
+const synthesizedArenaStatesCache = new Map<string, GameState[]>();
 
 export function buildMatchStorageKey(
   tournamentId: string,
@@ -541,15 +545,10 @@ export function getOrSynthesizeSovereignMatchLog(
       const loserName = targetResult === 'A_WIN' ? playerB.displayName : playerA.displayName;
 
       if (finalState.phase === 'gameover' && chosenTrace.winner === targetResult) {
-        chosenTrace.steps.push({
-          turn: finalState.turn,
-          activeSide: targetResult === 'A_WIN' ? 'A' : 'B',
-          actorSide: 'SYSTEM',
-          kind: 'finish',
-          summary: `Vitória de ${winnerName} (${targetResult === 'A_WIN' ? '1 – 0' : '0 – 1'}).`,
-          weight: 0.35,
-          state: finalState,
-        });
+        lastStep.state = finalState;
+        if (!finalState.winReason) {
+          finalState.winReason = `${winnerName} superou as defesas de ${loserName}.`;
+        }
       } else {
         // Trim any contradictory terminal frame and close cleanly on decisive position / clock flag
         const cleanSteps = chosenTrace.steps.filter((s) => s.state.phase !== 'gameover');
@@ -674,10 +673,199 @@ export function getOrSynthesizeSovereignMatchLog(
 
   if (synthesizedMatchCache.size >= SYNTH_CACHE_MAX) {
     const oldestKey = synthesizedMatchCache.keys().next().value;
-    if (oldestKey) synthesizedMatchCache.delete(oldestKey);
+    if (oldestKey) {
+      synthesizedMatchCache.delete(oldestKey);
+      synthesizedArenaStatesCache.delete(oldestKey);
+    }
   }
   synthesizedMatchCache.set(matchKey, log);
+  synthesizedArenaStatesCache.set(
+    matchKey,
+    rawSteps.map((s) => s.state)
+  );
   return log;
+}
+
+function hydrateBoardRowFromCompact(
+  compactCols: CompactBoardUnit[][],
+  row: RowType,
+  owner: 'player' | 'ai'
+): { primaries: (BoardUnit | null)[]; stacks: BoardUnit[][] } {
+  const primaries: (BoardUnit | null)[] = Array(BOARD_COLS).fill(null);
+  const stacks: BoardUnit[][] = Array.from({ length: BOARD_COLS }, () => []);
+  for (let col = 0; col < BOARD_COLS; col += 1) {
+    const stack = compactCols[col] ?? [];
+    if (stack.length === 0) continue;
+    const units: BoardUnit[] = stack.map((cu, sIdx) => {
+      const card = CARDS_BY_ID[cu.cid] ?? ALL_CARDS[0];
+      return {
+        instanceId: cu.id,
+        cardId: card.id,
+        card,
+        owner,
+        row,
+        slotIndex: col,
+        stackIndex: sIdx,
+        currentAtk: cu.atk,
+        currentArmor: cu.arm,
+        currentHp: cu.hp,
+        maxHp: cu.mhp,
+        keywords: [...card.keywords],
+        regeneration: card.regeneration ?? 0,
+        hasDivineShield: Boolean(cu.shd),
+        isFrozen: Boolean(cu.frz),
+        hasAttackedThisTurn: Boolean(cu.tap),
+        hasSummoningSickness: Boolean(cu.slp),
+        isTrap: Boolean(cu.trp),
+        isAscended: Boolean(cu.asc),
+        hasRebornTriggered: false,
+        stance: cu.stn ?? 'attack',
+      };
+    });
+    primaries[col] = units[0];
+    stacks[col] = units;
+  }
+  return { primaries, stacks };
+}
+
+function reconstructArenaStateFromCompactFrame(
+  log: TournamentMatchReplayLog,
+  frameIdx: number
+): GameState {
+  const safeIdx = Math.max(0, Math.min(log.frames.length - 1, frameIdx));
+  const frame = log.frames[safeIdx];
+  const fillerCard = ALL_CARDS[0];
+  const base = createInitialGameState([fillerCard], [fillerCard], {
+    playerName: frame.sideA.name,
+    aiName: frame.sideB.name,
+    aiTitle: frame.sideB.subtitle,
+    aiAvatarCardId: frame.sideB.avatarCardId,
+  });
+
+  const hydrateSide = (
+    target: PlayerState,
+    compact: CompactSideState,
+    owner: 'player' | 'ai'
+  ) => {
+    target.name = compact.name;
+    target.title = compact.subtitle;
+    target.avatarCardId = compact.avatarCardId;
+    target.hp = compact.hp;
+    target.maxHp = compact.maxHp;
+    target.currentEssence = compact.essence;
+    target.maxEssence = compact.maxEssence;
+    target.affinities = { ...compact.affinities };
+    target.hand = compact.handCardIds.map((id) => CARDS_BY_ID[id] ?? fillerCard);
+    target.channeledCards = compact.channeledCardIds.map(
+      (id) => CARDS_BY_ID[id] ?? fillerCard
+    );
+    target.crypt = compact.cryptCardIds.map((id) => CARDS_BY_ID[id] ?? fillerCard);
+    target.deck = Array.from({ length: Math.max(0, compact.deckCount) }, () => fillerCard);
+    const vg = hydrateBoardRowFromCompact(compact.vanguard, 'vanguard', owner);
+    const rg = hydrateBoardRowFromCompact(compact.rearguard, 'rearguard', owner);
+    target.vanguard = vg.primaries;
+    target.vanguardStacks = vg.stacks;
+    target.rearguard = rg.primaries;
+    target.rearguardStacks = rg.stacks;
+  };
+
+  hydrateSide(base.player, frame.sideA, 'player');
+  hydrateSide(base.ai, frame.sideB, 'ai');
+
+  base.turn = frame.turn;
+  base.activePlayer = frame.activeSide === 'A' ? 'player' : 'ai';
+
+  if (frame.domainExpansion) {
+    const spec = getDomainExpansionSpec(frame.domainExpansion.domain);
+    base.domainExpansion = {
+      owner: frame.domainExpansion.owner === 'A' ? 'player' : 'ai',
+      domain: frame.domainExpansion.domain,
+      name: frame.domainExpansion.name || spec.name,
+      subtitle: spec.subtitle,
+      icon: spec.icon,
+      turnsRemaining: frame.domainExpansion.turnsRemaining,
+      potencyDesc: spec.potencyDesc,
+      sureHitDesc: spec.sureHitDesc,
+      damageTakenByOwnerThisRound: 0,
+      simpleDomainProtectedActor: null,
+    };
+  } else {
+    base.domainExpansion = null;
+  }
+
+  const logs: CombatLogEntry[] = [];
+  for (let i = Math.max(0, safeIdx - 24); i <= safeIdx; i += 1) {
+    const f = log.frames[i];
+    logs.push({
+      id: `tv-log-${i}`,
+      turn: f.turn,
+      actor: f.actorSide === 'A' ? 'player' : f.actorSide === 'B' ? 'ai' : 'system',
+      category:
+        f.kind === 'attack'
+          ? 'combat'
+          : f.kind === 'channel'
+          ? 'channel'
+          : f.kind === 'end_turn' || f.kind === 'start' || f.kind === 'finish'
+          ? 'turn'
+          : f.kind === 'play_card'
+          ? 'summon'
+          : 'effect',
+      message: f.summary,
+    });
+  }
+  base.combatLog = logs;
+  base.feedbacks = [];
+
+  const isTerminalFrame =
+    log.isCompleted && safeIdx === log.frames.length - 1 && log.finalResult !== 'IN_PROGRESS';
+  if (isTerminalFrame) {
+    base.phase = 'gameover';
+    base.winner =
+      log.finalResult === 'A_WIN'
+        ? 'player'
+        : log.finalResult === 'B_WIN'
+        ? 'ai'
+        : null;
+    base.winReason = frame.summary;
+  } else {
+    base.phase = 'main';
+    base.winner = null;
+    base.winReason = '';
+  }
+
+  return base;
+}
+
+/**
+ * Returns a fresh cloned GameState for the Real Combat Tabletop (`BattleArena`),
+ * oriented so `player` (Mesa Sul) = `pairing.playerA` and `ai` (Mesa Norte) = `pairing.playerB`.
+ */
+export function getArenaGameStateForReplayFrame(
+  def: SwissTournamentDefinition,
+  pairing: ComputedRoundPairing,
+  log: TournamentMatchReplayLog,
+  frameIdx: number
+): GameState {
+  if (!log.isHumanRecorded && !synthesizedArenaStatesCache.has(log.matchKey)) {
+    getOrSynthesizeSovereignMatchLog(def, pairing);
+  }
+  const losslessList = synthesizedArenaStatesCache.get(log.matchKey);
+  const safeIdx = Math.max(0, Math.min(log.frames.length - 1, frameIdx));
+
+  let rawState: GameState;
+  if (losslessList && losslessList[safeIdx]) {
+    rawState = cloneGameState(losslessList[safeIdx]);
+  } else {
+    rawState = reconstructArenaStateFromCompactFrame(log, safeIdx);
+  }
+
+  // Ensure orientation matches pairing.playerA (South) vs pairing.playerB (North)
+  const expectedSouthName = pairing.playerA.displayName.trim().toLowerCase();
+  const actualSouthName = rawState.player.name.trim().toLowerCase();
+  if (actualSouthName !== expectedSouthName) {
+    return flipGameStatePerspective(rawState);
+  }
+  return rawState;
 }
 
 // ============================================================================

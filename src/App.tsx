@@ -104,6 +104,7 @@ import type { ActiveTournamentMatchLaunch } from './components/TournamentsView';
 import type { LastRankedDuelSummary } from './components/GlobalLeaderboardView';
 import {
   buildTournamentSovereignBossEncounter,
+  ComputedRoundPairing,
   computeTournamentSnapshot,
   fetchTournamentCatalogFromCloud,
   getClaimedTournamentPrizeIds,
@@ -111,6 +112,7 @@ import {
   HumanTournamentEntry,
   markTournamentPrizeClaimedLocal,
   publishTournamentDefinitionToCloud,
+  SwissTournamentDefinition,
   upsertHumanTournamentEntryToCloud,
 } from './utils/tournamentEngine';
 import { recordHumanTournamentMatchState } from './utils/tournamentSpectatorEngine';
@@ -600,6 +602,10 @@ export const App: React.FC = () => {
   } | null>(null);
   const [activeTournamentMatch, setActiveTournamentMatch] =
     useState<ActiveTournamentMatchLaunch | null>(null);
+  const [activeTournamentSpectate, setActiveTournamentSpectate] = useState<{
+    tournament: SwissTournamentDefinition;
+    pairing: ComputedRoundPairing;
+  } | null>(null);
   const notifiedTournamentRoundsRef = useRef<Set<string>>(new Set());
 
   // Sovereign Notification Center State
@@ -908,6 +914,7 @@ export const App: React.FC = () => {
 
   const handleOpenArenaSolo = () => {
     trackAdsEvent('start_duel', { mode: 'solo_arena', isGuest });
+    setActiveTournamentSpectate(null);
     setActiveTournamentMatch(null);
     setActiveCampaignBoss(null);
     setActiveRankedSovereign(null);
@@ -931,6 +938,7 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    setActiveTournamentSpectate(null);
     setActiveTournamentMatch(null);
     setActiveCampaignBoss(null);
     setActiveRankedSovereign(null);
@@ -953,6 +961,7 @@ export const App: React.FC = () => {
       // Ignore
     }
     const boss = await buildTournamentSovereignBossEncounter(sovEntry, launch.roundNumber);
+    setActiveTournamentSpectate(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setActiveRankedSovereign(null);
@@ -978,6 +987,7 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    setActiveTournamentSpectate(null);
     setActiveCampaignBoss(null);
     setActiveRankedSovereign(null);
     setActiveProblem(null);
@@ -1185,6 +1195,7 @@ export const App: React.FC = () => {
         overworldBuff: owBuff,
       })
     );
+    setActiveTournamentSpectate(null);
     setActiveTournamentMatch(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
@@ -1218,6 +1229,7 @@ export const App: React.FC = () => {
     }
     const { buildRankedSovereignBossEncounter } = await import('./data/sovereignEloLadder');
     const boss = buildRankedSovereignBossEncounter(entry);
+    setActiveTournamentSpectate(null);
     setActiveTournamentMatch(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
@@ -1273,6 +1285,8 @@ export const App: React.FC = () => {
         overworldBuff: owBuff,
       })
     );
+    setActiveTournamentSpectate(null);
+    setActiveTournamentMatch(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setActiveRankedSovereign(null);
@@ -1302,6 +1316,8 @@ export const App: React.FC = () => {
       // Ignore
     }
     const { applyEquippedRelicToModifiers } = await import('./data/sovereignRelics');
+    setActiveTournamentSpectate(null);
+    setActiveTournamentMatch(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setActiveRankedSovereign(null);
@@ -1333,6 +1349,8 @@ export const App: React.FC = () => {
       // Ignore
     }
     const { applyEquippedRelicToModifiers } = await import('./data/sovereignRelics');
+    setActiveTournamentSpectate(null);
+    setActiveTournamentMatch(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setActiveRankedSovereign(null);
@@ -1363,6 +1381,8 @@ export const App: React.FC = () => {
       import('./data/sovereignRelics'),
     ]);
     const { boss, modifiers } = buildRiftBattleEncounter(riftId, aiSkillTier);
+    setActiveTournamentSpectate(null);
+    setActiveTournamentMatch(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
     setActiveRankedSovereign(null);
@@ -1906,7 +1926,7 @@ export const App: React.FC = () => {
 
   const effectiveNavTab: ActiveTab = useMemo(() => {
     if (activeTab === 'arena') {
-      if (activeTournamentMatch) return 'tournaments';
+      if (activeTournamentMatch || activeTournamentSpectate) return 'tournaments';
       if (activeOnlineMatch) return 'multiplayer';
       if (activeProblem) return 'problems';
       if (activeCampaignBoss && activeRankedSovereign) return 'leaderboard';
@@ -1921,6 +1941,7 @@ export const App: React.FC = () => {
   }, [
     activeTab,
     activeTournamentMatch,
+    activeTournamentSpectate,
     activeOnlineMatch,
     activeProblem,
     activeCampaignBoss,
@@ -2694,6 +2715,22 @@ export const App: React.FC = () => {
             onInspectCard={setShowcaseInspectCard}
             onStartTournamentSovereignMatch={handleStartTournamentSovereignMatch}
             onStartTournamentPvpMatch={handleStartTournamentPvpMatch}
+            onSpectateTournamentMatch={(tournament, pairing) => {
+              startAdaptiveMusic();
+              setActiveTournamentMatch(null);
+              setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
+              setActiveProblem(null);
+              setActiveOnlineMatch(null);
+              setIsExpeditionBattle(false);
+              setIsDraftBattle(false);
+              setActiveRiftId(null);
+              setExpeditionBlessingId(null);
+              setActiveConquestContext(null);
+              setActiveGeoModifiers(null);
+              setActiveTournamentSpectate({ tournament, pairing });
+              setActiveTab('arena');
+            }}
           />
         )}
 
@@ -2726,6 +2763,8 @@ export const App: React.FC = () => {
               void handleQuickMatchSovereignFallback(deckIds, deckId);
             }}
             onStartOnlineMatch={(room, role) => {
+              setActiveTournamentSpectate(null);
+              setActiveTournamentMatch(null);
               setActiveCampaignBoss(null);
               setActiveRankedSovereign(null);
               setIsExpeditionBattle(false);
@@ -2780,6 +2819,11 @@ export const App: React.FC = () => {
 
         {activeTab === 'arena' && (
           <BattleArena
+            key={
+              activeTournamentSpectate
+                ? `spec_${activeTournamentSpectate.tournament.id}_r${activeTournamentSpectate.pairing.round}_t${activeTournamentSpectate.pairing.tableNumber}`
+                : 'live_arena'
+            }
             customDecks={customDecks}
             isGuest={isGuest}
             campaignBoss={activeCampaignBoss}
@@ -2799,7 +2843,8 @@ export const App: React.FC = () => {
             onCampaignVictory={handleCampaignVictory}
             onCampaignDefeat={handleCampaignDefeat}
             onExitArena={() => {
-              const wasTournament = Boolean(activeTournamentMatch);
+              const wasTournament = Boolean(activeTournamentMatch || activeTournamentSpectate);
+              setActiveTournamentSpectate(null);
               setActiveTournamentMatch(null);
               setActiveCampaignBoss(null);
               setActiveRankedSovereign(null);
@@ -2813,7 +2858,8 @@ export const App: React.FC = () => {
               setActiveTab(wasTournament ? 'tournaments' : 'home');
             }}
             onExitCampaign={() => {
-              if (activeTournamentMatch) {
+              if (activeTournamentMatch || activeTournamentSpectate) {
+                setActiveTournamentSpectate(null);
                 setActiveTournamentMatch(null);
                 setActiveCampaignBoss(null);
                 setActiveOnlineMatch(null);
@@ -2861,6 +2907,18 @@ export const App: React.FC = () => {
             }}
             onRewardGold={handleRewardGold}
             onMatchConcluded={handleMatchConcluded}
+            tournamentSpectatorContext={
+              activeTournamentSpectate
+                ? {
+                    tournament: activeTournamentSpectate.tournament,
+                    pairing: activeTournamentSpectate.pairing,
+                    onExitSpectator: () => {
+                      setActiveTournamentSpectate(null);
+                      setActiveTab('tournaments');
+                    },
+                  }
+                : null
+            }
             tournamentContext={
               activeTournamentMatch
                 ? {

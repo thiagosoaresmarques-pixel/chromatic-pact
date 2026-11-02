@@ -77,7 +77,7 @@ import {
 } from '../engine/gameEngine';
 import { executeAiMulligan, executeAiTurnStep } from '../engine/aiEngine';
 import { playSfx } from '../utils/soundEngine';
-import { MusicIntensityStage, setMusicState } from '../utils/musicEngine';
+import { MusicIntensityStage, setMusicState, startAdaptiveMusic } from '../utils/musicEngine';
 import {
   flipGameStatePerspective,
   MONOCHROMATIC_STARTER_DECKS,
@@ -117,7 +117,18 @@ import {
   SovereignAiLeaderboardEntry,
 } from '../data/sovereignEloLadder';
 import type { LastRankedDuelSummary } from './GlobalLeaderboardView';
-import { getTournamentNowMs } from '../utils/tournamentEngine';
+import {
+  ComputedRoundPairing,
+  getTournamentNowMs,
+  SwissTournamentDefinition,
+} from '../utils/tournamentEngine';
+import {
+  fetchCloudTournamentMatchLog,
+  getArenaGameStateForReplayFrame,
+  getOrSynthesizeSovereignMatchLog,
+  subscribeTournamentTvUpdates,
+  TournamentMatchReplayLog,
+} from '../utils/tournamentSpectatorEngine';
 
 const ARENA_COACHMARK_STEPS = [
   {
@@ -226,6 +237,11 @@ export interface BattleArenaProps {
       turns: number;
       reason: string;
     }) => void;
+  } | null;
+  tournamentSpectatorContext?: {
+    tournament: SwissTournamentDefinition;
+    pairing: ComputedRoundPairing;
+    onExitSpectator: () => void;
   } | null;
 }
 
@@ -412,8 +428,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onlineMatch,
   rankedDuelContext,
   tournamentContext,
+  tournamentSpectatorContext,
 }) => {
+  const isSpectatorMode = Boolean(tournamentSpectatorContext);
+
   const handleExitBattle = () => {
+    if (tournamentSpectatorContext) {
+      tournamentSpectatorContext.onExitSpectator();
+      return;
+    }
     try {
       localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
     } catch {
@@ -483,7 +506,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   }, [isGuest, customDecks]);
 
   const initialSavedSnapshot = useMemo(() => {
-    if (onlineMatch) return null;
+    if (onlineMatch || isSpectatorMode) return null;
     const mode: 'problem' | 'boss' | 'solo' = tacticalProblem
       ? 'problem'
       : campaignBoss
@@ -534,6 +557,26 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   );
 
   const [gameState, setGameState] = useState<GameState>(() => {
+    if (tournamentSpectatorContext) {
+      const initLog = getOrSynthesizeSovereignMatchLog(
+        tournamentSpectatorContext.tournament,
+        tournamentSpectatorContext.pairing
+      );
+      const nowInit = getTournamentNowMs();
+      const isLiveInit = !initLog.isCompleted || nowInit < initLog.matchFinishMs;
+      let startIdx = 0;
+      if (isLiveInit) {
+        for (let i = 0; i < initLog.frames.length; i += 1) {
+          if (initLog.frames[i].atMs <= nowInit) startIdx = i;
+        }
+      }
+      return getArenaGameStateForReplayFrame(
+        tournamentSpectatorContext.tournament,
+        tournamentSpectatorContext.pairing,
+        initLog,
+        startIdx
+      );
+    }
     if (initialSavedSnapshot?.gameState) {
       return initialSavedSnapshot.gameState;
     }
@@ -706,7 +749,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     'none' | 'cinematic' | 'modal' | 'dismissed'
   >('none');
   const [isMulliganOpen, setIsMulliganOpen] = useState<boolean>(() =>
-    initialSavedSnapshot !== null ? Boolean(initialSavedSnapshot.isMulliganOpen) : !tacticalProblem
+    isSpectatorMode
+      ? false
+      : initialSavedSnapshot !== null
+      ? Boolean(initialSavedSnapshot.isMulliganOpen)
+      : !tacticalProblem
   );
   const [problemHintStage, setProblemHintStage] = useState<0 | 1 | 2 | 3>(0);
   const [isProblemHudMinimized, setIsProblemHudMinimized] = useState<boolean>(() =>
@@ -1273,16 +1320,19 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         curr.clashRival.domain,
         rivalCard
       );
-    } else if (!prev && curr && curr.owner === 'ai') {
-      // AI invoked Domain Expansion on its turn
+    } else if (!prev && curr && (curr.owner === 'ai' || isSpectatorMode)) {
+      // AI (or either Sovereign in Spectator/Replay mode) invoked Domain Expansion on its turn
       playSfx('domain_expand');
-      const aiCard = CARDS_BY_ID[gameState.ai.avatarCardId] ?? ALL_CARDS[0];
+      const ownerActor = curr.owner;
+      const casterCard = CARDS_BY_ID[gameState[ownerActor].avatarCardId] ?? ALL_CARDS[0];
       triggerSovereignSpectacle(
-        'ai',
-        `⛩️ EXPANSÃO DE DOMÍNIO INIMIGA: ${curr.name.toUpperCase()}`,
+        ownerActor,
+        isSpectatorMode
+          ? `⛩️ EXPANSÃO DE DOMÍNIO: ${curr.name.toUpperCase()}`
+          : `⛩️ EXPANSÃO DE DOMÍNIO INIMIGA: ${curr.name.toUpperCase()}`,
         `${curr.potencyDesc} • ${curr.sureHitDesc}`,
         curr.domain,
-        aiCard
+        casterCard
       );
     }
 
@@ -1583,7 +1633,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   // Persist active solo / campaign / problem battle state across page reloads (F5 / mobile refresh)
   useEffect(() => {
-    if (onlineMatch) return;
+    if (onlineMatch || isSpectatorMode) return;
     try {
       if (gameState.phase === 'gameover') {
         localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
@@ -1967,9 +2017,300 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     showSurrenderConfirm,
   ]);
 
+  // =========================================================================
+  // REAL-TABLETOP TOURNAMENT SPECTATOR & REPLAY CONTROLLER
+  // Drives BattleArena with 100% authentic lunges, spells, Domain Expansions,
+  // adaptive battle/climax music, and Sovereign finisher cutscenes!
+  // =========================================================================
+  const [specLog, setSpecLog] = useState<TournamentMatchReplayLog | null>(() =>
+    tournamentSpectatorContext
+      ? getOrSynthesizeSovereignMatchLog(
+          tournamentSpectatorContext.tournament,
+          tournamentSpectatorContext.pairing
+        )
+      : null
+  );
+  const [specNowMs, setSpecNowMs] = useState<number>(() => getTournamentNowMs());
+  const [specFlipped, setSpecFlipped] = useState<boolean>(false);
+  const [specSpeed, setSpecSpeed] = useState<1 | 2 | 4>(1);
+  const [specFollowLive, setSpecFollowLive] = useState<boolean>(true);
+  const [specCursor, setSpecCursor] = useState<number>(() => {
+    if (!tournamentSpectatorContext || !specLog) return 0;
+    const nowInit = getTournamentNowMs();
+    const isLiveInit = !specLog.isCompleted || nowInit < specLog.matchFinishMs;
+    if (!isLiveInit) return 0;
+    let idx = 0;
+    for (let i = 0; i < specLog.frames.length; i += 1) {
+      if (specLog.frames[i].atMs <= nowInit) idx = i;
+    }
+    return idx;
+  });
+  const [specIsPlaying, setSpecIsPlaying] = useState<boolean>(() => {
+    if (!tournamentSpectatorContext || !specLog) return false;
+    const nowInit = getTournamentNowMs();
+    const isLiveInit = !specLog.isCompleted || nowInit < specLog.matchFinishMs;
+    return !isLiveInit;
+  });
+  const prevAppliedSpecCursorRef = useRef<number>(specCursor);
+  const prevAppliedSpecFlipRef = useRef<boolean>(false);
+
+  // Unlock & start adaptive arena soundtrack immediately upon entering Spectator/Replay
+  useEffect(() => {
+    if (!isSpectatorMode) return;
+    startAdaptiveMusic();
+  }, [isSpectatorMode]);
+
+  // Load / subscribe live human match telemetry when applicable
+  useEffect(() => {
+    if (!tournamentSpectatorContext) {
+      setSpecLog(null);
+      return;
+    }
+    const { tournament, pairing } = tournamentSpectatorContext;
+    const baseSynth = getOrSynthesizeSovereignMatchLog(tournament, pairing);
+    setSpecLog(baseSynth);
+
+    const hasHuman =
+      pairing.playerA.kind === 'human' || pairing.playerB?.kind === 'human';
+    if (!hasHuman || !pairing.playerB) return;
+
+    let cancelled = false;
+    const loadCloud = async () => {
+      const cloud = await fetchCloudTournamentMatchLog(
+        tournament.id,
+        pairing.round,
+        pairing.playerA.participantId,
+        pairing.playerB!.participantId
+      );
+      if (!cancelled && cloud && cloud.frames.length > 0) {
+        setSpecLog(cloud);
+      }
+    };
+    void loadCloud();
+
+    const unsub = subscribeTournamentTvUpdates((incoming) => {
+      if (
+        incoming.tournamentId === tournament.id &&
+        incoming.round === pairing.round &&
+        incoming.tableNumber === pairing.tableNumber
+      ) {
+        setSpecLog(incoming);
+      }
+    });
+    const poll = window.setInterval(() => {
+      void loadCloud();
+    }, 3000);
+    return () => {
+      cancelled = true;
+      unsub();
+      window.clearInterval(poll);
+    };
+  }, [tournamentSpectatorContext]);
+
+  // 1-second wall-clock tick for live broadcasts & turn clocks
+  useEffect(() => {
+    if (!isSpectatorMode) return;
+    const id = window.setInterval(() => {
+      setSpecNowMs(getTournamentNowMs());
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [isSpectatorMode]);
+
+  const isSpecLiveMatch = Boolean(
+    isSpectatorMode &&
+      specLog &&
+      (!specLog.isCompleted || specNowMs < specLog.matchFinishMs)
+  );
+
+  const specVisibleMaxIdx = useMemo(() => {
+    if (!specLog || specLog.frames.length === 0) return 0;
+    if (!isSpecLiveMatch) return specLog.frames.length - 1;
+    let idx = 0;
+    for (let i = 0; i < specLog.frames.length; i += 1) {
+      if (specLog.frames[i].atMs <= specNowMs) idx = i;
+    }
+    return idx;
+  }, [specLog, isSpecLiveMatch, specNowMs]);
+
+  // Follow live broadcast edge step-by-step so each live play animates naturally on the board
+  useEffect(() => {
+    if (!isSpecLiveMatch || !specFollowLive) return;
+    if (specCursor < specVisibleMaxIdx && !combatAnim && !spectacleFx) {
+      const t = window.setTimeout(() => {
+        setSpecCursor((prev) =>
+          prev < specVisibleMaxIdx ? prev + 1 : specVisibleMaxIdx
+        );
+      }, 280);
+      return () => window.clearTimeout(t);
+    }
+  }, [isSpecLiveMatch, specFollowLive, specCursor, specVisibleMaxIdx, combatAnim, spectacleFx]);
+
+  // Auto-play timer for past match replays (1x / 2x / 4x)
+  useEffect(() => {
+    if (!isSpectatorMode || isSpecLiveMatch || !specIsPlaying) return;
+    if (specCursor >= specVisibleMaxIdx) {
+      setSpecIsPlaying(false);
+      return;
+    }
+    if (combatAnim || spectacleFx) return;
+
+    const delayMs = specSpeed === 4 ? 480 : specSpeed === 2 ? 900 : 1580;
+    const t = window.setTimeout(() => {
+      setSpecCursor((prev) => Math.min(specVisibleMaxIdx, prev + 1));
+    }, delayMs);
+    return () => window.clearTimeout(t);
+  }, [
+    isSpectatorMode,
+    isSpecLiveMatch,
+    specIsPlaying,
+    specCursor,
+    specVisibleMaxIdx,
+    specSpeed,
+    combatAnim,
+    spectacleFx,
+  ]);
+
+  // Apply cursor & perspective transitions onto BattleArena's real GameState with full combat FX!
+  useEffect(() => {
+    if (!tournamentSpectatorContext || !specLog || specLog.frames.length === 0) return;
+    const clampedIdx = Math.max(0, Math.min(specVisibleMaxIdx, specCursor));
+    const prevIdx = prevAppliedSpecCursorRef.current;
+    const flipChanged = prevAppliedSpecFlipRef.current !== specFlipped;
+    prevAppliedSpecCursorRef.current = clampedIdx;
+    prevAppliedSpecFlipRef.current = specFlipped;
+
+    const rawNext = getArenaGameStateForReplayFrame(
+      tournamentSpectatorContext.tournament,
+      tournamentSpectatorContext.pairing,
+      specLog,
+      clampedIdx
+    );
+    const nextLocalized = specFlipped ? flipGameStatePerspective(rawNext) : rawNext;
+
+    if (nextLocalized.phase !== 'gameover') {
+      setRewardClaimed(false);
+      setGameoverStage('none');
+    }
+
+    const isSingleForwardStep = !flipChanged && clampedIdx === prevIdx + 1;
+    if (!isSingleForwardStep) {
+      setCombatAnim(null);
+      setSpectacleFx(null);
+      setGameState(nextLocalized);
+      return;
+    }
+
+    const nextFrame = specLog.frames[clampedIdx];
+    const prevRaw = getArenaGameStateForReplayFrame(
+      tournamentSpectatorContext.tournament,
+      tournamentSpectatorContext.pairing,
+      specLog,
+      prevIdx
+    );
+    const prevLocalized = specFlipped ? flipGameStatePerspective(prevRaw) : prevRaw;
+
+    // Determine whether Side A corresponds to 'player' or 'ai' after optional perspective flip
+    const actorOwner: 'player' | 'ai' =
+      nextFrame.actorSide === 'B'
+        ? specFlipped
+          ? 'player'
+          : 'ai'
+        : specFlipped
+        ? 'ai'
+        : 'player';
+    const defenderOwner: 'player' | 'ai' = actorOwner === 'player' ? 'ai' : 'player';
+
+    if (nextFrame.kind === 'attack') {
+      const prevActorUnits = getAllBoardUnits(prevLocalized[actorOwner]);
+      const nextActorUnits = getAllBoardUnits(nextLocalized[actorOwner]);
+      const attackerUnit =
+        prevActorUnits.find((pu) => {
+          if (pu.hasAttackedThisTurn) return false;
+          const nu = nextActorUnits.find((x) => x.instanceId === pu.instanceId);
+          return !nu || nu.hasAttackedThisTurn;
+        }) ??
+        (nextFrame.cardId
+          ? prevActorUnits.find((pu) => pu.card.id === nextFrame.cardId)
+          : undefined);
+
+      const hitTargetId =
+        nextLocalized.feedbacks[0]?.targetId ?? `${defenderOwner}-sovereign`;
+
+      if (attackerUnit) {
+        const isRanged =
+          attackerUnit.row === 'rearguard' && attackerUnit.keywords.includes('Alcance');
+        const isHeavy =
+          attackerUnit.currentAtk >= 5 || nextLocalized.phase === 'gameover';
+        measureAndTriggerLunge(
+          attackerUnit.instanceId,
+          hitTargetId,
+          attackerUnit.card.domain,
+          isRanged,
+          () => {
+            setGameState(nextLocalized);
+          },
+          isHeavy
+        );
+        return;
+      }
+      playSfx('attack');
+      setGameState(nextLocalized);
+      return;
+    }
+
+    if (nextFrame.kind === 'play_card') {
+      const playedCard =
+        (nextFrame.cardId ? CARDS_BY_ID[nextFrame.cardId] : undefined) ??
+        prevLocalized[actorOwner].hand.find((c) =>
+          nextFrame.summary.includes(`[${c.name}]`)
+        );
+      if (playedCard) {
+        playSfx(
+          playedCard.type === 'spell' || playedCard.type === 'reaction' ? 'spell' : 'summon'
+        );
+        triggerCardPlaySpectacle(
+          actorOwner,
+          playedCard,
+          prevLocalized,
+          nextLocalized.feedbacks[0]?.targetId
+        );
+      } else {
+        playSfx('summon');
+      }
+      setGameState(nextLocalized);
+      return;
+    }
+
+    if (nextFrame.kind === 'ascend') {
+      playSfx('ascend');
+      const prevActorUnits = getAllBoardUnits(prevLocalized[actorOwner]);
+      const nextActorUnits = getAllBoardUnits(nextLocalized[actorOwner]);
+      const ascendedUnit = nextActorUnits.find((nu) => {
+        const pu = prevActorUnits.find((x) => x.instanceId === nu.instanceId);
+        return pu && !pu.isAscended && nu.isAscended;
+      });
+      if (ascendedUnit) {
+        triggerAscendSpectacle(ascendedUnit);
+      }
+      setGameState(nextLocalized);
+      return;
+    }
+
+    if (nextFrame.kind === 'channel') {
+      playSfx('channel');
+    } else if (nextFrame.kind === 'power') {
+      playSfx('spell');
+    } else if (nextFrame.kind === 'end_turn') {
+      playSfx('draw');
+    }
+    setGameState(nextLocalized);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [specCursor, specFlipped, specLog, specVisibleMaxIdx]);
+
   // AI step-by-step execution with Physical Lunge Animation on AI Attacks!
   useEffect(() => {
     if (
+      isSpectatorMode ||
       onlineMatch ||
       gameState.phase === 'gameover' ||
       gameState.activePlayer !== 'ai' ||
@@ -2070,7 +2411,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     // Determine musical intensity stage (0..4) — Domain Expansion always escalates to maximum intensity ('climax')
     let stage: MusicIntensityStage = 'tactical';
     const isNearDeath = gameState.player.hp <= 14 || gameState.ai.hp <= 14;
-    const isLateBossClimax = Boolean(campaignBoss) && gameState.turn >= 7;
+    const isLateBossClimax =
+      (Boolean(campaignBoss) || isSpectatorMode || Boolean(tournamentContext)) &&
+      gameState.turn >= 6;
     const hasDomainExpansion = Boolean(gameState.domainExpansion);
 
     if (hasDomainExpansion || isNearDeath || hasAscendedUnit || isLateBossClimax) {
@@ -2101,6 +2444,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       setRewardClaimed(true);
       setGameoverStage('cinematic');
       triggerScreenShake('heavy');
+
+      if (isSpectatorMode) {
+        playSfx('victory');
+        return;
+      }
 
       if (tournamentContext) {
         const score: 1 | 0.5 | 0 =
@@ -2161,23 +2509,28 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           usedDeckId: campaignBoss ? null : selectedPlayerDeckId,
         });
       }
-
-      const timer = window.setTimeout(() => {
-        setGameoverStage('modal');
-      }, 2550);
-      return () => window.clearTimeout(timer);
     }
   }, [
     gameState.phase,
     gameState.winner,
     rewardClaimed,
+    isSpectatorMode,
     campaignBoss,
     onCampaignVictory,
     onCampaignDefeat,
     onRewardGold,
   ]);
 
-  const isPlayerTurn = gameState.activePlayer === 'player' && gameState.phase !== 'gameover';
+  useEffect(() => {
+    if (gameState.phase !== 'gameover' || gameoverStage !== 'cinematic') return;
+    const timer = window.setTimeout(() => {
+      setGameoverStage('modal');
+    }, 2550);
+    return () => window.clearTimeout(timer);
+  }, [gameState.phase, gameoverStage]);
+
+  const isPlayerTurn =
+    !isSpectatorMode && gameState.activePlayer === 'player' && gameState.phase !== 'gameover';
 
   const selectedHandCard: CardDefinition | null =
     selectedHandIndex !== null ? gameState.player.hand[selectedHandIndex] ?? null : null;
@@ -2502,7 +2855,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   const handleClickFriendlyUnit = (unit: BoardUnit, e?: React.MouseEvent) => {
     e?.stopPropagation();
-    if (!isPlayerTurn || combatAnim) return;
+    if (combatAnim) return;
+    if (!isPlayerTurn) {
+      closeAllArenaDrawers();
+      const friendlySlotUnits = getSlotUnits(gameState.player, unit.row, unit.slotIndex);
+      if (focusedBoardUnitId === unit.instanceId && friendlySlotUnits.length > 1) {
+        const curIdx = friendlySlotUnits.findIndex((u) => u.instanceId === unit.instanceId);
+        const nextFriendly = friendlySlotUnits[(curIdx + 1) % friendlySlotUnits.length];
+        setFocusedBoardUnitId(nextFriendly.instanceId);
+      } else {
+        setFocusedBoardUnitId((prev) =>
+          prev === unit.instanceId ? null : unit.instanceId
+        );
+      }
+      setIsCommandDockMinimized(false);
+      return;
+    }
 
     // 1. If holding an ally-targeted spell/reaction, cast it on this specific unit in the stack
     if (selectedHandIndex !== null && selectedHandCard && canPlaySelectedHandCard.allowed) {
@@ -2842,6 +3210,39 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         setSelectedAttackerId(null);
         clearHandSelectionAndDrawers();
         closeAllArenaDrawers();
+        return;
+      }
+
+      if (isSpectatorMode) {
+        if (e.code === 'Space') {
+          e.preventDefault();
+          if (!isSpecLiveMatch) {
+            if (specCursor >= specVisibleMaxIdx) {
+              setSpecCursor(0);
+              setSpecIsPlaying(true);
+            } else {
+              setSpecIsPlaying((p) => !p);
+            }
+          }
+          return;
+        }
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setSpecIsPlaying(false);
+          setSpecFollowLive(false);
+          setSpecCursor((c) => Math.max(0, c - 1));
+          return;
+        }
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          setSpecIsPlaying(false);
+          setSpecCursor((c) => {
+            const next = Math.min(specVisibleMaxIdx, c + 1);
+            if (isSpecLiveMatch && next >= specVisibleMaxIdx) setSpecFollowLive(true);
+            return next;
+          });
+          return;
+        }
         return;
       }
 
@@ -4292,7 +4693,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
           return (
             <div
-              className={`arena-fullscreen-stage ${
+              className={`arena-fullscreen-stage ${isSpectatorMode ? 'is-spectator-arena' : ''} ${
                 gameState.conquestModifiers?.biomeRealm
                   ? `biome-realm-${gameState.conquestModifiers.biomeRealm}`
                   : ''
@@ -4365,7 +4766,28 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </div>
 
                   <span className="hud-pill-name">{gameState.ai.name}</span>
-                  {!onlineMatch && !tacticalProblem && (() => {
+                  {tournamentSpectatorContext ? (() => {
+                    const northSov = specFlipped
+                      ? tournamentSpectatorContext.pairing.playerA
+                      : tournamentSpectatorContext.pairing.playerB;
+                    if (!northSov) return null;
+                    return (
+                      <span
+                        className="hud-pill-env-chip"
+                        style={{
+                          borderColor: 'rgba(212, 175, 55, 0.45)',
+                          color: '#fde68a',
+                          fontSize: '0.62rem',
+                          fontWeight: 700,
+                          whiteSpace: 'nowrap',
+                        }}
+                        title={`#${northSov.rank} na classificação · ${northSov.eloRating} ELO · ${northSov.subtitle}`}
+                      >
+                        #{northSov.rank} · {northSov.eloRating} ELO
+                        <span className="hide-on-mobile"> · {northSov.subtitle}</span>
+                      </span>
+                    );
+                  })() : !onlineMatch && !tacticalProblem && (() => {
                     const activeAiTier = gameState.aiSkillTier ?? 3;
                     const tSpec = AI_SKILL_TIER_SPECS[activeAiTier];
                     const rawAiKey =
@@ -4398,22 +4820,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           fontWeight: 800,
                           whiteSpace: 'nowrap',
                         }}
-                        title={`${tSpec.shortLabel} (${tSpec.title})${
-                          calibratedElo ? ` • ${calibratedElo} ELO Calibrado` : ''
+                        title={`${tSpec.title}${
+                          calibratedElo ? ` · ${calibratedElo} ELO` : ''
                         }${
                           champStanding
-                            ? ` • Campeão #${champStanding.rank}/44 [Tier ${champStanding.tierBadge}]: ${champStanding.name}`
+                            ? ` · #${champStanding.rank}: ${champStanding.name}`
                             : ''
-                        } — ${tSpec.description}`}
+                        }`}
                       >
-                        {rankedDuelContext ? '🏆 RANQUEADO ' : '🧠 '}T{tSpec.roman}
-                        {calibratedElo ? ` • ${calibratedElo} ELO` : ''}
+                        {rankedDuelContext ? 'Ranqueado · ' : ''}
+                        {calibratedElo ? `${calibratedElo} ELO` : tSpec.title}
                         {champStanding && (
-                          <>
-                            {' '}
-                            • #{champStanding.rank} [{champStanding.tierBadge}]
-                            <span className="hide-on-mobile"> {champStanding.name}</span>
-                          </>
+                          <span className="hide-on-mobile"> · {champStanding.name}</span>
                         )}
                       </span>
                     );
@@ -4546,7 +4964,35 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       ✕ Ocultar Painel
                     </button>
                   </div>
-                  {!onlineMatch && !tacticalProblem && (() => {
+                  {tournamentSpectatorContext ? (() => {
+                    const northSov = specFlipped
+                      ? tournamentSpectatorContext.pairing.playerA
+                      : tournamentSpectatorContext.pairing.playerB;
+                    if (!northSov) return null;
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '5px 8px',
+                          marginTop: '4px',
+                          borderRadius: '6px',
+                          background: 'rgba(15, 23, 42, 0.85)',
+                          border: '1px solid rgba(212, 175, 55, 0.35)',
+                          fontSize: '0.68rem',
+                          color: '#e2e8f0',
+                        }}
+                      >
+                        <strong style={{ color: '#fde68a' }}>
+                          #{northSov.rank} na classificação · {northSov.eloRating} ELO
+                        </strong>
+                        <span style={{ color: '#64748b' }}>·</span>
+                        <span style={{ color: '#cbd5e1' }}>{northSov.subtitle}</span>
+                      </div>
+                    );
+                  })() : !onlineMatch && !tacticalProblem && (() => {
                     const activeAiTier = gameState.aiSkillTier ?? 3;
                     const tSpec = AI_SKILL_TIER_SPECS[activeAiTier];
                     const champStanding = getUnifiedStandingForDeckId(
@@ -5796,6 +6242,51 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   Consolidates P1 Sovereign, Hand toggle, Phase button, and Match Menu into ONE sleek bar!
                   ===================================================== */}
               <footer className="hud-unified-bottom-bar">
+                {/* SPECTATOR / REPLAY TIMELINE SCRUBBER BAR ON REAL COMBAT TABLETOP */}
+                {isSpectatorMode && tournamentSpectatorContext && specLog && (() => {
+                  const clampedIdx = Math.max(0, Math.min(specVisibleMaxIdx, specCursor));
+                  const curFrame = specLog.frames[clampedIdx];
+                  return (
+                    <div className="arena-spec-scrubber-row" onClick={(e) => e.stopPropagation()}>
+                      <span className="arena-spec-table-tag">
+                        Mesa #{tournamentSpectatorContext.pairing.tableNumber} · R
+                        {tournamentSpectatorContext.pairing.round}
+                      </span>
+                      {isSpecLiveMatch ? (
+                        <span className="arena-spec-live-badge">
+                          <span className="trn-live-dot" />
+                          Ao vivo
+                        </span>
+                      ) : (
+                        <span className="arena-spec-replay-badge">Reprise</span>
+                      )}
+                      <input
+                        type="range"
+                        className="arena-spec-range"
+                        min={0}
+                        max={Math.max(1, specVisibleMaxIdx)}
+                        value={clampedIdx}
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          setSpecIsPlaying(false);
+                          if (isSpecLiveMatch) {
+                            setSpecFollowLive(v >= specVisibleMaxIdx);
+                          }
+                          setSpecCursor(v);
+                        }}
+                        aria-label="Linha do tempo da partida"
+                      />
+                      <span className="arena-spec-step-counter">
+                        {clampedIdx}/{specVisibleMaxIdx}
+                      </span>
+                      {curFrame?.summary && (
+                        <span className="arena-spec-move-summary" title={curFrame.summary}>
+                          {curFrame.summary}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
                 {/* Single Unified Bottom Strip: [P1 Sovereign + Rituals] | [Hand Toggle] | [Phase Action + Menu] */}
                 <div className="hud-bottom-strip-inner">
                   {/* Left Segment: Sovereign 1 (Hover or click ▴ opens Seus Terrenos, Cripta & Cenário 1!) */}
@@ -6011,6 +6502,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         📚 {gameState.player.deck.length} • 🪦 {gameState.player.crypt.length}
                       </span>
 
+                      {!isSpectatorMode && (
                       <div className="hud-p1-rituals">
                         <button
                           type="button"
@@ -6062,6 +6554,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           </>
                         )}
                       </div>
+                      )}
 
                       <button
                         type="button"
@@ -6149,6 +6642,180 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="hud-phase-segment"
                       onMouseEnter={() => setIsHandHovered(false)}
                     >
+                    {isSpectatorMode && tournamentSpectatorContext && specLog ? (
+                      (() => {
+                        const clampedIdx = Math.max(0, Math.min(specVisibleMaxIdx, specCursor));
+                        const curFrame = specLog.frames[clampedIdx];
+                        const nextUnseen = specLog.frames[clampedIdx + 1];
+                        const turnLim = tournamentSpectatorContext.tournament.turnTimeLimitSec || 45;
+                        let liveClockSec =
+                          curFrame?.activeSide === 'B'
+                            ? curFrame?.clockSecB ?? turnLim
+                            : curFrame?.clockSecA ?? turnLim;
+                        if (isSpecLiveMatch && specFollowLive && curFrame && nextUnseen) {
+                          const baseStartClock =
+                            nextUnseen.actorSide === 'B'
+                              ? curFrame.clockSecB
+                              : curFrame.clockSecA;
+                          const elapsedSinceCurSec = Math.max(
+                            0,
+                            Math.floor((specNowMs - curFrame.atMs) / 1000)
+                          );
+                          liveClockSec = Math.max(1, baseStartClock - elapsedSinceCurSec);
+                        }
+                        return (
+                          <div className="arena-spec-controls">
+                            <span
+                              className="hud-round-chip hud-turn-timer-chip"
+                              title={`Turno ${gameState.turn} · Relógio de turno`}
+                            >
+                              <span>T{gameState.turn}</span>
+                              <span className="hud-timer-sep">•</span>
+                              <span className="hud-timer-val">{liveClockSec}s</span>
+                            </span>
+
+                            <button
+                              type="button"
+                              className="arena-spec-btn"
+                              disabled={clampedIdx <= 0}
+                              onClick={() => {
+                                setSpecIsPlaying(false);
+                                setSpecFollowLive(false);
+                                setSpecCursor(0);
+                              }}
+                              title="Início da partida"
+                            >
+                              |◀
+                            </button>
+                            <button
+                              type="button"
+                              className="arena-spec-btn"
+                              disabled={clampedIdx <= 0}
+                              onClick={() => {
+                                setSpecIsPlaying(false);
+                                setSpecFollowLive(false);
+                                setSpecCursor((c) => Math.max(0, c - 1));
+                              }}
+                              title="Lance anterior (←)"
+                            >
+                              ◀
+                            </button>
+
+                            {!isSpecLiveMatch ? (
+                              <button
+                                type="button"
+                                className="arena-spec-btn primary"
+                                onClick={() => {
+                                  startAdaptiveMusic();
+                                  if (clampedIdx >= specVisibleMaxIdx) {
+                                    setSpecCursor(0);
+                                    setSpecIsPlaying(true);
+                                  } else {
+                                    setSpecIsPlaying((p) => !p);
+                                  }
+                                }}
+                                title="Reproduzir / Pausar reprise (Espaço)"
+                              >
+                                {specIsPlaying
+                                  ? '⏸ Pausar'
+                                  : clampedIdx >= specVisibleMaxIdx
+                                  ? '↻ Rever'
+                                  : '▶ Reproduzir'}
+                              </button>
+                            ) : !specFollowLive ? (
+                              <button
+                                type="button"
+                                className="arena-spec-btn live-sync"
+                                onClick={() => {
+                                  setSpecFollowLive(true);
+                                  setSpecCursor(specVisibleMaxIdx);
+                                }}
+                                title="Retornar ao tempo real da mesa"
+                              >
+                                ● Ao vivo
+                              </button>
+                            ) : null}
+
+                            <button
+                              type="button"
+                              className="arena-spec-btn"
+                              disabled={clampedIdx >= specVisibleMaxIdx}
+                              onClick={() => {
+                                setSpecIsPlaying(false);
+                                setSpecCursor((c) => {
+                                  const next = Math.min(specVisibleMaxIdx, c + 1);
+                                  if (isSpecLiveMatch && next >= specVisibleMaxIdx) {
+                                    setSpecFollowLive(true);
+                                  }
+                                  return next;
+                                });
+                              }}
+                              title="Próximo lance (→)"
+                            >
+                              ▶
+                            </button>
+                            <button
+                              type="button"
+                              className="arena-spec-btn"
+                              disabled={clampedIdx >= specVisibleMaxIdx}
+                              onClick={() => {
+                                setSpecIsPlaying(false);
+                                if (isSpecLiveMatch) setSpecFollowLive(true);
+                                setSpecCursor(specVisibleMaxIdx);
+                              }}
+                              title="Último lance disponível"
+                            >
+                              ▶|
+                            </button>
+
+                            {!isSpecLiveMatch && (
+                              <button
+                                type="button"
+                                className="arena-spec-btn"
+                                onClick={() =>
+                                  setSpecSpeed((s) => (s === 1 ? 2 : s === 2 ? 4 : 1))
+                                }
+                                title="Alternar velocidade da reprise"
+                              >
+                                {specSpeed}×
+                              </button>
+                            )}
+
+                            <button
+                              type="button"
+                              className={`arena-spec-btn ${specFlipped ? 'is-active' : ''}`}
+                              onClick={() => {
+                                setSelectedHandIndex(null);
+                                setFocusedBoardUnitId(null);
+                                setSpecFlipped((f) => !f);
+                              }}
+                              title="Inverter perspectiva da mesa (ver mão do outro Soberano)"
+                            >
+                              ⇅<span className="hide-on-mobile"> Mesa</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className={`arena-spec-btn ${showLogSidebar ? 'is-active' : ''}`}
+                              onClick={() => setShowLogSidebar((p) => !p)}
+                              title="Abrir / ocultar histórico de lances"
+                            >
+                              📜
+                            </button>
+
+                            <button
+                              type="button"
+                              className="arena-spec-btn exit"
+                              onClick={handleExitBattle}
+                              title="Voltar ao Salão do Torneio"
+                            >
+                              ←<span className="hide-on-mobile"> Torneio</span>
+                            </button>
+                          </div>
+                        );
+                      })()
+                    ) : (
+                    <>
                     {tacticalProblem && (
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                         <button
@@ -6527,6 +7194,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         {activeRightDrawer === 'menu' ? '✕' : '⚙️'}
                       </button>
                     </div>
+                    </>
+                    )}
                   </div>
                 </div>
               </footer>
@@ -6879,7 +7548,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       {gameState.phase === 'gameover' && gameoverStage === 'cinematic' && (
         <div
           className={`sovereign-finisher-overlay ${
-            gameState.winner === 'player' ? 'is-victory-finisher' : 'is-defeat-finisher'
+            isSpectatorMode || gameState.winner === 'player'
+              ? 'is-victory-finisher'
+              : 'is-defeat-finisher'
           }`}
           onClick={() => setGameoverStage('modal')}
           title="Clique para avançar para o resumo da batalha"
@@ -6921,16 +7592,28 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               ) : aiAvatarCard?.imagePath ? (
                 <img src={aiAvatarCard.imagePath} alt={gameState.ai.name} />
               ) : (
-                <span>💀</span>
+                <span>👑</span>
               )}
             </div>
             <div className="finisher-herald-kicker font-cinzel">
-              {gameState.winner === 'player'
+              {isSpectatorMode
+                ? gameState.winner
+                  ? '⚔️ SÚMULA OFICIAL • TRIUNFO SOBERANO ⚔️'
+                  : '⚖️ TEMPO REGULAMENTAR • IGUALDADE NA MESA ⚖️'
+                : gameState.winner === 'player'
                 ? '⚔️ BASTIÃO INIMIGO DESTRUÍDO • TRIUNFO SOBERANO ⚔️'
                 : '💀 SEU BASTIÃO SUCUMBIU • QUEDA DO SOBERANO 💀'}
             </div>
             <div className="finisher-herald-title font-cinzel">
-              {gameState.winner === 'player' ? 'VITÓRIA DO SOBERANO' : 'DERROTA NA BATALHA'}
+              {isSpectatorMode
+                ? gameState.winner === 'player'
+                  ? `VITÓRIA DE ${gameState.player.name.toUpperCase()}`
+                  : gameState.winner === 'ai'
+                  ? `VITÓRIA DE ${gameState.ai.name.toUpperCase()}`
+                  : 'EMPATE TÉCNICO (½ – ½)'
+                : gameState.winner === 'player'
+                ? 'VITÓRIA DO SOBERANO'
+                : 'DERROTA NA BATALHA'}
             </div>
             <div className="finisher-herald-sub">{gameState.winReason}</div>
           </div>
@@ -6972,17 +7655,31 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               style={{
                 fontSize: '0.75rem',
                 letterSpacing: '0.18em',
-                color: gameState.winner === 'player' ? '#d4af37' : '#ef4444',
+                color: isSpectatorMode || gameState.winner === 'player' ? '#d4af37' : '#ef4444',
                 marginBottom: '0.5rem',
               }}
             >
-              {gameState.winner === 'player' ? 'TRIUNFO SOBERANO' : 'QUEDA DO BASTIÃO'}
+              {isSpectatorMode
+                ? `MESA #${tournamentSpectatorContext?.pairing.tableNumber ?? 1} · RODADA ${
+                    tournamentSpectatorContext?.pairing.round ?? 1
+                  }`
+                : gameState.winner === 'player'
+                ? 'TRIUNFO SOBERANO'
+                : 'QUEDA DO BASTIÃO'}
             </div>
             <h2
               className="font-cinzel gold-gradient-text"
               style={{ fontSize: '1.65rem', marginBottom: '0.5rem' }}
             >
-              {gameState.winner === 'player' ? 'VITÓRIA DO SOBERANO' : 'DERROTA NA BATALHA'}
+              {isSpectatorMode
+                ? gameState.winner === 'player'
+                  ? `VITÓRIA DE ${gameState.player.name}`
+                  : gameState.winner === 'ai'
+                  ? `VITÓRIA DE ${gameState.ai.name}`
+                  : 'EMPATE TÉCNICO (½ – ½)'
+                : gameState.winner === 'player'
+                ? 'VITÓRIA DO SOBERANO'
+                : 'DERROTA NA BATALHA'}
             </h2>
             <p style={{ color: '#cbd5e1', fontSize: '0.92rem', marginBottom: '0.95rem' }}>
               {gameState.winReason}
@@ -7103,8 +7800,6 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               const playerRawId = gameState.playerDeckId ?? selectedPlayerDeckId;
               const playerStanding = getUnifiedStandingForDeckId(playerRawId);
               const empiricalWr = getEmpiricalUnifiedWinRatePct(playerRawId, rivalRawId);
-              const activeAiTier = gameState.aiSkillTier ?? 3;
-              const tierSpec = AI_SKILL_TIER_SPECS[activeAiTier];
 
               const myClassicId =
                 playerStanding?.classicDeckIds[0] ??
@@ -7184,8 +7879,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   >
                     <span>Análise tática da partida (Turno decisivo: T{pivotTurn})</span>
                     <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>
-                      T{tierSpec.roman}
-                      {rivalStanding ? ` · ${rivalStanding.name}` : ''}
+                      {tournamentSpectatorContext
+                        ? `Mesa #${tournamentSpectatorContext.pairing.tableNumber}`
+                        : rivalStanding
+                        ? rivalStanding.name
+                        : ''}
                     </span>
                   </summary>
 
@@ -7263,6 +7961,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     </div>
                   </div>
 
+                  {!isSpectatorMode && (
                   <div style={{ fontSize: '0.72rem', lineHeight: 1.4, color: '#94a3b8' }}>
                     {empiricalWr !== null && (
                       <div style={{ marginBottom: '3px', color: '#cbd5e1' }}>
@@ -7274,11 +7973,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       {matchupGuide.positioningTactic}
                     </div>
                   </div>
+                  )}
                 </details>
               );
             })()}
 
-            {gameState.winner === 'player' && (
+            {!isSpectatorMode && gameState.winner === 'player' && (
               <div
                 style={{
                   padding: '0.65rem 0.85rem',
@@ -7336,7 +8036,29 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </button>
                 );
               })()}
-              {tournamentContext ? (
+              {tournamentSpectatorContext ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn-fantasy btn-fantasy-primary"
+                    onClick={tournamentSpectatorContext.onExitSpectator}
+                  >
+                    ← Voltar ao Salão do Torneio
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-fantasy"
+                    onClick={() => {
+                      setGameoverStage('none');
+                      setRewardClaimed(false);
+                      setSpecCursor(0);
+                      setSpecIsPlaying(true);
+                    }}
+                  >
+                    ↻ Rever do Início
+                  </button>
+                </>
+              ) : tournamentContext ? (
                 <button
                   type="button"
                   className="btn-fantasy btn-fantasy-primary"
@@ -7365,7 +8087,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   </button>
                 )
               )}
-              {!onlineMatch && !tournamentContext && (
+              {!isSpectatorMode && !onlineMatch && !tournamentContext && (
                 <button
                   type="button"
                   className={
@@ -7405,7 +8127,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     Voltar ao Mapa
                   </button>
                 )}
-              {!tournamentContext && !onlineMatch && !campaignBoss && !tacticalProblem && onExitArena && (
+              {!isSpectatorMode && !tournamentContext && !onlineMatch && !campaignBoss && !tacticalProblem && onExitArena && (
                 <button type="button" className="btn-fantasy" onClick={onExitArena}>
                   Voltar ao Início
                 </button>
@@ -7444,9 +8166,17 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           }}
         >
           <span className="font-cinzel gold-gradient-text" style={{ fontSize: '0.74rem', fontWeight: 800 }}>
-            {gameState.winner === 'player' ? '🏆 VITÓRIA' : '💀 FIM DE PARTIDA'}
+            {isSpectatorMode
+              ? gameState.winner === 'player'
+                ? `🏆 VITÓRIA DE ${gameState.player.name.toUpperCase()}`
+                : gameState.winner === 'ai'
+                ? `🏆 VITÓRIA DE ${gameState.ai.name.toUpperCase()}`
+                : '⚖️ EMPATE TÉCNICO'
+              : gameState.winner === 'player'
+              ? '🏆 VITÓRIA'
+              : '💀 FIM DE PARTIDA'}
           </span>
-          {!onlineMatch && !tournamentContext && (
+          {!isSpectatorMode && !onlineMatch && !tournamentContext && (
             <button
               type="button"
               className="btn-fantasy btn-fantasy-primary"
@@ -7462,7 +8192,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             style={{ padding: '4px 10px', fontSize: '0.7rem' }}
             onClick={handleExitBattle}
           >
-            {tournamentContext
+            {tournamentSpectatorContext || tournamentContext
               ? 'Voltar ao Torneio'
               : campaignBoss
               ? 'Voltar ao Mapa'

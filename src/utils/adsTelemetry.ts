@@ -85,6 +85,10 @@ export function classifyVisitorChannel(session: {
     src.includes('google') ||
     src.includes('adwords') ||
     url.includes('gclid=') ||
+    url.includes('gad_source=') ||
+    url.includes('gad_campaignid=') ||
+    url.includes('gbraid=') ||
+    url.includes('wbraid=') ||
     url.includes('utm_source=google')
   ) {
     return 'google_ads';
@@ -241,8 +245,8 @@ export function trackAdsEvent(
         });
       }
 
-      // Compatibilidade adicional com regra de URL /inscricao
-      if (eventName === 'register_account' || eventName === 'quick_play_clicked') {
+      // Compatibilidade adicional com regra de URL /inscricao (restrito ao cadastro real)
+      if (eventName === 'register_account') {
         window.gtag('event', 'page_view', {
           send_to: GOOGLE_ADS_TAG_ID,
           page_location: 'https://chromaticpact.com/inscricao',
@@ -292,15 +296,23 @@ export function initAdsTelemetry(): AdsAttributionData | null {
 
   try {
     const searchParams = new URLSearchParams(window.location.search);
-    const gclid = searchParams.get('gclid') ?? undefined;
+    const gclid =
+      searchParams.get('gclid') ??
+      searchParams.get('gbraid') ??
+      searchParams.get('wbraid') ??
+      undefined;
+    const hasGoogleGadSignal = Boolean(
+      gclid || searchParams.get('gad_source') || searchParams.get('gad_campaignid')
+    );
     const ttclid = searchParams.get('ttclid') ?? undefined;
     const fbclid = searchParams.get('fbclid') ?? undefined;
     let utmSource = searchParams.get('utm_source') ?? undefined;
     let utmMedium = searchParams.get('utm_medium') ?? undefined;
-    const utmCampaign = searchParams.get('utm_campaign') ?? undefined;
+    const utmCampaign =
+      searchParams.get('utm_campaign') ?? searchParams.get('gad_campaignid') ?? undefined;
     const utmTerm = searchParams.get('utm_term') ?? undefined;
 
-    // Fallback inteligente para cliques vindos da Bio/Vídeo do TikTok ou Instagram mesmo sem UTM manual
+    // Fallback inteligente para cliques vindos da Bio/Vídeo do TikTok, Instagram ou Google Ads sem gclid
     const ref = (typeof document !== 'undefined' ? document.referrer || '' : '').toLowerCase();
     if (!utmSource) {
       if (ttclid || ref.includes('tiktok.com')) {
@@ -309,14 +321,14 @@ export function initAdsTelemetry(): AdsAttributionData | null {
       } else if (fbclid || ref.includes('instagram.com')) {
         utmSource = 'instagram';
         if (!utmMedium) utmMedium = fbclid ? 'paid_social' : 'bio_referral';
-      } else if (gclid) {
+      } else if (hasGoogleGadSignal) {
         utmSource = 'google_ads';
         if (!utmMedium) utmMedium = 'cpc';
       }
     }
 
     const hasUrlParams = Boolean(
-      gclid || ttclid || fbclid || utmSource || utmMedium || utmCampaign || utmTerm
+      hasGoogleGadSignal || ttclid || fbclid || utmSource || utmMedium || utmCampaign || utmTerm
     );
     let attribution = getAdsAttribution();
 

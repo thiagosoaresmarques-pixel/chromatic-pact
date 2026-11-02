@@ -1022,10 +1022,34 @@ export function createNewSovereignAccount(params: {
   password: string;
   avatarCardId: string;
   preferredDeckId: string;
+  starterTemplateDeckId?: string;
+  bonusGold?: number;
 }): SovereignUserProfile {
   const cleanName = params.username.trim() || `Soberano_${Math.floor(100 + Math.random() * 900)}`;
   const chosenAvatar = params.avatarCardId || 'neutral_10_valkyra_pentacromatica';
   const now = Date.now();
+  const templateId = params.starterTemplateDeckId ?? params.preferredDeckId;
+  const chosenTemplate =
+    templateId === 'empty'
+      ? null
+      : MONOCHROMATIC_STARTER_DECKS.find((d) => d.id === templateId) ??
+        MONOCHROMATIC_STARTER_DECKS[0] ??
+        null;
+
+  const initialCustomDecks: SovereignSavedDeck[] = chosenTemplate
+    ? [
+        {
+          id: `grimoire_starter_${chosenTemplate.domains[0] ?? 'red'}_${now}`,
+          name: chosenTemplate.name,
+          domain: chosenTemplate.domains[0] ?? 'red',
+          cardIds: [...chosenTemplate.cardIds],
+          updatedAt: now,
+          wins: 0,
+          losses: 0,
+        },
+      ]
+    : [];
+
   const profile: SovereignUserProfile = {
     id: `sov_${now}_${Math.random().toString(36).slice(2, 7)}`,
     username: cleanName,
@@ -1038,10 +1062,10 @@ export function createNewSovereignAccount(params: {
     campaignResetVersion: CAMPAIGN_RESET_VERSION,
     pvpWins: 0,
     pvpLosses: 0,
-    preferredDeckId: '',
-    gold: STARTER_GOLD,
-    customDecks: [],
-    starterDeckCardIds: [],
+    preferredDeckId: initialCustomDecks[0]?.id ?? '',
+    gold: STARTER_GOLD + Math.max(0, Math.floor(params.bonusGold ?? 0)),
+    customDecks: initialCustomDecks,
+    starterDeckCardIds: chosenTemplate ? [...chosenTemplate.cardIds] : [],
     extraUnlockedCards: {},
     defeatedBossIds: [],
     arenaWins: 0,
@@ -1289,37 +1313,60 @@ export async function authenticateSovereignAccount(
   const cfg = getSupabaseConfig();
   if (cfg.isConfigured) {
     try {
-      const res = await fetch(
-        `${cfg.url}/rest/v1/sovereign_profiles?select=*&limit=500`,
-        {
-          headers: getSupabaseHeaders(cfg.anonKey),
-        }
-      );
-      if (res.ok) {
-        const rows = (await res.json()) as SupabaseProfileRow[];
-        const matchedRow = rows.find((r) => {
-          if (!r.username || r.username.startsWith('__')) return false;
-          if (r.username.toLowerCase() === cleanLower) return true;
-          const meta = decodeCloudTitleMeta(r.title, r.avatar_card_id);
-          return Boolean(meta.email && meta.email.toLowerCase() === cleanLower);
-        });
+      let matchedRow: SupabaseProfileRow | undefined;
 
-        if (matchedRow) {
-          const cloudProfile = hydrateProfileFromRow(matchedRow, localMatch);
-          if (cloudProfile.passwordHash && cloudProfile.passwordHash !== inputHash) {
-            return {
-              ok: false,
-              error: 'Senha incorreta. Verifique sua senha ou clique em "Esqueci minha senha".',
-            };
+      // 1. Direct exact/case-insensitive username lookup first (fast, O(1), never touches other rows)
+      if (!cleanId.includes('@')) {
+        const directRes = await fetch(
+          `${cfg.url}/rest/v1/sovereign_profiles?username=ilike.${encodeURIComponent(cleanId)}&select=*&limit=2`,
+          {
+            headers: getSupabaseHeaders(cfg.anonKey),
           }
-          // If legacy account had no passwordHash yet, bind this password now
-          if (!cloudProfile.passwordHash) {
-            cloudProfile.passwordHash = inputHash;
-          }
-          const ensuredCloud = ensureStarterDeckForUser(cloudProfile);
-          setActiveTabUserProfile(ensuredCloud);
-          return { ok: true, profile: ensuredCloud };
+        );
+        if (directRes.ok) {
+          const directRows = (await directRes.json()) as SupabaseProfileRow[];
+          matchedRow = directRows.find(
+            (r) =>
+              Boolean(r.username) &&
+              !r.username.startsWith('__') &&
+              r.username.toLowerCase() === cleanLower
+          );
         }
+      }
+
+      // 2. Email login fallback: strictly exclude all '__*' system/telemetry/tournament rows
+      if (!matchedRow && cleanId.includes('@')) {
+        const emailRes = await fetch(
+          `${cfg.url}/rest/v1/sovereign_profiles?username=not.like.__*&select=*&limit=1000`,
+          {
+            headers: getSupabaseHeaders(cfg.anonKey),
+          }
+        );
+        if (emailRes.ok) {
+          const rows = (await emailRes.json()) as SupabaseProfileRow[];
+          matchedRow = rows.find((r) => {
+            if (!r.username || r.username.startsWith('__')) return false;
+            const meta = decodeCloudTitleMeta(r.title, r.avatar_card_id);
+            return Boolean(meta.email && meta.email.toLowerCase() === cleanLower);
+          });
+        }
+      }
+
+      if (matchedRow) {
+        const cloudProfile = hydrateProfileFromRow(matchedRow, localMatch);
+        if (cloudProfile.passwordHash && cloudProfile.passwordHash !== inputHash) {
+          return {
+            ok: false,
+            error: 'Senha incorreta. Verifique sua senha ou clique em "Esqueci minha senha".',
+          };
+        }
+        // If legacy account had no passwordHash yet, bind this password now
+        if (!cloudProfile.passwordHash) {
+          cloudProfile.passwordHash = inputHash;
+        }
+        const ensuredCloud = ensureStarterDeckForUser(cloudProfile);
+        setActiveTabUserProfile(ensuredCloud);
+        return { ok: true, profile: ensuredCloud };
       }
     } catch {
       // Fallback to local
@@ -1340,7 +1387,7 @@ export async function authenticateSovereignAccount(
 
   return {
     ok: false,
-    error: `Conta "${cleanId}" não encontrada. Clique na aba "✨ Criar Nova Conta" para se cadastrar!`,
+    error: `Conta "${cleanId}" não encontrada. Use a aba "Criar Nova Conta" para se cadastrar.`,
   };
 }
 
@@ -1871,42 +1918,54 @@ export async function fetchAllCloudProfilesForAdmin(): Promise<{
   }
 
   try {
-    const res = await fetch(
-      `${cfg.url}/rest/v1/sovereign_profiles?select=*&order=updated_at.desc&limit=500`,
-      {
-        headers: getSupabaseHeaders(cfg.anonKey),
-      }
-    );
+    const [profilesRes, telemetryRes] = await Promise.all([
+      fetch(
+        `${cfg.url}/rest/v1/sovereign_profiles?or=(username.not.like.__*,username.eq.__admin_global_announcement__)&select=*&order=updated_at.desc&limit=1000`,
+        {
+          headers: getSupabaseHeaders(cfg.anonKey),
+        }
+      ),
+      fetch(
+        `${cfg.url}/rest/v1/sovereign_profiles?username=like.__telemetry_session__:*&select=username,title,updated_at&order=updated_at.desc&limit=1000`,
+        {
+          headers: getSupabaseHeaders(cfg.anonKey),
+        }
+      ),
+    ]);
     const latencyMs = Math.round(performance.now() - startMs);
-    if (!res.ok) {
+    if (!profilesRes.ok) {
       return {
         profiles: localRoster,
         visitorSessions: [],
         announcement: null,
         latencyMs,
-        error: `HTTP ${res.status}`,
+        error: `HTTP ${profilesRes.status}`,
       };
     }
 
-    const rows = (await res.json()) as SupabaseProfileRow[];
+    const profileRows = (await profilesRes.json()) as SupabaseProfileRow[];
+    const telemetryRows = telemetryRes.ok
+      ? ((await telemetryRes.json()) as Array<{ username: string; title: string }>)
+      : [];
     const profiles: SovereignUserProfile[] = [];
     const visitorSessions: CloudVisitorSessionEntry[] = [];
     let announcement: GlobalAdminAnnouncement | null = null;
     const seenUsernames = new Set<string>();
 
-    for (const r of rows) {
-      if (!r.username) continue;
-      if (r.username.startsWith('__telemetry_session__:')) {
-        try {
-          const parsed = JSON.parse(r.title) as CloudVisitorSessionEntry;
-          if (parsed && parsed.sessionId) {
-            visitorSessions.push(parsed);
-          }
-        } catch {
-          // Ignore malformed telemetry row
+    for (const tr of telemetryRows) {
+      if (!tr.username || !tr.username.startsWith('__telemetry_session__:')) continue;
+      try {
+        const parsed = JSON.parse(tr.title) as CloudVisitorSessionEntry;
+        if (parsed && parsed.sessionId) {
+          visitorSessions.push(parsed);
         }
-        continue;
+      } catch {
+        // Ignore malformed telemetry row
       }
+    }
+
+    for (const r of profileRows) {
+      if (!r.username) continue;
       if (r.username === '__admin_global_announcement__') {
         try {
           const parsed = JSON.parse(r.title) as GlobalAdminAnnouncement;
@@ -2264,7 +2323,7 @@ export async function fetchUnifiedPlatformLeaderboard(
   if (cfg.isConfigured) {
     try {
       const res = await fetch(
-        `${cfg.url}/rest/v1/sovereign_profiles?select=*&order=elo_rating.desc&limit=500`,
+        `${cfg.url}/rest/v1/sovereign_profiles?username=not.like.__*&select=*&order=elo_rating.desc&limit=500`,
         {
           headers: getSupabaseHeaders(cfg.anonKey),
         }

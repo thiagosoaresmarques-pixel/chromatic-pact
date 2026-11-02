@@ -1773,7 +1773,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           {filteredCards.length === 0 ? (
             <div className="db-catalog-empty-state">
               <div className="font-cinzel gold-gradient-text" style={{ fontSize: '1.05rem', fontWeight: 800 }}>
-                NENHUMA CARTA ENCONTRADA PARA OS FILTROS SELECIONADOS
+                Nenhuma carta encontrada para os filtros selecionados
               </div>
               <div style={{ fontSize: '0.8rem', color: '#94a3b8', maxWidth: '420px' }}>
                 Ajuste a busca, desative o filtro "Coleção" para ver todas as {ALL_CARDS.length} cartas ou limpe os filtros atuais.
@@ -2315,7 +2315,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
             >
               <div>
                 <h3 className="font-cinzel gold-gradient-text" style={{ fontSize: '1.3rem' }}>
-                  🎨 Compêndio Ilustrado — {ALL_CARDS.length} Cartas
+                  Compêndio Ilustrado — {ALL_CARDS.length} Cartas
                 </h3>
                 <p style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
                   Catálogo completo das {ALL_CARDS.length} cartas ilustradas dos 5 Domínios e Neutras.
@@ -2328,8 +2328,8 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                   onClick={handleCopyAllPrompts}
                 >
                   {copiedId === 'ALL'
-                    ? '✅ Todos Copiados!'
-                    : `📋 Copiar Lista (${promptCardsList.length})`}
+                    ? 'Todos copiados'
+                    : `Copiar lista (${promptCardsList.length})`}
                 </button>
                 <button
                   type="button"

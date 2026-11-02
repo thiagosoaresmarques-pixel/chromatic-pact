@@ -448,6 +448,61 @@ async function saveHeraldDispatchedKeyToCloud(newKey: string, existingKeys: stri
   }
 }
 
+export async function postTournamentLiveNowToDiscordWebhook(params: {
+  webhookUrl: string;
+  tournamentId: string;
+  title: string;
+  totalRounds: number;
+  turnTimeLimitSec: number;
+  prizeHeadline: string;
+  isSundayPix?: boolean;
+}): Promise<{ ok: boolean; error?: string }> {
+  const clean = params.webhookUrl.trim();
+  if (!clean) return { ok: false, error: 'Webhook não configurado.' };
+
+  const origin = getCanonicalOrigin();
+  const link = `${origin}/?tab=tournaments&tid=${encodeURIComponent(
+    params.tournamentId
+  )}&utm_source=discord&utm_medium=webhook&utm_campaign=torneio_ao_vivo`;
+
+  try {
+    const res = await fetch(clean, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'Arauto do Conclave · Pacto Cromático',
+        embeds: [
+          {
+            title: `Torneio Ao Vivo Agora — ${params.title}`,
+            url: link,
+            description: `A **Rodada 1 de ${params.totalRounds}** começou nas mesas de Vaeloria (${params.turnTimeLimitSec}s/turno). A inscrição tardia segue aberta até a Rodada 2.`,
+            color: params.isSundayPix ? 0xeab308 : 0x22c55e,
+            fields: [
+              {
+                name: 'Premiação em Disputa',
+                value: params.prizeHeadline,
+                inline: true,
+              },
+              {
+                name: 'Entrar ou Assistir',
+                value: `[Abrir Salão do Torneio](${link})`,
+                inline: true,
+              },
+            ],
+          },
+        ],
+      }),
+    });
+    if (!res.ok) return { ok: false, error: `Discord retornou HTTP ${res.status}.` };
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : 'Falha ao publicar aviso ao vivo no Discord.',
+    };
+  }
+}
+
 export async function autoDispatchDiscordTournamentHerald(params: {
   webhookUrl: string;
   nowMs: number;
@@ -462,24 +517,31 @@ export async function autoDispatchDiscordTournamentHerald(params: {
   cashBrl?: number;
   phase: 'registration' | 'round_active' | 'round_break' | 'finished';
   top3: Array<{ rank: number; name: string; points: number }>;
-}): Promise<'dispatched_call' | 'dispatched_results' | 'noop'> {
+}): Promise<'dispatched_call' | 'dispatched_live' | 'dispatched_results' | 'noop'> {
   const cleanWebhook = params.webhookUrl.trim();
   if (!cleanWebhook) return 'noop';
 
-  const isCallWindow =
+  const isPreCallWindow =
     params.nowMs >= params.startsAtMs - 45 * 60_000 &&
-    params.nowMs < params.startsAtMs + 20 * 60_000 &&
-    params.phase !== 'finished';
+    params.nowMs < params.startsAtMs &&
+    params.phase === 'registration';
+
+  const isLiveNowWindow =
+    (params.phase === 'round_active' || params.phase === 'round_break') &&
+    params.nowMs >= params.startsAtMs &&
+    params.nowMs <= params.startsAtMs + 22 * 60_000;
 
   const isResultsWindow =
     params.phase === 'finished' &&
     params.nowMs >= params.endsAtMs &&
     params.nowMs <= params.endsAtMs + 6 * 3600_000;
 
-  if (!isCallWindow && !isResultsWindow) return 'noop';
+  if (!isPreCallWindow && !isLiveNowWindow && !isResultsWindow) return 'noop';
 
   const targetKey = isResultsWindow
     ? `result::${params.tournamentId}`
+    : isLiveNowWindow
+    ? `live::${params.tournamentId}`
     : `call::${params.tournamentId}`;
 
   if (inMemoryHeraldSeen.has(targetKey)) return 'noop';
@@ -500,6 +562,19 @@ export async function autoDispatchDiscordTournamentHerald(params: {
       top3: params.top3,
     });
     return res.ok ? 'dispatched_results' : 'noop';
+  }
+
+  if (isLiveNowWindow) {
+    const res = await postTournamentLiveNowToDiscordWebhook({
+      webhookUrl: cleanWebhook,
+      tournamentId: params.tournamentId,
+      title: params.title,
+      totalRounds: params.totalRounds,
+      turnTimeLimitSec: params.turnTimeLimitSec,
+      prizeHeadline: params.prizeHeadline,
+      isSundayPix: params.isSundayPix,
+    });
+    return res.ok ? 'dispatched_live' : 'noop';
   }
 
   const res = await postTournamentCallToDiscordWebhook({

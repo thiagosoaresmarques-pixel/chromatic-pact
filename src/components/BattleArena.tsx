@@ -142,6 +142,7 @@ import {
   isArenaVideoCaptureSupported,
   startArenaVideoCapture,
 } from '../utils/arenaVideoRecorder';
+import { trackAdsEvent } from '../utils/adsTelemetry';
 
 const ARENA_COACHMARK_STEPS = [
   {
@@ -223,6 +224,7 @@ export interface BattleArenaProps {
   onRewardGold?: (amount: number, reason: string) => void;
   onMatchConcluded?: (info: { didWin: boolean; usedDeckId: string | null }) => void;
   onOpenLastPersonalReplay?: () => void;
+  onGuestClaimVictoryAccount?: (bonusGold: number) => void;
   onlineMatch?: {
     room: MultiplayerRoom;
     role: 'host' | 'guest';
@@ -452,6 +454,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onRewardGold,
   onMatchConcluded,
   onOpenLastPersonalReplay,
+  onGuestClaimVictoryAccount,
   onlineMatch,
   rankedDuelContext,
   tournamentContext,
@@ -976,12 +979,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setTimeout(() => setArenaShake(null), intensity === 'heavy' ? 520 : 340);
   };
 
+  const hasTrackedFirstActionRef = useRef<boolean>(false);
+
   const triggerCardPlaySpectacle = (
     actor: 'player' | 'ai',
     card: CardDefinition,
     prePlayState: GameState,
     targetId?: string
   ) => {
+    if (!isSpectatorMode && actor === 'player' && !hasTrackedFirstActionRef.current) {
+      hasTrackedFirstActionRef.current = true;
+      trackAdsEvent('first_card_played', { action: 'play_card', isGuest });
+    }
     const enemyActor: 'player' | 'ai' = actor === 'player' ? 'ai' : 'player';
     const enemyState = prePlayState[enemyActor];
 
@@ -3052,6 +3061,21 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         return;
       }
 
+      if (gameState.winner === 'player') {
+        trackAdsEvent('match_victory', {
+          mode: tournamentContext
+            ? 'tournament'
+            : onlineMatch
+            ? 'pvp'
+            : campaignBoss
+            ? 'campaign'
+            : tacticalProblem
+            ? 'problem'
+            : 'arena',
+          isGuest,
+        });
+      }
+
       if (tournamentContext) {
         const score: 1 | 0.5 | 0 =
           gameState.winner === 'player' ? 1 : gameState.winner === 'ai' ? 0 : 0.5;
@@ -3228,6 +3252,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   const handleQuickChannelCard = (handIdx: number) => {
     if (!isPlayerTurn || gameState.player.hasChanneledThisTurn) return;
+    if (!isSpectatorMode && !hasTrackedFirstActionRef.current) {
+      hasTrackedFirstActionRef.current = true;
+      trackAdsEvent('first_card_played', { action: 'channel_essence', isGuest });
+    }
     const next = channelCard(gameState, 'player', handIdx);
     playSfx('channel');
     setGameState(next);
@@ -7467,6 +7495,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               )}
                               <button
                                 type="button"
+                                className={`arena-spec-btn ${specCinemaMode ? 'is-active' : ''}`}
+                                style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
+                                onClick={() => toggleSpecCinemaMode()}
+                              >
+                                {specCinemaMode ? 'Sair do Modo Cinema' : 'Modo Cinema'}
+                              </button>
+                              <button
+                                type="button"
                                 className={`arena-spec-btn ${showLogSidebar ? 'is-active' : ''}`}
                                 style={{ width: '100%', justifyContent: 'flex-start', textAlign: 'left' }}
                                 onClick={() => setShowLogSidebar((p) => !p)}
@@ -7478,6 +7514,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         );
 
                         if (isHomeLiveShowcase) {
+                          const showDesktopCinemaBtn =
+                            typeof window === 'undefined' || window.innerWidth >= 768;
                           return (
                             <div className="arena-spec-controls">
                               <span
@@ -7503,14 +7541,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 </button>
                               )}
 
-                              <button
-                                type="button"
-                                className={`arena-spec-btn ${specCinemaMode ? 'is-active' : ''}`}
-                                onClick={() => toggleSpecCinemaMode()}
-                                title="Modo Cinema: tela limpa 16:9 ou 9:16 ideal para gravar (Atalho: F)"
-                              >
-                                Cinema
-                              </button>
+                              {showDesktopCinemaBtn && (
+                                <button
+                                  type="button"
+                                  className={`arena-spec-btn ${specCinemaMode ? 'is-active' : ''}`}
+                                  onClick={() => toggleSpecCinemaMode()}
+                                  title="Modo Cinema: tela limpa 16:9 ou 9:16 ideal para gravar (Atalho: F)"
+                                >
+                                  Cinema
+                                </button>
+                              )}
 
                               {renderSecondarySpecPopover()}
 
@@ -7519,6 +7559,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 className="arena-spec-btn primary"
                                 onClick={() => {
                                   startAdaptiveMusic();
+                                  trackAdsEvent('quick_play_clicked', {
+                                    source: 'home_live_hud',
+                                    isGuest,
+                                  });
                                   const act =
                                     tournamentSpectatorContext.onPlayNowFromHome ??
                                     tournamentSpectatorContext.onExitSpectator;
@@ -8871,7 +8915,29 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 {tacticalProblem ? (
                   `${tacticalProblem.code} resolvido · +${tacticalProblem.goldReward} Ouro (1ª conclusão)`
                 ) : isGuest ? (
-                  'Modo Visitante · Crie sua conta gratuita para salvar progresso e receber +160 Ouro iniciais'
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '0.75rem',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <span>
+                      Vitória como Visitante · Salve este espólio (+{160 + VICTORY_GOLD_REWARD} Ouro + Grimório de 100 cartas)
+                    </span>
+                    {onGuestClaimVictoryAccount && (
+                      <button
+                        type="button"
+                        className="btn-fantasy btn-fantasy-primary"
+                        style={{ padding: '5px 12px', fontSize: '0.78rem' }}
+                        onClick={() => onGuestClaimVictoryAccount(VICTORY_GOLD_REWARD)}
+                      >
+                        Criar Conta Gratuita
+                      </button>
+                    )}
+                  </div>
                 ) : campaignBoss ? (
                   <div>
                     <div>
@@ -8919,10 +8985,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     <button
                       type="button"
                       className="btn-fantasy btn-fantasy-primary"
-                      onClick={
-                        tournamentSpectatorContext.onPlayNowFromHome ??
-                        tournamentSpectatorContext.onExitSpectator
-                      }
+                      onClick={() => {
+                        trackAdsEvent('quick_play_clicked', {
+                          source: 'home_live_gameover',
+                          isGuest,
+                        });
+                        const act =
+                          tournamentSpectatorContext.onPlayNowFromHome ??
+                          tournamentSpectatorContext.onExitSpectator;
+                        act();
+                      }}
                     >
                       Jogar Agora
                     </button>

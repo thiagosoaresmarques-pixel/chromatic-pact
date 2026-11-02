@@ -267,6 +267,25 @@ function readSavedTournamentNav(): SavedTournamentNavState | null {
   }
 }
 
+function buildGoogleCalendarReminderUrl(def: SwissTournamentDefinition): string {
+  const toCalUtc = (ms: number) =>
+    new Date(ms)
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\.\d{3}Z$/, 'Z');
+  const reminderStartMs = Math.max(Date.now(), def.startsAtMs - 5 * 60_000);
+  const dates = `${toCalUtc(reminderStartMs)}/${toCalUtc(def.endsAtMs)}`;
+  const link = `https://chromaticpact.com/?tab=tournaments&tid=${encodeURIComponent(def.id)}`;
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: `${def.title} — Chromatic Pact`,
+    dates,
+    details: `Sua inscrição está confirmada. Acesse a mesa 5 minutos antes do início: ${link}`,
+    location: link,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 export const TournamentsView: React.FC<TournamentsViewProps> = ({
   currentUser,
   customDecks,
@@ -289,13 +308,23 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   );
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(() => {
     try {
-      const urlTid = new URLSearchParams(window.location.search).get('tid');
+      const sp = new URLSearchParams(window.location.search);
+      const urlTid = sp.get('tid');
       if (urlTid) return urlTid;
+      const savedNav = readSavedTournamentNav();
+      if (savedNav) return savedNav.tid;
+      if (sp.get('tab') === 'tournaments') {
+        const initNow = getTournamentNowMs();
+        const activeOrUpcoming = catalog.tournaments.find((t) => initNow < t.endsAtMs);
+        if (activeOrUpcoming) return activeOrUpcoming.id;
+      }
     } catch {
       // ignore
     }
     return readSavedTournamentNav()?.tid ?? null;
   });
+
+  const pendingEnrollTidRef = useRef<string | null>(null);
 
   const [nowMs, setNowMs] = useState<number>(() => getTournamentNowMs());
   const [selectedDeckId, setSelectedDeckId] = useState<string>(
@@ -555,53 +584,79 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     }
   };
 
-  const handleEnroll = async () => {
-    if (isGuest) {
-      onRequireAccount();
+  const handleEnroll = useCallback(
+    async (explicitDef?: SwissTournamentDefinition) => {
+      const targetDef = explicitDef ?? snapshot.definition;
+      if (isGuest) {
+        pendingEnrollTidRef.current = targetDef.id;
+        onRequireAccount();
+        return;
+      }
+      if (!selectedDeckObj || selectedDeckObj.cardIds.length < 30) {
+        onRequireDeckSetup();
+        return;
+      }
+      setIsEnrolling(true);
+      try {
+        const entry = await enrollHumanInTournament({
+          tournament: targetDef,
+          user: currentUser,
+          deckId: selectedDeckObj.id,
+          deckName: selectedDeckObj.name,
+          deckCardIds: selectedDeckObj.cardIds,
+          unlockedCardIds,
+        });
+        playSfx('ascend');
+        trackAdsEvent('join_tournament', {
+          tournamentId: targetDef.id,
+          tournamentTitle: targetDef.title,
+          deckDomain: entry.primaryDomain,
+        });
+        setCatalog((prev) => {
+          const prevList = prev.entriesByTournament[targetDef.id] ?? [];
+          const clean = entry.username.trim().toLowerCase();
+          return {
+            ...prev,
+            entriesByTournament: {
+              ...prev.entriesByTournament,
+              [targetDef.id]: [
+                ...prevList.filter((e) => e.username.trim().toLowerCase() !== clean),
+                entry,
+              ],
+            },
+          };
+        });
+        const domLabel = DOMAIN_LABELS_PT[entry.primaryDomain] ?? entry.primaryDomain;
+        setStatusFeedback(
+          `Inscrição confirmada com "${entry.deckName}" (${domLabel}).`
+        );
+      } finally {
+        setIsEnrolling(false);
+      }
+    },
+    [
+      snapshot.definition,
+      isGuest,
+      onRequireAccount,
+      selectedDeckObj,
+      onRequireDeckSetup,
+      currentUser,
+      unlockedCardIds,
+    ]
+  );
+
+  // Seamless post-signup auto-enrollment when Guest clicks "Inscrever" and creates an account
+  useEffect(() => {
+    if (isGuest || !pendingEnrollTidRef.current || !selectedDeckObj || selectedDeckObj.cardIds.length < 30) {
       return;
     }
-    if (!selectedDeckObj || selectedDeckObj.cardIds.length < 30) {
-      onRequireDeckSetup();
-      return;
-    }
-    setIsEnrolling(true);
-    try {
-      const entry = await enrollHumanInTournament({
-        tournament: snapshot.definition,
-        user: currentUser,
-        deckId: selectedDeckObj.id,
-        deckName: selectedDeckObj.name,
-        deckCardIds: selectedDeckObj.cardIds,
-        unlockedCardIds,
-      });
-      playSfx('ascend');
-      trackAdsEvent('join_tournament', {
-        tournamentId: snapshot.definition.id,
-        tournamentTitle: snapshot.definition.title,
-        deckDomain: entry.primaryDomain,
-      });
-      setCatalog((prev) => {
-        const prevList = prev.entriesByTournament[snapshot.definition.id] ?? [];
-        const clean = entry.username.trim().toLowerCase();
-        return {
-          ...prev,
-          entriesByTournament: {
-            ...prev.entriesByTournament,
-            [snapshot.definition.id]: [
-              ...prevList.filter((e) => e.username.trim().toLowerCase() !== clean),
-              entry,
-            ],
-          },
-        };
-      });
-      const domLabel = DOMAIN_LABELS_PT[entry.primaryDomain] ?? entry.primaryDomain;
-      setStatusFeedback(
-        `Inscrição confirmada com "${entry.deckName}" (${domLabel}).`
-      );
-    } finally {
-      setIsEnrolling(false);
-    }
-  };
+    const targetTid = pendingEnrollTidRef.current;
+    pendingEnrollTidRef.current = null;
+    const targetDef =
+      catalog.tournaments.find((t) => t.id === targetTid) ?? snapshot.definition;
+    setSelectedTournamentId(targetDef.id);
+    void handleEnroll(targetDef);
+  }, [isGuest, selectedDeckObj, catalog.tournaments, snapshot.definition, handleEnroll]);
 
   const handleEnterRoundMatch = useCallback(async () => {
     if (
@@ -819,6 +874,25 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     onStartTournamentPvpMatch,
     refreshCloudCatalog,
   ]);
+
+  // If player is waiting on the Tournament Hub (selectedTournamentId === null) when a round goes live,
+  // automatically open their enrolled active tournament so auto-start & table banner engage immediately.
+  useEffect(() => {
+    if (selectedTournamentId || !autoStartRounds || isGuest) return;
+    for (const def of catalog.tournaments) {
+      const s = snapshotsById[def.id];
+      if (
+        s &&
+        s.phase === 'round_active' &&
+        s.myEntry &&
+        s.myCurrentPairing &&
+        !s.myEntry.resultsByRound?.[s.currentRound]
+      ) {
+        openTournamentDetail(def.id, 'pairings');
+        break;
+      }
+    }
+  }, [selectedTournamentId, autoStartRounds, isGuest, catalog.tournaments, snapshotsById, openTournamentDetail]);
 
   useEffect(() => {
     if (
@@ -1542,9 +1616,12 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                           onClick={(e) => {
                             e.stopPropagation();
                             openTournamentDetail(tSnap.definition.id, 'standings');
+                            if (!enrolled && tSnap.phase !== 'finished') {
+                              void handleEnroll(tSnap.definition);
+                            }
                           }}
                         >
-                          {isLive
+                          {isLive && enrolled
                             ? 'Entrar na mesa'
                             : enrolled
                             ? 'Ver torneio'
@@ -1770,7 +1847,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                   onClick={() => void handleEnroll()}
                 >
                   {isGuest
-                    ? 'Entrar na conta'
+                    ? 'Criar Conta e Inscrever'
                     : customDecks.length === 0
                     ? 'Montar Grimório'
                     : isEnrolling
@@ -1833,6 +1910,18 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                   />
                   <span>Auto-iniciar</span>
                 </label>
+
+                {snapshot.phase === 'registration' && (
+                  <a
+                    href={buildGoogleCalendarReminderUrl(snapshot.definition)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="trn-btn trn-btn-ghost"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    Lembrar na Agenda ↗
+                  </a>
+                )}
 
                 {snapshot.phase === 'registration' && customDecks.length > 1 && (
                   <button

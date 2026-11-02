@@ -42,10 +42,14 @@ async function main(): Promise<void> {
       }
     }
 
-    // 3. Dispatch idempotent Discord Herald notifications
-    if (cfg.webhookUrl.trim()) {
+    // 3. Dispatch idempotent Discord Herald notifications (cloud config + env fallback)
+    const effectiveWebhook = (
+      cfg.webhookUrl ||
+      (typeof process !== 'undefined' ? process.env.DISCORD_WEBHOOK_URL || '' : '')
+    ).trim();
+    if (effectiveWebhook) {
       const outcome = await autoDispatchDiscordTournamentHerald({
-        webhookUrl: cfg.webhookUrl,
+        webhookUrl: effectiveWebhook,
         nowMs,
         tournamentId: def.id,
         title: def.title,

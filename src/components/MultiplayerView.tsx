@@ -266,11 +266,21 @@ interface SovereignAccountModalProps {
   onAccountSuccess?: (profile: SovereignUserProfile) => void;
   onClose: () => void;
   initialTab?: AccountModalTab;
+  bonusStarterGold?: number;
+  contextNotice?: string;
   onNeedsDeckSetup?: () => void;
   onOpenAdminPanel?: () => void;
   onOpenPwaInstall?: () => void;
   onLaunchPersonalReplay?: (entry: PersonalMatchHistoryEntry) => void;
 }
+
+const STARTER_DOMAIN_SHORT_LABELS: Record<string, string> = {
+  red: 'Chama',
+  blue: 'Tempestade',
+  purple: 'Abismo',
+  green: 'Selva',
+  gold: 'Ordem',
+};
 
 export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   currentUser,
@@ -279,6 +289,8 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   onAccountSuccess,
   onClose,
   initialTab = 'profile',
+  bonusStarterGold = 0,
+  contextNotice,
   onNeedsDeckSetup,
   onOpenAdminPanel,
   onOpenPwaInstall,
@@ -382,9 +394,15 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   const [newUsername, setNewUsername] = useState<string>('');
   const [newEmail, setNewEmail] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
-  const [newPasswordConfirm, setNewPasswordConfirm] = useState<string>('');
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
   const [createError, setCreateError] = useState<string | null>(null);
-  const [newAvatarId, setNewAvatarId] = useState<string>('neutral_10_valkyra_pentacromatica');
+  const [selectedStarterTemplateId, setSelectedStarterTemplateId] = useState<string>(
+    () => MONOCHROMATIC_STARTER_DECKS[0]?.id || ''
+  );
+  const [hasCustomAvatarPick, setHasCustomAvatarPick] = useState<boolean>(false);
+  const [newAvatarId, setNewAvatarId] = useState<string>(
+    () => MONOCHROMATIC_STARTER_DECKS[0]?.coverCardId || 'neutral_10_valkyra_pentacromatica'
+  );
 
   const allAvailableDecks = useMemo(
     () =>
@@ -497,16 +515,14 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
       setCreateError('A senha deve ter pelo menos 4 caracteres.');
       return;
     }
-    if (newPassword !== newPasswordConfirm) {
-      setCreateError('As duas senhas digitadas não conferem.');
-      return;
-    }
     const created = createNewSovereignAccount({
       username: newUsername,
       email: newEmail,
       password: newPassword,
       avatarCardId: newAvatarId,
-      preferredDeckId: editDeckId || MONOCHROMATIC_STARTER_DECKS[0]?.id || '',
+      preferredDeckId: selectedStarterTemplateId || editDeckId || MONOCHROMATIC_STARTER_DECKS[0]?.id || '',
+      starterTemplateDeckId: selectedStarterTemplateId || MONOCHROMATIC_STARTER_DECKS[0]?.id,
+      bonusGold: bonusStarterGold,
     });
     setAccountsRoster(getSavedAccountsRoster());
     onUserChange(created);
@@ -1129,26 +1145,26 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
         {tab === 'create' && (
           <form
             onSubmit={handleCreateAccount}
-            style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}
           >
             {/* Nota sóbria de Boas-Vindas */}
             <div
               style={{
-                padding: '0.7rem 0.9rem',
+                padding: '0.65rem 0.9rem',
                 borderRadius: '8px',
                 background: 'rgba(15, 23, 42, 0.72)',
-                border: '1px solid rgba(250, 204, 21, 0.3)',
+                border: '1px solid rgba(148, 163, 184, 0.18)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '2px',
               }}
             >
               <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fde68a' }}>
-                Bônus inicial de Soberano
+                {contextNotice || 'Bônus inicial de Soberano'}
               </div>
               <div style={{ fontSize: '0.76rem', color: '#cbd5e1', lineHeight: 1.4 }}>
-                Inclui <strong>+160 Ouro inicial</strong> (2 pacotes no Relicário) e{' '}
-                <strong>1º Grimório de 100 cartas liberado</strong>.
+                Inclui <strong>+{160 + Math.max(0, bonusStarterGold)} Ouro inicial</strong> e{' '}
+                <strong>Grimório completo de 100 cartas pronto para jogar</strong> (editável a qualquer momento).
               </div>
             </div>
 
@@ -1171,19 +1187,19 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-                gap: '0.85rem',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(185px, 1fr))',
+                gap: '0.75rem',
                 alignItems: 'end',
               }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
-                  NICKNAME * (IMUTÁVEL)
+                  Apelido * (imutável)
                 </label>
                 <input
                   type="text"
                   className="myth-search-compact"
-                  placeholder="Ex: tsm81"
+                  placeholder="Ex: Valerius"
                   value={newUsername}
                   onChange={(e) => setNewUsername(e.target.value)}
                   required
@@ -1193,7 +1209,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
-                  E-MAIL * (PARA RECUPERAÇÃO)
+                  E-mail * (para recuperação)
                 </label>
                 <input
                   type="email"
@@ -1205,70 +1221,133 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                   style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
                 />
               </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
+                  Senha * (mín. 4 caracteres)
+                </label>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    className="myth-search-compact"
+                    placeholder="••••••••"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    style={{ flex: 1, minWidth: 0, height: '38px', boxSizing: 'border-box' }}
+                  />
+                  <button
+                    type="button"
+                    className="aaa-btn aaa-btn-ghost"
+                    onClick={() => setShowNewPassword((v) => !v)}
+                    style={{ height: '38px', padding: '0 10px', fontSize: '0.74rem', flexShrink: 0 }}
+                  >
+                    {showNewPassword ? 'Ocultar' : 'Mostrar'}
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div
+            {/* Escolha em 1 clique do Grimório Inicial de 100 cartas */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <label className="aaa-stat-label">
+                Grimório Inicial (100 cartas prontas para duelos e torneios)
+              </label>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
+                  gap: '6px',
+                }}
+              >
+                {MONOCHROMATIC_STARTER_DECKS.map((deck) => {
+                  const dom = deck.domains[0] ?? 'red';
+                  const active = selectedStarterTemplateId === deck.id;
+                  return (
+                    <button
+                      key={deck.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedStarterTemplateId(deck.id);
+                        if (!hasCustomAvatarPick && deck.coverCardId) {
+                          setNewAvatarId(deck.coverCardId);
+                        }
+                      }}
+                      style={{
+                        padding: '7px 4px',
+                        borderRadius: '6px',
+                        border: active
+                          ? '1px solid rgba(212, 175, 55, 0.75)'
+                          : '1px solid rgba(148, 163, 184, 0.16)',
+                        background: active ? 'rgba(212, 175, 55, 0.14)' : 'rgba(15, 23, 42, 0.6)',
+                        color: active ? '#fde68a' : '#cbd5e1',
+                        fontSize: '0.76rem',
+                        fontWeight: active ? 700 : 500,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      {STARTER_DOMAIN_SHORT_LABELS[dom] ?? dom}
+                    </button>
+                  );
+                })}
+              </div>
+              {(() => {
+                const chosen =
+                  MONOCHROMATIC_STARTER_DECKS.find((d) => d.id === selectedStarterTemplateId) ??
+                  MONOCHROMATIC_STARTER_DECKS[0];
+                return chosen ? (
+                  <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
+                    {chosen.name} — 100 cartas desbloqueadas na sua coleção
+                  </div>
+                ) : null;
+              })()}
+            </div>
+
+            {/* Revelação Progressiva para personalização opcional de Avatar */}
+            <details
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
-                gap: '0.85rem',
-                alignItems: 'end',
+                borderRadius: '8px',
+                border: '1px solid rgba(148, 163, 184, 0.14)',
+                background: 'rgba(15, 23, 42, 0.45)',
+                padding: '0.45rem 0.7rem',
               }}
             >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
-                  SENHA * (MÍN. 4 CARACTERES)
-                </label>
-                <input
-                  type="password"
-                  className="myth-search-compact"
-                  placeholder="••••••••"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
+              <summary
+                style={{
+                  cursor: 'pointer',
+                  fontSize: '0.76rem',
+                  color: '#cbd5e1',
+                  fontWeight: 600,
+                  userSelect: 'none',
+                }}
+              >
+                Personalizar avatar e título honorífico (opcional)
+              </summary>
+              <div style={{ marginTop: '0.6rem' }}>
+                <AvatarCreaturePicker
+                  selectedCardId={newAvatarId}
+                  onSelectCardId={(cid) => {
+                    setHasCustomAvatarPick(true);
+                    setNewAvatarId(cid);
+                  }}
                 />
               </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <label className="aaa-stat-label" style={{ whiteSpace: 'nowrap' }}>
-                  CONFIRMAR SENHA *
-                </label>
-                <input
-                  type="password"
-                  className="myth-search-compact"
-                  placeholder="••••••••"
-                  value={newPasswordConfirm}
-                  onChange={(e) => setNewPasswordConfirm(e.target.value)}
-                  required
-                  style={{ width: '100%', height: '38px', boxSizing: 'border-box' }}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="aaa-stat-label" style={{ marginBottom: '0.35rem', display: 'block' }}>
-                ESCOLHA SEU AVATAR (QUALQUER CRIATURA OU LENDÁRIA DEFINE SEU TÍTULO HONORÍFICO)
-              </label>
-              <AvatarCreaturePicker
-                selectedCardId={newAvatarId}
-                onSelectCardId={setNewAvatarId}
-              />
-            </div>
+            </details>
 
             <div
               style={{
                 display: 'flex',
                 justifyContent: 'flex-end',
                 gap: '0.65rem',
-                marginTop: '0.35rem',
+                marginTop: '0.2rem',
               }}
             >
               <button type="button" className="aaa-btn aaa-btn-ghost" onClick={onClose}>
                 Cancelar
               </button>
               <button type="submit" className="aaa-btn aaa-btn-primary">
-                ✓ Criar & Entrar com este Usuário
+                Criar Conta e Entrar
               </button>
             </div>
           </form>

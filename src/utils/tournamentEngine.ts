@@ -1941,7 +1941,7 @@ export async function fetchTournamentCatalogFromCloud(): Promise<TournamentCatal
 
   try {
     const res = await fetch(
-      `${cfg.url}/rest/v1/sovereign_profiles?username=like.__tournament_*&select=username,title,updated_at&order=updated_at.desc&limit=300`,
+      `${cfg.url}/rest/v1/sovereign_profiles?username=like.__tournament_*&select=username,title,updated_at&order=updated_at.desc&limit=1000`,
       {
         headers: getHeaders(cfg.anonKey),
       }

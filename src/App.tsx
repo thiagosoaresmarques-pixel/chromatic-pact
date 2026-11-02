@@ -620,6 +620,8 @@ export const App: React.FC = () => {
   const [accountModalState, setAccountModalState] = useState<{
     open: boolean;
     tab: AccountModalTab;
+    bonusGold?: number;
+    contextNotice?: string;
   }>({ open: false, tab: 'profile' });
   const [activeOnlineMatch, setActiveOnlineMatch] = useState<{
     room: MultiplayerRoom;
@@ -1309,15 +1311,14 @@ export const App: React.FC = () => {
           isGuest ? null : currentUser.username
         );
 
-        // 1. Round-Start Alert if enrolled and browsing outside Arena / Tournaments
+        // 1. Round-Start Alert if enrolled and not already in an Arena battle
         if (
           !isGuest &&
           snap.phase === 'round_active' &&
           snap.myEntry &&
           snap.myCurrentPairing &&
           !snap.myEntry.resultsByRound?.[snap.currentRound] &&
-          activeTabLiveRef.current !== 'arena' &&
-          activeTabLiveRef.current !== 'tournaments'
+          activeTabLiveRef.current !== 'arena'
         ) {
           const alertKey = `${def.id}::r${snap.currentRound}::${currentUser.username.toLowerCase()}`;
           if (!notifiedTournamentRoundsRef.current.has(alertKey)) {
@@ -2991,7 +2992,13 @@ export const App: React.FC = () => {
             customDecks={customDecks}
             unlockedCardIds={unlockedCardIds}
             isGuest={isGuest}
-            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireAccount={() =>
+              setAccountModalState({
+                open: true,
+                tab: 'create',
+                contextNotice: 'Crie sua conta para concluir a inscrição no torneio',
+              })
+            }
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onInspectCard={setShowcaseInspectCard}
             onClaimTournamentReward={deliverPersonalTournamentReward}
@@ -3068,7 +3075,13 @@ export const App: React.FC = () => {
             defeatedBossCount={defeatedBossIds.length}
             arenaWins={arenaWins}
             lastDraftOutcome={lastDraftOutcome}
-            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireAccount={() =>
+              setAccountModalState({
+                open: true,
+                tab: 'create',
+                contextNotice: undefined,
+              })
+            }
             onSpendEntryGold={(amount) => {
               if (isGuest) return;
               updateCurrentUserProgression((prev) => ({
@@ -3086,7 +3099,13 @@ export const App: React.FC = () => {
             isGuest={isGuest}
             defeatedBossCount={defeatedBossIds.length}
             arenaWins={arenaWins}
-            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireAccount={() =>
+              setAccountModalState({
+                open: true,
+                tab: 'create',
+                contextNotice: undefined,
+              })
+            }
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartRiftBattle={handleStartRiftBattle}
           />
@@ -3192,6 +3211,14 @@ export const App: React.FC = () => {
             }}
             onRewardGold={handleRewardGold}
             onMatchConcluded={handleMatchConcluded}
+            onGuestClaimVictoryAccount={(bonus) =>
+              setAccountModalState({
+                open: true,
+                tab: 'create',
+                bonusGold: bonus,
+                contextNotice: `Salve sua vitória e receba +${160 + bonus} Ouro inicial`,
+              })
+            }
             onOpenLastPersonalReplay={() => {
               const latest = getPersonalMatchHistory()[0];
               if (!latest) return;
@@ -3365,7 +3392,13 @@ export const App: React.FC = () => {
             arenaWins={arenaWins}
             customDecks={customDecks}
             isGuest={isGuest}
-            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireAccount={() =>
+              setAccountModalState({
+                open: true,
+                tab: 'create',
+                contextNotice: undefined,
+              })
+            }
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartBossBattle={handleStartBossBattle}
             onRewardGold={handleRewardGold}
@@ -3379,7 +3412,13 @@ export const App: React.FC = () => {
             isGuest={isGuest}
             defeatedBossCount={defeatedBossIds.length}
             arenaWins={arenaWins}
-            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireAccount={() =>
+              setAccountModalState({
+                open: true,
+                tab: 'create',
+                contextNotice: undefined,
+              })
+            }
             onStartExpeditionBattle={handleStartExpeditionBattle}
             onSaveCustomDeck={handleSaveCustomDeck}
             onRewardGold={handleRewardGold}
@@ -3394,7 +3433,13 @@ export const App: React.FC = () => {
             isGuest={isGuest}
             defeatedBossCount={defeatedBossIds.length}
             arenaWins={arenaWins}
-            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireAccount={() =>
+              setAccountModalState({
+                open: true,
+                tab: 'create',
+                contextNotice: undefined,
+              })
+            }
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onStartConquestBattle={handleStartConquestBattle}
             onRewardGold={handleRewardGold}
@@ -3450,7 +3495,13 @@ export const App: React.FC = () => {
             salvageableInfo={salvageableInfo}
             isGuest={isGuest}
             username={currentUser.username}
-            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireAccount={() =>
+              setAccountModalState({
+                open: true,
+                tab: 'create',
+                contextNotice: undefined,
+              })
+            }
             onSaveCustomDeck={handleSaveCustomDeck}
             onDeleteCustomDeck={handleDeleteCustomDeck}
             onCraftCard={handleCraftCard}
@@ -3470,7 +3521,13 @@ export const App: React.FC = () => {
             unlockedCardIds={unlockedCardIds}
             isGuest={isGuest}
             hasCustomDeck={!isGuest && customDecks.length > 0}
-            onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
+            onRequireAccount={() =>
+              setAccountModalState({
+                open: true,
+                tab: 'create',
+                contextNotice: undefined,
+              })
+            }
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onOpenPack={handleOpenPack}
             onSalvageDuplicates={handleSalvageExcessDuplicates}
@@ -3531,7 +3588,16 @@ export const App: React.FC = () => {
               trackAdsEvent('register_account', { username: updatedProfile.username });
             }}
             initialTab={accountModalState.tab}
-            onClose={() => setAccountModalState((prev) => ({ ...prev, open: false }))}
+            bonusStarterGold={accountModalState.bonusGold ?? 0}
+            contextNotice={accountModalState.contextNotice}
+            onClose={() =>
+              setAccountModalState((prev) => ({
+                ...prev,
+                open: false,
+                bonusGold: 0,
+                contextNotice: undefined,
+              }))
+            }
             onNeedsDeckSetup={() => setActiveTab('deckbuilder')}
             onOpenAdminPanel={handleOpenAdminTab}
             onOpenPwaInstall={() => setIsPwaModalOpen(true)}

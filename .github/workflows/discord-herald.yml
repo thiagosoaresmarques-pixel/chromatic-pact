@@ -6,10 +6,12 @@ on:
     # Segunda a Sexta (Torneio 19h00–20h00 BRT = 22h00–23h00 UTC)
     - cron: '25 21 * * 1-5' # 18h25 BRT: Convocação 35 min antes
     - cron: '55 21 * * 1-5' # 18h55 BRT: Janela de contingência
+    - cron: '02 22 * * 1-5' # 19h02 BRT: Aviso Ao Vivo Agora (Rodada 1 + inscrição tardia)
     - cron: '03 23 * * 1-5' # 20h03 BRT: Súmula oficial + reprise da Mesa #1
     # Sábado e Domingo (Torneio / Grande Copa PIX 14h00–15h00 BRT = 17h00–18h00 UTC)
     - cron: '25 16 * * 0,6' # 13h25 BRT: Convocação 35 min antes
     - cron: '55 16 * * 0,6' # 13h55 BRT: Janela de contingência
+    - cron: '02 17 * * 0,6' # 14h02 BRT: Aviso Ao Vivo Agora (Rodada 1 + inscrição tardia)
     - cron: '03 18 * * 0,6' # 15h03 BRT: Súmula oficial + reprise da Mesa #1
 
 jobs:

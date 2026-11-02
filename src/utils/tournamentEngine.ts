@@ -8,6 +8,7 @@ import {
   getSupabaseConfig,
   SovereignUserProfile,
 } from './multiplayerEngine';
+import { getConfiguredSundayPixBrl } from './discordCommunityEngine';
 
 // ============================================================================
 // 1. TIME CONTROL EMPIRICAL BENCHMARKS & TOURNAMENT CADENCE PRESETS
@@ -242,6 +243,37 @@ export type TournamentPhaseStatus =
   | 'round_break'  // 30s pairing transition between round r and r+1
   | 'finished';    // At or after endsAtMs
 
+export type TournamentRewardTierId =
+  | 'champion'
+  | 'podium_top3'
+  | 'finalist_top8'
+  | 'challenger_top16'
+  | 'participation';
+
+export interface TournamentPersonalReward {
+  tournamentId: string;
+  tournamentTitle: string;
+  userId: string;
+  username: string;
+  rank: number;
+  points: number;
+  completedRounds: number;
+  totalRounds: number;
+  primaryDomain: Domain;
+  isDomainLeader: boolean;
+  tierId: TournamentRewardTierId;
+  tierLabel: string;
+  cardId?: string;
+  cardName?: string;
+  cardRarity?: 'rare' | 'legendary';
+  goldBonus: number;
+  shardsBonus: number;
+  cashBrl?: number;
+  pixProtocolCode?: string;
+  claimKey: string;
+  alreadyClaimed: boolean;
+}
+
 export interface ComputedTournamentSnapshot {
   definition: SwissTournamentDefinition;
   nowMs: number;
@@ -259,6 +291,7 @@ export interface ComputedTournamentSnapshot {
   humanEntrantsCount: number;
   totalParticipantsCount: number;
   finalizedAward: TournamentAwardedPrize | null;
+  myPersonalReward: TournamentPersonalReward | null;
 }
 
 export interface TournamentCatalogData {
@@ -303,18 +336,17 @@ export const DEFAULT_INAUGURAL_TOURNAMENT: SwissTournamentDefinition = {
 };
 
 /**
- * Builds the deterministic official recurring tournament calendar in Brasília time (UTC-3):
- * - Daily 12h30 BRT: Copa Meridiana de Vaeloria (5 rounds, Blitz 30s/turn, +80 Gold & +60 Shards)
- * - Mon–Sat 20h00 BRT: Copa Suíça Noturna (6 rounds, Rapid 45s/turn, 1 Unowned Rare + 50 Gold)
- * - Sundays 19h00 BRT: Grande Copa Dominical (7 rounds, Rapid 45s/turn, 1 Unowned Legendary + 120 Gold)
- *
- * Includes editions within [nowMs - 36h, nowMs + 36h] plus the next upcoming Sunday Grand Cup
- * so players always have open registrations, countdowns, and recent completed replays.
+ * Builds the deterministic official hybrid recurring tournament calendar in Brasília time (UTC-3):
+ * - Mon–Fri 19h00–20h00 & Sat 14h00–15h00 BRT: Torneio Diário de Vaeloria
+ *   (Escalonado: Lendária ao #1, Raras ao Top 8/Líder de Domínio + Ouro/Estilhaços até Participação)
+ * - Sun 14h00–15h00 BRT: Grande Copa Dominical de Vaeloria
+ *   (Edição Especial Híbrida: PIX + Lendária ao #1 + prêmios escalonados para os demais)
  */
 export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamentDefinition[] {
   const BRT_OFFSET_MS = -3 * 60 * 60 * 1000;
   const DAY_MS = 24 * 60 * 60 * 1000;
   const pad2 = (n: number) => String(n).padStart(2, '0');
+  const sundayPixBrl = getConfiguredSundayPixBrl();
 
   const out = new Map<string, SwissTournamentDefinition>();
   const brtShiftedNow = nowMs + BRT_OFFSET_MS;
@@ -334,6 +366,7 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
     const dateSlug = `${yyyy}_${mm}_${dd}`;
     const createdAtMs = Date.parse(`${dateIsoPrefix}T00:05:00-03:00`);
     const isWeekend = dow === 0 || dow === 6;
+    const isSunday = dow === 0;
     const startClockIso = isWeekend ? '14:00:00' : '19:00:00';
     const hourSlug = isWeekend ? '14h' : '19h';
 
@@ -342,9 +375,28 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
     const endsAtMs = startsAtMs + 6 * 10 * 60 * 1000;
     const id = `torneio_diario_vaeloria_${dateSlug}_${hourSlug}`;
 
+    const prizeSpec: TournamentPrizeSpec =
+      isSunday && sundayPixBrl > 0
+        ? {
+            kind: 'cash_brl_pix',
+            label: `R$ ${sundayPixBrl} PIX + Lendária (Escalonado)`,
+            description: `Edição Especial Dominical com premiação escalonada: Campeão (#1) recebe R$ ${sundayPixBrl},00 via PIX + 1 Carta Lendária Inédita + 200 Ouro + 100 Estilhaços · Top 2–3: 1 Lendária Inédita + 120 Ouro · Top 4–8: 1 Rara Inédita + 80 Ouro · Top 9–16 / Líder Cromático: 75 Ouro + 50 Estilhaços · Honra de Combate (3+ rodadas): 40 Ouro + 25 Estilhaços.`,
+            goldBonus: 200,
+            shardsBonus: 100,
+            cashBrl: sundayPixBrl,
+          }
+        : {
+            kind: 'unowned_domain_legendary_card',
+            label: 'Lendária + Raras + Ouro (Escalonado)',
+            description:
+              'Premiação escalonada creditada automaticamente na conta: Campeão (#1) recebe 1 Carta Lendária Inédita + 150 Ouro + 80 Estilhaços · Top 2–3: 1 Rara Inédita + 100 Ouro + 50 Estilhaços · Top 4–8: 1 Rara Inédita + 60 Ouro · Top 9–16 / Líder Cromático: 60 Ouro + 40 Estilhaços · Honra de Combate (3+ rodadas): 30 Ouro + 20 Estilhaços.',
+            goldBonus: 150,
+            shardsBonus: 80,
+          };
+
     out.set(id, {
       id,
-      title: 'Torneio Diário de Vaeloria',
+      title: isSunday ? 'Grande Copa Dominical de Vaeloria' : 'Torneio Diário de Vaeloria',
       subtitle: 'Sistema Suíço · 6 Rodadas · 45s / turno',
       startsAtMs,
       endsAtMs,
@@ -355,29 +407,24 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
       turnTimeLimitSec: 45,
       mulliganTimeLimitSec: 20,
       includeAllSovereigns: true,
-      prizeSpec: {
-        kind: 'unowned_domain_rare_card',
-        label: '1 Carta Rara Inédita + 50 Ouro',
-        description:
-          'Concedida automaticamente ao Campeão do Torneio Diário ao término da 6ª rodada, sorteada entre as cartas Raras inéditas da cor predominante do seu Grimório (+50 Ouro).',
-        goldBonus: 50,
-      },
+      prizeSpec,
       createdBy: 'conclave_oficial',
       createdAtMs,
       finalizedAward: null,
     });
   };
 
-  // Past 7 days (for completed daily archive) + Today + Tomorrow
-  for (let offset = -7; offset <= 1; offset += 1) {
+  // Past 7 days (for completed daily archive) + next 7 days (so Sunday Grand Cup is always visible)
+  for (let offset = -7; offset <= 7; offset += 1) {
     buildDayEdition(offset);
   }
 
   const minEndKeepMs = nowMs - 7 * DAY_MS;
   const candidates = Array.from(out.values()).sort((a, b) => a.startsAtMs - b.startsAtMs);
 
-  // Keep completed editions + ONLY the single next active/upcoming daily edition!
+  // Keep completed editions + next immediate daily edition + next upcoming Sunday Grand Cup!
   let addedNextUpcoming = false;
+  let addedNextSunday = false;
   const filtered: SwissTournamentDefinition[] = [];
   for (const def of candidates) {
     if (def.endsAtMs < minEndKeepMs) continue;
@@ -385,8 +432,15 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
       filtered.push(def);
       continue;
     }
+    const isSundayDef = def.title.includes('Dominical');
     if (!addedNextUpcoming) {
       addedNextUpcoming = true;
+      if (isSundayDef) addedNextSunday = true;
+      filtered.push(def);
+      continue;
+    }
+    if (isSundayDef && !addedNextSunday) {
+      addedNextSunday = true;
       filtered.push(def);
     }
   }
@@ -688,18 +742,15 @@ function pickMidRoundSovereignChallenger(
 // 6. FULL TOURNAMENT SNAPSHOT COMPUTATION & PRIZE RESOLUTION
 // ============================================================================
 
-export function resolveUnownedDomainRareCardPrize(
+function pickDeterministicPrizeCard(
   tournamentId: string,
-  winnerEntry: HumanTournamentEntry,
-  winnerGlobalRank: number,
-  winnerPoints: number,
-  prizeSpec: TournamentPrizeSpec,
-  awardedAtMs: number
-): TournamentAwardedPrize {
-  const primaryDomain = winnerEntry.primaryDomain || inferDeckPrimaryDomain(winnerEntry.deckCardIds);
-  const ownedSet = new Set(winnerEntry.ownedCardIdsSnapshot ?? []);
-  const targetRarity = prizeSpec.kind === 'unowned_domain_legendary_card' ? 'legendary' : 'rare';
-
+  username: string,
+  points: number,
+  primaryDomain: Domain,
+  ownedIds: string[] | undefined,
+  targetRarity: 'rare' | 'legendary'
+): CardDefinition | undefined {
+  const ownedSet = new Set(ownedIds ?? []);
   let pool: CardDefinition[] = ALL_CARDS.filter(
     (c) => c.rarity === targetRarity && c.domain === primaryDomain && !ownedSet.has(c.id)
   );
@@ -709,15 +760,37 @@ export function resolveUnownedDomainRareCardPrize(
   if (pool.length === 0) {
     pool = ALL_CARDS.filter((c) => c.rarity === targetRarity && !ownedSet.has(c.id));
   }
-
+  if (pool.length === 0) {
+    pool = ALL_CARDS.filter((c) => c.rarity === targetRarity);
+  }
   pool.sort((a, b) => a.id.localeCompare(b.id));
+  if (pool.length === 0) return undefined;
   const pickIdx =
-    pool.length > 0
-      ? hashSeed(
-          `${tournamentId}::prize::${winnerEntry.username.toLowerCase()}::${winnerPoints}`
-        ) % pool.length
-      : 0;
-  const chosenCard = pool[pickIdx];
+    hashSeed(`${tournamentId}::prize::${username.toLowerCase()}::${targetRarity}::${points}`) %
+    pool.length;
+  return pool[pickIdx];
+}
+
+export function resolveUnownedDomainRareCardPrize(
+  tournamentId: string,
+  winnerEntry: HumanTournamentEntry,
+  winnerGlobalRank: number,
+  winnerPoints: number,
+  prizeSpec: TournamentPrizeSpec,
+  awardedAtMs: number
+): TournamentAwardedPrize {
+  const primaryDomain = winnerEntry.primaryDomain || inferDeckPrimaryDomain(winnerEntry.deckCardIds);
+  const targetRarity = prizeSpec.kind === 'unowned_domain_legendary_card' || prizeSpec.kind === 'cash_brl_pix'
+    ? 'legendary'
+    : 'rare';
+  const chosenCard = pickDeterministicPrizeCard(
+    tournamentId,
+    winnerEntry.username,
+    winnerPoints,
+    primaryDomain,
+    winnerEntry.ownedCardIdsSnapshot,
+    targetRarity
+  );
 
   return {
     winnerUserId: winnerEntry.userId,
@@ -737,6 +810,132 @@ export function resolveUnownedDomainRareCardPrize(
     shardsBonus: prizeSpec.shardsBonus ?? 0,
     cashBrl: prizeSpec.cashBrl,
     awardedAtMs,
+  };
+}
+
+export function buildTournamentPrizeClaimKey(tournamentId: string, username: string): string {
+  return `${tournamentId}::${username.trim().toLowerCase()}`;
+}
+
+export function resolvePersonalTournamentReward(
+  def: SwissTournamentDefinition,
+  standings: ComputedTournamentStanding[],
+  myStanding: ComputedTournamentStanding | null,
+  myEntry: HumanTournamentEntry | null
+): TournamentPersonalReward | null {
+  if (!myStanding || !myEntry) return null;
+
+  const completedRounds = Object.keys(myEntry.resultsByRound ?? {}).length;
+  if (completedRounds <= 0) return null;
+
+  const primaryDomain = myEntry.primaryDomain || inferDeckPrimaryDomain(myEntry.deckCardIds);
+  const minFullRounds = Math.min(3, def.totalRounds);
+  const firstInDomain = standings.find((s) => s.primaryDomain === primaryDomain);
+  const isDomainLeader =
+    Boolean(firstInDomain && firstInDomain.participantId === myStanding.participantId) &&
+    completedRounds >= minFullRounds;
+
+  const isSundaySpecial =
+    def.prizeSpec.kind === 'cash_brl_pix' || def.title.toLowerCase().includes('dominical');
+
+  let tierId: TournamentRewardTierId = 'participation';
+  let tierLabel = `Participação (${completedRounds}/${def.totalRounds} rodadas)`;
+  let cardRarity: 'rare' | 'legendary' | undefined;
+  let goldBonus = 15;
+  let shardsBonus = 10;
+  let cashBrl: number | undefined;
+
+  if (myStanding.rank === 1 && completedRounds >= minFullRounds) {
+    tierId = 'champion';
+    tierLabel = 'Campeão Geral (#1)';
+    if (def.prizeSpec.kind !== 'gold_and_shards') {
+      cardRarity =
+        def.prizeSpec.kind === 'unowned_domain_rare_card' ? 'rare' : 'legendary';
+    }
+    goldBonus = Math.max(def.prizeSpec.goldBonus ?? 0, isSundaySpecial ? 200 : 150);
+    shardsBonus = Math.max(def.prizeSpec.shardsBonus ?? 0, isSundaySpecial ? 100 : 80);
+    if (def.prizeSpec.kind === 'cash_brl_pix' && (def.prizeSpec.cashBrl ?? 0) > 0) {
+      cashBrl = def.prizeSpec.cashBrl;
+    }
+  } else if (myStanding.rank <= 3 && completedRounds >= minFullRounds) {
+    tierId = 'podium_top3';
+    tierLabel = `Pódio Oficial (#${myStanding.rank})`;
+    cardRarity = isSundaySpecial ? 'legendary' : 'rare';
+    goldBonus = isSundaySpecial ? 120 : 100;
+    shardsBonus = isSundaySpecial ? 60 : 50;
+  } else if (myStanding.rank <= 8 && completedRounds >= minFullRounds) {
+    tierId = 'finalist_top8';
+    tierLabel = `Finalista Top 8 (#${myStanding.rank})`;
+    cardRarity = 'rare';
+    goldBonus = isSundaySpecial ? 80 : 60;
+    shardsBonus = isSundaySpecial ? 40 : 30;
+  } else if ((myStanding.rank <= 16 || isDomainLeader) && completedRounds >= minFullRounds) {
+    tierId = 'challenger_top16';
+    tierLabel = isDomainLeader
+      ? `Líder Cromático (#${myStanding.rank})`
+      : `Destaque Top 16 (#${myStanding.rank})`;
+    cardRarity = isDomainLeader ? 'rare' : undefined;
+    goldBonus = isSundaySpecial ? 75 : 60;
+    shardsBonus = isSundaySpecial ? 50 : 40;
+  } else if (completedRounds >= minFullRounds) {
+    tierId = 'participation';
+    tierLabel = `Honra de Combate (${completedRounds}/${def.totalRounds} rodadas)`;
+    goldBonus = isSundaySpecial ? 40 : 30;
+    shardsBonus = isSundaySpecial ? 25 : 20;
+  }
+
+  let chosenCard: CardDefinition | undefined;
+  if (myEntry.claimedCardId && CARDS_BY_ID[myEntry.claimedCardId]) {
+    chosenCard = CARDS_BY_ID[myEntry.claimedCardId];
+  } else if (cardRarity) {
+    chosenCard = pickDeterministicPrizeCard(
+      def.id,
+      myEntry.username,
+      myStanding.points,
+      primaryDomain,
+      myEntry.ownedCardIdsSnapshot,
+      cardRarity
+    );
+  }
+
+  const claimKey = buildTournamentPrizeClaimKey(def.id, myEntry.username);
+  const alreadyClaimed =
+    Boolean(myEntry.prizeClaimed) || getClaimedTournamentPrizeIds().has(claimKey);
+
+  const pixProtocolCode = cashBrl
+    ? `PIX-${hashSeed(`${def.id}::pix::${myEntry.username.toLowerCase()}::${myStanding.points}`)
+        .toString(36)
+        .toUpperCase()
+        .padStart(6, '0')
+        .slice(0, 6)}`
+    : undefined;
+
+  return {
+    tournamentId: def.id,
+    tournamentTitle: def.title,
+    userId: myEntry.userId,
+    username: myEntry.username,
+    rank: myStanding.rank,
+    points: myStanding.points,
+    completedRounds,
+    totalRounds: def.totalRounds,
+    primaryDomain,
+    isDomainLeader,
+    tierId,
+    tierLabel,
+    cardId: chosenCard?.id,
+    cardName: chosenCard?.name,
+    cardRarity: chosenCard
+      ? chosenCard.rarity === 'legendary'
+        ? 'legendary'
+        : 'rare'
+      : cardRarity,
+    goldBonus,
+    shardsBonus,
+    cashBrl,
+    pixProtocolCode,
+    claimKey,
+    alreadyClaimed,
   };
 }
 
@@ -1461,6 +1660,11 @@ export function computeTournamentSnapshot(
     }
   }
 
+  const myPersonalReward =
+    phase === 'finished'
+      ? resolvePersonalTournamentReward(def, standings, myStanding, myEntry)
+      : null;
+
   return {
     definition: def,
     nowMs,
@@ -1478,6 +1682,7 @@ export function computeTournamentSnapshot(
     humanEntrantsCount: uniqueHumans.length,
     totalParticipantsCount: standings.length,
     finalizedAward,
+    myPersonalReward,
   };
 }
 
@@ -1485,7 +1690,7 @@ export function computeTournamentSnapshot(
 // 7. SUPABASE CLOUD PERSISTENCE & MULTI-TOURNAMENT CATALOG CACHE
 // ============================================================================
 
-const LOCAL_TOURNAMENT_CATALOG_KEY = 'chromatic_pact_tournament_catalog_v5';
+const LOCAL_TOURNAMENT_CATALOG_KEY = 'chromatic_pact_tournament_catalog_v6';
 const LOCAL_TOURNAMENT_ENTRIES_KEY = 'chromatic_pact_tournament_entries_v2';
 const CLAIMED_TOURNAMENT_PRIZES_KEY = 'chromatic_pact_claimed_tournaments_v1';
 
@@ -1583,13 +1788,21 @@ function assembleCatalogFromRaw(
       !cd.id.startsWith('copa_noturna_') &&
       !cd.id.startsWith('grande_copa_domingo_')
     ) {
-      defMap.set(cd.id, {
-        ...cd,
-        prizeSpec: {
-          ...cd.prizeSpec,
-          description: sanitizeLegacyNonDiegeticDescription(cd.prizeSpec?.description ?? ''),
-        },
-      });
+      const scheduledBase = defMap.get(cd.id);
+      if (scheduledBase && cd.id.startsWith('torneio_diario_vaeloria_')) {
+        defMap.set(cd.id, {
+          ...scheduledBase,
+          finalizedAward: cd.finalizedAward ?? scheduledBase.finalizedAward ?? null,
+        });
+      } else {
+        defMap.set(cd.id, {
+          ...cd,
+          prizeSpec: {
+            ...cd.prizeSpec,
+            description: sanitizeLegacyNonDiegeticDescription(cd.prizeSpec?.description ?? ''),
+          },
+        });
+      }
     }
   }
 

@@ -29,10 +29,10 @@ export interface AdsAttributionData {
   landingUrl: string;
 }
 
-export type TrafficChannelId = 'google_ads' | 'tiktok' | 'instagram' | 'organic';
+export type TrafficChannelId = 'google_ads' | 'tiktok' | 'instagram' | 'discord' | 'organic';
 
 /**
- * Classifica o canal de aquisição de uma sessão de visitante (Google Ads, TikTok, Instagram ou Orgânico/Direto).
+ * Classifica o canal de aquisição de uma sessão de visitante (Google Ads, TikTok, Instagram, Discord ou Orgânico/Direto).
  */
 export function classifyVisitorChannel(session: {
   gclid?: string;
@@ -45,6 +45,15 @@ export function classifyVisitorChannel(session: {
   const med = (session.utmMedium || '').toLowerCase();
   const camp = (session.utmCampaign || '').toLowerCase();
   const url = (session.landingUrl || '').toLowerCase();
+
+  if (
+    src.includes('discord') ||
+    med.includes('discord') ||
+    camp.includes('discord') ||
+    url.includes('utm_source=discord')
+  ) {
+    return 'discord';
+  }
 
   if (
     src.includes('tiktok') ||

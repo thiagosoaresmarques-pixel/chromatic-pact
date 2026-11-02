@@ -27,6 +27,7 @@ import {
 import type { DraftBattleOutcome, DraftRewardSummary } from './data/vaeloriaDraftData';
 import {
   craftSingleCardCopy,
+  DISENCHANT_YIELD_BY_RARITY,
   resolvePackDuplicatesWithShards,
   salvageAllExcessDuplicates,
 } from './utils/craftingEngine';
@@ -115,8 +116,10 @@ import {
   markTournamentPrizeClaimedLocal,
   publishTournamentDefinitionToCloud,
   SwissTournamentDefinition,
+  TournamentPersonalReward,
   upsertHumanTournamentEntryToCloud,
 } from './utils/tournamentEngine';
+import { fetchCommunityDiscordConfigFromCloud } from './utils/discordCommunityEngine';
 import {
   buildPersonalReplaySpectatorContext,
   fetchSharedPersonalReplay,
@@ -1208,7 +1211,84 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
-  // Background Tournament Supervisor: automatic round alerts, automatic finalization & Rare Card prize delivery
+  const claimedTournamentKeysSessionRef = useRef<Set<string>>(new Set());
+
+  const deliverPersonalTournamentReward = useCallback(
+    (reward: TournamentPersonalReward, entry: HumanTournamentEntry): boolean => {
+      if (isGuest) return false;
+      if (claimedTournamentKeysSessionRef.current.has(reward.claimKey)) return false;
+      if (getClaimedTournamentPrizeIds().has(reward.claimKey) || entry.prizeClaimed) {
+        claimedTournamentKeysSessionRef.current.add(reward.claimKey);
+        return false;
+      }
+
+      claimedTournamentKeysSessionRef.current.add(reward.claimKey);
+      markTournamentPrizeClaimedLocal(reward.claimKey);
+
+      const prizeCard = reward.cardId ? CARDS_BY_ID[reward.cardId] : undefined;
+      const bonusGold = reward.goldBonus ?? 0;
+      let bonusShards = reward.shardsBonus ?? 0;
+
+      updateCurrentUserProgression((prev) => {
+        const nextExtra = { ...(prev.extraUnlockedCards ?? {}) };
+        if (prizeCard) {
+          const maxCopies = prizeCard.rarity === 'legendary' ? 1 : prizeCard.rarity === 'rare' ? 2 : 3;
+          const baseCount = (prev.starterDeckCardIds ?? []).filter((id) => id === prizeCard.id).length;
+          const currentTotal = baseCount + (nextExtra[prizeCard.id] ?? 0);
+          if (currentTotal < maxCopies) {
+            nextExtra[prizeCard.id] = (nextExtra[prizeCard.id] ?? 0) + 1;
+          } else {
+            bonusShards += DISENCHANT_YIELD_BY_RARITY[prizeCard.rarity] ?? 40;
+          }
+        }
+        return {
+          gold: (prev.gold ?? 0) + bonusGold,
+          astralShards: (prev.astralShards ?? 0) + bonusShards,
+          extraUnlockedCards: nextExtra,
+        };
+      });
+
+      const claimedEntry: HumanTournamentEntry = {
+        ...entry,
+        prizeClaimed: true,
+        claimedCardId: prizeCard?.id,
+        lastHeartbeatAtMs: getTournamentNowMs(),
+      };
+      void upsertHumanTournamentEntryToCloud(claimedEntry);
+
+      const parts: string[] = [];
+      if (reward.cashBrl && reward.pixProtocolCode) {
+        parts.push(`R$ ${reward.cashBrl},00 PIX (Protocolo ${reward.pixProtocolCode})`);
+      }
+      if (prizeCard) {
+        parts.push(`Carta: ${prizeCard.name}`);
+      }
+      if (bonusGold > 0) {
+        parts.push(`+${bonusGold} Ouro`);
+      }
+      if (bonusShards > 0) {
+        parts.push(`+${bonusShards} Estilhaços`);
+      }
+
+      pushNotification({
+        kicker: 'PREMIAÇÃO DE TORNEIO CREDITADA',
+        title: `${reward.tierLabel} · ${reward.tournamentTitle}`,
+        message: `${parts.join(' · ')} adicionados à sua conta.`,
+        actionLabel: prizeCard ? 'Ver no Grimório' : 'Abrir Relicário',
+        actionTarget: prizeCard ? 'deckbuilder' : 'packs',
+      });
+
+      return true;
+    },
+    [isGuest, pushNotification]
+  );
+
+  // Sync Community Discord & Sunday PIX configuration from Supabase once on mount
+  useEffect(() => {
+    void fetchCommunityDiscordConfigFromCloud();
+  }, []);
+
+  // Background Tournament Supervisor: automatic round alerts, automatic finalization & escalated prize delivery
   useEffect(() => {
     let cancelled = false;
 
@@ -1247,64 +1327,22 @@ export const App: React.FC = () => {
           }
         }
 
-        // 2. Automatic Finalization & Automatic Prize Delivery at Tournament End
-        if (snap.phase === 'finished' && snap.finalizedAward) {
-          const award = snap.finalizedAward;
-          if (!def.finalizedAward) {
+        // 2. Automatic Finalization & Escalated Personal Prize Delivery at Tournament End
+        if (snap.phase === 'finished') {
+          if (snap.finalizedAward && !def.finalizedAward) {
             void publishTournamentDefinitionToCloud({
               ...def,
-              finalizedAward: award,
+              finalizedAward: snap.finalizedAward,
             });
           }
 
           if (
             !isGuest &&
-            currentUser.username.trim().toLowerCase() === award.winnerUsername.trim().toLowerCase()
+            snap.myPersonalReward &&
+            !snap.myPersonalReward.alreadyClaimed &&
+            snap.myEntry
           ) {
-            const claimKey = `${def.id}::${currentUser.username.trim().toLowerCase()}`;
-            const alreadyClaimedLocal = getClaimedTournamentPrizeIds().has(claimKey);
-            const alreadyClaimedCloud = Boolean(snap.myEntry?.prizeClaimed);
-
-            if (!alreadyClaimedLocal && !alreadyClaimedCloud) {
-              markTournamentPrizeClaimedLocal(claimKey);
-              const prizeCard = award.cardId ? CARDS_BY_ID[award.cardId] : undefined;
-              const bonusGold = award.goldBonus ?? 0;
-              const bonusShards = award.shardsBonus ?? 0;
-
-              updateCurrentUserProgression((prev) => {
-                const nextExtra = { ...(prev.extraUnlockedCards ?? {}) };
-                if (prizeCard) {
-                  nextExtra[prizeCard.id] = (nextExtra[prizeCard.id] ?? 0) + 1;
-                }
-                return {
-                  gold: (prev.gold ?? 0) + bonusGold,
-                  astralShards: (prev.astralShards ?? 0) + bonusShards,
-                  extraUnlockedCards: nextExtra,
-                };
-              });
-
-              if (snap.myEntry) {
-                const claimedEntry: HumanTournamentEntry = {
-                  ...snap.myEntry,
-                  prizeClaimed: true,
-                  claimedCardId: prizeCard?.id,
-                  lastHeartbeatAtMs: getTournamentNowMs(),
-                };
-                void upsertHumanTournamentEntryToCloud(claimedEntry);
-              }
-
-              pushNotification({
-                kicker: 'PREMIAÇÃO OFICIAL DE TORNEIO',
-                title: prizeCard
-                  ? `Carta Conquistada: ${prizeCard.name}`
-                  : `Campeão em ${def.title}`,
-                message: prizeCard
-                  ? `1º Lugar na classificação (${award.winnerPoints} pts). "${prizeCard.name}" foi adicionada à sua coleção.`
-                  : `Premiação homologada na classificação final (${award.winnerPoints} pts).`,
-                actionLabel: 'Ver no Grimório',
-                actionTarget: 'deckbuilder',
-              });
-            }
+            deliverPersonalTournamentReward(snap.myPersonalReward, snap.myEntry);
           }
         }
       }
@@ -1319,7 +1357,7 @@ export const App: React.FC = () => {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [isGuest, currentUser.username, pushNotification]);
+  }, [isGuest, currentUser.username, pushNotification, deliverPersonalTournamentReward]);
 
   const handleToggleSound = () => {
     startAdaptiveMusic();
@@ -2914,6 +2952,7 @@ export const App: React.FC = () => {
             onRequireAccount={() => setAccountModalState({ open: true, tab: 'create' })}
             onRequireDeckSetup={() => setActiveTab('deckbuilder')}
             onInspectCard={setShowcaseInspectCard}
+            onClaimTournamentReward={deliverPersonalTournamentReward}
             onStartTournamentSovereignMatch={handleStartTournamentSovereignMatch}
             onStartTournamentPvpMatch={handleStartTournamentPvpMatch}
             onSpectateTournamentMatch={(tournament, pairing) => {

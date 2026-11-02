@@ -28,6 +28,12 @@ import {
   GOOGLE_ADS_TAG_ID,
   TrafficChannelId,
 } from '../utils/adsTelemetry';
+import {
+  fetchCommunityDiscordConfigFromCloud,
+  getCommunityDiscordConfig,
+  postDiscordWebhookTestPing,
+  saveCommunityDiscordConfigToCloud,
+} from '../utils/discordCommunityEngine';
 
 interface AdminDashboardViewProps {
   currentUser: SovereignUserProfile;
@@ -89,6 +95,26 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [customUtmSource, setCustomUtmSource] = useState<string>('tiktok');
   const [customUtmMedium, setCustomUtmMedium] = useState<string>('video_organico');
   const [customUtmCampaign, setCustomUtmCampaign] = useState<string>('desafio_xequemate');
+
+  // Discord Community & Sunday PIX configuration (Cloud-persisted)
+  const [discordInviteInput, setDiscordInviteInput] = useState<string>(
+    () => getCommunityDiscordConfig().inviteUrl
+  );
+  const [discordWebhookInput, setDiscordWebhookInput] = useState<string>(
+    () => getCommunityDiscordConfig().webhookUrl
+  );
+  const [sundayPixBrlInput, setSundayPixBrlInput] = useState<string>(() =>
+    String(getCommunityDiscordConfig().sundayPixBrl)
+  );
+  const [discordBusy, setDiscordBusy] = useState<boolean>(false);
+
+  useEffect(() => {
+    void fetchCommunityDiscordConfigFromCloud().then((cfg) => {
+      setDiscordInviteInput(cfg.inviteUrl);
+      setDiscordWebhookInput(cfg.webhookUrl);
+      setSundayPixBrlInput(String(cfg.sundayPixBrl));
+    });
+  }, []);
 
   const isAuthorizedAdmin = isAdminProfile(currentUser);
 
@@ -174,6 +200,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       google_ads: buildChannelMetric('google_ads'),
       tiktok: buildChannelMetric('tiktok'),
       instagram: buildChannelMetric('instagram'),
+      discord: buildChannelMetric('discord'),
       organic: buildChannelMetric('organic'),
     };
 
@@ -1614,6 +1641,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                     data: stats.channelBreakdown.instagram,
                   },
                   {
+                    id: 'discord' as TrafficChannelId,
+                    title: '💬 Discord (Comunidade & Webhook)',
+                    badgeColor: '#818cf8',
+                    borderColor: 'rgba(129, 140, 248, 0.45)',
+                    data: stats.channelBreakdown.discord,
+                  },
+                  {
                     id: 'organic' as TrafficChannelId,
                     title: '🌐 Orgânico / Direto / Outros',
                     badgeColor: '#34d399',
@@ -1680,6 +1714,165 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             </div>
           </div>
 
+          {/* Cloud-Persisted Discord Server, Webhook & Sunday PIX Settings */}
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.88)',
+              border: '1px solid rgba(129, 140, 248, 0.35)',
+              borderRadius: '16px',
+              padding: '1.15rem 1.35rem',
+            }}
+          >
+            <div style={{ marginBottom: '0.85rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#a5b4fc' }}>
+                INTEGRAÇÃO DISCORD OFICIAL &amp; PREMIAÇÃO DOMINICAL (SINCRONIZADO NA NUVEM)
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                Cole o link de convite e o Webhook do Discord sem precisar alterar código: o botão
+                no Salão de Torneios e os envios de súmula ativam instantaneamente para todos os
+                jogadores.
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: '0.75rem',
+                marginBottom: '0.8rem',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#cbd5e1', marginBottom: '0.3rem' }}>
+                  Link Permanente de Convite (ex.: https://discord.gg/...)
+                </div>
+                <input
+                  type="url"
+                  value={discordInviteInput}
+                  onChange={(e) => setDiscordInviteInput(e.target.value)}
+                  placeholder="https://discord.gg/seu-servidor"
+                  style={{
+                    width: '100%',
+                    background: 'rgba(2, 6, 23, 0.9)',
+                    border: '1px solid rgba(148, 163, 184, 0.32)',
+                    borderRadius: '8px',
+                    padding: '0.45rem 0.65rem',
+                    color: '#f8fafc',
+                    fontSize: '0.8rem',
+                  }}
+                />
+              </div>
+
+              <div>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#cbd5e1', marginBottom: '0.3rem' }}>
+                  Webhook do Canal #torneios-e-resultados
+                </div>
+                <input
+                  type="url"
+                  value={discordWebhookInput}
+                  onChange={(e) => setDiscordWebhookInput(e.target.value)}
+                  placeholder="https://discord.com/api/webhooks/..."
+                  style={{
+                    width: '100%',
+                    background: 'rgba(2, 6, 23, 0.9)',
+                    border: '1px solid rgba(148, 163, 184, 0.32)',
+                    borderRadius: '8px',
+                    padding: '0.45rem 0.65rem',
+                    color: '#f8fafc',
+                    fontSize: '0.8rem',
+                  }}
+                />
+              </div>
+
+              <div>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#cbd5e1', marginBottom: '0.3rem' }}>
+                  PIX Campeão da Grande Copa Dominical (R$ · 0 desativa)
+                </div>
+                <input
+                  type="number"
+                  min={0}
+                  step={5}
+                  value={sundayPixBrlInput}
+                  onChange={(e) => setSundayPixBrlInput(e.target.value)}
+                  style={{
+                    width: '100%',
+                    background: 'rgba(2, 6, 23, 0.9)',
+                    border: '1px solid rgba(148, 163, 184, 0.32)',
+                    borderRadius: '8px',
+                    padding: '0.45rem 0.65rem',
+                    color: '#f8fafc',
+                    fontSize: '0.8rem',
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="nav-notif-mini-btn"
+                disabled={discordBusy}
+                style={{
+                  borderColor: 'rgba(251, 191, 36, 0.65)',
+                  color: '#fde047',
+                  fontWeight: 800,
+                  padding: '0.4rem 0.85rem',
+                }}
+                onClick={() => {
+                  void (async () => {
+                    setDiscordBusy(true);
+                    const pixVal = Math.max(0, parseInt(sundayPixBrlInput || '0', 10) || 0);
+                    const res = await saveCommunityDiscordConfigToCloud({
+                      inviteUrl: discordInviteInput,
+                      webhookUrl: discordWebhookInput,
+                      sundayPixBrl: pixVal,
+                    });
+                    setDiscordBusy(false);
+                    onNotify({
+                      kicker: res.ok ? 'CONFIGURAÇÃO SALVA NA NUVEM' : 'SALVO LOCALMENTE',
+                      title: 'Discord & Premiação Dominical Atualizados',
+                      message: res.ok
+                        ? `Convite ${res.config.inviteUrl ? 'ativo' : 'vazio'} · PIX Dominical: R$ ${res.config.sundayPixBrl},00.`
+                        : `Aviso Supabase: ${res.error ?? 'verifique a rede'}.`,
+                    });
+                  })();
+                }}
+              >
+                {discordBusy ? 'Salvando...' : 'Salvar Configuração na Nuvem'}
+              </button>
+
+              <button
+                type="button"
+                className="nav-notif-mini-btn"
+                disabled={discordBusy || !discordWebhookInput.trim()}
+                style={{
+                  borderColor: 'rgba(129, 140, 248, 0.55)',
+                  color: '#c7d2fe',
+                  fontWeight: 700,
+                  padding: '0.4rem 0.85rem',
+                }}
+                onClick={() => {
+                  void (async () => {
+                    setDiscordBusy(true);
+                    const res = await postDiscordWebhookTestPing(discordWebhookInput);
+                    setDiscordBusy(false);
+                    onNotify({
+                      kicker: res.ok ? 'WEBHOOK CONECTADO' : 'FALHA NO WEBHOOK',
+                      title: res.ok
+                        ? 'Mensagem de boas-vindas enviada ao Discord!'
+                        : 'Não foi possível enviar ao Discord',
+                      message: res.ok
+                        ? 'Verifique o canal do seu servidor Discord.'
+                        : res.error || 'Confira a URL do Webhook.',
+                    });
+                  })();
+                }}
+              >
+                Testar Envio no Webhook Discord
+              </button>
+            </div>
+          </div>
+
           {/* 1-Click UTM Link Generator for TikTok & Instagram */}
           <div
             style={{
@@ -1730,6 +1923,18 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   color: '#e879f9',
                   label: 'Link para Sticker de Stories / Reels',
                   url: 'https://chromaticpact.com/?utm_source=instagram&utm_medium=reels&utm_campaign=dominio_clash',
+                },
+                {
+                  badge: '🎵 TIKTOK TORNEIO DIÁRIO',
+                  color: '#fbbf24',
+                  label: 'Link Direto p/ Salão de Torneios Premiados',
+                  url: 'https://chromaticpact.com/?tab=tournaments&utm_source=tiktok&utm_medium=video_organico&utm_campaign=torneio_diario',
+                },
+                {
+                  badge: '💬 DISCORD COMUNIDADE',
+                  color: '#818cf8',
+                  label: 'Link Fixado no Servidor do Discord',
+                  url: 'https://chromaticpact.com/?tab=tournaments&utm_source=discord&utm_medium=canal_fixado&utm_campaign=conclave_diario',
                 },
                 {
                   badge: '🚀 META / IG ADS (PAGO)',
@@ -2140,6 +2345,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                     { id: 'google_ads', label: `🎯 Google Ads (${stats.channelBreakdown.google_ads.visitors})` },
                     { id: 'tiktok', label: `🎵 TikTok (${stats.channelBreakdown.tiktok.visitors})` },
                     { id: 'instagram', label: `📸 Instagram (${stats.channelBreakdown.instagram.visitors})` },
+                    { id: 'discord', label: `💬 Discord (${stats.channelBreakdown.discord.visitors})` },
                     { id: 'organic', label: `🌐 Orgânico (${stats.channelBreakdown.organic.visitors})` },
                   ] as Array<{ id: 'all' | TrafficChannelId; label: string }>
                 ).map((f) => (
@@ -2190,6 +2396,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                             label: '📸 INSTAGRAM',
                             bg: 'rgba(192, 132, 252, 0.22)',
                             color: '#e9d5ff',
+                          }
+                        : ch === 'discord'
+                        ? {
+                            label: '💬 DISCORD',
+                            bg: 'rgba(129, 140, 248, 0.22)',
+                            color: '#c7d2fe',
                           }
                         : ch === 'google_ads'
                         ? {

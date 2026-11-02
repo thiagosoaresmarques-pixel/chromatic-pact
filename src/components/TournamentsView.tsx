@@ -31,10 +31,19 @@ import {
   SwissTournamentDefinition,
   TOURNAMENT_TIME_CONTROLS,
   TournamentCatalogData,
+  TournamentPersonalReward,
   TournamentPrizeKind,
   TournamentTimeControlId,
   upsertHumanTournamentEntryToCloud,
 } from '../utils/tournamentEngine';
+import {
+  CommunityDiscordConfig,
+  fetchCommunityDiscordConfigFromCloud,
+  getCommunityDiscordConfig,
+  postTournamentCallToDiscordWebhook,
+  postTournamentResultsToDiscordWebhook,
+  subscribeCommunityDiscordConfig,
+} from '../utils/discordCommunityEngine';
 import type { CustomSavedDeck } from './BattleArena';
 import { DOMAIN_META } from './CardView';
 
@@ -55,6 +64,10 @@ interface TournamentsViewProps {
   onRequireAccount: () => void;
   onRequireDeckSetup: () => void;
   onInspectCard: (card: CardDefinition) => void;
+  onClaimTournamentReward?: (
+    reward: TournamentPersonalReward,
+    entry: HumanTournamentEntry
+  ) => boolean;
   onStartTournamentSovereignMatch: (launch: ActiveTournamentMatchLaunch) => void;
   onStartTournamentPvpMatch: (
     launch: ActiveTournamentMatchLaunch,
@@ -261,10 +274,15 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
   onRequireAccount,
   onRequireDeckSetup,
   onInspectCard,
+  onClaimTournamentReward,
   onStartTournamentSovereignMatch,
   onStartTournamentPvpMatch,
   onSpectateTournamentMatch,
 }) => {
+  const [discordConfig, setDiscordConfig] = useState<CommunityDiscordConfig>(() =>
+    getCommunityDiscordConfig()
+  );
+  const [isPostingDiscord, setIsPostingDiscord] = useState<boolean>(false);
   const [catalog, setCatalog] = useState<TournamentCatalogData>(() =>
     getInitialLocalTournamentCatalog()
   );
@@ -1061,7 +1079,74 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
     ? CARDS_BY_ID[snapshot.finalizedAward.cardId] ?? null
     : null;
 
+  const personalRewardCard = snapshot.myPersonalReward?.cardId
+    ? CARDS_BY_ID[snapshot.myPersonalReward.cardId] ?? null
+    : null;
+
   const podiumTop3 = useMemo(() => snapshot.standings.slice(0, 3), [snapshot.standings]);
+
+  useEffect(() => {
+    void fetchCommunityDiscordConfigFromCloud().then((cfg) => {
+      setDiscordConfig(cfg);
+    });
+    return subscribeCommunityDiscordConfig((cfg) => {
+      setDiscordConfig(cfg);
+      setCatalog(getInitialLocalTournamentCatalog());
+    });
+  }, []);
+
+  useEffect(() => {
+    if (isGuest || !onClaimTournamentReward) return;
+    let claimedAny = false;
+    for (const fSnap of finishedList) {
+      if (fSnap.myPersonalReward && !fSnap.myPersonalReward.alreadyClaimed && fSnap.myEntry) {
+        const ok = onClaimTournamentReward(fSnap.myPersonalReward, fSnap.myEntry);
+        if (ok) claimedAny = true;
+      }
+    }
+    if (claimedAny) {
+      setCatalog(getInitialLocalTournamentCatalog());
+    }
+  }, [finishedList, isGuest, onClaimTournamentReward]);
+
+  const handlePublishToDiscord = async () => {
+    if (!discordConfig.webhookUrl || isPostingDiscord) return;
+    setIsPostingDiscord(true);
+    playSfx('channel');
+    const res =
+      snapshot.phase === 'finished'
+        ? await postTournamentResultsToDiscordWebhook({
+            webhookUrl: discordConfig.webhookUrl,
+            tournamentId: snapshot.definition.id,
+            title: snapshot.definition.title,
+            totalRounds: snapshot.definition.totalRounds,
+            top3: snapshot.standings.slice(0, 3).map((s) => ({
+              rank: s.rank,
+              name: s.displayName,
+              points: s.points,
+            })),
+          })
+        : await postTournamentCallToDiscordWebhook({
+            webhookUrl: discordConfig.webhookUrl,
+            tournamentId: snapshot.definition.id,
+            title: snapshot.definition.title,
+            startsAtMs: snapshot.definition.startsAtMs,
+            endsAtMs: snapshot.definition.endsAtMs,
+            totalRounds: snapshot.definition.totalRounds,
+            turnTimeLimitSec: snapshot.definition.turnTimeLimitSec,
+            prizeHeadline: snapshot.definition.prizeSpec.label,
+            isSundayPix: snapshot.definition.prizeSpec.kind === 'cash_brl_pix',
+            cashBrl: snapshot.definition.prizeSpec.cashBrl,
+          });
+    setIsPostingDiscord(false);
+    setStatusFeedback(
+      res.ok
+        ? snapshot.phase === 'finished'
+          ? 'Súmula oficial e reprise da Mesa #1 publicadas no Discord.'
+          : 'Convocação do torneio publicada no Discord.'
+        : `Falha ao enviar para o Discord: ${res.error ?? 'verifique o Webhook no Admin'}`
+    );
+  };
 
   // Shared Modals (Rules & Admin Creation)
   const renderSharedModals = () => (
@@ -1103,6 +1188,65 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
               </section>
 
               <section className="trn-rules-sec">
+                <h3>Premiação Escalonada Automática (Seg–Sáb &amp; Domingo Especial)</h3>
+                <p>
+                  Ao término da 6ª rodada, a súmula é homologada e as recompensas são creditadas
+                  automaticamente na conta e coleção de todos os competidores ativos (mínimo de 3
+                  rodadas disputadas):
+                </p>
+                <table className="trn-table trn-bench-table">
+                  <thead>
+                    <tr>
+                      <th>Faixa Final</th>
+                      <th>Seg a Sáb (Torneio Diário)</th>
+                      <th>Domingo (Grande Copa)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="trn-row-me">
+                      <td>
+                        <strong>Campeão (#1)</strong>
+                      </td>
+                      <td>1 Lendária Inédita + 150 Ouro + 80 Estilhaços</td>
+                      <td>
+                        {discordConfig.sundayPixBrl > 0
+                          ? `R$ ${discordConfig.sundayPixBrl} PIX + 1 Lendária + 200 Ouro`
+                          : '1 Lendária Inédita + 200 Ouro + 100 Estilhaços'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Pódio (#2 e #3)</strong>
+                      </td>
+                      <td>1 Rara Inédita + 100 Ouro + 50 Estilhaços</td>
+                      <td>1 Lendária Inédita + 120 Ouro + 60 Estilhaços</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Finalista (Top 4–8)</strong>
+                      </td>
+                      <td>1 Rara Inédita + 60 Ouro + 30 Estilhaços</td>
+                      <td>1 Rara Inédita + 80 Ouro + 40 Estilhaços</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Top 9–16 / Líder Cromático</strong>
+                      </td>
+                      <td>60 Ouro + 40 Estilhaços (+1 Rara ao Líder)</td>
+                      <td>75 Ouro + 50 Estilhaços (+1 Rara ao Líder)</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Honra (3+ rodadas)</strong>
+                      </td>
+                      <td>30 Ouro + 20 Estilhaços</td>
+                      <td>40 Ouro + 25 Estilhaços</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section className="trn-rules-sec">
                 <h3>Calibração de Tempo por Turno</h3>
                 <p>
                   Na Campanha e modos de exploração não há relógio. A cronometragem vale apenas em
@@ -1130,14 +1274,6 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                     ))}
                   </tbody>
                 </table>
-              </section>
-
-              <section className="trn-rules-sec">
-                <h3>Premiações</h3>
-                <p>
-                  Ao término da última rodada, a súmula é homologada automaticamente e a premiação é
-                  creditada ao Campeão da edição.
-                </p>
               </section>
             </div>
           </div>
@@ -1271,6 +1407,17 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
           </div>
 
           <div className="trn-top-bar-actions">
+            {discordConfig.inviteUrl && (
+              <a
+                href={discordConfig.inviteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="trn-btn trn-btn-ghost"
+                style={{ textDecoration: 'none' }}
+              >
+                Discord Oficial ↗
+              </a>
+            )}
             {isAdminProfile(currentUser) && (
               <button
                 type="button"
@@ -1285,7 +1432,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
               className="trn-btn trn-btn-ghost"
               onClick={() => setShowRulesModal(true)}
             >
-              Regulamento
+              Regulamento &amp; Prêmios
             </button>
           </div>
         </header>
@@ -1516,6 +1663,31 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
         </div>
 
         <div className="trn-top-bar-actions">
+          {discordConfig.inviteUrl && (
+            <a
+              href={discordConfig.inviteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="trn-btn trn-btn-ghost"
+              style={{ textDecoration: 'none' }}
+            >
+              Discord ↗
+            </a>
+          )}
+          {isAdminProfile(currentUser) && discordConfig.webhookUrl && (
+            <button
+              type="button"
+              className="trn-btn trn-btn-ghost"
+              disabled={isPostingDiscord}
+              onClick={() => void handlePublishToDiscord()}
+            >
+              {isPostingDiscord
+                ? 'Enviando...'
+                : snapshot.phase === 'finished'
+                ? 'Publicar Súmula no Discord'
+                : 'Anunciar no Discord'}
+            </button>
+          )}
           {snapshot.myStanding && (
             <button
               type="button"
@@ -1531,7 +1703,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             className="trn-btn trn-btn-ghost"
             onClick={() => setShowRulesModal(true)}
           >
-            Regulamento
+            Regulamento &amp; Prêmios
           </button>
         </div>
       </header>
@@ -1875,24 +2047,96 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
             })}
           </div>
 
-          {snapshot.finalizedAward && awardedPrizeCard && (
+          {snapshot.myPersonalReward && (
             <div className="trn-finished-banner">
               <div className="trn-finished-col">
-                <div className="trn-kicker">Premiação Entregue</div>
+                <div className="trn-kicker">
+                  {snapshot.myPersonalReward.alreadyClaimed
+                    ? 'Sua Premiação · Creditada na Conta'
+                    : 'Sua Premiação Homologada'}
+                </div>
                 <div className="trn-finished-headline">
-                  <strong>{awardedPrizeCard.name}</strong> creditada para{' '}
-                  <strong>{snapshot.finalizedAward.winnerUsername}</strong>
+                  <strong>{snapshot.myPersonalReward.tierLabel}</strong> —{' '}
+                  {snapshot.myPersonalReward.cashBrl
+                    ? `R$ ${snapshot.myPersonalReward.cashBrl},00 PIX (${snapshot.myPersonalReward.pixProtocolCode}) · `
+                    : ''}
+                  {personalRewardCard ? `${personalRewardCard.name} · ` : ''}+
+                  {snapshot.myPersonalReward.goldBonus} Ouro · +
+                  {snapshot.myPersonalReward.shardsBonus} Estilhaços
                 </div>
               </div>
-              <button
-                type="button"
-                className="trn-btn trn-btn-ghost"
-                onClick={() => onInspectCard(awardedPrizeCard)}
-              >
-                Inspecionar carta
-              </button>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {snapshot.myPersonalReward.cashBrl && snapshot.myPersonalReward.pixProtocolCode && (
+                  <button
+                    type="button"
+                    className="trn-btn trn-btn-ghost"
+                    onClick={() => {
+                      const code = snapshot.myPersonalReward?.pixProtocolCode ?? '';
+                      navigator.clipboard?.writeText(code);
+                      setStatusFeedback(
+                        `Protocolo ${code} copiado. ${discordConfig.pixInstructions}`
+                      );
+                    }}
+                  >
+                    Copiar Protocolo PIX
+                  </button>
+                )}
+                {personalRewardCard && (
+                  <button
+                    type="button"
+                    className="trn-btn trn-btn-ghost"
+                    onClick={() => onInspectCard(personalRewardCard)}
+                  >
+                    Inspecionar carta
+                  </button>
+                )}
+                {!snapshot.myPersonalReward.alreadyClaimed &&
+                  snapshot.myEntry &&
+                  onClaimTournamentReward && (
+                    <button
+                      type="button"
+                      className="trn-btn trn-btn-primary"
+                      onClick={() => {
+                        if (snapshot.myPersonalReward && snapshot.myEntry) {
+                          const ok = onClaimTournamentReward(
+                            snapshot.myPersonalReward,
+                            snapshot.myEntry
+                          );
+                          if (ok) {
+                            setCatalog(getInitialLocalTournamentCatalog());
+                            setStatusFeedback('Premiação creditada na sua conta e coleção.');
+                          }
+                        }
+                      }}
+                    >
+                      Resgatar premiação
+                    </button>
+                  )}
+              </div>
             </div>
           )}
+
+          {snapshot.finalizedAward &&
+            awardedPrizeCard &&
+            snapshot.finalizedAward.winnerUsername.trim().toLowerCase() !==
+              currentUser.username.trim().toLowerCase() && (
+              <div className="trn-finished-banner">
+                <div className="trn-finished-col">
+                  <div className="trn-kicker">Premiação do Campeão</div>
+                  <div className="trn-finished-headline">
+                    <strong>{awardedPrizeCard.name}</strong> creditada para{' '}
+                    <strong>{snapshot.finalizedAward.winnerUsername}</strong>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="trn-btn trn-btn-ghost"
+                  onClick={() => onInspectCard(awardedPrizeCard)}
+                >
+                  Inspecionar carta
+                </button>
+              </div>
+            )}
 
           {/* COMPACT STATS & DOMAIN LEADERS */}
           <div className="trn-edition-stats-bar">

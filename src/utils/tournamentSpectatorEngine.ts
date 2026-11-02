@@ -516,15 +516,15 @@ export function getOrSynthesizeSovereignMatchLog(
     }
   } else {
     const desiredSide: 'A' | 'B' = targetResult === 'A_WIN' ? 'A' : 'B';
-    for (let attempt = 0; attempt < 6; attempt += 1) {
-      const favor = attempt >= 3 ? desiredSide : null;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const favor = attempt >= 1 ? desiredSide : null;
       const candidate = simulateSingleSeededGame(
         (baseSeed + attempt * 7919) >>> 0,
         playerA,
         playerB,
         deckInfoA,
         deckInfoB,
-        attempt >= 4 ? 12 : targetRounds + 2,
+        Math.max(11, targetRounds + 3),
         favor
       );
       if (candidate.winner === targetResult) {

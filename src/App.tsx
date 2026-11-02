@@ -977,6 +977,21 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
+  const memoizedTournamentSpectatorContext = useMemo(
+    () =>
+      activeTournamentSpectate
+        ? {
+            tournament: activeTournamentSpectate.tournament,
+            pairing: activeTournamentSpectate.pairing,
+            onExitSpectator: () => {
+              setActiveTournamentSpectate(null);
+              setActiveTab('tournaments');
+            },
+          }
+        : null,
+    [activeTournamentSpectate]
+  );
+
   const handleStartTournamentPvpMatch = (
     launch: ActiveTournamentMatchLaunch,
     room: MultiplayerRoom,
@@ -2902,18 +2917,7 @@ export const App: React.FC = () => {
             }}
             onRewardGold={handleRewardGold}
             onMatchConcluded={handleMatchConcluded}
-            tournamentSpectatorContext={
-              activeTournamentSpectate
-                ? {
-                    tournament: activeTournamentSpectate.tournament,
-                    pairing: activeTournamentSpectate.pairing,
-                    onExitSpectator: () => {
-                      setActiveTournamentSpectate(null);
-                      setActiveTab('tournaments');
-                    },
-                  }
-                : null
-            }
+            tournamentSpectatorContext={memoizedTournamentSpectatorContext}
             tournamentContext={
               activeTournamentMatch
                 ? {

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BattleArena, CustomSavedDeck } from './BattleArena';
 import {
   LiveArenaFeedItem,
@@ -35,22 +35,27 @@ export const HomeLiveArenaView: React.FC<HomeLiveArenaViewProps> = ({
     );
   }, []);
 
+  const spectatorContext = useMemo(
+    () => ({
+      tournament: activeFeedItem.tournament,
+      pairing: activeFeedItem.pairing,
+      variant: 'home_live' as const,
+      customTableBadge: activeFeedItem.tableBadge,
+      livePvpRoom: activeFeedItem.livePvpRoom ?? null,
+      onExitSpectator: onPlayDuelNow,
+      onCycleNextLiveMatch: handleCycleNextLiveMatch,
+      onPlayNowFromHome: onPlayDuelNow,
+    }),
+    [activeFeedItem, handleCycleNextLiveMatch, onPlayDuelNow]
+  );
+
   return (
     <div className="home-live-arena-shell">
       <BattleArena
         key={activeFeedItem.feedId}
         customDecks={customDecks}
         isGuest={isGuest}
-        tournamentSpectatorContext={{
-          tournament: activeFeedItem.tournament,
-          pairing: activeFeedItem.pairing,
-          variant: 'home_live',
-          customTableBadge: activeFeedItem.tableBadge,
-          livePvpRoom: activeFeedItem.livePvpRoom ?? null,
-          onExitSpectator: onPlayDuelNow,
-          onCycleNextLiveMatch: handleCycleNextLiveMatch,
-          onPlayNowFromHome: onPlayDuelNow,
-        }}
+        tournamentSpectatorContext={spectatorContext}
       />
     </div>
   );

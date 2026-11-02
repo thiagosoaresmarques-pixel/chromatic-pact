@@ -24,9 +24,9 @@ export interface LiveArenaFeedItem {
 }
 
 const ROLLING_TABLE_COUNT = 8;
-const ROLLING_CYCLE_MS = 210_000; // 3m 30s per table cycle
-const ROLLING_MATCH_SPAN_MS = 192_000; // ~3m 12s active play (~3.4s per real engine action)
-const ROLLING_STAGGER_MS = Math.floor(ROLLING_CYCLE_MS / ROLLING_TABLE_COUNT); // 26.25s stagger
+const ROLLING_CYCLE_MS = 132_000; // 2m 12s per table cycle
+const ROLLING_MATCH_SPAN_MS = 116_000; // ~1m 56s active play (~1.8s–2.3s per real engine action)
+const ROLLING_STAGGER_MS = Math.floor(ROLLING_CYCLE_MS / ROLLING_TABLE_COUNT); // 16.5s stagger
 
 let cachedCloudCatalog: TournamentCatalogData | null = null;
 let lastCloudFetchAtMs = 0;
@@ -84,10 +84,10 @@ function buildRollingSovereignTable(
       : bucket * ROLLING_CYCLE_MS + slotOffset;
   const matchFinishMs = matchStartMs + ROLLING_MATCH_SPAN_MS;
 
-  // Keep only tables currently mid-battle so the spectator lands right in live action
+  // Keep only tables currently mid-battle with >= 24s remaining so viewers never land at the very end
   if (
     customStartOffsetMs === undefined &&
-    (nowMs < matchStartMs + 10_000 || nowMs > matchFinishMs - 14_000)
+    (nowMs < matchStartMs + 6_000 || nowMs > matchFinishMs - 24_000)
   ) {
     return null;
   }

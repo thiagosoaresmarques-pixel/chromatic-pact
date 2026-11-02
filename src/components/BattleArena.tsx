@@ -675,7 +675,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   >([]);
 
   useEffect(() => {
-    if (tacticalProblem) return;
+    if (tacticalProblem || isSpectatorMode) return;
     if (
       gameState.turn === 1 &&
       gameState.combatLog.length <= 2 &&
@@ -2099,10 +2099,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const [specFlipped, setSpecFlipped] = useState<boolean>(false);
   const [specSpeed, setSpecSpeed] = useState<1 | 2 | 4>(1);
   const [specFollowLive, setSpecFollowLive] = useState<boolean>(true);
+  const specStartedAsLiveRef = useRef<boolean>(
+    Boolean(
+      tournamentSpectatorContext &&
+        (tournamentSpectatorContext.variant === 'home_live' ||
+          !specLog ||
+          !specLog.isCompleted ||
+          getTournamentNowMs() < specLog.matchFinishMs)
+    )
+  );
   const [specCursor, setSpecCursor] = useState<number>(() => {
     if (!tournamentSpectatorContext || !specLog) return 0;
     const nowInit = getTournamentNowMs();
-    const isLiveInit = !specLog.isCompleted || nowInit < specLog.matchFinishMs;
+    const isLiveInit =
+      tournamentSpectatorContext.variant === 'home_live' ||
+      !specLog.isCompleted ||
+      nowInit < specLog.matchFinishMs;
     if (!isLiveInit) return 0;
     let idx = 0;
     for (let i = 0; i < specLog.frames.length; i += 1) {
@@ -2113,11 +2125,34 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const [specIsPlaying, setSpecIsPlaying] = useState<boolean>(() => {
     if (!tournamentSpectatorContext || !specLog) return false;
     const nowInit = getTournamentNowMs();
-    const isLiveInit = !specLog.isCompleted || nowInit < specLog.matchFinishMs;
+    const isLiveInit =
+      tournamentSpectatorContext.variant === 'home_live' ||
+      !specLog.isCompleted ||
+      nowInit < specLog.matchFinishMs;
     return !isLiveInit;
   });
   const prevAppliedSpecCursorRef = useRef<number>(specCursor);
   const prevAppliedSpecFlipRef = useRef<boolean>(false);
+  const prevAppliedSpecLogRef = useRef<TournamentMatchReplayLog | null>(specLog);
+  const onCycleNextLiveMatchRef = useRef<(() => void) | undefined>(
+    tournamentSpectatorContext?.onCycleNextLiveMatch
+  );
+  useEffect(() => {
+    onCycleNextLiveMatchRef.current = tournamentSpectatorContext?.onCycleNextLiveMatch;
+  }, [tournamentSpectatorContext?.onCycleNextLiveMatch]);
+
+  // Safety watchdogs ensuring combatAnim / spectacleFx can never remain stuck non-null
+  useEffect(() => {
+    if (!combatAnim) return;
+    const guard = window.setTimeout(() => setCombatAnim(null), 900);
+    return () => window.clearTimeout(guard);
+  }, [combatAnim]);
+
+  useEffect(() => {
+    if (!spectacleFx) return;
+    const guard = window.setTimeout(() => setSpectacleFx(null), 1650);
+    return () => window.clearTimeout(guard);
+  }, [spectacleFx]);
 
   // Unlock & start adaptive arena soundtrack immediately upon entering Spectator/Replay
   useEffect(() => {
@@ -2165,27 +2200,25 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (isRecordingVideo && videoSessionRef.current) {
       const saveTimer = window.setTimeout(() => {
         videoSessionRef.current?.stopAndDownload();
-        if (isHomeLiveShowcase && tournamentSpectatorContext?.onCycleNextLiveMatch) {
+        if (isHomeLiveShowcase && onCycleNextLiveMatchRef.current) {
           window.setTimeout(() => {
-            tournamentSpectatorContext.onCycleNextLiveMatch?.();
+            onCycleNextLiveMatchRef.current?.();
           }, 700);
         }
       }, 3400);
       return () => window.clearTimeout(saveTimer);
     }
-    if (isHomeLiveShowcase && tournamentSpectatorContext?.onCycleNextLiveMatch) {
+    if (isHomeLiveShowcase && onCycleNextLiveMatchRef.current) {
       const nextTimer = window.setTimeout(() => {
-        tournamentSpectatorContext.onCycleNextLiveMatch?.();
-      }, 4200);
+        onCycleNextLiveMatchRef.current?.();
+      }, 2700);
       return () => window.clearTimeout(nextTimer);
     }
-  }, [
-    isSpectatorMode,
-    gameState.phase,
-    isRecordingVideo,
-    isHomeLiveShowcase,
-    tournamentSpectatorContext,
-  ]);
+  }, [isSpectatorMode, gameState.phase, isRecordingVideo, isHomeLiveShowcase]);
+
+  const specMatchIdentity = tournamentSpectatorContext
+    ? `${tournamentSpectatorContext.tournament.id}::r${tournamentSpectatorContext.pairing.round}::t${tournamentSpectatorContext.pairing.tableNumber}`
+    : '';
 
   // Load / subscribe live human match telemetry when applicable
   useEffect(() => {
@@ -2195,6 +2228,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
     const { tournament, pairing } = tournamentSpectatorContext;
     const baseSynth = getOrSynthesizeSovereignMatchLog(tournament, pairing);
+    const nowLoad = getTournamentNowMs();
+    const liveOnLoad =
+      tournamentSpectatorContext.variant === 'home_live' ||
+      !baseSynth.isCompleted ||
+      nowLoad < baseSynth.matchFinishMs;
+    specStartedAsLiveRef.current = liveOnLoad;
     setSpecLog(baseSynth);
 
     const hasHuman =
@@ -2232,7 +2271,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       unsub();
       window.clearInterval(poll);
     };
-  }, [tournamentSpectatorContext]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [specMatchIdentity]);
 
   // 1-second wall-clock tick for live broadcasts & turn clocks
   useEffect(() => {
@@ -2259,18 +2299,33 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     return idx;
   }, [specLog, isSpecLiveMatch, specNowMs]);
 
-  // Follow live broadcast edge step-by-step so each live play animates naturally on the board
+  // Follow live broadcast edge step-by-step (including the final lethal blow when matchFinishMs is reached!)
   useEffect(() => {
-    if (!isSpecLiveMatch || !specFollowLive) return;
+    const shouldFollowStream =
+      specFollowLive &&
+      (isSpecLiveMatch || isHomeLiveShowcase || specStartedAsLiveRef.current);
+    if (!shouldFollowStream) return;
+    if (specVisibleMaxIdx - specCursor > 4 && !combatAnim && !spectacleFx) {
+      setSpecCursor(Math.max(0, specVisibleMaxIdx - 1));
+      return;
+    }
     if (specCursor < specVisibleMaxIdx && !combatAnim && !spectacleFx) {
       const t = window.setTimeout(() => {
         setSpecCursor((prev) =>
           prev < specVisibleMaxIdx ? prev + 1 : specVisibleMaxIdx
         );
-      }, 280);
+      }, 260);
       return () => window.clearTimeout(t);
     }
-  }, [isSpecLiveMatch, specFollowLive, specCursor, specVisibleMaxIdx, combatAnim, spectacleFx]);
+  }, [
+    isSpecLiveMatch,
+    isHomeLiveShowcase,
+    specFollowLive,
+    specCursor,
+    specVisibleMaxIdx,
+    combatAnim,
+    spectacleFx,
+  ]);
 
   // Auto-play timer for past match replays (1x / 2x / 4x)
   useEffect(() => {
@@ -2300,11 +2355,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   // Apply cursor & perspective transitions onto BattleArena's real GameState with full combat FX!
   useEffect(() => {
     if (!tournamentSpectatorContext || !specLog || specLog.frames.length === 0) return;
-    const clampedIdx = Math.max(0, Math.min(specVisibleMaxIdx, specCursor));
+    const maxBound = specLog.frames.length - 1;
+    const clampedIdx = Math.max(0, Math.min(maxBound, specCursor));
     const prevIdx = prevAppliedSpecCursorRef.current;
     const flipChanged = prevAppliedSpecFlipRef.current !== specFlipped;
+    const logChanged = prevAppliedSpecLogRef.current !== specLog;
+    if (!flipChanged && !logChanged && clampedIdx === prevIdx) return;
+
     prevAppliedSpecCursorRef.current = clampedIdx;
     prevAppliedSpecFlipRef.current = specFlipped;
+    prevAppliedSpecLogRef.current = specLog;
 
     const rawNext = getArenaGameStateForReplayFrame(
       tournamentSpectatorContext.tournament,
@@ -2432,7 +2492,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
     setGameState(nextLocalized);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [specCursor, specFlipped, specLog, specVisibleMaxIdx]);
+  }, [specCursor, specFlipped, specLog]);
 
   // AI step-by-step execution with Physical Lunge Animation on AI Attacks!
   useEffect(() => {
@@ -2649,12 +2709,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   ]);
 
   useEffect(() => {
-    if (gameState.phase !== 'gameover' || gameoverStage !== 'cinematic') return;
+    if (gameState.phase !== 'gameover' || gameoverStage !== 'cinematic' || isHomeLiveShowcase) {
+      return;
+    }
     const timer = window.setTimeout(() => {
       setGameoverStage('modal');
     }, 2550);
     return () => window.clearTimeout(timer);
-  }, [gameState.phase, gameoverStage]);
+  }, [gameState.phase, gameoverStage, isHomeLiveShowcase]);
 
   const isPlayerTurn =
     !isSpectatorMode && gameState.activePlayer === 'player' && gameState.phase !== 'gameover';

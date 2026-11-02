@@ -656,6 +656,8 @@ export function recalculateProfileEloFromInitialBase(
   };
 }
 
+const RETIRED_EXACT_USERNAMES = new Set(['tsm81']);
+
 export function getSavedAccountsRoster(): SovereignUserProfile[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.ACCOUNTS_ROSTER);
@@ -663,17 +665,23 @@ export function getSavedAccountsRoster(): SovereignUserProfile[] {
       const parsed = JSON.parse(raw) as SovereignUserProfile[];
       if (Array.isArray(parsed)) {
         let anyCleaned = false;
-        const cleanedRoster = parsed
-          .filter((a) => !isUnregisteredProfile(a))
-          .map((acc) => {
-            const { cleaned, wasModified } = stripImposedStarterGrimoire(acc);
-            const { profile: rebased, wasRecalculated } =
-              recalculateProfileEloFromInitialBase(cleaned);
-            const { profile: campClean, wasReset } =
-              resetCampaignProgressionForProfile(rebased);
-            if (wasModified || wasRecalculated || wasReset) anyCleaned = true;
-            return campClean;
-          });
+        const validFiltered = parsed.filter((a) => {
+          if (isUnregisteredProfile(a)) return false;
+          if (RETIRED_EXACT_USERNAMES.has(a.username)) {
+            anyCleaned = true;
+            return false;
+          }
+          return true;
+        });
+        const cleanedRoster = validFiltered.map((acc) => {
+          const { cleaned, wasModified } = stripImposedStarterGrimoire(acc);
+          const { profile: rebased, wasRecalculated } =
+            recalculateProfileEloFromInitialBase(cleaned);
+          const { profile: campClean, wasReset } =
+            resetCampaignProgressionForProfile(rebased);
+          if (wasModified || wasRecalculated || wasReset) anyCleaned = true;
+          return campClean;
+        });
         if (anyCleaned) {
           try {
             localStorage.setItem(STORAGE_KEYS.ACCOUNTS_ROSTER, JSON.stringify(cleanedRoster));
@@ -691,7 +699,9 @@ export function getSavedAccountsRoster(): SovereignUserProfile[] {
 }
 
 export function saveAccountToRoster(profile: SovereignUserProfile): SovereignUserProfile[] {
-  if (isUnregisteredProfile(profile)) return getSavedAccountsRoster();
+  if (isUnregisteredProfile(profile) || RETIRED_EXACT_USERNAMES.has(profile.username)) {
+    return getSavedAccountsRoster();
+  }
   const current = getSavedAccountsRoster();
   const exists = current.some((a) => a.id === profile.id || a.username === profile.username);
   const next = exists
@@ -748,7 +758,11 @@ export function getActiveTabUserProfile(): SovereignUserProfile {
     const tabSaved = sessionStorage.getItem(STORAGE_KEYS.TAB_ACTIVE_USER);
     if (tabSaved) {
       const parsed = JSON.parse(tabSaved) as SovereignUserProfile;
-      if (!isUnregisteredProfile(parsed)) return ensureStarterDeckForUser(parsed);
+      if (RETIRED_EXACT_USERNAMES.has(parsed.username)) {
+        sessionStorage.removeItem(STORAGE_KEYS.TAB_ACTIVE_USER);
+      } else if (!isUnregisteredProfile(parsed)) {
+        return ensureStarterDeckForUser(parsed);
+      }
     }
   } catch {
     // Ignore
@@ -1402,6 +1416,7 @@ export async function recoverAndResetPassword(
 }
 
 async function syncProfileToSupabaseIfConfigured(profile: SovereignUserProfile): Promise<void> {
+  if (RETIRED_EXACT_USERNAMES.has(profile.username)) return;
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return;
 
@@ -1900,6 +1915,7 @@ export async function fetchAllCloudProfilesForAdmin(): Promise<{
         continue;
       }
       if (r.username.startsWith('__')) continue;
+      if (RETIRED_EXACT_USERNAMES.has(r.username)) continue;
 
       const localMatch = localRoster.find(
         (a) => a.username.toLowerCase() === r.username.toLowerCase()
@@ -1937,6 +1953,9 @@ export async function fetchAllCloudProfilesForAdmin(): Promise<{
 export async function adminSaveCloudProfile(
   profile: SovereignUserProfile
 ): Promise<{ ok: boolean; error?: string }> {
+  if (RETIRED_EXACT_USERNAMES.has(profile.username)) {
+    return { ok: false, error: 'Conta arquivada.' };
+  }
   const cfg = getSupabaseConfig();
   saveAccountToRoster(profile);
 
@@ -1984,9 +2003,7 @@ export async function adminSaveCloudProfile(
 export async function adminDeleteCloudProfile(username: string): Promise<boolean> {
   const cfg = getSupabaseConfig();
   try {
-    const remaining = getSavedAccountsRoster().filter(
-      (a) => a.username.toLowerCase() !== username.toLowerCase()
-    );
+    const remaining = getSavedAccountsRoster().filter((a) => a.username !== username);
     localStorage.setItem(STORAGE_KEYS.ACCOUNTS_ROSTER, JSON.stringify(remaining));
   } catch {
     // Ignore

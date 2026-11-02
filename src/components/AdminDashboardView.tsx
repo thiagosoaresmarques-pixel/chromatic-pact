@@ -1338,57 +1338,55 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   </div>
 
                   <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'space-between' }}>
-                    {!MASTER_ADMIN_USERNAMES.includes(selectedUser.username.toLowerCase()) && (
-                      <>
-                        <button
-                          type="button"
-                          className="nav-notif-mini-btn"
-                          onClick={() => {
-                            const nextAdmin = !selectedUser.isAdmin;
-                            handleSaveModifiedUser(
-                              { ...selectedUser, isAdmin: nextAdmin },
-                              nextAdmin ? 'Permissão Admin Concedida' : 'Permissão Admin Revogada',
-                              `${selectedUser.username} agora ${
-                                nextAdmin ? 'possui' : 'não possui mais'
-                              } acesso de administrador.`
+                    {!MASTER_ADMIN_USERNAMES.includes(selectedUser.username.toLowerCase()) ? (
+                      <button
+                        type="button"
+                        className="nav-notif-mini-btn"
+                        onClick={() => {
+                          const nextAdmin = !selectedUser.isAdmin;
+                          handleSaveModifiedUser(
+                            { ...selectedUser, isAdmin: nextAdmin },
+                            nextAdmin ? 'Permissão Admin Concedida' : 'Permissão Admin Revogada',
+                            `${selectedUser.username} agora ${
+                              nextAdmin ? 'possui' : 'não possui mais'
+                            } acesso de administrador.`
+                          );
+                        }}
+                      >
+                        {selectedUser.isAdmin ? 'Revogar Admin' : 'Tornar Admin'}
+                      </button>
+                    ) : (
+                      <span />
+                    )}
+                    {selectedUser.username !== currentUser.username && (
+                      <button
+                        type="button"
+                        className="nav-notif-mini-btn"
+                        style={{ borderColor: 'rgba(248, 113, 113, 0.6)', color: '#fca5a5' }}
+                        onClick={async () => {
+                          if (
+                            !window.confirm(
+                              `Tem certeza que deseja excluir permanentemente a conta "${selectedUser.username}" do Supabase?`
+                            )
+                          ) {
+                            return;
+                          }
+                          const ok = await adminDeleteCloudProfile(selectedUser.username);
+                          if (ok) {
+                            setProfiles((prev) =>
+                              prev.filter((p) => p.username !== selectedUser.username)
                             );
-                          }}
-                        >
-                          {selectedUser.isAdmin ? 'Revogar Admin' : '👑 Tornar Admin'}
-                        </button>
-                        <button
-                          type="button"
-                          className="nav-notif-mini-btn"
-                          style={{ borderColor: 'rgba(248, 113, 113, 0.6)', color: '#fca5a5' }}
-                          onClick={async () => {
-                            if (
-                              !window.confirm(
-                                `Tem certeza que deseja excluir permanentemente a conta "${selectedUser.username}" do Supabase?`
-                              )
-                            ) {
-                              return;
-                            }
-                            const ok = await adminDeleteCloudProfile(selectedUser.username);
-                            if (ok) {
-                              setProfiles((prev) =>
-                                prev.filter(
-                                  (p) =>
-                                    p.username.toLowerCase() !==
-                                    selectedUser.username.toLowerCase()
-                                )
-                              );
-                              setSelectedUser(null);
-                              onNotify({
-                                kicker: 'ADMINISTRAÇÃO SOBERANA',
-                                title: 'Conta Excluída',
-                                message: `A conta ${selectedUser.username} foi removida da nuvem.`,
-                              });
-                            }
-                          }}
-                        >
-                          🗑️ Excluir Conta
-                        </button>
-                      </>
+                            setSelectedUser(null);
+                            onNotify({
+                              kicker: 'ADMINISTRAÇÃO SOBERANA',
+                              title: 'Conta Excluída',
+                              message: `A conta ${selectedUser.username} foi removida da nuvem.`,
+                            });
+                          }
+                        }}
+                      >
+                        Excluir Conta
+                      </button>
                     )}
                   </div>
                 </div>

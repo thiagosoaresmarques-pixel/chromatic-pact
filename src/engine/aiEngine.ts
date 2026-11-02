@@ -1582,6 +1582,8 @@ export function executeTurnStepForActor(
   nextState: GameState;
   done: boolean;
   actionSummary: string;
+  attackerId?: string;
+  targetId?: string;
 } {
   if (state.phase === 'gameover') {
     return { nextState: state, done: true, actionSummary: 'Partida encerrada.' };
@@ -1894,6 +1896,8 @@ export function executeTurnStepForActor(
           nextState,
           done: nextState.phase === 'gameover',
           actionSummary: `[${attacker.card.name}] realizou um ataque!`,
+          attackerId: attacker.instanceId,
+          targetId: chosenTarget,
         };
       }
     }
@@ -1918,6 +1922,8 @@ export function executeAiTurnStep(
   nextState: GameState;
   done: boolean;
   actionSummary: string;
+  attackerId?: string;
+  targetId?: string;
 } {
   return executeTurnStepForActor(state, 'ai', overrides);
 }

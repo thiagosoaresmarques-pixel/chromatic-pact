@@ -93,6 +93,8 @@ export interface TournamentReplayFrame {
   actorSide: 'A' | 'B' | 'SYSTEM';
   kind: ReplayActionKind;
   cardId?: string;
+  attackerId?: string;
+  targetId?: string;
   summary: string;
   clockSecA: number;
   clockSecB: number;
@@ -358,6 +360,8 @@ interface RawSimTrace {
     actorSide: 'A' | 'B' | 'SYSTEM';
     kind: ReplayActionKind;
     cardId?: string;
+    attackerId?: string;
+    targetId?: string;
     summary: string;
     weight: number;
     state: GameState;
@@ -418,6 +422,8 @@ function simulateSingleSeededGame(
 
       state = stepRes.nextState;
       const classified = classifyStepAction(prevState, state, actor, stepRes.actionSummary);
+      const clonedStepState = cloneGameState(state);
+      clonedStepState.feedbacks = state.feedbacks.map((fb) => ({ ...fb }));
 
       steps.push({
         turn: prevState.turn,
@@ -425,9 +431,11 @@ function simulateSingleSeededGame(
         actorSide: actor === 'player' ? 'A' : 'B',
         kind: classified.kind,
         cardId: classified.cardId,
+        attackerId: stepRes.attackerId,
+        targetId: stepRes.targetId,
         summary: sanitizeSummaryText(stepRes.actionSummary),
         weight: classified.weight,
-        state: cloneGameState(state),
+        state: clonedStepState,
       });
 
       if (state.phase === 'gameover') break;
@@ -663,11 +671,31 @@ export function getOrSynthesizeSovereignMatchLog(
       actorSide: step.actorSide,
       kind: step.kind,
       cardId: step.cardId,
+      attackerId: step.attackerId,
+      targetId:
+        step.targetId === 'player-sovereign'
+          ? 'A-sovereign'
+          : step.targetId === 'ai-sovereign'
+          ? 'B-sovereign'
+          : step.targetId,
       summary: step.summary,
       clockSecA: clockA,
       clockSecB: clockB,
       thinkDurationMs: thinkMs,
       domainExpansion: domExp,
+      feedbacks:
+        step.state.feedbacks && step.state.feedbacks.length > 0
+          ? step.state.feedbacks.slice(0, 8).map((fb) => ({
+              targetId:
+                fb.targetId === 'player-sovereign'
+                  ? 'A-sovereign'
+                  : fb.targetId === 'ai-sovereign'
+                  ? 'B-sovereign'
+                  : fb.targetId,
+              text: fb.text,
+              color: fb.color,
+            }))
+          : undefined,
       sideA: compressPlayerSide(step.state.player, {
         subtitle: playerA.subtitle,
         primaryDomain: playerA.primaryDomain,
@@ -899,6 +927,7 @@ export function getArenaGameStateForReplayFrame(
   let rawState: GameState;
   if (losslessList && losslessList[safeIdx]) {
     rawState = cloneGameState(losslessList[safeIdx]);
+    rawState.feedbacks = losslessList[safeIdx].feedbacks.map((fb) => ({ ...fb }));
   } else {
     rawState = reconstructArenaStateFromCompactFrame(log, safeIdx);
   }
@@ -1135,20 +1164,23 @@ export function recordHumanTournamentMatchState(params: {
       ? 'A'
       : 'B';
 
-  const actorSideForFrame: 'A' | 'B' | 'SYSTEM' = isGameover
-    ? 'SYSTEM'
-    : newestLog && newestLog.actor !== 'system'
-    ? mapActorOwnerToSide(newestLog.actor)
-    : activeSide;
+  const isLethalCombatAttack = isGameover && newestLog?.category === 'combat';
+  const actorSideForFrame: 'A' | 'B' | 'SYSTEM' =
+    isGameover && !isLethalCombatAttack
+      ? 'SYSTEM'
+      : newestLog && newestLog.actor !== 'system'
+      ? mapActorOwnerToSide(newestLog.actor)
+      : activeSide;
 
-  const resolvedKind: ReplayActionKind = isGameover
-    ? 'finish'
-    : prevFrames.length === 0
-    ? 'start'
-    : newestLog?.category === 'channel' || rawMessage.includes('canalizou')
-    ? 'channel'
-    : newestLog?.category === 'combat'
-    ? 'attack'
+  const resolvedKind: ReplayActionKind =
+    isGameover && !isLethalCombatAttack
+      ? 'finish'
+      : prevFrames.length === 0
+      ? 'start'
+      : newestLog?.category === 'channel' || rawMessage.includes('canalizou')
+      ? 'channel'
+      : newestLog?.category === 'combat'
+      ? 'attack'
     : rawMessage.includes('Expansão de Domínio') ||
       rawMessage.includes('Domínio Simples') ||
       rawMessage.includes('CHOQUE DE DOMÍNIOS')
@@ -1191,7 +1223,7 @@ export function recordHumanTournamentMatchState(params: {
       : null,
     feedbacks:
       state.feedbacks && state.feedbacks.length > 0
-        ? state.feedbacks.slice(0, 3).map((fb) => ({
+        ? state.feedbacks.slice(0, 8).map((fb) => ({
             targetId:
               fb.targetId === 'player-sovereign'
                 ? `${mapActorOwnerToSide('player')}-sovereign`

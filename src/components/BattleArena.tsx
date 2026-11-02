@@ -56,6 +56,7 @@ import {
   DOMAIN_BREAK_SACRIFICE_HP,
   endTurn,
   executeAttack,
+  findAttackingUnitBetweenStates,
   findUnitOnBoard,
   getAllBoardUnits,
   getBestExpandableDomain,
@@ -73,6 +74,7 @@ import {
   mulliganCards,
   playCard,
   previewAttackOutcome,
+  resolveActualAttackVisualTarget,
   useSovereignPower,
 } from '../engine/gameEngine';
 import { executeAiMulligan, executeAiTurnStep } from '../engine/aiEngine';
@@ -382,6 +384,8 @@ function getOrganicTabletopPose(
 
   return {
     transform: `translate(${finalX}px, ${finalY}px) rotate(${finalRot.toFixed(1)}deg)`,
+    '--pose-x': `${finalX}px`,
+    '--pose-y': `${finalY}px`,
     '--stack-rel': stackRel,
     '--stack-idx': stackIdx,
     zIndex: (isInvading ? 18 : isClashingAtBorder ? 14 : 10) + stackIdx * 2,
@@ -927,6 +931,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     reasonText: string;
   } | null>(null);
   const prevDomainExpansionRef = useRef<GameState['domainExpansion']>(gameState.domainExpansion);
+  const latestGameStateRef = useRef<GameState>(gameState);
+  latestGameStateRef.current = gameState;
   const [combatAnim, setCombatAnim] = useState<{
     attackerId: string;
     targetId: string;
@@ -1195,14 +1201,23 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       `[data-combat-id="${targetId}"]`
     ) as HTMLElement | null;
 
-    let startX = window.innerWidth / 2;
-    let startY = window.innerHeight / 2 + 80;
+    const aRectFallback = attackerEl?.getBoundingClientRect() ?? null;
+    const attackerInNorthHalf =
+      targetId === 'player-sovereign' ||
+      (aRectFallback !== null && aRectFallback.top + aRectFallback.height / 2 < window.innerHeight / 2);
+
+    let startX = aRectFallback
+      ? Math.round(aRectFallback.left + aRectFallback.width / 2)
+      : window.innerWidth / 2;
+    let startY = aRectFallback
+      ? Math.round(aRectFallback.top + aRectFallback.height / 2)
+      : window.innerHeight / 2 + (attackerInNorthHalf ? -80 : 80);
     let lungeX = 0;
-    let lungeY = -120;
-    let impactX = window.innerWidth / 2;
-    let impactY = window.innerHeight / 2 - 80;
-    let angleDeg = -90;
-    let distancePx = 160;
+    let lungeY = attackerInNorthHalf ? 96 : -96;
+    let impactX = startX;
+    let impactY = startY + lungeY;
+    let angleDeg = attackerInNorthHalf ? 90 : -90;
+    let distancePx = 120;
 
     if (attackerEl && targetEl) {
       const aRect = attackerEl.getBoundingClientRect();
@@ -1550,6 +1565,39 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           onlineMatch.role === 'host'
             ? msg.canonicalState
             : flipGameStatePerspective(msg.canonicalState);
+        const prevLocal = latestGameStateRef.current;
+        const newestEntry = localized.combatLog[0];
+        if (
+          newestEntry &&
+          newestEntry.id !== prevLocal.combatLog[0]?.id &&
+          newestEntry.category === 'combat' &&
+          (newestEntry.actor === 'ai' || newestEntry.actor === 'player')
+        ) {
+          const atkOwner = newestEntry.actor;
+          const atkUnit = findAttackingUnitBetweenStates(prevLocal, localized, atkOwner);
+          if (atkUnit) {
+            const hitTargetId = resolveActualAttackVisualTarget(
+              prevLocal,
+              localized,
+              atkOwner,
+              atkUnit.instanceId
+            );
+            const isRanged =
+              atkUnit.row === 'rearguard' && atkUnit.keywords.includes('Alcance');
+            const isHeavy = atkUnit.currentAtk >= 5 || localized.phase === 'gameover';
+            measureAndTriggerLunge(
+              atkUnit.instanceId,
+              hitTargetId,
+              atkUnit.card.domain,
+              isRanged,
+              () => {
+                setGameState(localized);
+              },
+              isHeavy
+            );
+            return;
+          }
+        }
         playSfx('draw');
         setGameState(localized);
       } else if (
@@ -2356,10 +2404,44 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     const unsub = subscribeMultiplayerBus((msg) => {
       if (msg.type === 'MATCH_STATE_SYNC' && msg.roomCode === livePvpRoom.code) {
         livePvpCanonicalRef.current = msg.canonicalState;
+        const localized = specFlipped
+          ? flipGameStatePerspective(msg.canonicalState)
+          : msg.canonicalState;
+        const prevLocal = latestGameStateRef.current;
+        const newestEntry = localized.combatLog[0];
+        if (
+          newestEntry &&
+          newestEntry.id !== prevLocal.combatLog[0]?.id &&
+          newestEntry.category === 'combat' &&
+          (newestEntry.actor === 'ai' || newestEntry.actor === 'player')
+        ) {
+          const atkOwner = newestEntry.actor;
+          const atkUnit = findAttackingUnitBetweenStates(prevLocal, localized, atkOwner);
+          if (atkUnit) {
+            const hitTargetId = resolveActualAttackVisualTarget(
+              prevLocal,
+              localized,
+              atkOwner,
+              atkUnit.instanceId
+            );
+            const isRanged =
+              atkUnit.row === 'rearguard' && atkUnit.keywords.includes('Alcance');
+            const isHeavy = atkUnit.currentAtk >= 5 || localized.phase === 'gameover';
+            measureAndTriggerLunge(
+              atkUnit.instanceId,
+              hitTargetId,
+              atkUnit.card.domain,
+              isRanged,
+              () => {
+                setGameState(localized);
+              },
+              isHeavy
+            );
+            return;
+          }
+        }
         playSfx('draw');
-        setGameState(
-          specFlipped ? flipGameStatePerspective(msg.canonicalState) : msg.canonicalState
-        );
+        setGameState(localized);
       } else if (
         msg.type === 'ROOM_UPSERT' &&
         msg.room.code === livePvpRoom.code &&
@@ -2711,23 +2793,41 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         : specFlipped
         ? 'ai'
         : 'player';
-    const defenderOwner: 'player' | 'ai' = actorOwner === 'player' ? 'ai' : 'player';
 
-    if (nextFrame.kind === 'attack') {
-      const prevActorUnits = getAllBoardUnits(prevLocalized[actorOwner]);
-      const nextActorUnits = getAllBoardUnits(nextLocalized[actorOwner]);
-      const attackerUnit =
-        prevActorUnits.find((pu) => {
-          if (pu.hasAttackedThisTurn) return false;
-          const nu = nextActorUnits.find((x) => x.instanceId === pu.instanceId);
-          return !nu || nu.hasAttackedThisTurn;
-        }) ??
-        (nextFrame.cardId
-          ? prevActorUnits.find((pu) => pu.card.id === nextFrame.cardId)
-          : undefined);
+    const isAttackFrame =
+      nextFrame.kind === 'attack' ||
+      (nextFrame.kind === 'finish' &&
+        (Boolean(nextFrame.attackerId) ||
+          (nextLocalized.combatLog[0]?.category === 'combat' &&
+            nextLocalized.combatLog[0]?.id !== prevLocalized.combatLog[0]?.id)));
 
-      const hitTargetId =
-        nextLocalized.feedbacks[0]?.targetId ?? `${defenderOwner}-sovereign`;
+    if (isAttackFrame) {
+      const attackerUnit = findAttackingUnitBetweenStates(
+        prevLocalized,
+        nextLocalized,
+        actorOwner,
+        nextFrame.attackerId,
+        nextFrame.cardId
+      );
+
+      const localizedFrameTargetId =
+        nextFrame.targetId === 'A-sovereign'
+          ? specFlipped
+            ? 'ai-sovereign'
+            : 'player-sovereign'
+          : nextFrame.targetId === 'B-sovereign'
+          ? specFlipped
+            ? 'player-sovereign'
+            : 'ai-sovereign'
+          : nextFrame.targetId;
+
+      const hitTargetId = resolveActualAttackVisualTarget(
+        prevLocalized,
+        nextLocalized,
+        actorOwner,
+        attackerUnit?.instanceId,
+        localizedFrameTargetId
+      );
 
       if (attackerUnit) {
         const isRanged =
@@ -2816,19 +2916,27 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       const prevAiUnits = getAllBoardUnits(gameState.ai);
       const step = executeAiTurnStep(gameState);
 
-      if (step.actionSummary.includes('ataque')) {
-        // Identify which AI unit just attacked and which player target was hit
-        const nextAiUnits = getAllBoardUnits(step.nextState.ai);
-        const aiAttacker = prevAiUnits.find((pu) => {
-          if (pu.hasAttackedThisTurn) return false;
-          const nu = nextAiUnits.find((x) => x.instanceId === pu.instanceId);
-          return !nu || nu.hasAttackedThisTurn;
-        });
-        const hitTargetId = step.nextState.feedbacks[0]?.targetId ?? 'player-sovereign';
+      if (step.attackerId || step.actionSummary.includes('ataque')) {
+        // Identify which AI unit just attacked and the exact defender unit or Sovereign that absorbed the blow
+        const aiAttacker = findAttackingUnitBetweenStates(
+          gameState,
+          step.nextState,
+          'ai',
+          step.attackerId
+        );
+        const hitTargetId = resolveActualAttackVisualTarget(
+          gameState,
+          step.nextState,
+          'ai',
+          aiAttacker?.instanceId,
+          step.targetId
+        );
 
         if (aiAttacker) {
           const isRanged =
             aiAttacker.row === 'rearguard' && aiAttacker.keywords.includes('Alcance');
+          const isHeavy =
+            aiAttacker.currentAtk >= 5 || step.nextState.phase === 'gameover';
           measureAndTriggerLunge(
             aiAttacker.instanceId,
             hitTargetId,
@@ -2836,7 +2944,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             isRanged,
             () => {
               setGameState(step.nextState);
-            }
+            },
+            isHeavy
           );
           return;
         }
@@ -3276,19 +3385,35 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     const targets = getValidAttackTargets(gameState, attackerUnit.instanceId);
     if (!targets.includes(targetId)) return;
 
+    const resolvedNextState = executeAttack(gameState, attackerUnit.instanceId, targetId);
+    if (resolvedNextState === gameState) return;
+
+    const visualTargetId = resolveActualAttackVisualTarget(
+      gameState,
+      resolvedNextState,
+      'player',
+      attackerUnit.instanceId,
+      targetId
+    );
     const isRanged =
       attackerUnit.row === 'rearguard' && attackerUnit.keywords.includes('Alcance');
-    const isHeavy = attackerUnit.currentAtk >= 5 || targetId === 'ai-sovereign';
+    const prevOut = allTargetPreviews[targetId];
+    const isHeavy = Boolean(
+      attackerUnit.currentAtk >= 5 ||
+        visualTargetId === 'ai-sovereign' ||
+        prevOut?.targetDies ||
+        resolvedNextState.phase === 'gameover'
+    );
     setSelectedAttackerId(null);
     setFocusedBoardUnitId(null);
 
     measureAndTriggerLunge(
       attackerUnit.instanceId,
-      targetId,
+      visualTargetId,
       attackerUnit.card.domain,
       isRanged,
       () => {
-        setGameState((prev) => executeAttack(prev, attackerUnit.instanceId, targetId));
+        setGameState(resolvedNextState);
       },
       isHeavy
     );
@@ -3528,31 +3653,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       const attackerUnit = getAllBoardUnits(gameState.player).find(
         (u) => u.instanceId === selectedAttackerId
       );
-      const attackerIdToUse = selectedAttackerId;
-      const isRanged = Boolean(
-        attackerUnit &&
-          attackerUnit.row === 'rearguard' &&
-          attackerUnit.keywords.includes('Alcance')
-      );
-      const prevOut = allTargetPreviews[enemyUnit.instanceId];
-      const isHeavy = Boolean(
-        (attackerUnit && attackerUnit.currentAtk >= 5) || prevOut?.targetDies
-      );
-      setSelectedAttackerId(null);
-      setFocusedBoardUnitId(null);
-
-      measureAndTriggerLunge(
-        attackerIdToUse,
-        enemyUnit.instanceId,
-        attackerUnit?.card.domain ?? 'red',
-        isRanged,
-        () => {
-          setGameState((prev) =>
-            executeAttack(prev, attackerIdToUse, enemyUnit.instanceId)
-          );
-        },
-        isHeavy
-      );
+      if (attackerUnit) {
+        handleExecuteUnitAttackOnTarget(attackerUnit, enemyUnit.instanceId);
+      }
       return;
     }
 
@@ -3617,28 +3720,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       const attackerUnit = getAllBoardUnits(gameState.player).find(
         (u) => u.instanceId === selectedAttackerId
       );
-      const attackerIdToUse = selectedAttackerId;
-      const isRanged = Boolean(
-        attackerUnit &&
-          attackerUnit.row === 'rearguard' &&
-          attackerUnit.keywords.includes('Alcance')
-      );
-      const prevOut = allTargetPreviews['ai-sovereign'];
-      const isHeavy = Boolean(
-        (attackerUnit && attackerUnit.currentAtk >= 5) || prevOut?.targetDies
-      );
-      setSelectedAttackerId(null);
-
-      measureAndTriggerLunge(
-        attackerIdToUse,
-        'ai-sovereign',
-        attackerUnit?.card.domain ?? 'red',
-        isRanged,
-        () => {
-          setGameState((prev) => executeAttack(prev, attackerIdToUse, 'ai-sovereign'));
-        },
-        isHeavy
-      );
+      if (attackerUnit) {
+        handleExecuteUnitAttackOnTarget(attackerUnit, 'ai-sovereign');
+      }
       return;
     }
 

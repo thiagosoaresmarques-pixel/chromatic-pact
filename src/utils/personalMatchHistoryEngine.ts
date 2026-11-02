@@ -234,22 +234,25 @@ export function recordPersonalMatchFrame(
   }
 
   const activeSide: 'A' | 'B' = state.activePlayer === 'player' ? 'A' : 'B';
-  const actorSide: 'A' | 'B' | 'SYSTEM' = isGameover
-    ? 'SYSTEM'
-    : newestLog?.actor === 'player'
-    ? 'A'
-    : newestLog?.actor === 'ai'
-    ? 'B'
-    : activeSide;
+  const isLethalCombatAttack = isGameover && newestLog?.category === 'combat';
+  const actorSide: 'A' | 'B' | 'SYSTEM' =
+    isGameover && !isLethalCombatAttack
+      ? 'SYSTEM'
+      : newestLog?.actor === 'player'
+      ? 'A'
+      : newestLog?.actor === 'ai'
+      ? 'B'
+      : activeSide;
 
-  const resolvedKind: ReplayActionKind = isGameover
-    ? 'finish'
-    : session.frames.length === 0
-    ? 'start'
-    : newestLog?.category === 'channel' || rawMessage.includes('canalizou')
-    ? 'channel'
-    : newestLog?.category === 'combat'
-    ? 'attack'
+  const resolvedKind: ReplayActionKind =
+    isGameover && !isLethalCombatAttack
+      ? 'finish'
+      : session.frames.length === 0
+      ? 'start'
+      : newestLog?.category === 'channel' || rawMessage.includes('canalizou')
+      ? 'channel'
+      : newestLog?.category === 'combat'
+      ? 'attack'
     : rawMessage.includes('Expansão de Domínio') ||
       rawMessage.includes('Domínio Simples') ||
       rawMessage.includes('CHOQUE DE DOMÍNIOS')
@@ -299,7 +302,7 @@ export function recordPersonalMatchFrame(
       : null,
     feedbacks:
       state.feedbacks && state.feedbacks.length > 0
-        ? state.feedbacks.slice(0, 3).map((fb) => ({
+        ? state.feedbacks.slice(0, 8).map((fb) => ({
             targetId:
               fb.targetId === 'player-sovereign'
                 ? 'A-sovereign'

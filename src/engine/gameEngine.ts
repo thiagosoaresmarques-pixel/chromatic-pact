@@ -4697,6 +4697,213 @@ export function executeAttack(
   return next;
 }
 
+/**
+ * Identifies the attacking BoardUnit in `prevState[attackerOwner]` that executed an attack
+ * transitioning `prevState -> nextState`.
+ */
+export function findAttackingUnitBetweenStates(
+  prevState: GameState,
+  nextState: GameState,
+  attackerOwner: 'player' | 'ai',
+  explicitAttackerId?: string,
+  cardIdHint?: string
+): BoardUnit | undefined {
+  const prevUnits = getAllBoardUnits(prevState[attackerOwner]).filter((u) => !u.isTrap);
+  if (explicitAttackerId) {
+    const exact = prevUnits.find((u) => u.instanceId === explicitAttackerId);
+    if (exact) return exact;
+  }
+
+  const nextUnits = getAllBoardUnits(nextState[attackerOwner]);
+  const tappedOrFallenCandidates = prevUnits.filter((pu) => {
+    if (pu.hasAttackedThisTurn) return false;
+    const nu = nextUnits.find((x) => x.instanceId === pu.instanceId);
+    return !nu || nu.hasAttackedThisTurn;
+  });
+
+  if (tappedOrFallenCandidates.length === 1) {
+    return tappedOrFallenCandidates[0];
+  }
+
+  if (tappedOrFallenCandidates.length > 1) {
+    if (cardIdHint) {
+      const byCard = tappedOrFallenCandidates.find((pu) => pu.card.id === cardIdHint);
+      if (byCard) return byCard;
+    }
+    const prevTopLogId = prevState.combatLog[0]?.id;
+    const newLogs: CombatLogEntry[] = [];
+    for (const entry of nextState.combatLog) {
+      if (entry.id === prevTopLogId) break;
+      newLogs.push(entry);
+    }
+    for (const cand of tappedOrFallenCandidates) {
+      const dispName =
+        cand.isAscended && cand.card.ascension ? cand.card.ascension.newName : cand.card.name;
+      if (newLogs.some((l) => l.message.includes(`[${dispName}]`))) {
+        return cand;
+      }
+    }
+    return tappedOrFallenCandidates[0];
+  }
+
+  if (cardIdHint) {
+    return (
+      prevUnits.find((pu) => !pu.hasAttackedThisTurn && pu.card.id === cardIdHint) ??
+      prevUnits.find((pu) => pu.card.id === cardIdHint)
+    );
+  }
+
+  return undefined;
+}
+
+/**
+ * Resolves the exact DOM `data-combat-id` (`unit.instanceId` on Vanguard/Rearguard,
+ * an intercepting Rearguard Trap `instanceId`, or `${defenderOwner}-sovereign`)
+ * that physically received or intercepted an attack between `prevState` and `nextState`.
+ *
+ * Guarantees an attacking card NEVER lunges toward the enemy Sovereign when its blow
+ * was actually absorbed by a Vanguard/Rearguard unit or stopped by an Ambush Trap.
+ */
+export function resolveActualAttackVisualTarget(
+  prevState: GameState,
+  nextState: GameState,
+  attackerOwner: 'player' | 'ai',
+  attackerInstanceId?: string,
+  intendedTargetId?: string
+): string {
+  const defenderOwner: 'player' | 'ai' = attackerOwner === 'player' ? 'ai' : 'player';
+  const defenderSovId = `${defenderOwner}-sovereign`;
+  const prevDefenderUnits = getAllBoardUnits(prevState[defenderOwner]);
+  const nextDefenderUnits = getAllBoardUnits(nextState[defenderOwner]);
+
+  const prevTopLogId = prevState.combatLog[0]?.id;
+  const newLogs: CombatLogEntry[] = [];
+  for (const entry of nextState.combatLog) {
+    if (entry.id === prevTopLogId) break;
+    newLogs.push(entry);
+  }
+  const combatLogs =
+    newLogs.length > 0
+      ? newLogs
+      : nextState.combatLog.length > 0
+      ? [nextState.combatLog[0]]
+      : [];
+
+  // 1. Check if an armed Rearguard Trap (Emboscada) triggered AND stopped the attacker before combat contact!
+  const vanishedTrap = prevDefenderUnits.find(
+    (pu) => pu.isTrap && !nextDefenderUnits.some((nu) => nu.instanceId === pu.instanceId)
+  );
+  if (vanishedTrap) {
+    const reachedCombatAfterTrap = combatLogs.some(
+      (l) =>
+        l.category === 'combat' &&
+        (l.message.includes('] enfrentou [') ||
+          l.message.includes('] abateu [') ||
+          l.message.includes('quebrando seu Escudo') ||
+          l.message.includes(`] atacou ${prevState[defenderOwner].name}`))
+    );
+    const nextAttacker = attackerInstanceId
+      ? findUnitOnBoard(nextState, attackerInstanceId)?.unit
+      : undefined;
+    const attackerStopped =
+      !reachedCombatAfterTrap &&
+      (!nextAttacker || nextAttacker.currentHp <= 0 || nextAttacker.isFrozen);
+
+    if (attackerStopped) {
+      return vanishedTrap.instanceId;
+    }
+  }
+
+  // 2. If caller knows the exact intended target (Player click, AI step, or recorded frame targetId), honor it!
+  const nonTrapPrevDefenders = prevDefenderUnits.filter((u) => !u.isTrap);
+  if (intendedTargetId) {
+    if (nonTrapPrevDefenders.some((u) => u.instanceId === intendedTargetId)) {
+      return intendedTargetId;
+    }
+    if (intendedTargetId === defenderSovId) {
+      return defenderSovId;
+    }
+  }
+
+  // 3. Reconstruct true target from legal targets + combat logs + unit state diffs + feedbacks
+  const legalTargets = attackerInstanceId
+    ? getValidAttackTargets(prevState, attackerInstanceId, true)
+    : [];
+  const candidatePool =
+    legalTargets.length > 0
+      ? nonTrapPrevDefenders.filter((u) => legalTargets.includes(u.instanceId))
+      : nonTrapPrevDefenders;
+  const effectiveUnitPool = candidatePool.length > 0 ? candidatePool : nonTrapPrevDefenders;
+
+  const wasUnitAffected = (pu: BoardUnit): boolean => {
+    const nu = nextDefenderUnits.find((x) => x.instanceId === pu.instanceId);
+    if (!nu) return true; // Unit died and went to Crypt
+    if (nu.currentHp < pu.currentHp) return true;
+    if (pu.hasDivineShield && !nu.hasDivineShield) return true;
+    if ((nu.currentArmor ?? 0) < (pu.currentArmor ?? 0)) return true;
+    if (nextState.feedbacks.some((fb) => fb.targetId === pu.instanceId)) return true;
+    return false;
+  };
+
+  // 3a. Check combat log signature written by executeAttack:
+  // Unit combat ALWAYS logs `] enfrentou [Name]`, `] abateu [Name]`, or `] atacou [Name], quebrando seu Escudo Divino`.
+  for (const log of combatLogs) {
+    if (log.category !== 'combat') continue;
+    const unitEngageMatch =
+      log.message.match(/\] (?:enfrentou|abateu) \[([^\]]+)\]/) ??
+      log.message.match(/\] atacou \[([^\]]+)\], quebrando/);
+    if (unitEngageMatch?.[1]) {
+      const targetName = unitEngageMatch[1];
+      const byAffectedAndName = effectiveUnitPool.find((pu) => {
+        const disp =
+          pu.isAscended && pu.card.ascension ? pu.card.ascension.newName : pu.card.name;
+        return disp === targetName && wasUnitAffected(pu);
+      });
+      if (byAffectedAndName) return byAffectedAndName.instanceId;
+
+      const byName = nonTrapPrevDefenders.find((pu) => {
+        const disp =
+          pu.isAscended && pu.card.ascension ? pu.card.ascension.newName : pu.card.name;
+        return disp === targetName;
+      });
+      if (byName) return byName.instanceId;
+    }
+
+    // Direct Sovereign attack logs `[Attacker] atacou SovereignName causando X de dano` (not Atropelar splash)
+    if (
+      !log.message.startsWith('Atropelar de [') &&
+      log.message.includes(`] atacou ${prevState[defenderOwner].name}`)
+    ) {
+      if (legalTargets.length === 0 || legalTargets.includes(defenderSovId)) {
+        return defenderSovId;
+      }
+    }
+  }
+
+  // 3b. Check which legal enemy Vanguard/Rearguard unit took damage, lost shield/armor, died, or received feedback
+  const affectedLegalUnit = effectiveUnitPool.find(wasUnitAffected);
+  if (affectedLegalUnit) {
+    return affectedLegalUnit.instanceId;
+  }
+
+  const anyAffectedDefenderUnit = nonTrapPrevDefenders.find(wasUnitAffected);
+  if (anyAffectedDefenderUnit) {
+    return anyAffectedDefenderUnit.instanceId;
+  }
+
+  // 3c. If Sovereign was NOT even a legal attack target (blocked by Vanguard or Guardião), return the front legal blocker!
+  if (legalTargets.length > 0 && !legalTargets.includes(defenderSovId)) {
+    const firstLegalUnit = nonTrapPrevDefenders.find((u) =>
+      legalTargets.includes(u.instanceId)
+    );
+    if (firstLegalUnit) {
+      return firstLegalUnit.instanceId;
+    }
+  }
+
+  return defenderSovId;
+}
+
 export function endTurn(state: GameState): GameState {
   if (state.phase === 'gameover') {
     return state;

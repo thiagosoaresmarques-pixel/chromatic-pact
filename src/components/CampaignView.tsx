@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { AiSkillTier, CampaignBoss, CardDefinition, Domain } from '../types/game';
 import { CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
-import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { AI_SKILL_TIER_SPECS } from '../data/aiSkillTierSpecs';
 import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import { DOMAIN_META, CardInspectModal } from './CardView';
 import { CustomSavedDeck } from './BattleArena';

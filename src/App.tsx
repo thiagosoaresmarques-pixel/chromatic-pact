@@ -105,26 +105,17 @@ const TournamentsView = React.lazy(() =>
 );
 import type { ActiveTournamentMatchLaunch } from './components/TournamentsView';
 import type { LastRankedDuelSummary } from './components/GlobalLeaderboardView';
-import {
-  buildTournamentSovereignBossEncounter,
+import type {
   ComputedRoundPairing,
-  computeTournamentSnapshot,
-  fetchTournamentCatalogFromCloud,
-  getClaimedTournamentPrizeIds,
-  getTournamentNowMs,
   HumanTournamentEntry,
-  markTournamentPrizeClaimedLocal,
-  publishTournamentDefinitionToCloud,
   SwissTournamentDefinition,
   TournamentPersonalReward,
-  upsertHumanTournamentEntryToCloud,
 } from './utils/tournamentEngine';
 import {
   autoDispatchDiscordTournamentHerald,
   fetchCommunityDiscordConfigFromCloud,
   getCommunityDiscordConfig,
 } from './utils/discordCommunityEngine';
-import { consolidateFinishedSwissTournamentLiveElo } from './utils/sovereignLiveEloEngine';
 import {
   buildPersonalReplaySpectatorContext,
   fetchSharedPersonalReplay,
@@ -756,14 +747,15 @@ export const App: React.FC = () => {
           // ignore
         }
         void (async () => {
-          const catalog = await fetchTournamentCatalogFromCloud();
+          const te = await import('./utils/tournamentEngine');
+          const catalog = await te.fetchTournamentCatalogFromCloud();
           const def = catalog.tournaments.find((t) => t.id === tidParam);
           if (!def) {
             setActiveTab('tournaments');
             return;
           }
           const entries = catalog.entriesByTournament[def.id] ?? [];
-          const snap = computeTournamentSnapshot(def, entries, null);
+          const snap = te.computeTournamentSnapshot(def, entries, null);
           const pairing = (snap.roundsPairings[roundNum] ?? []).find(
             (p) => p.tableNumber === tableNum
           );
@@ -1143,7 +1135,8 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
-    const boss = await buildTournamentSovereignBossEncounter(sovEntry, launch.roundNumber);
+    const te = await import('./utils/tournamentEngine');
+    const boss = await te.buildTournamentSovereignBossEncounter(sovEntry, launch.roundNumber);
     setActiveTournamentSpectate(null);
     setActiveOnlineMatch(null);
     setActiveProblem(null);
@@ -1221,16 +1214,26 @@ export const App: React.FC = () => {
   const claimedTournamentKeysSessionRef = useRef<Set<string>>(new Set());
 
   const deliverPersonalTournamentReward = useCallback(
-    (reward: TournamentPersonalReward, entry: HumanTournamentEntry): boolean => {
+    (
+      reward: TournamentPersonalReward,
+      entry: HumanTournamentEntry,
+      te?: typeof import('./utils/tournamentEngine')
+    ): boolean => {
       if (isGuest) return false;
       if (claimedTournamentKeysSessionRef.current.has(reward.claimKey)) return false;
-      if (getClaimedTournamentPrizeIds().has(reward.claimKey) || entry.prizeClaimed) {
+      if (
+        reward.alreadyClaimed ||
+        entry.prizeClaimed ||
+        (te && te.getClaimedTournamentPrizeIds().has(reward.claimKey))
+      ) {
         claimedTournamentKeysSessionRef.current.add(reward.claimKey);
         return false;
       }
 
       claimedTournamentKeysSessionRef.current.add(reward.claimKey);
-      markTournamentPrizeClaimedLocal(reward.claimKey);
+      if (te) {
+        te.markTournamentPrizeClaimedLocal(reward.claimKey);
+      }
 
       const prizeCard = reward.cardId ? CARDS_BY_ID[reward.cardId] : undefined;
       const bonusGold = reward.goldBonus ?? 0;
@@ -1255,13 +1258,21 @@ export const App: React.FC = () => {
         };
       });
 
-      const claimedEntry: HumanTournamentEntry = {
-        ...entry,
-        prizeClaimed: true,
-        claimedCardId: prizeCard?.id,
-        lastHeartbeatAtMs: getTournamentNowMs(),
+      const persistClaim = (mod: typeof import('./utils/tournamentEngine')) => {
+        mod.markTournamentPrizeClaimedLocal(reward.claimKey);
+        const claimedEntry: HumanTournamentEntry = {
+          ...entry,
+          prizeClaimed: true,
+          claimedCardId: prizeCard?.id,
+          lastHeartbeatAtMs: mod.getTournamentNowMs(),
+        };
+        void mod.upsertHumanTournamentEntryToCloud(claimedEntry);
       };
-      void upsertHumanTournamentEntryToCloud(claimedEntry);
+      if (te) {
+        persistClaim(te);
+      } else {
+        void import('./utils/tournamentEngine').then(persistClaim);
+      }
 
       const parts: string[] = [];
       if (reward.cashBrl && reward.pixProtocolCode) {
@@ -1300,12 +1311,14 @@ export const App: React.FC = () => {
     let cancelled = false;
 
     const superviseTournament = async () => {
-      const catalog = await fetchTournamentCatalogFromCloud();
+      const te = await import('./utils/tournamentEngine');
+      if (cancelled) return;
+      const catalog = await te.fetchTournamentCatalogFromCloud();
       if (cancelled) return;
 
       for (const def of catalog.tournaments) {
         const entries = catalog.entriesByTournament[def.id] ?? [];
-        const snap = computeTournamentSnapshot(
+        const snap = te.computeTournamentSnapshot(
           def,
           entries,
           isGuest ? null : currentUser.username
@@ -1336,7 +1349,7 @@ export const App: React.FC = () => {
         // 2. Automatic Finalization & Escalated Personal Prize Delivery at Tournament End
         if (snap.phase === 'finished') {
           if (snap.finalizedAward && !def.finalizedAward) {
-            void publishTournamentDefinitionToCloud({
+            void te.publishTournamentDefinitionToCloud({
               ...def,
               finalizedAward: snap.finalizedAward,
             });
@@ -1348,7 +1361,7 @@ export const App: React.FC = () => {
             !snap.myPersonalReward.alreadyClaimed &&
             snap.myEntry
           ) {
-            deliverPersonalTournamentReward(snap.myPersonalReward, snap.myEntry);
+            deliverPersonalTournamentReward(snap.myPersonalReward, snap.myEntry, te);
           }
 
           if (snap.nowMs <= def.endsAtMs + 48 * 3600_000) {
@@ -1361,7 +1374,9 @@ export const App: React.FC = () => {
                 humanEloB: p.playerB?.kind === 'human' ? p.playerB.eloRating : null,
                 result: p.result,
               }));
-            void consolidateFinishedSwissTournamentLiveElo(def.id, flatPairings);
+            void import('./utils/sovereignLiveEloEngine').then((eloMod) =>
+              eloMod.consolidateFinishedSwissTournamentLiveElo(def.id, flatPairings)
+            );
           }
         }
 
@@ -1391,13 +1406,16 @@ export const App: React.FC = () => {
       }
     };
 
-    void superviseTournament();
+    const initTimer = window.setTimeout(() => {
+      void superviseTournament();
+    }, 1500);
     const id = window.setInterval(() => {
       void superviseTournament();
     }, 15000);
 
     return () => {
       cancelled = true;
+      window.clearTimeout(initTimer);
       window.clearInterval(id);
     };
   }, [isGuest, currentUser.username, pushNotification, deliverPersonalTournamentReward]);
@@ -3254,7 +3272,10 @@ export const App: React.FC = () => {
                     },
                     onTournamentLiveStateUpdate: (liveGameState, turnTimeLeftSec) => {
                       const ctx = activeTournamentMatch;
-                      void import('./utils/tournamentSpectatorEngine').then((m) =>
+                      void Promise.all([
+                        import('./utils/tournamentSpectatorEngine'),
+                        import('./utils/tournamentEngine'),
+                      ]).then(([m, te]) =>
                         m.recordHumanTournamentMatchState({
                           tournament: ctx.tournament,
                           roundNumber: ctx.roundNumber,
@@ -3266,31 +3287,34 @@ export const App: React.FC = () => {
                           localPerspectiveRole: 'player_is_me',
                           state: liveGameState,
                           turnTimeLeftSec,
-                          nowMs: getTournamentNowMs(),
+                          nowMs: te.getTournamentNowMs(),
                         })
                       );
                     },
                     onTournamentMatchResult: ({ score, hpDiff, turns, reason }) => {
                       const ctx = activeTournamentMatch;
-                      const updatedEntry: HumanTournamentEntry = {
-                        ...ctx.entry,
-                        lastHeartbeatAtMs: getTournamentNowMs(),
-                        resultsByRound: {
-                          ...(ctx.entry.resultsByRound ?? {}),
-                          [ctx.roundNumber]: {
-                            round: ctx.roundNumber,
-                            opponentId: ctx.opponentStanding.participantId,
-                            opponentName: ctx.opponentStanding.displayName,
-                            opponentKind: ctx.opponentStanding.kind,
-                            score,
-                            hpDiff,
-                            turns,
-                            finishedAtMs: getTournamentNowMs(),
-                            reason,
+                      void import('./utils/tournamentEngine').then((te) => {
+                        const nowMs = te.getTournamentNowMs();
+                        const updatedEntry: HumanTournamentEntry = {
+                          ...ctx.entry,
+                          lastHeartbeatAtMs: nowMs,
+                          resultsByRound: {
+                            ...(ctx.entry.resultsByRound ?? {}),
+                            [ctx.roundNumber]: {
+                              round: ctx.roundNumber,
+                              opponentId: ctx.opponentStanding.participantId,
+                              opponentName: ctx.opponentStanding.displayName,
+                              opponentKind: ctx.opponentStanding.kind,
+                              score,
+                              hpDiff,
+                              turns,
+                              finishedAtMs: nowMs,
+                              reason,
+                            },
                           },
-                        },
-                      };
-                      void upsertHumanTournamentEntryToCloud(updatedEntry);
+                        };
+                        void te.upsertHumanTournamentEntryToCloud(updatedEntry);
+                      });
 
                       if (
                         !isGuest &&

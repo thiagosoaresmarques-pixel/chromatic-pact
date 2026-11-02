@@ -9567,7 +9567,7 @@ html, body, #root {
 .tabletop-wood-base-img {
   position: absolute;
   inset: 0;
-  background-image: url('/tabletops/tabletop_wood_default.jpg');
+  background-image: url('/tabletops/tabletop_wood_default.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -9638,42 +9638,42 @@ html, body, #root {
 .tabletop-domain-clash-half.domain-red,
 .tabletop-domain-expire-layer.domain-red,
 .domain-shatter-shard.domain-red {
-  background-image: url('/tabletops/tabletop_domain_red.jpg');
+  background-image: url('/tabletops/tabletop_domain_red.webp');
 }
 
 .tabletop-domain-takeover-img.domain-purple,
 .tabletop-domain-clash-half.domain-purple,
 .tabletop-domain-expire-layer.domain-purple,
 .domain-shatter-shard.domain-purple {
-  background-image: url('/tabletops/tabletop_domain_purple.jpg');
+  background-image: url('/tabletops/tabletop_domain_purple.webp');
 }
 
 .tabletop-domain-takeover-img.domain-blue,
 .tabletop-domain-clash-half.domain-blue,
 .tabletop-domain-expire-layer.domain-blue,
 .domain-shatter-shard.domain-blue {
-  background-image: url('/tabletops/tabletop_domain_blue.jpg');
+  background-image: url('/tabletops/tabletop_domain_blue.webp');
 }
 
 .tabletop-domain-takeover-img.domain-green,
 .tabletop-domain-clash-half.domain-green,
 .tabletop-domain-expire-layer.domain-green,
 .domain-shatter-shard.domain-green {
-  background-image: url('/tabletops/tabletop_domain_green.jpg');
+  background-image: url('/tabletops/tabletop_domain_green.webp');
 }
 
 .tabletop-domain-takeover-img.domain-gold,
 .tabletop-domain-clash-half.domain-gold,
 .tabletop-domain-expire-layer.domain-gold,
 .domain-shatter-shard.domain-gold {
-  background-image: url('/tabletops/tabletop_domain_gold.jpg');
+  background-image: url('/tabletops/tabletop_domain_gold.webp');
 }
 
 .tabletop-domain-takeover-img.domain-neutral,
 .tabletop-domain-clash-half.domain-neutral,
 .tabletop-domain-expire-layer.domain-neutral,
 .domain-shatter-shard.domain-neutral {
-  background-image: url('/tabletops/tabletop_domain_neutral.jpg');
+  background-image: url('/tabletops/tabletop_domain_neutral.webp');
 }
 
 .tabletop-domain-takeover-img.domain-neutral::after {

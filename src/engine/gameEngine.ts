@@ -2586,19 +2586,17 @@ function createTokenDefinition(domain: Domain, atk: number, hp: number): CardDef
   };
 
   const tokenImages: Record<Domain, string> = {
-    red: '/assets/cards/red_39_elemental_magma.png',
-    blue: '/assets/cards/blue_39_elemental_gelo.png',
-    purple: '/assets/cards/purple_38_espectro_faminto.png',
-    green: '/assets/cards/green_37_lobo_atroz.png',
-    gold: '/assets/cards/gold_05_automato_guardiao.png',
-    neutral: '/assets/cards/neutral_31_automato_explorado.png',
+    red: '/assets/cards/red_39_elemental_magma.webp',
+    blue: '/assets/cards/blue_39_elemental_gelo.webp',
+    purple: '/assets/cards/purple_38_espectro_faminto.webp',
+    green: '/assets/cards/green_37_lobo_atroz.webp',
+    gold: '/assets/cards/gold_05_automato_guardiao.webp',
+    neutral: '/assets/cards/neutral_31_automato_explorado.webp',
   };
 
   return {
     id: `token_${domain}_${atk}_${hp}`,
     name: tokenNames[domain] ?? 'Espírito Invocado',
-    originalInspiration: 'Token Invocado',
-    ipSafeNotes: 'Unidade gerada por efeito mágico',
     domain,
     type: 'creature',
     subtype: 'Invocação',
@@ -2613,8 +2611,7 @@ function createTokenDefinition(domain: Domain, atk: number, hp: number): CardDef
     effects: [],
     description: 'Unidade invocada em batalha.',
     flavorText: 'Moldado a partir da pura essência elemental.',
-    imagePath: tokenImages[domain] ?? '/assets/cards/neutral_31_automato_explorado.png',
-    aiArtPrompt: 'Elemental summoned token creature',
+    imagePath: tokenImages[domain] ?? '/assets/cards/neutral_31_automato_explorado.webp',
   };
 }
 

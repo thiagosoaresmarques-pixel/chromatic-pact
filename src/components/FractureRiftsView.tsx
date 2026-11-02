@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS } from '../data/decks';
-import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { AI_SKILL_TIER_SPECS } from '../data/aiSkillTierSpecs';
 import {
   FRACTURE_RIFTS,
   FractureRiftDef,

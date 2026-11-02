@@ -10,7 +10,7 @@ import { VaeloriaWorldMap } from './VaeloriaWorldMap';
 import { resolvePrimaryBossDomain, resolveStageMapNode } from '../data/vaeloriaMapData';
 import { clearExpeditionVisitedLandmarks } from '../data/vaeloriaOverworldEvents';
 import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
-import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { AI_SKILL_TIER_SPECS } from '../data/aiSkillTierSpecs';
 import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import { TacticalGuideView } from './TacticalGuideView';
 

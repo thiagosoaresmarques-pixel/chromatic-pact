@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { Suspense, useState, useEffect, useMemo, useRef } from 'react';
 import {
   AiSkillTier,
   BoardUnit,
@@ -97,17 +97,19 @@ import {
   formatCardFaceDescription,
   KEYWORD_TOOLTIPS,
 } from './CardView';
-import { TacticalGuideView } from './TacticalGuideView';
-import { TutorialCodexView } from './TutorialCodexView';
+const TacticalGuideView = React.lazy(() =>
+  import('./TacticalGuideView').then((m) => ({ default: m.TacticalGuideView }))
+);
+const TutorialCodexView = React.lazy(() =>
+  import('./TutorialCodexView').then((m) => ({ default: m.TutorialCodexView }))
+);
 import {
   buildProblemInitialGameState,
-  getNextPlayableProblem,
-  markProblemAsSolved,
   PROBLEM_DIFFICULTY_META,
   recordProblemAttemptFailed,
   recordProblemHintUsed,
   TacticalProblem,
-} from '../data/problems';
+} from '../data/problemsRuntime';
 import {
   recordDailyProblemAttemptResult,
   recordDailyQuestEvent,
@@ -585,6 +587,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       PREBUILT_DECKS[1]?.id ??
       'deck_blue_tempest'
   );
+
+  const [lazyProblemsModule, setLazyProblemsModule] = useState<
+    typeof import('../data/problems') | null
+  >(null);
+  useEffect(() => {
+    if (!tacticalProblem || lazyProblemsModule) return;
+    import('../data/problems')
+      .then((m) => setLazyProblemsModule(m))
+      .catch(() => undefined);
+  }, [tacticalProblem, lazyProblemsModule]);
 
   const [gameState, setGameState] = useState<GameState>(() => {
     if (tournamentSpectatorContext) {
@@ -3095,19 +3107,32 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       } else if (gameState.winner === 'player') {
         playSfx('victory');
         if (tacticalProblem) {
-          const solvedRes = markProblemAsSolved(tacticalProblem.id);
-          if (solvedRes.isFirstTime && onRewardGold) {
-            onRewardGold(tacticalProblem.goldReward, `Resolução do ${tacticalProblem.code}: ${tacticalProblem.title}`);
-          }
-          const dailyRes = recordDailyProblemAttemptResult(tacticalProblem.id, 'solved');
-          if (solvedRes.entry.solvedOnFirstTry) {
-            recordDailyQuestEvent('problem_solved_clean', 1);
-          }
-          if (dailyRes.earnedDailyBonusGold > 0 && onRewardGold) {
-            onRewardGold(
-              dailyRes.earnedDailyBonusGold,
-              `🎯 Bônus do Problema do Dia (${tacticalProblem.code} de 1ª sem Dica)`
-            );
+          const handleSolved = (mod: typeof import('../data/problems')) => {
+            const solvedRes = mod.markProblemAsSolved(tacticalProblem.id);
+            if (solvedRes.isFirstTime && onRewardGold) {
+              onRewardGold(
+                tacticalProblem.goldReward,
+                `Resolução do ${tacticalProblem.code}: ${tacticalProblem.title}`
+              );
+            }
+            const dailyRes = recordDailyProblemAttemptResult(tacticalProblem.id, 'solved');
+            if (solvedRes.entry.solvedOnFirstTry) {
+              recordDailyQuestEvent('problem_solved_clean', 1);
+            }
+            if (dailyRes.earnedDailyBonusGold > 0 && onRewardGold) {
+              onRewardGold(
+                dailyRes.earnedDailyBonusGold,
+                `🎯 Bônus do Problema do Dia (${tacticalProblem.code} de 1ª sem Dica)`
+              );
+            }
+          };
+          if (lazyProblemsModule) {
+            handleSolved(lazyProblemsModule);
+          } else {
+            import('../data/problems').then((m) => {
+              setLazyProblemsModule(m);
+              handleSolved(m);
+            });
           }
         } else if (onlineMatch) {
           recordDailyQuestEvent('match_won', 1);
@@ -4260,8 +4285,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               >
                 🔄 Tentar Novamente (Reiniciar Turno)
               </button>
-              {onSelectProblem && (() => {
-                const { nextProblem } = getNextPlayableProblem(tacticalProblem.id);
+              {onSelectProblem && lazyProblemsModule && (() => {
+                const { nextProblem } = lazyProblemsModule.getNextPlayableProblem(tacticalProblem.id);
                 if (!nextProblem || nextProblem.id === tacticalProblem.id) return null;
                 return (
                   <button
@@ -8961,9 +8986,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             )}
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-              {tacticalProblem && onSelectProblem && (() => {
+              {tacticalProblem && onSelectProblem && lazyProblemsModule && (() => {
                 const { nextProblem, isCyclingUnsolvedInTier, pendingInCurrentTier } =
-                  getNextPlayableProblem(tacticalProblem.id);
+                  lazyProblemsModule.getNextPlayableProblem(tacticalProblem.id);
                 if (!nextProblem) return null;
                 return (
                   <button
@@ -9493,34 +9518,38 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
       {/* FULL INTERACTIVE TUTORIAL & CODEX MODAL */}
       {showQuickRules && (
-        <TutorialCodexView
-          isModal={true}
-          onClose={() => setShowQuickRules(false)}
-          onStartPracticeDuel={() => {
-            setShowQuickRules(false);
-            setArenaTutorialStep(0);
-          }}
-          onInspectCard={setInspectCard}
-        />
+        <Suspense fallback={null}>
+          <TutorialCodexView
+            isModal={true}
+            onClose={() => setShowQuickRules(false)}
+            onStartPracticeDuel={() => {
+              setShowQuickRules(false);
+              setArenaTutorialStep(0);
+            }}
+            onInspectCard={setInspectCard}
+          />
+        </Suspense>
       )}
 
       {/* REAL-TIME TACTICAL ADVISOR OVERLAY MODAL */}
       {showTacticalAdvisor && (
-        <TacticalGuideView
-          customDecks={customDecks}
-          initialPlayerDeckId={selectedPlayerDeckId}
-          initialOpponentDeckId={campaignBoss ? campaignBoss.deckId : selectedAiDeckId}
-          isModal={true}
-          onClose={() => setShowTacticalAdvisor(false)}
-          onLaunchDuel={(pId, aId, tier) => {
-            const nextTier = tier ?? selectedAiSkillTier;
-            setShowTacticalAdvisor(false);
-            setSelectedPlayerDeckId(pId);
-            setSelectedAiDeckId(aId);
-            setSelectedAiSkillTier(nextTier);
-            startNewQuickMatch(pId, aId, nextTier);
-          }}
-        />
+        <Suspense fallback={null}>
+          <TacticalGuideView
+            customDecks={customDecks}
+            initialPlayerDeckId={selectedPlayerDeckId}
+            initialOpponentDeckId={campaignBoss ? campaignBoss.deckId : selectedAiDeckId}
+            isModal={true}
+            onClose={() => setShowTacticalAdvisor(false)}
+            onLaunchDuel={(pId, aId, tier) => {
+              const nextTier = tier ?? selectedAiSkillTier;
+              setShowTacticalAdvisor(false);
+              setSelectedPlayerDeckId(pId);
+              setSelectedAiDeckId(aId);
+              setSelectedAiSkillTier(nextTier);
+              startNewQuickMatch(pId, aId, nextTier);
+            }}
+          />
+        </Suspense>
       )}
 
       {/* CARD INSPECT MODAL */}

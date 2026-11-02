@@ -1,7 +1,7 @@
 import { AiSkillTier, CardDefinition, Domain, DomainExpansionState, GameState, PlayerState, PrebuiltDeck } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { CAMPAIGN_BOSSES, PREBUILT_DECKS } from '../data/decks';
-import { LEGENDARY_CREATURE_BIOGRAPHIES } from '../data/legendaryCreaturesLore';
+import { LEGENDARY_CREATURE_TITLES } from '../data/legendaryCreatureTitles';
 import type { UnifiedFormatKind } from '../data/aiUnifiedTournamentData';
 import {
   calculateFideRankedEloDelta,
@@ -9,10 +9,6 @@ import {
   INITIAL_PLAYER_ELO,
 } from '../data/eloDivisions';
 import type { SovereignAiLeaderboardEntry } from '../data/sovereignEloLadderData';
-import {
-  fetchHydratedLiveSovereignRoster,
-  recordHumanVsSovereignLiveMatch,
-} from './sovereignLiveEloEngine';
 
 export const VICTORY_GOLD_REWARD = 10;
 export const STARTER_GOLD = 160;
@@ -455,8 +451,8 @@ if (typeof window !== 'undefined') {
  * Returns the canonical Honorific Title bound to the chosen Creature / Legendary Avatar.
  */
 export function getAvatarHonorificTitle(cardId: string): string {
-  const bio = LEGENDARY_CREATURE_BIOGRAPHIES[cardId];
-  if (bio?.properTitle) return bio.properTitle;
+  const properTitle = LEGENDARY_CREATURE_TITLES[cardId];
+  if (properTitle) return properTitle;
   const card = CARDS_BY_ID[cardId];
   if (card?.name) return card.name;
   return 'Valkyra, Imperatriz Pentacromática';
@@ -468,7 +464,7 @@ export function getAvatarHonorificTitle(cardId: string): string {
 export function getSelectableAvatarCards(mode: 'legendary' | 'all_creatures' = 'legendary'): CardDefinition[] {
   if (mode === 'legendary') {
     return ALL_CARDS.filter(
-      (c) => (c.rarity === 'legendary' || Boolean(LEGENDARY_CREATURE_BIOGRAPHIES[c.id])) && Boolean(c.imagePath)
+      (c) => (c.rarity === 'legendary' || Boolean(LEGENDARY_CREATURE_TITLES[c.id])) && Boolean(c.imagePath)
     );
   }
   return ALL_CARDS.filter((c) => c.type === 'creature' && Boolean(c.imagePath));
@@ -2406,6 +2402,7 @@ export async function fetchUnifiedPlatformLeaderboard(
     });
   }
 
+  const { fetchHydratedLiveSovereignRoster } = await import('./sovereignLiveEloEngine');
   const liveSovereigns = await fetchHydratedLiveSovereignRoster();
   const aiSource = includeCommanders
     ? liveSovereigns.roster
@@ -2552,10 +2549,12 @@ export function recordRankedSovereignDuelResult(
   setActiveTabUserProfile(updatedProfile);
   if (!isUnregisteredProfile(updatedProfile)) {
     void adminSaveCloudProfile(updatedProfile);
-    void recordHumanVsSovereignLiveMatch(
-      opponentEntry.sovereignId,
-      didWin,
-      previousElo
+    void import('./sovereignLiveEloEngine').then((m) =>
+      m.recordHumanVsSovereignLiveMatch(
+        opponentEntry.sovereignId,
+        didWin,
+        previousElo
+      )
     );
   }
 

@@ -1,9 +1,8 @@
 import {
   getSolvedProblemIds,
   isProblemTierUnlocked,
-  TACTICAL_PROBLEMS,
-  TacticalProblem,
-} from '../data/problems';
+  PROBLEM_ROSTER_LITE,
+} from '../data/problemsRuntime';
 
 export type DailyQuestEventType =
   | 'problem_solved'
@@ -158,10 +157,10 @@ function hashDateSeed(dateKey: string, salt: string): number {
   return Math.abs(h);
 }
 
-function pickDailyProblemForToday(dateKey: string): TacticalProblem {
+function pickDailyProblemIdForToday(dateKey: string): string {
   const solvedIds = getSolvedProblemIds();
   const solvedSet = new Set(solvedIds);
-  const unlockedProblems = TACTICAL_PROBLEMS.filter((p) =>
+  const unlockedProblems = PROBLEM_ROSTER_LITE.filter((p) =>
     isProblemTierUnlocked(p.difficulty, solvedIds)
   );
   const unsolvedUnlocked = unlockedProblems.filter((p) => !solvedSet.has(p.id));
@@ -170,13 +169,13 @@ function pickDailyProblemForToday(dateKey: string): TacticalProblem {
       ? unsolvedUnlocked
       : unlockedProblems.length > 0
         ? unlockedProblems
-        : TACTICAL_PROBLEMS;
+        : PROBLEM_ROSTER_LITE;
   const idx = hashDateSeed(dateKey, 'daily_problem') % pool.length;
-  return pool[idx] ?? TACTICAL_PROBLEMS[0];
+  return (pool[idx] ?? PROBLEM_ROSTER_LITE[0])?.id ?? 'prob_01_forja_impeto';
 }
 
 function createInitialDailyState(dateKey: string): DailyStateData {
-  const dailyProb = pickDailyProblemForToday(dateKey);
+  const dailyProblemId = pickDailyProblemIdForToday(dateKey);
   const q1 =
     QUEST_POOL_PROBLEMS[hashDateSeed(dateKey, 'q_prob') % QUEST_POOL_PROBLEMS.length];
   const q2 =
@@ -187,7 +186,7 @@ function createInitialDailyState(dateKey: string): DailyStateData {
   const templates = [q1, q2, q3];
   return {
     dateKey,
-    dailyProblemId: dailyProb.id,
+    dailyProblemId,
     dailyProblemFailedToday: false,
     dailyProblemHintUsedToday: false,
     dailyProblemSolvedToday: false,
@@ -210,10 +209,9 @@ export function getDailyState(): DailyStateData {
     if (raw) {
       const parsed: DailyStateData = JSON.parse(raw);
       if (parsed && parsed.dateKey === today && Array.isArray(parsed.quests)) {
-        // Garante que o problema do dia existe na lista de 100 problemas
-        const exists = TACTICAL_PROBLEMS.some((p) => p.id === parsed.dailyProblemId);
+        const exists = PROBLEM_ROSTER_LITE.some((p) => p.id === parsed.dailyProblemId);
         if (!exists) {
-          parsed.dailyProblemId = pickDailyProblemForToday(today).id;
+          parsed.dailyProblemId = pickDailyProblemIdForToday(today);
         }
         return parsed;
       }

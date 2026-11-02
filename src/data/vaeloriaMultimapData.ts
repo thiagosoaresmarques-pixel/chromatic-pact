@@ -149,7 +149,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Santuário da Árvore-Mãe, Delta de Jade & Península das Presas',
     icon: '🌿',
     accentColor: '#10b981',
-    imagePath: '/assets/map/vaeloria_region_veridia.jpg',
+    imagePath: '/assets/map/vaeloria_region_veridia.webp',
     worldBounds: { x: 28, y: 61, w: 45, h: 33 },
     worldCenter: { x: 50.5, y: 74.5 },
     portals: [
@@ -241,7 +241,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Catedral de Obsidiana, Fenda Abissal & Costa do Ossário',
     icon: '💀',
     accentColor: '#a855f7',
-    imagePath: '/assets/map/vaeloria_region_eclipse.jpg',
+    imagePath: '/assets/map/vaeloria_region_eclipse.webp',
     worldBounds: { x: 14, y: 31, w: 26, h: 42 },
     worldCenter: { x: 27, y: 51 },
     portals: [
@@ -344,7 +344,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Torre dos Cinco Selos, Monólitos Prismáticos & Anel do Pacto',
     icon: '☸',
     accentColor: '#cbd5e1',
-    imagePath: '/assets/map/vaeloria_region_axial.jpg',
+    imagePath: '/assets/map/vaeloria_region_axial.webp',
     worldBounds: { x: 38.5, y: 38.5, w: 23, h: 14.5 },
     worldCenter: { x: 50, y: 45.5 },
     portals: [
@@ -436,7 +436,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Grande Domo Solar, Relicário Eterno & Falésias dos Espelhos',
     icon: '☀️',
     accentColor: '#eab308',
-    imagePath: '/assets/map/vaeloria_region_solaria.jpg',
+    imagePath: '/assets/map/vaeloria_region_solaria.webp',
     worldBounds: { x: 62, y: 29, w: 28, h: 37 },
     worldCenter: { x: 74, y: 45 },
     portals: [
@@ -550,7 +550,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'A Grande Bigorna Partida, Caldeiras de Magma & Ninho das Armadas',
     icon: '🔥',
     accentColor: '#ef4444',
-    imagePath: '/assets/map/vaeloria_region_pyros.jpg',
+    imagePath: '/assets/map/vaeloria_region_pyros.webp',
     worldBounds: { x: 35, y: 17, w: 32, h: 22 },
     worldCenter: { x: 51, y: 26 },
     portals: [
@@ -653,7 +653,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Pináculo Polar de Chronos, Agulhas de Safira & Fossa Estelar',
     icon: '❄️',
     accentColor: '#38bdf8',
-    imagePath: '/assets/map/vaeloria_region_vortex.jpg',
+    imagePath: '/assets/map/vaeloria_region_vortex.webp',
     worldBounds: { x: 37, y: 4, w: 41.5, h: 20 },
     worldCenter: { x: 50, y: 10.5 },
     portals: [
@@ -761,7 +761,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Bigorna Abissal, Cataratas de Escória & Crisol de Basalto',
     icon: '⚒️',
     accentColor: '#f97316',
-    imagePath: '/assets/map/vaeloria_frontier_underforge.jpg',
+    imagePath: '/assets/map/vaeloria_frontier_underforge.webp',
     worldBounds: { x: 45.5, y: 30.2, w: 12.2, h: 7.0 },
     worldCenter: { x: 51.5, y: 33.8 },
     portals: [
@@ -832,7 +832,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Turbilhão de Chronos, Faróis de Latão & Recifes Estelares',
     icon: '🌌',
     accentColor: '#06b6d4',
-    imagePath: '/assets/map/vaeloria_frontier_astral_isles.jpg',
+    imagePath: '/assets/map/vaeloria_frontier_astral_isles.webp',
     worldBounds: { x: 26, y: 5, w: 13, h: 17 },
     worldCenter: { x: 31.0, y: 15.8 },
     portals: [
@@ -925,7 +925,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Basílica Afogada, Arcos de Leviatã & Porto de Fogo-Fátuo',
     icon: '🦑',
     accentColor: '#c084fc',
-    imagePath: '/assets/map/vaeloria_frontier_sunken_abyss.jpg',
+    imagePath: '/assets/map/vaeloria_frontier_sunken_abyss.webp',
     worldBounds: { x: 12.0, y: 34.5, w: 9.5, h: 31.5 },
     worldCenter: { x: 18.2, y: 53.2 },
     portals: [
@@ -1007,7 +1007,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Lago de Âmbar Vivo, Fortaleza de Cipó-Ferro & Bosques Bioluminescentes',
     icon: '🍄',
     accentColor: '#34d399',
-    imagePath: '/assets/map/vaeloria_frontier_deep_roots.jpg',
+    imagePath: '/assets/map/vaeloria_frontier_deep_roots.webp',
     worldBounds: { x: 42.5, y: 81.5, w: 16.0, h: 12.5 },
     worldCenter: { x: 49.5, y: 84 },
     portals: [
@@ -1078,7 +1078,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Catedral dos Espelhos, Ilhas Flutuantes & Docas das Armadas',
     icon: '🌤️',
     accentColor: '#facc15',
-    imagePath: '/assets/map/vaeloria_frontier_sky_bastions.jpg',
+    imagePath: '/assets/map/vaeloria_frontier_sky_bastions.webp',
     worldBounds: { x: 81.5, y: 37.0, w: 8.0, h: 17.0 },
     worldCenter: { x: 84.8, y: 41.5 },
     portals: [
@@ -1160,7 +1160,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Núcleo Pentacromático, Monólitos Partidos & Fenda Primordial',
     icon: '💎',
     accentColor: '#cbd5e1',
-    imagePath: '/assets/map/vaeloria_frontier_prismatic_crater.jpg',
+    imagePath: '/assets/map/vaeloria_frontier_prismatic_crater.webp',
     worldBounds: { x: 40.2, y: 53.0, w: 19.6, h: 6.4 },
     worldCenter: { x: 50, y: 56.2 },
     portals: [
@@ -1234,7 +1234,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Vórtice Bioluminescente, Faróis-Fortaleza, Ossadas de Leviatã & Rotas de Comboio',
     icon: '⚓',
     accentColor: '#22d3ee',
-    imagePath: '/assets/map/vaeloria_corridor_sea_storms.jpg',
+    imagePath: '/assets/map/vaeloria_corridor_sea_storms.webp',
     worldBounds: { x: 65, y: 56, w: 20, h: 14 },
     worldCenter: { x: 75, y: 63 },
     portals: [
@@ -1370,7 +1370,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Viadutos Suspensos, Espirais de Ley Eólica, Poleiros de Dragões & Relés Celestes',
     icon: '🐉',
     accentColor: '#fde047',
-    imagePath: '/assets/map/vaeloria_corridor_skyway.jpg',
+    imagePath: '/assets/map/vaeloria_corridor_skyway.webp',
     worldBounds: { x: 58, y: 24, w: 20, h: 14 },
     worldCenter: { x: 68.5, y: 31.5 },
     portals: [
@@ -1478,7 +1478,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Anéis Suspensos da Árvore-Mãe, Porto de Raízes, Círculo Druídico & Arquivo de Âmbar',
     icon: '🏰',
     accentColor: '#10b981',
-    imagePath: '/assets/map/vaeloria_capital_veridia.jpg',
+    imagePath: '/assets/map/vaeloria_capital_veridia.webp',
     worldBounds: { x: 46.5, y: 71, w: 8, h: 7 },
     worldCenter: { x: 50.5, y: 72.5 },
     portals: [
@@ -1538,7 +1538,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Grande Astrolábio de Chronos, Agulhas Refratoras, Fundição Relojoeira & Eclusas Polares',
     icon: '🏰',
     accentColor: '#38bdf8',
-    imagePath: '/assets/map/vaeloria_capital_vortex.jpg',
+    imagePath: '/assets/map/vaeloria_capital_vortex.webp',
     worldBounds: { x: 46.2, y: 5, w: 8, h: 6 },
     worldCenter: { x: 50.2, y: 7.8 },
     portals: [
@@ -1598,7 +1598,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Catedral do Sol Invicto, Matriz de Espelhos Heliostáticos, Docas Celestes & Sete Terraços',
     icon: '🏰',
     accentColor: '#eab308',
-    imagePath: '/assets/map/vaeloria_capital_solaria.jpg',
+    imagePath: '/assets/map/vaeloria_capital_solaria.webp',
     worldBounds: { x: 69.5, y: 39, w: 8, h: 7 },
     worldCenter: { x: 73.5, y: 42.5 },
     portals: [
@@ -1658,7 +1658,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Alta Catedral de Obsidiana, Criptas de Marfim, Aqueduto Carmesim & Cais dos Barqueiros',
     icon: '🏰',
     accentColor: '#a855f7',
-    imagePath: '/assets/map/vaeloria_capital_eclipse.jpg',
+    imagePath: '/assets/map/vaeloria_capital_eclipse.webp',
     worldBounds: { x: 25.4, y: 46.8, w: 8, h: 7 },
     worldCenter: { x: 29.4, y: 50.8 },
     portals: [
@@ -1718,7 +1718,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Grande Bigorna Real, Comportas de Lava, Fundições de Guerra & Poleiros de Wyverns',
     icon: '🏰',
     accentColor: '#ef4444',
-    imagePath: '/assets/map/vaeloria_capital_pyros.jpg',
+    imagePath: '/assets/map/vaeloria_capital_pyros.webp',
     worldBounds: { x: 47, y: 19.5, w: 8, h: 6.5 },
     worldCenter: { x: 51, y: 22.5 },
     portals: [
@@ -1778,7 +1778,7 @@ export const VAELORIA_REGIONAL_MAPS: Record<VaeloriaRealmId, VaeloriaRegionalMap
     subtitle: 'Coliseu do Pacto, Cinco Bairros-Embaixada Pentacromáticos & Canais de Ley Convergentes',
     icon: '🏰',
     accentColor: '#cbd5e1',
-    imagePath: '/assets/map/vaeloria_capital_axial.jpg',
+    imagePath: '/assets/map/vaeloria_capital_axial.webp',
     worldBounds: { x: 46, y: 45, w: 8, h: 7 },
     worldCenter: { x: 50, y: 47.0 },
     portals: [

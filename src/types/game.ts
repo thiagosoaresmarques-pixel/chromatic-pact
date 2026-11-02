@@ -62,8 +62,8 @@ export interface AscensionSpec {
 export interface CardDefinition {
   id: string;
   name: string;
-  originalInspiration: string;
-  ipSafeNotes: string;
+  originalInspiration?: string;
+  ipSafeNotes?: string;
   domain: Domain;
   type: CardType;
   subtype: string;
@@ -83,7 +83,7 @@ export interface CardDefinition {
   description: string;
   flavorText: string;
   imagePath: string;
-  aiArtPrompt: string;
+  aiArtPrompt?: string;
 }
 
 export interface BoardUnit {

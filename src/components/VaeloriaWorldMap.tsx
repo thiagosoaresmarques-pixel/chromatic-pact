@@ -34,7 +34,7 @@ import {
   CartographicSvgLayer,
 } from './CartographicAtlasExtras';
 import { getWeeklyFeaturedRift, WEEKLY_RIFT_SHARDS_BONUS } from '../data/fractureRiftsData';
-import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { AI_SKILL_TIER_SPECS } from '../data/aiSkillTierSpecs';
 import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import {
   getFogOfWarEnabled,

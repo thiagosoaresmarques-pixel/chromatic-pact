@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'chromatic-pact-v45';
+const CACHE_VERSION = 'chromatic-pact-v46';
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
 const PRECACHE_URLS = [
@@ -78,26 +78,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Immutable content-hashed Vite JS/CSS bundles (/assets/index-XYZ.js): Cache-First
-  if (url.pathname.startsWith('/assets/')) {
-    event.respondWith(
-      caches.open(ASSET_CACHE).then((cache) =>
-        cache.match(req).then((cached) => {
-          if (cached) return cached;
-          return fetch(req).then((res) => {
-            if (res && res.status === 200) {
-              cache.put(req, res.clone());
-            }
-            return res;
-          });
-        })
-      )
-    );
-    return;
-  }
-
-  // Static artwork, maps, tabletops, icons: Stale-While-Revalidate
+  // Static artwork, maps, tabletops, music, icons: Stale-While-Revalidate
   const isCacheableArt =
+    url.pathname.startsWith('/assets/cards/') ||
+    url.pathname.startsWith('/assets/map/') ||
+    url.pathname.startsWith('/assets/music/') ||
     url.pathname.startsWith('/cards/') ||
     url.pathname.startsWith('/map/') ||
     url.pathname.startsWith('/tabletops/') ||
@@ -119,5 +104,24 @@ self.addEventListener('fetch', (event) => {
         })
       )
     );
+    return;
+  }
+
+  // Immutable content-hashed Vite JS/CSS bundles (/assets/index-XYZ.js): Cache-First
+  if (url.pathname.startsWith('/assets/')) {
+    event.respondWith(
+      caches.open(ASSET_CACHE).then((cache) =>
+        cache.match(req).then((cached) => {
+          if (cached) return cached;
+          return fetch(req).then((res) => {
+            if (res && res.status === 200) {
+              cache.put(req, res.clone());
+            }
+            return res;
+          });
+        })
+      )
+    );
+    return;
   }
 });

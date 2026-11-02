@@ -1,4 +1,4 @@
-import { TacticalProblem } from './problems';
+import type { TacticalProblem } from './problemsRuntime';
 
 /**
  * PROBLEMAS DOS GRÃO-MESTRES IA (#111–#116)

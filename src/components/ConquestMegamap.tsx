@@ -20,7 +20,7 @@ import {
   resolveConquestChampionForProvince,
   resolveConquestProvinceSkillTier,
 } from '../data/vaeloriaConquestData';
-import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { AI_SKILL_TIER_SPECS } from '../data/aiSkillTierSpecs';
 import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import {
   CAPITAL_PROVINCE_TO_CAPITAL_MAP,

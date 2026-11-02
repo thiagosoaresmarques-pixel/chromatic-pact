@@ -47,7 +47,7 @@ export interface VaeloriaStageMapNode {
   territoryDomain: Domain;
 }
 
-export const VAELORIA_WORLD_MAP_IMAGE = '/assets/map/vaeloria_world_map.jpg';
+export const VAELORIA_WORLD_MAP_IMAGE = '/assets/map/vaeloria_world_map.webp';
 
 /**
  * OS SEIS TERRITÓRIOS CANÔNICOS DE VAELORIA

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import React, { Suspense, useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { CardDefinition, CardType, Domain, Keyword, Rarity } from '../types/game';
 import { ALL_CARDS, CARDS_BY_ID } from '../data/cards';
 import { PREBUILT_DECKS, MAX_COPIES_BY_RARITY, MAX_LEGENDARIES_PER_DECK } from '../data/decks';
@@ -15,8 +15,10 @@ import {
   CARD_TYPE_LABELS,
   formatCardFaceDescription,
 } from './CardView';
-import { CustomSavedDeck } from './BattleArena';
-import { TacticalGuideView } from './TacticalGuideView';
+import type { CustomSavedDeck } from './BattleArena';
+const TacticalGuideView = React.lazy(() =>
+  import('./TacticalGuideView').then((m) => ({ default: m.TacticalGuideView }))
+);
 import { TACTICAL_COMBOS_COMPENDIUM } from '../data/combosCompendium';
 import {
   GRIMOIRE_REPLACEMENT_GOLD_COST,
@@ -595,7 +597,15 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   // Modals
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [showPromptsModal, setShowPromptsModal] = useState<boolean>(false);
+  const [lazyArtPrompts, setLazyArtPrompts] = useState<Record<string, string> | null>(null);
   const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!showPromptsModal || lazyArtPrompts) return;
+    import('../data/cardArtPrompts')
+      .then((m) => setLazyArtPrompts(m.CARD_ART_PROMPTS))
+      .catch(() => setLazyArtPrompts({}));
+  }, [showPromptsModal, lazyArtPrompts]);
   const [guideModalSection, setGuideModalSection] = useState<
     'deck_mastery' | 'matchup_duel' | 'matrix_all' | 'combos_compendium'
   >('deck_mastery');
@@ -939,7 +949,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
           card.subtype,
           card.description,
           formatCardFaceDescription(card),
-          card.originalInspiration,
+          card.originalInspiration ?? '',
           ...card.keywords,
           ...(card.ascension?.addedKeywords ?? []),
         ]
@@ -1369,11 +1379,17 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     return ALL_CARDS.filter((c) => c.domain === promptDomainFilter);
   }, [promptDomainFilter]);
 
-  const handleCopyAllPrompts = () => {
+  const handleCopyAllPrompts = async () => {
+    const promptsMap =
+      lazyArtPrompts ??
+      (await import('../data/cardArtPrompts').then((m) => {
+        setLazyArtPrompts(m.CARD_ART_PROMPTS);
+        return m.CARD_ART_PROMPTS;
+      }));
     const text = promptCardsList
       .map(
         (c) =>
-          `### ${c.id} — ${c.name} (${DOMAIN_META[c.domain].name})\nArquivo: ${c.imagePath}\nPrompt: ${c.aiArtPrompt}\n`
+          `### ${c.id} — ${c.name} (${DOMAIN_META[c.domain].name})\nArquivo: ${c.imagePath}\nPrompt: ${promptsMap?.[c.id] ?? c.aiArtPrompt ?? ''}\n`
       )
       .join('\n');
     navigator.clipboard.writeText(text);
@@ -2385,7 +2401,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                       {DOMAIN_META[card.domain].icon} [{card.id}] {card.name} —{' '}
                       <span style={{ color: '#94a3b8', fontWeight: 400 }}>
                         {CARD_TYPE_LABELS[card.type]} ({RARITY_LABELS[card.rarity]}) • Inspiração:{' '}
-                        {card.originalInspiration}
+                        {card.originalInspiration ?? 'Códice Autoral de Vaeloria'}
                       </span>
                     </span>
                     <button
@@ -2393,7 +2409,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                       className="btn-fantasy"
                       style={{ padding: '0.2rem 0.6rem', fontSize: '0.7rem' }}
                       onClick={() => {
-                        navigator.clipboard.writeText(card.aiArtPrompt);
+                        navigator.clipboard.writeText(lazyArtPrompts?.[card.id] ?? card.aiArtPrompt ?? '');
                         setCopiedId(card.id);
                         setTimeout(() => setCopiedId(null), 1800);
                       }}
@@ -2411,7 +2427,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                       userSelect: 'all',
                     }}
                   >
-                    {card.aiArtPrompt}
+                    {lazyArtPrompts?.[card.id] ?? card.aiArtPrompt ?? 'Carregando...'}
                   </code>
                 </div>
               ))}
@@ -2422,25 +2438,27 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
       {/* TACTICAL GUIDE & MATCHUPS MODAL */}
       {showTacticalGuideModal && (
-        <TacticalGuideView
-          customDecks={[
-            ...customDecks.filter((cd) => cd.id !== editingDeckId),
-            ...(deckCardIds.length > 0
-              ? [{ id: editingDeckId, name: deckName || 'Deck em Edição', cardIds: deckCardIds }]
-              : []),
-          ]}
-          initialPlayerDeckId={deckCardIds.length > 0 ? editingDeckId : activeGuideDeckId}
-          initialViewSection={guideModalSection}
-          isModal={true}
-          onImportToDeckBuilder={(templateDeckId) => {
-            setShowTacticalGuideModal(false);
-            handleLoadPrebuilt(templateDeckId);
-          }}
-          onClose={() => {
-            setShowTacticalGuideModal(false);
-            setGuideModalSection('deck_mastery');
-          }}
-        />
+        <Suspense fallback={null}>
+          <TacticalGuideView
+            customDecks={[
+              ...customDecks.filter((cd) => cd.id !== editingDeckId),
+              ...(deckCardIds.length > 0
+                ? [{ id: editingDeckId, name: deckName || 'Deck em Edição', cardIds: deckCardIds }]
+                : []),
+            ]}
+            initialPlayerDeckId={deckCardIds.length > 0 ? editingDeckId : activeGuideDeckId}
+            initialViewSection={guideModalSection}
+            isModal={true}
+            onImportToDeckBuilder={(templateDeckId) => {
+              setShowTacticalGuideModal(false);
+              handleLoadPrebuilt(templateDeckId);
+            }}
+            onClose={() => {
+              setShowTacticalGuideModal(false);
+              setGuideModalSection('deck_mastery');
+            }}
+          />
+        </Suspense>
       )}
 
       {/* CARD INSPECT MODAL */}

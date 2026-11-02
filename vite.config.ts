@@ -94,11 +94,20 @@ export default defineConfig({
           if (norm.includes('node_modules')) {
             return 'vendor-react';
           }
+          if (norm.includes('/src/data/cardArtPrompts')) {
+            return 'data-card-prompts';
+          }
           if (norm.includes('/src/data/cards')) {
             return 'data-cards';
           }
           if (norm.includes('/src/data/decks')) {
             return 'data-decks';
+          }
+          if (norm.includes('/src/data/problemsRuntime')) {
+            return 'app-utils';
+          }
+          if (norm.includes('/src/data/problems')) {
+            return 'data-problems';
           }
           if (
             norm.includes('aiLearnedWeights') ||
@@ -115,11 +124,16 @@ export default defineConfig({
             return 'arena-spectator';
           }
           if (
+            norm.includes('/src/utils/tournamentEngine') ||
+            norm.includes('/src/utils/sovereignLiveEloEngine')
+          ) {
+            return 'tournament-runtime';
+          }
+          if (
             norm.includes('/src/utils/') ||
-            norm.includes('/src/data/problems') ||
             norm.includes('epicPoemEvents') ||
             norm.includes('eloDivisions') ||
-            norm.includes('legendaryCreaturesLore') ||
+            norm.includes('legendaryCreatureTitles') ||
             norm.includes('cardTextFormatter')
           ) {
             return 'app-utils';
@@ -147,7 +161,8 @@ export default defineConfig({
             norm.includes('/src/data/epicPoemData') ||
             norm.includes('/src/data/epicPoemPart') ||
             norm.includes('/src/data/epicPoemParallel') ||
-            norm.includes('/src/data/mythologyLore')
+            norm.includes('/src/data/mythologyLore') ||
+            norm.includes('legendaryCreaturesLore')
           ) {
             return 'mythology-codex';
           }

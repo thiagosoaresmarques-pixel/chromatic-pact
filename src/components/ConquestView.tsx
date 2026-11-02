@@ -11,7 +11,7 @@ import { playSfx } from '../utils/soundEngine';
 import { CardInspectModal, DOMAIN_META } from './CardView';
 import { CustomSavedDeck } from './BattleArena';
 import { TacticalGuideView } from './TacticalGuideView';
-import { AI_SKILL_TIER_SPECS } from '../data/aiMonocolorMastery';
+import { AI_SKILL_TIER_SPECS } from '../data/aiSkillTierSpecs';
 import { getUnifiedStandingForDeckId } from '../data/aiUnifiedTournament';
 import { ActiveInvasionVector, ConquestMegamap } from './ConquestMegamap';
 import {

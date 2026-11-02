@@ -1,4 +1,4 @@
-import { TacticalProblem } from './problems';
+import type { TacticalProblem } from './problemsRuntime';
 
 export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'>[] = [
   // ============================================================================

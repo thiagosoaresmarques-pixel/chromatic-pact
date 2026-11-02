@@ -123,12 +123,14 @@ import {
   SwissTournamentDefinition,
 } from '../utils/tournamentEngine';
 import {
+  extractReplayClimaxMarkers,
   fetchCloudTournamentMatchLog,
   getArenaGameStateForReplayFrame,
   getOrSynthesizeSovereignMatchLog,
   subscribeTournamentTvUpdates,
   TournamentMatchReplayLog,
 } from '../utils/tournamentSpectatorEngine';
+import { recordPersonalMatchFrame } from '../utils/personalMatchHistoryEngine';
 import {
   ActiveArenaVideoSession,
   isArenaVideoCaptureSupported,
@@ -214,6 +216,7 @@ export interface BattleArenaProps {
   onExitCampaign?: () => void;
   onRewardGold?: (amount: number, reason: string) => void;
   onMatchConcluded?: (info: { didWin: boolean; usedDeckId: string | null }) => void;
+  onOpenLastPersonalReplay?: () => void;
   onlineMatch?: {
     room: MultiplayerRoom;
     role: 'host' | 'guest';
@@ -247,7 +250,9 @@ export interface BattleArenaProps {
     tournament: SwissTournamentDefinition;
     pairing: ComputedRoundPairing;
     onExitSpectator: () => void;
-    variant?: 'tournament' | 'home_live';
+    variant?: 'tournament' | 'home_live' | 'personal_replay';
+    preloadedReplayLog?: TournamentMatchReplayLog | null;
+    exitButtonLabel?: string;
     customTableBadge?: string;
     livePvpRoom?: MultiplayerRoom | null;
     onCycleNextLiveMatch?: () => void;
@@ -435,6 +440,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onExitCampaign,
   onRewardGold,
   onMatchConcluded,
+  onOpenLastPersonalReplay,
   onlineMatch,
   rankedDuelContext,
   tournamentContext,
@@ -571,12 +577,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       if (tournamentSpectatorContext.livePvpRoom?.canonicalState) {
         return tournamentSpectatorContext.livePvpRoom.canonicalState;
       }
-      const initLog = getOrSynthesizeSovereignMatchLog(
-        tournamentSpectatorContext.tournament,
-        tournamentSpectatorContext.pairing
-      );
+      const initLog =
+        tournamentSpectatorContext.preloadedReplayLog ??
+        getOrSynthesizeSovereignMatchLog(
+          tournamentSpectatorContext.tournament,
+          tournamentSpectatorContext.pairing
+        );
       const nowInit = getTournamentNowMs();
-      const isLiveInit = !initLog.isCompleted || nowInit < initLog.matchFinishMs;
+      const isLiveInit =
+        tournamentSpectatorContext.variant !== 'personal_replay' &&
+        (!initLog.isCompleted || nowInit < initLog.matchFinishMs);
       let startIdx = 0;
       if (isLiveInit) {
         for (let i = 0; i < initLog.frames.length; i += 1) {
@@ -796,6 +806,69 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     tournamentContext.onTournamentLiveStateUpdate(gameState, turnTimeLeft);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.combatLog.length, gameState.turn, gameState.phase]);
+
+  // Automatic Personal Match Replay Recorder (saves player's last 15 full duels across all modes)
+  const personalMatchSessionRef = useRef<{
+    id: string;
+    completed: boolean;
+  }>({
+    id: `duel-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+    completed: false,
+  });
+
+  useEffect(() => {
+    if (isSpectatorMode || tacticalProblem || isMulliganOpen) return;
+    if (
+      personalMatchSessionRef.current.completed &&
+      gameState.phase !== 'gameover' &&
+      gameState.turn <= 1
+    ) {
+      personalMatchSessionRef.current = {
+        id: `duel-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
+        completed: false,
+      };
+    }
+
+    const modeLabel = tournamentContext
+      ? tournamentContext.tournamentTitle || 'Torneio Suíço'
+      : rankedDuelContext
+      ? 'Duelo Ranqueado'
+      : onlineMatch
+      ? 'Conclave 1×1'
+      : conquestModifiers?.riftMutator
+      ? conquestModifiers.riftName || 'Fenda da Fratura'
+      : conquestModifiers?.provinceName
+      ? `Conquista · ${conquestModifiers.provinceName}`
+      : expeditionBlessingId
+      ? 'Expedição'
+      : campaignBoss
+      ? 'Campanha de Vaeloria'
+      : 'Arena de Combate';
+
+    recordPersonalMatchFrame(
+      {
+        sessionId: personalMatchSessionRef.current.id,
+        modeLabel,
+        playerElo: rankedDuelContext?.playerElo ?? 1500,
+        opponentElo: rankedDuelContext?.opponentEntry.eloRating ?? 1500,
+        turnTimeLimitSec: TURN_TIME_LIMIT_SECONDS,
+      },
+      gameState,
+      turnTimeLeft
+    );
+
+    if (gameState.phase === 'gameover') {
+      personalMatchSessionRef.current.completed = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    isSpectatorMode,
+    tacticalProblem,
+    isMulliganOpen,
+    gameState.combatLog.length,
+    gameState.turn,
+    gameState.phase,
+  ]);
   const [isHandPinnedOpen, setIsHandPinnedOpen] = useState(false);
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [isCommandDockMinimized, setIsCommandDockMinimized] = useState(false);
@@ -2089,7 +2162,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   const [specLog, setSpecLog] = useState<TournamentMatchReplayLog | null>(() =>
     tournamentSpectatorContext && !tournamentSpectatorContext.livePvpRoom
-      ? getOrSynthesizeSovereignMatchLog(
+      ? tournamentSpectatorContext.preloadedReplayLog ??
+        getOrSynthesizeSovereignMatchLog(
           tournamentSpectatorContext.tournament,
           tournamentSpectatorContext.pairing
         )
@@ -2099,9 +2173,72 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const [specFlipped, setSpecFlipped] = useState<boolean>(false);
   const [specSpeed, setSpecSpeed] = useState<1 | 2 | 4>(1);
   const [specFollowLive, setSpecFollowLive] = useState<boolean>(true);
+  const [specCinemaMode, setSpecCinemaMode] = useState<boolean>(false);
+  const [specCinemaAspect, setSpecCinemaAspect] = useState<'16:9' | '9:16'>('16:9');
+  const [specCinemaHudVisible, setSpecCinemaHudVisible] = useState<boolean>(false);
+  const cinemaHideTimerRef = useRef<number | null>(null);
+
+  const wakeCinemaStudioHud = () => {
+    if (cinemaHideTimerRef.current !== null) {
+      window.clearTimeout(cinemaHideTimerRef.current);
+    }
+    setSpecCinemaHudVisible(true);
+    cinemaHideTimerRef.current = window.setTimeout(() => {
+      setSpecCinemaHudVisible(false);
+    }, 2400);
+  };
+
+  const toggleSpecCinemaMode = (nextVal?: boolean) => {
+    const targetVal = typeof nextVal === 'boolean' ? nextVal : !specCinemaMode;
+    setSpecCinemaMode(targetVal);
+    if (targetVal) {
+      setShowLogSidebar(false);
+      setIsHandPinnedOpen(false);
+      setIsP1DrawerPinned(false);
+      setIsP2DrawerPinned(false);
+      setActiveRightDrawer(null);
+      startAdaptiveMusic();
+      wakeCinemaStudioHud();
+      try {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          void document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } catch {
+        // ignore if blocked
+      }
+    } else {
+      if (cinemaHideTimerRef.current !== null) {
+        window.clearTimeout(cinemaHideTimerRef.current);
+        cinemaHideTimerRef.current = null;
+      }
+      setSpecCinemaHudVisible(false);
+      try {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          void document.exitFullscreen().catch(() => {});
+        }
+      } catch {
+        // ignore
+      }
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (cinemaHideTimerRef.current !== null) {
+        window.clearTimeout(cinemaHideTimerRef.current);
+      }
+    };
+  }, []);
+
+  const specClimaxMarkers = useMemo(
+    () => extractReplayClimaxMarkers(specLog),
+    [specLog]
+  );
+
   const specStartedAsLiveRef = useRef<boolean>(
     Boolean(
       tournamentSpectatorContext &&
+        tournamentSpectatorContext.variant !== 'personal_replay' &&
         (tournamentSpectatorContext.variant === 'home_live' ||
           !specLog ||
           !specLog.isCompleted ||
@@ -2110,6 +2247,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   );
   const [specCursor, setSpecCursor] = useState<number>(() => {
     if (!tournamentSpectatorContext || !specLog) return 0;
+    if (tournamentSpectatorContext.variant === 'personal_replay') return 0;
     const nowInit = getTournamentNowMs();
     const isLiveInit =
       tournamentSpectatorContext.variant === 'home_live' ||
@@ -2124,6 +2262,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   });
   const [specIsPlaying, setSpecIsPlaying] = useState<boolean>(() => {
     if (!tournamentSpectatorContext || !specLog) return false;
+    if (tournamentSpectatorContext.variant === 'personal_replay') return true;
     const nowInit = getTournamentNowMs();
     const isLiveInit =
       tournamentSpectatorContext.variant === 'home_live' ||
@@ -2211,7 +2350,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (isHomeLiveShowcase && onCycleNextLiveMatchRef.current) {
       const nextTimer = window.setTimeout(() => {
         onCycleNextLiveMatchRef.current?.();
-      }, 2700);
+      }, 3600);
       return () => window.clearTimeout(nextTimer);
     }
   }, [isSpectatorMode, gameState.phase, isRecordingVideo, isHomeLiveShowcase]);
@@ -2224,6 +2363,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   useEffect(() => {
     if (!tournamentSpectatorContext || tournamentSpectatorContext.livePvpRoom) {
       setSpecLog(null);
+      return;
+    }
+    if (tournamentSpectatorContext.preloadedReplayLog) {
+      specStartedAsLiveRef.current = false;
+      setSpecLog(tournamentSpectatorContext.preloadedReplayLog);
       return;
     }
     const { tournament, pairing } = tournamentSpectatorContext;
@@ -2285,9 +2429,21 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   const isSpecLiveMatch = Boolean(
     isSpectatorMode &&
+      tournamentSpectatorContext?.variant !== 'personal_replay' &&
       specLog &&
       (!specLog.isCompleted || specNowMs < specLog.matchFinishMs)
   );
+
+  const handleJumpToNextSpecClimax = () => {
+    if (specClimaxMarkers.length === 0) return;
+    startAdaptiveMusic();
+    const nextMarker =
+      specClimaxMarkers.find((m) => m.frameIndex > specCursor + 1) ??
+      specClimaxMarkers[0];
+    setSpecFollowLive(false);
+    setSpecCursor(nextMarker.leadInIndex);
+    setSpecIsPlaying(true);
+  };
 
   const specVisibleMaxIdx = useMemo(() => {
     if (!specLog || specLog.frames.length === 0) return 0;
@@ -3390,6 +3546,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
       if (e.key === 'Escape') {
         e.preventDefault();
+        if (specCinemaMode) {
+          toggleSpecCinemaMode(false);
+          return;
+        }
         setInspectCard(null);
         setShowQuickRules(false);
         setShowTacticalAdvisor(false);
@@ -3403,6 +3563,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       }
 
       if (isSpectatorMode) {
+        if (e.key.toLowerCase() === 'f') {
+          e.preventDefault();
+          toggleSpecCinemaMode();
+          return;
+        }
         if (e.code === 'Space') {
           e.preventDefault();
           if (!isSpecLiveMatch) {
@@ -4025,6 +4190,99 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           >
             Baixar Vídeo
           </button>
+        </div>
+      )}
+
+      {/* AUTO-HIDING STUDIO CINEMA OVERLAY FOR CLEAN WINDOWS / REELS / YOUTUBE CAPTURE */}
+      {isSpectatorMode && specCinemaMode && (
+        <div
+          className={`arena-cinema-hover-zone ${
+            specCinemaHudVisible ? 'is-visible' : 'is-hidden'
+          }`}
+          onMouseMove={wakeCinemaStudioHud}
+          onClick={wakeCinemaStudioHud}
+        >
+          <div
+            className="arena-cinema-studio-pill"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="arena-cinema-studio-label">Estúdio</span>
+            <button
+              type="button"
+              className={`arena-spec-btn ${specCinemaAspect === '16:9' ? 'is-active' : ''}`}
+              onClick={() => {
+                setSpecCinemaAspect('16:9');
+                wakeCinemaStudioHud();
+              }}
+              title="Enquadramento Paisagem 16:9 (YouTube / X / Tela Cheia)"
+            >
+              16:9 Paisagem
+            </button>
+            <button
+              type="button"
+              className={`arena-spec-btn ${specCinemaAspect === '9:16' ? 'is-active' : ''}`}
+              onClick={() => {
+                setSpecCinemaAspect('9:16');
+                wakeCinemaStudioHud();
+              }}
+              title="Enquadramento Vertical 9:16 centralizado (Instagram Reels / TikTok / Shorts)"
+            >
+              9:16 Vertical
+            </button>
+            {!isSpecLiveMatch && !isHomeLiveShowcase && specLog && (
+              <>
+                <button
+                  type="button"
+                  className="arena-spec-btn"
+                  onClick={() => {
+                    startAdaptiveMusic();
+                    if (specCursor >= specVisibleMaxIdx) {
+                      setSpecCursor(0);
+                      setSpecIsPlaying(true);
+                    } else {
+                      setSpecIsPlaying((p) => !p);
+                    }
+                    wakeCinemaStudioHud();
+                  }}
+                >
+                  {specIsPlaying ? '⏸ Pausar' : '▶ Reproduzir'}
+                </button>
+                {specClimaxMarkers.length > 0 && (
+                  <button
+                    type="button"
+                    className="arena-spec-btn"
+                    onClick={() => {
+                      handleJumpToNextSpecClimax();
+                      wakeCinemaStudioHud();
+                    }}
+                    title="Pular para o próximo momento de clímax da partida"
+                  >
+                    ✦ Clímax
+                  </button>
+                )}
+              </>
+            )}
+            {isHomeLiveShowcase && tournamentSpectatorContext?.onCycleNextLiveMatch && (
+              <button
+                type="button"
+                className="arena-spec-btn"
+                onClick={() => {
+                  tournamentSpectatorContext.onCycleNextLiveMatch?.();
+                  wakeCinemaStudioHud();
+                }}
+              >
+                Outra Mesa
+              </button>
+            )}
+            <button
+              type="button"
+              className="arena-spec-btn exit"
+              onClick={() => toggleSpecCinemaMode(false)}
+              title="Sair do Modo Cinema (Esc ou F)"
+            >
+              Sair (Esc)
+            </button>
+          </div>
         </div>
       )}
 
@@ -4885,7 +5143,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       <div
         className={`arena-main-column cpa-arena-table ${
           arenaShake ? `arena-shake-${arenaShake}` : ''
+        } ${
+          isSpectatorMode && specCinemaMode
+            ? `is-cinema-studio-active ${
+                specCinemaAspect === '9:16' ? 'cinema-aspect-9-16' : 'cinema-aspect-16-9'
+              }`
+            : ''
         }`}
+        onMouseMove={(e) => {
+          if (isSpectatorMode && specCinemaMode && e.clientY <= 68) {
+            wakeCinemaStudioHud();
+          }
+        }}
       >
         {/* =========================================================
             FULL-SCREEN BATTLEFIELD STAGE (100% VIEWPORT) +
@@ -4907,7 +5176,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             <div
               ref={arenaStageRef}
               className={`arena-fullscreen-stage ${isSpectatorMode ? 'is-spectator-arena' : ''} ${
-                isRecordingVideo ? 'is-video-recording-clean' : ''
+                isRecordingVideo || specCinemaMode ? 'is-video-recording-clean' : ''
               } ${
                 gameState.conquestModifiers?.biomeRealm
                   ? `biome-realm-${gameState.conquestModifiers.biomeRealm}`
@@ -6489,22 +6758,51 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       )}
                       {!isHomeLiveShowcase && specLog && (
                         <>
-                          <input
-                            type="range"
-                            className="arena-spec-range"
-                            min={0}
-                            max={Math.max(1, specVisibleMaxIdx)}
-                            value={clampedIdx}
-                            onChange={(e) => {
-                              const v = Number(e.target.value);
-                              setSpecIsPlaying(false);
-                              if (isSpecLiveMatch) {
-                                setSpecFollowLive(v >= specVisibleMaxIdx);
-                              }
-                              setSpecCursor(v);
-                            }}
-                            aria-label="Linha do tempo da partida"
-                          />
+                          <div className="arena-spec-timeline-wrap">
+                            <input
+                              type="range"
+                              className="arena-spec-range"
+                              min={0}
+                              max={Math.max(1, specVisibleMaxIdx)}
+                              value={clampedIdx}
+                              onChange={(e) => {
+                                const v = Number(e.target.value);
+                                setSpecIsPlaying(false);
+                                if (isSpecLiveMatch) {
+                                  setSpecFollowLive(v >= specVisibleMaxIdx);
+                                }
+                                setSpecCursor(v);
+                              }}
+                              aria-label="Linha do tempo da partida"
+                            />
+                            {!isSpecLiveMatch &&
+                              specVisibleMaxIdx > 1 &&
+                              specClimaxMarkers.map((mk) => {
+                                const pct = Math.max(
+                                  2,
+                                  Math.min(
+                                    98,
+                                    (mk.frameIndex / Math.max(1, specVisibleMaxIdx)) * 100
+                                  )
+                                );
+                                return (
+                                  <button
+                                    key={`climax-${mk.frameIndex}`}
+                                    type="button"
+                                    className={`arena-spec-climax-tick kind-${mk.kind}`}
+                                    style={{ left: `${pct.toFixed(1)}%` }}
+                                    title={`${mk.label} (Turno ${mk.turn}) — clique para assistir`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      startAdaptiveMusic();
+                                      setSpecFollowLive(false);
+                                      setSpecCursor(mk.leadInIndex);
+                                      setSpecIsPlaying(true);
+                                    }}
+                                  />
+                                );
+                              })}
+                          </div>
                           <span className="arena-spec-step-counter">
                             {clampedIdx}/{specVisibleMaxIdx}
                           </span>
@@ -6943,12 +7241,21 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 ⇅<span className="hide-on-mobile"> Mesa</span>
                               </button>
 
+                              <button
+                                type="button"
+                                className={`arena-spec-btn ${specCinemaMode ? 'is-active' : ''}`}
+                                onClick={() => toggleSpecCinemaMode()}
+                                title="Modo Cinema: tela limpa 16:9 ou 9:16 (Reels/Shorts) ideal para gravar pelo Windows (Atalho: F)"
+                              >
+                                Cinema
+                              </button>
+
                               {canRecordVideo && (
                                 <button
                                   type="button"
                                   className={`arena-spec-btn ${isRecordingVideo ? 'is-active' : ''}`}
                                   onClick={() => void handleToggleVideoRecording()}
-                                  title="Gravar vídeo em alta definição desta partida para redes sociais"
+                                  title="Gravar vídeo em alta definição (28 Mbps) desta partida"
                                 >
                                   Gravar<span className="hide-on-mobile"> Vídeo</span>
                                 </button>
@@ -7099,6 +7406,17 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               </button>
                             )}
 
+                            {!isSpecLiveMatch && specClimaxMarkers.length > 0 && (
+                              <button
+                                type="button"
+                                className="arena-spec-btn"
+                                onClick={handleJumpToNextSpecClimax}
+                                title="Saltar para o próximo momento épico / clímax da partida"
+                              >
+                                ✦<span className="hide-on-mobile"> Clímax</span>
+                              </button>
+                            )}
+
                             <button
                               type="button"
                               className={`arena-spec-btn ${specFlipped ? 'is-active' : ''}`}
@@ -7112,12 +7430,21 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               ⇅<span className="hide-on-mobile"> Mesa</span>
                             </button>
 
+                            <button
+                              type="button"
+                              className={`arena-spec-btn ${specCinemaMode ? 'is-active' : ''}`}
+                              onClick={() => toggleSpecCinemaMode()}
+                              title="Modo Cinema: tela limpa 16:9 ou 9:16 (Reels/Shorts) ideal para gravar pelo Windows (Atalho: F)"
+                            >
+                              Cinema
+                            </button>
+
                             {canRecordVideo && (
                               <button
                                 type="button"
                                 className={`arena-spec-btn ${isRecordingVideo ? 'is-active' : ''}`}
                                 onClick={() => void handleToggleVideoRecording()}
-                                title="Gravar vídeo desta partida para redes sociais"
+                                title="Gravar vídeo em alta definição (28 Mbps) desta partida"
                               >
                                 Gravar<span className="hide-on-mobile"> Vídeo</span>
                               </button>
@@ -7136,9 +7463,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               type="button"
                               className="arena-spec-btn exit"
                               onClick={handleExitBattle}
-                              title="Voltar ao Salão do Torneio"
+                              title={`Voltar (${
+                                tournamentSpectatorContext.exitButtonLabel || 'Torneio'
+                              })`}
                             >
-                              ←<span className="hide-on-mobile"> Torneio</span>
+                              ←
+                              <span className="hide-on-mobile">
+                                {' '}
+                                {tournamentSpectatorContext.exitButtonLabel || 'Torneio'}
+                              </span>
                             </button>
                           </div>
                         );
@@ -7989,9 +8322,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               }}
             >
               {isSpectatorMode
-                ? `MESA #${tournamentSpectatorContext?.pairing.tableNumber ?? 1} · RODADA ${
-                    tournamentSpectatorContext?.pairing.round ?? 1
-                  }`
+                ? tournamentSpectatorContext?.variant === 'personal_replay'
+                  ? tournamentSpectatorContext.tournament.title.toUpperCase()
+                  : `MESA #${tournamentSpectatorContext?.pairing.tableNumber ?? 1} · RODADA ${
+                      tournamentSpectatorContext?.pairing.round ?? 1
+                    }`
                 : gameState.winner === 'player'
                 ? 'TRIUNFO SOBERANO'
                 : 'QUEDA DO BASTIÃO'}
@@ -8395,7 +8730,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       className="btn-fantasy btn-fantasy-primary"
                       onClick={tournamentSpectatorContext.onExitSpectator}
                     >
-                      ← Voltar ao Salão do Torneio
+                      {tournamentSpectatorContext.exitButtonLabel
+                        ? `← Voltar (${tournamentSpectatorContext.exitButtonLabel})`
+                        : '← Voltar ao Salão do Torneio'}
                     </button>
                     <button
                       type="button"
@@ -8485,6 +8822,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   Voltar ao Início
                 </button>
               )}
+              {!isSpectatorMode && !tacticalProblem && onOpenLastPersonalReplay && (
+                <button
+                  type="button"
+                  className="btn-fantasy"
+                  onClick={onOpenLastPersonalReplay}
+                >
+                  Rever Partida
+                </button>
+              )}
               <button
                 type="button"
                 className="btn-fantasy"
@@ -8545,7 +8891,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             style={{ padding: '4px 10px', fontSize: '0.7rem' }}
             onClick={handleExitBattle}
           >
-            {tournamentSpectatorContext || tournamentContext
+            {tournamentSpectatorContext
+              ? tournamentSpectatorContext.exitButtonLabel ?? 'Voltar ao Torneio'
+              : tournamentContext
               ? 'Voltar ao Torneio'
               : campaignBoss
               ? 'Voltar ao Mapa'

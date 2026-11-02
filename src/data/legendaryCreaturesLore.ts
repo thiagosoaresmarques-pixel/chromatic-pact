@@ -1,4 +1,4 @@
-import { CardMythologyEntry } from './mythologyLore';
+import type { CardMythologyEntry } from './mythologyLore';
 
 export interface LegendaryCreatureBiography extends CardMythologyEntry {
   properTitle: string;

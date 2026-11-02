@@ -38,8 +38,12 @@ import {
   triggerPwaInstallPrompt,
 } from '../utils/pwaInstall';
 import { CustomSavedDeck } from './BattleArena';
+import {
+  getPersonalMatchHistory,
+  PersonalMatchHistoryEntry,
+} from '../utils/personalMatchHistoryEngine';
 
-export type AccountModalTab = 'profile' | 'login' | 'create';
+export type AccountModalTab = 'profile' | 'replays' | 'login' | 'create';
 
 interface AvatarCreaturePickerProps {
   selectedCardId: string;
@@ -265,6 +269,7 @@ interface SovereignAccountModalProps {
   onNeedsDeckSetup?: () => void;
   onOpenAdminPanel?: () => void;
   onOpenPwaInstall?: () => void;
+  onLaunchPersonalReplay?: (entry: PersonalMatchHistoryEntry) => void;
 }
 
 export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
@@ -277,10 +282,14 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
   onNeedsDeckSetup,
   onOpenAdminPanel,
   onOpenPwaInstall,
+  onLaunchPersonalReplay,
 }) => {
   const isUnregistered = isUnregisteredProfile(currentUser);
   const [tab, setTab] = useState<AccountModalTab>(
     isUnregistered && initialTab === 'profile' ? 'create' : initialTab
+  );
+  const [personalReplays] = useState<PersonalMatchHistoryEntry[]>(() =>
+    getPersonalMatchHistory()
   );
   const [accountsRoster, setAccountsRoster] = useState<SovereignUserProfile[]>(() =>
     getSavedAccountsRoster()
@@ -535,11 +544,11 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
           IDENTIDADE & PERFIL DO SOBERANO
         </h3>
 
-        {/* 3 Tabs: Meu Perfil | Entrar / Trocar Conta | Criar Nova Conta */}
+        {/* 4 Tabs: Meu Perfil | Partidas | Entrar / Trocar | Criar Nova Conta */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(128px, 1fr))',
             gap: '0.45rem',
             marginBottom: '1rem',
           }}
@@ -550,6 +559,13 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
             onClick={() => setTab('profile')}
           >
             Meu Perfil
+          </button>
+          <button
+            type="button"
+            className={`aaa-btn ${tab === 'replays' ? 'aaa-btn-primary' : 'aaa-btn-secondary'}`}
+            onClick={() => setTab('replays')}
+          >
+            Partidas{personalReplays.length > 0 ? ` (${personalReplays.length})` : ''}
           </button>
           <button
             type="button"
@@ -1256,6 +1272,165 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
               </button>
             </div>
           </form>
+        )}
+
+        {tab === 'replays' && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              marginBottom: '0.75rem',
+            }}
+          >
+            {personalReplays.length === 0 ? (
+              <div
+                style={{
+                  padding: '1.35rem 1rem',
+                  borderRadius: '8px',
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  border: '1px solid rgba(148, 163, 184, 0.12)',
+                  textAlign: 'center',
+                  color: '#94a3b8',
+                  fontSize: '0.84rem',
+                }}
+              >
+                Suas últimas batalhas completas aparecerão automaticamente aqui para rever na mesa ou gravar em Modo Cinema.
+              </div>
+            ) : (
+              <div
+                style={{
+                  borderRadius: '8px',
+                  background: 'rgba(15, 23, 42, 0.6)',
+                  border: '1px solid rgba(148, 163, 184, 0.12)',
+                  overflow: 'hidden',
+                }}
+              >
+                {personalReplays.map((item, idx) => {
+                  const oppCard = CARDS_BY_ID[item.opponentAvatarCardId];
+                  const resultLabel =
+                    item.didWin === true
+                      ? 'Vitória'
+                      : item.didWin === false
+                      ? 'Derrota'
+                      : 'Empate';
+                  const resultColor =
+                    item.didWin === true
+                      ? '#34d399'
+                      : item.didWin === false
+                      ? '#94a3b8'
+                      : '#fbbf24';
+                  return (
+                    <div
+                      key={item.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '0.75rem',
+                        padding: '0.6rem 0.85rem',
+                        borderBottom:
+                          idx < personalReplays.length - 1
+                            ? '1px solid rgba(148, 163, 184, 0.12)'
+                            : 'none',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.65rem',
+                          minWidth: 0,
+                          flex: 1,
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: '34px',
+                            height: '34px',
+                            borderRadius: '6px',
+                            overflow: 'hidden',
+                            background: '#0b0f19',
+                            border: '1px solid rgba(148, 163, 184, 0.22)',
+                            flexShrink: 0,
+                          }}
+                        >
+                          {oppCard?.imagePath ? (
+                            <img
+                              src={oppCard.imagePath}
+                              alt={item.opponentName}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                          ) : null}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              fontSize: '0.84rem',
+                              fontWeight: 700,
+                              color: '#f1f5f9',
+                            }}
+                          >
+                            <span
+                              style={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              vs {item.opponentName}
+                            </span>
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                fontWeight: 700,
+                                color: resultColor,
+                                flexShrink: 0,
+                              }}
+                            >
+                              {resultLabel}
+                            </span>
+                          </div>
+                          <div
+                            style={{
+                              fontSize: '0.71rem',
+                              color: '#94a3b8',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {item.modeLabel.replace('Arena de Combate', 'Arena')} · T{item.turns} ({item.finalPlayerHp}–{item.finalOpponentHp})
+                          </div>
+                        </div>
+                      </div>
+
+                      {onLaunchPersonalReplay && (
+                        <button
+                          type="button"
+                          className="aaa-btn aaa-btn-secondary"
+                          style={{
+                            padding: '4px 12px',
+                            fontSize: '0.75rem',
+                            flexShrink: 0,
+                          }}
+                          onClick={() => {
+                            onClose();
+                            onLaunchPersonalReplay(item);
+                          }}
+                        >
+                          Rever
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         )}
 
         {/* PWA App Install + Portable Save Codex (PC <-> Smartphone Sync) */}

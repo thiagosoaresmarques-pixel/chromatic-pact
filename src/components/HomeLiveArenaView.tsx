@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BattleArena, CustomSavedDeck } from './BattleArena';
 import {
   LiveArenaFeedItem,
@@ -20,20 +20,41 @@ export const HomeLiveArenaView: React.FC<HomeLiveArenaViewProps> = ({
   const [activeFeedItem, setActiveFeedItem] = useState<LiveArenaFeedItem>(() =>
     pickRandomLiveArenaMatchSync()
   );
+  const [isCrossfading, setIsCrossfading] = useState<boolean>(false);
+  const fadeTimersRef = useRef<number[]>([]);
+
+  const clearPendingFadeTimers = useCallback(() => {
+    for (const id of fadeTimersRef.current) {
+      window.clearTimeout(id);
+    }
+    fadeTimersRef.current = [];
+  }, []);
 
   useEffect(() => {
     void refreshLiveArenaCloudPool();
     const pollId = window.setInterval(() => {
       void refreshLiveArenaCloudPool();
     }, 20_000);
-    return () => window.clearInterval(pollId);
-  }, []);
+    return () => {
+      window.clearInterval(pollId);
+      clearPendingFadeTimers();
+    };
+  }, [clearPendingFadeTimers]);
 
   const handleCycleNextLiveMatch = useCallback(() => {
-    setActiveFeedItem((prev) =>
-      pickRandomLiveArenaMatchSync({ excludeFeedId: prev.feedId })
-    );
-  }, []);
+    clearPendingFadeTimers();
+    setIsCrossfading(true);
+    const swapTimer = window.setTimeout(() => {
+      setActiveFeedItem((prev) =>
+        pickRandomLiveArenaMatchSync({ excludeFeedId: prev.feedId })
+      );
+      const revealTimer = window.setTimeout(() => {
+        setIsCrossfading(false);
+      }, 90);
+      fadeTimersRef.current.push(revealTimer);
+    }, 240);
+    fadeTimersRef.current.push(swapTimer);
+  }, [clearPendingFadeTimers]);
 
   const spectatorContext = useMemo(
     () => ({
@@ -50,7 +71,11 @@ export const HomeLiveArenaView: React.FC<HomeLiveArenaViewProps> = ({
   );
 
   return (
-    <div className="home-live-arena-shell">
+    <div
+      className={`home-live-arena-shell ${
+        isCrossfading ? 'is-crossfading-table' : ''
+      }`}
+    >
       <BattleArena
         key={activeFeedItem.feedId}
         customDecks={customDecks}

@@ -18,6 +18,7 @@ import {
   CardDefinition,
   CombatLogEntry,
   Domain,
+  FloatingFeedback,
   GameState,
   PlayerState,
   RowType,
@@ -108,6 +109,11 @@ export interface TournamentReplayFrame {
       icon: string;
     } | null;
   } | null;
+  feedbacks?: Array<{
+    targetId: string;
+    text: string;
+    color: FloatingFeedback['color'];
+  }>;
   sideA: CompactSideState;
   sideB: CompactSideState;
 }
@@ -146,7 +152,7 @@ function withSeededRandom<T>(seedInt: number, fn: () => T): T {
   }
 }
 
-function sanitizeSummaryText(raw: string): string {
+export function sanitizeSummaryText(raw: string): string {
   return raw
     .replace(/[⚡❤️🛡️🗺️🔥❄️🌑🌿✨⚔️🃏]/gu, '')
     .replace(/\s*->\s*/g, ' → ')
@@ -714,6 +720,10 @@ function hydrateBoardRowFromCompact(
     if (stack.length === 0) continue;
     const units: BoardUnit[] = stack.map((cu, sIdx) => {
       const card = CARDS_BY_ID[cu.cid] ?? ALL_CARDS[0];
+      const mergedKeywords =
+        cu.asc && card.ascension?.addedKeywords
+          ? Array.from(new Set([...card.keywords, ...card.ascension.addedKeywords]))
+          : [...card.keywords];
       return {
         instanceId: cu.id,
         cardId: card.id,
@@ -726,7 +736,7 @@ function hydrateBoardRowFromCompact(
         currentArmor: cu.arm,
         currentHp: cu.hp,
         maxHp: cu.mhp,
-        keywords: [...card.keywords],
+        keywords: mergedKeywords,
         regeneration: card.regeneration ?? 0,
         hasDivineShield: Boolean(cu.shd),
         isFrozen: Boolean(cu.frz),
@@ -838,7 +848,17 @@ function reconstructArenaStateFromCompactFrame(
     });
   }
   base.combatLog = logs;
-  base.feedbacks = [];
+  base.feedbacks = (frame.feedbacks ?? []).map((fb, idx) => ({
+    id: `tv-fb-${safeIdx}-${idx}`,
+    targetId:
+      fb.targetId === 'A-sovereign'
+        ? 'player-sovereign'
+        : fb.targetId === 'B-sovereign'
+        ? 'ai-sovereign'
+        : fb.targetId,
+    text: fb.text,
+    color: fb.color,
+  }));
 
   const isTerminalFrame =
     log.isCompleted && safeIdx === log.frames.length - 1 && log.finalResult !== 'IN_PROGRESS';
@@ -1169,6 +1189,19 @@ export function recordHumanTournamentMatchState(params: {
             : null,
         }
       : null,
+    feedbacks:
+      state.feedbacks && state.feedbacks.length > 0
+        ? state.feedbacks.slice(0, 3).map((fb) => ({
+            targetId:
+              fb.targetId === 'player-sovereign'
+                ? `${mapActorOwnerToSide('player')}-sovereign`
+                : fb.targetId === 'ai-sovereign'
+                ? `${mapActorOwnerToSide('ai')}-sovereign`
+                : fb.targetId,
+            text: fb.text,
+            color: fb.color,
+          }))
+        : undefined,
     sideA: compressPlayerSide(sideAState, sideAMeta),
     sideB: compressPlayerSide(sideBState, sideBMeta),
   };
@@ -1209,4 +1242,124 @@ export function recordHumanTournamentMatchState(params: {
     lastCloudFlushMsByKey.set(matchKey, nowMs);
     void persistMatchReplayLogToCloud(updatedLog);
   }
+}
+
+export interface ReplayClimaxMarker {
+  frameIndex: number;
+  leadInIndex: number;
+  turn: number;
+  kind: 'legendary' | 'ascend' | 'domain' | 'critical' | 'finisher';
+  label: string;
+}
+
+/**
+ * Extracts up to 8 key dramatic turning points from a replay log so spectators and
+ * social-video creators can jump straight to the most cinematic moments in 1 click.
+ */
+export function extractReplayClimaxMarkers(
+  log: TournamentMatchReplayLog | null | undefined
+): ReplayClimaxMarker[] {
+  if (!log || !log.frames || log.frames.length < 3) return [];
+
+  const rawMarkers: Array<ReplayClimaxMarker & { priority: number }> = [];
+  let criticalRecorded = false;
+
+  for (let i = 1; i < log.frames.length; i += 1) {
+    const f = log.frames[i];
+    const prev = log.frames[i - 1];
+
+    if (f.kind === 'domain') {
+      const isClash =
+        f.summary.includes('CHOQUE') ||
+        f.summary.includes('Disputa') ||
+        Boolean(f.domainExpansion?.clashRival);
+      rawMarkers.push({
+        frameIndex: i,
+        leadInIndex: Math.max(0, i - 1),
+        turn: f.turn,
+        kind: 'domain',
+        label: isClash ? 'Choque de Domínios' : f.domainExpansion?.name || 'Expansão de Domínio',
+        priority: 5,
+      });
+      continue;
+    }
+
+    if (f.kind === 'ascend') {
+      rawMarkers.push({
+        frameIndex: i,
+        leadInIndex: Math.max(0, i - 1),
+        turn: f.turn,
+        kind: 'ascend',
+        label: 'Ascensão em Campo',
+        priority: 4,
+      });
+      continue;
+    }
+
+    if (f.kind === 'play_card' && f.cardId) {
+      const card = CARDS_BY_ID[f.cardId];
+      if (card && (card.rarity === 'legendary' || (card.breathDamage ?? 0) > 0)) {
+        rawMarkers.push({
+          frameIndex: i,
+          leadInIndex: Math.max(0, i - 1),
+          turn: f.turn,
+          kind: 'legendary',
+          label: card.name,
+          priority: card.rarity === 'legendary' ? 3 : 2,
+        });
+        continue;
+      }
+    }
+
+    if (!criticalRecorded && i < log.frames.length - 2) {
+      const prevMinHp = Math.min(prev.sideA.hp, prev.sideB.hp);
+      const curMinHp = Math.min(f.sideA.hp, f.sideB.hp);
+      if (prevMinHp > 12 && curMinHp <= 12 && curMinHp > 0) {
+        criticalRecorded = true;
+        rawMarkers.push({
+          frameIndex: i,
+          leadInIndex: Math.max(0, i - 1),
+          turn: f.turn,
+          kind: 'critical',
+          label: 'Clímax (Vida Crítica)',
+          priority: 2,
+        });
+      }
+    }
+  }
+
+  if (log.isCompleted && log.finalResult !== 'IN_PROGRESS') {
+    const lastIdx = log.frames.length - 1;
+    const lastFrame = log.frames[lastIdx];
+    rawMarkers.push({
+      frameIndex: lastIdx,
+      leadInIndex: Math.max(0, lastIdx - 2),
+      turn: lastFrame.turn,
+      kind: 'finisher',
+      label: 'Golpe Final',
+      priority: 6,
+    });
+  }
+
+  // Deduplicate markers within 2 frames of each other, keeping higher priority
+  const filtered: Array<ReplayClimaxMarker & { priority: number }> = [];
+  for (const m of rawMarkers) {
+    const prev = filtered[filtered.length - 1];
+    if (prev && Math.abs(m.frameIndex - prev.frameIndex) <= 2) {
+      if (m.priority >= prev.priority) {
+        filtered[filtered.length - 1] = m;
+      }
+    } else {
+      filtered.push(m);
+    }
+  }
+
+  if (filtered.length > 8) {
+    filtered.sort((a, b) => b.priority - a.priority);
+    const top = filtered.slice(0, 8);
+    top.sort((a, b) => a.frameIndex - b.frameIndex);
+    return top.map(({ priority: _p, ...rest }) => rest);
+  }
+
+  return filtered.map(({ priority: _p, ...rest }) => rest);
 }

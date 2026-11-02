@@ -36,7 +36,9 @@ import {
   getDailyState,
   recordDailyQuestEvent,
 } from './utils/dailyQuestsEngine';
-import { CardInspectModal } from './components/CardView';
+const CardInspectModal = React.lazy(() =>
+  import('./components/CardView').then((m) => ({ default: m.CardInspectModal }))
+);
 
 const HomeLiveArenaView = React.lazy(() =>
   import('./components/HomeLiveArenaView').then((m) => ({
@@ -115,7 +117,11 @@ import {
   SwissTournamentDefinition,
   upsertHumanTournamentEntryToCloud,
 } from './utils/tournamentEngine';
-import { recordHumanTournamentMatchState } from './utils/tournamentSpectatorEngine';
+import {
+  buildPersonalReplaySpectatorContext,
+  getPersonalMatchHistory,
+  PersonalMatchHistoryEntry,
+} from './utils/personalMatchHistoryEngine';
 import { getEloDivisionMeta, INITIAL_PLAYER_ELO } from './data/eloDivisions';
 import type { SovereignAiLeaderboardEntry } from './data/sovereignEloLadderData';
 import {
@@ -606,6 +612,14 @@ export const App: React.FC = () => {
     tournament: SwissTournamentDefinition;
     pairing: ComputedRoundPairing;
   } | null>(null);
+  const [activePersonalReplay, setActivePersonalReplay] =
+    useState<PersonalMatchHistoryEntry | null>(null);
+
+  useEffect(() => {
+    if (activeTab !== 'arena') {
+      setActivePersonalReplay(null);
+    }
+  }, [activeTab]);
   const notifiedTournamentRoundsRef = useRef<Set<string>>(new Set());
 
   // Sovereign Notification Center State
@@ -914,6 +928,7 @@ export const App: React.FC = () => {
 
   const handleOpenArenaSolo = () => {
     trackAdsEvent('start_duel', { mode: 'solo_arena', isGuest });
+    setActivePersonalReplay(null);
     setActiveTournamentSpectate(null);
     setActiveTournamentMatch(null);
     setActiveCampaignBoss(null);
@@ -938,6 +953,7 @@ export const App: React.FC = () => {
     } catch {
       // Ignore
     }
+    setActivePersonalReplay(null);
     setActiveTournamentSpectate(null);
     setActiveTournamentMatch(null);
     setActiveCampaignBoss(null);
@@ -977,20 +993,25 @@ export const App: React.FC = () => {
     setActiveTab('arena');
   };
 
-  const memoizedTournamentSpectatorContext = useMemo(
-    () =>
-      activeTournamentSpectate
-        ? {
-            tournament: activeTournamentSpectate.tournament,
-            pairing: activeTournamentSpectate.pairing,
-            onExitSpectator: () => {
-              setActiveTournamentSpectate(null);
-              setActiveTab('tournaments');
-            },
-          }
-        : null,
-    [activeTournamentSpectate]
-  );
+  const memoizedTournamentSpectatorContext = useMemo(() => {
+    if (activePersonalReplay) {
+      return buildPersonalReplaySpectatorContext(activePersonalReplay, () => {
+        setActivePersonalReplay(null);
+        setActiveTab('home');
+        setAccountModalState({ open: true, tab: 'replays' });
+      });
+    }
+    return activeTournamentSpectate
+      ? {
+          tournament: activeTournamentSpectate.tournament,
+          pairing: activeTournamentSpectate.pairing,
+          onExitSpectator: () => {
+            setActiveTournamentSpectate(null);
+            setActiveTab('tournaments');
+          },
+        }
+      : null;
+  }, [activePersonalReplay, activeTournamentSpectate]);
 
   const handleStartTournamentPvpMatch = (
     launch: ActiveTournamentMatchLaunch,
@@ -2738,6 +2759,7 @@ export const App: React.FC = () => {
               setExpeditionBlessingId(null);
               setActiveConquestContext(null);
               setActiveGeoModifiers(null);
+              setActivePersonalReplay(null);
               setActiveTournamentSpectate({ tournament, pairing });
               setActiveTab('arena');
             }}
@@ -2830,7 +2852,9 @@ export const App: React.FC = () => {
         {activeTab === 'arena' && (
           <BattleArena
             key={
-              activeTournamentSpectate
+              activePersonalReplay
+                ? `personal_spec_${activePersonalReplay.id}`
+                : activeTournamentSpectate
                 ? `spec_${activeTournamentSpectate.tournament.id}_r${activeTournamentSpectate.pairing.round}_t${activeTournamentSpectate.pairing.tableNumber}`
                 : 'live_arena'
             }
@@ -2917,6 +2941,23 @@ export const App: React.FC = () => {
             }}
             onRewardGold={handleRewardGold}
             onMatchConcluded={handleMatchConcluded}
+            onOpenLastPersonalReplay={() => {
+              const latest = getPersonalMatchHistory()[0];
+              if (!latest) return;
+              setActiveTournamentSpectate(null);
+              setActiveTournamentMatch(null);
+              setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
+              setActiveProblem(null);
+              setActiveOnlineMatch(null);
+              setIsExpeditionBattle(false);
+              setIsDraftBattle(false);
+              setActiveRiftId(null);
+              setActiveConquestContext(null);
+              setActiveGeoModifiers(null);
+              setActivePersonalReplay(latest);
+              setActiveTab('arena');
+            }}
             tournamentSpectatorContext={memoizedTournamentSpectatorContext}
             tournamentContext={
               activeTournamentMatch
@@ -2935,19 +2976,21 @@ export const App: React.FC = () => {
                     },
                     onTournamentLiveStateUpdate: (liveGameState, turnTimeLeftSec) => {
                       const ctx = activeTournamentMatch;
-                      recordHumanTournamentMatchState({
-                        tournament: ctx.tournament,
-                        roundNumber: ctx.roundNumber,
-                        tableNumber: ctx.tableNumber ?? 1,
-                        myParticipantId: `hum::${ctx.entry.username.trim().toLowerCase()}`,
-                        mySubtitle: ctx.entry.deckName || ctx.entry.title,
-                        myPrimaryDomain: ctx.entry.primaryDomain,
-                        opponentStanding: ctx.opponentStanding,
-                        localPerspectiveRole: 'player_is_me',
-                        state: liveGameState,
-                        turnTimeLeftSec,
-                        nowMs: getTournamentNowMs(),
-                      });
+                      void import('./utils/tournamentSpectatorEngine').then((m) =>
+                        m.recordHumanTournamentMatchState({
+                          tournament: ctx.tournament,
+                          roundNumber: ctx.roundNumber,
+                          tableNumber: ctx.tableNumber ?? 1,
+                          myParticipantId: `hum::${ctx.entry.username.trim().toLowerCase()}`,
+                          mySubtitle: ctx.entry.deckName || ctx.entry.title,
+                          myPrimaryDomain: ctx.entry.primaryDomain,
+                          opponentStanding: ctx.opponentStanding,
+                          localPerspectiveRole: 'player_is_me',
+                          state: liveGameState,
+                          turnTimeLeftSec,
+                          nowMs: getTournamentNowMs(),
+                        })
+                      );
                     },
                     onTournamentMatchResult: ({ score, hpDiff, turns, reason }) => {
                       const ctx = activeTournamentMatch;
@@ -3239,6 +3282,21 @@ export const App: React.FC = () => {
             onNeedsDeckSetup={() => setActiveTab('deckbuilder')}
             onOpenAdminPanel={handleOpenAdminTab}
             onOpenPwaInstall={() => setIsPwaModalOpen(true)}
+            onLaunchPersonalReplay={(entry) => {
+              setActiveTournamentSpectate(null);
+              setActiveTournamentMatch(null);
+              setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
+              setActiveProblem(null);
+              setActiveOnlineMatch(null);
+              setIsExpeditionBattle(false);
+              setIsDraftBattle(false);
+              setActiveRiftId(null);
+              setActiveConquestContext(null);
+              setActiveGeoModifiers(null);
+              setActivePersonalReplay(entry);
+              setActiveTab('arena');
+            }}
           />
         )}
         </Suspense>

@@ -24978,6 +24978,11 @@ input:focus-visible,
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: opacity 0.25s ease;
+}
+
+.home-live-arena-shell.is-crossfading-table {
+  opacity: 0.08;
 }
 
 .arena-spec-scrubber-row.is-home-live-row {
@@ -25096,4 +25101,226 @@ input:focus-visible,
     max-height: 100% !important;
     min-height: 0 !important;
   }
+}
+
+
+/* ============================================================================
+   REPLAY CLIMAX TIMELINE MARKERS & SOCIAL STUDIO CINEMA MODE (16:9 & 9:16)
+   ============================================================================ */
+
+.arena-spec-timeline-wrap {
+  position: relative;
+  flex: 1 1 180px;
+  min-width: 110px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+}
+
+.arena-spec-timeline-wrap .arena-spec-range {
+  width: 100%;
+  margin: 0;
+}
+
+.arena-spec-climax-tick {
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  margin: 0;
+  border-radius: 1px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  background: #d4af37;
+  border: 1px solid #0b0f19;
+  box-shadow: 0 0 6px rgba(212, 175, 55, 0.72);
+  cursor: pointer;
+  z-index: 4;
+  transition: transform 0.14s ease, background-color 0.14s ease;
+}
+
+.arena-spec-climax-tick.kind-domain,
+.arena-spec-climax-tick.kind-finisher {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.9);
+}
+
+.arena-spec-climax-tick:hover {
+  transform: translate(-50%, -50%) rotate(45deg) scale(1.45);
+  background: #fef08a;
+  z-index: 6;
+}
+
+.arena-cinema-hover-zone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 68px;
+  z-index: 9998;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10px;
+  pointer-events: auto;
+  transition: opacity 0.28s ease;
+}
+
+.arena-cinema-hover-zone.is-hidden {
+  opacity: 0;
+}
+
+.arena-cinema-hover-zone.is-hidden .arena-cinema-studio-pill {
+  pointer-events: none;
+}
+
+.arena-cinema-hover-zone.is-visible {
+  opacity: 1;
+}
+
+.arena-cinema-studio-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(11, 15, 25, 0.94);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.8);
+  font-family: var(--font-sans);
+}
+
+.arena-cinema-studio-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+  padding: 0 4px 0 2px;
+  letter-spacing: 0.03em;
+}
+
+/* Fullscreen Studio Stage (zero outer chrome, ready for Windows Win+Alt+R or OBS) */
+.arena-main-column.cpa-arena-table.is-cinema-studio-active {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  min-height: 100dvh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  z-index: 9850 !important;
+  background: #04060b !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-16-9 .arena-fullscreen-stage {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+}
+
+/* 9:16 Vertical Social Frame (Instagram Reels / TikTok / YouTube Shorts) */
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .arena-fullscreen-stage {
+  width: min(100vw, calc(100dvh * 9 / 16)) !important;
+  max-width: min(100vw, calc(100dvh * 9 / 16)) !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  padding: 8px 4px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  overflow: hidden !important;
+  background: #0b0f19 !important;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.14), 0 28px 90px rgba(0, 0, 0, 0.95) !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .hud-unified-top-bar,
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .hud-unified-bottom-bar {
+  position: relative !important;
+  top: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .hud-top-pill,
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .hud-bottom-strip-inner {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  justify-content: center !important;
+  flex-wrap: wrap !important;
+  gap: 5px !important;
+  padding: 5px 8px !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .hud-strip-divider,
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .hud-phase-segment {
+  display: none !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .arena-fullscreen-stage > .cpa-battlefield-surface,
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .cpa-battlefield-surface {
+  flex: 1 1 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 10px 6px !important;
+  gap: 6px !important;
+  box-sizing: border-box !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .cpa-lane-slots {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+  width: 100% !important;
+  padding: 0 10px !important;
+  box-sizing: border-box !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .cpa-slot {
+  width: 100% !important;
+  max-width: 72px !important;
+  min-width: 0 !important;
+  height: 100px !important;
+  margin: 0 auto !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .card-frame.mode-board.cpa-board-token,
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .tabletop-facedown-card {
+  width: 100% !important;
+  max-width: 70px !important;
+  min-width: 0 !important;
+  height: 96px !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .cpa-token-header {
+  height: 15px !important;
+  padding: 1px 3px !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .cpa-token-name {
+  font-size: 0.48rem !important;
+}
+
+.arena-main-column.cpa-arena-table.is-cinema-studio-active.cinema-aspect-9-16 .cpa-pt-plate {
+  min-width: 28px !important;
+  height: 16px !important;
+  font-size: 0.58rem !important;
+  padding: 0 4px !important;
 }

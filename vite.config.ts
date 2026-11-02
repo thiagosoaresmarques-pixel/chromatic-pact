@@ -108,6 +108,13 @@ export default defineConfig({
             return 'ai-weights';
           }
           if (
+            norm.includes('tournamentSpectatorEngine') ||
+            norm.includes('liveArenaFeedEngine') ||
+            norm.includes('arenaVideoRecorder')
+          ) {
+            return 'arena-spectator';
+          }
+          if (
             norm.includes('/src/utils/') ||
             norm.includes('/src/data/problems') ||
             norm.includes('epicPoemEvents') ||
@@ -116,6 +123,9 @@ export default defineConfig({
             norm.includes('cardTextFormatter')
           ) {
             return 'app-utils';
+          }
+          if (norm.includes('/src/engine/aiEngine')) {
+            return 'engine-ai';
           }
           if (norm.includes('/src/engine/')) {
             return 'engine-core';

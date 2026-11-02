@@ -13,6 +13,7 @@ export type AdsConversionEventName =
   | 'first_card_played'
   | 'match_victory'
   | 'register_account'
+  | 'join_tournament'
   | 'open_pack'
   | 'save_deck'
   | 'install_pwa';

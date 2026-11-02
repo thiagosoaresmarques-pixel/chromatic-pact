@@ -13,6 +13,7 @@ import {
   subscribeMultiplayerBus,
 } from '../utils/multiplayerEngine';
 import { playSfx } from '../utils/soundEngine';
+import { trackAdsEvent } from '../utils/adsTelemetry';
 import {
   ComputedRoundPairing,
   ComputedTournamentSnapshot,
@@ -574,6 +575,11 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
         unlockedCardIds,
       });
       playSfx('ascend');
+      trackAdsEvent('join_tournament', {
+        tournamentId: snapshot.definition.id,
+        tournamentTitle: snapshot.definition.title,
+        deckDomain: entry.primaryDomain,
+      });
       setCatalog((prev) => {
         const prevList = prev.entriesByTournament[snapshot.definition.id] ?? [];
         const clean = entry.username.trim().toLowerCase();

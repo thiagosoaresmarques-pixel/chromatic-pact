@@ -1,19 +1,225 @@
 /**
- * SCRIPT DE OTIMIZAÇÃO DIÁRIA AUTOMÁTICA — CHROMATIC PACT
+ * SCRIPT DE OTIMIZAÇÃO DIÁRIA AUTOMÁTICA + UPGRADE DE TORNEIOS DIÁRIOS (V2) — CHROMATIC PACT
  * Frequência recomendada no Google Ads: Diariamente (ex.: 07:00 da manhã)
  *
- * O que este script faz automaticamente todos os dias:
- * 1. Trava de Segurança de Orçamento: Garante que o orçamento diário nunca passe de R$ 50,00.
- * 2. Pausa de Palavras-Chave com CTR Baixo: Pausa termos com >= 150 impressões e CTR < 1,5%
- *    nos últimos 14 dias (protege o Índice de Qualidade da conta).
- * 3. Ajuste Dinâmico de Lances (Bid Optimization):
- *    - Palavras-chave campeãs (CTR >= 6% e >= 3 cliques): +12% no lance (teto máx. R$ 3,50).
- *    - Palavras-chave caras com baixo retorno (CPC médio > R$ 2,60 e CTR < 3,5%): -15% no lance (piso R$ 0,80).
- *    - Palavras-chave travadas sem entrega (0 impressões quando a campanha já tem tráfego): +10% (até R$ 3,00).
- * 4. Blindagem Automática de Termos de Pesquisa (Auto-Negativação):
- *    - Varre os termos reais digitados pelos usuários nos últimos 7 dias e negativa automaticamente
- *      qualquer termo com palavras de jogos de azar/apostas/pirataria/físico ou termos com >= 100 impressões e 0 cliques.
+ * O que este script faz automaticamente:
+ * 1. Auto-Upgrade Idempotente para Torneios Diários às 19h (sem zerar aprendizado):
+ *    - Garante o anúncio RSA atualizado no GA1 (Torneios Diários às 19h + 1.038 Cartas),
+ *    - Garante o GA3 dedicado ("GA3 - Torneios de Card Game Online" -> ?tab=tournaments),
+ *    - Garante os 4 Sitelinks oficiais (Torneios às 19h, Ranking ELO, Campanha, Grimório),
+ *    - Garante o impulso de +15% no horário pré-torneio (16h00 às 20h00).
+ * 2. Trava de Segurança de Orçamento: Nunca passa de R$ 50,00/dia.
+ * 3. Pausa de Palavras-Chave com CTR Baixo (< 1,5% após 150+ impressões).
+ * 4. Ajuste Dinâmico de Lances (+12% nas campeãs, -15% nas caras de baixo CTR, +10% nas travadas).
+ * 5. Blindagem Automática de Termos de Pesquisa Negativos (jogos de azar, apostas, físico, APK/mod).
  */
+
+function hasRsaWithPath2(adGroup, path2Value) {
+  var adIter = adGroup.ads()
+    .withCondition("Type = RESPONSIVE_SEARCH_AD")
+    .withCondition("Status != REMOVED")
+    .get();
+  while (adIter.hasNext()) {
+    var ad = adIter.next();
+    try {
+      if (ad.asType().responsiveSearchAd().getPath2() === path2Value) {
+        return true;
+      }
+    } catch (e) {}
+  }
+  return false;
+}
+
+function ensureKeywordsExist(adGroup, keywords, cpc) {
+  var existing = {};
+  var kwIter = adGroup.keywords()
+    .withCondition("Status != REMOVED")
+    .get();
+  while (kwIter.hasNext()) {
+    existing[kwIter.next().getText().toLowerCase()] = true;
+  }
+  for (var i = 0; i < keywords.length; i++) {
+    if (!existing[keywords[i].toLowerCase()]) {
+      adGroup.newKeywordBuilder().withText(keywords[i]).withCpc(cpc).build();
+    }
+  }
+}
+
+function ensureTournamentUpgradeApplied(campaign) {
+  var finalUrl = 'https://chromaticpact.com/';
+  var tournamentsUrl = 'https://chromaticpact.com/?tab=tournaments';
+
+  // A) Adiciona RSA com foco em Torneios Diários às 19h no GA1 existente (sem apagar o RSA antigo em aprendizado)
+  var ag1Iter = campaign.adGroups()
+    .withCondition("Name = 'GA1 - Card Games e TCG Online'")
+    .withCondition("Status != REMOVED")
+    .get();
+  if (ag1Iter.hasNext()) {
+    var ag1 = ag1Iter.next();
+    if (!hasRsaWithPath2(ag1, 'Torneios19h')) {
+      ag1.newAd().responsiveSearchAdBuilder()
+        .withFinalUrl(finalUrl)
+        .withPath1('CardGame')
+        .withPath2('Torneios19h')
+        .withHeadlines([
+          'Torneios Diários às 19h',
+          'Chromatic Pact - Card Game',
+          'Inscrição Grátis • Sem Baixar',
+          'Suba no Ranking ELO Ao Vivo',
+          'TCG Tático de Dark Fantasy',
+          '1.038 Cartas Ilustradas',
+          'Torneio Suíço Valendo Cartas',
+          'Jogue Grátis no Navegador',
+          'Monte Seu Grimório Lendário',
+          'Duelos Táticos 1v1 Ao Vivo',
+          'Alternativa a MTG e Yu-Gi-Oh',
+          'Card Game 100% em Português'
+        ])
+        .withDescriptions([
+          'Dispute Torneios Suíços diários às 19h valendo Cartas Lendárias. Inscrição 100% grátis!',
+          'Card game tático Dark Fantasy com 1.038 cartas no navegador (PC e celular), sem baixar!',
+          'Suba no Ranking ELO ao vivo, monte seu grimório em 6 domínios e desafie Grão-Soberanos!',
+          'Campanha solo com 190 confrontos, duelos 1v1 e torneios diários em chromaticpact.com!'
+        ])
+        .build();
+      Logger.log('[Auto-Upgrade] RSA de Torneios Diários às 19h adicionado ao GA1.');
+    }
+  }
+
+  // B) Garante o Grupo de Anúncios dedicado GA3 - Torneios de Card Game Online -> ?tab=tournaments
+  var ag3Iter = campaign.adGroups()
+    .withCondition("Name = 'GA3 - Torneios de Card Game Online'")
+    .withCondition("Status != REMOVED")
+    .get();
+  var ag3 = null;
+  if (ag3Iter.hasNext()) {
+    ag3 = ag3Iter.next();
+  } else {
+    var ag3Op = campaign.newAdGroupBuilder()
+      .withName('GA3 - Torneios de Card Game Online')
+      .withCpc(2.65)
+      .withStatus('ENABLED')
+      .build();
+    if (ag3Op.isSuccessful()) {
+      ag3 = ag3Op.getResult();
+      Logger.log('[Auto-Upgrade] Grupo GA3 - Torneios de Card Game Online criado.');
+    }
+  }
+
+  if (ag3) {
+    if (!hasRsaWithPath2(ag3, 'As-19h')) {
+      ag3.newAd().responsiveSearchAdBuilder()
+        .withFinalUrl(tournamentsUrl)
+        .withPath1('Torneios')
+        .withPath2('As-19h')
+        .withHeadlines([
+          'Torneios Diários às 19h',
+          'Torneio de Card Game Online',
+          'Inscrição 100% Gratuita',
+          'Formato Suíço Competitivo',
+          'Ganhe Cartas Lendárias',
+          'Ranking ELO Oficial Ao Vivo',
+          'Jogue no Navegador Sem Baixar',
+          'Chromatic Pact - TCG Tático',
+          '1.038 Cartas • 6 Domínios',
+          'Alternativa Competitiva a MTG',
+          'Assista às Mesas Ao Vivo',
+          'Entre Hoje na Rodada das 19h'
+        ])
+        .withDescriptions([
+          'Participe dos Torneios Suíços todos os dias às 19h com inscrição grátis e ganhe Lendárias!',
+          'Suba no Ranking ELO ao vivo em um TCG tático com 1.038 cartas direto no navegador.',
+          'Monte seu grimório grátis sem baixar (PC e celular) e dispute o torneio de hoje às 19h!',
+          'Acompanhe duelos em tempo real, estude replays táticos e conquiste o topo de Vaeloria.'
+        ])
+        .build();
+    }
+    ensureKeywordsExist(ag3, [
+      '"torneio card game online"',
+      '"campeonato card game"',
+      '"torneio jogo de cartas online"',
+      '"card game competitivo"',
+      '"tcg competitivo gratis"',
+      '"card game ranking online"',
+      '"jogo de cartas competitivo"',
+      '"torneio tcg online"',
+      '"card game campeonato gratis"'
+    ], 2.65);
+  }
+
+  // C) Sitelinks diretos (?tab=tournaments, ?tab=leaderboard, ?tab=campaign, ?tab=deckbuilder)
+  var sitelinkSpecs = [
+    {
+      linkText: 'Torneios Diários às 19h',
+      finalUrl: 'https://chromaticpact.com/?tab=tournaments',
+      desc1: 'Inscrição 100% gratuita todo dia',
+      desc2: 'Formato Suíço valendo Lendárias'
+    },
+    {
+      linkText: 'Ranking ELO Ao Vivo',
+      finalUrl: 'https://chromaticpact.com/?tab=leaderboard',
+      desc1: 'Veja os duelos ao vivo na mesa',
+      desc2: 'Suba de divisão na liga oficial'
+    },
+    {
+      linkText: 'Campanha Dark Fantasy',
+      finalUrl: 'https://chromaticpact.com/?tab=campaign',
+      desc1: '190 confrontos táticos de história',
+      desc2: 'Jogue grátis no PC ou celular'
+    },
+    {
+      linkText: 'Forjar Grimório (1.038)',
+      finalUrl: 'https://chromaticpact.com/?tab=deckbuilder',
+      desc1: 'Combine 6 domínios elementais',
+      desc2: 'Monte seu deck direto no navegador'
+    }
+  ];
+
+  var existingTexts = {};
+  try {
+    var slIter = campaign.extensions().sitelinks().get();
+    while (slIter.hasNext()) {
+      existingTexts[slIter.next().getLinkText()] = true;
+    }
+  } catch (e) {}
+
+  for (var s = 0; s < sitelinkSpecs.length; s++) {
+    var sp = sitelinkSpecs[s];
+    if (existingTexts[sp.linkText]) continue;
+    try {
+      var slOp = AdsApp.extensions().newSitelinkBuilder()
+        .withLinkText(sp.linkText)
+        .withFinalUrl(sp.finalUrl)
+        .withDescription1(sp.desc1)
+        .withDescription2(sp.desc2)
+        .build();
+      if (slOp.isSuccessful()) {
+        campaign.addSitelink(slOp.getResult());
+        Logger.log('[Auto-Upgrade] Sitelink adicionado: ' + sp.linkText);
+      }
+    } catch (e) {}
+  }
+
+  // D) Programação de lance +15% na janela pré-torneio (16h00 às 20h00)
+  var days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+  var existingDays = {};
+  try {
+    var schedIter = campaign.targeting().adSchedules().get();
+    while (schedIter.hasNext()) {
+      var sc = schedIter.next();
+      if (sc.getStartHour() === 16 && sc.getEndHour() === 20) {
+        existingDays[sc.getDayOfWeek()] = true;
+      }
+    }
+  } catch (e) {}
+
+  for (var d = 0; d < days.length; d++) {
+    if (existingDays[days[d]]) continue;
+    try {
+      campaign.addAdSchedule(days[d], 16, 0, 20, 0, 1.15);
+    } catch (e) {}
+  }
+}
 
 function main() {
   var MAX_DAILY_BUDGET = 50.00;
@@ -34,6 +240,10 @@ function main() {
   while (campaignIter.hasNext()) {
     var campaign = campaignIter.next();
     var campName = campaign.getName();
+
+    // 0. Garante o upgrade de Torneios Diários às 19h + Sitelinks sem perder aprendizado
+    ensureTournamentUpgradeApplied(campaign);
+
     var stats7d = campaign.getStatsFor('LAST_7_DAYS');
     var campImpr7d = stats7d.getImpressions();
     var campClicks7d = stats7d.getClicks();
@@ -74,7 +284,7 @@ function main() {
       var s7 = kw.getStatsFor('LAST_7_DAYS');
 
       var impr14 = s14.getImpressions();
-      var ctr14 = s14.getCtr(); // decimal (0.015 = 1.5%)
+      var ctr14 = s14.getCtr();
 
       var impr7 = s7.getImpressions();
       var clicks7 = s7.getClicks();
@@ -82,14 +292,11 @@ function main() {
       var avgCpc7 = s7.getAverageCpc();
       var cost7 = s7.getCost();
 
-      // Obtém lance atual da palavra-chave (ou do grupo de anúncios)
       var currentCpc = kw.bidding().getCpc();
       if (!currentCpc || currentCpc <= 0) {
         currentCpc = kw.getAdGroup().bidding().getCpc() || DEFAULT_CPC;
       }
 
-      // REGRA A: Pausar palavras-chave com muitas impressões e CTR muito baixo (< 1,5% após 150+ impressões)
-      // ou alto gasto (> R$ 25 na semana) com CTR pífio (< 1,2%)
       if ((impr14 >= 150 && ctr14 < 0.015) || (cost7 >= 25.0 && ctr7 < 0.012)) {
         try {
           kw.pause();
@@ -101,7 +308,6 @@ function main() {
         }
       }
 
-      // REGRA B: Palavra-chave Campeã (CTR >= 6% e pelo menos 3 cliques nos últimos 7 dias) -> Impulsiona +12% até o teto de R$ 3,50
       if (clicks7 >= 3 && ctr7 >= 0.06 && currentCpc < MAX_CPC_CEILING) {
         var boostedCpc = Math.min(MAX_CPC_CEILING, Math.round(currentCpc * 1.12 * 100) / 100);
         if (boostedCpc > currentCpc) {
@@ -114,7 +320,6 @@ function main() {
         }
       }
 
-      // REGRA C: Palavra-chave Cara com CTR moderado/baixo (Cliques >= 3, CPC médio > R$ 2,60 e CTR < 3,5%) -> Reduz -15% para economizar verba
       if (clicks7 >= 3 && avgCpc7 > 2.60 && ctr7 < 0.035 && currentCpc > MIN_CPC_FLOOR) {
         var reducedCpc = Math.max(MIN_CPC_FLOOR, Math.round(currentCpc * 0.85 * 100) / 100);
         if (reducedCpc < currentCpc) {
@@ -127,7 +332,6 @@ function main() {
         }
       }
 
-      // REGRA D: Palavra-chave sem entrega (0 impressões nos últimos 7 dias quando a campanha já tem >= 100 impressões) -> +10% até R$ 3,00
       if (campImpr7d >= 100 && impr7 === 0 && currentCpc < 3.00) {
         var nudgeCpc = Math.min(3.00, Math.round(currentCpc * 1.10 * 100) / 100);
         if (nudgeCpc > currentCpc) {
@@ -148,7 +352,7 @@ function main() {
     // 3. Mineração Automática de Termos de Pesquisa Negativos (Últimos 7 dias)
     var badTokens = [
       'truco', 'poker', 'buraco', 'cacheta', 'paciencia', 'solitaire',
-      'cassino', 'aposta', 'bet', 'tigrinho', 'dinheiro', 'pix',
+      'cassino', 'aposta', 'bet', 'tigrinho', 'dinheiro', 'pix', 'renda extra',
       'tarot', 'cigano', 'horoscopo', 'comprar', 'mercado livre',
       'shopee', 'amazon', 'pdf', 'livro', 'apk', 'mod', 'hack', 'cheat'
     ];
@@ -198,6 +402,6 @@ function main() {
     }
 
     Logger.log('[Blindagem de Termos] ' + negAdded + ' novos termos negativados hoje.');
-    Logger.log('=== OTIMIZAÇÃO DIÁRIA CONCLUÍDA COM SUCESSO ===');
+    Logger.log('=== OTIMIZAÇÃO DIÁRIA + UPGRADE V2 CONCLUÍDOS COM SUCESSO ===');
   }
 }

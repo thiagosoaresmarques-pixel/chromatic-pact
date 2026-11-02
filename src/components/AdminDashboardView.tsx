@@ -180,6 +180,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     const registeredFromSessions = visitorSessions.filter(
       (s) => s.events.includes('register_account') || Boolean(s.registeredUsername)
     ).length;
+    const joinedTournamentSessions = visitorSessions.filter((s) =>
+      s.events.includes('join_tournament')
+    ).length;
 
     const buildChannelMetric = (ch: TrafficChannelId) => {
       const list = visitorSessions.filter((s) => classifyVisitorChannel(s) === ch);
@@ -219,6 +222,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       firstCardSessions,
       victorySessions,
       registeredFromSessions,
+      joinedTournamentSessions,
       channelBreakdown,
     };
   }, [profiles, visitorSessions]);
@@ -2273,6 +2277,11 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   label: '6. Criaram Conta Soberana (register_account)',
                   count: Math.max(stats.registeredFromSessions, stats.totalUsers),
                   color: '#fbbf24',
+                },
+                {
+                  label: '7. Inscreveram-se em Torneio Diário (join_tournament)',
+                  count: stats.joinedTournamentSessions,
+                  color: '#f97316',
                 },
               ].map((step) => {
                 const denom = Math.max(1, stats.totalVisitors);

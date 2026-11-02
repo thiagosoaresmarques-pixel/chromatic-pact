@@ -119,7 +119,11 @@ import {
   TournamentPersonalReward,
   upsertHumanTournamentEntryToCloud,
 } from './utils/tournamentEngine';
-import { fetchCommunityDiscordConfigFromCloud } from './utils/discordCommunityEngine';
+import {
+  autoDispatchDiscordTournamentHerald,
+  fetchCommunityDiscordConfigFromCloud,
+  getCommunityDiscordConfig,
+} from './utils/discordCommunityEngine';
 import {
   buildPersonalReplaySpectatorContext,
   fetchSharedPersonalReplay,
@@ -1344,6 +1348,30 @@ export const App: React.FC = () => {
           ) {
             deliverPersonalTournamentReward(snap.myPersonalReward, snap.myEntry);
           }
+        }
+
+        // 3. Automatic Idempotent Discord Herald (Call T-45m & Homologated Results T+0m)
+        const discordCfg = getCommunityDiscordConfig();
+        if (discordCfg.webhookUrl) {
+          void autoDispatchDiscordTournamentHerald({
+            webhookUrl: discordCfg.webhookUrl,
+            nowMs: snap.nowMs,
+            tournamentId: def.id,
+            title: def.title,
+            startsAtMs: def.startsAtMs,
+            endsAtMs: def.endsAtMs,
+            totalRounds: def.totalRounds,
+            turnTimeLimitSec: def.turnTimeLimitSec,
+            prizeHeadline: def.prizeSpec.label,
+            isSundayPix: def.prizeSpec.kind === 'cash_brl_pix',
+            cashBrl: def.prizeSpec.cashBrl,
+            phase: snap.phase,
+            top3: snap.standings.slice(0, 3).map((s) => ({
+              rank: s.rank,
+              name: s.displayName,
+              points: s.points,
+            })),
+          });
         }
       }
     };

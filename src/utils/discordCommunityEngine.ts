@@ -377,3 +377,139 @@ export async function postTournamentResultsToDiscordWebhook(params: {
     };
   }
 }
+
+// ============================================================================
+// AUTOMATIC IDEMPOTENT CLOUD HERALD (GITHUB ACTIONS CRON + IN-APP BACKUP)
+// ============================================================================
+
+const CLOUD_HERALD_LOG_ROW = '__discord_herald_log__:global';
+const inMemoryHeraldSeen = new Set<string>();
+
+async function fetchHeraldDispatchedKeysFromCloud(): Promise<string[]> {
+  const supa = getSupabaseConfig();
+  if (!supa.isConfigured) return Array.from(inMemoryHeraldSeen);
+
+  try {
+    const res = await fetch(
+      `${supa.url}/rest/v1/sovereign_profiles?username=eq.${encodeURIComponent(
+        CLOUD_HERALD_LOG_ROW
+      )}&select=title&limit=1`,
+      {
+        headers: {
+          apikey: supa.anonKey,
+          Authorization: `Bearer ${supa.anonKey}`,
+        },
+      }
+    );
+    if (!res.ok) return Array.from(inMemoryHeraldSeen);
+    const rows = (await res.json()) as Array<{ title?: string }>;
+    if (!rows[0]?.title) return [];
+    const parsed = JSON.parse(rows[0].title) as { keys?: string[] };
+    const list = Array.isArray(parsed?.keys) ? parsed.keys : [];
+    for (const k of list) inMemoryHeraldSeen.add(k);
+    return list;
+  } catch {
+    return Array.from(inMemoryHeraldSeen);
+  }
+}
+
+async function saveHeraldDispatchedKeyToCloud(newKey: string, existingKeys: string[]): Promise<boolean> {
+  inMemoryHeraldSeen.add(newKey);
+  const nextKeys = Array.from(new Set([...existingKeys, newKey])).slice(-80);
+  const supa = getSupabaseConfig();
+  if (!supa.isConfigured) return true;
+
+  try {
+    const res = await fetch(`${supa.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
+      method: 'POST',
+      headers: {
+        apikey: supa.anonKey,
+        Authorization: `Bearer ${supa.anonKey}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates',
+      },
+      body: JSON.stringify({
+        username: CLOUD_HERALD_LOG_ROW,
+        title: JSON.stringify({ keys: nextKeys, updatedAtMs: Date.now() }),
+        avatar_card_id: 'neutral_10_valkyra_pentacromatica',
+        elo_rating: 1000,
+        pvp_wins: 0,
+        pvp_losses: 0,
+        gold: 0,
+        updated_at: new Date().toISOString(),
+      }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function autoDispatchDiscordTournamentHerald(params: {
+  webhookUrl: string;
+  nowMs: number;
+  tournamentId: string;
+  title: string;
+  startsAtMs: number;
+  endsAtMs: number;
+  totalRounds: number;
+  turnTimeLimitSec: number;
+  prizeHeadline: string;
+  isSundayPix?: boolean;
+  cashBrl?: number;
+  phase: 'registration' | 'round_active' | 'round_break' | 'finished';
+  top3: Array<{ rank: number; name: string; points: number }>;
+}): Promise<'dispatched_call' | 'dispatched_results' | 'noop'> {
+  const cleanWebhook = params.webhookUrl.trim();
+  if (!cleanWebhook) return 'noop';
+
+  const isCallWindow =
+    params.nowMs >= params.startsAtMs - 45 * 60_000 &&
+    params.nowMs < params.startsAtMs + 20 * 60_000 &&
+    params.phase !== 'finished';
+
+  const isResultsWindow =
+    params.phase === 'finished' &&
+    params.nowMs >= params.endsAtMs &&
+    params.nowMs <= params.endsAtMs + 6 * 3600_000;
+
+  if (!isCallWindow && !isResultsWindow) return 'noop';
+
+  const targetKey = isResultsWindow
+    ? `result::${params.tournamentId}`
+    : `call::${params.tournamentId}`;
+
+  if (inMemoryHeraldSeen.has(targetKey)) return 'noop';
+
+  const cloudKeys = await fetchHeraldDispatchedKeysFromCloud();
+  if (cloudKeys.includes(targetKey)) return 'noop';
+
+  // Claim lock in Supabase first to prevent multi-client duplicate posts
+  const locked = await saveHeraldDispatchedKeyToCloud(targetKey, cloudKeys);
+  if (!locked) return 'noop';
+
+  if (isResultsWindow) {
+    const res = await postTournamentResultsToDiscordWebhook({
+      webhookUrl: cleanWebhook,
+      tournamentId: params.tournamentId,
+      title: params.title,
+      totalRounds: params.totalRounds,
+      top3: params.top3,
+    });
+    return res.ok ? 'dispatched_results' : 'noop';
+  }
+
+  const res = await postTournamentCallToDiscordWebhook({
+    webhookUrl: cleanWebhook,
+    tournamentId: params.tournamentId,
+    title: params.title,
+    startsAtMs: params.startsAtMs,
+    endsAtMs: params.endsAtMs,
+    totalRounds: params.totalRounds,
+    turnTimeLimitSec: params.turnTimeLimitSec,
+    prizeHeadline: params.prizeHeadline,
+    isSundayPix: params.isSundayPix,
+    cashBrl: params.cashBrl,
+  });
+  return res.ok ? 'dispatched_call' : 'noop';
+}

@@ -12,7 +12,9 @@
     "train:mono": "node --import tsx src/scripts/trainMonocolorEvolution.ts",
     "train:bicolor": "node --import tsx src/scripts/trainBicolorEvolution.ts",
     "train:polycolor": "node --import tsx src/scripts/trainPolycolorEvolution.ts",
-    "tournament:unified": "node --import tsx src/scripts/runUnifiedTournament.ts"
+    "tournament:unified": "node --import tsx src/scripts/runUnifiedTournament.ts",
+    "discord:herald": "node --import tsx src/scripts/runDiscordTournamentHerald.ts",
+    "discord:provision": "node scripts/provisionDiscordServer.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

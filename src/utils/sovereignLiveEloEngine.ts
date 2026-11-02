@@ -10,15 +10,14 @@ export const ROLLING_STAGGER_MS = Math.floor(ROLLING_CYCLE_MS / ROLLING_TABLE_CO
 const BUCKET_ALL_SLOTS_DONE_OFFSET_MS =
   (ROLLING_TABLE_COUNT - 1) * ROLLING_STAGGER_MS + ROLLING_MATCH_SPAN_MS;
 
-const CLOUD_LIVE_ELO_ROW = '__sovereign_live_elo_v1__:global';
-const LOCAL_LIVE_ELO_CACHE_KEY = 'chromatic_pact_sovereign_live_elo_v1';
+const CLOUD_LIVE_ELO_ROW = '__sovereign_live_elo_v2__:global';
+const LOCAL_LIVE_ELO_CACHE_KEY = 'chromatic_pact_sovereign_live_elo_v2';
 const DEFAULT_SUPABASE_URL = 'https://hpsrvsjcenkvikmipgik.supabase.co';
 const DEFAULT_SUPABASE_KEY = 'sb_publishable_Uk8HZmNDvhNLHIaosigqfA_raWP3k9l';
 
 const ARENA_K_FACTOR = 16;
-const TOURNAMENT_K_FACTOR = 14;
-const MEAN_REVERSION_RATE = 0.032;
-const MAX_ELO_DRIFT = 135;
+const TOURNAMENT_K_FACTOR = 16;
+const HUMAN_DUEL_SOVEREIGN_K_FACTOR = 16;
 const INITIAL_BACKFILL_BUCKETS = 660; // ~24h of organic arena matches on cold genesis
 const MAX_STEP_CATCHUP_BUCKETS = 1200; // bounded O(1) execution (< 2ms)
 const RECENT_DELTA_WINDOW_MS = 15 * 60_000; // 15 minutes
@@ -199,17 +198,12 @@ function applyPairMatchToStats(
 
   const expA = 1 / (1 + Math.pow(10, (curEloB - curEloA) / 400));
   const scoreA = outcome === 'A_WIN' ? 1 : outcome === 'B_WIN' ? 0 : 0.5;
-  const scoreB = 1 - scoreA;
 
   const rawStepA = kFactor * (scoreA - expA);
-  const rawStepB = kFactor * (scoreB - (1 - expA));
+  const rawStepB = -rawStepA;
 
-  const nextDEloA = round1(
-    clamp(prevA[0] * (1 - MEAN_REVERSION_RATE) + rawStepA, -MAX_ELO_DRIFT, MAX_ELO_DRIFT)
-  );
-  const nextDEloB = round1(
-    clamp(prevB[0] * (1 - MEAN_REVERSION_RATE) + rawStepB, -MAX_ELO_DRIFT, MAX_ELO_DRIFT)
-  );
+  const nextDEloA = round1(prevA[0] + rawStepA);
+  const nextDEloB = round1(prevB[0] + rawStepB);
 
   const beforeIntA = Math.round(sovA.eloRating + prevA[0]);
   const beforeIntB = Math.round(sovB.eloRating + prevB[0]);
@@ -558,7 +552,7 @@ export async function fetchHydratedLiveSovereignRoster(
 export async function recordHumanVsSovereignLiveMatch(
   sovereignId: string,
   didHumanWin: boolean,
-  humanEloDeltaAbs: number
+  humanOpponentElo: number
 ): Promise<void> {
   if (!BASE_INDEX_BY_ID.has(sovereignId)) return;
   const nowMs = Date.now();
@@ -567,11 +561,12 @@ export async function recordHumanVsSovereignLiveMatch(
   const { nextLedger } = advanceLedgerToBucket(current, nowMs);
 
   const prev = nextLedger.stats[sovereignId] ?? [0, 0, 0];
-  const rawSovStep = clamp(Math.round(Math.max(6, humanEloDeltaAbs * 0.65)), 5, 18) * (didHumanWin ? -1 : 1);
-  const beforeInt = Math.round(base.eloRating + prev[0]);
-  const nextDElo = round1(
-    clamp(prev[0] * (1 - MEAN_REVERSION_RATE) + rawSovStep, -MAX_ELO_DRIFT, MAX_ELO_DRIFT)
-  );
+  const curSovElo = base.eloRating + prev[0];
+  const expSov = 1 / (1 + Math.pow(10, (humanOpponentElo - curSovElo) / 400));
+  const scoreSov = didHumanWin ? 0 : 1;
+  const rawSovStep = HUMAN_DUEL_SOVEREIGN_K_FACTOR * (scoreSov - expSov);
+  const beforeInt = Math.round(curSovElo);
+  const nextDElo = round1(prev[0] + rawSovStep);
   const afterInt = Math.round(base.eloRating + nextDElo);
   const appliedInt = afterInt - beforeInt;
 
@@ -645,13 +640,7 @@ export async function consolidateFinishedSwissTournamentLiveElo(
       const expA = 1 / (1 + Math.pow(10, (p.humanEloB - curA) / 400));
       const scoreA = p.result === 'A_WIN' ? 1 : p.result === 'B_WIN' ? 0 : 0.5;
       const beforeInt = Math.round(curA);
-      const nextDElo = round1(
-        clamp(
-          prev[0] * (1 - MEAN_REVERSION_RATE) + TOURNAMENT_K_FACTOR * (scoreA - expA),
-          -MAX_ELO_DRIFT,
-          MAX_ELO_DRIFT
-        )
-      );
+      const nextDElo = round1(prev[0] + TOURNAMENT_K_FACTOR * (scoreA - expA));
       const afterInt = Math.round(sovA.eloRating + nextDElo);
       nextLedger.stats[sovA.sovereignId] = [
         nextDElo,
@@ -667,13 +656,7 @@ export async function consolidateFinishedSwissTournamentLiveElo(
       const expB = 1 / (1 + Math.pow(10, (p.humanEloA - curB) / 400));
       const scoreB = p.result === 'B_WIN' ? 1 : p.result === 'A_WIN' ? 0 : 0.5;
       const beforeInt = Math.round(curB);
-      const nextDElo = round1(
-        clamp(
-          prev[0] * (1 - MEAN_REVERSION_RATE) + TOURNAMENT_K_FACTOR * (scoreB - expB),
-          -MAX_ELO_DRIFT,
-          MAX_ELO_DRIFT
-        )
-      );
+      const nextDElo = round1(prev[0] + TOURNAMENT_K_FACTOR * (scoreB - expB));
       const afterInt = Math.round(sovB.eloRating + nextDElo);
       nextLedger.stats[sovB.sovereignId] = [
         nextDElo,

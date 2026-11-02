@@ -2496,7 +2496,7 @@ export function recordRankedSovereignDuelResult(
     void recordHumanVsSovereignLiveMatch(
       opponentEntry.sovereignId,
       didWin,
-      Math.abs(newElo - previousElo)
+      previousElo
     );
   }
 

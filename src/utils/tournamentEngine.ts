@@ -338,7 +338,7 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
       const noonId = `copa_meridiana_${dateSlug}_12h30`;
       out.set(noonId, {
         id: noonId,
-        title: `Copa Meridiana de Vaeloria — 12h30`,
+        title: `Copa Meridiana`,
         subtitle: `Sistema Suíço · 5 Rodadas · 30s / turno`,
         startsAtMs: noonStartMs,
         endsAtMs: noonEndMs,
@@ -369,7 +369,7 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
         const nightId = `copa_noturna_${dateSlug}_20h`;
         out.set(nightId, {
           id: nightId,
-          title: `Copa Suíça Noturna — 20h00`,
+          title: `Copa Suíça Noturna`,
           subtitle: `Sistema Suíço · 6 Rodadas · 45s / turno`,
           startsAtMs: nightStartMs,
           endsAtMs: nightEndMs,
@@ -382,7 +382,7 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
           includeAllSovereigns: true,
           prizeSpec: {
             kind: 'unowned_domain_rare_card',
-            label: '1 Carta Rara Inédita (Cor do Grimório)',
+            label: '1 Carta Rara Inédita + 50 Ouro',
             description:
               'Concedida automaticamente ao Campeão da edição noturna ao término da 6ª rodada, sorteada entre as cartas Raras inéditas da cor predominante do seu Grimório (+50 Ouro).',
             goldBonus: 50,
@@ -403,7 +403,7 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
       if (dateIsoPrefix !== '2026-11-01') {
         out.set(sunId, {
           id: sunId,
-          title: `Grande Copa Dominical de Vaeloria — 19h00`,
+          title: `Grande Copa Dominical`,
           subtitle: `Sistema Suíço · 7 Rodadas · 45s / turno`,
           startsAtMs: sunStartMs,
           endsAtMs: sunEndMs,
@@ -416,7 +416,7 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
           includeAllSovereigns: true,
           prizeSpec: {
             kind: 'unowned_domain_legendary_card',
-            label: '1 Carta Lendária (Cor do Grimório)',
+            label: '1 Carta Lendária Inédita + 120 Ouro',
             description:
               'Concedida automaticamente ao Grande Campeão de Domingo ao término da 7ª rodada, sorteada entre as cartas Lendárias inéditas da cor predominante do seu Grimório (+120 Ouro).',
             goldBonus: 120,
@@ -429,8 +429,8 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
     }
   };
 
-  // Yesterday, Today, Tomorrow
-  for (const offset of [-1, 0, 1]) {
+  // Yesterday, Today, Tomorrow, +2d (in case tomorrow is Sunday and Monday is next Night Cup)
+  for (const offset of [-1, 0, 1, 2]) {
     buildDayEditions(offset, false);
   }
   // Ensure the next upcoming Sunday Grand Cup is always visible on the schedule
@@ -443,14 +443,31 @@ export function buildScheduledOfficialTournaments(nowMs: number): SwissTournamen
   }
 
   const minEndKeepMs = nowMs - 36 * 60 * 60 * 1000;
-  const maxDailyStartKeepMs = nowMs + 30 * 60 * 60 * 1000;
-  const maxSundayStartKeepMs = nowMs + 8 * DAY_MS;
+  const candidates = Array.from(out.values()).sort((a, b) => a.startsAtMs - b.startsAtMs);
 
-  return Array.from(out.values()).filter((def) => {
-    if (def.endsAtMs < minEndKeepMs) return false;
-    const isSundayGrandCup = def.id.startsWith('grande_copa_domingo_');
-    return def.startsAtMs <= (isSundayGrandCup ? maxSundayStartKeepMs : maxDailyStartKeepMs);
-  });
+  // Keep recent completed editions + ONLY the single next active/upcoming edition per series!
+  const seenUpcomingSeries = new Set<string>();
+  const filtered: SwissTournamentDefinition[] = [];
+  for (const def of candidates) {
+    if (def.endsAtMs < minEndKeepMs) continue;
+    const isFinished = nowMs >= def.endsAtMs;
+    if (isFinished) {
+      filtered.push(def);
+      continue;
+    }
+    const seriesKey = def.id.startsWith('copa_meridiana_')
+      ? 'meridiana'
+      : def.id.startsWith('copa_noturna_')
+      ? 'noturna'
+      : def.id.startsWith('grande_copa_domingo_')
+      ? 'domingo'
+      : def.id;
+    if (seenUpcomingSeries.has(seriesKey)) continue;
+    seenUpcomingSeries.add(seriesKey);
+    filtered.push(def);
+  }
+
+  return filtered;
 }
 
 let serverClockOffsetMs = 0;
@@ -1544,7 +1561,7 @@ export function computeTournamentSnapshot(
 // 7. SUPABASE CLOUD PERSISTENCE & MULTI-TOURNAMENT CATALOG CACHE
 // ============================================================================
 
-const LOCAL_TOURNAMENT_CATALOG_KEY = 'chromatic_pact_tournament_catalog_v3';
+const LOCAL_TOURNAMENT_CATALOG_KEY = 'chromatic_pact_tournament_catalog_v4';
 const LOCAL_TOURNAMENT_ENTRIES_KEY = 'chromatic_pact_tournament_entries_v2';
 const CLAIMED_TOURNAMENT_PRIZES_KEY = 'chromatic_pact_claimed_tournaments_v1';
 

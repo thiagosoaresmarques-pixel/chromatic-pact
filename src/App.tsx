@@ -739,7 +739,7 @@ export const App: React.FC = () => {
         cleanQueryKeys(['tid', 'tround', 'ttable', 'tframe']);
         try {
           sessionStorage.setItem(
-            'chromatic_pact_tournament_nav_v1',
+            'chromatic_pact_trn_nav_v1',
             JSON.stringify({ tid: tidParam, tview: 'pairings', tround: roundNum })
           );
         } catch {

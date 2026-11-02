@@ -23568,24 +23568,51 @@ input:focus-visible,
 
 .trn-upcoming-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 0.85rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.trn-upcoming-grid.count-1 {
+  grid-template-columns: minmax(0, 560px);
+}
+
+.trn-upcoming-grid.count-2,
+.trn-upcoming-grid.count-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 1060px) {
+  .trn-upcoming-grid,
+  .trn-upcoming-grid.count-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .trn-upcoming-grid,
+  .trn-upcoming-grid.count-1,
+  .trn-upcoming-grid.count-2,
+  .trn-upcoming-grid.count-3,
+  .trn-upcoming-grid.count-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .trn-event-card {
   position: relative;
   overflow: hidden;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.82) 0%, #090d16 100%);
-  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.72) 0%, #0b0f19 100%);
+  border: 1px solid rgba(148, 163, 184, 0.12);
   padding: 1.15rem 1.25rem;
   cursor: pointer;
-  transition: border-color 0.18s ease, transform 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
 }
 
 .trn-event-card:hover {
-  border-color: rgba(212, 175, 55, 0.38);
-  transform: translateY(-1px);
+  border-color: rgba(212, 175, 55, 0.35);
 }
 
 .trn-event-card.is-live {
@@ -23597,14 +23624,14 @@ input:focus-visible,
   top: -8px;
   right: -8px;
   bottom: -8px;
-  width: 46%;
+  width: 42%;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: right center;
-  opacity: 0.13;
+  opacity: 0.1;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 12%, transparent 92%);
-  mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 12%, transparent 92%);
+  -webkit-mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 10%, transparent 90%);
+  mask-image: linear-gradient(to left, rgba(0, 0, 0, 1) 10%, transparent 90%);
 }
 
 .trn-event-card-content {
@@ -23612,7 +23639,8 @@ input:focus-visible,
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  flex: 1 1 auto;
+  gap: 0.8rem;
 }
 
 .trn-event-card-top {
@@ -23628,43 +23656,50 @@ input:focus-visible,
   font-variant-numeric: tabular-nums;
 }
 
+.trn-event-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .trn-event-card-title {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 1.08rem;
+  font-size: 1.06rem;
   font-weight: 700;
   color: #f8fafc;
   letter-spacing: -0.01em;
 }
 
-.trn-event-specs-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.65rem;
-  padding: 0.65rem 0;
+.trn-event-card-sub {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+}
+
+.trn-event-prize-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  margin-top: auto;
   border-top: 1px solid rgba(148, 163, 184, 0.1);
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.trn-spec-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
 .trn-spec-label {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   color: #64748b;
+  flex-shrink: 0;
 }
 
 .trn-spec-val {
-  font-size: 0.8rem;
+  font-size: 0.81rem;
   font-weight: 600;
   color: #e2e8f0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: right;
 }
 
 .trn-spec-val.gold {
@@ -23684,42 +23719,45 @@ input:focus-visible,
   font-variant-numeric: tabular-nums;
 }
 
-/* 5. Hub Completed Tournaments Archive (3 Clean Medalist Slots) */
+/* 5. Hub Completed Tournaments Archive (Clean Non-Wrapping Single-Row Table) */
 .trn-archive-list {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(15, 23, 42, 0.45);
+  overflow: hidden;
 }
 
 .trn-archive-card {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(220px, 1.35fr) minmax(200px, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 0.95rem 1.15rem;
-  border-radius: 12px;
-  background: #0b0f19;
-  border: 1px solid rgba(148, 163, 184, 0.13);
+  gap: 1.25rem;
+  padding: 0.85rem 1.2rem;
+  background: transparent;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: background-color 0.15s ease;
+}
+
+.trn-archive-card:last-child {
+  border-bottom: none;
 }
 
 .trn-archive-card:hover {
-  border-color: rgba(148, 163, 184, 0.3);
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.72);
 }
 
 .trn-archive-info {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  flex: 1 1 260px;
   min-width: 0;
 }
 
 .trn-archive-title {
-  font-size: 0.94rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: #f8fafc;
 }
@@ -23730,27 +23768,11 @@ input:focus-visible,
   font-variant-numeric: tabular-nums;
 }
 
-.trn-archive-medals {
+.trn-archive-champion {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.trn-mini-medal {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.38rem 0.55rem;
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  gap: 0.6rem;
   min-width: 0;
-}
-
-.trn-mini-medal.place-1 {
-  border-color: rgba(212, 175, 55, 0.32);
-  background: rgba(212, 175, 55, 0.05);
 }
 
 .trn-mini-medal-avatar {
@@ -23759,22 +23781,24 @@ input:focus-visible,
   border-radius: 7px;
   object-fit: contain;
   background: #050811;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid rgba(212, 175, 55, 0.35);
   flex-shrink: 0;
-}
-
-.trn-mini-medal.place-1 .trn-mini-medal-avatar {
-  border-color: rgba(212, 175, 55, 0.5);
 }
 
 .trn-mini-medal-text {
   display: flex;
   flex-direction: column;
+  gap: 1px;
   min-width: 0;
 }
 
+.trn-mini-medal-kicker {
+  font-size: 0.66rem;
+  color: #64748b;
+}
+
 .trn-mini-medal-rank {
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #f1f5f9;
   white-space: nowrap;
@@ -23782,10 +23806,32 @@ input:focus-visible,
   text-overflow: ellipsis;
 }
 
-.trn-mini-medal-pts {
-  font-size: 0.69rem;
-  color: #94a3b8;
+.trn-mini-medal-pts-inline {
+  font-weight: 500;
+  color: #fde68a;
   font-variant-numeric: tabular-nums;
+}
+
+.trn-archive-cta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.trn-archive-cta .trn-btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 740px) {
+  .trn-archive-card {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.65rem;
+  }
+
+  .trn-archive-info {
+    grid-column: 1 / -1;
+  }
 }
 
 .trn-mini-medal.place-1 .trn-mini-medal-pts {

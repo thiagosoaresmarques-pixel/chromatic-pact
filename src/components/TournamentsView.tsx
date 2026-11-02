@@ -145,7 +145,10 @@ function compactDisplayName(name: string): string {
 function cleanTournamentTitle(title: string): string {
   return title
     .replace(/\s*—\s*Circuito Suíço Oficial/i, '')
-    .replace(/\s*—\s*Suíço Oficial/i, '');
+    .replace(/\s*—\s*Suíço Oficial/i, '')
+    .replace(/\s*—\s*Edição das\s*\d{1,2}h\d{0,2}/i, '')
+    .replace(/\s*—\s*\d{1,2}h\d{0,2}/i, '')
+    .trim();
 }
 
 const LEGENDARY_BACKDROP_CARDS = ALL_CARDS.filter(
@@ -1317,7 +1320,9 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
               Nenhuma edição aberta no momento.
             </div>
           ) : (
-            <div className="trn-upcoming-grid">
+            <div
+              className={`trn-upcoming-grid count-${Math.min(4, liveAndUpcomingList.length)}`}
+            >
               {liveAndUpcomingList.map((tSnap) => {
                 const isLive = tSnap.phase === 'round_active' || tSnap.phase === 'round_break';
                 const remMs = isLive
@@ -1325,6 +1330,9 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                   : tSnap.definition.startsAtMs - nowMs;
                 const enrolled = Boolean(tSnap.myEntry);
                 const artPath = pickEventBackdropArt(tSnap.definition.id);
+                const cleanPrize = tSnap.definition.prizeSpec.label
+                  .replace(/\s*\(Cor do Grimório\)/i, '')
+                  .trim();
 
                 return (
                   <article
@@ -1353,29 +1361,19 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                         </span>
                       </div>
 
-                      <h3 className="trn-event-card-title">
-                        {cleanTournamentTitle(tSnap.definition.title)}
-                      </h3>
+                      <div className="trn-event-card-head">
+                        <h3 className="trn-event-card-title">
+                          {cleanTournamentTitle(tSnap.definition.title)}
+                        </h3>
+                        <p className="trn-event-card-sub">
+                          Suíço · {tSnap.definition.totalRounds} rodadas ·{' '}
+                          {tSnap.definition.turnTimeLimitSec}s por turno
+                        </p>
+                      </div>
 
-                      <div className="trn-event-specs-grid">
-                        <div className="trn-spec-item">
-                          <span className="trn-spec-label">Formato</span>
-                          <span className="trn-spec-val">
-                            Suíço · {tSnap.definition.totalRounds} rodadas
-                          </span>
-                        </div>
-                        <div className="trn-spec-item">
-                          <span className="trn-spec-label">Ritmo</span>
-                          <span className="trn-spec-val">
-                            {tSnap.definition.turnTimeLimitSec}s / turno
-                          </span>
-                        </div>
-                        <div className="trn-spec-item">
-                          <span className="trn-spec-label">Premiação</span>
-                          <span className="trn-spec-val gold">
-                            {tSnap.definition.prizeSpec.label.replace(/\s*\(Cor do Grimório\)/i, '')}
-                          </span>
-                        </div>
+                      <div className="trn-event-prize-row">
+                        <span className="trn-spec-label">Premiação</span>
+                        <span className="trn-spec-val gold">{cleanPrize}</span>
                       </div>
 
                       <div className="trn-event-card-foot">
@@ -1407,7 +1405,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
           )}
         </section>
 
-        {/* 2. COMPLETED TOURNAMENTS ARCHIVE (CLEAN PODIUM MINI-STRIP, ZERO TRUNCATION) */}
+        {/* 2. COMPLETED TOURNAMENTS ARCHIVE (CLEAN SINGLE-ROW TABLE, ZERO WRAPPING) */}
         <section className="trn-section">
           <div className="trn-section-bar">
             <h2 className="trn-section-title">Edições concluídas</h2>
@@ -1418,7 +1416,8 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
           ) : (
             <div className="trn-archive-list">
               {finishedList.map((fSnap) => {
-                const top3 = fSnap.standings.slice(0, 3);
+                const champion = fSnap.standings[0] ?? null;
+                const champCard = champion ? CARDS_BY_ID[champion.avatarCardId] : null;
                 return (
                   <div
                     key={fSnap.definition.id}
@@ -1426,45 +1425,46 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                     onClick={() => openTournamentDetail(fSnap.definition.id, 'podium')}
                   >
                     <div className="trn-archive-info">
-                      <div className="trn-archive-title">{fSnap.definition.title}</div>
+                      <div className="trn-archive-title">
+                        {cleanTournamentTitle(fSnap.definition.title)}
+                      </div>
                       <div className="trn-archive-meta">
                         {formatBrtFriendlyDate(fSnap.definition.startsAtMs)} ·{' '}
-                        {fSnap.definition.totalRounds} rodadas ·{' '}
-                        {fSnap.totalParticipantsCount} competidores
+                        {formatBrtHourMinute(fSnap.definition.startsAtMs)} ·{' '}
+                        {fSnap.definition.totalRounds} rodadas
                       </div>
                     </div>
 
-                    <div className="trn-archive-medals">
-                      {top3.map((m, idx) => {
-                        const card = CARDS_BY_ID[m.avatarCardId];
-                        return (
-                          <div
-                            key={m.participantId}
-                            className={`trn-mini-medal place-${idx + 1}`}
-                            title={`${idx + 1}º ${m.displayName} (${formatPoints(m.points)} pts)`}
-                          >
-                            {card?.imagePath ? (
-                              <img
-                                src={`${card.imagePath}?v=12`}
-                                alt={m.displayName}
-                                loading="lazy"
-                                className="trn-mini-medal-avatar"
-                              />
-                            ) : (
-                              <div className="trn-mini-medal-avatar" />
-                            )}
-                            <div className="trn-mini-medal-text">
-                              <span className="trn-mini-medal-rank">
-                                {idx + 1}º {compactDisplayName(m.displayName)}
-                              </span>
-                              <span className="trn-mini-medal-pts">
-                                {formatPoints(m.points)} pts
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                    {champion ? (
+                      <div
+                        className="trn-archive-champion"
+                        title={`Campeão: ${champion.displayName} (${formatPoints(
+                          champion.points
+                        )} pts)`}
+                      >
+                        {champCard?.imagePath ? (
+                          <img
+                            src={`${champCard.imagePath}?v=12`}
+                            alt={champion.displayName}
+                            loading="lazy"
+                            className="trn-mini-medal-avatar"
+                          />
+                        ) : (
+                          <div className="trn-mini-medal-avatar" />
+                        )}
+                        <div className="trn-mini-medal-text">
+                          <span className="trn-mini-medal-kicker">Campeão</span>
+                          <span className="trn-mini-medal-rank">
+                            {compactDisplayName(champion.displayName)}{' '}
+                            <span className="trn-mini-medal-pts-inline">
+                              · {formatPoints(champion.points)} pts
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div />
+                    )}
 
                     <div className="trn-archive-cta">
                       <button
@@ -1475,7 +1475,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                           openTournamentDetail(fSnap.definition.id, 'podium');
                         }}
                       >
-                        Ver resultados →
+                        Ver resultados
                       </button>
                     </div>
                   </div>

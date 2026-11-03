@@ -692,7 +692,13 @@ begin
         'is_admin', coalesce(s.is_admin, false)
       ) as row_data
       from public.sovereign_profiles p
-      left join public.sovereign_secrets s on lower(s.username) = lower(p.username)
+      left join lateral (
+        select s2.email, s2.is_admin
+        from public.sovereign_secrets s2
+        where lower(s2.username) = lower(p.username)
+        order by (s2.email <> '') desc, s2.updated_at desc
+        limit 1
+      ) s on true
       where left(p.username, 2) <> '__'
       order by p.updated_at desc
       limit 1000

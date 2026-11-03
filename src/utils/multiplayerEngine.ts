@@ -665,12 +665,19 @@ export function getSavedAccountsRoster(): SovereignUserProfile[] {
       const parsed = JSON.parse(raw) as SovereignUserProfile[];
       if (Array.isArray(parsed)) {
         let anyCleaned = false;
+        const seenLocal = new Set<string>();
         const validFiltered = parsed.filter((a) => {
           if (isUnregisteredProfile(a)) return false;
           if (RETIRED_EXACT_USERNAMES.has(a.username)) {
             anyCleaned = true;
             return false;
           }
+          const key = (a.username || '').trim().toLowerCase();
+          if (!key || seenLocal.has(key)) {
+            anyCleaned = true;
+            return false;
+          }
+          seenLocal.add(key);
           return true;
         });
         const cleanedRoster = validFiltered.map((acc) => {
@@ -703,10 +710,13 @@ export function saveAccountToRoster(profile: SovereignUserProfile): SovereignUse
     return getSavedAccountsRoster();
   }
   const current = getSavedAccountsRoster();
-  const exists = current.some((a) => a.id === profile.id || a.username === profile.username);
+  const normUser = (profile.username || '').trim().toLowerCase();
+  const exists = current.some(
+    (a) => a.id === profile.id || (a.username || '').trim().toLowerCase() === normUser
+  );
   const next = exists
     ? current.map((a) =>
-        a.id === profile.id || a.username === profile.username ? profile : a
+        a.id === profile.id || (a.username || '').trim().toLowerCase() === normUser ? profile : a
       )
     : [...current, profile];
 
@@ -2272,15 +2282,29 @@ export async function fetchAllCloudProfilesForAdmin(): Promise<{
         }
       }
 
+      const profilesByKey = new Map<string, SovereignUserProfile>();
       for (const r of profileRows) {
         if (!r.username || r.username.startsWith('__')) continue;
         if (RETIRED_EXACT_USERNAMES.has(r.username)) continue;
+        const normKey = r.username.trim().toLowerCase();
+        if (!normKey) continue;
         const localMatch = localRoster.find(
-          (a) => a.username.toLowerCase() === r.username.toLowerCase()
+          (a) => a.username.trim().toLowerCase() === normKey
         );
-        profiles.push(hydrateProfileFromRow(r, localMatch));
-        seenUsernames.add(r.username.toLowerCase());
+        const hydrated = hydrateProfileFromRow(r, localMatch);
+        const prev = profilesByKey.get(normKey);
+        if (!prev) {
+          profilesByKey.set(normKey, hydrated);
+        } else {
+          profilesByKey.set(normKey, {
+            ...prev,
+            email: prev.email || hydrated.email,
+            isAdmin: Boolean(prev.isAdmin || hydrated.isAdmin),
+          });
+        }
+        seenUsernames.add(normKey);
       }
+      profiles.push(...profilesByKey.values());
 
       for (const localAcc of localRoster) {
         if (!seenUsernames.has(localAcc.username.toLowerCase())) {
@@ -2340,6 +2364,7 @@ export async function fetchAllCloudProfilesForAdmin(): Promise<{
       }
     }
 
+    const profilesByKey = new Map<string, SovereignUserProfile>();
     for (const r of profileRows) {
       if (!r.username) continue;
       if (r.username === '__admin_global_announcement__') {
@@ -2356,13 +2381,25 @@ export async function fetchAllCloudProfilesForAdmin(): Promise<{
       if (r.username.startsWith('__')) continue;
       if (RETIRED_EXACT_USERNAMES.has(r.username)) continue;
 
+      const normKey = r.username.trim().toLowerCase();
+      if (!normKey) continue;
       const localMatch = localRoster.find(
-        (a) => a.username.toLowerCase() === r.username.toLowerCase()
+        (a) => a.username.trim().toLowerCase() === normKey
       );
       const hydrated = hydrateProfileFromRow(r, localMatch);
-      profiles.push(hydrated);
-      seenUsernames.add(r.username.toLowerCase());
+      const prev = profilesByKey.get(normKey);
+      if (!prev) {
+        profilesByKey.set(normKey, hydrated);
+      } else {
+        profilesByKey.set(normKey, {
+          ...prev,
+          email: prev.email || hydrated.email,
+          isAdmin: Boolean(prev.isAdmin || hydrated.isAdmin),
+        });
+      }
+      seenUsernames.add(normKey);
     }
+    profiles.push(...profilesByKey.values());
 
     for (const localAcc of localRoster) {
       if (!seenUsernames.has(localAcc.username.toLowerCase())) {

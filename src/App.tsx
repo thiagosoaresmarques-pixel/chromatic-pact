@@ -33,10 +33,13 @@ import {
 } from './utils/craftingEngine';
 import {
   claimDailyQuestReward,
+  claimDailyVigilReward,
   DAILY_PROBLEM_BONUS_GOLD,
   getDailyState,
+  getVigilStreakState,
   recordDailyQuestEvent,
 } from './utils/dailyQuestsEngine';
+import { dispatchTournamentBrowserNotification } from './utils/browserNotifications';
 const CardInspectModal = React.lazy(() =>
   import('./components/CardView').then((m) => ({ default: m.CardInspectModal }))
 );
@@ -1057,9 +1060,16 @@ export const App: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isNotifOpen, gold, arenaWins, defeatedBossIds.length, dailyPopoverTick]
   );
+  const vigilState = useMemo(
+    () => getVigilStreakState(isGuest ? null : currentUser.username),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isGuest, currentUser.username, isNotifOpen, dailyPopoverTick]
+  );
   const claimableDailyCount = useMemo(
-    () => dailyPopoverState.quests.filter((q) => q.progress >= q.target && !q.claimed).length,
-    [dailyPopoverState.quests]
+    () =>
+      dailyPopoverState.quests.filter((q) => q.progress >= q.target && !q.claimed).length +
+      (!isGuest && !vigilState.claimedToday ? 1 : 0),
+    [dailyPopoverState.quests, isGuest, vigilState.claimedToday]
   );
 
   const unreadNotifCount = useMemo(
@@ -1324,6 +1334,34 @@ export const App: React.FC = () => {
           isGuest ? null : currentUser.username
         );
 
+        // 0. T-5m Pre-Start Alert for enrolled players
+        if (
+          !isGuest &&
+          snap.phase === 'registration' &&
+          snap.myEntry &&
+          snap.nowMs >= def.startsAtMs - 5 * 60_000 &&
+          snap.nowMs < def.startsAtMs
+        ) {
+          const preKey = `${def.id}::pre5m::${currentUser.username.toLowerCase()}`;
+          if (!notifiedTournamentRoundsRef.current.has(preKey)) {
+            notifiedTournamentRoundsRef.current.add(preKey);
+            const minsLeft = Math.max(1, Math.ceil((def.startsAtMs - snap.nowMs) / 60_000));
+            pushNotification({
+              kicker: 'TORNEIO SUÍÇO EM BREVE',
+              title: `${def.title} começa em ${minsLeft} min`,
+              message: 'Prepare-se no Salão do Torneio para a abertura da Rodada 1.',
+              actionLabel: 'Abrir Salão',
+              actionTarget: 'tournaments',
+            });
+            void dispatchTournamentBrowserNotification({
+              dedupKey: preKey,
+              title: `${def.title} começa em ${minsLeft} min`,
+              body: 'Toque para abrir o Salão do Torneio antes do início da 1ª rodada.',
+              url: '/?tab=tournaments',
+            });
+          }
+        }
+
         // 1. Round-Start Alert if enrolled and not already in an Arena battle
         if (
           !isGuest &&
@@ -1342,6 +1380,12 @@ export const App: React.FC = () => {
               message: `Sua mesa da Rodada ${snap.currentRound} está aberta (${def.turnTimeLimitSec}s por turno).`,
               actionLabel: 'Entrar na Mesa',
               actionTarget: 'tournaments',
+            });
+            void dispatchTournamentBrowserNotification({
+              dedupKey: alertKey,
+              title: `Rodada ${snap.currentRound}/${def.totalRounds} Iniciada`,
+              body: `Sua mesa da ${def.title} está aberta (${def.turnTimeLimitSec}s por turno).`,
+              url: '/?tab=tournaments',
             });
           }
         }
@@ -2725,6 +2769,69 @@ export const App: React.FC = () => {
                     </button>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {!isGuest && (
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '5px 0 6px',
+                          marginBottom: '2px',
+                          borderBottom: '1px solid rgba(148, 163, 184, 0.1)',
+                          fontSize: '0.76rem',
+                          color: vigilState.claimedToday ? '#94a3b8' : '#f8fafc',
+                        }}
+                        title="Presença diária consecutiva em Vaeloria (Dia 7 concede +30 Ouro e +15 Estilhaços Astrais)"
+                      >
+                        <span>
+                          Vigília Soberana{' '}
+                          <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}>
+                            (Dia {vigilState.currentDay}/7)
+                          </span>
+                        </span>
+                        {!vigilState.claimedToday ? (
+                          <button
+                            type="button"
+                            className="nav-notif-mini-btn"
+                            style={{ color: '#fde047', borderColor: 'rgba(250, 204, 21, 0.45)' }}
+                            onClick={() => {
+                              const spec = claimDailyVigilReward(currentUser.username);
+                              if (!spec) return;
+                              setDailyPopoverTick((t) => t + 1);
+                              trackAdsEvent('claim_daily_vigil', {
+                                day: spec.day,
+                                gold: spec.gold,
+                                shards: spec.shards,
+                              });
+                              updateCurrentUserProgression((prev) => ({
+                                gold: (prev.gold ?? 0) + spec.gold,
+                                astralShards: (prev.astralShards ?? 0) + spec.shards,
+                              }));
+                              const nextGold = gold + spec.gold;
+                              pushNotification({
+                                kicker: `VIGÍLIA SOBERANA · DIA ${spec.day}/7`,
+                                title:
+                                  spec.shards > 0
+                                    ? `+${spec.gold} Ouro · +${spec.shards} Estilhaços`
+                                    : `+${spec.gold} Ouro creditados`,
+                                message: `Presença diária registrada. Saldo atual: ${nextGold} Ouro.`,
+                                actionLabel: nextGold >= 30 ? 'Abrir Relicário' : undefined,
+                                actionTarget: nextGold >= 30 ? 'packs' : undefined,
+                              });
+                            }}
+                          >
+                            {vigilState.todayReward.shards > 0
+                              ? `Resgatar +${vigilState.todayReward.gold} / +${vigilState.todayReward.shards}💎`
+                              : `Resgatar +${vigilState.todayReward.gold}`}
+                          </button>
+                        ) : (
+                          <span style={{ fontSize: '0.7rem', color: '#34d399' }}>
+                            ✓ Amanhã +{vigilState.nextReward.gold}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     {dailyPopoverState.quests.map((q) => {
                       const ready = q.progress >= q.target && !q.claimed;
                       return (
@@ -3228,13 +3335,31 @@ export const App: React.FC = () => {
               );
             }}
             onRewardGold={handleRewardGold}
+            gold={gold}
             onMatchConcluded={handleMatchConcluded}
+            onOpenPacks={() => {
+              setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
+              setActiveProblem(null);
+              setActiveOnlineMatch(null);
+              setActiveTab('packs');
+            }}
+            onOpenTournaments={() => {
+              setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
+              setActiveProblem(null);
+              setActiveOnlineMatch(null);
+              setActiveTab('tournaments');
+            }}
             onGuestClaimVictoryAccount={(bonus) =>
               setAccountModalState({
                 open: true,
                 tab: 'create',
                 bonusGold: bonus,
-                contextNotice: `Salve sua vitória e receba +${160 + bonus} Ouro inicial`,
+                contextNotice:
+                  bonus > 0
+                    ? `Salve sua vitória e receba +${160 + bonus} Ouro inicial`
+                    : 'Receba 160 Ouro iniciais (5 pacotes no Relicário) + Grimório Inicial de 100 cartas',
               })
             }
             onOpenLastPersonalReplay={() => {

@@ -1083,6 +1083,13 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     }
 
     setDeckCardIds(nextIds);
+    playSfx('channel');
+    setSaveBanner(
+      nextIds.length === 100
+        ? 'Grimório completado para 100/100 cartas — toque em Salvar grimório.'
+        : `Adicionadas ${nextIds.length - deckCardIds.length} cartas disponíveis (${nextIds.length}/100).`
+    );
+    setTimeout(() => setSaveBanner(null), 3200);
   };
 
   const handleLoadPrebuilt = useCallback(
@@ -2042,6 +2049,17 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
                 ? 'Salvar grimório'
                 : `Salvar (${deckCardIds.length}/100)`}
             </button>
+
+            {deckCardIds.length < 100 && (
+              <button
+                type="button"
+                className="db-action-btn"
+                onClick={handleAutoCompleteDeck}
+                title="Preencher automaticamente as cartas restantes até 100 respeitando domínio e raridade"
+              >
+                Completar 100
+              </button>
+            )}
 
             <details style={{ position: 'relative' }}>
               <summary

@@ -16,7 +16,9 @@ export type AdsConversionEventName =
   | 'join_tournament'
   | 'open_pack'
   | 'save_deck'
-  | 'install_pwa';
+  | 'install_pwa'
+  | 'claim_daily_vigil'
+  | 'enable_tournament_alerts';
 
 export interface AdsAttributionData {
   gclid?: string;

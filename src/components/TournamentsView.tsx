@@ -15,6 +15,12 @@ import {
 import { playSfx } from '../utils/soundEngine';
 import { trackAdsEvent } from '../utils/adsTelemetry';
 import {
+  getBrowserNotificationPermission,
+  getTournamentBrowserAlertsEnabled,
+  isBrowserNotificationSupported,
+  toggleTournamentBrowserAlerts,
+} from '../utils/browserNotifications';
+import {
   ComputedRoundPairing,
   ComputedTournamentSnapshot,
   ComputedTournamentStanding,
@@ -526,6 +532,27 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
       Boolean(readSavedTournamentNav()?.pinnedRound)
   );
   const prevTrackedRoundRef = useRef<number>(0);
+  const [browserAlertsOn, setBrowserAlertsOn] = useState<boolean>(() =>
+    getTournamentBrowserAlertsEnabled()
+  );
+
+  const handleToggleBrowserAlerts = async () => {
+    const res = await toggleTournamentBrowserAlerts();
+    setBrowserAlertsOn(res.enabled);
+    if (res.enabled) {
+      playSfx('channel');
+      trackAdsEvent('enable_tournament_alerts', { tournamentId: snapshot.definition.id });
+      setStatusFeedback(
+        'Alertas ativados: você receberá aviso 5 minutos antes do início e a cada rodada aberta.'
+      );
+    } else if (res.permission === 'denied') {
+      setStatusFeedback(
+        'Permissão bloqueada pelo navegador. Libere notificações no cadeado da barra de endereço ou use "Lembrar na Agenda".'
+      );
+    } else {
+      setStatusFeedback('Alertas de navegador desativados para os torneios.');
+    }
+  };
 
   useEffect(() => {
     try {
@@ -1910,6 +1937,18 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                   />
                   <span>Auto-iniciar</span>
                 </label>
+
+                {isBrowserNotificationSupported() &&
+                  getBrowserNotificationPermission() !== 'denied' && (
+                    <button
+                      type="button"
+                      className="trn-btn trn-btn-ghost"
+                      onClick={() => void handleToggleBrowserAlerts()}
+                      title="Receber notificação do navegador 5 minutos antes e quando cada rodada abrir"
+                    >
+                      {browserAlertsOn ? 'Alerta ativo ✓' : 'Avisar no navegador'}
+                    </button>
+                  )}
 
                 {snapshot.phase === 'registration' && (
                   <a

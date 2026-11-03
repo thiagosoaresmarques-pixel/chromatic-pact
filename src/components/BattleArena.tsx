@@ -208,6 +208,7 @@ export interface CustomSavedDeck {
 export interface BattleArenaProps {
   customDecks: CustomSavedDeck[];
   isGuest?: boolean;
+  gold?: number;
   campaignBoss?: CampaignBoss | null;
   campaignPlayerDeckIds?: string[] | null;
   expeditionBlessingId?: string | null;
@@ -227,6 +228,8 @@ export interface BattleArenaProps {
   onMatchConcluded?: (info: { didWin: boolean; usedDeckId: string | null }) => void;
   onOpenLastPersonalReplay?: () => void;
   onGuestClaimVictoryAccount?: (bonusGold: number) => void;
+  onOpenPacks?: () => void;
+  onOpenTournaments?: () => void;
   onlineMatch?: {
     room: MultiplayerRoom;
     role: 'host' | 'guest';
@@ -438,6 +441,7 @@ function loadSavedBattleSnapshot(
 export const BattleArena: React.FC<BattleArenaProps> = ({
   customDecks,
   isGuest = false,
+  gold = 0,
   campaignBoss,
   campaignPlayerDeckIds,
   expeditionBlessingId,
@@ -457,6 +461,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   onMatchConcluded,
   onOpenLastPersonalReplay,
   onGuestClaimVictoryAccount,
+  onOpenPacks,
+  onOpenTournaments,
   onlineMatch,
   rankedDuelContext,
   tournamentContext,
@@ -8985,6 +8991,41 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               </div>
             )}
 
+            {!isSpectatorMode &&
+              gameState.winner !== 'player' &&
+              isGuest &&
+              !tacticalProblem &&
+              onGuestClaimVictoryAccount && (
+                <div
+                  style={{
+                    padding: '0.65rem 0.85rem',
+                    borderRadius: '8px',
+                    background: 'rgba(15, 23, 42, 0.72)',
+                    border: '1px solid rgba(148, 163, 184, 0.22)',
+                    color: '#e2e8f0',
+                    fontSize: '0.8rem',
+                    marginBottom: '1.15rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '0.75rem',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <span>
+                    Crie sua conta gratuita para receber <strong>160 Ouro</strong> (5 pacotes no Relicário) + Grimório Inicial de 100 cartas.
+                  </span>
+                  <button
+                    type="button"
+                    className="btn-fantasy btn-fantasy-primary"
+                    style={{ padding: '5px 12px', fontSize: '0.78rem' }}
+                    onClick={() => onGuestClaimVictoryAccount(0)}
+                  >
+                    Criar Conta Gratuita
+                  </button>
+                </div>
+              )}
+
             <div style={{ display: 'flex', justifyContent: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
               {tacticalProblem && onSelectProblem && lazyProblemsModule && (() => {
                 const { nextProblem, isCyclingUnsolvedInTier, pendingInCurrentTier } =
@@ -9127,6 +9168,22 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     Voltar ao Mapa
                   </button>
                 )}
+              {!isSpectatorMode &&
+                !isGuest &&
+                !tournamentContext &&
+                !onlineMatch &&
+                !campaignBoss &&
+                !tacticalProblem &&
+                !rankedDuelContext &&
+                (gold >= 30 && onOpenPacks ? (
+                  <button type="button" className="btn-fantasy" onClick={onOpenPacks}>
+                    Abrir Relicário ({Math.floor(gold / 30)})
+                  </button>
+                ) : onOpenTournaments ? (
+                  <button type="button" className="btn-fantasy" onClick={onOpenTournaments}>
+                    Torneios Diários
+                  </button>
+                ) : null)}
               {!isSpectatorMode && !tournamentContext && !onlineMatch && !campaignBoss && !tacticalProblem && onExitArena && (
                 <button type="button" className="btn-fantasy" onClick={onExitArena}>
                   Voltar ao Início

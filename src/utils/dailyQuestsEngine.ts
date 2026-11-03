@@ -320,3 +320,120 @@ export function claimDailyQuestReward(questId: string): {
   }
   return { state, claimedQuest };
 }
+
+// ============================================================================
+// VIGÍLIA SOBERANA (CICLO DE PRESENÇA DIÁRIA D1–D7 — REVELAÇÃO PROGRESSIVA)
+// ============================================================================
+
+export interface VigilDayRewardSpec {
+  day: number; // 1..7
+  gold: number;
+  shards: number;
+}
+
+export const DAILY_VIGIL_REWARDS: ReadonlyArray<VigilDayRewardSpec> = [
+  { day: 1, gold: 5, shards: 0 },
+  { day: 2, gold: 6, shards: 0 },
+  { day: 3, gold: 8, shards: 0 },
+  { day: 4, gold: 10, shards: 0 },
+  { day: 5, gold: 12, shards: 0 },
+  { day: 6, gold: 15, shards: 0 },
+  { day: 7, gold: 30, shards: 15 },
+];
+
+interface StoredVigilStreak {
+  streakDay: number; // 1..7 of last claimed day
+  lastClaimDateKey: string; // YYYY-MM-DD
+}
+
+const VIGIL_STORAGE_PREFIX = 'chromatic_pact_vigil_streak_v1::';
+
+function getYesterdayDateKey(): string {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+export interface VigilStreakStatus {
+  currentDay: number; // 1..7 (either claimed today or ready to claim today)
+  claimedToday: boolean;
+  todayReward: VigilDayRewardSpec;
+  nextReward: VigilDayRewardSpec;
+}
+
+export function getVigilStreakState(username: string | null | undefined): VigilStreakStatus {
+  const defaultSpec = DAILY_VIGIL_REWARDS[0];
+  const secondSpec = DAILY_VIGIL_REWARDS[1];
+  if (!username || typeof window === 'undefined') {
+    return {
+      currentDay: 1,
+      claimedToday: false,
+      todayReward: defaultSpec,
+      nextReward: secondSpec,
+    };
+  }
+
+  const key = `${VIGIL_STORAGE_PREFIX}${username.trim().toLowerCase()}`;
+  const today = getTodayDateKey();
+  const yesterday = getYesterdayDateKey();
+
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw) as StoredVigilStreak;
+      if (parsed && parsed.lastClaimDateKey === today) {
+        const day = Math.min(7, Math.max(1, parsed.streakDay || 1));
+        const todayReward = DAILY_VIGIL_REWARDS[day - 1] ?? defaultSpec;
+        const nextDay = day >= 7 ? 1 : day + 1;
+        return {
+          currentDay: day,
+          claimedToday: true,
+          todayReward,
+          nextReward: DAILY_VIGIL_REWARDS[nextDay - 1] ?? defaultSpec,
+        };
+      }
+      if (parsed && parsed.lastClaimDateKey === yesterday) {
+        const prevDay = Math.min(7, Math.max(1, parsed.streakDay || 1));
+        const nextDay = prevDay >= 7 ? 1 : prevDay + 1;
+        const todayReward = DAILY_VIGIL_REWARDS[nextDay - 1] ?? defaultSpec;
+        const afterNext = nextDay >= 7 ? 1 : nextDay + 1;
+        return {
+          currentDay: nextDay,
+          claimedToday: false,
+          todayReward,
+          nextReward: DAILY_VIGIL_REWARDS[afterNext - 1] ?? defaultSpec,
+        };
+      }
+    }
+  } catch {
+    // ignore storage errors
+  }
+
+  return {
+    currentDay: 1,
+    claimedToday: false,
+    todayReward: defaultSpec,
+    nextReward: secondSpec,
+  };
+}
+
+export function claimDailyVigilReward(username: string): VigilDayRewardSpec | null {
+  if (!username || typeof window === 'undefined') return null;
+  const status = getVigilStreakState(username);
+  if (status.claimedToday) return null;
+
+  const key = `${VIGIL_STORAGE_PREFIX}${username.trim().toLowerCase()}`;
+  const stored: StoredVigilStreak = {
+    streakDay: status.currentDay,
+    lastClaimDateKey: getTodayDateKey(),
+  };
+  try {
+    window.localStorage.setItem(key, JSON.stringify(stored));
+  } catch {
+    // ignore
+  }
+  return status.todayReward;
+}

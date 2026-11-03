@@ -32,4 +32,6 @@ jobs:
         run: npm ci
 
       - name: Run Discord Tournament Herald
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: npm run discord:herald

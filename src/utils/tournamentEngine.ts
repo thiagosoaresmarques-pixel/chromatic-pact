@@ -7,6 +7,7 @@ import { CampaignBoss, CardDefinition, Domain } from '../types/game';
 import {
   getSupabaseConfig,
   SovereignUserProfile,
+  upsertCloudSystemRecord,
 } from './multiplayerEngine';
 import { getConfiguredSundayPixBrl } from './discordCommunityEngine';
 
@@ -1860,32 +1861,16 @@ export async function publishTournamentDefinitionToCloud(
   const nextDefs = [...local.defs.filter((d) => d.id !== def.id), def];
   saveLocalCatalogCache(nextDefs, local.entries);
 
-  const cfg = getSupabaseConfig();
-  if (!cfg.isConfigured) return true;
-
-  try {
-    const res = await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
-      method: 'POST',
-      headers: getHeaders(cfg.anonKey, {
-        'Content-Type': 'application/json',
-        Prefer: 'resolution=merge-duplicates',
-      }),
-      body: JSON.stringify({
-        username: `${CLOUD_META_PREFIX}${def.id}`,
-        title: JSON.stringify(def),
-        avatar_card_id: 'neutral_10_valkyra_pentacromatica',
-        elo_rating: 1000,
-        pvp_wins: def.totalRounds,
-        pvp_losses: 0,
-        gold: 0,
-        updated_at: new Date().toISOString(),
-      }),
-    });
-    updateServerClockOffsetFromHeader(res.headers.get('date'));
-    return res.ok;
-  } catch {
-    return false;
-  }
+  const res = await upsertCloudSystemRecord({
+    key: `${CLOUD_META_PREFIX}${def.id}`,
+    payload: JSON.stringify(def),
+    avatarCardId: 'neutral_10_valkyra_pentacromatica',
+    eloRating: 1000,
+    pvpWins: def.totalRounds,
+    pvpLosses: 0,
+  });
+  updateServerClockOffsetFromHeader(res.serverDateHeader);
+  return res.ok;
 }
 
 export async function upsertHumanTournamentEntryToCloud(
@@ -1902,32 +1887,16 @@ export async function upsertHumanTournamentEntryToCloud(
   );
   saveLocalCatalogCache(local.defs, [...filtered, entry]);
 
-  const cfg = getSupabaseConfig();
-  if (!cfg.isConfigured) return true;
-
-  try {
-    const res = await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
-      method: 'POST',
-      headers: getHeaders(cfg.anonKey, {
-        'Content-Type': 'application/json',
-        Prefer: 'resolution=merge-duplicates',
-      }),
-      body: JSON.stringify({
-        username: `${CLOUD_ENTRY_PREFIX}${entry.tournamentId}:${cleanUser}`,
-        title: JSON.stringify(entry),
-        avatar_card_id: entry.avatarCardId || 'neutral_10_valkyra_pentacromatica',
-        elo_rating: entry.eloRating || 1000,
-        pvp_wins: Object.values(entry.resultsByRound ?? {}).filter((r) => r.score === 1).length,
-        pvp_losses: Object.values(entry.resultsByRound ?? {}).filter((r) => r.score === 0).length,
-        gold: 0,
-        updated_at: new Date().toISOString(),
-      }),
-    });
-    updateServerClockOffsetFromHeader(res.headers.get('date'));
-    return res.ok;
-  } catch {
-    return false;
-  }
+  const res = await upsertCloudSystemRecord({
+    key: `${CLOUD_ENTRY_PREFIX}${entry.tournamentId}:${cleanUser}`,
+    payload: JSON.stringify(entry),
+    avatarCardId: entry.avatarCardId || 'neutral_10_valkyra_pentacromatica',
+    eloRating: entry.eloRating || 1000,
+    pvpWins: Object.values(entry.resultsByRound ?? {}).filter((r) => r.score === 1).length,
+    pvpLosses: Object.values(entry.resultsByRound ?? {}).filter((r) => r.score === 0).length,
+  });
+  updateServerClockOffsetFromHeader(res.serverDateHeader);
+  return res.ok;
 }
 
 export async function fetchTournamentCatalogFromCloud(): Promise<TournamentCatalogData> {

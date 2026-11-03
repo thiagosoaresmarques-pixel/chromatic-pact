@@ -1,4 +1,9 @@
-import { getSupabaseConfig } from './multiplayerEngine';
+import {
+  getSupabaseConfig,
+  getVerifiedActiveAdminCredentials,
+  invokeSupabaseRpc,
+  upsertCloudSystemRecord,
+} from './multiplayerEngine';
 
 export interface CommunityDiscordConfig {
   inviteUrl: string;
@@ -125,6 +130,32 @@ export async function saveCommunityDiscordConfigToCloud(
   const supa = getSupabaseConfig();
   if (!supa.isConfigured) {
     return { ok: true, config: merged };
+  }
+
+  const adminCreds = getVerifiedActiveAdminCredentials();
+  if (adminCreds) {
+    const rpcRes = await invokeSupabaseRpc<{ ok?: boolean; code?: string }>('rpc_admin_action', {
+      p_admin_username: adminCreds.username,
+      p_admin_password_hash: adminCreds.passwordHash,
+      p_action: 'save_community_config',
+      p_payload: merged,
+    });
+    if (rpcRes.status === 'ok') {
+      return rpcRes.data?.ok
+        ? { ok: true, config: merged }
+        : {
+            ok: false,
+            config: merged,
+            error: rpcRes.data?.code || 'Credencial administrativa recusada.',
+          };
+    }
+    if (rpcRes.status !== 'missing_rpc') {
+      return {
+        ok: false,
+        config: merged,
+        error: rpcRes.errorText || `HTTP ${rpcRes.httpStatus}`,
+      };
+    }
   }
 
   try {
@@ -419,33 +450,15 @@ async function fetchHeraldDispatchedKeysFromCloud(): Promise<string[]> {
 async function saveHeraldDispatchedKeyToCloud(newKey: string, existingKeys: string[]): Promise<boolean> {
   inMemoryHeraldSeen.add(newKey);
   const nextKeys = Array.from(new Set([...existingKeys, newKey])).slice(-80);
-  const supa = getSupabaseConfig();
-  if (!supa.isConfigured) return true;
-
-  try {
-    const res = await fetch(`${supa.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
-      method: 'POST',
-      headers: {
-        apikey: supa.anonKey,
-        Authorization: `Bearer ${supa.anonKey}`,
-        'Content-Type': 'application/json',
-        Prefer: 'resolution=merge-duplicates',
-      },
-      body: JSON.stringify({
-        username: CLOUD_HERALD_LOG_ROW,
-        title: JSON.stringify({ keys: nextKeys, updatedAtMs: Date.now() }),
-        avatar_card_id: 'neutral_10_valkyra_pentacromatica',
-        elo_rating: 1000,
-        pvp_wins: 0,
-        pvp_losses: 0,
-        gold: 0,
-        updated_at: new Date().toISOString(),
-      }),
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
+  const res = await upsertCloudSystemRecord({
+    key: CLOUD_HERALD_LOG_ROW,
+    payload: JSON.stringify({ keys: nextKeys, updatedAtMs: Date.now() }),
+    avatarCardId: 'neutral_10_valkyra_pentacromatica',
+    eloRating: 1000,
+    pvpWins: 0,
+    pvpLosses: 0,
+  });
+  return res.ok;
 }
 
 export async function postTournamentLiveNowToDiscordWebhook(params: {

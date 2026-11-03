@@ -1,6 +1,6 @@
 import { ALL_CARDS } from '../data/cards';
 import type { BoardUnit, Domain, GameState, PlayerState } from '../types/game';
-import { getSupabaseConfig } from './multiplayerEngine';
+import { getSupabaseConfig, upsertCloudSystemRecord } from './multiplayerEngine';
 import type {
   ComputedRoundPairing,
   ComputedTournamentStanding,
@@ -548,32 +548,14 @@ export async function publishPersonalReplayShareToCloud(
   const shareId = computePersonalReplayShareId(entry);
   saveSharedReplayLocalCache(shareId, entry);
 
-  const cfg = getSupabaseConfig();
-  if (!cfg.isConfigured) return shareId;
-
-  try {
-    await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
-      method: 'POST',
-      headers: {
-        apikey: cfg.anonKey,
-        Authorization: `Bearer ${cfg.anonKey}`,
-        'Content-Type': 'application/json',
-        Prefer: 'resolution=merge-duplicates',
-      },
-      body: JSON.stringify({
-        username: `${SHARED_REPLAY_CLOUD_PREFIX}${shareId}`,
-        title: JSON.stringify(entry),
-        avatar_card_id: entry.playerAvatarCardId || 'gold_01',
-        elo_rating: entry.playerElo || 1500,
-        pvp_wins: entry.didWin === true ? 1 : 0,
-        pvp_losses: entry.didWin === false ? 1 : 0,
-        gold: 0,
-        updated_at: new Date().toISOString(),
-      }),
-    });
-  } catch {
-    // Local cache still resolves in-browser if offline
-  }
+  await upsertCloudSystemRecord({
+    key: `${SHARED_REPLAY_CLOUD_PREFIX}${shareId}`,
+    payload: JSON.stringify(entry),
+    avatarCardId: entry.playerAvatarCardId || 'gold_01',
+    eloRating: entry.playerElo || 1500,
+    pvpWins: entry.didWin === true ? 1 : 0,
+    pvpLosses: entry.didWin === false ? 1 : 0,
+  });
 
   return shareId;
 }

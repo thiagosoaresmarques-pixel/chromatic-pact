@@ -739,13 +739,19 @@ export async function deleteSovereignAccount(profile: SovereignUserProfile): Pro
   const cfg = getSupabaseConfig();
   if (cfg.isConfigured && profile.username) {
     try {
-      await fetch(
-        `${cfg.url}/rest/v1/sovereign_profiles?username=eq.${encodeURIComponent(profile.username)}`,
-        {
-          method: 'DELETE',
-          headers: getSupabaseHeaders(cfg.anonKey),
-        }
-      );
+      const rpcRes = await invokeSupabaseRpc<{ ok?: boolean }>('rpc_delete_own_account', {
+        p_username: profile.username,
+        p_password_hash: profile.passwordHash || '',
+      });
+      if (rpcRes.status === 'missing_rpc') {
+        await fetch(
+          `${cfg.url}/rest/v1/sovereign_profiles?username=eq.${encodeURIComponent(profile.username)}`,
+          {
+            method: 'DELETE',
+            headers: getSupabaseHeaders(cfg.anonKey),
+          }
+        );
+      }
     } catch {
       // Ignore
     }
@@ -906,12 +912,13 @@ export function hashPassword(rawPassword: string): string {
   return `cpw_${(h2 >>> 0).toString(16).padStart(8, '0')}${(h1 >>> 0).toString(16).padStart(8, '0')}`;
 }
 
-function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
+function encodeCloudTitleMeta(
+  profile: SovereignUserProfile,
+  includeLegacySecrets = false
+): string {
   const honorific = getAvatarHonorificTitle(profile.avatarCardId);
-  return JSON.stringify({
+  const payload: Record<string, unknown> = {
     t: honorific,
-    e: (profile.email || '').trim().toLowerCase(),
-    p: profile.passwordHash || '',
     g: profile.gold ?? 0,
     as: profile.astralShards ?? 0,
     d: profile.customDecks ?? [],
@@ -929,7 +936,12 @@ function encodeCloudTitleMeta(profile: SovereignUserProfile): string {
     adm: isAdminProfile(profile),
     ca: profile.createdAt ?? Date.now(),
     la: Date.now(),
-  });
+  };
+  if (includeLegacySecrets) {
+    payload.e = (profile.email || '').trim().toLowerCase();
+    payload.p = profile.passwordHash || '';
+  }
+  return JSON.stringify(payload);
 }
 
 function decodeCloudTitleMeta(
@@ -1216,6 +1228,121 @@ function getSupabaseHeaders(anonKey: string, extra?: Record<string, string>): Re
   return headers;
 }
 
+export type SupabaseRpcOutcome<T> =
+  | { status: 'ok'; data: T; response: Response }
+  | { status: 'missing_rpc'; response?: Response }
+  | { status: 'error'; httpStatus?: number; errorText?: string };
+
+export async function invokeSupabaseRpc<T = Record<string, unknown>>(
+  rpcName: string,
+  args: Record<string, unknown>,
+  options?: { keepalive?: boolean }
+): Promise<SupabaseRpcOutcome<T>> {
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) {
+    return { status: 'error', errorText: 'Supabase not configured' };
+  }
+  try {
+    const res = await fetch(`${cfg.url}/rest/v1/rpc/${rpcName}`, {
+      method: 'POST',
+      keepalive: options?.keepalive,
+      headers: getSupabaseHeaders(cfg.anonKey, {
+        'Content-Type': 'application/json',
+      }),
+      body: JSON.stringify(args),
+    });
+    if (res.status === 404) {
+      return { status: 'missing_rpc', response: res };
+    }
+    if (!res.ok) {
+      return { status: 'error', httpStatus: res.status };
+    }
+    const data = (await res.json()) as T;
+    return { status: 'ok', data, response: res };
+  } catch (err) {
+    return {
+      status: 'error',
+      errorText: err instanceof Error ? err.message : 'RPC network error',
+    };
+  }
+}
+
+export async function upsertCloudSystemRecord(params: {
+  key: string;
+  payload: string;
+  avatarCardId?: string;
+  eloRating?: number;
+  pvpWins?: number;
+  pvpLosses?: number;
+}): Promise<{ ok: boolean; serverDateHeader: string | null }> {
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) {
+    return { ok: true, serverDateHeader: null };
+  }
+
+  let actorUsername: string | null = null;
+  let actorPasswordHash: string | null = null;
+  if (typeof window !== 'undefined') {
+    try {
+      const active = getActiveTabUserProfile();
+      if (!isUnregisteredProfile(active)) {
+        actorUsername = active.username || null;
+        actorPasswordHash = active.passwordHash || null;
+      }
+    } catch {
+      // Ignore in non-UI contexts
+    }
+  }
+
+  const rpcRes = await invokeSupabaseRpc<{ ok?: boolean }>('rpc_upsert_system_record', {
+    p_key: params.key,
+    p_payload: params.payload,
+    p_avatar_card_id: params.avatarCardId || 'neutral_10_valkyra_pentacromatica',
+    p_elo_rating: params.eloRating ?? 1000,
+    p_pvp_wins: params.pvpWins ?? 0,
+    p_pvp_losses: params.pvpLosses ?? 0,
+    p_actor_username: actorUsername,
+    p_actor_password_hash: actorPasswordHash,
+  });
+
+  if (rpcRes.status === 'ok') {
+    return {
+      ok: Boolean(rpcRes.data?.ok),
+      serverDateHeader: rpcRes.response.headers.get('date'),
+    };
+  }
+
+  if (rpcRes.status === 'missing_rpc') {
+    try {
+      const fallbackRes = await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
+        method: 'POST',
+        headers: getSupabaseHeaders(cfg.anonKey, {
+          'Content-Type': 'application/json',
+          Prefer: 'resolution=merge-duplicates',
+        }),
+        body: JSON.stringify({
+          username: params.key,
+          title: params.payload,
+          avatar_card_id: params.avatarCardId || 'neutral_10_valkyra_pentacromatica',
+          elo_rating: params.eloRating ?? 1000,
+          pvp_wins: params.pvpWins ?? 0,
+          pvp_losses: params.pvpLosses ?? 0,
+          gold: 0,
+          updated_at: new Date().toISOString(),
+        }),
+      });
+      return {
+        ok: fallbackRes.ok,
+        serverDateHeader: fallbackRes.headers.get('date'),
+      };
+    } catch {
+      return { ok: false, serverDateHeader: null };
+    }
+  }
+
+  return { ok: false, serverDateHeader: null };
+}
+
 interface SupabaseProfileRow {
   id: string;
   username: string;
@@ -1226,11 +1353,14 @@ interface SupabaseProfileRow {
   pvp_losses: number;
   gold?: number;
   updated_at?: string;
+  email?: string;
+  is_admin?: boolean;
 }
 
 function hydrateProfileFromRow(
   row: SupabaseProfileRow,
-  localMatch?: SovereignUserProfile
+  localMatch?: SovereignUserProfile,
+  secretOverlay?: { email?: string; passwordHash?: string; isAdmin?: boolean }
 ): SovereignUserProfile {
   const safeLocal = localMatch
     ? resetCampaignProgressionForProfile(localMatch).profile
@@ -1246,8 +1376,8 @@ function hydrateProfileFromRow(
   const rawProfile: SovereignUserProfile = {
     id: safeLocal?.id ?? `sov_${row.id}`,
     username: row.username,
-    email: meta.email || safeLocal?.email,
-    passwordHash: meta.passwordHash || safeLocal?.passwordHash,
+    email: secretOverlay?.email || row.email || meta.email || safeLocal?.email,
+    passwordHash: secretOverlay?.passwordHash || meta.passwordHash || safeLocal?.passwordHash,
     title: meta.title,
     avatarCardId: resolvedAvatar,
     eloRating: row.elo_rating ?? INITIAL_PLAYER_ELO,
@@ -1269,14 +1399,16 @@ function hydrateProfileFromRow(
     extraUnlockedCards: meta.extraUnlockedCards ?? safeLocal?.extraUnlockedCards ?? {},
     defeatedBossIds: meta.defeatedBossIds ?? safeLocal?.defeatedBossIds ?? [],
     arenaWins: meta.arenaWins ?? 0,
-    isAdmin: Boolean(isMasterAdmin || meta.isAdmin || safeLocal?.isAdmin),
+    isAdmin: Boolean(
+      isMasterAdmin || secretOverlay?.isAdmin || row.is_admin || meta.isAdmin || safeLocal?.isAdmin
+    ),
     createdAt: meta.createdAt ?? safeLocal?.createdAt ?? updatedMs,
     lastActiveAt: meta.lastActiveAt ?? updatedMs ?? safeLocal?.lastActiveAt,
   };
   const { cleaned, wasModified } = stripImposedStarterGrimoire(rawProfile);
   const { profile: rebased, wasRecalculated } = recalculateProfileEloFromInitialBase(cleaned);
   const { profile: campClean, wasReset } = resetCampaignProgressionForProfile(rebased);
-  if (wasModified || wasRecalculated || wasReset) {
+  if ((wasModified || wasRecalculated || wasReset) && Boolean(campClean.passwordHash)) {
     void syncProfileToSupabaseIfConfigured(campClean);
   }
   return campClean;
@@ -1308,64 +1440,94 @@ export async function authenticateSovereignAccount(
 
   const cfg = getSupabaseConfig();
   if (cfg.isConfigured) {
-    try {
-      let matchedRow: SupabaseProfileRow | undefined;
+    const rpcRes = await invokeSupabaseRpc<{
+      ok?: boolean;
+      code?: string;
+      row?: SupabaseProfileRow;
+      email?: string;
+      is_admin?: boolean;
+    }>('rpc_auth_sovereign', {
+      p_identifier: cleanId,
+      p_password_hash: inputHash,
+    });
 
-      // 1. Direct exact/case-insensitive username lookup first (fast, O(1), never touches other rows)
-      if (!cleanId.includes('@')) {
-        const directRes = await fetch(
-          `${cfg.url}/rest/v1/sovereign_profiles?username=ilike.${encodeURIComponent(cleanId)}&select=*&limit=2`,
-          {
-            headers: getSupabaseHeaders(cfg.anonKey),
-          }
-        );
-        if (directRes.ok) {
-          const directRows = (await directRes.json()) as SupabaseProfileRow[];
-          matchedRow = directRows.find(
-            (r) =>
-              Boolean(r.username) &&
-              !r.username.startsWith('__') &&
-              r.username.toLowerCase() === cleanLower
-          );
-        }
-      }
-
-      // 2. Email login fallback: strictly exclude all '__*' system/telemetry/tournament rows
-      if (!matchedRow && cleanId.includes('@')) {
-        const emailRes = await fetch(
-          `${cfg.url}/rest/v1/sovereign_profiles?username=not.like.__*&select=*&limit=1000`,
-          {
-            headers: getSupabaseHeaders(cfg.anonKey),
-          }
-        );
-        if (emailRes.ok) {
-          const rows = (await emailRes.json()) as SupabaseProfileRow[];
-          matchedRow = rows.find((r) => {
-            if (!r.username || r.username.startsWith('__')) return false;
-            const meta = decodeCloudTitleMeta(r.title, r.avatar_card_id);
-            return Boolean(meta.email && meta.email.toLowerCase() === cleanLower);
-          });
-        }
-      }
-
-      if (matchedRow) {
-        const cloudProfile = hydrateProfileFromRow(matchedRow, localMatch);
-        if (cloudProfile.passwordHash && cloudProfile.passwordHash !== inputHash) {
-          return {
-            ok: false,
-            error: 'Senha incorreta. Verifique sua senha ou clique em "Esqueci minha senha".',
-          };
-        }
-        // If legacy account had no passwordHash yet, bind this password now
-        if (!cloudProfile.passwordHash) {
-          cloudProfile.passwordHash = inputHash;
-        }
+    if (rpcRes.status === 'ok') {
+      if (rpcRes.data?.ok && rpcRes.data.row) {
+        const cloudProfile = hydrateProfileFromRow(rpcRes.data.row, localMatch, {
+          email: rpcRes.data.email || undefined,
+          passwordHash: inputHash,
+          isAdmin: rpcRes.data.is_admin,
+        });
         const ensuredCloud = ensureStarterDeckForUser(cloudProfile);
         setActiveTabUserProfile(ensuredCloud);
         return { ok: true, profile: ensuredCloud };
       }
-    } catch {
-      // Fallback to local
+      if (rpcRes.data?.code === 'INVALID_PASSWORD') {
+        return {
+          ok: false,
+          error: 'Senha incorreta. Verifique sua senha ou clique em "Esqueci minha senha".',
+        };
+      }
+      // If NOT_FOUND in cloud, fall through to check localMatch below
+    } else if (rpcRes.status === 'missing_rpc') {
+      try {
+        let matchedRow: SupabaseProfileRow | undefined;
+
+        // 1. Direct exact/case-insensitive username lookup first (fast, O(1), never touches other rows)
+        if (!cleanId.includes('@')) {
+          const directRes = await fetch(
+            `${cfg.url}/rest/v1/sovereign_profiles?username=ilike.${encodeURIComponent(cleanId)}&select=*&limit=2`,
+            {
+              headers: getSupabaseHeaders(cfg.anonKey),
+            }
+          );
+          if (directRes.ok) {
+            const directRows = (await directRes.json()) as SupabaseProfileRow[];
+            matchedRow = directRows.find(
+              (r) =>
+                Boolean(r.username) &&
+                !r.username.startsWith('__') &&
+                r.username.toLowerCase() === cleanLower
+            );
+          }
+        }
+
+        // 2. Email login fallback: strictly exclude all '__*' system/telemetry/tournament rows
+        if (!matchedRow && cleanId.includes('@')) {
+          const emailRes = await fetch(
+            `${cfg.url}/rest/v1/sovereign_profiles?username=not.like.__*&select=*&limit=1000`,
+            {
+              headers: getSupabaseHeaders(cfg.anonKey),
+            }
+          );
+          if (emailRes.ok) {
+            const rows = (await emailRes.json()) as SupabaseProfileRow[];
+            matchedRow = rows.find((r) => {
+              if (!r.username || r.username.startsWith('__')) return false;
+              const meta = decodeCloudTitleMeta(r.title, r.avatar_card_id);
+              return Boolean(meta.email && meta.email.toLowerCase() === cleanLower);
+            });
+          }
+        }
+
+        if (matchedRow) {
+          const cloudProfile = hydrateProfileFromRow(matchedRow, localMatch);
+          if (cloudProfile.passwordHash && cloudProfile.passwordHash !== inputHash) {
+            return {
+              ok: false,
+              error: 'Senha incorreta. Verifique sua senha ou clique em "Esqueci minha senha".',
+            };
+          }
+          if (!cloudProfile.passwordHash) {
+            cloudProfile.passwordHash = inputHash;
+          }
+          const ensuredCloud = ensureStarterDeckForUser(cloudProfile);
+          setActiveTabUserProfile(ensuredCloud);
+          return { ok: true, profile: ensuredCloud };
+        }
+      } catch {
+        // Fallback to local
+      }
     }
   }
 
@@ -1408,34 +1570,66 @@ export async function recoverAndResetPassword(
     (a) => a.username.toLowerCase() === cleanUser.toLowerCase()
   );
 
+  const newHash = hashPassword(newRawPassword);
   const cfg = getSupabaseConfig();
   if (cfg.isConfigured) {
-    try {
-      const res = await fetch(
-        `${cfg.url}/rest/v1/sovereign_profiles?username=ilike.${encodeURIComponent(cleanUser)}&limit=1`,
-        {
-          headers: getSupabaseHeaders(cfg.anonKey),
-        }
-      );
-      if (res.ok) {
-        const rows = (await res.json()) as SupabaseProfileRow[];
-        if (rows.length > 0) {
-          const cloudProfile = hydrateProfileFromRow(rows[0], localMatch);
-          if (cloudProfile.email && cloudProfile.email.toLowerCase() !== cleanEmail) {
-            return {
-              ok: false,
-              error: 'O E-mail informado não corresponde ao E-mail cadastrado para este Nickname.',
-            };
-          }
-          cloudProfile.email = cleanEmail;
-          cloudProfile.passwordHash = hashPassword(newRawPassword);
-          const ensuredCloud = ensureStarterDeckForUser(cloudProfile);
-          setActiveTabUserProfile(ensuredCloud);
-          return { ok: true, profile: ensuredCloud };
-        }
+    const rpcRes = await invokeSupabaseRpc<{
+      ok?: boolean;
+      code?: string;
+      row?: SupabaseProfileRow;
+      email?: string;
+      is_admin?: boolean;
+    }>('rpc_recover_password', {
+      p_username: cleanUser,
+      p_email: cleanEmail,
+      p_new_password_hash: newHash,
+    });
+
+    if (rpcRes.status === 'ok') {
+      if (rpcRes.data?.ok && rpcRes.data.row) {
+        const cloudProfile = hydrateProfileFromRow(rpcRes.data.row, localMatch, {
+          email: rpcRes.data.email || cleanEmail,
+          passwordHash: newHash,
+          isAdmin: rpcRes.data.is_admin,
+        });
+        const ensuredCloud = ensureStarterDeckForUser(cloudProfile);
+        setActiveTabUserProfile(ensuredCloud);
+        return { ok: true, profile: ensuredCloud };
       }
-    } catch {
-      // Fallback to local
+      if (rpcRes.data?.code === 'EMAIL_MISMATCH') {
+        return {
+          ok: false,
+          error: 'O E-mail informado não corresponde ao E-mail cadastrado para este Nickname.',
+        };
+      }
+    } else if (rpcRes.status === 'missing_rpc') {
+      try {
+        const res = await fetch(
+          `${cfg.url}/rest/v1/sovereign_profiles?username=ilike.${encodeURIComponent(cleanUser)}&limit=1`,
+          {
+            headers: getSupabaseHeaders(cfg.anonKey),
+          }
+        );
+        if (res.ok) {
+          const rows = (await res.json()) as SupabaseProfileRow[];
+          if (rows.length > 0) {
+            const cloudProfile = hydrateProfileFromRow(rows[0], localMatch);
+            if (cloudProfile.email && cloudProfile.email.toLowerCase() !== cleanEmail) {
+              return {
+                ok: false,
+                error: 'O E-mail informado não corresponde ao E-mail cadastrado para este Nickname.',
+              };
+            }
+            cloudProfile.email = cleanEmail;
+            cloudProfile.passwordHash = newHash;
+            const ensuredCloud = ensureStarterDeckForUser(cloudProfile);
+            setActiveTabUserProfile(ensuredCloud);
+            return { ok: true, profile: ensuredCloud };
+          }
+        }
+      } catch {
+        // Fallback to local
+      }
     }
   }
 
@@ -1464,8 +1658,23 @@ export async function recoverAndResetPassword(
 
 async function syncProfileToSupabaseIfConfigured(profile: SovereignUserProfile): Promise<void> {
   if (RETIRED_EXACT_USERNAMES.has(profile.username)) return;
+  if (isUnregisteredProfile(profile)) return;
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return;
+
+  const rpcRes = await invokeSupabaseRpc<{ ok?: boolean }>('rpc_sync_sovereign_profile', {
+    p_username: profile.username,
+    p_password_hash: profile.passwordHash || '',
+    p_email: (profile.email || '').trim().toLowerCase(),
+    p_title_json: encodeCloudTitleMeta(profile, false),
+    p_avatar_card_id: profile.avatarCardId,
+    p_elo_rating: profile.eloRating,
+    p_pvp_wins: profile.pvpWins,
+    p_pvp_losses: profile.pvpLosses,
+    p_gold: profile.gold ?? 0,
+  });
+
+  if (rpcRes.status !== 'missing_rpc') return;
 
   try {
     await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
@@ -1476,7 +1685,7 @@ async function syncProfileToSupabaseIfConfigured(profile: SovereignUserProfile):
       }),
       body: JSON.stringify({
         username: profile.username,
-        title: encodeCloudTitleMeta(profile),
+        title: encodeCloudTitleMeta(profile, true),
         avatar_card_id: profile.avatarCardId,
         elo_rating: profile.eloRating,
         pvp_wins: profile.pvpWins,
@@ -1496,6 +1705,27 @@ async function syncRoomToSupabaseIfConfigured(
 ): Promise<void> {
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return;
+
+  let actorId = room.lastActorId || room.host.id;
+  try {
+    const active = getActiveTabUserProfile();
+    if (!isUnregisteredProfile(active) && active.id) {
+      actorId = active.id;
+    }
+  } catch {
+    // Ignore
+  }
+
+  const rpcRes = await invokeSupabaseRpc<{ ok?: boolean }>(
+    'rpc_sync_multiplayer_room',
+    {
+      p_room: room,
+      p_actor_id: actorId,
+    },
+    { keepalive }
+  );
+
+  if (rpcRes.status !== 'missing_rpc') return;
 
   try {
     await fetch(`${cfg.url}/rest/v1/multiplayer_rooms?on_conflict=code`, {
@@ -1536,6 +1766,35 @@ async function deleteRoomFromSupabaseIfConfigured(
 ): Promise<void> {
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return;
+
+  let actorId: string | null = null;
+  let adminUsername: string | null = null;
+  let adminPasswordHash: string | null = null;
+  try {
+    const active = getActiveTabUserProfile();
+    if (!isUnregisteredProfile(active)) {
+      actorId = active.id || null;
+      if (isAdminProfile(active) && active.passwordHash) {
+        adminUsername = active.username;
+        adminPasswordHash = active.passwordHash;
+      }
+    }
+  } catch {
+    // Ignore
+  }
+
+  const rpcRes = await invokeSupabaseRpc<{ ok?: boolean }>(
+    'rpc_close_multiplayer_room',
+    {
+      p_code: roomCode,
+      p_actor_id: actorId,
+      p_admin_username: adminUsername,
+      p_admin_password_hash: adminPasswordHash,
+    },
+    { keepalive }
+  );
+
+  if (rpcRes.status !== 'missing_rpc') return;
 
   try {
     await fetch(
@@ -1928,6 +2187,28 @@ export interface GlobalAdminAnnouncement {
   author: string;
 }
 
+export function getVerifiedActiveAdminCredentials(): {
+  username: string;
+  passwordHash: string;
+} | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const active = getActiveTabUserProfile();
+    if (!isUnregisteredProfile(active) && isAdminProfile(active) && active.passwordHash) {
+      return { username: active.username, passwordHash: active.passwordHash };
+    }
+    const adminInRoster = getSavedAccountsRoster().find(
+      (a) => !isUnregisteredProfile(a) && isAdminProfile(a) && Boolean(a.passwordHash)
+    );
+    if (adminInRoster && adminInRoster.passwordHash) {
+      return { username: adminInRoster.username, passwordHash: adminInRoster.passwordHash };
+    }
+  } catch {
+    // Ignore
+  }
+  return null;
+}
+
 export async function fetchAllCloudProfilesForAdmin(): Promise<{
   profiles: SovereignUserProfile[];
   visitorSessions: CloudVisitorSessionEntry[];
@@ -1947,6 +2228,69 @@ export async function fetchAllCloudProfilesForAdmin(): Promise<{
       latencyMs: 0,
       error: 'Supabase não configurado.',
     };
+  }
+
+  const adminCreds = getVerifiedActiveAdminCredentials();
+  if (adminCreds) {
+    const rpcRes = await invokeSupabaseRpc<{
+      ok?: boolean;
+      code?: string;
+      profiles?: SupabaseProfileRow[];
+      telemetry?: Array<{ username: string; title: string }>;
+      announcement_raw?: string | null;
+    }>('rpc_admin_action', {
+      p_admin_username: adminCreds.username,
+      p_admin_password_hash: adminCreds.passwordHash,
+      p_action: 'fetch_dashboard',
+    });
+
+    if (rpcRes.status === 'ok' && rpcRes.data?.ok) {
+      const latencyMs = Math.round(performance.now() - startMs);
+      const profileRows = rpcRes.data.profiles ?? [];
+      const telemetryRows = rpcRes.data.telemetry ?? [];
+      const profiles: SovereignUserProfile[] = [];
+      const visitorSessions: CloudVisitorSessionEntry[] = [];
+      let announcement: GlobalAdminAnnouncement | null = null;
+      const seenUsernames = new Set<string>();
+
+      if (rpcRes.data.announcement_raw) {
+        try {
+          const parsed = JSON.parse(rpcRes.data.announcement_raw) as GlobalAdminAnnouncement;
+          if (parsed && parsed.title) announcement = parsed;
+        } catch {
+          // Ignore
+        }
+      }
+
+      for (const tr of telemetryRows) {
+        if (!tr.username || !tr.username.startsWith('__telemetry_session__:')) continue;
+        try {
+          const parsed = JSON.parse(tr.title) as CloudVisitorSessionEntry;
+          if (parsed && parsed.sessionId) visitorSessions.push(parsed);
+        } catch {
+          // Ignore
+        }
+      }
+
+      for (const r of profileRows) {
+        if (!r.username || r.username.startsWith('__')) continue;
+        if (RETIRED_EXACT_USERNAMES.has(r.username)) continue;
+        const localMatch = localRoster.find(
+          (a) => a.username.toLowerCase() === r.username.toLowerCase()
+        );
+        profiles.push(hydrateProfileFromRow(r, localMatch));
+        seenUsernames.add(r.username.toLowerCase());
+      }
+
+      for (const localAcc of localRoster) {
+        if (!seenUsernames.has(localAcc.username.toLowerCase())) {
+          profiles.push(localAcc);
+        }
+      }
+
+      visitorSessions.sort((a, b) => b.lastSeenAt - a.lastSeenAt);
+      return { profiles, visitorSessions, announcement, latencyMs };
+    }
   }
 
   try {
@@ -2068,6 +2412,57 @@ export async function adminSaveCloudProfile(
     return { ok: true };
   }
 
+  const adminCreds = getVerifiedActiveAdminCredentials();
+  if (adminCreds) {
+    const adminRpc = await invokeSupabaseRpc<{ ok?: boolean; code?: string }>('rpc_admin_action', {
+      p_admin_username: adminCreds.username,
+      p_admin_password_hash: adminCreds.passwordHash,
+      p_action: 'save_profile',
+      p_target_username: profile.username,
+      p_payload: {
+        title: encodeCloudTitleMeta(profile, false),
+        email: (profile.email || '').trim().toLowerCase(),
+        password_hash: profile.passwordHash || '',
+        is_admin: isAdminProfile(profile),
+        avatar_card_id: profile.avatarCardId,
+        elo_rating: profile.eloRating,
+        pvp_wins: profile.pvpWins,
+        pvp_losses: profile.pvpLosses,
+        gold: profile.gold ?? 0,
+      },
+    });
+    if (adminRpc.status === 'ok') {
+      return adminRpc.data?.ok
+        ? { ok: true }
+        : { ok: false, error: adminRpc.data?.code || 'Acesso administrativo negado.' };
+    }
+    if (adminRpc.status !== 'missing_rpc') {
+      return { ok: false, error: adminRpc.errorText || `HTTP ${adminRpc.httpStatus}` };
+    }
+  } else {
+    // Regular user syncing their own local account on startup (App.tsx)
+    const selfRpc = await invokeSupabaseRpc<{ ok?: boolean; code?: string }>(
+      'rpc_sync_sovereign_profile',
+      {
+        p_username: profile.username,
+        p_password_hash: profile.passwordHash || '',
+        p_email: (profile.email || '').trim().toLowerCase(),
+        p_title_json: encodeCloudTitleMeta(profile, false),
+        p_avatar_card_id: profile.avatarCardId,
+        p_elo_rating: profile.eloRating,
+        p_pvp_wins: profile.pvpWins,
+        p_pvp_losses: profile.pvpLosses,
+        p_gold: profile.gold ?? 0,
+      }
+    );
+    if (selfRpc.status === 'ok') {
+      return selfRpc.data?.ok ? { ok: true } : { ok: false, error: selfRpc.data?.code };
+    }
+    if (selfRpc.status !== 'missing_rpc') {
+      return { ok: false, error: selfRpc.errorText || `HTTP ${selfRpc.httpStatus}` };
+    }
+  }
+
   try {
     const res = await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
       method: 'POST',
@@ -2077,7 +2472,7 @@ export async function adminSaveCloudProfile(
       }),
       body: JSON.stringify({
         username: profile.username,
-        title: encodeCloudTitleMeta(profile),
+        title: encodeCloudTitleMeta(profile, true),
         avatar_card_id: profile.avatarCardId,
         elo_rating: profile.eloRating,
         pvp_wins: profile.pvpWins,
@@ -2105,6 +2500,19 @@ export async function adminDeleteCloudProfile(username: string): Promise<boolean
   }
 
   if (!cfg.isConfigured) return true;
+
+  const adminCreds = getVerifiedActiveAdminCredentials();
+  if (adminCreds) {
+    const rpcRes = await invokeSupabaseRpc<{ ok?: boolean }>('rpc_admin_action', {
+      p_admin_username: adminCreds.username,
+      p_admin_password_hash: adminCreds.passwordHash,
+      p_action: 'delete_profile',
+      p_target_username: username,
+    });
+    if (rpcRes.status === 'ok') return Boolean(rpcRes.data?.ok);
+    if (rpcRes.status !== 'missing_rpc') return false;
+  }
+
   try {
     const res = await fetch(
       `${cfg.url}/rest/v1/sovereign_profiles?username=eq.${encodeURIComponent(username)}`,
@@ -2173,34 +2581,31 @@ export async function adminDeleteCloudRoom(roomCode: string): Promise<boolean> {
 }
 
 export async function syncVisitorSessionToCloud(session: CloudVisitorSessionEntry): Promise<void> {
-  const cfg = getSupabaseConfig();
-  if (!cfg.isConfigured) return;
-  try {
-    await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
-      method: 'POST',
-      headers: getSupabaseHeaders(cfg.anonKey, {
-        'Content-Type': 'application/json',
-        Prefer: 'resolution=merge-duplicates',
-      }),
-      body: JSON.stringify({
-        username: `__telemetry_session__:${session.sessionId}`,
-        title: JSON.stringify(session),
-        avatar_card_id: 'neutral_10_valkyra_pentacromatica',
-        elo_rating: session.events.length,
-        pvp_wins: session.registeredUsername ? 1 : 0,
-        pvp_losses: 0,
-        gold: 0,
-        updated_at: new Date().toISOString(),
-      }),
-    });
-  } catch {
-    // Non-blocking
-  }
+  await upsertCloudSystemRecord({
+    key: `__telemetry_session__:${session.sessionId}`,
+    payload: JSON.stringify(session),
+    avatarCardId: 'neutral_10_valkyra_pentacromatica',
+    eloRating: session.events.length,
+    pvpWins: session.registeredUsername ? 1 : 0,
+    pvpLosses: 0,
+  });
 }
 
 export async function clearCloudVisitorTelemetryForAdmin(): Promise<boolean> {
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return false;
+
+  const adminCreds = getVerifiedActiveAdminCredentials();
+  if (adminCreds) {
+    const rpcRes = await invokeSupabaseRpc<{ ok?: boolean }>('rpc_admin_action', {
+      p_admin_username: adminCreds.username,
+      p_admin_password_hash: adminCreds.passwordHash,
+      p_action: 'clear_telemetry',
+    });
+    if (rpcRes.status === 'ok') return Boolean(rpcRes.data?.ok);
+    if (rpcRes.status !== 'missing_rpc') return false;
+  }
+
   try {
     const res = await fetch(
       `${cfg.url}/rest/v1/sovereign_profiles?username=like.__telemetry_session__:*`,
@@ -2220,6 +2625,19 @@ export async function publishGlobalAdminAnnouncement(
 ): Promise<boolean> {
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return false;
+
+  const adminCreds = getVerifiedActiveAdminCredentials();
+  if (adminCreds) {
+    const rpcRes = await invokeSupabaseRpc<{ ok?: boolean }>('rpc_admin_action', {
+      p_admin_username: adminCreds.username,
+      p_admin_password_hash: adminCreds.passwordHash,
+      p_action: 'set_announcement',
+      p_payload: announcement,
+    });
+    if (rpcRes.status === 'ok') return Boolean(rpcRes.data?.ok);
+    if (rpcRes.status !== 'missing_rpc') return false;
+  }
+
   try {
     if (!announcement) {
       const res = await fetch(

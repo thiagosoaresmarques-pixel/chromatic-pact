@@ -23,7 +23,11 @@ import {
   PlayerState,
   RowType,
 } from '../types/game';
-import { flipGameStatePerspective, getSupabaseConfig } from './multiplayerEngine';
+import {
+  flipGameStatePerspective,
+  getSupabaseConfig,
+  upsertCloudSystemRecord,
+} from './multiplayerEngine';
 import {
   computeCanonicalPairKey,
   ComputedRoundPairing,
@@ -979,33 +983,15 @@ export function subscribeTournamentTvUpdates(listener: TvListener): () => void {
 }
 
 async function persistMatchReplayLogToCloud(log: TournamentMatchReplayLog): Promise<void> {
-  const cfg = getSupabaseConfig();
-  if (!cfg.isConfigured) return;
-
-  try {
-    const res = await fetch(`${cfg.url}/rest/v1/sovereign_profiles?on_conflict=username`, {
-      method: 'POST',
-      headers: {
-        apikey: cfg.anonKey,
-        Authorization: `Bearer ${cfg.anonKey}`,
-        'Content-Type': 'application/json',
-        Prefer: 'resolution=merge-duplicates',
-      },
-      body: JSON.stringify({
-        username: `${CLOUD_MATCH_PREFIX}${log.matchKey}`,
-        title: JSON.stringify(log),
-        avatar_card_id: log.frames[0]?.sideA.avatarCardId || 'neutral_10_valkyra_pentacromatica',
-        elo_rating: 1000,
-        pvp_wins: log.round,
-        pvp_losses: log.tableNumber,
-        gold: 0,
-        updated_at: new Date().toISOString(),
-      }),
-    });
-    updateServerClockOffsetFromHeader(res.headers.get('date'));
-  } catch {
-    // Non-blocking telemetry
-  }
+  const res = await upsertCloudSystemRecord({
+    key: `${CLOUD_MATCH_PREFIX}${log.matchKey}`,
+    payload: JSON.stringify(log),
+    avatarCardId: log.frames[0]?.sideA.avatarCardId || 'neutral_10_valkyra_pentacromatica',
+    eloRating: 1000,
+    pvpWins: log.round,
+    pvpLosses: log.tableNumber,
+  });
+  updateServerClockOffsetFromHeader(res.serverDateHeader);
 }
 
 export async function fetchCloudTournamentMatchLog(

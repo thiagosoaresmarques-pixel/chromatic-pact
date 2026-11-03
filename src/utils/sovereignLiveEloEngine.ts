@@ -369,13 +369,33 @@ async function persistLedgerToSupabase(
   lastCloudWriteMs = now;
 
   const { url, anonKey } = resolveSupabaseCredentials();
+  const baseHeaders: Record<string, string> = {
+    apikey: anonKey,
+    'Content-Type': 'application/json',
+  };
+  if (anonKey.startsWith('eyJ')) {
+    baseHeaders.Authorization = `Bearer ${anonKey}`;
+  }
+
   try {
+    const rpcRes = await fetch(`${url}/rest/v1/rpc/rpc_upsert_system_record`, {
+      method: 'POST',
+      headers: baseHeaders,
+      body: JSON.stringify({
+        p_key: CLOUD_LIVE_ELO_ROW,
+        p_payload: JSON.stringify(ledger),
+        p_avatar_card_id: 'neutral_10_valkyra_pentacromatica',
+        p_elo_rating: 1000,
+        p_pvp_wins: 0,
+        p_pvp_losses: 0,
+      }),
+    });
+    if (rpcRes.status !== 404) return;
+
     await fetch(`${url}/rest/v1/sovereign_profiles?on_conflict=username`, {
       method: 'POST',
       headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${anonKey}`,
-        'Content-Type': 'application/json',
+        ...baseHeaders,
         Prefer: 'resolution=merge-duplicates',
       },
       body: JSON.stringify({

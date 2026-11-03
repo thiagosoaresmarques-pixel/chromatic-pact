@@ -14,12 +14,14 @@ import { SovereignRelicSelectorBar } from './SovereignRelicSelectorBar';
 import {
   GRAND_CAMPAIGN_BOSSES,
   GRAND_CAMPAIGN_NODES_BY_ID,
+  GRAND_CAMPAIGN_SUBMAP_GRAPHS,
   SOVEREIGN_BANNER_PALETTE,
   STARTING_REALM_BY_SOVEREIGN_DOMAIN,
   SovereignBannerDomain,
   computeSubmapReachability,
   computeUnlockedCampaignSubmaps,
   loadCampaignMapSession,
+  resolveLockedOriginBanner,
   saveCampaignMapSession,
 } from '../data/vaeloriaGrandCampaign';
 
@@ -100,7 +102,7 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     return PREBUILT_DECKS[0]?.cardIds ?? [];
   };
 
-  const [sovereignDomain, setSovereignDomain] = useState<SovereignBannerDomain>(() => {
+  const [rawBannerChoice, setRawBannerChoice] = useState<SovereignBannerDomain>(() => {
     try {
       const saved = localStorage.getItem(BANNER_STORAGE_KEY);
       if (
@@ -120,6 +122,11 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
     return inferDeckSovereignDomain(initialCards);
   });
 
+  const sovereignDomain = useMemo(
+    () => resolveLockedOriginBanner(defeatedBossIds, rawBannerChoice),
+    [defeatedBossIds, rawBannerChoice]
+  );
+
   useEffect(() => {
     try {
       localStorage.setItem(BANNER_STORAGE_KEY, sovereignDomain);
@@ -133,8 +140,13 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   const [selectedBossId, setSelectedBossId] = useState<string>(() => {
     const savedId = loadCampaignMapSession()?.selectedBossId;
     if (savedId && fullBossRoster.some((b) => b.id === savedId)) {
-      return savedId;
+      const hasAnyClear = fullBossRoster.some((b) => defeatedBossIds.includes(b.id));
+      if (hasAnyClear || GRAND_CAMPAIGN_NODES_BY_ID[savedId]?.submapId === startingRealm) {
+        return savedId;
+      }
     }
+    const entryNodeId = GRAND_CAMPAIGN_SUBMAP_GRAPHS[startingRealm]?.entryNodeIds[0];
+    if (entryNodeId) return entryNodeId;
     const firstInStartRealm = fullBossRoster.find(
       (b) => GRAND_CAMPAIGN_NODES_BY_ID[b.id]?.submapId === startingRealm
     );
@@ -251,30 +263,59 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
   );
   const bannerMeta = SOVEREIGN_BANNER_PALETTE[sovereignDomain];
 
+  const isOriginLocked = grandClearedIds.length > 0;
+
+  const handleSelectInitialOrigin = (nextOrigin: SovereignBannerDomain) => {
+    if (isOriginLocked) return;
+    setRawBannerChoice(nextOrigin);
+    const nextRealm = STARTING_REALM_BY_SOVEREIGN_DOMAIN[nextOrigin];
+    const firstEntryId = GRAND_CAMPAIGN_SUBMAP_GRAPHS[nextRealm]?.entryNodeIds[0];
+    if (firstEntryId) {
+      setSelectedBossId(firstEntryId);
+    }
+  };
+
   const campaignLoadoutControls = (
     <>
-      <label
-        className="aaa-ctrl-field"
-        title="Cor do Estandarte Soberano (converte sub-mapas 100% vencidos para sua cor)"
-      >
+      {isOriginLocked ? (
         <span
-          className="aaa-ctrl-dot"
-          style={{ background: bannerMeta.hex }}
-          aria-hidden="true"
-        />
-        <select
-          value={sovereignDomain}
-          onChange={(e) => setSovereignDomain(e.target.value as SovereignBannerDomain)}
-          className="aaa-ctrl-select-inner"
-          aria-label="Cor do Estandarte"
+          className="aaa-ctrl-field"
+          style={{ cursor: 'default' }}
+          title="Reino Natal fixado após a 1ª vitória — você pode trocar de Grimório livremente sem mudar sua capital"
         >
-          <option value="green">Estandarte: Veridia</option>
-          <option value="red">Estandarte: Pyros</option>
-          <option value="blue">Estandarte: Vórtex</option>
-          <option value="purple">Estandarte: Eclipse</option>
-          <option value="gold">Estandarte: Solária</option>
-        </select>
-      </label>
+          <span
+            className="aaa-ctrl-dot"
+            style={{ background: bannerMeta.hex }}
+            aria-hidden="true"
+          />
+          <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#e2e8f0', whiteSpace: 'nowrap' }}>
+            Origem: {bannerMeta.realmLabel}
+          </span>
+        </span>
+      ) : (
+        <label
+          className="aaa-ctrl-field"
+          title="Escolha o Reino Natal para iniciar sua Campanha (fixado após a 1ª vitória)"
+        >
+          <span
+            className="aaa-ctrl-dot"
+            style={{ background: bannerMeta.hex }}
+            aria-hidden="true"
+          />
+          <select
+            value={sovereignDomain}
+            onChange={(e) => handleSelectInitialOrigin(e.target.value as SovereignBannerDomain)}
+            className="aaa-ctrl-select-inner"
+            aria-label="Reino de Origem"
+          >
+            <option value="green">Origem: Veridia</option>
+            <option value="red">Origem: Pyros</option>
+            <option value="blue">Origem: Vórtex</option>
+            <option value="purple">Origem: Eclipse</option>
+            <option value="gold">Origem: Solária</option>
+          </select>
+        </label>
+      )}
 
       <SovereignRelicSelectorBar
         defeatedBossCount={grandClearedIds.length}
@@ -288,9 +329,11 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
             onChange={(e) => {
               const nextId = e.target.value;
               setSelectedDeckId(nextId);
-              const chosen = customDecks.find((d) => d.id === nextId);
-              if (chosen) {
-                setSovereignDomain(inferDeckSovereignDomain(chosen.cardIds));
+              if (!isOriginLocked) {
+                const chosen = customDecks.find((d) => d.id === nextId);
+                if (chosen) {
+                  handleSelectInitialOrigin(inferDeckSovereignDomain(chosen.cardIds));
+                }
               }
             }}
             className="aaa-ctrl-select-inner"

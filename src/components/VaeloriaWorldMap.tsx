@@ -184,10 +184,22 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   );
 
   const [mapScope, setMapScope] = useState<VaeloriaMapScope>(() => {
+    if (!isCampaign) return 'world';
     const saved = initialCampaignSessionRef.current;
-    if (!isCampaign || !saved) return 'world';
+    // Before the 1st victory, open directly inside the player's starting homeland sub-map
+    // (unless they explicitly clicked '← Continente' to inspect the continental overview).
+    if (clearedBossIds.length === 0) {
+      if (saved?.mapScope === 'world' && saved.explicitWorldView) {
+        return 'world';
+      }
+      if (saved && saved.mapScope !== 'world' && unlockedCampaignSubmaps.has(saved.mapScope)) {
+        return saved.mapScope;
+      }
+      return startingRealm;
+    }
+    if (!saved) return startingRealm;
     if (saved.mapScope === 'world') return 'world';
-    return unlockedCampaignSubmaps.has(saved.mapScope) ? saved.mapScope : 'world';
+    return unlockedCampaignSubmaps.has(saved.mapScope) ? saved.mapScope : startingRealm;
   });
   const [internalTheaterFullscreen, setInternalTheaterFullscreen] = useState<boolean>(() =>
     isCampaign ? true : false
@@ -404,7 +416,11 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
   const [pawnPos, setPawnPos] = useState<{ x: number; y: number }>(() => {
     if (isCampaign) {
       const saved = initialCampaignSessionRef.current;
-      if (saved?.pawnPos && (saved.mapScope === 'world' || unlockedCampaignSubmaps.has(saved.mapScope))) {
+      if (
+        saved?.pawnPos &&
+        saved.mapScope === mapScope &&
+        (saved.mapScope === 'world' || unlockedCampaignSubmaps.has(saved.mapScope))
+      ) {
         return saved.pawnPos;
       }
       if (mapScope !== 'world') {
@@ -444,24 +460,35 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
       setMusicState('sanctuary', regDef.domain);
       setVisitedRealms(markRealmVisited(mapScopeRef.current));
     }
-    if (initialCampaignSessionRef.current?.returnBanner) {
-      saveCampaignMapSession({ returnBanner: null });
-    }
+    saveCampaignMapSession({
+      mapScope: mapScopeRef.current,
+      pawnPos: pawnPosRef.current,
+      returnBanner: null,
+    });
   }, [isCampaign]);
 
-  // Reposition Sovereign on world map ONLY when player explicitly switches Sovereign Banner Color
+  // When player changes starting Origin before the 1st victory, open the chosen starting sub-map directly
   useEffect(() => {
     if (!isCampaign) return;
     if (prevStartingRealmRef.current === startingRealm) return;
     prevStartingRealmRef.current = startingRealm;
     lastWorldRealmRef.current = startingRealm;
-    if (mapScopeRef.current === 'world') {
-      const hub = GRAND_CAMPAIGN_SUBMAP_GRAPHS[startingRealm].worldHub;
-      pawnPosRef.current = { x: hub.x, y: hub.y };
-      setPawnPos({ x: hub.x, y: hub.y });
-      setMarchWaypoints([]);
-      saveCampaignMapSession({ mapScope: 'world', pawnPos: { x: hub.x, y: hub.y } });
-    }
+    const g = GRAND_CAMPAIGN_SUBMAP_GRAPHS[startingRealm];
+    const regDef = VAELORIA_REGIONAL_MAPS[startingRealm];
+    const nextPos = { x: g.entryPos.x, y: g.entryPos.y };
+    mapScopeRef.current = startingRealm;
+    setMapScope(startingRealm);
+    pawnPosRef.current = nextPos;
+    setPawnPos(nextPos);
+    setMarchWaypoints([]);
+    setMusicState('sanctuary', regDef.domain);
+    setVisitedRealms(markRealmVisited(startingRealm));
+    saveCampaignMapSession({
+      mapScope: startingRealm,
+      pawnPos: nextPos,
+      explicitWorldView: false,
+      returnBanner: null,
+    });
   }, [isCampaign, startingRealm]);
 
   const showPortalNotification = useCallback((msg: string) => {
@@ -586,7 +613,12 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         pawnPosRef.current = { x: wx, y: wy };
         setPawnPos({ x: wx, y: wy });
         if (isCampaign) {
-          saveCampaignMapSession({ mapScope: 'world', pawnPos: { x: wx, y: wy }, returnBanner: null });
+          saveCampaignMapSession({
+            mapScope: 'world',
+            pawnPos: { x: wx, y: wy },
+            explicitWorldView: true,
+            returnBanner: null,
+          });
         }
         showPortalNotification('Carta Continental de Vaeloria');
         return;
@@ -635,6 +667,7 @@ export const VaeloriaWorldMap: React.FC<VaeloriaWorldMapProps> = ({
         saveCampaignMapSession({
           mapScope: nextScope,
           pawnPos: { x: destX, y: destY },
+          explicitWorldView: false,
           returnBanner: null,
         });
       }

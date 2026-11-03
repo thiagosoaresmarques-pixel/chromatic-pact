@@ -15252,20 +15252,64 @@ export const GRAND_CAMPAIGN_BOSSES: CampaignBoss[] = GRAND_CAMPAIGN_NODES.map((n
  * - Fronteiras Profundas, Corredores, Capitais Imperiais e o Eixo Central (Matriz -> Cratera -> Cidade Franca)
  *   só abrem quando o jogador derrota o Guardião de Fronteira/Trono correspondente sem pular inimigos!
  */
+/**
+ * Fixa o Reino Natal / Estandarte após a 1ª vitória na Campanha:
+ * - Enquanto `0` chefes foram derrotados, respeita livremente `preferredBanner`.
+ * - Assim que `>= 1` chefe foi derrotado, mantém o reino inicial onde a campanha começou
+ *   (impedindo que trocar de Grimório mude a capital ou destrave outro reino de graça).
+ */
+export function resolveLockedOriginBanner(
+  clearedBossIds: Iterable<string>,
+  preferredBanner: SovereignBannerDomain
+): SovereignBannerDomain {
+  const cleared = new Set(clearedBossIds);
+  const hasAnyGrandClear = GRAND_CAMPAIGN_NODES.some((n) => cleared.has(n.id));
+  if (!hasAnyGrandClear) {
+    return preferredBanner;
+  }
+
+  const preferredRealm = STARTING_REALM_BY_SOVEREIGN_DOMAIN[preferredBanner];
+  const preferredGraph = GRAND_CAMPAIGN_SUBMAP_GRAPHS[preferredRealm];
+  if (preferredGraph?.nodeIds.some((nid) => cleared.has(nid))) {
+    return preferredBanner;
+  }
+
+  const candidates: SovereignBannerDomain[] = ['green', 'red', 'blue', 'purple', 'gold'];
+  let bestBanner: SovereignBannerDomain = preferredBanner;
+  let bestScore = 0;
+  for (const dom of candidates) {
+    const realm = STARTING_REALM_BY_SOVEREIGN_DOMAIN[dom];
+    const g = GRAND_CAMPAIGN_SUBMAP_GRAPHS[realm];
+    if (!g) continue;
+    const entryBonus = g.entryNodeIds.some((nid) => cleared.has(nid)) ? 100 : 0;
+    const clearedCount = g.nodeIds.filter((nid) => cleared.has(nid)).length;
+    const score = entryBonus + clearedCount;
+    if (score > bestScore) {
+      bestScore = score;
+      bestBanner = dom;
+    }
+  }
+  return bestBanner;
+}
+
 export function computeUnlockedCampaignSubmaps(
   clearedBossIds: Iterable<string>,
   sovereignDomain: SovereignBannerDomain
 ): Set<VaeloriaRealmId> {
   const cleared = new Set(clearedBossIds);
   const unlocked = new Set<VaeloriaRealmId>();
-  const homeRealm = STARTING_REALM_BY_SOVEREIGN_DOMAIN[sovereignDomain] ?? 'veridia';
-  unlocked.add(homeRealm);
 
-  // Also unlock any submap where the player already defeated a boss previously (if they switched banner color)
+  // Unlock submaps where the player already defeated at least 1 boss
   for (const node of GRAND_CAMPAIGN_NODES) {
     if (cleared.has(node.id)) {
       unlocked.add(node.submapId);
     }
+  }
+
+  // Only seed the chosen starting homeland before the 1st campaign victory (or if legacy data had no node match)
+  if (unlocked.size === 0) {
+    const homeRealm = STARTING_REALM_BY_SOVEREIGN_DOMAIN[sovereignDomain] ?? 'veridia';
+    unlocked.add(homeRealm);
   }
 
   let changed = true;
@@ -15539,6 +15583,7 @@ export interface CampaignMapSessionState {
   selectedBossId?: string;
   isTheaterFullscreen: boolean;
   returnBanner?: string | null;
+  explicitWorldView?: boolean;
 }
 
 const CAMPAIGN_MAP_SESSION_KEY = 'chromatic_pact_campaign_map_session_v1';
@@ -15566,6 +15611,7 @@ export function loadCampaignMapSession(): CampaignMapSessionState | null {
         parsed.isTheaterFullscreen !== undefined ? Boolean(parsed.isTheaterFullscreen) : true,
       returnBanner:
         typeof parsed.returnBanner === 'string' ? parsed.returnBanner : null,
+      explicitWorldView: Boolean(parsed.explicitWorldView),
     };
   } catch {
     return null;
@@ -15575,6 +15621,9 @@ export function loadCampaignMapSession(): CampaignMapSessionState | null {
 export function saveCampaignMapSession(patch: Partial<CampaignMapSessionState>): void {
   try {
     const prev = loadCampaignMapSession();
+    if (!prev && !patch.mapScope) {
+      return;
+    }
     const next: CampaignMapSessionState = {
       mapScope: patch.mapScope ?? prev?.mapScope ?? 'world',
       pawnPos: patch.pawnPos ?? prev?.pawnPos,
@@ -15585,6 +15634,10 @@ export function saveCampaignMapSession(patch: Partial<CampaignMapSessionState>):
           : prev?.isTheaterFullscreen ?? true,
       returnBanner:
         patch.returnBanner !== undefined ? patch.returnBanner : prev?.returnBanner ?? null,
+      explicitWorldView:
+        patch.explicitWorldView !== undefined
+          ? patch.explicitWorldView
+          : prev?.explicitWorldView ?? false,
     };
     localStorage.setItem(CAMPAIGN_MAP_SESSION_KEY, JSON.stringify(next));
   } catch {

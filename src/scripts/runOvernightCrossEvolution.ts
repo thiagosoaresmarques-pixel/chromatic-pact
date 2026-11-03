@@ -13,8 +13,12 @@ import {
 } from '../data/decks';
 import type { DeckLearnedAiProfile, DiscoveredCardCombo } from '../data/aiLearnedProfiles';
 import {
-  CardShapleyMetric,
+  BICOLOR_VALUE_NETWORKS,
   DOMAIN_VALUE_NETWORKS,
+  POLYCOLOR_VALUE_NETWORKS,
+} from '../data/aiValueNetworksData';
+import {
+  CardShapleyMetric,
   MONOCOLOR_ARCHETYPE_MASTERY,
   MONOCOLOR_TRAINING_SUMMARY,
   MonocolorArchetypeId,
@@ -25,7 +29,6 @@ import {
 import {
   BICOLOR_ARCHETYPE_MASTERY,
   BICOLOR_TRAINING_SUMMARY,
-  BICOLOR_VALUE_NETWORKS,
   BicolorArchetypeId,
   BicolorArchetypeMastery,
   BicolorTrainingSummary,
@@ -34,7 +37,6 @@ import { ORDERED_BICOLOR_ARCHETYPE_IDS } from '../data/aiBicolorMastery';
 import {
   POLYCOLOR_ARCHETYPE_MASTERY,
   POLYCOLOR_TRAINING_SUMMARY,
-  POLYCOLOR_VALUE_NETWORKS,
   PolycolorArchetypeId,
   PolycolorArchetypeMastery,
   PolycolorTrainingSummary,

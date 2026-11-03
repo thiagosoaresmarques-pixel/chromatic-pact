@@ -1,5 +1,4 @@
 import { unpackMasteryRecord } from './compactMasteryCodec';
-import { POLYCOLOR_VALUE_NETWORKS } from './aiValueNetworksData';
 import { AiSkillTier, Domain } from '../types/game';
 import type { DeckLearnedAiProfile, DiscoveredCardCombo } from './aiLearnedProfiles';
 import type { CardShapleyMetric, TierDeckMetadata } from './aiMonocolorMasteryData';
@@ -229,8 +228,6 @@ export const POLYCOLOR_TRAINING_SUMMARY: PolycolorTrainingSummary = {
     }
   }
 };
-
-export { POLYCOLOR_VALUE_NETWORKS };
 
 export const POLYCOLOR_ARCHETYPE_MASTERY: Record<PolycolorArchetypeId, PolycolorArchetypeMastery> = unpackMasteryRecord<PolycolorArchetypeId, PolycolorArchetypeMastery>({
   "tri_red_blue_purple": {

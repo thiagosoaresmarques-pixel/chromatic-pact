@@ -2,9 +2,9 @@ import { AiSkillTier, Domain, PrebuiltDeck } from '../types/game';
 import {
   BICOLOR_ARCHETYPE_MASTERY,
   BICOLOR_TRAINING_SUMMARY,
-  BICOLOR_VALUE_NETWORKS,
   BicolorArchetypeId,
 } from './aiBicolorMasteryData';
+import { CACHED_BICOLOR_VALUE_NETWORKS, scheduleAiValueNetworksPreload } from './aiValueNetworksLoader';
 
 export * from './aiBicolorMasteryData';
 
@@ -86,7 +86,8 @@ export function getBicolorTrainingSummary() {
 }
 
 export function getBicolorValueNetwork(archetypeId: BicolorArchetypeId) {
-  return BICOLOR_VALUE_NETWORKS[archetypeId] ?? null;
+  scheduleAiValueNetworksPreload();
+  return CACHED_BICOLOR_VALUE_NETWORKS[archetypeId] ?? null;
 }
 
 /**

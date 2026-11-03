@@ -11,9 +11,9 @@ import {
   DEFAULT_AI_WEIGHTS,
   DiscoveredCardCombo,
 } from '../data/aiLearnedProfiles';
+import { DOMAIN_VALUE_NETWORKS } from '../data/aiValueNetworksData';
 import {
   CardShapleyMetric,
-  DOMAIN_VALUE_NETWORKS,
   MONOCOLOR_ARCHETYPE_MASTERY,
   MonocolorArchetypeId,
   TierDeckMetadata,

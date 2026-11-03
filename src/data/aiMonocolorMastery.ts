@@ -10,7 +10,6 @@ import {
 } from '../types/game';
 import type { SerializedValueMlp } from '../engine/aiValueNetwork';
 import {
-  DOMAIN_VALUE_NETWORKS,
   MONOCOLOR_ARCHETYPE_MASTERY,
   MONOCOLOR_TRAINING_SUMMARY,
   MonocolorArchetypeId,
@@ -18,19 +17,31 @@ import {
 } from './aiMonocolorMasteryData';
 import {
   BICOLOR_ARCHETYPE_MASTERY,
-  BICOLOR_VALUE_NETWORKS,
   BicolorArchetypeId,
   resolveBicolorArchetypeForDeckId,
   resolveBicolorArchetypeForDomains,
 } from './aiBicolorMastery';
 import {
   POLYCOLOR_ARCHETYPE_MASTERY,
-  POLYCOLOR_VALUE_NETWORKS,
   PolycolorArchetypeId,
   resolvePentachromaticArchetypeForBoss,
   resolvePolycolorArchetypeForDeckId,
   resolveTricolorArchetypeForDomains,
 } from './aiPolycolorMastery';
+import {
+  CACHED_BICOLOR_VALUE_NETWORKS,
+  CACHED_DOMAIN_VALUE_NETWORKS,
+  CACHED_POLYCOLOR_VALUE_NETWORKS,
+  ensureAiValueNetworksLoaded,
+  isAiValueNetworksLoaded,
+  scheduleAiValueNetworksPreload,
+} from './aiValueNetworksLoader';
+
+export {
+  ensureAiValueNetworksLoaded,
+  isAiValueNetworksLoaded,
+  scheduleAiValueNetworksPreload,
+};
 
 export * from './aiMonocolorMasteryData';
 export * from './aiBicolorMastery';
@@ -568,30 +579,35 @@ export function resolveDomainValueMlpForActor(
   state: GameState,
   actor: 'player' | 'ai'
 ): SerializedValueMlp | null {
+  if (!isAiValueNetworksLoaded()) {
+    scheduleAiValueNetworksPreload();
+    return null;
+  }
+
   const side = state[actor];
   const deckId = actor === 'player' ? state.playerDeckId : state.aiDeckId;
 
   if (deckId) {
     const polyArchId = resolvePolycolorArchetypeForDeckId(deckId);
-    if (polyArchId && POLYCOLOR_VALUE_NETWORKS[polyArchId]) {
-      return POLYCOLOR_VALUE_NETWORKS[polyArchId] ?? null;
+    if (polyArchId && CACHED_POLYCOLOR_VALUE_NETWORKS[polyArchId]) {
+      return CACHED_POLYCOLOR_VALUE_NETWORKS[polyArchId] ?? null;
     }
 
     const biArchId = resolveBicolorArchetypeForDeckId(deckId);
-    if (biArchId && BICOLOR_VALUE_NETWORKS[biArchId]) {
-      return BICOLOR_VALUE_NETWORKS[biArchId] ?? null;
+    if (biArchId && CACHED_BICOLOR_VALUE_NETWORKS[biArchId]) {
+      return CACHED_BICOLOR_VALUE_NETWORKS[biArchId] ?? null;
     }
 
     const mastery = MONOCOLOR_ARCHETYPE_MASTERY[deckId as MonocolorArchetypeId];
-    if (mastery && DOMAIN_VALUE_NETWORKS[mastery.domain]) {
-      return DOMAIN_VALUE_NETWORKS[mastery.domain] ?? null;
+    if (mastery && CACHED_DOMAIN_VALUE_NETWORKS[mastery.domain]) {
+      return CACHED_DOMAIN_VALUE_NETWORKS[mastery.domain] ?? null;
     }
-    if (deckId.includes('green')) return DOMAIN_VALUE_NETWORKS.green ?? null;
-    if (deckId.includes('red')) return DOMAIN_VALUE_NETWORKS.red ?? null;
-    if (deckId.includes('blue')) return DOMAIN_VALUE_NETWORKS.blue ?? null;
-    if (deckId.includes('purple')) return DOMAIN_VALUE_NETWORKS.purple ?? null;
-    if (deckId.includes('gold')) return DOMAIN_VALUE_NETWORKS.gold ?? null;
-    if (deckId.includes('neutral')) return DOMAIN_VALUE_NETWORKS.neutral ?? null;
+    if (deckId.includes('green')) return CACHED_DOMAIN_VALUE_NETWORKS.green ?? null;
+    if (deckId.includes('red')) return CACHED_DOMAIN_VALUE_NETWORKS.red ?? null;
+    if (deckId.includes('blue')) return CACHED_DOMAIN_VALUE_NETWORKS.blue ?? null;
+    if (deckId.includes('purple')) return CACHED_DOMAIN_VALUE_NETWORKS.purple ?? null;
+    if (deckId.includes('gold')) return CACHED_DOMAIN_VALUE_NETWORKS.gold ?? null;
+    if (deckId.includes('neutral')) return CACHED_DOMAIN_VALUE_NETWORKS.neutral ?? null;
   }
 
   // Fallback: inspect actor's active domain affinities (supports custom 1–5 color decks)
@@ -601,8 +617,8 @@ export function resolveDomainValueMlpForActor(
     .filter((x) => x.val > 0)
     .sort((a, b) => b.val - a.val);
 
-  if (activeColored.length >= 4 && POLYCOLOR_VALUE_NETWORKS.penta_free_city_sovereign) {
-    return POLYCOLOR_VALUE_NETWORKS.penta_free_city_sovereign ?? null;
+  if (activeColored.length >= 4 && CACHED_POLYCOLOR_VALUE_NETWORKS.penta_free_city_sovereign) {
+    return CACHED_POLYCOLOR_VALUE_NETWORKS.penta_free_city_sovereign ?? null;
   }
   if (activeColored.length === 3) {
     const triFallback = resolveTricolorArchetypeForDomains([
@@ -610,8 +626,8 @@ export function resolveDomainValueMlpForActor(
       activeColored[1].domain,
       activeColored[2].domain,
     ]);
-    if (triFallback && POLYCOLOR_VALUE_NETWORKS[triFallback]) {
-      return POLYCOLOR_VALUE_NETWORKS[triFallback] ?? null;
+    if (triFallback && CACHED_POLYCOLOR_VALUE_NETWORKS[triFallback]) {
+      return CACHED_POLYCOLOR_VALUE_NETWORKS[triFallback] ?? null;
     }
   }
   if (activeColored.length === 2) {
@@ -619,18 +635,18 @@ export function resolveDomainValueMlpForActor(
       activeColored[0].domain,
       activeColored[1].domain,
     ]);
-    if (biFallback && BICOLOR_VALUE_NETWORKS[biFallback]) {
-      return BICOLOR_VALUE_NETWORKS[biFallback] ?? null;
+    if (biFallback && CACHED_BICOLOR_VALUE_NETWORKS[biFallback]) {
+      return CACHED_BICOLOR_VALUE_NETWORKS[biFallback] ?? null;
     }
   } else if (activeColored.length === 1 && (side.affinities.neutral ?? 0) >= 2) {
     const axialFallback = resolveBicolorArchetypeForDomains([activeColored[0].domain, 'neutral']);
-    if (axialFallback && BICOLOR_VALUE_NETWORKS[axialFallback]) {
-      return BICOLOR_VALUE_NETWORKS[axialFallback] ?? null;
+    if (axialFallback && CACHED_BICOLOR_VALUE_NETWORKS[axialFallback]) {
+      return CACHED_BICOLOR_VALUE_NETWORKS[axialFallback] ?? null;
     }
   }
 
   const bestDom: Domain = activeColored[0]?.domain ?? 'neutral';
-  return DOMAIN_VALUE_NETWORKS[bestDom] ?? DOMAIN_VALUE_NETWORKS.neutral ?? null;
+  return CACHED_DOMAIN_VALUE_NETWORKS[bestDom] ?? CACHED_DOMAIN_VALUE_NETWORKS.neutral ?? null;
 }
 
 export function getMonocolorTrainingSummary() {

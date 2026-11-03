@@ -1,5 +1,4 @@
 import { unpackMasteryRecord } from './compactMasteryCodec';
-import { DOMAIN_VALUE_NETWORKS } from './aiValueNetworksData';
 import { AiSkillTier, Domain } from '../types/game';
 import type { DeckLearnedAiProfile } from './aiLearnedProfiles';
 
@@ -297,8 +296,6 @@ export const MONOCOLOR_TRAINING_SUMMARY: MonocolorTrainingSummary = {
     }
   }
 };
-
-export { DOMAIN_VALUE_NETWORKS };
 
 export const MONOCOLOR_ARCHETYPE_MASTERY: Partial<Record<MonocolorArchetypeId, MonocolorArchetypeMastery>> = unpackMasteryRecord<MonocolorArchetypeId, MonocolorArchetypeMastery>({
   "mono_green_swarm": {

@@ -2,7 +2,6 @@ import { AiSkillTier, CampaignBoss, Domain, PrebuiltDeck } from '../types/game';
 import {
   POLYCOLOR_ARCHETYPE_MASTERY,
   POLYCOLOR_TRAINING_SUMMARY,
-  POLYCOLOR_VALUE_NETWORKS,
   PolycolorArchetypeId,
 } from './aiPolycolorMasteryData';
 

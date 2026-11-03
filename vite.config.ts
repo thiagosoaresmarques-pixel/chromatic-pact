@@ -109,11 +109,11 @@ export default defineConfig({
           if (norm.includes('/src/data/problems')) {
             return 'data-problems';
           }
-          if (
-            norm.includes('aiValueNetworksData') ||
-            norm.includes('compactMasteryCodec')
-          ) {
+          if (norm.includes('aiValueNetworksData')) {
             return 'ai-value-networks';
+          }
+          if (norm.includes('compactMasteryCodec')) {
+            return 'app-utils';
           }
           if (
             norm.includes('aiLearnedWeights') ||

@@ -5,19 +5,21 @@ import { isMainThread, parentPort, Worker } from 'node:worker_threads';
 import { CARDS_BY_ID } from '../data/cards';
 import type { DeckLearnedAiProfile } from '../data/aiLearnedProfiles';
 import {
+  BICOLOR_VALUE_NETWORKS,
   DOMAIN_VALUE_NETWORKS,
+  POLYCOLOR_VALUE_NETWORKS,
+} from '../data/aiValueNetworksData';
+import {
   MONOCOLOR_ARCHETYPE_MASTERY,
   MonocolorArchetypeId,
 } from '../data/aiMonocolorMasteryData';
 import {
   BICOLOR_ARCHETYPE_MASTERY,
-  BICOLOR_VALUE_NETWORKS,
   BicolorArchetypeId,
 } from '../data/aiBicolorMasteryData';
 import { ORDERED_BICOLOR_ARCHETYPE_IDS } from '../data/aiBicolorMastery';
 import {
   POLYCOLOR_ARCHETYPE_MASTERY,
-  POLYCOLOR_VALUE_NETWORKS,
   PolycolorArchetypeId,
 } from '../data/aiPolycolorMasteryData';
 import { ORDERED_POLYCOLOR_ARCHETYPE_IDS } from '../data/aiPolycolorMastery';

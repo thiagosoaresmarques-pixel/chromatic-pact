@@ -153,8 +153,11 @@ export const CampaignView: React.FC<CampaignViewProps> = ({
 
   const [domainFilter, setDomainFilter] = useState<'all' | Domain>('all');
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
-  // Collapsed by default in Map mode so 100% of every map fits unobstructed on screen!
-  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(true);
+  // Collapsed by default on desktop widescreen so 100% of every map fits unobstructed;
+  // expanded below the map on mobile portrait (<= 768px) where the dossier stacks underneath without overlap.
+  const [isDossierCollapsed, setIsDossierCollapsed] = useState<boolean>(() =>
+    typeof window !== 'undefined' ? window.innerWidth > 768 : true
+  );
   const [inspectCard, setInspectCard] = useState<CardDefinition | null>(null);
   const [showTacticalGuideModal, setShowTacticalGuideModal] = useState<boolean>(false);
 

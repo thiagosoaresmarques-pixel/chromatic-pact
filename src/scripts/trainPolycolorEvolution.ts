@@ -11,16 +11,15 @@ import {
   DEFAULT_AI_WEIGHTS,
   DiscoveredCardCombo,
 } from '../data/aiLearnedProfiles';
+import { BICOLOR_VALUE_NETWORKS, DOMAIN_VALUE_NETWORKS } from '../data/aiValueNetworksData';
 import {
   CardShapleyMetric,
-  DOMAIN_VALUE_NETWORKS,
   MONOCOLOR_ARCHETYPE_MASTERY,
   MonocolorArchetypeId,
   TierDeckMetadata,
 } from '../data/aiMonocolorMasteryData';
 import {
   BICOLOR_ARCHETYPE_MASTERY,
-  BICOLOR_VALUE_NETWORKS,
   BicolorArchetypeId,
 } from '../data/aiBicolorMasteryData';
 import { resolveBicolorArchetypeForDomains } from '../data/aiBicolorMastery';

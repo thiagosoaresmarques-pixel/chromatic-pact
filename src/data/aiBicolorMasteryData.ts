@@ -1,5 +1,4 @@
 import { unpackMasteryRecord } from './compactMasteryCodec';
-import { BICOLOR_VALUE_NETWORKS } from './aiValueNetworksData';
 import { AiSkillTier, Domain } from '../types/game';
 import type { DeckLearnedAiProfile, DiscoveredCardCombo } from './aiLearnedProfiles';
 import type { CardShapleyMetric, TierDeckMetadata } from './aiMonocolorMasteryData';
@@ -290,8 +289,6 @@ export const BICOLOR_TRAINING_SUMMARY: BicolorTrainingSummary = {
     }
   }
 };
-
-export { BICOLOR_VALUE_NETWORKS };
 
 export const BICOLOR_ARCHETYPE_MASTERY: Partial<Record<BicolorArchetypeId, BicolorArchetypeMastery>> = unpackMasteryRecord<BicolorArchetypeId, BicolorArchetypeMastery>({
   "dual_red_gold": {

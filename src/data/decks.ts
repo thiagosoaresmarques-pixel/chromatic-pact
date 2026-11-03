@@ -243,7 +243,7 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
     "domains": [
       "purple"
     ],
-    "strategy": "Rituais de Necromancia e Relíquias Sombrias (65 Criaturas, 24 Feitiços, 1 Reações, 10 Relíquias • 47 cartas distintas: 20×3, 13×2, 14×1). Drena a vida do Soberano rival enquanto reanima campeões da Cripta.",
+    "strategy": "Ecos da Cripta e Relíquias Umbrais (65 Criaturas, 24 Feitiços, 1 Reações, 10 Relíquias • 47 cartas distintas: 20×3, 13×2, 14×1). Drena a vida do Soberano rival enquanto reanima campeões da Cripta.",
     "coverCardId": "purple_13_zumbi",
     "cardIds": [
       "purple_13_zumbi",
@@ -1139,13 +1139,13 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
   },
   {
     "id": "deck_dual_blood_flame",
-    "name": "Grimório da Chama Sangrenta",
+    "name": "Aliança de Brasa & Umbra",
     "subtitle": "Pacto Duplo 🔥+💀 • Chama & Abismo",
     "domains": [
       "red",
       "purple"
     ],
-    "strategy": "Corrupção, Queima e Sacrifício (93 Criaturas, 0 Feitiços, 0 Reações, 7 Relíquias • 44 cartas distintas: 25×3, 6×2, 13×1): alcança o limiar de Poder Sombrio rapidamente para amplificar feitiços piromânticos e drenos.",
+    "strategy": "Sobrecarga, Queima e Sacrifício Vital (93 Criaturas, 0 Feitiços, 0 Reações, 7 Relíquias • 44 cartas distintas: 25×3, 6×2, 13×1): alcança o limiar de Sobrecarga (5+) rapidamente para amplificar feitiços piromânticos e drenos.",
     "coverCardId": "neutral_81_operario_relojoeiro",
     "cardIds": [
       "neutral_81_operario_relojoeiro",
@@ -2852,7 +2852,7 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple",
       "gold"
     ],
-    "strategy": "Sacrifício de Sangue, Dreno de Vida e Relíquias Imperiais (94 Criaturas, 0 Feitiços, 2 Reações, 4 Relíquias • 48 cartas distintas: 21×3, 10×2, 17×1): combina Serafins, Lordes Vampiros e Balors atrás de 20 Relíquias Contínuas que drenam e queimam a cada turno.",
+    "strategy": "Sacrifício Vital, Dreno de Vida e Relíquias Imperiais (94 Criaturas, 0 Feitiços, 2 Reações, 4 Relíquias • 48 cartas distintas: 21×3, 10×2, 17×1): combina Serafins, Lordes Vampiros e Balors atrás de 20 Relíquias Contínuas que drenam e queimam a cada turno.",
     "coverCardId": "gold_99_serafim_coroado",
     "cardIds": [
       "gold_99_serafim_coroado",
@@ -3759,7 +3759,7 @@ export const PREBUILT_DECKS: PrebuiltDeck[] = [
       "purple",
       "neutral"
     ],
-    "strategy": "Atrito implacável que funde carcaças autômatas da Fronteira Cinzenta com rituais de drenagem e reanimação sombria (62 Criaturas, 26 Feitiços, 2 Reações, 10 Relíquias • 49 cartas distintas: 17×3, 17×2, 15×1).",
+    "strategy": "Atrito implacável que funde carcaças autômatas da Fronteira Cinzenta com feitiços de drenagem e reanimação sombria (62 Criaturas, 26 Feitiços, 2 Reações, 10 Relíquias • 49 cartas distintas: 17×3, 17×2, 15×1).",
     "coverCardId": "purple_173_general_roda_abismo",
     "cardIds": [
       "purple_12_fogo_fatuo",

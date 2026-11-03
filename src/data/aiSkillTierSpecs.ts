@@ -52,7 +52,7 @@ export const AI_SKILL_TIER_SPECS: Record<AiSkillTier, AiSkillTierSpec> = {
     shortLabel: 'Tier III • Veterano',
     title: 'Bastião Veterano',
     description:
-      'Grimório sinérgico (4–5 Lendárias) com domínio completo de terreno e rituais.',
+      'Grimório sinérgico (4–5 Lendárias) com domínio completo de terreno e canalizações.',
     temperature: 0.25,
     useValueMlp: true,
     beamWidth: 1,

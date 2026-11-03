@@ -627,7 +627,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Queima a Vanguarda inimiga em 2 de dano."
       }
     ],
-    "description": "Corrupção +2. Voo, Atropelar, Pele Incandescente. Fim do Turno: Aura de fogo causa 2 de dano à Vanguarda inimiga.",
+    "description": "Sobrecarga +2. Voo, Atropelar, Pele Incandescente. Fim do Turno: Aura de fogo causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Legiões inteiras marcham ao compasso do bater de suas asas.",
     "imagePath": "/assets/cards/red_22_tirano_fogo.webp"
   },
@@ -2408,7 +2408,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Orbe de Fogo Profano causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Corrupção +1. Guardião, Dreno de Vida. Armadura 2. Ao Entrar: Causa 2 de dano à Vanguarda inimiga. Ascensão (4): Transforma-se em Grão-Marechal do Sol Negro (8/8, ARM 3).",
+    "description": "Sobrecarga +1. Guardião, Dreno de Vida. Armadura 2. Ao Entrar: Causa 2 de dano à Vanguarda inimiga. Ascensão (4): Transforma-se em Grão-Marechal do Sol Negro (8/8, ARM 3).",
     "flavorText": "Mesmo na morte, sua espada ainda busca a honra que ele próprio assassinou.",
     "imagePath": "/assets/cards/purple_05_cavaleiro_morte.webp",
     "ascension": {
@@ -2581,7 +2581,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Fim do Turno: Drena 1 de VIDA do Soberano rival."
       }
     ],
-    "description": "Corrupção +1. Ao Entrar: Compra 2 cartas. Fim do Turno: Drena 1 de VIDA do Soberano inimigo.",
+    "description": "Sobrecarga +1. Ao Entrar: Compra 2 cartas. Fim do Turno: Drena 1 de VIDA do Soberano inimigo.",
     "flavorText": "O preço é pago em pesadelos; o lucro é colhido em segredos.",
     "imagePath": "/assets/cards/purple_10_pacto_profano.webp"
   },
@@ -2894,7 +2894,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Escraviza um inimigo com ATQ <= 3."
       }
     ],
-    "description": "Corrupção +1. Alcance, Dreno de Vida. Ao Entrar: Escraviza mentalmente um inimigo com ATQ <= 3.",
+    "description": "Sobrecarga +1. Alcance, Dreno de Vida. Ao Entrar: Escraviza mentalmente um inimigo com ATQ <= 3.",
     "flavorText": "Antes dos deuses nascerem, ele já sonhava nas águas negras.",
     "imagePath": "/assets/cards/purple_21_abolete.webp"
   },
@@ -2925,7 +2925,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Reanima um aliado da Cripta."
       }
     ],
-    "description": "Corrupção +1. Voo, Alcance, Toque Letal. Ao Entrar: Reanima um aliado caído da sua Cripta.",
+    "description": "Sobrecarga +1. Voo, Alcance, Toque Letal. Ao Entrar: Reanima um aliado caído da sua Cripta.",
     "flavorText": "Quando um Serafim dos Anéis Abissais cai, sua vigília continua flutuando.",
     "imagePath": "/assets/cards/purple_22_orbe_necrotico.webp"
   },
@@ -2963,7 +2963,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Reanima 1 criatura (custo <= 4) da sua Cripta."
       }
     ],
-    "description": "Corrupção +2. Voo, Toque Letal, Renascer. Armadura 2. Sopro 3. Ao Entrar: Causa 3 de dano à Vanguarda inimiga e reanima 1 criatura (custo <= 4) da Cripta.",
+    "description": "Sobrecarga +2. Voo, Toque Letal, Renascer. Armadura 2. Sopro 3. Ao Entrar: Causa 3 de dano à Vanguarda inimiga e reanima 1 criatura (custo <= 4) da Cripta.",
     "flavorText": "Nem a própria extinção conseguiu apagar sua ganância.",
     "imagePath": "/assets/cards/purple_23_dracolich.webp"
   },
@@ -3016,7 +3016,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Atacar: Dança das Lâminas causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Corrupção +1. Ímpeto, Fúria Crescente. Ao Atacar: Suas seis espadas causam 2 de dano a toda a Vanguarda inimiga.",
+    "description": "Sobrecarga +1. Ímpeto, Fúria Crescente. Ao Atacar: Suas seis espadas causam 2 de dano a toda a Vanguarda inimiga.",
     "flavorText": "Seis lâminas para atacar, uma cauda para estrangular.",
     "imagePath": "/assets/cards/purple_25_dama_seis_laminas.webp"
   },
@@ -3119,7 +3119,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Início do Turno: Restaura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Corrupção +1. Ao Entrar: Reanima criatura da Cripta e 2 de dano à Vanguarda. Início do Turno: Cura 2 no Soberano.",
+    "description": "Sobrecarga +1. Ao Entrar: Reanima criatura da Cripta e 2 de dano à Vanguarda. Início do Turno: Cura 2 no Soberano.",
     "flavorText": "Esculpida em crânio de dragão negro, sussurra segredos de imortalidade ácida.",
     "imagePath": "/assets/cards/purple_28_filacterio_noite.webp"
   },
@@ -3158,7 +3158,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Compra 1 carta."
       }
     ],
-    "description": "Corrupção +1. Feitiço: Ceifa a força vital de um inimigo causando 3 de dano, curando 2 de VIDA do seu Soberano e comprando 1 carta.",
+    "description": "Sobrecarga +1. Feitiço: Ceifa a força vital de um inimigo causando 3 de dano, curando 2 de VIDA do seu Soberano e comprando 1 carta.",
     "flavorText": "A vida nunca é perdida; apenas muda de dono.",
     "imagePath": "/assets/cards/purple_29_colheita_sombras.webp"
   },
@@ -3192,7 +3192,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Concede +1/+1 aos seus aliados."
       }
     ],
-    "description": "Corrupção +1. Feitiço: Reanima uma criatura de custo até 5 da sua Cripta e concede +1/+1 a todos os aliados.",
+    "description": "Sobrecarga +1. Feitiço: Reanima uma criatura de custo até 5 da sua Cripta e concede +1/+1 a todos os aliados.",
     "flavorText": "Soldados mortos não pedem soldo, água ou descanso.",
     "imagePath": "/assets/cards/purple_30_erguer_mortos.webp"
   },
@@ -3231,7 +3231,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Cura 3 de VIDA do seu Soberano."
       }
     ],
-    "description": "Corrupção +1. Feitiço: Nuvem pestilenta causa 3 de dano à fileira inimiga, reduz o ATQ dos inimigos em -2 e cura 3 no Soberano.",
+    "description": "Sobrecarga +1. Feitiço: Nuvem pestilenta causa 3 de dano à fileira inimiga, reduz o ATQ dos inimigos em -2 e cura 3 no Soberano.",
     "flavorText": "O aço enferruja e a carne desfalece ao primeiro sopro da Cripta.",
     "imagePath": "/assets/cards/purple_31_peste_abissal.webp"
   },
@@ -3270,7 +3270,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Corrupção +2. Feitiço Lendário: Destrói o inimigo mais forte, reanima um campeão da sua Cripta e causa 2 de dano ao Soberano rival.",
+    "description": "Sobrecarga +2. Feitiço Lendário: Destrói o inimigo mais forte, reanima um campeão da sua Cripta e causa 2 de dano ao Soberano rival.",
     "flavorText": "Quando o Sol Negro se ergue, os vivos trocam de lugar com os mortos.",
     "imagePath": "/assets/cards/purple_32_apocalipse_vazio.webp"
   },
@@ -3413,7 +3413,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Invoca uma Sombra Faminta (2/2)."
       }
     ],
-    "description": "Corrupção +1. Ao Entrar: Invoca Sombra Faminta (2/2). Início do Turno: Concede +1/+1 a um aliado.",
+    "description": "Sobrecarga +1. Ao Entrar: Invoca Sombra Faminta (2/2). Início do Turno: Concede +1/+1 a um aliado.",
     "flavorText": "Sentar-se nele exige abrir mão da carne; erguer-se dele move um império de ossos.",
     "imagePath": "/assets/cards/purple_36_trono_ossos.webp"
   },
@@ -5798,7 +5798,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Investida Sísmica causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Sem requisito de Afinidade. Corrupção +1. Atropelar, Fúria Crescente. Armadura 2. Ao Entrar: Causa 2 de dano à Vanguarda inimiga.",
+    "description": "Sem requisito de Afinidade. Sobrecarga +1. Atropelar, Fúria Crescente. Armadura 2. Ao Entrar: Causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Quando os portões de bronze resistem aos exércitos, eles soltam a besta.",
     "imagePath": "/assets/cards/neutral_09_baphometis_abismo.webp"
   },
@@ -7551,7 +7551,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Ímpeto, Voo. Corrupção +1. Ao Entrar: Causa 2 de dano ao Soberano inimigo.",
+    "description": "Ímpeto, Voo. Sobrecarga +1. Ao Entrar: Causa 2 de dano ao Soberano inimigo.",
     "flavorText": "Seus cascos galopam sobre as almas dos traidores.",
     "imagePath": "/assets/cards/purple_42_pesadelo_infernal.webp"
   },
@@ -7616,7 +7616,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Domina uma criatura inimiga com ATQ <= 3 (ou causa 3 de dano se não houver espaço)."
       }
     ],
-    "description": "Alcance, Dreno de Vida. Corrupção +2. Ao Entrar: Toma o controle de um inimigo com ATQ <= 3.",
+    "description": "Alcance, Dreno de Vida. Sobrecarga +2. Ao Entrar: Toma o controle de um inimigo com ATQ <= 3.",
     "flavorText": "Quando suas correntes espectrais tocam o elmo do guerreiro, a espada muda de mestre.",
     "imagePath": "/assets/cards/purple_44_devorador_intelecto.webp"
   },
@@ -7706,7 +7706,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Reanima a criatura mais forte da sua Cripta."
       }
     ],
-    "description": "Atropelar, Toque Letal, Dreno de Vida. Armadura 1. Corrupção +2. Ao Entrar: Reanima um campeão da sua Cripta.",
+    "description": "Atropelar, Toque Letal, Dreno de Vida. Armadura 1. Sobrecarga +2. Ao Entrar: Reanima um campeão da sua Cripta.",
     "flavorText": "Quando a última estrela se apagar, apenas sua gargalhada restará no vazio.",
     "imagePath": "/assets/cards/purple_47_avatar_escuridao.webp"
   },
@@ -7777,7 +7777,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Compra 1 carta."
       }
     ],
-    "description": "Feitiço (Corrupção +1): Drena 3 de VIDA do Soberano inimigo para o seu Soberano e compra 1 carta.",
+    "description": "Feitiço (Sobrecarga +1): Drena 3 de VIDA do Soberano inimigo para o seu Soberano e compra 1 carta.",
     "flavorText": "O banquete nunca termina enquanto houver pulsos batendo no campo.",
     "imagePath": "/assets/cards/purple_49_banquete_almas.webp"
   },
@@ -7810,7 +7810,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Compra 2 cartas."
       }
     ],
-    "description": "Feitiço (Corrupção +2): Assina um pergaminho abissal, gerando +2⚡ de Essência imediata e comprando 2 cartas.",
+    "description": "Feitiço (Sobrecarga +2): Assina um pergaminho abissal, gerando +2⚡ de Essência imediata e comprando 2 cartas.",
     "flavorText": "A cláusula final cobra juros na moeda da própria eternidade.",
     "imagePath": "/assets/cards/purple_50_pacto_proibido.webp"
   },
@@ -7849,7 +7849,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Cura 3 de VIDA do seu Soberano."
       }
     ],
-    "description": "Feitiço (Corrupção +1): Um eclipse total causa 3 de dano à fileira inimiga, reanima um aliado da Cripta e cura 3 no seu Soberano.",
+    "description": "Feitiço (Sobrecarga +1): Um eclipse total causa 3 de dano à fileira inimiga, reanima um aliado da Cripta e cura 3 no seu Soberano.",
     "flavorText": "Sob a coroa negra do eclipse, os mortos marcham como reis.",
     "imagePath": "/assets/cards/purple_51_eclipse_eterno.webp"
   },
@@ -16773,7 +16773,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Ao Entrar: Causa 3 de dano a um inimigo."
       }
     ],
-    "description": "Voo, Ímpeto, Dreno de Vida. Armadura 1. Corrupção +1. Ao Entrar: Causa 3 de dano a um inimigo.",
+    "description": "Voo, Ímpeto, Dreno de Vida. Armadura 1. Sobrecarga +1. Ao Entrar: Causa 3 de dano a um inimigo.",
     "flavorText": "Suas asas de corvo eclipsam as tochas antes do golpe fatal.",
     "imagePath": "/assets/cards/purple_97_arquidemonio_sombras.webp"
   },
@@ -16961,13 +16961,13 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Cura 4 de VIDA do seu Soberano."
       }
     ],
-    "description": "Feitiço (Corrupção +1): Absorve a força vital de um inimigo causando 4 de dano e curando 4 de VIDA no seu Soberano.",
+    "description": "Feitiço (Sobrecarga +1): Absorve a força vital de um inimigo causando 4 de dano e curando 4 de VIDA no seu Soberano.",
     "flavorText": "O que era sangue no peito do inimigo torna-se vinho na taça do Soberano.",
     "imagePath": "/assets/cards/purple_103_drenar_existencia.webp"
   },
   {
     "id": "purple_104_pacto_demoniaco",
-    "name": "Pacto de Sangue do Abismo",
+    "name": "Centelha Umbral",
     "domain": "purple",
     "type": "spell",
     "subtype": "Feitiço • Pacto",
@@ -16988,7 +16988,7 @@ export const ALL_CARDS: CardDefinition[] = [
         "description": "Gera +2 de Essência neste turno."
       }
     ],
-    "description": "Feitiço (Corrupção +1): Sacrifica a pureza da alma para gerar +2⚡ de Essência imediata neste turno.",
+    "description": "Feitiço (Sobrecarga +1): Canaliza energia vital concentrada para gerar +2⚡ de Essência imediata neste turno.",
     "flavorText": "O poder nunca é negado a quem aceita o preço das sombras.",
     "imagePath": "/assets/cards/purple_104_pacto_demoniaco.webp"
   },

@@ -1696,7 +1696,7 @@ export function executeTurnStepForActor(
       return {
         nextState,
         done: false,
-        actionSummary: `${actorState.name} selou Pacto de Sangue (-3❤️ -> +1⚡)!`,
+        actionSummary: `${actorState.name} ativou Sacrifício Vital (-3❤️ -> +1⚡)!`,
       };
     }
   }

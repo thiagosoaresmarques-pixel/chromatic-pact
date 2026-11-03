@@ -1978,7 +1978,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
   {
     id: 'prob_ext_ava_11_heliokar_cura_pacto_sangue',
     title: 'Os Oito Sóis de Bronze',
-    subtitle: 'Invocar Heliokar (7⚡) com 1 ❤️ restante para quebrar a Disputa 50/50, curar +3 ❤️ no Soberano e destravar o Pacto de Sangue (+1⚡)',
+    subtitle: 'Invocar Heliokar (7⚡) com 1 ❤️ restante para quebrar a Disputa 50/50, curar +3 ❤️ no Soberano e destravar o Sacrifício Vital (+1⚡)',
     difficulty: 'avancado',
     difficultyLabel: 'Grau III • Avançado',
     stars: 3,
@@ -1986,20 +1986,20 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
     primaryDomain: 'gold',
     mechanicTag: '☸ Heliokar Quebra 50/50 & Cura 3❤️ → Pacto (+1⚡)',
     scenarioLore:
-      'Seu Soberano sobrevive com apenas 1 ❤️! Seu Tribunal da Sentença Dourada está travado em Disputa de Domínios 50/50 contra o Santuário das Almas de Vesperion (7 de Afinidade Umbral). Você tem 8⚡ de Essência e precisa jogar TANTO Heliokar, General da Roda Celeste (7⚡) QUANTO o Baluarte dos Escudos de Luz (2⚡) — totalizando 9⚡, com o Pacto de Sangue bloqueado em 1 ❤️!',
+      'Seu Soberano sobrevive com apenas 1 ❤️! Seu Tribunal da Sentença Dourada está travado em Disputa de Domínios 50/50 contra o Santuário das Almas de Vesperion (7 de Afinidade Umbral). Você tem 8⚡ de Essência e precisa jogar TANTO Heliokar, General da Roda Celeste (7⚡) QUANTO o Baluarte dos Escudos de Luz (2⚡) — totalizando 9⚡, com o Sacrifício Vital bloqueado em 1 ❤️!',
     objectiveText: 'Derrote Vesperion (21 ❤️) neste turno.',
     hint1:
-      'Com 1 ❤️ o Pacto de Sangue (-3 ❤️ / +1⚡) está bloqueado! Mas observe o texto de Heliokar, General da Roda Celeste (7⚡): além de estilhaçar a barreira rival na Disputa 50/50, ele restaura 3 ❤️ de todas as suas criaturas E DO SEU SOBERANO Ao Entrar (1 ❤️ → 4 ❤️)!',
+      'Com 1 ❤️ o Sacrifício Vital (-3 ❤️ / +1⚡) está bloqueado! Mas observe o texto de Heliokar, General da Roda Celeste (7⚡): além de estilhaçar a barreira rival na Disputa 50/50, ele restaura 3 ❤️ de todas as suas criaturas E DO SEU SOBERANO Ao Entrar (1 ❤️ → 4 ❤️)!',
     hint2:
       '1º Invoque Heliokar (7⚡) na Vanguarda [V] da Coluna 3: ele estilhaça o Domínio rival (restaurando seu Acerto Garantido e ganhando +1/+1 e Ímpeto!) e cura seu Soberano de 1 ❤️ para 4 ❤️ (sobrando 1⚡). 2º Agora com 4 ❤️, ative "🩸 Pacto (+1⚡)" (4 ❤️ → 1 ❤️, 1⚡ → 2⚡)! 3º Lance o Baluarte dos Escudos de Luz (2⚡, +1⚔️ a toda a Vanguarda) e ataque o Soberano rival com os 3 campeões (6 + 7 + 8 = 21 de dano)!',
     solutionSteps: [
       '1. Invoque Heliokar, General da Roda Celeste (7⚡) na Vanguarda [V] da Coluna 3: estilhaça a barreira rival na Disputa 50/50, restaura seu Acerto Garantido, ganha Ímpeto do seu Domínio e cura +3 ❤️ no seu Soberano (1 ❤️ → 4 ❤️).',
-      '2. Com 4 ❤️ disponíveis, ative o ritual "🩸 Pacto (+1⚡)" na barra inferior (4 ❤️ → 1 ❤️, elevando sua Essência de 1⚡ para 2⚡).',
+      '2. Com 4 ❤️ disponíveis, ative o botão "Vital (+1)" na barra inferior (4 ❤️ → 1 ❤️, elevando sua Essência de 1⚡ para 2⚡).',
       '3. Lance o Baluarte dos Escudos de Luz (2⚡): concede +1⚔️ a todas as suas 3 criaturas na Vanguarda.',
       '4. Ataque diretamente o Soberano rival com o Flagelo da Alvorada (6⚔️), o Anjo Mensageiro (7⚔️) e Heliokar (8⚔️) para 21 de dano cravado!',
     ],
     whyIndefensible:
-      'Se você lançar o Baluarte dos Escudos de Luz (2⚡) primeiro, cairá para 6⚡ com 1 ❤️ (sem Pacto de Sangue) e jamais poderá invocar Heliokar (7⚡).',
+      'Se você lançar o Baluarte dos Escudos de Luz (2⚡) primeiro, cairá para 6⚡ com 1 ❤️ (sem Sacrifício Vital) e jamais poderá invocar Heliokar (7⚡).',
     turnNumber: 8,
     p1Name: 'Aurelius (Você)',
     p1AvatarCardId: 'gold_173_general_roda_sol',
@@ -2057,10 +2057,10 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
     primaryDomain: 'green',
     mechanicTag: '🐉 Enxame Ancestral (8⚡): Ordem de Ataque (+1/+2 Global)',
     scenarioLore:
-      'Seu Mar de Árvores Primordial está ativo! O Soberano rival tem imponentes 30 ❤️ atrás de duas Tartarugas-Titã de Pangeia. Você tem 7⚡ de Essência (com 3 ❤️ restantes no seu Soberano, impossibilitando o Pacto de Sangue!) e duas cartas na mão: o Enxame Dracônico Ancestral (8⚡) e a Ruptura de Raízes (2⚡).',
+      'Seu Mar de Árvores Primordial está ativo! O Soberano rival tem imponentes 30 ❤️ atrás de duas Tartarugas-Titã de Pangeia. Você tem 7⚡ de Essência (com 3 ❤️ restantes no seu Soberano, impossibilitando o Sacrifício Vital!) e duas cartas na mão: o Enxame Dracônico Ancestral (8⚡) e a Ruptura de Raízes (2⚡).',
     objectiveText: 'Derrote Guardião de Pangeia (30 ❤️) neste turno.',
     hint1:
-      'Com apenas 3 ❤️ você não pode usar o Pacto de Sangue! Para chegar aos 8⚡ do Enxame Dracônico Ancestral, Sacrifique/Queime [C] a Ruptura de Raízes (+1⚡ → 8⚡). E preste muita atenção à ORDEM DE ATAQUE após invocar o Enxame!',
+      'Com apenas 3 ❤️ você não pode usar o Sacrifício Vital! Para chegar aos 8⚡ do Enxame Dracônico Ancestral, Sacrifique/Queime [C] a Ruptura de Raízes (+1⚡ → 8⚡). E preste muita atenção à ORDEM DE ATAQUE após invocar o Enxame!',
     hint2:
       '1º Sacrifique/Queime [C] a Ruptura de Raízes (+1⚡ → 8⚡). 2º Invoque o Enxame Dracônico Ancestral (8⚡) na Vanguarda [V] da Coluna 2: ele invoca 2 Crias da Selva 2/2, e todos ganham +1/+1 e Ímpeto do seu Domínio! 3º Ataque o Soberano rival PRIMEIRO com o Enxame Dracônico Ancestral: seu efeito Ao Atacar concede +1/+2 a TODAS as suas 5 criaturas antes dos ataques delas (9 + 6 + 5 + 5 + 5 = 30 de dano cravado)!',
     solutionSteps: [
@@ -2120,7 +2120,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
   {
     id: 'prob_ext_mes_01_pacto_sangue_ascensao_anjo',
     title: 'O Juramento de Sangue e Luz',
-    subtitle: 'Cura Ao Entrar do Anjo Mensageiro (3⚡) para permitir o Pacto de Sangue (-3❤️ / +1⚡) e expandir o Domínio',
+    subtitle: 'Cura Ao Entrar do Anjo Mensageiro (3⚡) para permitir o Sacrifício Vital (-3❤️ / +1⚡) e expandir o Domínio',
     difficulty: 'mestre',
     difficultyLabel: 'Grau IV • Mestre',
     stars: 4,
@@ -2129,18 +2129,18 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
     mechanicTag: '👼 Anjo Cura 3❤️ → Habilita Pacto (+1⚡) → Domínio',
     scenarioLore:
       'Seu Soberano está com apenas 1 ❤️! O Soberano rival tem 19 ❤️ protegido por duas Muralhas. Você tem 5⚡ de Essência e o Anjo Mensageiro da Maça Solar (3⚡, Ao Entrar: cura 3 ❤️ do seu Soberano) na mão — mas precisa de 3⚡ para o Anjo + 3⚡ para a Expansão de Domínio (totalizando 6⚡)!',
-    objectiveText: 'Suba sua vida de 1 ❤️ para 4 ❤️ invocando o Anjo para destravar o Pacto de Sangue (+1⚡) e expandir o Domínio!',
+    objectiveText: 'Suba sua vida de 1 ❤️ para 4 ❤️ invocando o Anjo para destravar o Sacrifício Vital (+1⚡) e expandir o Domínio!',
     hint1:
-      'Com 1 ❤️ você NÃO pode usar o Pacto de Sangue (-3 ❤️). Mas o Anjo Mensageiro (3⚡) cura 3 ❤️ do seu Soberano Ao Entrar (levando você de 1 ❤️ para 4 ❤️!) — o que destrava o Pacto de Sangue imediatamente!',
+      'Com 1 ❤️ você NÃO pode usar o Sacrifício Vital (-3 ❤️). Mas o Anjo Mensageiro (3⚡) cura 3 ❤️ do seu Soberano Ao Entrar (levando você de 1 ❤️ para 4 ❤️!) — o que destrava o Sacrifício Vital imediatamente!',
     hint2:
       '1º Invoque o Anjo Mensageiro da Maça Solar (3⚡) na Vanguarda [V] da Coluna 3 (com Cobertura da Relíquia): sua vida sobe de 1 ❤️ para 4 ❤️ e sobram 2⚡! 2º Clique em "🩸 Pacto (+1⚡)" na barra inferior (sua vida volta para 1 ❤️ e sua Essência sobe de 2⚡ para 3⚡!). 3º Invoque a Expansão de Domínio Cidadela da Aurora (⛩️ 3⚡: o Anjo ganha +1/+1 e Ímpeto!) e ataque com todos para 19+ de dano!',
     solutionSteps: [
       '1. Invoque o Anjo Mensageiro da Maça Solar (3⚡) na Vanguarda [V] da Coluna 3 (apoiada pela Relíquia na Retaguarda): seu efeito Ao Entrar cura 3 ❤️ do seu Soberano (1 ❤️ → 4 ❤️).',
-      '2. Agora com 4 ❤️, ative o ritual "🩸 Pacto (+1⚡)" na barra inferior (4 ❤️ → 1 ❤️, subindo de 2⚡ para 3⚡).',
+      '2. Agora com 4 ❤️, ative o botão "Vital (+1)" na barra inferior (4 ❤️ → 1 ❤️, subindo de 2⚡ para 3⚡).',
       '3. Com os 3⚡, invoque a Expansão de Domínio Cidadela da Aurora (⛩️ 3⚡) — dando +1/+1, Ímpeto ao Anjo e Acerto Garantido — e ataque o Soberano rival para 19+ de dano letal!',
     ],
     whyIndefensible:
-      'Tentar usar o Pacto de Sangue antes do Anjo é bloqueado por você ter apenas 1 ❤️; tentar expandir o Domínio antes do Anjo deixa você com apenas 2⚡.',
+      'Tentar usar o Sacrifício Vital antes do Anjo é bloqueado por você ter apenas 1 ❤️; tentar expandir o Domínio antes do Anjo deixa você com apenas 2⚡.',
     turnNumber: 7,
     p1Name: 'Aurelius (Você)',
     p1AvatarCardId: 'gold_150_paladino_juramento_eterno',
@@ -2398,7 +2398,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
   {
     id: 'prob_ext_mes_06_kraken_congelamento_dominio',
     title: 'O Despertar do Kraken da Fossa Abissal',
-    subtitle: 'Combinar Pacto de Sangue (+1⚡) + Queimar Carta (+1⚡) para invocar o Kraken (8⚡) sob Domínio ativo',
+    subtitle: 'Combinar Sacrifício Vital (+1⚡) + Queimar Carta (+1⚡) para invocar o Kraken (8⚡) sob Domínio ativo',
     difficulty: 'mestre',
     difficultyLabel: 'Grau IV • Mestre',
     stars: 4,
@@ -2409,7 +2409,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'Sua Expansão de Domínio Olho do Maelstrom Astral já está ativa! Três inimigos de 2 ❤️ ocupam as Colunas 1, 2 e 3 (bloqueando os +3⚔️ de Invasão!). Você tem apenas 6⚡ de Essência e o Kraken da Fossa Abissal (8⚡: Ao Entrar causa 2 de dano à Vanguarda inimiga) na mão!',
     objectiveText: 'Suba de 6⚡ para 8⚡ neste turno para invocar o Kraken da Fossa Abissal e causar 23+ de dano!',
     hint1:
-      'Para ir de 6⚡ a 8⚡: 1) Canalize [C] a 1ª carta secundária e Sacrifique/Queime [C] a 2ª carta secundária (+1⚡ → 7⚡); 2) Ative o Pacto de Sangue (+1⚡ → 8⚡)!',
+      'Para ir de 6⚡ a 8⚡: 1) Canalize [C] a 1ª carta secundária e Sacrifique/Queime [C] a 2ª carta secundária (+1⚡ → 7⚡); 2) Ative o Sacrifício Vital (+1⚡ → 8⚡)!',
     hint2:
       '1º Canalize a Sentinela [C] e Sacrifique/Queime o Tritão [C] (+1⚡ → 7⚡). 2º Ative "🩸 Pacto (+1⚡)" na barra inferior (+1⚡ → 8⚡). 3º Invoque o Kraken da Fossa Abissal (8⚡) na Vanguarda [V] da Coluna 3: seu Maremoto Ao Entrar causa 2 de dano e destrói os 3 inimigos nas Colunas 1, 2 e 3 (liberando +3⚔️ de Invasão!) e o Kraken ganha +1/+1 e Ímpeto do Maelstrom! 4º Ataque com todos para 23+ de dano!',
     solutionSteps: [
@@ -2476,9 +2476,9 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
     mechanicTag: '⇄ Manobra + ★ Ascensão (3⚡) + Domínio (3⚡)',
     scenarioLore:
       'Sua Salamandra do Mar de Brasas está na Retaguarda [R] da Coluna 2! O Soberano rival tem 20 ❤️ protegido por duas Muralhas. Você tem 5⚡ de Essência, 6/6 de Afinidade Carmesim e precisa de 6⚡ para Ascender a Salamandra (3⚡) E expandir o Domínio (3⚡)!',
-    objectiveText: 'Avance a Salamandra [⇄], use o Pacto de Sangue (+1⚡), Ascenda-a e expanda o Domínio!',
+    objectiveText: 'Avance a Salamandra [⇄], use o Sacrifício Vital (+1⚡), Ascenda-a e expanda o Domínio!',
     hint1:
-      'Avance a Salamandra da Retaguarda [R] para a Vanguarda [V] com "⇄ Mover Fileira", use o Pacto de Sangue para subir de 5⚡ para 6⚡, Ascenda a Salamandra (3⚡ → 8/8!) e invoque a Caldeira do Fogo Primordial (3⚡)!',
+      'Avance a Salamandra da Retaguarda [R] para a Vanguarda [V] com "⇄ Mover Fileira", use o Sacrifício Vital para subir de 5⚡ para 6⚡, Ascenda a Salamandra (3⚡ → 8/8!) e invoque a Caldeira do Fogo Primordial (3⚡)!',
     hint2:
       '1º Clique na Salamandra na Retaguarda [R] (Coluna 2) e use "⇄ Mover para Vanguarda". 2º Ative "🩸 Pacto (+1⚡)" (5⚡ → 6⚡). 3º Clique na Salamandra e escolha "★ Ascender (3⚡)" (vira Salamandra Anciã 8/8!). 4º Ative a Expansão de Domínio (⛩️ 3⚡) e ataque o Soberano rival com todas as unidades para 20+ de dano!',
     solutionSteps: [
@@ -2637,7 +2637,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
   {
     id: 'prob_ext_mes_10_colapso_8dano_mais_pacto_sangue',
     title: 'A Queda da Cidadela (8+ Dano Aéreo + Pacto)',
-    subtitle: 'Usar Pacto de Sangue (+1⚡) para lançar Óleo Etéreo (2⚡), atingir 8+ de dano pelo ar e quebrar o Domínio rival',
+    subtitle: 'Usar Sacrifício Vital (+1⚡) para lançar Óleo Etéreo (2⚡), atingir 8+ de dano pelo ar e quebrar o Domínio rival',
     difficulty: 'mestre',
     difficultyLabel: 'Grau IV • Mestre',
     stars: 4,
@@ -2646,7 +2646,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
     mechanicTag: '🦅 Pacto (+1⚡) → Óleo (+2/+2) → 8 Dano Aéreo',
     scenarioLore:
       'O Soberano rival (18 ❤️) está com a Cidadela da Aurora ativa (+1/+1), mantendo o Guardião terrestre dele na Coluna 2 com 2 ❤️. Seu Vorthurion na Coluna 4 tem Voo (7⚔️) — mas 7 de dano NÃO atinge os 8 necessários para quebrar o Domínio rival por perda de concentração! Você tem apenas 1⚡ de Essência.',
-    objectiveText: 'Suba o ataque de Vorthurion para 9⚔️ usando Pacto de Sangue + Óleo Etéreo para quebrar o Domínio rival no ataque aéreo!',
+    objectiveText: 'Suba o ataque de Vorthurion para 9⚔️ usando Sacrifício Vital + Óleo Etéreo para quebrar o Domínio rival no ataque aéreo!',
     hint1:
       'Vorthurion tem 7⚔️ (faltam +1⚔️ para chegar a 8+ de dano e quebrar a concentração do Domínio rival!). Na sua mão está o Óleo de Afiação Etérea (2⚡, +2/+2 a todos), mas você só tem 1⚡!',
     hint2:
@@ -2707,7 +2707,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'Aurelius domina a arena com o Tribunal da Sentença Dourada (8 de Afinidade Solar contra 6 da sua Afinidade Umbral — impossível vencer no grito e seu pool de vida é menor que 10 ❤️ para o Tributo!). Pior: na Retaguarda da Coluna 2 inimiga repousa o Soberano Dragão da Alvorada (8/9, Escudo Divino), roubando o bônus de +1⚔️ de Invasão da sua Serpente de Seis Espadas! Você tem 8⚡ e 6 ❤️.',
     objectiveText: 'Derrote Aurelius, Imperador Solar (22 ❤️) neste turno.',
     hint1:
-      'Você precisa de 10⚡ (7⚡ de Nyxaroth + 3⚡ da sua Expansão de Domínio): ative o Pacto de Sangue (-3 ❤️ / +1⚡ → 9⚡) e Sacrifique/Queime [C] a Garra Sifão de Almas (+1⚡ → 10⚡)! E lembre-se: uma unidade inimiga na Retaguarda da mesma coluna bloqueia o +1⚔️ de Invasão mesmo sob Acerto Garantido!',
+      'Você precisa de 10⚡ (7⚡ de Nyxaroth + 3⚡ da sua Expansão de Domínio): ative o Sacrifício Vital (-3 ❤️ / +1⚡ → 9⚡) e Sacrifique/Queime [C] a Garra Sifão de Almas (+1⚡ → 10⚡)! E lembre-se: uma unidade inimiga na Retaguarda da mesma coluna bloqueia o +1⚔️ de Invasão mesmo sob Acerto Garantido!',
     hint2:
       '1º Ative "🩸 Pacto (+1⚡)" (8⚡ → 9⚡) e Sacrifique/Queime [C] a Garra Sifão (+1⚡ → 10⚡). 2º Invoque Nyxaroth (7⚡) na Vanguarda [V] da Coluna 1 (quebrando o Domínio Solar!) e ative seu Santuário Malevolente das Almas (⛩️ 3⚡, dando +1/+1, Ímpeto e Acerto Garantido). 3º Ataque o Soberano rival PRIMEIRO com Nyxaroth (7⚔️): seu efeito Ao Atacar executa o Dragão 8/9 na Retaguarda da Coluna 2 inimiga, devolvendo +1⚔️ de Invasão à sua Serpente Abissal (9⚔️) + Espectro (6⚔️) = 22 de dano exato!',
     solutionSteps: [
@@ -2772,7 +2772,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
     primaryDomain: 'purple',
     mechanicTag: '🐉 Queimar Armada p/ Cripta (+1⚡) → Reanimação em Voo!',
     scenarioLore:
-      'Seu campo está completamente vazio, sua Cripta está vazia e você tem apenas 3 ❤️ (sem Pacto de Sangue), mas o Santuário Malevolente das Almas está ativo! O Soberano rival tem 28 ❤️ atrás de duas Muralhas Reais. Você tem 7⚡ de Essência e três cartas na mão: a Legião Dracônica do Eclipse (8⚡), a Hoste Dracônica da Cratera (8⚡, mas você não tem Afinidade Carmesim!) e o Flagelo Cornudo do Abismo (3⚡).',
+      'Seu campo está completamente vazio, sua Cripta está vazia e você tem apenas 3 ❤️ (sem Sacrifício Vital), mas o Santuário Malevolente das Almas está ativo! O Soberano rival tem 28 ❤️ atrás de duas Muralhas Reais. Você tem 7⚡ de Essência e três cartas na mão: a Legião Dracônica do Eclipse (8⚡), a Hoste Dracônica da Cratera (8⚡, mas você não tem Afinidade Carmesim!) e o Flagelo Cornudo do Abismo (3⚡).',
     objectiveText: 'Derrote Custódio de Solária (28 ❤️) neste turno partindo de um campo vazio!',
     hint1:
       'Por que há uma Hoste Dracônica da Cratera (8⚡) na sua mão se você não tem Essência para duas Armadas? Lembre-se: quando você Sacrifica/Queima [C] uma carta por +1⚡ de Essência, ela é enviada diretamente para a SUA CRIPTA! E o que a Legião Dracônica do Eclipse faz Ao Atacar?',
@@ -2847,7 +2847,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'Sua Selva Primordial está em Confronto de Domínios 50/50 (6 vs 6) contra o Eclipse inimigo! O Soberano rival tem 27 ❤️ protegido por três Muralhas. Seu Tiranossauro está preso na Retaguarda [R], você tem apenas 6⚡ de Essência e precisa invocar o Dragão Esmeralda de Galhada Viva (8⚡: +2/+2 a todos os aliados)!',
     objectiveText: 'Vença o Confronto 50/50 (7 vs 6), gere +2⚡ para chegar a 8⚡, avance o Tiranossauro [⇄] e cause 27+ de dano!',
     hint1:
-      'Você tem 3 cartas Verdes na mão: o Dragão Esmeralda (8⚡) e duas cartas de 1⚡/2⚡. Use a 1ª carta secundária para Canalizar [C] (6 → 7 vs 6, estilhaçando o Domínio rival!), a 2ª para Sacrificar/Queimar [C] (+1⚡ → 7⚡) e o Pacto de Sangue para chegar a 8⚡!',
+      'Você tem 3 cartas Verdes na mão: o Dragão Esmeralda (8⚡) e duas cartas de 1⚡/2⚡. Use a 1ª carta secundária para Canalizar [C] (6 → 7 vs 6, estilhaçando o Domínio rival!), a 2ª para Sacrificar/Queimar [C] (+1⚡ → 7⚡) e o Sacrifício Vital para chegar a 8⚡!',
     hint2:
       '1º Canalize o Batedor [C] (Afinidade Verde sobe para 7 vs 6 → rompe o Confronto 50/50!). 2º Sacrifique/Queime o Lobo [C] (+1⚡ → 7⚡). 3º Ative "🩸 Pacto (+1⚡)" (+1⚡ → 8⚡). 4º Clique no Tiranossauro na Retaguarda [R] (Coluna 1) e use "⇄ Mover para Vanguarda". 5º Invoque o Dragão Esmeralda de Galhada Viva (8⚡) na Vanguarda [V] da Coluna 4 (dá +2/+2 a todos e ganha +1/+1 e Ímpeto da Selva Primordial!) e ataque com toda a Vanguarda para 27+ de dano!',
     solutionSteps: [
@@ -2858,7 +2858,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       '5. Ataque diretamente o Soberano rival com todas as unidades para 27+ de dano letal!',
     ],
     whyIndefensible:
-      'Qualquer passo omitido (7 vs 6, Queimar, Pacto de Sangue ou Manobra de Fileira) impede o letal de 27 ❤️.',
+      'Qualquer passo omitido (7 vs 6, Queimar, Sacrifício Vital ou Manobra de Fileira) impede o letal de 27 ❤️.',
     turnNumber: 9,
     p1Name: 'Sylvarion, Grão-Mestre (Você)',
     p1AvatarCardId: 'green_161_dragao_esmeralda_primordial',
@@ -2915,7 +2915,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
   {
     id: 'prob_ext_gm_02_tributo_10hp_reanimacao_conde',
     title: 'O Sangue do Conde Imortal',
-    subtitle: 'Romper Domínio rival (10❤️) → Pacto de Sangue (+1⚡) → Ascender Conde Vampiro (4⚡) → Expandir Domínio (3⚡)',
+    subtitle: 'Romper Domínio rival (10❤️) → Sacrifício Vital (+1⚡) → Ascender Conde Vampiro (4⚡) → Expandir Domínio (3⚡)',
     difficulty: 'grao_mestre',
     difficultyLabel: 'Grau V • Grão-Mestre Soberano',
     stars: 5,
@@ -2923,10 +2923,10 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
     primaryDomain: 'purple',
     mechanicTag: '👑 Tributo 10❤️ + Pacto + Ascensão (4⚡) + Domínio (3⚡)',
     scenarioLore:
-      'O Soberano Dourado (22 ❤️) está com a Cidadela da Aurora ativa (6 de Afinidade). Você também tem 6/6 de Afinidade Roxa e apenas 6⚡ de Essência. Se você expandir seu Domínio sem antes destruir o Domínio rival, cairá num Confronto 50/50! E atenção à sua Vida (14 ❤️): em qual ordem usar o Tributo de 10❤️ e o Pacto de Sangue (-3 ❤️)?',
-    objectiveText: 'Sobreviva com 1 ❤️ combinando Tributo de 10❤️ + Pacto de Sangue (-3❤️) + Ascensão do Conde (4⚡) + Domínio (3⚡)!',
+      'O Soberano Dourado (22 ❤️) está com a Cidadela da Aurora ativa (6 de Afinidade). Você também tem 6/6 de Afinidade Roxa e apenas 6⚡ de Essência. Se você expandir seu Domínio sem antes destruir o Domínio rival, cairá num Confronto 50/50! E atenção à sua Vida (14 ❤️): em qual ordem usar o Tributo de 10❤️ e o Sacrifício Vital (-3 ❤️)?',
+    objectiveText: 'Sobreviva com 1 ❤️ combinando Tributo de 10❤️ + Sacrifício Vital (-3❤️) + Ascensão do Conde (4⚡) + Domínio (3⚡)!',
     hint1:
-      'Seu Soberano tem 14 ❤️! Se você usar o Pacto de Sangue (-3 ❤️ → 11 ❤️) e o Tributo Anti-Domínio (💥 10❤️), você sobrevive no limite! E com os +1⚡ do Pacto, sua Essência sobe de 6⚡ para 7⚡ (4⚡ para Ascender o Conde Vampiro + 3⚡ para a Expansão de Domínio)!',
+      'Seu Soberano tem 14 ❤️! Se você usar o Sacrifício Vital (-3 ❤️ → 11 ❤️) e o Tributo Anti-Domínio (💥 10❤️), você sobrevive no limite! E com +1⚡ do Sacrifício Vital, sua Essência sobe de 6⚡ para 7⚡ (4⚡ para Ascender o Conde Vampiro + 3⚡ para a Expansão de Domínio)!',
     hint2:
       '1º Clique em "💥 Quebrar Domínio (10❤️)" na barra inferior para estilhaçar a Cidadela da Aurora inimiga (evitando o Confronto 50/50!). 2º Ative "🩸 Pacto (+1⚡)" (6⚡ → 7⚡). 3º Clique no Conde Vampiro na Coluna 2 e ative "★ Ascender (4⚡)" (vira Lorde Vampiro Soberano 9/10!). 4º Com os 3⚡ restantes, invoque a Expansão de Domínio Eclipse do Trono de Ossos (⛩️ 3⚡) e ataque o Soberano rival para 22+ de dano!',
     solutionSteps: [
@@ -2983,7 +2983,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
   {
     id: 'prob_ext_gm_03_pedra_filosofal_forja_dominio',
     title: 'A Grande Obra Alquímica (Pedra + Bigorna + Domínio)',
-    subtitle: 'Canalizar + Queimar + Pacto de Sangue + Pedra Filosofal (5⚡ → +2⚡) + Bigorna (4⚡) + Domínio (3⚡)',
+    subtitle: 'Canalizar + Queimar + Sacrifício Vital + Pedra Filosofal (5⚡ → +2⚡) + Bigorna (4⚡) + Domínio (3⚡)',
     difficulty: 'grao_mestre',
     difficultyLabel: 'Grau V • Grão-Mestre Soberano',
     stars: 5,
@@ -2994,7 +2994,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'O Soberano rival tem 24 ❤️ protegido por três Muralhas. Você tem 8⚡ de Essência e 5/6 de Afinidade Carmesim. Na sua mão estão a Pedra Filosofal (5⚡ → devolve +2⚡), a Bigorna do Rei da Fornalha (4⚡) e duas cartas Carmesim!',
     objectiveText: 'Execute 12⚡ de ações (Pedra Filosofal 5⚡ + Bigorna 4⚡ + Domínio 3⚡) começando com apenas 8⚡!',
     hint1:
-      'Faça a contabilidade de mana: você começa com 8⚡. 1) Canalize [C] a 1ª carta Carmesim (Afinidade 5 → 6/6) e Sacrifique/Queime [C] a 2ª carta (+1⚡ → 9⚡); 2) Ative o Pacto de Sangue (+1⚡ → 10⚡); 3) Instale a Pedra Filosofal (custa 5⚡, devolve +2⚡ → fica com 7⚡!); 4) Instale a Bigorna (4⚡ → sobram 3⚡) e ative a Expansão de Domínio (3⚡)!',
+      'Faça a contabilidade de mana: você começa com 8⚡. 1) Canalize [C] a 1ª carta Carmesim (Afinidade 5 → 6/6) e Sacrifique/Queime [C] a 2ª carta (+1⚡ → 9⚡); 2) Ative o Sacrifício Vital (+1⚡ → 10⚡); 3) Instale a Pedra Filosofal (custa 5⚡, devolve +2⚡ → fica com 7⚡!); 4) Instale a Bigorna (4⚡ → sobram 3⚡) e ative a Expansão de Domínio (3⚡)!',
     hint2:
       '1º Canalize o Diabrete [C] (Afinidade 6/6) e Sacrifique/Queime o Saqueador [C] (+1⚡ → 9⚡). 2º Ative "🩸 Pacto (+1⚡)" (9⚡ → 10⚡). 3º Instale a Pedra Filosofal (5⚡) na Retaguarda [R] da Coluna 2 (devolve +2⚡ → fica com 7⚡ e dá Cobertura!). 4º Instale a Bigorna do Rei da Fornalha (4⚡) na Retaguarda [R] da Coluna 3 (+1/+1 global, cria Cria Dracônica 2/1 e dá Cobertura!). 5º Ative a Expansão de Domínio (⛩️ 3⚡) e ataque com todas as 4 criaturas para 24+ de dano!',
     solutionSteps: [
@@ -3063,7 +3063,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
     hint1:
       'Se você instalar o Códice da Ressonância Astral (3⚡) na Retaguarda [R] primeiro, cada feitiço que você lançar depois disparará 2 de dano rúnico contra os Guardiões inimigos! E veja o que o Códice compra do topo do Grimório: o Pulso Etéreo (2⚡ → +1⚡) e a Poção de Fúria (1⚡)!',
     hint2:
-      '1º Instale o Códice da Ressonância Astral (3⚡) na Retaguarda [R] da Coluna 2 (sobram 4⚡ e você compra o Pulso Etéreo e a Poção de Fúria!). 2º Lance a Ruptura do Relógio Astral (3⚡ → devolve +2⚡ = 3⚡ e o Códice dispara 2 de dano!). 3º Lance o Pulso Etéreo (2⚡ → devolve +1⚡ = 2⚡ e o Códice dispara +2 de dano!). 4º Lance a Poção de Fúria (1⚡, +2/+2 e o Códice dispara mais 2 de dano!) e use o Pacto de Sangue (+1⚡) para ativar o Poder do Soberano (2⚡) e vencer!',
+      '1º Instale o Códice da Ressonância Astral (3⚡) na Retaguarda [R] da Coluna 2 (sobram 4⚡ e você compra o Pulso Etéreo e a Poção de Fúria!). 2º Lance a Ruptura do Relógio Astral (3⚡ → devolve +2⚡ = 3⚡ e o Códice dispara 2 de dano!). 3º Lance o Pulso Etéreo (2⚡ → devolve +1⚡ = 2⚡ e o Códice dispara +2 de dano!). 4º Lance a Poção de Fúria (1⚡, +2/+2 e o Códice dispara mais 2 de dano!) e use o Sacrifício Vital (+1⚡) para ativar o Poder do Soberano (2⚡) e vencer!',
     solutionSteps: [
       '1. Instale o Códice da Ressonância Astral (3⚡) na Retaguarda [R] da Coluna 2 (compra o Pulso Etéreo e a Poção de Fúria e dá +1⚔️ de Cobertura).',
       '2. Lance a Ruptura do Relógio Astral (3⚡ → devolve +2⚡ = 3⚡; Códice causa 2 de dano).',
@@ -3119,7 +3119,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'Sua Cidadela da Aurora está travada num Confronto 50/50 (6 vs 6) contra o Trono de Ossos inimigo! Seus dois maiores atacantes (Dragão de Ouro e Leão Sagrado) estão presos na Retaguarda [R] das Colunas 2 e 4! O Soberano rival tem 22 ❤️, você tem apenas 3⚡ de Essência e o Talismã do Bem Supremo (5⚡) na mão!',
     objectiveText: 'Rompa o Confronto 50/50 (7 vs 6), gere +2⚡ para o Talismã (5⚡) e avance seus dois campeões [⇄]!',
     hint1:
-      '1) Canalize [C] a 1ª carta Dourada secundária (6 → 7 vs 6, estilhaçando o Domínio rival!) e Sacrifique/Queime [C] a 2ª carta (+1⚡ → 4⚡); 2) Use o Pacto de Sangue (+1⚡ → 5⚡); 3) Avance o Dragão de Ouro e o Leão Sagrado da Retaguarda [R] para a Vanguarda [V] com "⇄ Mover Fileira" ANTES de instalar o Talismã do Bem na Retaguarda!',
+      '1) Canalize [C] a 1ª carta Dourada secundária (6 → 7 vs 6, estilhaçando o Domínio rival!) e Sacrifique/Queime [C] a 2ª carta (+1⚡ → 4⚡); 2) Use o Sacrifício Vital (+1⚡ → 5⚡); 3) Avance o Dragão de Ouro e o Leão Sagrado da Retaguarda [R] para a Vanguarda [V] com "⇄ Mover Fileira" ANTES de instalar o Talismã do Bem na Retaguarda!',
     hint2:
       '1º Canalize o Paladino [C] (Afinidade Dourada sobe para 7 vs 6 → restaura o Acerto Garantido!). 2º Sacrifique/Queime o Clérigo [C] (+1⚡ → 4⚡) e ative "🩸 Pacto (+1⚡)" (4⚡ → 5⚡). 3º Use "⇄ Mover Fileira" no Dragão de Ouro (Coluna 2) e no Leão Sagrado (Coluna 4) para avançá-los à Vanguarda [V]. 4º Instale o Talismã do Bem Supremo (5⚡) na Retaguarda [R] da Coluna 2 (invoca Sentinela 3/4 com Ímpeto do Domínio e dá +1⚔️ Cobertura ao Dragão!). 5º Ataque com todas as unidades para 22+ de dano!',
     solutionSteps: [
@@ -3196,7 +3196,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'Um Verme Púrpura (10/10) descansa na sua Cripta (⚰️ 1)! O Soberano rival tem 26 ❤️ protegido por três Muralhas. Você tem apenas 7⚡ de Essência, mas precisa instalar a Pedra Filosofal (5⚡ → +2⚡), lançar Uivo Despedaçador de Mentes (3⚡: reanima 1 criatura da Cripta) E ativar a Expansão de Domínio (3⚡) — totalizando 11⚡ brutos!',
     objectiveText: 'Encadeie Pedra Filosofal + Pacto + Queimar Carta + Reanimação da Cripta + Domínio para 26+ de dano!',
     hint1:
-      'Veja a matemática a partir de 7⚡: 1) Canalize [C] a 1ª carta secundária e Sacrifique/Queime [C] a 2ª (+1⚡ → 8⚡); 2) Ative o Pacto de Sangue (+1⚡ → 9⚡); 3) Instale a Pedra Filosofal (custa 5⚡, devolve +2⚡ → fica com 6⚡!); 4) Lance Uivo Despedaçador (3⚡: reanima o Verme Púrpura 10/10!) e ative a Expansão de Domínio (3⚡: dá Ímpeto e +1/+1 ao Verme reanimado!)!',
+      'Veja a matemática a partir de 7⚡: 1) Canalize [C] a 1ª carta secundária e Sacrifique/Queime [C] a 2ª (+1⚡ → 8⚡); 2) Ative o Sacrifício Vital (+1⚡ → 9⚡); 3) Instale a Pedra Filosofal (custa 5⚡, devolve +2⚡ → fica com 6⚡!); 4) Lance Uivo Despedaçador (3⚡: reanima o Verme Púrpura 10/10!) e ative a Expansão de Domínio (3⚡: dá Ímpeto e +1/+1 ao Verme reanimado!)!',
     hint2:
       '1º Canalize a Garra Rastejante [C] (Afinidade 6/6) e Sacrifique/Queime o Zumbi [C] (+1⚡ → 8⚡). 2º Ative "🩸 Pacto (+1⚡)" (8⚡ → 9⚡). 3º Instale a Pedra Filosofal (5⚡) na Retaguarda [R] da Coluna 2 (devolve +2⚡ → 6⚡!). 4º Lance Uivo Despedaçador de Mentes (3⚡: reanima o Verme Púrpura 10/10 da Cripta!). 5º Ative a Expansão de Domínio Eclipse do Trono de Ossos (⛩️ 3⚡) e ataque o Soberano rival com todas as unidades para 26+ de dano!',
     solutionSteps: [
@@ -3329,7 +3329,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'Quatro Guardiões inimigos de 3 ❤️ bloqueiam as Colunas 1, 2, 3 e 4! Suas três feras com Fúria Crescente estão com a vida cheia. O Soberano rival tem 29 ❤️! Você tem 6⚡ de Essência, 5/6 de Afinidade Esmeralda e precisa lançar TANTO a Inversão Gravitacional Planar (5⚡) QUANTO a Expansão de Domínio (3⚡) — totalizando 8⚡!',
     objectiveText: 'Suba para 6/6 de Afinidade e de 6⚡ para 8⚡ para combinar Inversão Gravitacional + Domínio e causar 29 de dano!',
     hint1:
-      '1) Canalize [C] a 1ª carta Verde secundária (Afinidade 5 → 6/6) e Sacrifique/Queime [C] a 2ª carta (+1⚡ → 7⚡); 2) Use o Pacto de Sangue (+1⚡ → 8⚡); 3) Lance a Inversão Gravitacional Planar (5⚡): destrói todos os 4 Guardiões inimigos (liberando +3⚔️ de Invasão!), causa 3 de dano ao Soberano rival (29 ❤️ → 26 ❤️) e fere suas 3 feras ativando a Fúria Crescente (+6⚔️ somados!); 4) Ative a Expansão de Domínio (3⚡)!',
+      '1) Canalize [C] a 1ª carta Verde secundária (Afinidade 5 → 6/6) e Sacrifique/Queime [C] a 2ª carta (+1⚡ → 7⚡); 2) Use o Sacrifício Vital (+1⚡ → 8⚡); 3) Lance a Inversão Gravitacional Planar (5⚡): destrói todos os 4 Guardiões inimigos (liberando +3⚔️ de Invasão!), causa 3 de dano ao Soberano rival (29 ❤️ → 26 ❤️) e fere suas 3 feras ativando a Fúria Crescente (+6⚔️ somados!); 4) Ative a Expansão de Domínio (3⚡)!',
     hint2:
       '1º Canalize o Batedor [C] (Afinidade 6/6) e Sacrifique/Queime o Lobo [C] (+1⚡ → 7⚡). 2º Ative "🩸 Pacto (+1⚡)" (7⚡ → 8⚡). 3º Lance a Inversão Gravitacional Planar (5⚡): varre os 4 Guardiões, causa 3 de dano ao Soberano rival e enfurece suas 3 feras (+2⚔️ em cada!). 4º Ative a Expansão de Domínio Selva Primordial (⛩️ 3⚡) e ataque o Soberano rival com suas 3 feras para 26+ de dano!',
     solutionSteps: [
@@ -3396,7 +3396,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'O Soberano Rubro (26 ❤️) está com a Caldeira do Fogo Primordial ativa (6 de Afinidade). Você também tem 6/6 de Afinidade Azul e apenas 4⚡ de Essência! Se expandir seu Domínio antes de quebrar o dele, cairá num Confronto 50/50!',
     objectiveText: 'Estilhace o Domínio rival com 10❤️, encadeie Ruptura Astral + Mercenário Planar + Pacto + Domínio + Poção e cause 26 de dano!',
     hint1:
-      'Veja a cadeia exata começando com 4⚡: 1) Clique em "💥 Quebrar Domínio (10❤️)" para destruir o Domínio rival antes de erguer o seu; 2) Lance a Ruptura do Relógio Astral (3⚡ → devolve +2⚡ = 3⚡ e compra o Mercenário Planar!); 3) Invoque o Mercenário Planar (2⚡ → devolve +1⚡ = 2⚡ e compra a Poção de Fúria!); 4) Canalize + Queime cartas secundárias (+1⚡ → 3⚡) e use o Pacto de Sangue (+1⚡ → 4⚡) para pagar Expansão de Domínio (3⚡) + Poção de Fúria (1⚡)!',
+      'Veja a cadeia exata começando com 4⚡: 1) Clique em "💥 Quebrar Domínio (10❤️)" para destruir o Domínio rival antes de erguer o seu; 2) Lance a Ruptura do Relógio Astral (3⚡ → devolve +2⚡ = 3⚡ e compra o Mercenário Planar!); 3) Invoque o Mercenário Planar (2⚡ → devolve +1⚡ = 2⚡ e compra a Poção de Fúria!); 4) Canalize + Queime cartas secundárias (+1⚡ → 3⚡) e use o Sacrifício Vital (+1⚡ → 4⚡) para pagar Expansão de Domínio (3⚡) + Poção de Fúria (1⚡)!',
     hint2:
       '1º Clique em "💥 Quebrar Domínio (10❤️)" na barra inferior. 2º Lance a Ruptura do Relógio Astral (3⚡ → +2⚡ = 3⚡, compra Mercenário Planar). 3º Invoque o Mercenário Planar (2⚡ → +1⚡ = 2⚡, compra Poção de Fúria) na Vanguarda [V] da Coluna 3 (com Cobertura!). 4º Canalize [C] a 1ª carta secundária e Sacrifique/Queime [C] a 2ª (+1⚡ → 3⚡), e ative "🩸 Pacto (+1⚡)" (3⚡ → 4⚡). 5º Ative a Expansão de Domínio Olho do Maelstrom Astral (⛩️ 3⚡) e lance a Poção de Fúria (1⚡, +2/+2) para 26+ de dano!',
     solutionSteps: [
@@ -3407,7 +3407,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       '5. Invoque a Expansão de Domínio Olho do Maelstrom Astral (⛩️ 3⚡), lance a Poção de Fúria (1⚡, +2/+2) e ataque diretamente o Soberano rival para 26+ de dano letal!',
     ],
     whyIndefensible:
-      'Um quebra-cabeça de 6 etapas que exige o uso coordenado de Tributo 10❤️, Reembolso de Mana, Compra de Topo, Queima de Carta, Pacto de Sangue e Expansão de Domínio.',
+      'Um quebra-cabeça de 6 etapas que exige o uso coordenado de Tributo 10❤️, Reembolso de Mana, Compra de Topo, Queima de Carta, Sacrifício Vital e Expansão de Domínio.',
     turnNumber: 9,
     p1Name: 'Hydrissa, Grã-Mestra (Você)',
     p1AvatarCardId: 'blue_154_dragao_safira_soberano',
@@ -3469,7 +3469,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'O Problema #100 de Chromatic Pact! O Imperador Dourado tem 32 ❤️ e trava um Confronto de Domínios 50/50 (6 vs 6) atrás de três Muralhas com Escudo Divino. Seu Conde Vampiro Ascendido (9/10) está preso na Retaguarda [R] da Coluna 2! Você tem 9⚡ de Essência e precisa instalar a Pedra Filosofal (5⚡ → +2⚡) E invocar o Lich da Coroa da Entropia (8⚡: drena 3 ❤️ e dá +2/+2 a todos)!',
     objectiveText: 'Vença o Problema #100 causando 32+ de dano neste único turno com a sequência perfeita de 6 ações!',
     hint1:
-      'Contabilidade do Desafio #100 (começando com 9⚡ e precisando de 5⚡ da Pedra Filosofal + 8⚡ do Lich = 13⚡ brutos): 1) Canalize [C] a 1ª carta Roxa secundária (6 → 7 vs 6, estilhaçando o Domínio rival!) e Sacrifique/Queime [C] a 2ª (+1⚡ → 10⚡); 2) Ative o Pacto de Sangue (+1⚡ → 11⚡); 3) Avance o Conde Vampiro da Retaguarda [R] para a Vanguarda [V] com "⇄ Mover Fileira"; 4) Instale a Pedra Filosofal (5⚡ → devolve +2⚡ = 8⚡!) na Retaguarda [R] da Coluna 2; 5) Invoque o Lich da Coroa da Entropia (8⚡)!',
+      'Contabilidade do Desafio #100 (começando com 9⚡ e precisando de 5⚡ da Pedra Filosofal + 8⚡ do Lich = 13⚡ brutos): 1) Canalize [C] a 1ª carta Roxa secundária (6 → 7 vs 6, estilhaçando o Domínio rival!) e Sacrifique/Queime [C] a 2ª (+1⚡ → 10⚡); 2) Ative o Sacrifício Vital (+1⚡ → 11⚡); 3) Avance o Conde Vampiro da Retaguarda [R] para a Vanguarda [V] com "⇄ Mover Fileira"; 4) Instale a Pedra Filosofal (5⚡ → devolve +2⚡ = 8⚡!) na Retaguarda [R] da Coluna 2; 5) Invoque o Lich da Coroa da Entropia (8⚡)!',
     hint2:
       '1º Canalize a Garra Rastejante [C] (Afinidade Roxa sobe para 7 vs 6 → rompe o Confronto 50/50!). 2º Sacrifique/Queime o Zumbi [C] (+1⚡ → 10⚡) e ative "🩸 Pacto (+1⚡)" (10⚡ → 11⚡). 3º Clique no Conde Vampiro na Retaguarda [R] (Coluna 2) e use "⇄ Mover para Vanguarda". 4º Instale a Pedra Filosofal (5⚡) na Retaguarda [R] da Coluna 2 (devolve +2⚡ → 8⚡ e dá +1⚔️ Cobertura ao Conde!). 5º Invoque o Lich da Coroa da Entropia (8⚡) na Vanguarda [V] da Coluna 4 (drena 3 ❤️ do rival: 32 ❤️ → 29 ❤️, dá +2/+2 a todos e ganha +1/+1 e Ímpeto do Eclipse!). 6º Ataque diretamente o Soberano rival com todos para 32+ de dano!',
     solutionSteps: [
@@ -3481,7 +3481,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       '6. Ataque diretamente o Soberano rival com toda a sua Vanguarda para superar os 32 ❤️ e conquistar a Coroa dos 100 Problemas!',
     ],
     whyIndefensible:
-      'O teste supremo de Chromatic Pact: exige domínio absoluto de Confronto 7v6, Canalização, Queima de Mana, Pacto de Sangue, Manobra de Fileira, Pedra Filosofal, Cobertura e Expansão de Domínio!',
+      'O teste supremo de Chromatic Pact: exige domínio absoluto de Confronto 7v6, Canalização, Queima de Mana, Sacrifício Vital, Manobra de Fileira, Pedra Filosofal, Cobertura e Expansão de Domínio!',
     turnNumber: 10,
     p1Name: 'Vesperion, Soberano dos 100 Problemas',
     p1AvatarCardId: 'purple_156_lich_coroa_entropia',
@@ -3549,7 +3549,7 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'Seu Vazio Infinito de Cronos está bloqueado em Disputa de Domínios 50/50 contra a Caldeira de Ignis Rex (8 de Afinidade Carmesim!). Seu Flagelo da Geada está na Retaguarda [R] da Coluna 1 (perdendo +1⚔️ de Invasão!), o Pactuário do Éter Primordial e o Pactuário do Espírito Glacial aguardam na Retaguarda [R] das Colunas 2 e 3, e você tem 8⚡ de Essência com APENAS Cryonax, General da Roda Astral (7⚡) na mão para derrubar 35 ❤️!',
     objectiveText: 'Derrote Ignis Rex, Soberano da Caldeira (35 ❤️) neste turno.',
     hint1:
-      '1) Avance o Flagelo da Geada [⇄] da Retaguarda para a Vanguarda (Coluna 1, ganhando +1⚔️ de Invasão). 2) Invoque Cryonax (7⚡) na Vanguarda da Coluna 2 (dando Disparo Apoiado +1⚔️ ao Pactuário do Éter atrás dele e quebrando a Disputa 50/50!). 3) Ative o Pacto de Sangue (+1⚡ → sobe de 1⚡ para 2⚡) e ataque o Soberano PRIMEIRO com Cryonax (6⚔️) para comprar a Rajada das Lâminas de Vento (2⚡) do topo!',
+      '1) Avance o Flagelo da Geada [⇄] da Retaguarda para a Vanguarda (Coluna 1, ganhando +1⚔️ de Invasão). 2) Invoque Cryonax (7⚡) na Vanguarda da Coluna 2 (dando Disparo Apoiado +1⚔️ ao Pactuário do Éter atrás dele e quebrando a Disputa 50/50!). 3) Ative o Sacrifício Vital (+1⚡ → sobe de 1⚡ para 2⚡) e ataque o Soberano PRIMEIRO com Cryonax (6⚔️) para comprar a Rajada das Lâminas de Vento (2⚡) do topo!',
     hint2:
       'Quando você lança a Rajada das Lâminas de Vento (2⚡) com o Pactuário do Éter Primordial em campo, ela devolve +1⚡ próprio + 1⚡ do Pactuário = 2⚡ e compra o Óleo de Afiação Etérea (2⚡) e o Elixir de Fúria (1⚡)! Lance o Óleo (2⚡ → devolve +1⚡ pelo Pactuário!) e use esse 1⚡ exato no Elixir de Fúria (+2/+2), atacando depois com suas outras 4 unidades (7 + 10 + 6 + 6 + 6 de Cryonax = 35 de dano cravado)!',
     solutionSteps: [
@@ -3630,9 +3630,9 @@ export const EXTRA_50_TACTICAL_PROBLEMS: Omit<TacticalProblem, 'number' | 'code'
       'O Desafio #110 de Chromatic Pact! Sua Vanguarda está vazia e seu Tribunal da Sentença Dourada trava uma Disputa de Domínios 50/50 contra o Santuário de Vesperion (8 de Afinidade Umbral) atrás de três Guardiões Imortais. Você tem 13⚡ de Essência, um Pactuário Solar na Retaguarda e as duas relíquias vivas supremas do Prisma na mão: Vaelkor, General da Roda Prismática (7⚡) e a Armada Dracônica do Prisma (8⚡) — para alcançar 30 de dano em 1 único turno!',
     objectiveText: 'Derrote Vesperion, Arconte do Fim (30 ❤️) neste turno.',
     hint1:
-      'Contabilidade exata de 19⚡ pagos a partir de 13⚡: 1) Vaelkor (7⚡ → devolve +2⚡ Ao Entrar = 8⚡ restantes, quebrando a Disputa 50/50!); 2) Sacrifique/Queime [C] o Paladino (+1⚡ → 9⚡) e ative o Pacto de Sangue (+1⚡ → 10⚡); 3) Invoque a Armada Dracônica do Prisma (8⚡ → sobram 2⚡)! Mas de onde vêm os outros +2⚡ para ★ Ascender Vaelkor (4⚡)?',
+      'Contabilidade exata de 19⚡ pagos a partir de 13⚡: 1) Vaelkor (7⚡ → devolve +2⚡ Ao Entrar = 8⚡ restantes, quebrando a Disputa 50/50!); 2) Sacrifique/Queime [C] o Paladino (+1⚡ → 9⚡) e ative o Sacrifício Vital (+1⚡ → 10⚡); 3) Invoque a Armada Dracônica do Prisma (8⚡ → sobram 2⚡)! Mas de onde vêm os outros +2⚡ para ★ Ascender Vaelkor (4⚡)?',
     hint2:
-      'A Armada Dracônica do Prisma concede +2⚡ AO ATACAR! Portanto, NÃO ataque com Vaelkor primeiro! 1º Invoque Vaelkor (7⚡ → +2⚡) na Vanguarda [V] da Coluna 1 (apoiando o Pactuário Solar na Retaguarda!). 2º Queime o Paladino (+1⚡) + Pacto de Sangue (+1⚡ → 10⚡) e invoque a Armada Dracônica do Prisma (8⚡ → sobram 2⚡) na Coluna 2. 3º Ataque o Soberano rival PRIMEIRO com a Armada Dracônica (8⚔️): seu ataque gera +2⚡ (2⚡ → 4⚡)! 4º Use os 4⚡ para ★ Ascender Vaelkor em Vaelkor, Roda da Perfeição (10⚔️!) e ataque com Vaelkor (10⚔️), os 2 Constructos (4⚔️ + 4⚔️) e o Pactuário Solar (4⚔️) = 30 de dano cravado!',
+      'A Armada Dracônica do Prisma concede +2⚡ AO ATACAR! Portanto, NÃO ataque com Vaelkor primeiro! 1º Invoque Vaelkor (7⚡ → +2⚡) na Vanguarda [V] da Coluna 1 (apoiando o Pactuário Solar na Retaguarda!). 2º Queime o Paladino (+1⚡) + Sacrifício Vital (+1⚡ → 10⚡) e invoque a Armada Dracônica do Prisma (8⚡ → sobram 2⚡) na Coluna 2. 3º Ataque o Soberano rival PRIMEIRO com a Armada Dracônica (8⚔️): seu ataque gera +2⚡ (2⚡ → 4⚡)! 4º Use os 4⚡ para ★ Ascender Vaelkor em Vaelkor, Roda da Perfeição (10⚔️!) e ataque com Vaelkor (10⚔️), os 2 Constructos (4⚔️ + 4⚔️) e o Pactuário Solar (4⚔️) = 30 de dano cravado!',
     solutionSteps: [
       '1. Invoque Vaelkor, General da Roda Prismática (7⚡) na Vanguarda [V] da Coluna 1 (à frente do Pactuário Solar): quebra a barreira rival na Disputa 50/50, restaura o Acerto Garantido e devolve +2⚡ (13⚡ → 8⚡).',
       '2. Sacrifique/Queime [C] o Paladino do Brasão Solar (+1⚡ → 9⚡) e ative "🩸 Pacto (+1⚡)" (+1⚡ → 10⚡).',

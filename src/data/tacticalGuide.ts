@@ -261,7 +261,7 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "Resposta Anti-Domínio nativa com Nyxaroth, General da Roda Fúnebre (quebra Expansões inimigas na entrada ou ataque e impõe 2 rodadas de Exaustão de Domínio)."
     ],
     "weaknesses": [
-      "O acúmulo de Corrupção exige atenção para não sofrer recuo sombrio se a partida fugir do controle.",
+      "O acúmulo de Sobrecarga exige atenção para não atingir 10/10 (-2 PV de desgaste) se a partida fugir do controle.",
       "Congelamento atrasa os gatilhos de Dreno de Vida em combate."
     ],
     "keyCards": [
@@ -718,13 +718,13 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
   },
   "deck_dual_blood_flame": {
     "deckId": "deck_dual_blood_flame",
-    "deckName": "Grimório da Chama Sangrenta",
+    "deckName": "Aliança de Brasa & Umbra",
     "subtitle": "Pacto Duplo 🔥+💀 • Chama & Abismo",
     "domains": [
       "red",
       "purple"
     ],
-    "archetypeTag": "Pacto de Corrupção & Queima (52 Criaturas / 35 Magias)",
+    "archetypeTag": "Sobrecarga & Queima (52 Criaturas / 35 Magias)",
     "compositionSummary": {
       "creatures": 52,
       "spells": 25,
@@ -733,8 +733,8 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "ascensions": 5,
       "averageCost": 3.02
     },
-    "playstyleOverview": "Agressão sombria de 100 cartas (52 Criaturas, 25 Feitiços, 10 Reações e 13 Relíquias) que utiliza Corrupção como combustível para feitiços devastadores, Fênix velozes e Lordes Abissais.",
-    "channelingStrategy": "Atinja 2 Vermelho e 2 Roxo até o Turno 4; guarde Dreno Vital e Colheita das Sombras para compensar a vida gasta em pactos. Jamais canalize Pyrrakon, General da Roda Vulcânica e Nyxaroth, General da Roda Fúnebre nos turnos médios/finais: preserve seu General da Roda para quebrar a Expansão de Domínio inimiga (ou vencer instantaneamente uma Disputa de Domínios 50/50)!",
+    "playstyleOverview": "Agressão sombria de 100 cartas (52 Criaturas, 25 Feitiços, 10 Reações e 13 Relíquias) que utiliza Sobrecarga (5+) como amplificador para feitiços devastadores, Fênix velozes e Lordes Abissais.",
+    "channelingStrategy": "Atinja 2 Vermelho e 2 Roxo até o Turno 4; guarde Dreno Vital e Colheita das Sombras para compensar a vida convertida em Sacrifício Vital. Jamais canalize Pyrrakon, General da Roda Vulcânica e Nyxaroth, General da Roda Fúnebre nos turnos médios/finais: preserve seu General da Roda para quebrar a Expansão de Domínio inimiga (ou vencer instantaneamente uma Disputa de Domínios 50/50)!",
     "positioningAndStackingGuide": "Espalhe atacantes agressivos na Vanguarda e mantenha a Lanterna das Almas e o Caldeirão de Magma protegidos na Retaguarda.",
     "phasePlan": {
       "earlyGame": "Estabeleça presença imediata na Vanguarda com Acólito do Sol Negro, Víbora de Brasa Jovem, Batedor Escamado das Brasas para disputar colunas e ativar Invasão de Território (+1 ATQ).",
@@ -766,7 +766,7 @@ export const DECK_TACTICAL_PROFILES: Record<string, DeckTacticalProfile> = {
       "Resposta Anti-Domínio nativa com Pyrrakon, General da Roda Vulcânica e Nyxaroth, General da Roda Fúnebre (quebra Expansões inimigas na entrada ou ataque e impõe 2 rodadas de Exaustão de Domínio)."
     ],
     "weaknesses": [
-      "Exige equilíbrio entre agressão e gerenciamento de VIDA/Corrupção."
+      "Exige equilíbrio entre agressão e gerenciamento de VIDA/Sobrecarga."
     ],
     "keyCards": [
       "purple_08_lorde_abissal",

@@ -298,7 +298,7 @@ export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBio
     chronologicalOrder: 18,
     locationLabel: 'Fosso Inferior da Cidadela da Caldeira',
     proseStory:
-      'Senhor das galerias mais fundas sob a Cidadela da Caldeira, Baelgor estabeleceu no Ano 178 D.F. o pacto de sangue e enxofre que alimenta as fornalhas militares de Pyros. O calor que irradia de suas asas é tão intenso que derrete as lanças da vanguarda inimiga antes do contato.',
+      'Senhor das galerias mais fundas sob a Cidadela da Caldeira, Baelgor estabeleceu no Ano 178 D.F. o tratado de brasa e enxofre que alimenta as fornalhas militares de Pyros. O calor que irradia de suas asas é tão intenso que derrete as lanças da vanguarda inimiga antes do contato.',
     sungStanza: [
       'No fundo do fosso onde a escória reluz,',
       'Baelgor nas trevas de brasa conduz;',

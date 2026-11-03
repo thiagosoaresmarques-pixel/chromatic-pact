@@ -151,7 +151,7 @@ const ARENA_COACHMARK_STEPS = [
     step: 1,
     badge: 'PASSO 1 DE 8 • FUNDAMENTOS, FADIGA & BARRAS SIMÉTRICAS',
     title: '40❤️ de Vida, 3⚡ Iniciais, 7 Cartas & Limite de 12 na Mão',
-    text: 'Você inicia com 40❤️ de Vida, 3⚡ de Essência Máxima e 7 cartas (com Mulligan inicial de 30s e 60s por fase). Limite de 12 cartas na mão (excedentes queimam para a Cripta) e grimório vazio causa 2❤️ de Fadiga por compra. Use as barras no topo (▾ Rival) e na base (▴ Você) para inspecionar Afinidades, Cripta e Corrupção!',
+    text: 'Você inicia com 40❤️ de Vida, 3⚡ de Essência Máxima e 7 cartas (com Mulligan inicial de 30s e 60s por fase). Limite de 12 cartas na mão (excedentes queimam para a Cripta) e grimório vazio causa 2❤️ de Fadiga por compra. Use as barras no topo (▾ Rival) e na base (▴ Você) para inspecionar Afinidades, Cripta e Sobrecarga!',
   },
   {
     step: 2,
@@ -185,9 +185,9 @@ const ARENA_COACHMARK_STEPS = [
   },
   {
     step: 7,
-    badge: 'PASSO 7 DE 8 • RITUAIS, CORRUPÇÃO ABISSAL & ASCENSÃO ★',
-    title: 'Poder do Soberano (2⚡), Pacto de Sangue (-3❤️/+1⚡) & Evolução',
-    text: 'Ative 1× por turno o Poder do Soberano (2⚡) e o Pacto de Sangue (-3❤️ → +1⚡ e +1 Corrupção; com 5+ de Corrupção suas tropas ganham +1⚔️ e magias +1 dano, mas em 10/10 sofre -2❤️ de sobrecarga). Ao pagar Ascensão (★) numa unidade em campo, ela evolui preservando todos os buffs permanentes já acumulados!',
+    badge: 'PASSO 7 DE 8 • CANALIZAÇÃO, SOBRECARGA & ASCENSÃO ★',
+    title: 'Poder do Soberano (2⚡), Sacrifício Vital (-3❤️/+1⚡) & Evolução',
+    text: 'Ative 1× por turno o Poder do Soberano (2⚡) e o Sacrifício Vital (-3❤️ → +1⚡ e +1 Sobrecarga; com 5+ de Sobrecarga suas tropas ganham +1⚔️ e magias +1 dano, mas em 10/10 sofre -2❤️ de desgaste). Ao pagar Ascensão (★) numa unidade em campo, ela evolui preservando todos os buffs permanentes já acumulados!',
   },
   {
     step: 8,
@@ -3349,8 +3349,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     const pCard = CARDS_BY_ID[gameState.player.avatarCardId] ?? ALL_CARDS[0];
     triggerSovereignSpectacle(
       'player',
-      '🩸 PACTO DE SANGUE SOBERANO',
-      'Sacrificou 3 PV (+1 Corrupção) em troca de +1 Essência imediata!',
+      '⚡ SACRIFÍCIO VITAL',
+      'Converteu 3 PV (+1 Sobrecarga) em +1 Essência imediata!',
       'purple',
       pCard
     );
@@ -7393,9 +7393,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           className="hud-ritual-chip"
                           disabled={!canBlood}
                           onClick={handleBloodPact}
-                          title="Pacto de Sangue (-2 PV por +1 Essência)"
+                          title="Sacrifício Vital (-3 PV por +1 Essência imediata e +1 Sobrecarga)"
                         >
-                          Pacto (+1)
+                          Vital (+1)
                         </button>
                         <button
                           type="button"

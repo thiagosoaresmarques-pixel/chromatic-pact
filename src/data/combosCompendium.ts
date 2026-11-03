@@ -161,7 +161,7 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
     tier: 'mono',
     tierLabel: '1 Cor • Monocromático',
     domains: ['purple'],
-    title: 'Ritual Abissal de Aceleração Precoce',
+    title: 'Canalização Umbral de Aceleração Precoce',
     archetypeTag: 'Explosão de Essência',
     cardIds: [
       'purple_104_pacto_demoniaco',
@@ -170,7 +170,7 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
       'purple_07_lich',
     ],
     mechanism:
-      'Pacto de Sangue (1⚡ → +2⚡) e Contrato das Sete Correntes (2⚡ → +2⚡ e compra 2 cartas) convertem Corrupção em Essência imediata, permitindo descer colossos de custo 6–7 já nos primeiros turnos.',
+      'Centelha Umbral (1⚡ → +2⚡) e Contrato das Sete Correntes (2⚡ → +2⚡ e compra 2 cartas) convertem Sobrecarga em Essência imediata, permitindo descer colossos de custo 6–7 já nos primeiros turnos.',
     payoff: 'Invoca Serpente Abissal (7/6 Ímpeto) ou Vesperion vários turnos antes da curva normal.',
   },
   {
@@ -550,7 +550,7 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
       'purple_28_filacterio_noite',
     ],
     mechanism:
-      'Use o Pacto de Sangue para invocar a Fênix da Coroa Solar cedo. Quando ela gastar seu Renascer e finalmente cair na Cripta (causando 2× dano em área), Erguer Legião da Cripta e a Máscara a trazem de volta com Renascer renovado.',
+      'Use a Centelha Umbral e o Sacrifício Vital para invocar a Fênix da Coroa Solar cedo. Quando ela gastar seu Renascer e finalmente cair na Cripta (causando 2× dano em área), Erguer Legião da Cripta e a Máscara a trazem de volta com Renascer renovado.',
     payoff: 'Uma Fênix com Voo e Ímpeto que precisa ser morta 4 a 6 vezes pelo oponente.',
   },
   {
@@ -915,7 +915,7 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
       'purple_107_grimorio_necromante',
     ],
     mechanism:
-      'Estágio 1 (Roxo): Pacto de Sangue e Contrato geram +4⚡ de explosão. Estágio 2 (Vermelho + Roxo): Fornalha, Piromante e Necronomicon na Retaguarda. Estágio 3 (Azul): Feitiços de compra e restituição de Essência disparam todos os gatilhos em sequência.',
+      'Estágio 1 (Roxo): Centelha Umbral e Contrato geram +4⚡ de explosão. Estágio 2 (Vermelho + Roxo): Fornalha, Piromante e Necronomicon na Retaguarda. Estágio 3 (Azul): Feitiços de compra e restituição de Essência disparam todos os gatilhos em sequência.',
     payoff: 'Cada feitiço causa 5+ de dano direto e drena VIDA, permitindo abater o Soberano rival em um único turno.',
   },
   {
@@ -1022,7 +1022,7 @@ export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
       'green_88_reencarnacao_ancestral',
     ],
     mechanism:
-      'Acelere Vulcanor (3 de dano a todos os inimigos + 2 ao Soberano) e a Hidra-Rei de Sete Cabeças com Pacto de Sangue. Se o oponente gastar recursos para abatê-los, Despertar da Legião e Reencarnação Primordial os trazem de volta com +2/+3 extras.',
+      'Acelere Vulcanor (3 de dano a todos os inimigos + 2 ao Soberano) e a Hidra-Rei de Sete Cabeças com Centelha Umbral e Sacrifício Vital. Se o oponente gastar recursos para abatê-los, Despertar da Legião e Reencarnação Primordial os trazem de volta com +2/+3 extras.',
     payoff: 'Colossos de Sopro e Atropelar que retornam da Cripta disparando novos terremotos na entrada.',
   },
   {

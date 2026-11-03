@@ -86,9 +86,9 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
   },
   {
     id: 'abyssal_corruption',
-    icon: '🩸',
-    label: 'Pacto de Sangue & Dreno',
-    shortDesc: 'Corrupção Abissal (5+ concede +1 ATQ/+1 Dano), Dreno de Vida e Toque Letal.',
+    icon: '⚡',
+    label: 'Sacrifício Vital & Dreno',
+    shortDesc: 'Sobrecarga (5+ concede +1 ATQ/+1 Dano), Dreno de Vida e Toque Letal.',
     matches: (c) =>
       (c.corruptionCost ?? 0) > 0 ||
       c.keywords.includes('Dreno de Vida') ||
@@ -385,7 +385,7 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     label: 'Quebra-Domínio',
     matches: (c) => c.effects.some((e) => e.type === 'break_domain_expansion'),
   },
-  { id: 'mech:corruption', group: 'mechanics', label: 'Custo de Corrupção', matches: (c) => (c.corruptionCost ?? 0) > 0 },
+  { id: 'mech:corruption', group: 'mechanics', label: 'Custo de Sobrecarga', matches: (c) => (c.corruptionCost ?? 0) > 0 },
   {
     id: 'row:vanguard',
     group: 'mechanics',
@@ -768,8 +768,8 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
       archetypeTitle = '🐾 Enxame Predatório (Creature-Heavy)';
       archetypeSubtitle = 'Pressão implacável de criaturas, Atropelar e evolução de matilha.';
     } else if ((packageCounts['abyssal_corruption'] ?? 0) >= 12) {
-      archetypeTitle = '🩸 Pacto Abissal & Dreno';
-      archetypeSubtitle = 'Usa Corrupção (5+) para amplificar ataques e drena a vida do Soberano rival.';
+      archetypeTitle = '⚡ Sobrecarga & Dreno Vital';
+      archetypeSubtitle = 'Usa Sobrecarga (5+) para amplificar ataques e drena a vida do Soberano rival.';
     } else if ((packageCounts['crypt_reborn'] ?? 0) >= 12) {
       archetypeTitle = '💀 Necromancia & Cripta Eterna';
       archetypeSubtitle = 'Reciclagem de criaturas com Renascer, Eco Necrótico e reanimação.';

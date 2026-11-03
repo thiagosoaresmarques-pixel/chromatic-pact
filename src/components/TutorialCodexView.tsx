@@ -43,16 +43,16 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
       'Cada Soberano inicia com 40 pontos de Vida, 3 de Essência Máxima e 7 cartas na mão (teto de 12 cartas na mão; compras acima de 12 queimam para a Cripta). Em caso de Colapso Mútuo simultâneo (ambos <= 0 PV), o jogador prevalece.',
     keyPoints: [
       {
-        tag: 'RITUAL • 2 ESSÊNCIA',
+        tag: 'CANALIZAÇÃO • 2 ESSÊNCIA',
         title: 'Poder do Soberano (1×/Turno)',
         detail:
           'Ativável uma vez por turno na barra inferior. Dispara a técnica assinatura do Domínio principal do seu grimório para causar dano, congelar, curar ou blindar aliados.',
       },
       {
-        tag: 'RITUAL • 3 VIDA & +1 CORRUPÇÃO',
-        title: 'Pacto de Sangue & Fadiga (-2 PV)',
+        tag: 'CANALIZAÇÃO • 3 VIDA & +1 SOBRECARGA',
+        title: 'Sacrifício Vital & Fadiga (-2 PV)',
         detail:
-          'Sacrifique 3 PV (exige > 3 PV) 1× por turno para ganhar +1 Essência imediata e +1 Corrupção. Se o grimório acabar, você não perde na hora: cada compra vazia causa 2 de dano de Fadiga.',
+          'Converta 3 PV (exige > 3 PV) 1× por turno para ganhar +1 Essência imediata e +1 Sobrecarga. Se o grimório acabar, você não perde na hora: cada compra vazia causa 2 de dano de Fadiga.',
       },
       {
         tag: 'PREPARAÇÃO • 30s / 60s',
@@ -62,7 +62,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
       },
     ],
     proTip:
-      'Ao atingir 5+ de Corrupção Abissal, todas as suas criaturas entram com +1 ATQ permanente e seus feitiços/sopros ganham +1 de dano — mas não estoure 10/10 (-2 PV de Sobrecarga)!',
+      'Ao atingir 5+ de Sobrecarga, todas as suas criaturas entram com +1 ATQ permanente e seus feitiços/sopros ganham +1 de dano — mas não estoure 10/10 (-2 PV de desgaste)!',
   },
   {
     stepNumber: 2,
@@ -430,7 +430,7 @@ const KEYWORD_ENCYCLOPEDIA: KeywordEntry[] = [
     description:
       'Restaura +2 pontos de Vida ao seu Soberano ao causar dano real direto ao Soberano rival, ou +1 ponto de Vida ao causar dano real a criaturas (tanto atacando quanto contra-atacando na defesa).',
     tacticalTip:
-      'Acertar diretamente o Soberano rival dobra a cura (+2 PV), compensando rapidamente o Pacto de Sangue.',
+      'Acertar diretamente o Soberano rival dobra a cura (+2 PV), compensando rapidamente o Sacrifício Vital.',
     exampleCardId: 'purple_19_conde_vampiro',
   },
   {
@@ -1116,9 +1116,9 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 desc: 'Se o alvo planejado de uma unidade morrer antes da vez dela (na Onda 1 por feitiço ou na Onda 2 por Ímpeto), ela NÃO perde o ataque: redireciona automaticamente na mesma coluna ou avança até o Soberano! E se A planejou atacar B e B planejou atacar A na Onda 3, ambas trocam dano em um único Duelo Mútuo simultâneo.',
               },
               {
-                tag: 'CORRUPÇÃO ABISSAL (0 A 10) & ASCENSÃO ★',
-                title: 'Poder Sombrio (5+), Sobrecarga (10/10) & Evolução',
-                desc: 'Pacto de Sangue (-3 PV), Dreno Umbroso e cartas Abissais somam Corrupção: com 5+ de Corrupção suas criaturas entram com +1 ATQ permanente e feitiços/sopros causam +1 de dano; porém em 10/10 cada ponto extra causa -2 PV de rebote! Já a Ascensão (★) evolui a criatura preservando 100% dos buffs permanentes acumulados.',
+                tag: 'SOBRECARGA (0 A 10) & ASCENSÃO ★',
+                title: 'Potência Máxima (5+), Limite (10/10) & Evolução',
+                desc: 'Sacrifício Vital (-3 PV), Dreno Umbroso e cartas de alto risco somam Sobrecarga: com 5+ de Sobrecarga suas criaturas entram com +1 ATQ permanente e feitiços/sopros causam +1 de dano; porém em 10/10 cada ponto extra causa -2 PV de desgaste! Já a Ascensão (★) evolui a criatura preservando 100% dos buffs permanentes acumulados.',
               },
               {
                 tag: 'MÃO CHEIA (12), DEVOLUÇÃO (10) & FADIGA',
@@ -1249,9 +1249,9 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 },
                 {
                   dom: 'purple' as Domain,
-                  role: 'Necromancia, Renascer, Dreno Vital & Corrupção Abissal',
+                  role: 'Cripta, Renascer, Dreno Vital & Sobrecarga',
                   strategy:
-                    'Transforme a Cripta em recurso com Renascer e reanimações, e acumule 5+ de Corrupção Abissal (via Pacto de Sangue, Dreno Umbroso e cartas de Pacto) para dar +1 ATQ às suas criaturas e +1 de dano às magias (cuidando do teto 10/10).',
+                    'Transforme a Cripta em recurso com Renascer e reanimações, e acumule 5+ de Sobrecarga (via Sacrifício Vital, Dreno Umbroso e cartas de sobrecarga) para dar +1 ATQ às suas criaturas e +1 de dano às magias (cuidando do teto 10/10).',
                   keyCards: 'Priorize Esqueletos/Lichs com Renascer, Vampiros com Dreno de Vida (+2 PV no Soberano), Remoções Letais e Altares de Reanimação.',
                 },
                 {
@@ -1527,10 +1527,10 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               },
               {
                 domain: 'purple' as Domain,
-                sovereignPower: 'Dreno Umbroso (2 de Essência): Causa 2 de dano a um alvo, restaura 2 de Vida ao seu Soberano e gera +1 Corrupção.',
+                sovereignPower: 'Dreno Umbroso (2 de Essência): Causa 2 de dano a um alvo, restaura 2 de Vida ao seu Soberano e gera +1 Sobrecarga.',
                 domainExpansion:
                   'Santuário Malevolente das Almas: Suas criaturas ganham +1/+1, Ímpeto e Acerto Garantido direto no Soberano rival.',
-                archetype: 'Reanimação da Cripta, Toque Letal, Dreno de Vida, Renascer e Pactos de Sangue.',
+                archetype: 'Reanimação da Cripta, Toque Letal, Dreno de Vida, Renascer e Sacrifício Vital.',
                 cardId: 'purple_07_lich',
               },
               {
@@ -2095,8 +2095,8 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
               },
               {
                 key: 'Barra Inferior ▴',
-                title: 'Seu Soberano & Rituais',
-                desc: 'Reúne sua Vida, Essência, Poder do Soberano, Pacto de Sangue e o progresso 6/6 para a Expansão de Domínio.',
+                title: 'Seu Soberano & Canalização',
+                desc: 'Reúne sua Vida, Essência, Poder do Soberano, Sacrifício Vital e o progresso 6/6 para a Expansão de Domínio.',
               },
               {
                 key: 'Gaveta MÃO',

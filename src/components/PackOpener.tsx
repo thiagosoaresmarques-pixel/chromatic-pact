@@ -63,8 +63,8 @@ const PACK_OPTIONS: PackTypeOption[] = [
   {
     id: 'pack_purple',
     name: 'Abismo & Sombra',
-    kicker: 'DOMÍNIO ABISSAL',
-    subtitle: 'Demônios, Mortos-Vivos, Pactos de Sangue e Reanimação',
+    kicker: 'DOMÍNIO UMBRAL',
+    subtitle: 'Espectros, Titãs Umbrais, Sacrifício Vital e Retorno da Cripta',
     domain: 'purple',
     cost: 30,
     accent: '#a855f7',

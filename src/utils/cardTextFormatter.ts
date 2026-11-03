@@ -784,7 +784,7 @@ export function formatCardDetailedRules(card: CardDefinition): string[] {
   }
   if (card.corruptionCost && card.corruptionCost > 0) {
     passiveParts.push(
-      `adiciona +${card.corruptionCost} de Corrupção ao seu Soberano ao ser jogada`
+      `adiciona +${card.corruptionCost} de Sobrecarga ao seu Soberano ao ser jogada`
     );
   }
   if (passiveParts.length > 0) {

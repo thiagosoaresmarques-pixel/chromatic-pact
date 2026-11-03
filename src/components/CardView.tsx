@@ -725,7 +725,7 @@ export const CardView: React.FC<CardViewProps> = ({
             <div className="spell-bottom-ribbon">
               <span>{displayCard.type === 'spell' ? 'FEITIÇO ARCANO' : 'REAÇÃO / EMBOSCADA'}</span>
               {displayCard.corruptionCost ? (
-                <span className="corruption-cost-tag">CORRUPÇÃO +{displayCard.corruptionCost}</span>
+                <span className="corruption-cost-tag">SOBRECARGA +{displayCard.corruptionCost}</span>
               ) : null}
             </div>
           )}

@@ -134,7 +134,7 @@ export const PROBLEM_DIFFICULTY_META: Record<
     bg: 'rgba(251, 146, 60, 0.14)',
     border: 'rgba(251, 146, 60, 0.45)',
     description:
-      'Tributo Anti-Domínio (10❤️), Pacto de Sangue no limite da vida, Manobras de Fileira [⇄] e Retorno à Mão (+7 🪙 por problema).',
+      'Tributo Anti-Domínio (10❤️), Sacrifício Vital no limite da vida, Manobras de Fileira [⇄] e Retorno à Mão (+7 🪙 por problema).',
   },
   grao_mestre: {
     label: 'Grau V • Grão-Mestre Soberano',

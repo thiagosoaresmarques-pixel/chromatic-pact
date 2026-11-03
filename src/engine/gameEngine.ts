@@ -1977,7 +1977,7 @@ export function burnCardForEssence(
 }
 
 /**
- * Pacto de Sangue do Soberano: Sacrifica 3❤️ de Vida (+1 Corrupção) para ganhar +1⚡ Essência temporária (1x por turno).
+ * Sacrifício Vital do Soberano: Converte 3❤️ de Vida (+1 Sobrecarga) em +1⚡ Essência temporária (1x por turno).
  */
 export function canUseBloodPact(state: GameState, actor: 'player' | 'ai'): boolean {
   if (state.phase === 'gameover' || (actor === 'player' && state.activePlayer !== 'player')) return false;
@@ -1995,12 +1995,12 @@ export function bloodPactForEssence(state: GameState, actor: 'player' | 'ai'): G
   actorState.hasUsedBloodPactThisTurn = true;
   actorState.corruption = Math.min(10, actorState.corruption + 1);
 
-  addFeedback(next, `${actor}-sovereign`, '-3❤️ / +1⚡ Pacto de Sangue!', 'ess');
+  addFeedback(next, `${actor}-sovereign`, '-3❤️ / +1⚡ Sacrifício Vital!', 'ess');
   addLog(
     next,
     actor,
     'corruption',
-    `${actorState.name} selou um Pacto de Sangue (-3❤️ Vida, +1 Corrupção -> +1⚡ Essência imediata)!`
+    `${actorState.name} ativou Sacrifício Vital (-3❤️ Vida, +1 Sobrecarga -> +1⚡ Essência imediata)!`
   );
   return next;
 }
@@ -2135,7 +2135,7 @@ export function getSovereignPowerInfo(actorState: PlayerState): {
         name: 'Dreno Umbroso',
         cost: 2,
         icon: '🟣',
-        shortDesc: 'Causa 2💀 a um inimigo (ou ao Soberano rival), cura +2❤️ no seu Soberano e gera +1 Corrupção.',
+        shortDesc: 'Causa 2💀 a um inimigo (ou ao Soberano rival), cura +2❤️ no seu Soberano e gera +1 Sobrecarga.',
       };
     case 'green':
       return {
@@ -3414,24 +3414,24 @@ export function playCard(
     'ess'
   );
 
-  // Process Corruption cost & Dark Power thresholds
+  // Process Overload (corruption) cost & 5+ / 10 thresholds
   if (card.corruptionCost && card.corruptionCost > 0) {
     actorState.corruption = Math.min(10, actorState.corruption + card.corruptionCost);
     addLog(
       next,
       actor,
       'corruption',
-      `${actorState.name} absorveu +${card.corruptionCost} de Corrupção (${actorState.corruption}/10).`
+      `${actorState.name} acumulou +${card.corruptionCost} de Sobrecarga (${actorState.corruption}/10).`
     );
 
     if (actorState.corruption >= 10) {
       actorState.hp = Math.max(0, actorState.hp - 2);
-      addFeedback(next, `${actor}-sovereign`, '-2 Sobrecarga Abissal!', 'damage');
+      addFeedback(next, `${actor}-sovereign`, '-2 Sobrecarga (10/10)!', 'damage');
       addLog(
         next,
         actor,
         'corruption',
-        `Sobrecarga Abissal (10/10)! ${actorState.name} sofreu 2 de dano de rebote sombrio!`
+        `Limite de Sobrecarga (10/10)! ${actorState.name} sofreu 2 de dano de desgaste!`
       );
     }
   }
@@ -3678,7 +3678,7 @@ export function playCard(
       'summon',
       `${actorState.name} invocou [${card.name}] (Custo ${card.cost}⚡ → Restam ${actorState.currentEssence}/${actorState.maxEssence}⚡) na ${rowLabel} Coluna ${slot.slotIndex + 1}${
         newStackSize > 1 ? ` [Pilha ${newStackSize}/${MAX_UNITS_PER_SLOT}]` : ''
-      }${corruptionAtkBonus > 0 ? ' (+1 ATQ do Pacto Abissal)' : ''}.`
+      }${corruptionAtkBonus > 0 ? ' (+1 ATQ de Sobrecarga)' : ''}.`
     );
 
     if (card.breathDamage && card.breathDamage > 0) {

@@ -135,30 +135,30 @@ export const GRANDMASTER_CHAMPION_PROBLEMS: Omit<TacticalProblem, 'number' | 'co
   // ============================================================================
   {
     id: 'prob_champ_03_corte_lua_sangrenta',
-    title: 'O Ritual da Lua Sangrenta',
+    title: 'A Canalização da Lua Carmesim',
     subtitle:
-      'Campeão #3 Global (Pyros + Eclipse + Veridia): Pacto de Sangue no limite vital, gatilho duplo do Pactuário Umbral e Atropelar sobre o bloqueador',
+      'Campeão #3 Global (Pyros + Eclipse + Veridia): Sacrifício Vital no limite vital, gatilho duplo do Pactuário Umbral e Atropelar sobre o bloqueador',
     difficulty: 'campeoes_torneio',
     difficultyLabel: '🏆 Grão-Soberanos',
     stars: 5,
     goldReward: 12,
     primaryDomain: 'purple',
-    mechanicTag: '🏆 #3 Corte da Lua Sangrenta • Pacto de Sangue + Pactuário + Atropelar',
+    mechanicTag: '🏆 #3 Corte da Lua Carmesim • Sacrifício Vital + Pactuário + Atropelar',
     scenarioLore:
-      'Inspirado na Corte da Lua Sangrenta (#3 Global • 71.7% WR): você está com apenas 6 ❤️ e 3⚡, mas seu Pactuário do Espírito Umbral está na Retaguarda (causando 2 de dano direto ao Soberano rival a cada Feitiço lançado!) e Vorágine, a Hidra com Atropelar, aguarda na Coluna 2.',
-    objectiveText: 'Use o Pacto de Sangue e encadeie dois feitiços letais para abater o rival.',
+      'Inspirado na Corte da Lua Carmesim (#3 Global • 71.7% WR): você está com apenas 6 ❤️ e 3⚡, mas seu Pactuário do Espírito Umbral está na Retaguarda (causando 2 de dano direto ao Soberano rival a cada Feitiço lançado!) e Vorágine, a Hidra com Atropelar, aguarda na Coluna 2.',
+    objectiveText: 'Use o Sacrifício Vital e encadeie dois feitiços letais para abater o rival.',
     hint1:
-      'Com 6 ❤️, você ainda pode ativar o Pacto de Sangue (-3 ❤️ -> +1⚡), subindo de 3⚡ para 4⚡ — o suficiente para conjurar DOIS feitiços de custo 2⚡ (Fúria de Sangue Vulcânico + Tambores da Conquista), disparando duas vezes o Pactuário Umbral (4 de dano direto)!',
+      'Com 6 ❤️, você ainda pode ativar o Sacrifício Vital (-3 ❤️ -> +1⚡), subindo de 3⚡ para 4⚡ — o suficiente para conjurar DOIS feitiços de custo 2⚡ (Fúria de Sangue Vulcânico + Tambores da Conquista), disparando duas vezes o Pactuário Umbral (4 de dano direto)!',
     hint2:
-      '1º Ative o Pacto de Sangue (-3 ❤️ -> 4⚡)! 2º Conjure Fúria de Sangue Vulcânico (2⚡) na Hidra Vorágine (+2/+1 na Hidra + 2 de dano do feitiço + 2 de dano do Pactuário)! 3º Conjure Tambores da Conquista (2⚡ -> +2⚔️ a todos os aliados + 2 de dano do Pactuário)! 4º Ataque o bloqueador da Coluna 2 com Vorágine (Atropelar perfura todo o excedente) e dispare com o Pactuário Umbral (Alcance)!',
+      '1º Ative o Sacrifício Vital (-3 ❤️ -> 4⚡)! 2º Conjure Fúria de Sangue Vulcânico (2⚡) na Hidra Vorágine (+2/+1 na Hidra + 2 de dano do feitiço + 2 de dano do Pactuário)! 3º Conjure Tambores da Conquista (2⚡ -> +2⚔️ a todos os aliados + 2 de dano do Pactuário)! 4º Ataque o bloqueador da Coluna 2 com Vorágine (Atropelar perfura todo o excedente) e dispare com o Pactuário Umbral (Alcance)!',
     solutionSteps: [
-      '1. Ative o Pacto de Sangue no seu Soberano (-3 ❤️, subindo de 3⚡ para 4⚡).',
+      '1. Ative o Sacrifício Vital no seu Soberano (-3 ❤️, subindo de 3⚡ para 4⚡).',
       '2. Conjure Fúria de Sangue Vulcânico (2⚡) mirando Vorágine, Hidra Voraz na Coluna 2 (+2/+1 na Hidra, +2 de dano direto do feitiço e +2 de dano do Pactuário Umbral!).',
       '3. Conjure Tambores da Conquista (2⚡): +2⚔️ para todos os aliados (incluindo a Cria Dracônica e o Pactuário) e mais +2 de dano direto do Pactuário Umbral!',
       '4. Ataque o bloqueador rival da Coluna 2 com Vorágine (Atropelar transpassa a vida restante direto no Soberano!) e ataque direto com o Pactuário do Espírito Umbral (Alcance)!',
     ],
     whyIndefensible:
-      'Sem o Pacto de Sangue você só lança 1 feitiço; e se aplicar a Fúria de Sangue no Pactuário em vez da Hidra com Atropelar (ou atacar antes dos buffs), perderá o dano excedente ou o bônus nas unidades!',
+      'Sem o Sacrifício Vital você só lança 1 feitiço; e se aplicar a Fúria de Sangue no Pactuário em vez da Hidra com Atropelar (ou atacar antes dos buffs), perderá o dano excedente ou o bônus nas unidades!',
     turnNumber: 7,
     p1Name: 'Soberano da Lua Sangrenta (Você)',
     p1AvatarCardId: 'purple_171_pactuario_elemental_abismo',

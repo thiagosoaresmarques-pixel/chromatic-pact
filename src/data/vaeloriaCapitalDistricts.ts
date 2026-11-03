@@ -581,7 +581,7 @@ export const VAELORIA_CAPITAL_DISTRICTS: CapitalDistrictDef[] = [
     cantoQuote: '“Os vivos reinam por décadas; Nocturnus governa por eras.” — Canto II',
     loreChronicle:
       'Coração da Alta Catedral de Obsidiana, onde arcebispos-lich e príncipes imortais deliberam em silêncio.',
-    tacticalPerkSummary: 'Doutrina do Eclipse: Dreno de Vida, Renascer da Cripta e Pactos de Sangue.',
+    tacticalPerkSummary: 'Doutrina do Eclipse: Dreno de Vida, Renascer da Cripta e Sacrifício Vital.',
     nativeCardIds: [
       'purple_07_lich',
       'purple_65_principe_mortos',

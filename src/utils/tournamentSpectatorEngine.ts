@@ -238,7 +238,11 @@ function classifyStepAction(
   ) {
     return { kind: 'domain', weight: 1.25 };
   }
-  if (rawSummary.includes('Poder do Soberano') || rawSummary.includes('Pacto de Sangue')) {
+  if (
+    rawSummary.includes('Poder do Soberano') ||
+    rawSummary.includes('Sacrifício Vital') ||
+    rawSummary.includes('Pacto de Sangue')
+  ) {
     return { kind: 'power', weight: 0.85 };
   }
   if (rawSummary.includes('ascendeu')) {
@@ -1173,7 +1177,9 @@ export function recordHumanTournamentMatchState(params: {
     ? 'domain'
     : rawMessage.includes('ascendeu') || rawMessage.includes('ASCENSÃO')
     ? 'ascend'
-    : rawMessage.includes('Poder do Soberano') || rawMessage.includes('Pacto de Sangue')
+    : rawMessage.includes('Poder do Soberano') ||
+      rawMessage.includes('Sacrifício Vital') ||
+      rawMessage.includes('Pacto de Sangue')
     ? 'power'
     : newestLog?.category === 'turn'
     ? 'end_turn'

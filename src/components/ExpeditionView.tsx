@@ -375,8 +375,8 @@ const PACK_ARCHETYPES: {
   },
   {
     id: 'blood_moon_court',
-    title: 'Corte da Lua Sangrenta (#3)',
-    subtitle: 'Pactos de Sangue, Renascer & Atropelar Selvagem',
+    title: 'Corte da Lua Carmesim (#3)',
+    subtitle: 'Sacrifício Vital, Renascer & Atropelar Selvagem',
     domain: 'purple',
     filter: (c) =>
       (c.domain === 'purple' && (c.keywords.includes('Renascer') || c.keywords.includes('Dreno de Vida'))) ||

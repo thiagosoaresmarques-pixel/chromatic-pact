@@ -259,7 +259,9 @@ export function recordPersonalMatchFrame(
     ? 'domain'
     : rawMessage.includes('ascendeu') || rawMessage.includes('ASCENSÃO')
     ? 'ascend'
-    : rawMessage.includes('Poder do Soberano') || rawMessage.includes('Pacto de Sangue')
+    : rawMessage.includes('Poder do Soberano') ||
+      rawMessage.includes('Sacrifício Vital') ||
+      rawMessage.includes('Pacto de Sangue')
     ? 'power'
     : newestLog?.category === 'turn'
     ? 'end_turn'

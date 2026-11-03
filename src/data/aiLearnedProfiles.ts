@@ -1323,7 +1323,7 @@ export const AI_LEARNED_PROFILES: Record<string, DeckLearnedAiProfile> = {
   },
   "deck_dual_blood_flame": {
     "deckId": "deck_dual_blood_flame",
-    "deckName": "Grimório da Chama Sangrenta",
+    "deckName": "Aliança de Brasa & Umbra",
     "archetypeTag": "Pacto Duplo 🔥+💀 • Chama & Abismo",
     "generationsTrained": 48,
     "matchesSimulated": 4660,

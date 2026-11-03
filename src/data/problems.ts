@@ -1784,28 +1784,28 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
     id: 'prob_31_pacto_sangue_limite',
     number: 31,
     code: 'PROBLEMA #31',
-    title: 'Pacto de Sangue à Beira do Abismo',
-    subtitle: 'Pagar 3 ❤️ no Pacto de Sangue (ficando com 1 ❤️!) para comprar a carta letal e ganhar +1⚡',
+    title: 'Sacrifício Vital no Limite',
+    subtitle: 'Pagar 3 ❤️ no Sacrifício Vital (ficando com 1 ❤️!) para comprar a carta letal e ganhar +1⚡',
     difficulty: 'mestre',
     difficultyLabel: 'Grau IV • Mestre',
     stars: 4,
     goldReward: 7,
     primaryDomain: 'purple',
-    mechanicTag: '🩸 Pacto de Sangue (-3❤️ / +1⚡ & Compra)',
+    mechanicTag: '⚡ Sacrifício Vital (-3❤️ / +1⚡ & Compra)',
     scenarioLore:
       'Você está com apenas 4 ❤️ restantes! O Soberano rival tem 19 ❤️. Sua mão tem o Campanário dos Mortos (4⚡), mas você só tem 6⚡ — falta 1⚡ para conseguir instalar o Campanário (4⚡) E expandir o Eclipse do Trono de Ossos (3⚡)!',
-    objectiveText: 'Sobreviva com 1 ❤️ usando o Pacto de Sangue para destravar o combo de 7⚡ e vencer neste turno!',
+    objectiveText: 'Sobreviva com 1 ❤️ usando o Sacrifício Vital para destravar o combo de 7⚡ e vencer neste turno!',
     hint1:
-      'Na barra inferior de comando (ou gaveta de Terrenos), o ritual "🩸 Pacto de Sangue" custa 3 ❤️ do seu Soberano (4 ❤️ → 1 ❤️), mas concede +1⚡ de Essência imediata e compra a carta do topo do seu Grimório!',
+      'Na barra inferior de comando (ou gaveta de Terrenos), a canalização "Sacrifício Vital" custa 3 ❤️ do seu Soberano (4 ❤️ → 1 ❤️), mas concede +1⚡ de Essência imediata e compra a carta do topo do seu Grimório!',
     hint2:
       '1º Clique em "🩸 Pacto (+1⚡)" na barra inferior: você cai para 1 ❤️, sobe de 6⚡ para 7⚡ e compra o Batedor Escamado! 2º Instale o Campanário dos Mortos na Retaguarda [R] da Coluna 2 (4⚡). 3º Invoque a Expansão de Domínio Eclipse do Trono de Ossos (⛩️ 3⚡) e ataque o Soberano rival para 19+ de dano!',
     solutionSteps: [
-      '1. Ative o ritual "🩸 Pacto (+1⚡)" na barra inferior: seu Soberano sacrifica 3 ❤️ (ficando com 1 ❤️!), ganha +1⚡ (6⚡ → 7⚡) e compra 1 carta.',
+      '1. Ative o botão "Vital (+1)" na barra inferior: seu Soberano sacrifica 3 ❤️ (ficando com 1 ❤️!), ganha +1⚡ (6⚡ → 7⚡) e compra 1 carta.',
       '2. Instale o Campanário dos Mortos (4⚡) na Retaguarda [R] atrás de um de seus atacantes da Vanguarda (+1/+1 global e +1⚔️ Cobertura).',
       '3. Com os 3⚡ restantes, invoque a Expansão de Domínio Eclipse do Trono de Ossos (⛩️ 3⚡) e ataque diretamente o Soberano rival com todas as unidades!',
     ],
     whyIndefensible:
-      'Sem o Pacto de Sangue, você tem apenas 6⚡ e não consegue combinar o Campanário (4⚡) com a Expansão de Domínio (3⚡).',
+      'Sem o Sacrifício Vital, você tem apenas 6⚡ e não consegue combinar o Campanário (4⚡) com a Expansão de Domínio (3⚡).',
     turnNumber: 7,
     p1Name: 'Vesperion, Arquilich (Você)',
     p1AvatarCardId: 'purple_156_lich_coroa_entropia',
@@ -2196,28 +2196,28 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
     id: 'prob_38_banquete_parasitario_pacto',
     number: 38,
     code: 'PROBLEMA #38',
-    title: 'Banquete Parasitário (Cura para Pacto de Sangue)',
-    subtitle: 'Com apenas 2 ❤️ (impedido de usar Pacto de Sangue!), drenar 3 ❤️ primeiro para habilitar o Pacto (+1⚡)',
+    title: 'Banquete Parasitário (Cura para Sacrifício Vital)',
+    subtitle: 'Com apenas 2 ❤️ (impedido de usar Sacrifício Vital!), drenar 3 ❤️ primeiro para habilitar o Sacrifício Vital (+1⚡)',
     difficulty: 'mestre',
     difficultyLabel: 'Grau IV • Mestre',
     stars: 4,
     goldReward: 7,
     primaryDomain: 'purple',
-    mechanicTag: '🩸 Drenar 3❤️ → Habilita Pacto de Sangue (+1⚡)',
+    mechanicTag: '⚡ Drenar 3❤️ → Habilita Sacrifício Vital (+1⚡)',
     scenarioLore:
-      'Seu Soberano está com apenas 2 ❤️! Como o Pacto de Sangue exige sacrificar 3 ❤️ (e você não pode se matar), o botão do Pacto está bloqueado! Porém, você tem 5⚡ e precisa de 3⚡ para o Banquete Parasitário + 3⚡ para a Expansão de Domínio (totalizando 6⚡)!',
-    objectiveText: 'Suba sua vida de 2 ❤️ para 5 ❤️ com o Banquete Parasitário para destravar o Pacto de Sangue (+1⚡) e expandir o Domínio!',
+      'Seu Soberano está com apenas 2 ❤️! Como o Sacrifício Vital exige sacrificar 3 ❤️ (e você não pode se matar), o botão Vital (+1) está bloqueado! Porém, você tem 5⚡ e precisa de 3⚡ para o Banquete Parasitário + 3⚡ para a Expansão de Domínio (totalizando 6⚡)!',
+    objectiveText: 'Suba sua vida de 2 ❤️ para 5 ❤️ com o Banquete Parasitário para destravar o Sacrifício Vital (+1⚡) e expandir o Domínio!',
     hint1:
-      'O Banquete Parasitário (3⚡) drena 3 ❤️ do Soberano rival e cura 3 ❤️ do seu Soberano (levando você de 2 ❤️ para 5 ❤️ e reduzindo o rival de 18 ❤️ para 15 ❤️!). Com 5 ❤️, você já pode pagar 3 ❤️ no Pacto de Sangue!',
+      'O Banquete Parasitário (3⚡) drena 3 ❤️ do Soberano rival e cura 3 ❤️ do seu Soberano (levando você de 2 ❤️ para 5 ❤️ e reduzindo o rival de 18 ❤️ para 15 ❤️!). Com 5 ❤️, você já pode pagar 3 ❤️ no Sacrifício Vital!',
     hint2:
       '1º Lance o Banquete Parasitário (3⚡ dos seus 5⚡ → sobram 2⚡; sua Vida sobe de 2 ❤️ para 5 ❤️ e o rival cai para 15 ❤️!). 2º Agora clique em "🩸 Pacto (+1⚡)" na barra inferior (você cai de 5 ❤️ para 2 ❤️ e sua Essência sobe de 2⚡ para 3⚡!). 3º Invoque a Expansão de Domínio Eclipse do Trono de Ossos (⛩️ 3⚡) e ataque com toda a Vanguarda para zerar os 15 ❤️!',
     solutionSteps: [
       '1. Lance o feitiço Banquete Parasitário (3⚡): drena 3 ❤️ do Soberano rival (18 ❤️ → 15 ❤️) e cura 3 ❤️ do seu Soberano (2 ❤️ → 5 ❤️).',
-      '2. Agora que você tem 5 ❤️ (> 3 ❤️), o ritual "🩸 Pacto (+1⚡)" é desbloqueado! Ative-o para subir de 2⚡ para 3⚡.',
+      '2. Agora que você tem 5 ❤️ (> 3 ❤️), o botão "Vital (+1)" é desbloqueado! Ative-o para subir de 2⚡ para 3⚡.',
       '3. Com os 3⚡, invoque a Expansão de Domínio Eclipse do Trono de Ossos (⛩️ 3⚡) e ataque diretamente o Soberano rival para 15+ de dano letal!',
     ],
     whyIndefensible:
-      'Tentando usar o Pacto de Sangue no início do turno você é bloqueado por ter apenas 2 ❤️; tentando expandir o Domínio primeiro você fica com apenas 2⚡ e não consegue lançar o Banquete Parasitário.',
+      'Tentando usar o Sacrifício Vital no início do turno você é bloqueado por ter apenas 2 ❤️; tentando expandir o Domínio primeiro você fica com apenas 2⚡ e não consegue lançar o Banquete Parasitário.',
     turnNumber: 7,
     p1Name: 'Vesperion (Você)',
     p1AvatarCardId: 'purple_156_lich_coroa_entropia',
@@ -2461,7 +2461,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
     number: 42,
     code: 'PROBLEMA #42',
     title: 'Xeque-Mate da Coroa da Entropia',
-    subtitle: 'Canalizar + Queimar + Pacto de Sangue para expandir o Domínio E invocar o Lich de 8⚡ no mesmo turno',
+    subtitle: 'Canalizar + Queimar + Sacrifício Vital para expandir o Domínio E invocar o Lich de 8⚡ no mesmo turno',
     difficulty: 'grao_mestre',
     difficultyLabel: 'Grau V • Grão-Mestre Soberano',
     stars: 5,
@@ -2472,7 +2472,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
       'O Soberano rival tem 27 ❤️ e três Guardiões com Escudo Divino. Para causar 27 de dano neste turno, você precisa TANTO expandir o Eclipse do Trono de Ossos (3⚡) QUANTO invocar o Lich da Coroa da Entropia (8⚡) — o que exige 11⚡, mas você tem apenas 9⚡ e 5/6 de Afinidade!',
     objectiveText: 'Suba de 5/6 para 6/6 de Afinidade e de 9⚡ para 11⚡ no mesmo turno para causar 27 de dano letal!',
     hint1:
-      'Para sair de 9⚡ e chegar a 11⚡ enquanto ganha +1 de Afinidade: 1) Canalize 1 carta Roxa (+1 Afinidade → 6/6 e compra 1 carta); 2) Sacrifique/Queime outra carta (+1⚡ → 10⚡); 3) Use o Pacto de Sangue (-3 ❤️, +1⚡ → 11⚡)!',
+      'Para sair de 9⚡ e chegar a 11⚡ enquanto ganha +1 de Afinidade: 1) Canalize 1 carta Roxa (+1 Afinidade → 6/6 e compra 1 carta); 2) Sacrifique/Queime outra carta (+1⚡ → 10⚡); 3) Use o Sacrifício Vital (-3 ❤️, +1⚡ → 11⚡)!',
     hint2:
       '1º Canalize Exumar Legião [C] (Afinidade vai para 6/6). 2º Sacrifique/Queime Eclipse Abissal [C] (+1⚡ → 10⚡). 3º Ative "🩸 Pacto (+1⚡)" (+1⚡ → 11⚡). 4º Invoque a Expansão de Domínio Eclipse do Trono de Ossos (3⚡ → sobram 8⚡). 5º Invoque o Lich da Coroa da Entropia na Vanguarda [V] (8⚡: drena 3 ❤️ do rival e dá +2/+2 a todos!). 6º Ataque diretamente o Soberano rival para 27+ de dano!',
     solutionSteps: [
@@ -2483,7 +2483,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
       '5. Com o Acerto Garantido ativo, ataque o Soberano rival com toda a sua Vanguarda para superar os 27 ❤️!',
     ],
     whyIndefensible:
-      'Exige o domínio simultâneo das três mecânicas de economia do jogo (Canalizar para Afinidade, Queimar para +1⚡ e Pacto de Sangue para +1⚡) para alcançar os 11⚡ necessários.',
+      'Exige o domínio simultâneo das três mecânicas de economia do jogo (Canalizar para Afinidade, Queimar para +1⚡ e Sacrifício Vital para +1⚡) para alcançar os 11⚡ necessários.',
     turnNumber: 9,
     p1Name: 'Vesperion, Lich Supremo (Você)',
     p1AvatarCardId: 'purple_156_lich_coroa_entropia',
@@ -2540,7 +2540,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
       'Seu Verme Púrpura (10⚔️) começou na Retaguarda [R] da Coluna 2! O Soberano rival tem 28 ❤️. Você tem 8⚡ de Essência, a Pedra Filosofal (5⚡ → +2⚡) e Terrakhor, Monarca da Rocha Eterna (7⚡, Ao Entrar: +2/+2 a todos os aliados) na mão!',
     objectiveText: 'Avance o Verme Púrpura [⇄], instale a Pedra Filosofal atrás dele, gere 7⚡ para Terrakhor e cause 28 de dano!',
     hint1:
-      'A Pedra Filosofal custa 5⚡ e devolve +2⚡ (8⚡ - 5⚡ + 2⚡ = 5⚡). Para chegar aos 7⚡ que Terrakhor exige, faltam +2⚡: 1⚡ vem de Canalizar + Sacrificar cartas da mão, e 1⚡ vem do Pacto de Sangue!',
+      'A Pedra Filosofal custa 5⚡ e devolve +2⚡ (8⚡ - 5⚡ + 2⚡ = 5⚡). Para chegar aos 7⚡ que Terrakhor exige, faltam +2⚡: 1⚡ vem de Canalizar + Sacrificar cartas da mão, e 1⚡ vem do Sacrifício Vital!',
     hint2:
       '1º Clique no Verme Púrpura na Retaguarda [R] (Coluna 2) e use "⇄ Mover para Vanguarda". 2º Instale a Pedra Filosofal (5⚡) na Retaguarda [R] da Coluna 2 (devolve +2⚡ → fica com 5⚡ e dá +1⚔️ Cobertura ao Verme!). 3º Canalize 1 carta secundária [C] e Sacrifique outra [C] (+1⚡ → 6⚡). 4º Ative "🩸 Pacto (+1⚡)" (+1⚡ → 7⚡!). 5º Invoque Terrakhor (7⚡, +2/+2 a todos!) na Retaguarda [R] da Coluna 4 (dando +1⚔️ Cobertura ao Tiranossauro!) e ataque para 28+ de dano!',
     solutionSteps: [
@@ -2755,7 +2755,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
       'Você começa com apenas 5⚡ de Essência, e o Soberano rival tem 22 ❤️ atrás de três Muralhas! Mas cada carta na sua mão e no topo do seu Grimório reembolsa Essência e compra a próxima peça da engrenagem!',
     objectiveText: 'Execute a tempestade de reembolsos de Essência na ordem exata para terminar com Domínio ativo e 22+ de dano!',
     hint1:
-      'Calcule o custo líquido de cada passo começando com 5⚡: 1) Ruptura do Relógio Astral (custa 3⚡, devolve +2⚡ → você fica com 4⚡ e compra o Mercenário Planar!); 2) Mercenário Planar (custa 2⚡, devolve +1⚡ → fica com 3⚡ e compra a Poção de Fúria!); 3) Pacto de Sangue (+1⚡ → fica com 4⚡ para pagar Expansão de Domínio 3⚡ + Poção de Fúria 1⚡!).',
+      'Calcule o custo líquido de cada passo começando com 5⚡: 1) Ruptura do Relógio Astral (custa 3⚡, devolve +2⚡ → você fica com 4⚡ e compra o Mercenário Planar!); 2) Mercenário Planar (custa 2⚡, devolve +1⚡ → fica com 3⚡ e compra a Poção de Fúria!); 3) Sacrifício Vital (+1⚡ → fica com 4⚡ para pagar Expansão de Domínio 3⚡ + Poção de Fúria 1⚡!).',
     hint2:
       '1º Lance Ruptura do Relógio Astral (3⚡ → +2⚡ = 4⚡, compra Mercenário Planar). 2º Invoque o Mercenário Planar (2⚡ → +1⚡ = 3⚡, compra Poção de Fúria) na Vanguarda [V] da Coluna 3 (com Cobertura da Relíquia!). 3º Ative "🩸 Pacto (+1⚡)" (3⚡ → 4⚡). 4º Ative a Expansão de Domínio Olho do Maelstrom Astral (⛩️ 3⚡ → sobra 1⚡) e lance a Poção de Fúria (1⚡, +2/+2)! 5º Ataque com todos para 22+ de dano!',
     solutionSteps: [
@@ -2809,7 +2809,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
     number: 47,
     code: 'PROBLEMA #47',
     title: 'Forja de Sangue e Cataclismo',
-    subtitle: 'Inversão Gravitacional (5⚡) para ativar Fúria Crescente + Ascensão da Salamandra (3⚡) + Pacto de Sangue',
+    subtitle: 'Inversão Gravitacional (5⚡) para ativar Fúria Crescente + Ascensão da Salamandra (3⚡) + Sacrifício Vital',
     difficulty: 'grao_mestre',
     difficultyLabel: 'Grau V • Grão-Mestre Soberano',
     stars: 5,
@@ -2820,7 +2820,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
       'Três Guardiões de 3 ❤️ bloqueiam as Colunas 1, 2 e 3. Você tem 7⚡ de Essência, a Inversão Gravitacional Planar (5⚡) na mão e uma Salamandra do Mar de Brasas na Coluna 2 (cujo ★ Ascender custa 3⚡) acompanhada de dois Campeões com Fúria Crescente! O Soberano rival tem 25 ❤️.',
     objectiveText: 'Gere o 8º ponto de Essência, varra os Guardiões ativando Fúria Crescente e Ascenda a Salamandra!',
     hint1:
-      'Cuidado com a ordem entre Inversão Gravitacional (5⚡, causa 3 de dano a todas as unidades) e a Ascensão da Salamandra (3⚡)! Tanto em qualquer ordem a Salamandra sobrevive, mas você precisa de 5⚡ + 3⚡ = 8⚡ (use o Pacto de Sangue para ir de 7⚡ a 8⚡!).',
+      'Cuidado com a ordem entre Inversão Gravitacional (5⚡, causa 3 de dano a todas as unidades) e a Ascensão da Salamandra (3⚡)! Tanto em qualquer ordem a Salamandra sobrevive, mas você precisa de 5⚡ + 3⚡ = 8⚡ (use o Sacrifício Vital para ir de 7⚡ a 8⚡!).',
     hint2:
       '1º Ative "🩸 Pacto (+1⚡)" (7⚡ → 8⚡). 2º Lance a Inversão Gravitacional Planar (5⚡): destrói os 3 Guardiões inimigos (liberando +3⚔️ de Invasão!), causa 3 de dano ao Soberano rival (25 ❤️ → 22 ❤️) e fere seus dois Campeões ativando a Fúria Crescente (+4⚔️)! 3º Clique na Salamandra na Coluna 2 e ative "★ Ascender (3⚡)" (vai a 8/8 + Cobertura + Invasão = 10⚔️!). 4º Ataque com os três para 24+ de dano letal!',
     solutionSteps: [
@@ -2830,7 +2830,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
       '4. Ataque o Soberano rival com seus três campeões para zerar os 22 ❤️ restantes!',
     ],
     whyIndefensible:
-      'Sem o Pacto de Sangue falta 1⚡ para combinar Inversão Gravitacional (5⚡) + Ascensão (3⚡).',
+      'Sem o Sacrifício Vital falta 1⚡ para combinar Inversão Gravitacional (5⚡) + Ascensão (3⚡).',
     turnNumber: 7,
     p1Name: 'Ignis Rex (Você)',
     p1AvatarCardId: 'red_05_salamandra',
@@ -3007,7 +3007,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
     number: 50,
     code: 'PROBLEMA #50',
     title: 'O Juízo Final de Pyros (30 de Dano em 1 Turno)',
-    subtitle: 'O Desafio Supremo #50: Desempate 7v6 + Manobra de Fileira [⇄] + Pacto de Sangue + Dragão de Tiamat Carmesim',
+    subtitle: 'O Desafio Supremo #50: Desempate 7v6 + Manobra de Fileira [⇄] + Sacrifício Vital + Dragão de Tiamat Carmesim',
     difficulty: 'grao_mestre',
     difficultyLabel: 'Grau V • Grão-Mestre Soberano',
     stars: 5,
@@ -3018,7 +3018,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
       'O Problema #50 de Chromatic Pact! O Arquilich rival tem 30 ❤️ e está travando um Confronto de Domínios 50/50 (6 vs 6) com três Muralhas de Escudo Divino na Vanguarda. Seu Soberano Meio-Dragão Ascendido está na Retaguarda [R], você tem 7⚡ de Essência e o Dragão de Tiamat Carmesim (8⚡) na mão!',
     objectiveText: 'Cause exatos 30+ de dano neste único turno combinando todas as mecânicas mestras do jogo!',
     hint1:
-      'Observe os 4 obstáculos: 1) O Confronto 50/50 anula seu Acerto Garantido (precisa Canalizar 1 carta Vermelha para 7 vs 6!); 2) O Dragão de Tiamat Carmesim custa 8⚡ e você tem 7⚡ (precisa do Pacto de Sangue para +1⚡!); 3) Seu Campeão Dracônico está na Retaguarda [R] (precisa de "⇄ Mover Fileira" para a Vanguarda [V]!); 4) Coloque o Dragão de Tiamat na coluna com Cobertura da Bigorna!',
+      'Observe os 4 obstáculos: 1) O Confronto 50/50 anula seu Acerto Garantido (precisa Canalizar 1 carta Vermelha para 7 vs 6!); 2) O Dragão de Tiamat Carmesim custa 8⚡ e você tem 7⚡ (precisa do Sacrifício Vital para +1⚡!); 3) Seu Campeão Dracônico está na Retaguarda [R] (precisa de "⇄ Mover Fileira" para a Vanguarda [V]!); 4) Coloque o Dragão de Tiamat na coluna com Cobertura da Bigorna!',
     hint2:
       '1º Canalize o Batedor Escamado [C] (Afinidade Carmesim vai a 7 vs 6 → rompe o Domínio rival!). 2º Use "🩸 Pacto (+1⚡)" (7⚡ → 8⚡). 3º Clique no Campeão Dracônico na Retaguarda [R] (Coluna 1) e use "⇄ Mover Fileira" para avançá-lo à Vanguarda [V]. 4º Invoque o Dragão de Tiamat Carmesim (8⚡) na Vanguarda [V] da Coluna 4 (apoiada pela Bigorna na Retaguarda): causa 3 de dano Ao Entrar no Soberano rival (30 ❤️ → 27 ❤️!) e entra com +1/+1 e Ímpeto! 5º Ataque diretamente o Soberano rival com toda a sua Vanguarda sob a Caldeira do Fogo Primordial para 30+ de dano!',
     solutionSteps: [
@@ -3029,7 +3029,7 @@ const BASE_50_TACTICAL_PROBLEMS: TacticalProblem[] = [
       '5. Ataque diretamente o Soberano rival com toda a sua Vanguarda para ultrapassar os 30 ❤️ e conquistar o título de Grão-Mestre dos 50 Problemas!',
     ],
     whyIndefensible:
-      'Qualquer esquecimento (não canalizar 7 vs 6, não fazer Pacto de Sangue para 8⚡, ou esquecer de avançar o Campeão da Retaguarda com ⇄) deixa o Arquilich vivo!',
+      'Qualquer esquecimento (não canalizar 7 vs 6, não fazer Sacrifício Vital para 8⚡, ou esquecer de avançar o Campeão da Retaguarda com ⇄) deixa o Arquilich vivo!',
     turnNumber: 9,
     p1Name: 'Ignis Rex, Grão-Mestre (Você)',
     p1AvatarCardId: 'red_157_dragao_tiamat_carmesim',

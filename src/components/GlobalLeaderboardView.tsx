@@ -14,12 +14,24 @@ import {
 } from '../data/sovereignEloLadder';
 import { CardDefinition, Domain } from '../types/game';
 import {
+  getRecentMatchesForSovereign,
+  type LiveArenaFeedItem,
+} from '../utils/liveArenaFeedEngine';
+import {
   fetchUnifiedPlatformLeaderboard,
   SovereignSavedDeck,
   SovereignUserProfile,
   UnifiedLeaderboardEntry,
   UnifiedLeaderboardSnapshot,
 } from '../utils/multiplayerEngine';
+import {
+  computePersonalReplayShareId,
+  fetchSharedPersonalReplay,
+  fetchUserMatchHistoryForInspection,
+  getPersonalMatchHistory,
+  type PersonalMatchHistoryEntry,
+  type UserInspectableMatchItem,
+} from '../utils/personalMatchHistoryEngine';
 import { DOMAIN_META } from './CardView';
 
 export interface LastRankedDuelSummary {
@@ -45,6 +57,19 @@ interface GlobalLeaderboardViewProps {
   onOpenPvpConclave: () => void;
   onOpenDeckBuilder: () => void;
   onInspectCard: (card: CardDefinition) => void;
+  onWatchSovereignMatch?: (item: LiveArenaFeedItem) => void;
+  onWatchUserReplay?: (entry: PersonalMatchHistoryEntry) => void;
+}
+
+function formatRelativeTimePt(tsMs: number): string {
+  const diffSec = Math.max(0, Math.floor((Date.now() - tsMs) / 1000));
+  if (diffSec < 60) return 'agora';
+  const mins = Math.floor(diffSec / 60);
+  if (mins < 60) return `há ${mins} min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `há ${hours} h`;
+  const days = Math.floor(hours / 24);
+  return `há ${days} d`;
 }
 
 const DOMAIN_OPTIONS: Array<{ id: Domain; label: string }> = [
@@ -66,6 +91,8 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
   onOpenPvpConclave,
   onOpenDeckBuilder,
   onInspectCard,
+  onWatchSovereignMatch,
+  onWatchUserReplay,
 }) => {
   const [snapshot, setSnapshot] = useState<UnifiedLeaderboardSnapshot | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -75,6 +102,10 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [dossierSovereign, setDossierSovereign] =
     useState<SovereignAiLeaderboardEntry | null>(null);
+  const [dossierHuman, setDossierHuman] = useState<UnifiedLeaderboardEntry | null>(null);
+  const [humanMatches, setHumanMatches] = useState<UserInspectableMatchItem[]>([]);
+  const [isLoadingHumanMatches, setIsLoadingHumanMatches] = useState<boolean>(false);
+  const [loadingReplayKey, setLoadingReplayKey] = useState<string | null>(null);
   const [showRulesModal, setShowRulesModal] = useState<boolean>(false);
   const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -148,17 +179,63 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
   }, [loadLeaderboard]);
 
   useEffect(() => {
-    if (!dossierSovereign && !showRulesModal && !showHistoryModal) return;
+    if (!dossierSovereign && !dossierHuman && !showRulesModal && !showHistoryModal) return;
     const onKeyDown = (ev: KeyboardEvent) => {
       if (ev.key === 'Escape') {
         setDossierSovereign(null);
+        setDossierHuman(null);
         setShowRulesModal(false);
         setShowHistoryModal(false);
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [dossierSovereign, showRulesModal, showHistoryModal]);
+  }, [dossierSovereign, dossierHuman, showRulesModal, showHistoryModal]);
+
+  useEffect(() => {
+    const hp = dossierHuman?.humanProfile;
+    if (!hp) {
+      setHumanMatches([]);
+      setIsLoadingHumanMatches(false);
+      return;
+    }
+    let cancelled = false;
+    setIsLoadingHumanMatches(true);
+    void fetchUserMatchHistoryForInspection(hp, Boolean(dossierHuman?.isCurrentUser)).then(
+      (items) => {
+        if (!cancelled) {
+          setHumanMatches(items);
+          setIsLoadingHumanMatches(false);
+        }
+      }
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [dossierHuman]);
+
+  const handleOpenUserReplay = async (
+    key: string,
+    localEntry?: PersonalMatchHistoryEntry,
+    shareId?: string
+  ) => {
+    if (!onWatchUserReplay) return;
+    if (localEntry) {
+      setDossierHuman(null);
+      setShowHistoryModal(false);
+      onWatchUserReplay(localEntry);
+      return;
+    }
+    if (!shareId) return;
+    setLoadingReplayKey(key);
+    const fetched = await fetchSharedPersonalReplay(shareId);
+    setLoadingReplayKey(null);
+    if (fetched) {
+      setDossierHuman(null);
+      setShowHistoryModal(false);
+      onWatchUserReplay(fetched);
+    }
+  };
 
   const activeDeck = useMemo(
     () => availableDecks.find((d) => d.id === selectedDeckId) ?? availableDecks[0] ?? null,
@@ -695,6 +772,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                   className="glb-grid-row"
                   onClick={() => {
                     if (sov) setDossierSovereign(sov);
+                    else if (row.humanProfile) setDossierHuman(row);
                   }}
                   style={{
                     display: 'grid',
@@ -707,7 +785,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                         ? '1px solid rgba(148, 163, 184, 0.08)'
                         : 'none',
                     background: isMe ? 'rgba(234, 179, 8, 0.06)' : 'transparent',
-                    cursor: sov ? 'pointer' : 'default',
+                    cursor: sov || row.humanProfile ? 'pointer' : 'default',
                     transition: 'background 0.12s ease',
                   }}
                   onMouseEnter={(ev) => {
@@ -1352,6 +1430,119 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                     </div>
                   )}
 
+                  {/* Progressive Disclosure: Recent Official Matches of this Sovereign */}
+                  {(() => {
+                    const recentSovMatches = getRecentMatchesForSovereign(s.sovereignId, 6);
+                    if (recentSovMatches.length === 0) return null;
+                    return (
+                      <details
+                        style={{
+                          marginBottom: '0.65rem',
+                          borderRadius: '8px',
+                          background: 'rgba(15, 23, 42, 0.45)',
+                          border: '1px solid rgba(148, 163, 184, 0.12)',
+                          padding: '0.55rem 0.8rem',
+                        }}
+                      >
+                        <summary
+                          style={{
+                            fontSize: '0.76rem',
+                            fontWeight: 600,
+                            color: '#cbd5e1',
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                          }}
+                        >
+                          Ver últimas partidas deste Soberano ({recentSovMatches.length} partidas)
+                        </summary>
+                        <div
+                          style={{
+                            marginTop: '0.6rem',
+                            borderRadius: '6px',
+                            border: '1px solid rgba(148, 163, 184, 0.12)',
+                            background: 'rgba(11, 15, 25, 0.72)',
+                            overflow: 'hidden',
+                          }}
+                        >
+                          {recentSovMatches.map((m, mIdx) => {
+                            const sign = m.deltaElo >= 0 ? `+${m.deltaElo}` : `${m.deltaElo}`;
+                            return (
+                              <div
+                                key={m.id}
+                                style={{
+                                  display: 'flex',
+                                  justifyContent: 'space-between',
+                                  alignItems: 'center',
+                                  gap: '0.65rem',
+                                  padding: '0.5rem 0.7rem',
+                                  borderBottom:
+                                    mIdx < recentSovMatches.length - 1
+                                      ? '1px solid rgba(148, 163, 184, 0.08)'
+                                      : 'none',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.55rem',
+                                    minWidth: 0,
+                                  }}
+                                >
+                                  {renderPortrait(m.opponent.avatarCardId, 30, false)}
+                                  <div style={{ minWidth: 0 }}>
+                                    <div
+                                      style={{
+                                        fontSize: '0.78rem',
+                                        fontWeight: 600,
+                                        color: '#f1f5f9',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                      }}
+                                    >
+                                      vs. {m.opponent.sovereignName}
+                                    </div>
+                                    <div
+                                      style={{
+                                        fontSize: '0.69rem',
+                                        color: m.didWin ? '#6ee7b7' : '#fca5a5',
+                                        fontVariantNumeric: 'tabular-nums',
+                                      }}
+                                    >
+                                      {m.didWin ? 'Vitória' : 'Derrota'} ({sign} ELO) ·{' '}
+                                      <span style={{ color: '#64748b' }}>
+                                        {formatRelativeTimePt(m.playedAtMs)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {onWatchSovereignMatch && (
+                                  <button
+                                    type="button"
+                                    className="aaa-btn aaa-btn-secondary"
+                                    style={{
+                                      padding: '4px 10px',
+                                      fontSize: '0.72rem',
+                                      flexShrink: 0,
+                                    }}
+                                    onClick={() => {
+                                      setDossierSovereign(null);
+                                      onWatchSovereignMatch(m.spectatorItem);
+                                    }}
+                                  >
+                                    Assistir
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </details>
+                    );
+                  })()}
+
                   {/* Progressive Disclosure: Signature Cards of this Sovereign's Grimoire */}
                   {(() => {
                     const sigCards = getSignatureCardsForSovereign(s, 8);
@@ -1467,6 +1658,362 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                     >
                       Desafiar ({s.eloRating} ELO)
                     </button>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================================
+          PROGRESSIVE DISCLOSURE MODAL 1B: HUMAN PLAYER PROFILE & RECENT MATCHES
+          (Opened by clicking any Human Player row)
+          ===================================================================== */}
+      {dossierHuman && dossierHuman.humanProfile && (
+        <div
+          className="modal-backdrop"
+          onClick={() => setDossierHuman(null)}
+          style={{ zIndex: 3200 }}
+        >
+          <div
+            className="modal-panel"
+            style={{ maxWidth: '580px', width: '94vw', padding: '1.35rem' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {(() => {
+              const h = dossierHuman;
+              const hp = h.humanProfile!;
+              const div = getEloDivisionMeta(h.eloRating);
+              const campaignWins = hp.defeatedBossIds?.length ?? 0;
+              const customDeckCount = hp.customDecks?.length ?? 0;
+
+              return (
+                <>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      gap: '1rem',
+                      marginBottom: '1rem',
+                    }}
+                  >
+                    <div style={{ display: 'flex', gap: '0.85rem', alignItems: 'center' }}>
+                      {renderPortrait(h.avatarCardId, 52, Boolean(h.isCurrentUser))}
+                      <div>
+                        <h3
+                          className="font-cinzel"
+                          style={{ margin: 0, fontSize: '1.08rem', color: '#f8fafc' }}
+                        >
+                          {h.displayName}
+                        </h3>
+                        <div style={{ fontSize: '0.8rem', color: '#cbd5e1', marginTop: '2px' }}>
+                          {h.subtitle}
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="aaa-btn aaa-btn-secondary"
+                      style={{ padding: '4px 9px', fontSize: '0.75rem' }}
+                      onClick={() => setDossierHuman(null)}
+                      aria-label="Fechar"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(155px, 1fr))',
+                      gap: '0.75rem',
+                      padding: '0.85rem 0.95rem',
+                      borderRadius: '8px',
+                      background: 'rgba(15, 23, 42, 0.65)',
+                      border: '1px solid rgba(148, 163, 184, 0.14)',
+                      marginBottom: '1rem',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '2px' }}>
+                        Pontuação no ranking
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.05rem',
+                          fontWeight: 700,
+                          color: '#f8fafc',
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
+                      >
+                        {h.eloRating} ELO
+                      </div>
+                      <div
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '0.72rem',
+                          color: '#94a3b8',
+                          marginTop: '2px',
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: div.color,
+                          }}
+                        />
+                        #{h.globalRank} · Divisão {div.shortLabel}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '2px' }}>
+                        Aproveitamento ranqueado
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.05rem',
+                          fontWeight: 700,
+                          color: '#f8fafc',
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
+                      >
+                        {h.totalGames > 0
+                          ? `${Math.round(h.winRate * 100)}% de vitórias`
+                          : 'Em calibração'}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.72rem',
+                          color: '#64748b',
+                          marginTop: '2px',
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
+                      >
+                        {h.wins} vitórias · {h.losses} derrotas
+                      </div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginBottom: '2px' }}>
+                        Jornada em Vaeloria
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '1.05rem',
+                          fontWeight: 700,
+                          color: '#f8fafc',
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
+                      >
+                        {campaignWins} {campaignWins === 1 ? 'vitória' : 'vitórias'}
+                      </div>
+                      <div style={{ fontSize: '0.72rem', color: '#64748b', marginTop: '2px' }}>
+                        {customDeckCount} {customDeckCount === 1 ? 'grimório salvo' : 'grimórios salvos'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ marginBottom: '1.1rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'baseline',
+                        marginBottom: '0.45rem',
+                      }}
+                    >
+                      <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e2e8f0' }}>
+                        Partidas recentes
+                      </span>
+                      <span style={{ fontSize: '0.71rem', color: '#64748b' }}>
+                        {isLoadingHumanMatches
+                          ? 'Sincronizando...'
+                          : `${humanMatches.length} ${humanMatches.length === 1 ? 'partida' : 'partidas'}`}
+                      </span>
+                    </div>
+
+                    <div
+                      style={{
+                        borderRadius: '8px',
+                        background: 'rgba(15, 23, 42, 0.45)',
+                        border: '1px solid rgba(148, 163, 184, 0.12)',
+                        maxHeight: '260px',
+                        overflowY: 'auto',
+                      }}
+                    >
+                      {isLoadingHumanMatches ? (
+                        <div
+                          style={{
+                            padding: '1.1rem',
+                            textAlign: 'center',
+                            fontSize: '0.78rem',
+                            color: '#64748b',
+                          }}
+                        >
+                          Carregando histórico de partidas...
+                        </div>
+                      ) : humanMatches.length === 0 ? (
+                        <div
+                          style={{
+                            padding: '1.1rem',
+                            textAlign: 'center',
+                            fontSize: '0.78rem',
+                            color: '#64748b',
+                          }}
+                        >
+                          Nenhuma partida recente registrada nesta conta.
+                        </div>
+                      ) : (
+                        humanMatches.map((m, idx) => {
+                          const canWatch = Boolean(
+                            onWatchUserReplay && (m.localReplay || m.shareId)
+                          );
+                          const outcomeText =
+                            m.didWin === true
+                              ? 'Vitória'
+                              : m.didWin === false
+                              ? 'Derrota'
+                              : 'Empate';
+                          const deltaText =
+                            typeof m.deltaElo === 'number'
+                              ? ` (${m.deltaElo >= 0 ? `+${m.deltaElo}` : m.deltaElo} ELO)`
+                              : '';
+                          const isOpening = loadingReplayKey === m.id;
+
+                          return (
+                            <div
+                              key={m.id}
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                gap: '0.7rem',
+                                padding: '0.55rem 0.8rem',
+                                borderBottom:
+                                  idx < humanMatches.length - 1
+                                    ? '1px solid rgba(148, 163, 184, 0.08)'
+                                    : 'none',
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.6rem',
+                                  minWidth: 0,
+                                }}
+                              >
+                                {renderPortrait(m.opponentAvatarCardId, 30, false)}
+                                <div style={{ minWidth: 0 }}>
+                                  <div
+                                    style={{
+                                      fontSize: '0.79rem',
+                                      fontWeight: 600,
+                                      color: '#f1f5f9',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                    }}
+                                  >
+                                    vs. {m.opponentName}
+                                  </div>
+                                  <div
+                                    style={{
+                                      fontSize: '0.69rem',
+                                      color:
+                                        m.didWin === true
+                                          ? '#6ee7b7'
+                                          : m.didWin === false
+                                          ? '#fca5a5'
+                                          : '#cbd5e1',
+                                      whiteSpace: 'nowrap',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                    }}
+                                  >
+                                    {outcomeText}
+                                    {deltaText} ·{' '}
+                                    <span style={{ color: '#64748b' }}>{m.modeLabel}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {canWatch ? (
+                                <button
+                                  type="button"
+                                  className="aaa-btn aaa-btn-secondary"
+                                  disabled={isOpening}
+                                  style={{
+                                    padding: '4px 10px',
+                                    fontSize: '0.72rem',
+                                    flexShrink: 0,
+                                  }}
+                                  onClick={() =>
+                                    void handleOpenUserReplay(m.id, m.localReplay, m.shareId)
+                                  }
+                                >
+                                  {isOpening ? 'Abrindo...' : 'Assistir'}
+                                </button>
+                              ) : (
+                                <span
+                                  style={{
+                                    fontSize: '0.69rem',
+                                    color: '#64748b',
+                                    flexShrink: 0,
+                                  }}
+                                >
+                                  {formatRelativeTimePt(m.playedAtMs)}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                    <button
+                      type="button"
+                      className="aaa-btn aaa-btn-secondary"
+                      style={{ padding: '7px 14px', fontSize: '0.78rem' }}
+                      onClick={() => setDossierHuman(null)}
+                    >
+                      Fechar
+                    </button>
+                    {h.isCurrentUser ? (
+                      <button
+                        type="button"
+                        className="aaa-btn aaa-btn-primary"
+                        style={{ padding: '7px 16px', fontSize: '0.78rem' }}
+                        onClick={() => {
+                          setDossierHuman(null);
+                          onOpenAccountModal(isGuest ? 'create' : 'profile');
+                        }}
+                      >
+                        {isGuest ? 'Criar Conta' : 'Meu Perfil'}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="aaa-btn aaa-btn-primary"
+                        style={{ padding: '7px 16px', fontSize: '0.78rem' }}
+                        onClick={() => {
+                          setDossierHuman(null);
+                          onOpenPvpConclave();
+                        }}
+                      >
+                        Salas 1×1
+                      </button>
+                    )}
                   </div>
                 </>
               );
@@ -1616,62 +2163,101 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                 marginBottom: '1rem',
               }}
             >
-              {(currentUser.recentRankedHistory ?? []).map((h, idx, arr) => (
-                <div
-                  key={h.id}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '0.75rem',
-                    padding: '0.55rem 0.85rem',
-                    borderBottom:
-                      idx < arr.length - 1 ? '1px solid rgba(148, 163, 184, 0.08)' : 'none',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0 }}>
-                    {h.opponentAvatarCardId
-                      ? renderPortrait(h.opponentAvatarCardId, 30, false)
-                      : null}
-                    <div style={{ minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontSize: '0.8rem',
-                          fontWeight: 600,
-                          color: '#f1f5f9',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {h.opponentName}
-                      </div>
-                      <div style={{ fontSize: '0.69rem', color: '#64748b' }}>
-                        {h.opponentElo} ELO · {h.didWin ? 'Vitória' : 'Derrota'}
-                      </div>
-                    </div>
-                  </div>
+              {(currentUser.recentRankedHistory ?? []).map((h, idx, arr) => {
+                const localList = getPersonalMatchHistory();
+                const matchedLocal = localList.find(
+                  (le) =>
+                    (h.replayShareId &&
+                      (le.shareId === h.replayShareId ||
+                        computePersonalReplayShareId(le) === h.replayShareId)) ||
+                    (Math.abs(le.playedAtMs - h.timestamp) <= 35_000 &&
+                      le.opponentName.trim().toLowerCase() ===
+                        h.opponentName.trim().toLowerCase())
+                );
+                const canWatch = Boolean(
+                  onWatchUserReplay && (matchedLocal || h.replayShareId)
+                );
+                const isOpening = loadingReplayKey === h.id;
 
+                return (
                   <div
+                    key={h.id}
                     style={{
-                      textAlign: 'right',
-                      fontVariantNumeric: 'tabular-nums',
-                      flexShrink: 0,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      gap: '0.75rem',
+                      padding: '0.55rem 0.85rem',
+                      borderBottom:
+                        idx < arr.length - 1 ? '1px solid rgba(148, 163, 184, 0.08)' : 'none',
                     }}
                   >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0 }}>
+                      {h.opponentAvatarCardId
+                        ? renderPortrait(h.opponentAvatarCardId, 30, false)
+                        : null}
+                      <div style={{ minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            color: '#f1f5f9',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {h.opponentName}
+                        </div>
+                        <div style={{ fontSize: '0.69rem', color: '#64748b' }}>
+                          {h.opponentElo} ELO · {h.didWin ? 'Vitória' : 'Derrota'}
+                        </div>
+                      </div>
+                    </div>
+
                     <div
                       style={{
-                        fontSize: '0.82rem',
-                        fontWeight: 700,
-                        color: h.deltaElo >= 0 ? '#6ee7b7' : '#fca5a5',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.65rem',
+                        flexShrink: 0,
                       }}
                     >
-                      {h.deltaElo >= 0 ? `+${h.deltaElo}` : h.deltaElo} ELO
+                      <div
+                        style={{
+                          textAlign: 'right',
+                          fontVariantNumeric: 'tabular-nums',
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: '0.82rem',
+                            fontWeight: 700,
+                            color: h.deltaElo >= 0 ? '#6ee7b7' : '#fca5a5',
+                          }}
+                        >
+                          {h.deltaElo >= 0 ? `+${h.deltaElo}` : h.deltaElo} ELO
+                        </div>
+                        <div style={{ fontSize: '0.68rem', color: '#64748b' }}>{h.newElo} final</div>
+                      </div>
+
+                      {canWatch && (
+                        <button
+                          type="button"
+                          className="aaa-btn aaa-btn-secondary"
+                          disabled={isOpening}
+                          style={{ padding: '4px 10px', fontSize: '0.71rem' }}
+                          onClick={() =>
+                            void handleOpenUserReplay(h.id, matchedLocal, h.replayShareId)
+                          }
+                        >
+                          {isOpening ? 'Abrindo...' : 'Assistir'}
+                        </button>
+                      )}
                     </div>
-                    <div style={{ fontSize: '0.68rem', color: '#64748b' }}>{h.newElo} final</div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

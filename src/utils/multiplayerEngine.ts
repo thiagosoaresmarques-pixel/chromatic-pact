@@ -123,6 +123,12 @@ export interface RankedMatchHistoryItem {
   didWin: boolean;
   deltaElo: number;
   newElo: number;
+  replayShareId?: string;
+}
+
+let latestPersonalMatchShareIdResolver: (() => string | undefined) | null = null;
+export function registerPersonalMatchShareIdResolver(fn: () => string | undefined): void {
+  latestPersonalMatchShareIdResolver = fn;
 }
 
 export interface SovereignUserProfile {
@@ -1169,6 +1175,7 @@ export function recordPvpMatchResult(
     didWin,
     deltaElo: newElo - prevElo,
     newElo,
+    replayShareId: latestPersonalMatchShareIdResolver?.(),
   };
   const updated: SovereignUserProfile = {
     ...profile,
@@ -3022,6 +3029,7 @@ export function recordRankedSovereignDuelResult(
     didWin,
     deltaElo: newElo - previousElo,
     newElo,
+    replayShareId: latestPersonalMatchShareIdResolver?.(),
   };
 
   const updatedProfile: SovereignUserProfile = {

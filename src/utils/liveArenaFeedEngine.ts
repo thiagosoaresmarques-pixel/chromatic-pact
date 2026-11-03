@@ -415,3 +415,72 @@ export function resolveSharedLiveArenaFeedItem(
   }
   return null;
 }
+
+export interface RecentSovereignMatchSummary {
+  id: string;
+  playedAtMs: number;
+  opponent: SovereignAiLeaderboardEntry;
+  didWin: boolean;
+  deltaElo: number;
+  spectatorItem: LiveArenaFeedItem;
+}
+
+export function getRecentMatchesForSovereign(
+  sovereignId: string,
+  limit = 6,
+  nowMs = getTournamentNowMs()
+): RecentSovereignMatchSummary[] {
+  const results: RecentSovereignMatchSummary[] = [];
+  const allSlotsDoneOffset =
+    (ROLLING_TABLE_COUNT - 1) * ROLLING_STAGGER_MS + ROLLING_MATCH_SPAN_MS;
+  const latestCompletedBucket = Math.floor((nowMs - allSlotsDoneOffset) / ROLLING_CYCLE_MS);
+  const liveMap = getCachedHydratedLiveSovereignRoster(nowMs).byId;
+  const maxScanBuckets = 2600;
+
+  for (
+    let b = latestCompletedBucket;
+    b > latestCompletedBucket - maxScanBuckets && results.length < limit;
+    b -= 1
+  ) {
+    for (let slotIdx = ROLLING_TABLE_COUNT - 1; slotIdx >= 0; slotIdx -= 1) {
+      const spec = resolveDeterministicRollingMatchup(b, slotIdx);
+      if (!spec || spec.matchFinishMs > nowMs) continue;
+
+      const isA = spec.sovA.sovereignId === sovereignId;
+      const isB = !isA && spec.sovB.sovereignId === sovereignId;
+      if (!isA && !isB) continue;
+
+      const rawSelf = isA ? spec.sovA : spec.sovB;
+      const rawOpp = isA ? spec.sovB : spec.sovA;
+      const oppLive = liveMap.get(rawOpp.sovereignId) ?? rawOpp;
+      const selfLive = liveMap.get(rawSelf.sovereignId) ?? rawSelf;
+
+      const didWin = isA ? spec.canonicalWinner === 'A_WIN' : spec.canonicalWinner === 'B_WIN';
+      const expSelf = 1 / (1 + Math.pow(10, (oppLive.eloRating - selfLive.eloRating) / 400));
+      const rawDelta = Math.round(16 * ((didWin ? 1 : 0) - expSelf));
+      const deltaElo = didWin ? Math.max(1, rawDelta) : Math.min(-1, rawDelta);
+
+      const spectatorItem = buildRollingSovereignTable(slotIdx, nowMs, undefined, b);
+      if (!spectatorItem) continue;
+
+      const dateFmt = new Date(spec.matchFinishMs).toLocaleTimeString('pt-BR', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      spectatorItem.tableBadge = `Mesa #${slotIdx + 1} · ${dateFmt}`;
+
+      results.push({
+        id: `sov_hist_b${b}_s${slotIdx}`,
+        playedAtMs: spec.matchFinishMs,
+        opponent: oppLive,
+        didWin,
+        deltaElo,
+        spectatorItem,
+      });
+
+      if (results.length >= limit) break;
+    }
+  }
+
+  return results;
+}

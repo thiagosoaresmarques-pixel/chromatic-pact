@@ -34,12 +34,19 @@ import {
   postDiscordWebhookTestPing,
   saveCommunityDiscordConfigToCloud,
 } from '../utils/discordCommunityEngine';
+import {
+  fetchSharedPersonalReplay,
+  fetchUserMatchHistoryForInspection,
+  type PersonalMatchHistoryEntry,
+  type UserInspectableMatchItem,
+} from '../utils/personalMatchHistoryEngine';
 
 interface AdminDashboardViewProps {
   currentUser: SovereignUserProfile;
   onUpdateCurrentUser: (updated: SovereignUserProfile) => void;
   onOpenAccountModal: () => void;
   onNotify: (item: { kicker: string; title: string; message: string }) => void;
+  onWatchUserReplay?: (entry: PersonalMatchHistoryEntry) => void;
 }
 
 type AdminSectionTab = 'overview' | 'users' | 'telemetry' | 'rooms' | 'system';
@@ -53,6 +60,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   onUpdateCurrentUser,
   onOpenAccountModal,
   onNotify,
+  onWatchUserReplay,
 }) => {
   const [section, setSection] = useState<AdminSectionTab>('overview');
   const [loading, setLoading] = useState<boolean>(true);
@@ -76,6 +84,9 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [userSearch, setUserSearch] = useState<string>('');
   const [userSort, setUserSort] = useState<'recent' | 'gold' | 'elo' | 'wins'>('recent');
   const [selectedUser, setSelectedUser] = useState<SovereignUserProfile | null>(null);
+  const [selectedUserMatches, setSelectedUserMatches] = useState<UserInspectableMatchItem[]>([]);
+  const [loadingSelectedUserMatches, setLoadingSelectedUserMatches] = useState<boolean>(false);
+  const [loadingAdminReplayId, setLoadingAdminReplayId] = useState<string | null>(null);
   const [customGoldInput, setCustomGoldInput] = useState<string>('');
   const [customEloInput, setCustomEloInput] = useState<string>('');
   const [resetPassInput, setResetPassInput] = useState<string>('');
@@ -88,6 +99,27 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   const [adminLoginId, setAdminLoginId] = useState<string>('tsm81');
   const [adminLoginPass, setAdminLoginPass] = useState<string>('');
   const [adminLoginError, setAdminLoginError] = useState<string>('');
+
+  useEffect(() => {
+    if (!selectedUser) {
+      setSelectedUserMatches([]);
+      setLoadingSelectedUserMatches(false);
+      return;
+    }
+    let cancelled = false;
+    setLoadingSelectedUserMatches(true);
+    const isCurrent =
+      selectedUser.username.trim().toLowerCase() === currentUser.username.trim().toLowerCase();
+    void fetchUserMatchHistoryForInspection(selectedUser, isCurrent).then((items) => {
+      if (!cancelled) {
+        setSelectedUserMatches(items);
+        setLoadingSelectedUserMatches(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedUser, currentUser.username]);
   const [adminLoginBusy, setAdminLoginBusy] = useState<boolean>(false);
 
   // Social & Multi-channel marketing tools state
@@ -1421,6 +1453,178 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                     )}
                   </div>
                 </div>
+              </div>
+
+              {/* Recent Matches of Selected User */}
+              <div
+                style={{
+                  marginTop: '1rem',
+                  background: 'rgba(2, 6, 23, 0.55)',
+                  border: '1px solid rgba(148, 163, 184, 0.2)',
+                  borderRadius: '12px',
+                  padding: '0.9rem',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'baseline',
+                    marginBottom: '0.55rem',
+                  }}
+                >
+                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#e2e8f0' }}>
+                    Partidas recentes de {selectedUser.username}
+                  </span>
+                  <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                    {loadingSelectedUserMatches
+                      ? 'Sincronizando...'
+                      : `${selectedUserMatches.length} ${
+                          selectedUserMatches.length === 1 ? 'partida' : 'partidas'
+                        }`}
+                  </span>
+                </div>
+
+                {loadingSelectedUserMatches ? (
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', padding: '0.6rem 0' }}>
+                    Carregando histórico de partidas...
+                  </div>
+                ) : selectedUserMatches.length === 0 ? (
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', padding: '0.6rem 0' }}>
+                    Nenhuma partida recente registrada nesta conta.
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      borderRadius: '8px',
+                      border: '1px solid rgba(148, 163, 184, 0.14)',
+                      background: 'rgba(11, 15, 25, 0.72)',
+                      maxHeight: '240px',
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {selectedUserMatches.map((m, idx) => {
+                      const oppCard = CARDS_BY_ID[m.opponentAvatarCardId];
+                      const canWatch = Boolean(
+                        onWatchUserReplay && (m.localReplay || m.shareId)
+                      );
+                      const outcomeLabel =
+                        m.didWin === true
+                          ? 'Vitória'
+                          : m.didWin === false
+                          ? 'Derrota'
+                          : 'Empate';
+                      const deltaStr =
+                        typeof m.deltaElo === 'number'
+                          ? ` (${m.deltaElo >= 0 ? `+${m.deltaElo}` : m.deltaElo} ELO)`
+                          : '';
+                      const dateFmt = new Date(m.playedAtMs).toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const isOpening = loadingAdminReplayId === m.id;
+
+                      return (
+                        <div
+                          key={m.id}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: '0.75rem',
+                            padding: '0.5rem 0.75rem',
+                            borderBottom:
+                              idx < selectedUserMatches.length - 1
+                                ? '1px solid rgba(148, 163, 184, 0.08)'
+                                : 'none',
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.6rem',
+                              minWidth: 0,
+                            }}
+                          >
+                            {oppCard?.imagePath ? (
+                              <img
+                                src={oppCard.imagePath}
+                                alt={m.opponentName}
+                                loading="lazy"
+                                style={{
+                                  width: '28px',
+                                  height: '28px',
+                                  borderRadius: '50%',
+                                  objectFit: 'cover',
+                                  border: '1px solid rgba(148, 163, 184, 0.28)',
+                                  flexShrink: 0,
+                                }}
+                              />
+                            ) : null}
+                            <div style={{ minWidth: 0 }}>
+                              <div
+                                style={{
+                                  fontSize: '0.79rem',
+                                  fontWeight: 600,
+                                  color: '#f1f5f9',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                vs. {m.opponentName}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: '0.69rem',
+                                  color:
+                                    m.didWin === true
+                                      ? '#6ee7b7'
+                                      : m.didWin === false
+                                      ? '#fca5a5'
+                                      : '#cbd5e1',
+                                }}
+                              >
+                                {outcomeLabel}
+                                {deltaStr} ·{' '}
+                                <span style={{ color: '#64748b' }}>
+                                  {m.modeLabel} · {dateFmt}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {canWatch && onWatchUserReplay ? (
+                            <button
+                              type="button"
+                              className="nav-notif-mini-btn"
+                              disabled={isOpening}
+                              style={{ flexShrink: 0 }}
+                              onClick={async () => {
+                                if (m.localReplay) {
+                                  onWatchUserReplay(m.localReplay);
+                                  return;
+                                }
+                                if (!m.shareId) return;
+                                setLoadingAdminReplayId(m.id);
+                                const fetched = await fetchSharedPersonalReplay(m.shareId);
+                                setLoadingAdminReplayId(null);
+                                if (fetched) {
+                                  onWatchUserReplay(fetched);
+                                }
+                              }}
+                            >
+                              {isOpening ? 'Abrindo...' : 'Assistir'}
+                            </button>
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}

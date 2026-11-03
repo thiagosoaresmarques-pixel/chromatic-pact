@@ -125,6 +125,7 @@ import {
   getPersonalMatchHistory,
   PersonalMatchHistoryEntry,
 } from './utils/personalMatchHistoryEngine';
+import type { LiveArenaFeedItem } from './utils/liveArenaFeedEngine';
 import { getEloDivisionMeta, INITIAL_PLAYER_ELO } from './data/eloDivisions';
 import type { SovereignAiLeaderboardEntry } from './data/sovereignEloLadderData';
 import {
@@ -638,11 +639,15 @@ export const App: React.FC = () => {
     useState<PersonalMatchHistoryEntry | null>(null);
   const [activePersonalReplayInitFrame, setActivePersonalReplayInitFrame] =
     useState<number | undefined>(undefined);
+  const [activePersonalReplayReturnTab, setActivePersonalReplayReturnTab] = useState<
+    'leaderboard' | 'admin' | null
+  >(null);
 
   useEffect(() => {
     if (activeTab !== 'arena') {
       setActivePersonalReplay(null);
       setActivePersonalReplayInitFrame(undefined);
+      setActivePersonalReplayReturnTab(null);
     }
   }, [activeTab]);
 
@@ -1175,17 +1180,30 @@ export const App: React.FC = () => {
 
   const memoizedTournamentSpectatorContext = useMemo(() => {
     if (activePersonalReplay) {
+      const exitLabel =
+        activePersonalReplayReturnTab === 'leaderboard'
+          ? 'Ranking'
+          : activePersonalReplayReturnTab === 'admin'
+          ? 'Admin'
+          : 'Histórico';
       return buildPersonalReplaySpectatorContext(
         activePersonalReplay,
         () => {
+          const returnTab = activePersonalReplayReturnTab;
           setActivePersonalReplay(null);
           setActivePersonalReplayInitFrame(undefined);
-          setActiveTab('home');
-          if (!isGuest) {
-            setAccountModalState({ open: true, tab: 'replays' });
+          setActivePersonalReplayReturnTab(null);
+          if (returnTab) {
+            setActiveTab(returnTab);
+          } else {
+            setActiveTab('home');
+            if (!isGuest) {
+              setAccountModalState({ open: true, tab: 'replays' });
+            }
           }
         },
-        activePersonalReplayInitFrame
+        activePersonalReplayInitFrame,
+        exitLabel
       );
     }
     return activeTournamentSpectate
@@ -1204,7 +1222,13 @@ export const App: React.FC = () => {
           },
         }
       : null;
-  }, [activePersonalReplay, activePersonalReplayInitFrame, activeTournamentSpectate, isGuest]);
+  }, [
+    activePersonalReplay,
+    activePersonalReplayInitFrame,
+    activePersonalReplayReturnTab,
+    activeTournamentSpectate,
+    isGuest,
+  ]);
 
   const handleStartTournamentPvpMatch = (
     launch: ActiveTournamentMatchLaunch,
@@ -3217,6 +3241,44 @@ export const App: React.FC = () => {
             onOpenPvpConclave={() => setActiveTab('multiplayer')}
             onOpenDeckBuilder={() => setActiveTab('deckbuilder')}
             onInspectCard={setShowcaseInspectCard}
+            onWatchSovereignMatch={(item) => {
+              setActivePersonalReplay(null);
+              setActivePersonalReplayReturnTab(null);
+              setActiveTournamentMatch(null);
+              setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
+              setActiveProblem(null);
+              setActiveOnlineMatch(null);
+              setIsExpeditionBattle(false);
+              setIsDraftBattle(false);
+              setActiveRiftId(null);
+              setActiveConquestContext(null);
+              setActiveGeoModifiers(null);
+              setActiveTournamentSpectate({
+                tournament: item.tournament,
+                pairing: item.pairing,
+                customTableBadge: item.tableBadge,
+                exitTargetTab: 'leaderboard',
+                exitButtonLabel: 'Ranking',
+              });
+              setActiveTab('arena');
+            }}
+            onWatchUserReplay={(entry) => {
+              setActiveTournamentSpectate(null);
+              setActiveTournamentMatch(null);
+              setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
+              setActiveProblem(null);
+              setActiveOnlineMatch(null);
+              setIsExpeditionBattle(false);
+              setIsDraftBattle(false);
+              setActiveRiftId(null);
+              setActiveConquestContext(null);
+              setActiveGeoModifiers(null);
+              setActivePersonalReplayReturnTab('leaderboard');
+              setActivePersonalReplay(entry);
+              setActiveTab('arena');
+            }}
           />
         )}
 
@@ -3329,7 +3391,12 @@ export const App: React.FC = () => {
             onCampaignVictory={handleCampaignVictory}
             onCampaignDefeat={handleCampaignDefeat}
             onExitArena={() => {
-              const wasTournament = Boolean(activeTournamentMatch || activeTournamentSpectate);
+              const spectateExitTab =
+                activePersonalReplayReturnTab ??
+                activeTournamentSpectate?.exitTargetTab ??
+                (activeTournamentMatch || activeTournamentSpectate ? 'tournaments' : 'home');
+              setActivePersonalReplay(null);
+              setActivePersonalReplayReturnTab(null);
               setActiveTournamentSpectate(null);
               setActiveTournamentMatch(null);
               setActiveCampaignBoss(null);
@@ -3341,7 +3408,7 @@ export const App: React.FC = () => {
               setActiveRiftId(null);
               setActiveConquestContext(null);
               setActiveGeoModifiers(null);
-              setActiveTab(wasTournament ? 'tournaments' : 'home');
+              setActiveTab(spectateExitTab);
             }}
             onExitCampaign={() => {
               if (activeTournamentMatch || activeTournamentSpectate) {
@@ -3770,6 +3837,22 @@ export const App: React.FC = () => {
               })
             }
             onNotify={(item) => pushNotification(item, true)}
+            onWatchUserReplay={(entry) => {
+              setActiveTournamentSpectate(null);
+              setActiveTournamentMatch(null);
+              setActiveCampaignBoss(null);
+              setActiveRankedSovereign(null);
+              setActiveProblem(null);
+              setActiveOnlineMatch(null);
+              setIsExpeditionBattle(false);
+              setIsDraftBattle(false);
+              setActiveRiftId(null);
+              setActiveConquestContext(null);
+              setActiveGeoModifiers(null);
+              setActivePersonalReplayReturnTab('admin');
+              setActivePersonalReplay(entry);
+              setActiveTab('arena');
+            }}
           />
         )}
 

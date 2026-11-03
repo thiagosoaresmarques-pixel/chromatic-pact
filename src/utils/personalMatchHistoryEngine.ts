@@ -1,6 +1,13 @@
 import { ALL_CARDS } from '../data/cards';
 import type { BoardUnit, Domain, GameState, PlayerState } from '../types/game';
-import { getSupabaseConfig, upsertCloudSystemRecord } from './multiplayerEngine';
+import {
+  getActiveTabUserProfile,
+  getSupabaseConfig,
+  isUnregisteredProfile,
+  registerPersonalMatchShareIdResolver,
+  upsertCloudSystemRecord,
+  type SovereignUserProfile,
+} from './multiplayerEngine';
 import type {
   ComputedRoundPairing,
   ComputedTournamentStanding,
@@ -100,8 +107,17 @@ export interface PersonalMatchHistoryEntry {
   turns: number;
   finalPlayerHp: number;
   finalOpponentHp: number;
+  shareId?: string;
   replayLog: TournamentMatchReplayLog;
 }
+
+let lastFinalizedPersonalShare: { shareId: string; atMs: number } | null = null;
+export function getLatestPersonalMatchShareId(): string | undefined {
+  if (!lastFinalizedPersonalShare) return undefined;
+  if (Date.now() - lastFinalizedPersonalShare.atMs > 30_000) return undefined;
+  return lastFinalizedPersonalShare.shareId;
+}
+registerPersonalMatchShareIdResolver(getLatestPersonalMatchShareId);
 
 export interface PersonalMatchSessionMeta {
   sessionId: string;
@@ -378,15 +394,25 @@ export function recordPersonalMatchFrame(
       replayLog,
     };
 
+    const shareId = computePersonalReplayShareId(entry);
+    entry.shareId = shareId;
+    lastFinalizedPersonalShare = { shareId, atMs: nowMs };
+
     const prevList = getPersonalMatchHistory().filter((m) => m.id !== entry.id);
     savePersonalHistoryListSafe([entry, ...prevList]);
+
+    const activeUser = getActiveTabUserProfile();
+    if (activeUser && !isUnregisteredProfile(activeUser)) {
+      void syncPersonalMatchToCloudUserFeed(activeUser.username, entry);
+    }
   }
 }
 
 export function buildPersonalReplaySpectatorContext(
   entry: PersonalMatchHistoryEntry,
   onExit: () => void,
-  initialSpecFrame?: number
+  initialSpecFrame?: number,
+  exitButtonLabel = 'Histórico'
 ): {
   tournament: SwissTournamentDefinition;
   pairing: ComputedRoundPairing;
@@ -489,7 +515,7 @@ export function buildPersonalReplaySpectatorContext(
     initialSpecFrame,
     variant: 'personal_replay',
     customTableBadge: `${entry.modeLabel} · ${dateFmt}`,
-    exitButtonLabel: 'Histórico',
+    exitButtonLabel,
     onExitSpectator: onExit,
   };
 }
@@ -600,4 +626,206 @@ export async function fetchSharedPersonalReplay(
     // ignore
   }
   return null;
+}
+
+const USER_REPLAY_FEED_PREFIX = '__shared_replay__:user_feed:';
+const MAX_CLOUD_USER_FEED_ITEMS = 12;
+
+export interface UserCloudMatchFeedItem {
+  id: string;
+  shareId: string;
+  modeLabel: string;
+  playedAtMs: number;
+  durationSec: number;
+  turns: number;
+  playerName: string;
+  playerElo: number;
+  opponentName: string;
+  opponentSubtitle: string;
+  opponentAvatarCardId: string;
+  opponentElo: number;
+  didWin: boolean | null;
+  finalPlayerHp: number;
+  finalOpponentHp: number;
+}
+
+export interface UserInspectableMatchItem {
+  id: string;
+  playedAtMs: number;
+  modeLabel: string;
+  opponentName: string;
+  opponentAvatarCardId: string;
+  opponentElo: number;
+  didWin: boolean | null;
+  deltaElo?: number;
+  turns?: number;
+  shareId?: string;
+  localReplay?: PersonalMatchHistoryEntry;
+}
+
+async function fetchRawCloudUserMatchFeed(username: string): Promise<UserCloudMatchFeedItem[]> {
+  const cleanUser = username.trim().toLowerCase();
+  if (!cleanUser) return [];
+  const cfg = getSupabaseConfig();
+  if (!cfg.isConfigured) return [];
+
+  try {
+    const encodedKey = encodeURIComponent(`${USER_REPLAY_FEED_PREFIX}${cleanUser}`);
+    const res = await fetch(
+      `${cfg.url}/rest/v1/sovereign_profiles?username=eq.${encodedKey}&select=title&limit=1`,
+      {
+        headers: {
+          apikey: cfg.anonKey,
+          Authorization: `Bearer ${cfg.anonKey}`,
+        },
+      }
+    );
+    if (!res.ok) return [];
+    const rows = (await res.json()) as Array<{ title?: string }>;
+    const rawTitle = rows?.[0]?.title;
+    if (!rawTitle) return [];
+    const parsed = JSON.parse(rawTitle);
+    if (!Array.isArray(parsed)) return [];
+    return (parsed as UserCloudMatchFeedItem[]).filter(
+      (item) => item && typeof item.shareId === 'string' && typeof item.playedAtMs === 'number'
+    );
+  } catch {
+    return [];
+  }
+}
+
+export async function syncPersonalMatchToCloudUserFeed(
+  username: string,
+  entry: PersonalMatchHistoryEntry
+): Promise<void> {
+  const cleanUser = username.trim().toLowerCase();
+  if (!cleanUser) return;
+  try {
+    const shareId = await publishPersonalReplayShareToCloud(entry);
+    const existing = await fetchRawCloudUserMatchFeed(cleanUser);
+    const summary: UserCloudMatchFeedItem = {
+      id: entry.id,
+      shareId,
+      modeLabel: entry.modeLabel,
+      playedAtMs: entry.playedAtMs,
+      durationSec: entry.durationSec,
+      turns: entry.turns,
+      playerName: entry.playerName,
+      playerElo: entry.playerElo,
+      opponentName: entry.opponentName,
+      opponentSubtitle: entry.opponentSubtitle,
+      opponentAvatarCardId: entry.opponentAvatarCardId || 'purple_01',
+      opponentElo: entry.opponentElo,
+      didWin: entry.didWin,
+      finalPlayerHp: entry.finalPlayerHp,
+      finalOpponentHp: entry.finalOpponentHp,
+    };
+    const merged = [
+      summary,
+      ...existing.filter((item) => item.shareId !== shareId && item.id !== entry.id),
+    ].slice(0, MAX_CLOUD_USER_FEED_ITEMS);
+
+    await upsertCloudSystemRecord({
+      key: `${USER_REPLAY_FEED_PREFIX}${cleanUser}`,
+      payload: JSON.stringify(merged),
+      avatarCardId: entry.playerAvatarCardId || 'gold_01',
+      eloRating: entry.playerElo || 1500,
+    });
+  } catch {
+    // Non-blocking cloud archive sync
+  }
+}
+
+export async function fetchUserMatchHistoryForInspection(
+  profile: SovereignUserProfile,
+  isCurrentLocalUser = false
+): Promise<UserInspectableMatchItem[]> {
+  const cleanUser = profile.username.trim().toLowerCase();
+  const cloudFeed = await fetchRawCloudUserMatchFeed(cleanUser);
+  const byShareId = new Map<string, UserInspectableMatchItem>();
+
+  for (const cf of cloudFeed) {
+    byShareId.set(cf.shareId, {
+      id: cf.id || cf.shareId,
+      playedAtMs: cf.playedAtMs,
+      modeLabel: cf.modeLabel || 'Partida Oficial',
+      opponentName: cf.opponentName,
+      opponentAvatarCardId: cf.opponentAvatarCardId || 'purple_01',
+      opponentElo: cf.opponentElo || 1500,
+      didWin: cf.didWin,
+      turns: cf.turns,
+      shareId: cf.shareId,
+    });
+  }
+
+  const localEntries = getPersonalMatchHistory().filter(
+    (e) =>
+      isCurrentLocalUser ||
+      e.playerName.trim().toLowerCase() === cleanUser
+  );
+
+  const missingFromCloud: PersonalMatchHistoryEntry[] = [];
+  for (const le of localEntries) {
+    const sid = le.shareId || computePersonalReplayShareId(le);
+    const existing = byShareId.get(sid);
+    if (!existing && isCurrentLocalUser && !isUnregisteredProfile(profile)) {
+      missingFromCloud.push(le);
+    }
+    byShareId.set(sid, {
+      id: le.id,
+      playedAtMs: le.playedAtMs,
+      modeLabel: le.modeLabel,
+      opponentName: le.opponentName,
+      opponentAvatarCardId: le.opponentAvatarCardId || 'purple_01',
+      opponentElo: le.opponentElo || 1500,
+      didWin: le.didWin,
+      turns: le.turns,
+      shareId: sid,
+      localReplay: le,
+    });
+  }
+
+  if (missingFromCloud.length > 0) {
+    void (async () => {
+      for (const item of missingFromCloud.slice(0, 4).reverse()) {
+        await syncPersonalMatchToCloudUserFeed(profile.username, item);
+      }
+    })();
+  }
+
+  const combined = Array.from(byShareId.values());
+  const rankedHist = profile.recentRankedHistory ?? [];
+
+  for (const rh of rankedHist) {
+    const matchIdx = combined.findIndex(
+      (c) =>
+        (rh.replayShareId && c.shareId === rh.replayShareId) ||
+        (Math.abs(c.playedAtMs - rh.timestamp) <= 35_000 &&
+          c.opponentName.trim().toLowerCase() === rh.opponentName.trim().toLowerCase())
+    );
+    if (matchIdx >= 0) {
+      combined[matchIdx] = {
+        ...combined[matchIdx],
+        deltaElo: rh.deltaElo,
+        opponentElo: rh.opponentElo || combined[matchIdx].opponentElo,
+        opponentAvatarCardId: rh.opponentAvatarCardId || combined[matchIdx].opponentAvatarCardId,
+        shareId: combined[matchIdx].shareId || rh.replayShareId,
+      };
+    } else {
+      combined.push({
+        id: rh.id,
+        playedAtMs: rh.timestamp,
+        modeLabel: rh.mode === 'pvp' ? 'Conclave 1×1' : 'Duelo Ranqueado',
+        opponentName: rh.opponentName,
+        opponentAvatarCardId: rh.opponentAvatarCardId || 'gold_01',
+        opponentElo: rh.opponentElo,
+        didWin: rh.didWin,
+        deltaElo: rh.deltaElo,
+        shareId: rh.replayShareId,
+      });
+    }
+  }
+
+  combined.sort((a, b) => b.playedAtMs - a.playedAtMs);
+  return combined.slice(0, MAX_CLOUD_USER_FEED_ITEMS);
 }

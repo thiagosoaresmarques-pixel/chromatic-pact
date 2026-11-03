@@ -25,7 +25,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
     title: 'O Incêndio Temporal de Ignis-Aeterna e a Vigília de Thaddeus',
     subtitle: 'Como a Fênix do Tempo Emprestado abriu uma fresta temporal em 741 D.F., e como Thaddeus, o eco de Aldric e o artífice Kaelen repeliram o primeiro sussurro faminto de Nihil-Vael antes que apagasse o Pacto',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_5c_1_ignis_aeterna',
@@ -357,7 +357,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
     title: 'A Escolta da Coroa dos Pactos e o Cerco na Estrada Cinzenta',
     subtitle: 'Como o Guardião Imortal Garrick, o General Varkas — reencarnado do Grimório Rubro por Valkyra como Campeão Juramentado — e Justinian protegeram os Dez Tratados Bicolores contra Mephistar, salvos pelo voo de Astrolon',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_6c_1_coroa_pactos',
@@ -689,7 +689,7 @@ export const EPIC_POEM_PARALLEL_PART_6: EpicPoemCanto[] = [
     title: 'A Batalha das Caravanas Douradas no Planalto do Trono de Ossos',
     subtitle: 'Como Necrothor e Vesperion cercaram o comboio de Pacotes do Relicário em 1.181 D.F., e como Garrick, Varkas, Kongor e Tellurion abriram caminho até a Arena',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_7c_1_necrothor_cerco',

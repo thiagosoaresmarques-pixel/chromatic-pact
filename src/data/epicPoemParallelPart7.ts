@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
     title: 'O Cofre de Raízes e o Primeiro Sopro de Veridia',
     subtitle: 'Como Sylvanor, Chronos, Aldric e Kaelen abrigaram o Coração da Árvore-Mundo nas galerias aquecidas antes da Fratura, fazendo despertar a primeira centelha da fada Lyra',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_1d_sylvanor_guardiao',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
     title: 'A Domesticação de Vulcanor e a Fundação das Forjas do Norte',
     subtitle: 'Como Kaelen, Zik, o Colosso Forjador e o Soberano Ígneo forjaram os Grilhões da Fornalha em 83 D.F. para impedir que a fúria de Vulcanor partisse o continente',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_2d_vulcanor_desperto',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
     title: 'O Traçado das Cinco Linhas de Mana e o Despertar de Aeternus',
     subtitle: 'A assembleia secreta entre Kaelen, o Arquimago Aldric e o Arconte da Trombeta Dourada para ligar as Cinco Capitais fundadas em 143 D.F. ao despertar de Aeternus em 152 D.F.',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_3d_trono_soberano_sol',
@@ -996,7 +996,7 @@ export const EPIC_POEM_PARALLEL_PART_7: EpicPoemCanto[] = [
     title: 'A Muralha de Fogo e Seiva contra a Rainha dos Fungos',
     subtitle: 'Como Vesperion alimentou os esporos de Mycoria para tomar Veridia por dentro, e como Lyra, Kongor, o Arquidruida e o General Varkas selaram o vale infectado',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_4d_mycoria_rainha',

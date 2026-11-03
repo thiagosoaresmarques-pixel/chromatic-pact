@@ -34,10 +34,19 @@ export const HomeLiveArenaView: React.FC<HomeLiveArenaViewProps> = ({
   useEffect(() => {
     void refreshLiveArenaCloudPool();
     const pollId = window.setInterval(() => {
-      void refreshLiveArenaCloudPool();
+      if (document.visibilityState === 'visible') {
+        void refreshLiveArenaCloudPool();
+      }
     }, 20_000);
+    const onVisChange = () => {
+      if (document.visibilityState === 'visible') {
+        void refreshLiveArenaCloudPool();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisChange);
     return () => {
       window.clearInterval(pollId);
+      document.removeEventListener('visibilitychange', onVisChange);
       clearPendingFadeTimers();
     };
   }, [clearPendingFadeTimers]);

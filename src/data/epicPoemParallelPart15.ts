@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
     title: 'O Escudo Oculto do Titã Primogênito da Alvorada',
     subtitle: 'Como o Titã da Alvorada, Zephaniel, Kaelen, Aldric, o Leão Sagrado e a Visagem das Cinco Coroas guardaram a semente da justiça solar antes que o Golpe Pentacromático partisse o céu',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_1h_tita_alvorada',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
     title: 'O Pacto de Abrigo sob o Dragão Esmeralda de Galhada Viva',
     subtitle: 'Como, no Ano 118 D.F., o Dragão Esmeralda, Lyra, Zik, Aldric, o Carvalho-Mestre de Mil Invernos e o Brontossauro do Santuário Vivo acolheram os refugiados das cinco cores sob a abóbada verde',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_2h_dragao_esmeralda',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
     title: 'O Transporte da Grande Lente nas Asas de Aureon',
     subtitle: 'Como Aureon, o Arquimago Aldric, Kaelen, o Lobo Alfa da Geada, o Arconte Glacial e o Serafim de Seis Asas do Zênite defenderam a lente-mestra do Planetário contra a emboscada na neve em 238 D.F.',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_3h_aureon_voo',
@@ -996,7 +996,7 @@ export const EPIC_POEM_PARALLEL_PART_15: EpicPoemCanto[] = [
     title: 'O Sacrifício da Ponte de Ferro contra Bael-Khor e Malakor-Vael',
     subtitle: 'Como os veteranos da Legião de Varkas, Zephaniel, Kongor e o Campeão Dracônico demoliram a ponte continental em 589 D.F. para impedir a junção dos exércitos de Bael-Khor e Malakor-Vael',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_4h_bael_khor_marcha',

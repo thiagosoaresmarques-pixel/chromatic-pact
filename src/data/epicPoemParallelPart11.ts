@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
     title: 'O Voto Silencioso de Valkyra antes da Fratura do Mundo',
     subtitle: 'Como, na véspera imediata dos sessenta grãos, a Imperatriz Pentacromática reuniu em visão suspensa a Esfinge do Pináculo, Zephaniel, Aldric e Kaelen, selando a semente das Memórias Eternas',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_1f_valkyra_vigilia',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
     title: 'O Jovem Vesperion e a Colheita Proibida em Ossaurion',
     subtitle: 'Como, no Ano 27 D.F., o ainda mortal arcanista Vesperion roubou uma lasca do Dragão-Ossário Ossaurion durante o combate contra Aurarius, Aldric, Zik e Lyra',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_2f_ossaurion_despertar',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
     title: 'A Noite em que Vesperion Trancou a Própria Alma no Filactério',
     subtitle: 'A invasão desesperada liderada pelo velho Aldric, Kaelen e o Arconte da Trombeta Dourada à Catedral de Obsidiana em 195 D.F. na tentativa de impedir que Vesperion e a jovem emissária Carmilla concluíssem o ritual de imortalidade',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_3f_vesperion_ritual',
@@ -996,7 +996,7 @@ export const EPIC_POEM_PARALLEL_PART_11: EpicPoemCanto[] = [
     title: 'A Trincheira do Marechal Varkas contra o Sopro de Pyraxis',
     subtitle: 'Como Pyraxis despertou em 554 D.F. e como em 568 D.F. o General Varkas recusou-se a abandonar suas tropas diante da vanguarda de Bael-Khor, sacrificando-se com o auxílio de Kongor, Lyra e Caelestius',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_4f_pyraxis_despertar',

@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
     title: 'A Cláusula de Sangue de Mephistar e a Lei da Oferenda Pacífica',
     subtitle: 'Como Mephistar tentou cobrar a alma de doze duelistas derrotados na Arena em 794 D.F., sendo vencido no Tribunal Dourado por Justinian, Thaddeus, o Comandante Garrick e Valkyra',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_5f_mephistar_cobranca',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
     title: 'A Vigília de Orion e o Aviso antes da Ruptura',
     subtitle: 'Como Orion, Astrolon, Thaddeus, a Memória Imortal do Marechal Varkas e Lyra reuniram-se no Planetário de Vórtex em 1.115 D.F. e prepararam em segredo até 1.120 D.F. a defesa da Torre e o Grimório Inicial',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_6f_orion_vigilia_orbital',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_12: EpicPoemCanto[] = [
     title: 'O Duelo de Kongor e Sylvanhorn para Libertar Fenris-Gorgon',
     subtitle: 'Como Vesperion prendeu grilhões de sombra no pescoço de Fenris-Gorgon em 1.195 D.F., e como Kongor, a bênção oculta de Sylvanhorn, Lyra e o sentinela imortal Garrick libertaram o Imperador das Feras e abriram caminho para a vigília de 1.208 D.F.',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_7f_fenris_gorgon_acorrentado',

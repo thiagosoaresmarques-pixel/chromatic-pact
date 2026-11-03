@@ -25,7 +25,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
     title: 'O Primeiro Censo das Eras Antigas e as Mil e Trinta e Oito Molduras',
     subtitle: 'Como Thaddeus, Justinian, a Esfinge do Pináculo e o Comandante Garrick catalogaram as três eras passadas, abriram 1.038 molduras proféticas no Relógio Astral e frustraram a infiltração de Carmilla',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_5e_1_thaddeus_censo',
@@ -357,7 +357,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
     title: 'A Purificação dos Recifes Profundos por Aegirion e Silvathor',
     subtitle: 'Como Aegirion, Nereus, os guardiões costeiros Silvathor e Polydra, Lyra e o sentinela imortal Garrick purificaram o veneno necromântico de Vesperion no estuário em 948 D.F., preparando o Tratado Safira-Esmeralda',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_6e_1_aegirion_fendas',
@@ -689,7 +689,7 @@ export const EPIC_POEM_PARALLEL_PART_10: EpicPoemCanto[] = [
     title: 'A Batalha para Impedir o Rebobinamento das Eras',
     subtitle: 'Como Vesperion tentou cavalgar o Chronoleviatã em 1.166 D.F. para apagar a assinatura do Pacto Cromático, sendo detido por Thaddeus, Nereus, Zephaniel e Valkyra',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_7e_1_chronoleviata_emerge',

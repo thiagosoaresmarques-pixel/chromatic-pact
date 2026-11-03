@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_17: EpicPoemCanto[] = [
     title: 'O Terror de Igniskar e a Forja do Titã Ferrostor',
     subtitle: 'Como Kaelen recordou em 108 D.F. a fúria primordial de Igniskar (3 D.F.) e o Colosso de Vidro Prismático (39 D.F.) para erguer o Titã Ferrostor em 110 D.F. e expulsar o tirano da Cratera de Adamantina',
     accentColor: '#94a3b8',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     nodes: [
       {
         id: 'node_2i_igniskar_cratera',
@@ -403,7 +403,7 @@ export const EPIC_POEM_PARALLEL_PART_17: EpicPoemCanto[] = [
     title: 'O Fosso Ardente de Baelgor e as Relíquias das Sete Minas',
     subtitle: 'Como Baelgor tentou tomar a Bigorna da Chama Primordial em 178 D.F., sendo contido sob pacto por Kaelen, pelo General Varkas, pelo Colosso de Ferro e pelo selo da Grande Máscara Pentacromática',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_3i_bigorna_primordial',

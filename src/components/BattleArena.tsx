@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useEffect, useMemo, useRef } from 'react';
+import React, { Suspense, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   AiSkillTier,
   BoardUnit,
@@ -794,6 +794,49 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const [showQuickRules, setShowQuickRules] = useState(false);
   const [arenaTutorialStep, setArenaTutorialStep] = useState<number | null>(null);
   const [showTacticalAdvisor, setShowTacticalAdvisor] = useState(false);
+
+  const FIRST_TURN_GUIDE_STORAGE_KEY = 'chromatic_pact_first_turn_guide_done_v1';
+  const [firstTurnGuideDismissed, setFirstTurnGuideDismissed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(FIRST_TURN_GUIDE_STORAGE_KEY) === '1';
+    } catch {
+      return true;
+    }
+  });
+  const dismissFirstTurnGuide = useCallback(() => {
+    setFirstTurnGuideDismissed(true);
+    try {
+      localStorage.setItem(FIRST_TURN_GUIDE_STORAGE_KEY, '1');
+    } catch {
+      // Ignore storage errors
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      !firstTurnGuideDismissed &&
+      !isSpectatorMode &&
+      !tacticalProblem &&
+      !onlineMatch &&
+      !tournamentContext &&
+      (gameState.turn > 1 ||
+        (gameState.turn === 1 &&
+          gameState.activePlayer !== 'player' &&
+          gameState.player.hasChanneledThisTurn))
+    ) {
+      dismissFirstTurnGuide();
+    }
+  }, [
+    firstTurnGuideDismissed,
+    isSpectatorMode,
+    tacticalProblem,
+    onlineMatch,
+    tournamentContext,
+    gameState.turn,
+    gameState.activePlayer,
+    gameState.player.hasChanneledThisTurn,
+    dismissFirstTurnGuide,
+  ]);
 
   const isDesktopHoverDevice = () =>
     typeof window !== 'undefined' &&
@@ -9429,6 +9472,86 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           </div>
         </div>
       )}
+
+      {/* SILENT 1-LINE CONTEXTUAL FIRST-TURN MICRO-GUIDE (FIRST PLAYABLE MATCH ONLY) */}
+      {!firstTurnGuideDismissed &&
+        !isSpectatorMode &&
+        !tacticalProblem &&
+        !onlineMatch &&
+        !tournamentContext &&
+        !isMulliganOpen &&
+        arenaTutorialStep === null &&
+        !showQuickRules &&
+        !showTacticalAdvisor &&
+        gameState.phase !== 'gameover' &&
+        gameState.turn === 1 &&
+        gameState.activePlayer === 'player' &&
+        (() => {
+          const hasPlayableInHand = gameState.player.hand.some(
+            (c) =>
+              c.cost <= gameState.player.currentEssence &&
+              (c.domain === 'neutral' || (gameState.player.affinities[c.domain] ?? 0) >= c.affinityReq)
+          );
+          const stepLabel = !gameState.player.hasChanneledThisTurn
+            ? 'Passo 1/3'
+            : hasPlayableInHand
+            ? 'Passo 2/3'
+            : 'Passo 3/3';
+          const stepMessage = !gameState.player.hasChanneledThisTurn
+            ? 'Toque em 1 carta da mão e selecione Canalizar para gerar Essência e Afinidade.'
+            : hasPlayableInHand
+            ? 'Selecione uma carta iluminada da mão e posicione-a na Vanguarda.'
+            : 'Ataque com unidades prontas ou toque em Passar Turno.';
+          return (
+            <div
+              role="status"
+              style={{
+                position: 'fixed',
+                top: '54px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                zIndex: 1140,
+                maxWidth: 'min(680px, 94vw)',
+                width: 'max-content',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.65rem',
+                padding: '0.4rem 0.75rem',
+                borderRadius: '8px',
+                background: 'rgba(11, 15, 25, 0.92)',
+                border: '1px solid rgba(148, 163, 184, 0.18)',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.55)',
+                color: '#cbd5e1',
+                fontSize: '0.78rem',
+                lineHeight: 1.35,
+              }}
+            >
+              <span style={{ color: '#e2c574', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                {stepLabel}
+              </span>
+              <span style={{ color: 'rgba(148, 163, 184, 0.35)' }}>·</span>
+              <span style={{ color: '#e2e8f0' }}>{stepMessage}</span>
+              <button
+                type="button"
+                onClick={dismissFirstTurnGuide}
+                aria-label="Dispensar dica inicial"
+                style={{
+                  marginLeft: '0.25rem',
+                  background: 'transparent',
+                  border: '1px solid rgba(148, 163, 184, 0.2)',
+                  borderRadius: '5px',
+                  color: '#94a3b8',
+                  fontSize: '0.7rem',
+                  padding: '1px 6px',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Dispensar ✕
+              </button>
+            </div>
+          );
+        })()}
 
       {/* INTERACTIVE LIVE ARENA COACHMARK WALKTHROUGH BANNER */}
       {arenaTutorialStep !== null && (

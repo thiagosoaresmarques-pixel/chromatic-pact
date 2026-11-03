@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
     title: 'O Santuário do Relógio da Eternidade e a Contenção dos Três Cataclismos',
     subtitle: 'Como Thaddeus, Justinian e o imortal Comandante Garrick ergueram o Santuário do Relógio da Eternidade e acionaram a Ruptura Arcana Universal para selar em pergaminhos a Detonação do Sol Carmesim, o Colapso Gravitacional e o Eclipse do Sol Abissal',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_5j_trono_horas',
@@ -373,7 +373,7 @@ export const EPIC_POEM_PARALLEL_PART_21: EpicPoemCanto[] = [
     title: 'A Coroa do Imperador Solar e a Travessia das Três Fendas',
     subtitle: 'Como os soberanos portando a Coroa do Imperador Solar atravessaram o Portal Astral para subjugar em definitivo a insurgência de Pyroclasmos na Fissura do Julgamento Vulcânico e conter o Dilúvio da Fenda Cósmica e o Apocalipse da Fenda Umbral às vésperas da Ruptura do Sétimo Selo',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_6k_coroa_imperador_solar',

@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_8: EpicPoemCanto[] = [
     title: 'O Primeiro Duelo Régio de Soberanos Dracônicos entre Heliodor e Smaragda',
     subtitle: 'Como os dois colossos dracônicos de Solária e Veridia aceitaram resolver pela primeira vez uma disputa régia de fronteira dentro da Arena, arbitrados por Valkyra, Justinian, Thaddeus e o Comandante Garrick',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_5d_heliodor_dragao_solar',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_8: EpicPoemCanto[] = [
     title: 'O Julgamento de Pyroclasmos perante a Imperatriz das Seis Asas',
     subtitle: 'Como Seraphiel, Zephaniel, Orion, Aetherion e o General Varkas contiveram provisoriamente a fúria vulcânica de Pyroclasmos para preservar os Dez Tratados Bicolores',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_6d_seraphiel_imperatriz',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_8: EpicPoemCanto[] = [
     title: 'A Batalha da Aurora Suprema contra o Presságio dos Três Crânios',
     subtitle: 'O cerco noturno movido pelo eco abissal de Malakor e pela projeção embrionária do Monarca dos Três Crânios em 1.220 D.F., desfeito pela alvorada de Hyperion, pelo Dragão de Safira Sônico, por Kongor e pelo Comandante Garrick',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_7d_monarca_tres_cranios',

@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
     title: 'A Cravação Pentacromática e o Concílio da Forja Oculta',
     subtitle: 'Como Vulcanis, Chronos, Sylvanor e o Artífice Kaelen concluíram o Malho central de Vulcanis com a lasca do Coroa-Prisma enquanto o Iniciado Aldric distraía as sentinelas',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_1b_fragmento_coroa_prisma',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
     title: 'A Caravana dos Sobreviventes sob o Dia dos Cinco Sóis',
     subtitle: 'A jornada desesperada de Aldric, Kaelen, Zik e Lyra para guiar as primeiras tribos mortais através da chuva de fogo no Ano 1 D.F.',
     accentColor: '#f59e0b',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_2b_cataclismo_estrela',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
     title: 'A Noite dos Espelhos Negros no Grande Planetário de Vórtex',
     subtitle: 'Como Vesperion e a jovem emissária Carmilla tentaram eclipsar as lentes astrais em 240 D.F., e como o ancião Aldric — em seu crepúsculo mortal —, a Esfinge e Nereus salvaram o mapa das estrelas',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_3b_planetario_arcano',
@@ -996,7 +996,7 @@ export const EPIC_POEM_PARALLEL_PART_3: EpicPoemCanto[] = [
     title: 'O Último Embaixador antes da Chuva de Meteoros',
     subtitle: 'A tentativa frustrada de Zephaniel e Lyra de impedir o confronto entre as falanges de Solária e o Marechal Varkas na hora em que Ignarok incendiou o céu',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_4b_meteoro_draconico',

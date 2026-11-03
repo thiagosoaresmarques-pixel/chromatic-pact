@@ -10310,7 +10310,7 @@ html, body, #root {
   position: relative;
   padding: 2.1rem 1.5rem 1.45rem;
   background-image: linear-gradient(180deg, rgba(8, 10, 18, 0.82) 0%, rgba(6, 7, 13, 0.98) 100%),
-    url('/assets/arena/tabletop_gold.png');
+    url('/tabletops/tabletop_domain_gold.webp');
   background-size: cover;
   background-position: center;
   border-bottom: 1px solid rgba(245, 158, 11, 0.16);

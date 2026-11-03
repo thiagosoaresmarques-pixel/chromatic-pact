@@ -25,7 +25,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
     title: 'O Julgamento de Atlas-Khor e a Caçada a Fenris-Vael',
     subtitle: 'Como, ao despertar das geleiras em 572 D.F., recordaram-se os juízos de Atlas-Khor contra o Behemoth Ossário (520–532 D.F.), culminando na aliança com Kongor e o Marechal Kael-Varkas em 588 D.F. para conter Fenris-Vael',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_4i_1_atlas_khor',
@@ -388,7 +388,7 @@ export const EPIC_POEM_PARALLEL_PART_18: EpicPoemCanto[] = [
     title: 'Os Sete Selos de Valerius e a Vigília de Skrym-Khor',
     subtitle: 'Como o Arquimago Valerius preparou as cláusulas do Pacto Cromático na vigília de 688 D.F. e como Skrym-Khor fechou a Espinha Cinzenta em 689 D.F. para proteger a subida inaugural à Torre',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     nodes: [
       {
         id: 'node_5i_1_valerius',

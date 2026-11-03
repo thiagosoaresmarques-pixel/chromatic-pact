@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
     title: 'O Bestiário de Aldous, a Tempestade de Zephyros e o Olho de Oculus-Vex',
     subtitle: 'Como o cronista Aldous compilou em 965–968 D.F. seus cadernos de campo sobre a fúria de Zephyros, desmascarou o sindicato mecânico de Oculus-Vex no Porto Neutro e catalogou o despertar de Morgath nas charnecas glaciais',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_6i_aldous_cronista',
@@ -373,7 +373,7 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
     title: 'O Ritual Oculto de Malphas e o Veredito de Aurion-Sol',
     subtitle: 'Como o arquimago exilado Malphas de Vizeran manipulou relíquias planares em 1.048–1.054 D.F. para jogar os senhores do Abismo uns contra os outros, até que o esplendor imperial de Aurion-Sol selou a paz do Zênite em 1.068 D.F.',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_6j_malphas_arquimago',
@@ -731,7 +731,7 @@ export const EPIC_POEM_PARALLEL_PART_19: EpicPoemCanto[] = [
     title: 'O Deus-Máquina de Aeternus, os Quatro Tronos e o Despertar de Gorgonoth',
     subtitle: 'Como, após os cataclismos de 1.233–1.238 D.F. e a marcha do Monarca de Três Crânios, os relojoeiros acionaram o Deus-Máquina em 1.239 D.F. e os domínios consagraram suas regalias finais antes que Gorgonoth rompesse a Fenda Axial em 1.240 D.F., precipitando o Concílio Final na Arena',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_7i_deus_maquina_aeternus',

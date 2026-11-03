@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
     title: 'O Encontro Secreto entre a Alvorada e a Escuridão',
     subtitle: 'Como Nocturnus e o Titã da Alvorada descobriram que somente a união entre sombra e fulgor permitiria refratar o branco tirânico do Coroa-Prisma, auxiliados por Aldric, Kaelen e o silêncio vigilante de Valkyra',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_1c_nocturnus',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
     title: 'A Muralha de Cascos contra o Maremoto do Kraken',
     subtitle: 'Como o despertar do Kraken em 44 D.F. quase submergiu a recém-erguida Torre Cinzenta, e como Chelonia, Nereus, Zik e Lyra salvaram o litoral da Fronteira',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_2c_kraken',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
     title: 'O Eclipse da Taça Imortal no Dia do Jubileu Solar',
     subtitle: 'O duelo oculto de 388 D.F. entre Zephaniel e Aurelius contra Vladislaus, Carmilla e Vesperion pelo Cálice de Obsidiana, e a vigília de sangue até a ascensão plena da Corte do Eclipse em 402–410 D.F.',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_3c_calice_obsidiana',
@@ -996,7 +996,7 @@ export const EPIC_POEM_PARALLEL_PART_5: EpicPoemCanto[] = [
     title: 'O Dia em que Cinco Exércitos Inimigos Lutaram Lado a Lado',
     subtitle: 'Como o avanço cataclísmico de Kragmorth obrigou o Marechal Kael-Varkas, Zephaniel, Kongor, o Colosso de Adamantina e Tauron-Khor a defenderem juntos a garganta continental',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_4c_kragmorth',

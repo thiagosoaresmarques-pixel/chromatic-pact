@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
     title: 'A Tiara Escarlate, o Astrolábio do Furacão e o Eclipse do Vazio',
     subtitle: 'Como Aldric, Kaelen, Lyra e Zik usaram a Concha do Teleporte Uvar e as Grevas Relâmpago para sobreviver ao embate entre a Tempestade Psiônica do Vórtex e o Eclipse do Vazio Eterno',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_2j_coroa_cinzas',
@@ -373,7 +373,7 @@ export const EPIC_POEM_PARALLEL_PART_20: EpicPoemCanto[] = [
     title: 'O Trono Celestial do Zênite, o Talismã Puro e a Estase Absoluta',
     subtitle: 'Como Zephaniel consagrou o Trono Celestial e o Talismã do Zênite Puro em Solária, enquanto o Oráculo Astral do Pináculo congelava uma invasão inteira na Estase Temporal Absoluta e os guardiões da Fronteira forjavam suas relíquias de vigília',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_3j_trono_celestial',

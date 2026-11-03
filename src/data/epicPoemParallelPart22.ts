@@ -24,7 +24,7 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
     title: 'A Égide Soberana, a Singularidade Nula e os Cofres da Guerra',
     subtitle: 'Como, no auge da Guerra do Sangue Derramado, os cinco domínios e a Fronteira Cinzenta abriram seus arsenais sagrados, opondo o Cálice da Aurora Imortal e a Arca do Pacto Radiante ao Espelho Devorador de Almas e ao Orbe da Singularidade Nula',
     accentColor: '#f59e0b',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     nodes: [
       {
         id: 'node_4j_1_calice_aurora_imortal',
@@ -387,7 +387,7 @@ export const EPIC_POEM_PARALLEL_PART_22: EpicPoemCanto[] = [
     title: 'O Orbe do Sol Aprisionado e a Mobilização da Torre dos Cinco Selos',
     subtitle: 'Como a abertura do Orbe do Sol Aprisionado desencadeou a Ira do Firmamento Dourado, os Pilares da Geada Eterna e a Colheita do Cálice de Obsidiana, levando o Comandante Garrick e Valkyra a decretarem a Mobilização da Torre dos Cinco Selos',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_7j_1_orbe_sol_aprisionado',

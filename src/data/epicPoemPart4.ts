@@ -590,7 +590,7 @@ export const EPIC_POEM_PART_4: EpicPoemCanto[] = [
     title: 'O Eclipse do Sétimo Selo e a Guerra dos Relicários',
     subtitle: 'Quando as fissuras do Vazio se abriram e as 1.038 Memórias despertaram para o duelo final',
     accentColor: '#f43f5e',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'canto7_prelude_setimo_selo',

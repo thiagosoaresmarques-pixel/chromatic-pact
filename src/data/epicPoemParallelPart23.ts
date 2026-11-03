@@ -24,7 +24,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
     title: 'A Bússola Navegadora dos Planos e os Cinco Santuários Consagrados',
     subtitle: 'Como Aetherion e os artífices dos Tratados Bicolores alinharam a Bússola Navegadora dos Planos ao Coração da Selva Viva, ao Astrolábio do Infinito, ao Campanário dos Mortos, à Bigorna Dracônica e ao Santuário da Ordem Suprema',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_6l_1_bussola_navegadora_planos',
@@ -387,7 +387,7 @@ export const EPIC_POEM_PARALLEL_PART_23: EpicPoemCanto[] = [
     title: 'O Decreto de Paz Armada e as Armadilhas Rúnicas da Torre',
     subtitle: 'Como o Comandante Garrick e o Mestre da Lâmina Cantante acionaram o Decreto de Paz Armada da Torre, o Selo de Anulação Instantânea, a Égide de Adamantina Planar e as Escrituras das Asas de Pérola para blindar a Arena antes do cerco final',
     accentColor: '#94a3b8',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     nodes: [
       {
         id: 'node_7k_1_egide_adamantina_planar',

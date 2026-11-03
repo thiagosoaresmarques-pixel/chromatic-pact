@@ -1551,10 +1551,29 @@ async function deleteRoomFromSupabaseIfConfigured(
   }
 }
 
+let mpPollingActive = false;
+let mpPollInFlight = false;
+const IS_VITE_DEV = Boolean(
+  (import.meta as unknown as { env?: { DEV?: boolean } }).env?.DEV
+);
+
+export function setMultiplayerPollingActive(active: boolean): void {
+  const becameActive = active && !mpPollingActive;
+  mpPollingActive = active;
+  if (becameActive && typeof window !== 'undefined') {
+    initMultiplayerNetworkBus();
+    if (typeof document === 'undefined' || document.visibilityState === 'visible') {
+      void pollRoomsFromSupabaseIfConfigured();
+    }
+  }
+}
+
 async function pollRoomsFromSupabaseIfConfigured(): Promise<void> {
+  if (mpPollInFlight) return;
   const cfg = getSupabaseConfig();
   if (!cfg.isConfigured) return;
 
+  mpPollInFlight = true;
   try {
     const res = await fetch(
       `${cfg.url}/rest/v1/multiplayer_rooms?select=code,status,game_state,updated_at&order=updated_at.desc&limit=30`,
@@ -1598,6 +1617,8 @@ async function pollRoomsFromSupabaseIfConfigured(): Promise<void> {
     }
   } catch {
     // Ignore transient network errors
+  } finally {
+    mpPollInFlight = false;
   }
 }
 
@@ -1744,29 +1765,42 @@ export function initMultiplayerNetworkBus(): void {
     }
   });
 
-  // 3. Vite Built-in SSE Relay (Cross-browser / Incognito / LAN sync)
-  try {
-    sseSource = new EventSource('/api/mp/stream');
-    sseSource.onmessage = (ev) => {
-      try {
-        const msg = JSON.parse(ev.data) as MpNetworkMessage;
-        handleIncomingMessage(msg);
-      } catch {
-        // Ignore
-      }
-    };
-    sseSource.onerror = () => {
-      // Static hosting without Vite dev server will silently use BroadcastChannel/Supabase
-    };
-  } catch {
-    // Ignore
+  // 3. Vite Built-in SSE Relay (Dev-only cross-browser / LAN sync)
+  if (IS_VITE_DEV) {
+    try {
+      sseSource = new EventSource('/api/mp/stream');
+      sseSource.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data) as MpNetworkMessage;
+          handleIncomingMessage(msg);
+        } catch {
+          // Ignore
+        }
+      };
+      sseSource.onerror = () => {
+        // Ignore dev SSE transient disconnects
+      };
+    } catch {
+      // Ignore
+    }
   }
 
-  // 4. Supabase Cloud Sync Loop (Cross-Internet global 1v1 sync)
-  pollRoomsFromSupabaseIfConfigured();
+  // 4. Adaptive Supabase Cloud Sync Loop (polls fast only when Multiplayer / Tournament PvP is active & tab visible)
+  if (mpPollingActive && (typeof document === 'undefined' || document.visibilityState === 'visible')) {
+    void pollRoomsFromSupabaseIfConfigured();
+  }
   window.setInterval(() => {
-    pollRoomsFromSupabaseIfConfigured();
+    if (mpPollingActive && (typeof document === 'undefined' || document.visibilityState === 'visible')) {
+      void pollRoomsFromSupabaseIfConfigured();
+    }
   }, 1500);
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && mpPollingActive) {
+        void pollRoomsFromSupabaseIfConfigured();
+      }
+    });
+  }
 }
 
 export function publishMpMessage(msg: MpNetworkMessage): void {
@@ -1781,16 +1815,18 @@ export function publishMpMessage(msg: MpNetworkMessage): void {
     }
   }
 
-  // Post to Vite Relay for cross-browser / LAN players
-  const isUrgentLifecycle = msg.type === 'MATCH_FORFEIT' || msg.type === 'ROOM_REMOVE';
-  fetch('/api/mp/publish', {
-    method: 'POST',
-    keepalive: isUrgentLifecycle,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(msg),
-  }).catch(() => {
-    // Ignore on static build
-  });
+  // Post to Vite Relay for local dev cross-browser / LAN players
+  if (IS_VITE_DEV) {
+    const isUrgentLifecycle = msg.type === 'MATCH_FORFEIT' || msg.type === 'ROOM_REMOVE';
+    fetch('/api/mp/publish', {
+      method: 'POST',
+      keepalive: isUrgentLifecycle,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(msg),
+    }).catch(() => {
+      // Ignore
+    });
+  }
 
   if (msg.type === 'ROOM_UPSERT') {
     syncRoomToSupabaseIfConfigured(msg.room);

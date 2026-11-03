@@ -25,7 +25,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
     title: 'O Duelo de Sete Dias e a Invenção do Relógio de Turnos',
     subtitle: 'Como Thaddeus, Justinian, o Draco Horológico, Kaelen, o Comandante Garrick e Valkyra instalaram sob a Arena o grande pêndulo que divide cada partida em Fases e Turnos invioláveis',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_5g_1_draco_horologico',
@@ -357,7 +357,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
     title: 'O Encontro entre Khorvath e Silvathor no Vale das Cinzas Verdes',
     subtitle: 'Como o General Varkas, Kongor, Lyra e o Comandante Garrick transformaram a erupção de Khorvath sobre as matas de Silvathor no rito de fertilidade e fúria do Tratado Rubro-Esmeralda',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_6g_1_khorvath_erupcao',
@@ -689,7 +689,7 @@ export const EPIC_POEM_PARALLEL_PART_14: EpicPoemCanto[] = [
     title: 'O Dia em que Malakor Quis Devorar o Próprio Trono de Eclipse',
     subtitle: 'Como a chegada corpórea de Malakor em 1.132 D.F. ameaçou desintegrar tanto a Torre quanto as legiões de Vesperion, forçando Zephaniel, o General Varkas, o Comandante Garrick e Valkyra a selar sua encarnação física como carta Lendária',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_7g_1_malakor_chegada',

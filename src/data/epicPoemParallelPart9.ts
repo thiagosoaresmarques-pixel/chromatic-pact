@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
     title: 'A Destrava do Pêndulo Central no Eixo de Chronos',
     subtitle: 'Como Chronos, o jovem Aldric, o artífice Kaelen e o Draco Horológico soltaram a trava do Eixo Central para que o tempo pudesse nascer no Golpe Pentacromático, sob a unção silenciosa de Valkyra',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_1e_chronos',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
     title: 'O Concerto das Águas Profundas e o Fim da Primeira Era',
     subtitle: 'Como Nereus, Aldric, Lyra e o Quelônio-Titã apaziguaram o choque entre Thalassia e o Verme das Fendas em 134 D.F., abrindo oito anos de paz costeira até 142 D.F.',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_2e_thalassia',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
     title: 'O Levante dos Artífices e o Pacto Marcial de Belphegor',
     subtitle: 'Como Kaelen, o herdeiro da Casa Varkas, o Titã de Adamantina, o Operário de Relojoaria e Rik III firmaram com Belphegor o Pacto Constitucional Marcial das Forjas Livres em 366 D.F.',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_3e_belphegor',
@@ -996,7 +996,7 @@ export const EPIC_POEM_PARALLEL_PART_9: EpicPoemCanto[] = [
     title: 'A Barreira dos Escudos Partidos diante da Explosão de Balgorath',
     subtitle: 'Como Zephaniel, o General Varkas, Lyra e o Paladino do Brasão Solar contiveram a detonação mortal de Balgorath conjurada por Vesperion para salvar os refugiados da fronteira',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_4e_balgorath',

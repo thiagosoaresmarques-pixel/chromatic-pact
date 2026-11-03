@@ -18,7 +18,7 @@ export const EPIC_POEM_PART_1: EpicPoemCanto[] = [
     subtitle:
       'Quando o sol hexagonal de vidro governava um mundo sem tempo, até a rebelião dos Cinco Primogênitos',
     accentColor: '#e2e8f0',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     nodes: [
       {
         id: 'canto_1_prelude_silencio',

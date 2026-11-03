@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
     title: 'A Falsificação dos Selos Lendários e o Julgamento de Thaddeus',
     subtitle: 'Como Mephistar tentou corromper a balança das quatro raridades em 740 D.F., e como Thaddeus, Justinian, o Capitão Garrick e o Serafim dos Anéis Abissais preservaram a lei da Oferenda',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_5b_tirano_ocular',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
     title: 'O Banquete de Gelo e Sangue no Estreito de Vórtex-Eclipse',
     subtitle: 'As intrigas na assinatura do tratado bicolor entre Safira e Eclipse, reunindo Vladislaus, Carmilla, Vesperion, Kryonax e Nereus sobre o mar congelado',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_6b_devorador_mentes',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_4: EpicPoemCanto[] = [
     title: 'A Vigília dos Imortais antes da Chegada do Novo Soberano',
     subtitle: 'O encontro final entre Valkyra, Hyperion, Vesperion, Kongor, Zephaniel e o Marechal Varkas na madrugada em que o Grimório Inicial de 100 Cartas é entregue ao Campeão',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_7b_valkyra_pentacromatica',

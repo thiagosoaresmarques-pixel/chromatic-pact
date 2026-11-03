@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
     title: 'A Descida de Thaddeus e Lyra ao Ventre de Nihil-Vael',
     subtitle: 'Como Thaddeus, Justinian, o Comandante Garrick, Lyra e a voz espiritual de Aldric no Cetro Astral recuperaram os três séculos de memórias que Nihil-Vael manifestara sua fome para apagar em 768 D.F.',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_5h_nihil_vael_devorador',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
     title: 'A Prova de Fogo entre Aurelion e Magmarok na Praça Solar',
     subtitle: 'Como Kaelen, o General Varkas, Zephaniel e o Comandante Garrick fundiram o sopro de Magmarok e a luz de Aurelion em 901 D.F. para ratificar em metal bélico o Tratado da Forja Solar de 880 D.F.',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_6h_aurelion_tita_empireo',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_16: EpicPoemCanto[] = [
     title: 'O Mergulho Sônico que Rasgou o Véu de Vesperion sobre a Torre',
     subtitle: 'Como, oito anos antes do presente, o Dragão de Safira Sônico, Thaddeus, Zephaniel, o General Varkas, o Comandante Garrick e Valkyra dissiparam a abóbada de cinzas que cercava a Arena',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_7h_dragao_safira_estratosfera',

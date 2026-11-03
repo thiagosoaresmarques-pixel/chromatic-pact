@@ -25,7 +25,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
     title: 'A Noite das Cem Memórias e a Emboscada do Subsolo',
     subtitle: 'Como o Comandante Garrick defendeu o Tomo das Estrelas Viajantes contra os sabotadores umbrais na noite em que a Torre Cinzenta tornou-se Torre dos Cinco Selos, sendo investido Guardião Imortal',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_5a_1_prelude_grimorio',
@@ -357,7 +357,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
     title: 'O Ritual da Forja Solar e a Bancada dos Pares Bicolores',
     subtitle: 'Como o Campeão Juramentado Varkas e a fada Lyra conduziram o ensaio cruzado entre dois pares bicolores aliados (Pyros-Solária e Vórtex-Veridia) nos Laboratórios da Concordata',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_6a_1_prelude_portal_runas',
@@ -689,7 +689,7 @@ export const EPIC_POEM_PARALLEL_PART_2: EpicPoemCanto[] = [
     title: 'A Noite da Fenda Áurea e o Decreto do Relicário',
     subtitle: 'O embate titânico entre Garrick, Vesperion, Kongor, Zephaniel e Valkyra quando a Pedra Filosofal abriu o cofre das 1.038 Memórias',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_7a_1_prelude_pedra_filosofal',

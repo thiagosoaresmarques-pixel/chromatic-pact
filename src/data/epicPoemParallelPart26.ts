@@ -27,7 +27,7 @@ export const EPIC_POEM_PARALLEL_PART_26: EpicPoemCanto[] = [
     subtitle:
       'De como seis linhagens de brutos couraçados nascidos das cascas cristalinas do Prisma despedaçaram as correntes das pedreiras reais, exigindo a vigília do Titã de Adamantina antes de se tornarem baluartes juramentados das seis bandeiras',
     accentColor: '#94a3b8',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     nodes: [
       {
         id: 'node_3k_1_flagelo_primordial',

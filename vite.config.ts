@@ -110,6 +110,12 @@ export default defineConfig({
             return 'data-problems';
           }
           if (
+            norm.includes('aiValueNetworksData') ||
+            norm.includes('compactMasteryCodec')
+          ) {
+            return 'ai-value-networks';
+          }
+          if (
             norm.includes('aiLearnedWeights') ||
             norm.includes('aiLearnedProfiles') ||
             norm.includes('aiValueMlpWeights')

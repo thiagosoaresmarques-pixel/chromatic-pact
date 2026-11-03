@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
     title: 'A Brasa Proibida que Aqueceu o Coração de Vulcanis',
     subtitle: 'Como Vulcanis, o Titã da Alvorada, Kaelen, Aldric e a Salamandra do Mar de Brasas alimentaram em segredo a Fornalha Rúnica sob o gelo branco na estase perpétua antes da Fratura',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_1g_vulcanis',
@@ -342,7 +342,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
     title: 'A Tempestade de Vorthurion e a Primeira Torre Astral de Aldric',
     subtitle: 'Como o sopro de raios de Vorthurion transformou as dunas em agulhas de quartzo em 14 D.F., onde Aldric, Kaelen, Zik, a Esfinge e a Serpe Trovejante fundaram o primeiro observatório de Vórtex',
     accentColor: '#38bdf8',
-    bannerImage: '/assets/arena/tabletop_blue.png',
+    bannerImage: '/tabletops/tabletop_domain_blue.webp',
     nodes: [
       {
         id: 'node_2g_vorthurion',
@@ -669,7 +669,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
     title: 'A Conjura do Veneno Verde e a Missão de Lyra e Kongor',
     subtitle: 'Como Carmilla incitou Viperia e Vorágine a envenenarem as águas de Solária em 312 D.F., e como Lyra, Kongor e Zephaniel purificaram o rio a tempo de impedir a guerra',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_3g_viperia',
@@ -996,7 +996,7 @@ export const EPIC_POEM_PARALLEL_PART_13: EpicPoemCanto[] = [
     title: 'A Honra do Marechal Varkas no Ninho do Tiranossauro Alfa',
     subtitle: 'Como o General Varkas impediu os capitães de Ignis-Vael de escravizarem as crias do Tiranossauro Alfa em 518 D.F., conquistando o respeito eterno de Kongor, Lyra e Gorgoroth',
     accentColor: '#10b981',
-    bannerImage: '/assets/arena/tabletop_green.png',
+    bannerImage: '/tabletops/tabletop_domain_green.webp',
     nodes: [
       {
         id: 'node_4g_rex_primordial',

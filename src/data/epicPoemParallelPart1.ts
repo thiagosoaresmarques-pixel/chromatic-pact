@@ -15,7 +15,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
     title: 'Os Sessenta Grãos Cegos do Golpe Pentacromático',
     subtitle: 'Como Aldric, Kaelen, o Autômato de Quartzo e o pacto selado com Valkyra ocultaram a subida dos Cinco Conjuradores no instante da Fratura',
     accentColor: '#94a3b8',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     nodes: [
       {
         id: 'node_1a_ampulheta',
@@ -372,7 +372,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
     title: 'A Vigília dos Pequenos na Cratera da Casca Cinzenta',
     subtitle: 'Como os veteranos Zik, Lyra e Aldric se reencontraram para impedir que a Mandíbula Escavadora devorasse o núcleo do Coroa-Prisma antes da chegada de Zephaniel e Valkyra',
     accentColor: '#ef4444',
-    bannerImage: '/assets/arena/tabletop_red.png',
+    bannerImage: '/tabletops/tabletop_domain_red.webp',
     nodes: [
       {
         id: 'node_2a_refluxo_astral',
@@ -699,7 +699,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
     title: 'Os Três Minutos de Magma sob a Bigorna Primordial',
     subtitle: 'Como Kaelen, o Patriarca General Varkas I, Rik (neto de Zik) e o Colosso do Vulcão salvaram a Cidadela da Caldeira no dia do Acendimento',
     accentColor: '#f59e0b',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     nodes: [
       {
         id: 'node_3a_bigorna_fogo',
@@ -1026,7 +1026,7 @@ export const EPIC_POEM_PARALLEL_PART_1: EpicPoemCanto[] = [
     title: 'A Quarta Armada da Noite da Longa Exumação',
     subtitle: 'Como Vesperion, Carmilla, o Lobo Alfa, o Espectro e o Leviatã Psíquico ergueram do mar congelado a quarta legião de Malakor-Vael',
     accentColor: '#a855f7',
-    bannerImage: '/assets/arena/tabletop_purple.png',
+    bannerImage: '/tabletops/tabletop_domain_purple.webp',
     nodes: [
       {
         id: 'node_4a_contrato_correntes',

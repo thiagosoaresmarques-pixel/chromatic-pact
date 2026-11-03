@@ -28,7 +28,7 @@ export const EPIC_POEM_PARALLEL_PART_24: EpicPoemCanto[] = [
     subtitle:
       'De como, no primeiro segundo após o Golpe Pentacromático partir o Coroa-Prisma, sua alma despedaçada encarnou na Matriz Primordial e nos cinco Arautos elementais suspensos sobre Vaeloria',
     accentColor: '#e2e8f0',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     nodes: [
       {
         id: 'node_2aa_1_matriz_prisma',

@@ -140,6 +140,7 @@ import {
   recordPvpMatchResult,
   recordRankedSovereignDuelResult,
   setActiveTabUserProfile,
+  setMultiplayerPollingActive,
   SovereignUserProfile,
   subscribeMultiplayerBus,
   VICTORY_GOLD_REWARD,
@@ -644,6 +645,15 @@ export const App: React.FC = () => {
       setActivePersonalReplayInitFrame(undefined);
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    const needsRealtimeRooms =
+      activeTab === 'multiplayer' ||
+      activeTab === 'tournaments' ||
+      Boolean(activeOnlineMatch) ||
+      Boolean(activeTournamentSpectate?.livePvpRoom);
+    setMultiplayerPollingActive(needsRealtimeRooms);
+  }, [activeTab, activeOnlineMatch, activeTournamentSpectate]);
 
   // Shareable Deep-Link Router (?deck=..., ?replay=..., ?live=..., ?tid=...&tround=...&ttable=...)
   useEffect(() => {

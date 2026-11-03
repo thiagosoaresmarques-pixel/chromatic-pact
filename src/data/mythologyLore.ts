@@ -65,7 +65,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
     title: 'A Vigília Imóvel sob o Coroa-Prisma',
     subtitle: 'Quando o mundo de Vaeloria não conhecia sombra, estação nem morte',
     accentColor: '#e2e8f0',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     proseOverview: [
       'Antes que os relógios de Vórtex tivessem ponteiros ou que as forjas de Pyros conhecessem a primeira fagulha, o continente de Vaeloria jazia sob o Coroa-Prisma: um sol hexagonal de luz branca absoluta suspenso no zênite do firmamento.',
       'Sob sua claridade imóvel, nenhuma folha caía nas matas, nenhuma maré subia nos mares e nenhum mortal envelhecia. Mas a perfeição sem mudança era também uma prisão de vidro: nada podia nascer, nada podia ser sonhado e nenhuma canção tinha fim.',
@@ -353,7 +353,7 @@ export const TIMELINE_ERAS: TimelineEra[] = [
     title: 'O Eclipse do Sétimo Selo e a Abertura dos Relicários',
     subtitle: 'O tempo presente: fissuras na Fronteira Cinzenta e a ascensão de um novo Soberano',
     accentColor: '#eab308',
-    bannerImage: '/assets/arena/tabletop_gold.png',
+    bannerImage: '/tabletops/tabletop_domain_gold.webp',
     proseOverview: [
       'Chegamos ao Ano 1.240 D.F. Após mais de meio milênio de estabilidade, os Cinco Selos da Torre Cinzenta começaram a vibrar com uma frequência desconhecida.',
       'Antigos cofres da Primeira Era — os Relicários — emergiram das fendas trazendo à tona 1.038 ecos de criaturas, feitiços e artefatos de todas as eras passadas. Ao mesmo tempo, vinte Senhores da Guerra rebeldes ocuparam as rotas da Campanha em cinco atos, desafiando a autoridade da Torre.',
@@ -396,7 +396,7 @@ export const MYTHOLOGY_BOOKS: MythologyBook[] = [
     subtitle: 'De como o Coroa-Prisma foi partido e o Pacto Cromático foi jurado (∞ A.F. – 689 D.F.)',
     epigraph: '«Cantai, ó cronistas da Torre Cinzenta, o dia em que o branco aprendeu a sangrar em cinco cores.»',
     accentColor: '#f59e0b',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     cantos: [
       {
         id: 'canto_p1',
@@ -717,7 +717,7 @@ export const MYTHOLOGY_BOOKS: MythologyBook[] = [
     subtitle: 'A crônica do Conclave Cinzento e das 10 Alianças Bicolores que regem os 30 Grimórios',
     epigraph: '«Todas as cinco cores juraram na nossa mesa; por isso nossas portas se abrem a todas elas.»',
     accentColor: '#94a3b8',
-    bannerImage: '/assets/arena/tabletop_neutral.png',
+    bannerImage: '/tabletops/tabletop_domain_neutral.webp',
     cantos: [
       {
         id: 'canto_neutral_1',

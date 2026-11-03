@@ -280,6 +280,7 @@ const STARTER_DOMAIN_SHORT_LABELS: Record<string, string> = {
   purple: 'Abismo',
   green: 'Selva',
   gold: 'Ordem',
+  neutral: 'Axial',
 };
 
 export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
@@ -441,8 +442,18 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     }
   };
 
+  const [armedDeleteAccId, setArmedDeleteAccId] = useState<string | null>(null);
+
   const handleDeleteAccount = async (acc: SovereignUserProfile, e?: React.MouseEvent) => {
     e?.stopPropagation();
+    if (armedDeleteAccId !== acc.id) {
+      setArmedDeleteAccId(acc.id);
+      window.setTimeout(() => {
+        setArmedDeleteAccId((prev) => (prev === acc.id ? null : prev));
+      }, 3000);
+      return;
+    }
+    setArmedDeleteAccId(null);
     const remaining = await deleteSovereignAccount(acc);
     setAccountsRoster(remaining);
     const nextActive = getActiveTabUserProfile();
@@ -538,7 +549,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
     <div className="modal-backdrop" onClick={onClose}>
       <div
         className="modal-panel"
-        style={{ maxWidth: '680px', width: '95vw', maxHeight: '92vh', overflowY: 'auto' }}
+        style={{ maxWidth: '680px', width: '95vw', maxHeight: '92dvh', overflowY: 'auto' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-sticky-close-bar">
@@ -1119,18 +1130,27 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
                             </div>
                           </div>
                         </div>
-                        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                          <span className="aaa-btn aaa-btn-secondary" style={{ padding: '4px 10px' }}>
-                            {isCurrent ? 'Conectado' : 'Usar Conta'}
+                        <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center', flexShrink: 0 }}>
+                          <span className="aaa-btn aaa-btn-secondary" style={{ minHeight: '36px', padding: '0 10px' }}>
+                            {isCurrent ? 'Conectado' : 'Usar'}
                           </span>
                           <button
                             type="button"
                             className="aaa-btn aaa-btn-ghost"
-                            style={{ padding: '4px 8px', color: '#fca5a5', fontSize: '0.72rem' }}
+                            style={{
+                              minHeight: '36px',
+                              padding: '0 9px',
+                              color: armedDeleteAccId === acc.id ? '#fef08a' : '#fca5a5',
+                              borderColor:
+                                armedDeleteAccId === acc.id
+                                  ? 'rgba(250, 204, 21, 0.7)'
+                                  : undefined,
+                              fontSize: '0.73rem',
+                            }}
                             title="Excluir este perfil"
-                            onClick={(e) => handleDeleteAccount(acc, e)}
+                            onClick={(e) => void handleDeleteAccount(acc, e)}
                           >
-                            Excluir
+                            {armedDeleteAccId === acc.id ? 'Confirmar?' : 'Excluir'}
                           </button>
                         </div>
                       </div>
@@ -1256,7 +1276,7 @@ export const SovereignAccountModal: React.FC<SovereignAccountModalProps> = ({
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(5, minmax(0, 1fr))',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(84px, 1fr))',
                   gap: '6px',
                 }}
               >

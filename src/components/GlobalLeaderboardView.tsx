@@ -317,7 +317,10 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
             style={{
               background: 'none',
               border: 'none',
-              padding: 0,
+              padding: '4px 2px',
+              minHeight: '32px',
+              display: 'inline-flex',
+              alignItems: 'center',
               color: '#94a3b8',
               fontSize: '0.76rem',
               textDecoration: 'underline',
@@ -518,9 +521,10 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
           <strong style={{ color: '#e2e8f0' }}>{filteredEntries.length}</strong> Soberanos
         </div>
 
-        <div style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
+        <div className="glb-filter-bar" style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <input
             type="search"
+            className="glb-search-input"
             placeholder="Buscar nome ou arquétipo..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -531,11 +535,12 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
               border: '1px solid rgba(148, 163, 184, 0.18)',
               color: '#f8fafc',
               fontSize: '0.76rem',
-              width: '185px',
+              width: '215px',
             }}
           />
 
           <select
+            className="glb-filter-select"
             value={divisionFilter}
             onChange={(e) => setDivisionFilter(e.target.value as 'all' | EloDivisionId)}
             aria-label="Filtrar por divisão"
@@ -557,6 +562,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
           </select>
 
           <select
+            className="glb-filter-select"
             value={domainFilter}
             onChange={(e) => setDomainFilter(e.target.value as 'all' | Domain)}
             aria-label="Filtrar por domínio"
@@ -579,6 +585,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
 
           <button
             type="button"
+            className="glb-filter-btn"
             onClick={() => setIncludeRegionalCommanders((v) => !v)}
             style={{
               padding: '6px 10px',
@@ -601,6 +608,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
           {totalPages > 1 && safePage !== myTargetPage && (
             <button
               type="button"
+              className="glb-filter-btn"
               onClick={() => setCurrentPage(myTargetPage)}
               style={{
                 padding: '6px 10px',
@@ -631,6 +639,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
       >
         {/* Column Headers */}
         <div
+          className="glb-grid-row glb-grid-header"
           style={{
             display: 'grid',
             gridTemplateColumns: '48px minmax(0, 1fr) auto',
@@ -647,15 +656,15 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
         >
           <span>#</span>
           <span>Participante</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <div className="glb-right-cols" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
             <span className="hide-on-mobile" style={{ width: '64px', textAlign: 'center' }}>
               Domínio
             </span>
             <span className="hide-on-mobile" style={{ width: '92px' }}>
               Divisão
             </span>
-            <span style={{ width: '84px', textAlign: 'right' }}>ELO</span>
-            <span style={{ width: '88px', textAlign: 'right' }}>Ação</span>
+            <span className="glb-elo-col" style={{ width: '84px', textAlign: 'right' }}>ELO</span>
+            <span className="glb-action-col" style={{ width: '88px', textAlign: 'right' }}>Ação</span>
           </div>
         </div>
 
@@ -683,6 +692,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
               return (
                 <div
                   key={row.entryId}
+                  className="glb-grid-row"
                   onClick={() => {
                     if (sov) setDossierSovereign(sov);
                   }}
@@ -724,7 +734,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                   </div>
 
                   {/* Identity */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: 0 }}>
+                  <div className="glb-identity-col" style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: 0 }}>
                     {renderPortrait(row.avatarCardId, 36, isMe)}
                     <div style={{ minWidth: 0 }}>
                       <div
@@ -779,7 +789,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                   </div>
 
                   {/* Right Columns */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                  <div className="glb-right-cols" style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                     {/* Clean Geometric Domain Dots */}
                     <div
                       className="hide-on-mobile"
@@ -840,6 +850,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
 
                     {/* ELO Rating */}
                     <div
+                      className="glb-elo-col"
                       style={{
                         width: '84px',
                         textAlign: 'right',
@@ -859,6 +870,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                       >
                         {typeof row.recentEloDelta === 'number' && row.recentEloDelta !== 0 && (
                           <span
+                            className="glb-elo-delta"
                             style={{
                               fontSize: '0.66rem',
                               fontWeight: 600,
@@ -885,6 +897,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
 
                     {/* Single Action */}
                     <div
+                      className="glb-action-col"
                       style={{ width: '88px', display: 'flex', justifyContent: 'flex-end' }}
                       onClick={(ev) => ev.stopPropagation()}
                     >

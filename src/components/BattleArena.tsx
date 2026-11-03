@@ -3847,7 +3847,33 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setGameState(next);
   };
 
-  const handleEndPlayerTurn = () => {
+  const [endTurnConfirmArmed, setEndTurnConfirmArmed] = useState(false);
+  const endTurnConfirmTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setEndTurnConfirmArmed(false);
+    if (endTurnConfirmTimerRef.current !== null) {
+      window.clearTimeout(endTurnConfirmTimerRef.current);
+      endTurnConfirmTimerRef.current = null;
+    }
+  }, [
+    gameState.turn,
+    gameState.activePlayer,
+    gameState.player.currentEssence,
+    gameState.player.hasChanneledThisTurn,
+    gameState.player.hand.length,
+    readyPlayerUnits.length,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      if (endTurnConfirmTimerRef.current !== null) {
+        window.clearTimeout(endTurnConfirmTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleEndPlayerTurn = (bypassActionGuard = false) => {
     if (!isPlayerTurn || combatAnim) return;
     if (tacticalProblem && gameState.ai.hp > 0) {
       recordProblemAttemptFailed(tacticalProblem.id);
@@ -3855,6 +3881,30 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       setShowProblemIncompleteModal(true);
       playSfx('hit');
       return;
+    }
+    if (!bypassActionGuard && !tacticalProblem) {
+      const canStillChannel =
+        !gameState.player.hasChanneledThisTurn && gameState.player.hand.length > 0;
+      const hasPlayableHandCard = gameState.player.hand.some(
+        (c) => canPlayCard(gameState, 'player', c).allowed
+      );
+      const hasReadyAttackers = readyPlayerUnits.length > 0;
+      if ((canStillChannel || hasPlayableHandCard || hasReadyAttackers) && !endTurnConfirmArmed) {
+        setEndTurnConfirmArmed(true);
+        if (endTurnConfirmTimerRef.current !== null) {
+          window.clearTimeout(endTurnConfirmTimerRef.current);
+        }
+        endTurnConfirmTimerRef.current = window.setTimeout(() => {
+          setEndTurnConfirmArmed(false);
+          endTurnConfirmTimerRef.current = null;
+        }, 2500);
+        return;
+      }
+    }
+    setEndTurnConfirmArmed(false);
+    if (endTurnConfirmTimerRef.current !== null) {
+      window.clearTimeout(endTurnConfirmTimerRef.current);
+      endTurnConfirmTimerRef.current = null;
     }
     setSelectedHandIndex(null);
     setSelectedAttackerId(null);
@@ -3942,7 +3992,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
       if (e.code === 'Space') {
         e.preventDefault();
-        handleEndPlayerTurn();
+        handleEndPlayerTurn(true);
         return;
       }
 
@@ -6679,7 +6729,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               onClick={() => handleQuickDeployToRow(selectedHandIndex, 'vanguard')}
                               title="Invocar automaticamente na Vanguarda"
                             >
-                              ⚔️ Vang.
+                              Vanguarda
                             </button>
                           )}
                         {isPlayerTurn &&
@@ -6692,7 +6742,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               onClick={() => handleQuickDeployToRow(selectedHandIndex, 'rearguard')}
                               title="Invocar automaticamente na Retaguarda"
                             >
-                              🛡️ Retag.
+                              Retaguarda
                             </button>
                           )}
                         {isPlayerTurn &&
@@ -6705,7 +6755,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               onClick={() => handleQuickDeployToRow(selectedHandIndex, 'rearguard')}
                               title="Forjar Relíquia na Retaguarda"
                             >
-                              🏺 Retag.
+                              Retaguarda
                             </button>
                           )}
                         {isPlayerTurn &&
@@ -6716,7 +6766,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               className="mccb-btn act-cast"
                               onClick={() => handleQuickCastSpell(selectedHandIndex)}
                             >
-                              ✨ Lançar
+                              Lançar
                             </button>
                           )}
                         {isPlayerTurn &&
@@ -6735,7 +6785,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 }
                                 title={`Mirar em ${tu.card.name} (Col ${tu.slotIndex + 1} • ${tu.currentAtk}/${tu.currentHp})`}
                               >
-                                🎯 {tu.card.name.split(' ')[0]} C{tu.slotIndex + 1} ({tu.currentHp}❤️)
+                                {tu.card.name.split(' ')[0]} C{tu.slotIndex + 1} ({tu.currentHp} PV)
                               </button>
                             ))}
                         {isPlayerTurn &&
@@ -6754,7 +6804,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                 }
                                 title={`Mirar em ${tu.card.name} (Col ${tu.slotIndex + 1} • ${tu.currentAtk}/${tu.currentHp})`}
                               >
-                                🎯 {tu.card.name.split(' ')[0]} C{tu.slotIndex + 1} ({tu.currentHp}❤️)
+                                {tu.card.name.split(' ')[0]} C{tu.slotIndex + 1} ({tu.currentHp} PV)
                               </button>
                             ))}
                         {isPlayerTurn &&
@@ -6766,7 +6816,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               className="mccb-btn act-trap"
                               onClick={() => handleQuickArmTrap(selectedHandIndex)}
                             >
-                              🪤 Armar
+                              Armar
                             </button>
                           )}
                         {isPlayerTurn && !gameState.player.hasChanneledThisTurn && (
@@ -6776,7 +6826,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             onClick={() => handleQuickChannelCard(selectedHandIndex)}
                             title="Canalizar (+1 Afinidade, +1 Essência e Compra)"
                           >
-                            🔮 +1⚡
+                            Canalizar (+1)
                           </button>
                         )}
                         {isPlayerTurn && gameState.player.hasChanneledThisTurn && (
@@ -6786,7 +6836,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             onClick={() => handleQuickBurnCard(selectedHandIndex)}
                             title="Sacrificar carta por +1 Essência"
                           >
-                            🔥 +1⚡
+                            Sacrificar (+1)
                           </button>
                         )}
                         <button
@@ -6795,15 +6845,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           onClick={() => setInspectCard(activeHand)}
                           title="Ver detalhes da carta"
                         >
-                          🔍
+                          Detalhes
                         </button>
                         <button
                           type="button"
                           className="mccb-btn act-cancel"
-                          onClick={() => clearHandSelectionAndDrawers()}
-                          title="Cancelar seleção"
+                          onClick={() => {
+                            setSelectedHandIndex(null);
+                            setIsHandPinnedOpen(true);
+                          }}
+                          title="Voltar para a mão"
                         >
-                          ✕
+                          ← Mão
                         </button>
                       </div>
                     </div>
@@ -7485,7 +7538,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         }
 
                         const renderSecondarySpecPopover = () => (
-                          <details style={{ position: 'relative' }}>
+                          <details className="cp-floating-details" style={{ position: 'relative' }}>
                             <summary
                               className="arena-spec-btn"
                               style={{
@@ -7903,21 +7956,32 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         disabled={Boolean(combatAnim)}
                         onClick={handleAutoAttackAll}
                       >
-                        ⚔️ <span className="hide-on-mobile">ATACAR </span>({readyPlayerUnits.length})
+                        Atacar ({readyPlayerUnits.length})
                       </button>
                     )}
 
                     <button
                       type="button"
-                      className="hud-action-cta primary"
+                      className={`hud-action-cta primary ${endTurnConfirmArmed ? 'is-confirm-armed' : ''}`}
+                      style={
+                        endTurnConfirmArmed
+                          ? {
+                              borderColor: '#facc15',
+                              background: 'linear-gradient(180deg, rgba(161, 98, 7, 0.9) 0%, rgba(113, 63, 18, 0.95) 100%)',
+                              color: '#fef9c3',
+                            }
+                          : undefined
+                      }
                       disabled={!isPlayerTurn || Boolean(combatAnim)}
-                      onClick={handleEndPlayerTurn}
+                      onClick={() => handleEndPlayerTurn(false)}
                     >
                       {!isPlayerTurn ? (
-                        'AGUARDE...'
+                        'Aguarde...'
+                      ) : endTurnConfirmArmed ? (
+                        'Confirmar?'
                       ) : (
                         <>
-                          ⏭️ PASSAR<span className="hide-on-mobile"> TURNO [ESPAÇO]</span>
+                          Passar<span className="hide-on-mobile"> Turno [Espaço]</span>
                         </>
                       )}
                     </button>
@@ -7935,7 +7999,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         title="Render-se e encerrar a batalha"
                         onClick={() => setShowSurrenderConfirm(true)}
                       >
-                        🏳️ DESISTIR
+                        Desistir
                       </button>
                     )}
 
@@ -9355,7 +9419,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                 className="btn-fantasy btn-fantasy-danger"
                 onClick={handleConfirmSurrender}
               >
-                🏳️ Confirmar Desistência
+                Confirmar Desistência
               </button>
               {!onlineMatch && (
                 <button
@@ -9366,7 +9430,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     handleExitBattle();
                   }}
                 >
-                  {campaignBoss ? '🗺️ Voltar ao Mapa' : '🏠 Sair para o Início'}
+                  {campaignBoss ? 'Voltar ao Mapa' : 'Sair para o Início'}
                 </button>
               )}
             </div>
@@ -9502,49 +9566,51 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             : hasPlayableInHand
             ? 'Selecione uma carta iluminada da mão e posicione-a na Vanguarda.'
             : 'Ataque com unidades prontas ou toque em Passar Turno.';
+          const needsHandAction =
+            !gameState.player.hasChanneledThisTurn || hasPlayableInHand;
           return (
             <div
               role="status"
+              className="arena-turn1-guide-pill"
+              onClick={() => {
+                if (needsHandAction && !isHandPinnedOpen && selectedHandIndex === null) {
+                  setIsP1DrawerPinned(false);
+                  setIsP2DrawerPinned(false);
+                  setActiveRightDrawer(null);
+                  setIsHandPinnedOpen(true);
+                }
+              }}
               style={{
-                position: 'fixed',
-                top: '54px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: 1140,
-                maxWidth: 'min(680px, 94vw)',
-                width: 'max-content',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.65rem',
-                padding: '0.4rem 0.75rem',
-                borderRadius: '8px',
-                background: 'rgba(11, 15, 25, 0.92)',
-                border: '1px solid rgba(148, 163, 184, 0.18)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.55)',
-                color: '#cbd5e1',
-                fontSize: '0.78rem',
-                lineHeight: 1.35,
+                cursor:
+                  needsHandAction && !isHandPinnedOpen && selectedHandIndex === null
+                    ? 'pointer'
+                    : 'default',
               }}
             >
               <span style={{ color: '#e2c574', fontWeight: 600, whiteSpace: 'nowrap' }}>
                 {stepLabel}
               </span>
               <span style={{ color: 'rgba(148, 163, 184, 0.35)' }}>·</span>
-              <span style={{ color: '#e2e8f0' }}>{stepMessage}</span>
+              <span style={{ color: '#e2e8f0', flex: 1, minWidth: 0 }}>{stepMessage}</span>
               <button
                 type="button"
-                onClick={dismissFirstTurnGuide}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dismissFirstTurnGuide();
+                }}
                 aria-label="Dispensar dica inicial"
                 style={{
                   marginLeft: '0.25rem',
-                  background: 'transparent',
-                  border: '1px solid rgba(148, 163, 184, 0.2)',
-                  borderRadius: '5px',
-                  color: '#94a3b8',
-                  fontSize: '0.7rem',
-                  padding: '1px 6px',
+                  background: 'rgba(15, 23, 42, 0.85)',
+                  border: '1px solid rgba(148, 163, 184, 0.28)',
+                  borderRadius: '6px',
+                  color: '#cbd5e1',
+                  fontSize: '0.72rem',
+                  minHeight: '32px',
+                  padding: '0 10px',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
+                  flexShrink: 0,
                 }}
               >
                 Dispensar ✕

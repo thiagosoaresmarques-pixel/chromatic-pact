@@ -1410,6 +1410,18 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
   const reactionPct = Math.round((deckAnalysis.typeCounts.reaction / totalForBar) * 100);
   const relicPct = Math.max(0, 100 - creaturePct - spellPct - reactionPct);
 
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+
+  const activeSecondaryFilterCount =
+    (typeFilter !== 'all' ? 1 : 0) +
+    (rarityFilter !== 'all' ? 1 : 0) +
+    (abilityFilter !== 'all' ? 1 : 0) +
+    (secondaryAbilityFilter !== 'all' ? 1 : 0) +
+    (sortMode !== 'domain_cost' ? 1 : 0) +
+    (costFilter !== 'all' ? 1 : 0) +
+    (onlyUnlocked ? 1 : 0) +
+    (onlyMissingCopies ? 1 : 0);
+
   const hasActiveFilters =
     domainFilter !== 'all' ||
     typeFilter !== 'all' ||
@@ -1467,26 +1479,45 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
 
           <div className="db-toolbar-divider" />
 
-          {/* Unified Search Input */}
-          <div className="db-search-wrap">
-            <input
-              type="text"
-              className="db-modern-search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar carta..."
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                className="db-search-clear"
-                onClick={() => setSearchQuery('')}
-              >
-                ✕
-              </button>
-            )}
+          {/* Unified Search Input + Mobile Progressive-Disclosure Filter Toggle */}
+          <div className="db-search-row-mobile">
+            <div className="db-search-wrap">
+              <input
+                type="text"
+                className="db-modern-search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar carta..."
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="db-search-clear"
+                  onClick={() => setSearchQuery('')}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            <button
+              type="button"
+              className={`db-analytics-toggle-btn db-mobile-filters-btn show-on-mobile-inline ${
+                isMobileFiltersOpen || activeSecondaryFilterCount > 0 ? 'is-open' : ''
+              }`}
+              onClick={() => setIsMobileFiltersOpen((prev) => !prev)}
+            >
+              <span>
+                Filtros{activeSecondaryFilterCount > 0 ? ` (${activeSecondaryFilterCount})` : ''}{' '}
+                {isMobileFiltersOpen ? '▴' : '▾'}
+              </span>
+            </button>
           </div>
 
+          <div
+            className={`db-advanced-filters-group ${
+              isMobileFiltersOpen ? 'is-mobile-open' : ''
+            }`}
+          >
           <select
             className={`db-modern-select ${typeFilter !== 'all' ? 'is-highlighted' : ''}`}
             value={typeFilter}
@@ -1611,6 +1642,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               <span>Forjáveis</span>
             </label>
           )}
+          </div>
 
           {/* Sleek Analytics Drawer Toggle + Count */}
           <div className="db-toolbar-right">
@@ -2061,7 +2093,7 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
               </button>
             )}
 
-            <details style={{ position: 'relative' }}>
+            <details className="cp-floating-details" style={{ position: 'relative' }}>
               <summary
                 className="db-action-btn"
                 style={{

@@ -2343,43 +2343,86 @@ export const App: React.FC = () => {
     }
   }, []);
 
+  const isMobileTouchNavViewport = useCallback((): boolean => {
+    if (typeof window === 'undefined') return false;
+    return (
+      window.innerWidth <= 768 ||
+      (window.innerHeight <= 540 && Boolean(window.matchMedia?.('(pointer: coarse)').matches))
+    );
+  }, []);
+
   const scheduleNavHoverClose = useCallback(() => {
     clearNavHoverCloseTimer();
     navHoverCloseTimerRef.current = window.setTimeout(() => {
-      if (window.innerWidth > 768) {
+      if (!isMobileTouchNavViewport()) {
         setOpenNavPillar(null);
       }
     }, 160);
-  }, [clearNavHoverCloseTimer]);
+  }, [clearNavHoverCloseTimer, isMobileTouchNavViewport]);
+
+  // Ensure navigation sheets/popovers never remain orphaned on top of a newly started match or tab transition
+  useEffect(() => {
+    setOpenNavPillar(null);
+    setIsNotifOpen(false);
+  }, [activeTab, activeCampaignBoss, activeOnlineMatch, activeProblem]);
+
+  // Global outside-tap dismissal for floating <details className="cp-floating-details"> menus
+  useEffect(() => {
+    const handleDocPointerDownForDetails = (ev: PointerEvent | MouseEvent) => {
+      const target = ev.target as HTMLElement | null;
+      const openDetails = document.querySelectorAll<HTMLDetailsElement>(
+        'details.cp-floating-details[open]'
+      );
+      openDetails.forEach((det) => {
+        if (!target || !det.contains(target)) {
+          det.open = false;
+        }
+      });
+    };
+    document.addEventListener('pointerdown', handleDocPointerDownForDetails);
+    return () => {
+      document.removeEventListener('pointerdown', handleDocPointerDownForDetails);
+    };
+  }, []);
 
   useEffect(() => {
-    if (!openNavPillar) return;
+    if (!openNavPillar && !isNotifOpen) return;
     const handleKeyDown = (ev: KeyboardEvent) => {
       if (ev.key === 'Escape') {
         setOpenNavPillar(null);
+        setIsNotifOpen(false);
       }
     };
-    const handleResize = () => setOpenNavPillar(null);
-    const handleDocClick = (ev: MouseEvent) => {
-      const target = ev.target as HTMLElement | null;
-      if (
-        target?.closest('.nav-tab-btn') ||
-        target?.closest('.nav-group-popover') ||
-        target?.closest('.nav-mobile-sheet')
-      ) {
-        return;
-      }
+    const handleResize = () => {
       setOpenNavPillar(null);
+    };
+    const handleDocPointerDown = (ev: PointerEvent | MouseEvent) => {
+      const target = ev.target as HTMLElement | null;
+      if (openNavPillar) {
+        const insideNav =
+          target?.closest('.nav-tab-btn') ||
+          target?.closest('.nav-group-popover') ||
+          target?.closest('.nav-mobile-sheet');
+        if (!insideNav) {
+          setOpenNavPillar(null);
+        }
+      }
+      if (isNotifOpen) {
+        const insideNotif = target?.closest('.nav-notif-wrapper');
+        if (!insideNotif) {
+          setIsNotifOpen(false);
+        }
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('resize', handleResize);
-    document.addEventListener('mousedown', handleDocClick);
+    document.addEventListener('pointerdown', handleDocPointerDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('resize', handleResize);
-      document.removeEventListener('mousedown', handleDocClick);
+      document.removeEventListener('pointerdown', handleDocPointerDown);
     };
-  }, [openNavPillar]);
+  }, [openNavPillar, isNotifOpen]);
 
   const handleSelectSubTab = (targetTab: ActiveTab) => {
     clearNavHoverCloseTimer();
@@ -2471,7 +2514,7 @@ export const App: React.FC = () => {
                 aria-expanded={hasSubItems ? isOpenPillar : undefined}
                 aria-haspopup={hasSubItems ? 'menu' : undefined}
                 onMouseEnter={(e) => {
-                  if (!hasSubItems || window.innerWidth <= 768) return;
+                  if (!hasSubItems || isMobileTouchNavViewport()) return;
                   clearNavHoverCloseTimer();
                   openPopoverAtButton(
                     pillar.id as Exclude<NavPillarId, 'home'>,
@@ -2479,7 +2522,7 @@ export const App: React.FC = () => {
                   );
                 }}
                 onMouseLeave={() => {
-                  if (!hasSubItems || window.innerWidth <= 768) return;
+                  if (!hasSubItems || isMobileTouchNavViewport()) return;
                   scheduleNavHoverClose();
                 }}
                 onClick={(e) => {
@@ -2489,7 +2532,7 @@ export const App: React.FC = () => {
                     return;
                   }
                   const pid = pillar.id as Exclude<NavPillarId, 'home'>;
-                  if (window.innerWidth <= 768) {
+                  if (isMobileTouchNavViewport()) {
                     setIsNotifOpen(false);
                     setOpenNavPillar((prev) => (prev === pid ? null : pid));
                     return;
@@ -2631,8 +2674,10 @@ export const App: React.FC = () => {
             </button>
           )}
 
-          <div
+          <button
+            type="button"
             className="gold-pill nav-account-pill"
+            style={{ cursor: 'pointer' }}
             onClick={() =>
               setAccountModalState({
                 open: true,
@@ -2651,9 +2696,10 @@ export const App: React.FC = () => {
                 {currentUser.username}
               </span>
             )}
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             className="gold-pill nav-gold-pill"
             onClick={() => setActiveTab('packs')}
             style={{ cursor: 'pointer' }}
@@ -2667,10 +2713,11 @@ export const App: React.FC = () => {
                 ? `${Math.floor(gold / 1000)}k`
                 : gold.toLocaleString('pt-BR')}
             </span>
-          </div>
+          </button>
 
           {!isGuest && astralShards > 0 && (
-            <div
+            <button
+              type="button"
               className="gold-pill astral-shards-pill hide-on-mobile"
               onClick={() => setActiveTab('deckbuilder')}
               style={{ cursor: 'pointer' }}
@@ -2678,7 +2725,7 @@ export const App: React.FC = () => {
             >
               <span style={{ fontSize: '0.72rem', opacity: 0.85 }}>💎</span>
               <span className="nav-gold-amount">{astralShards.toLocaleString('pt-BR')}</span>
-            </div>
+            </button>
           )}
 
           {/* Sovereign Notification & Daily Quests Popover (Progressive Disclosure) */}
@@ -3104,7 +3151,7 @@ export const App: React.FC = () => {
         )}
 
         {activeTab === 'home' && (
-          <Suspense fallback={<div style={{ minHeight: 'calc(100vh - 52px)' }} />}>
+          <Suspense fallback={<div style={{ minHeight: 'calc(100dvh - 52px)' }} />}>
             <HomeLiveArenaView
               customDecks={customDecks}
               isGuest={isGuest}

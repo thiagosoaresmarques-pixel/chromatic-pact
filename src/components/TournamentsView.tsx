@@ -1301,6 +1301,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                   automaticamente na conta e coleção de todos os competidores ativos (mínimo de 3
                   rodadas disputadas):
                 </p>
+                <div className="trn-table-wrap">
                 <table className="trn-table trn-bench-table">
                   <thead>
                     <tr>
@@ -1351,6 +1352,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                     </tr>
                   </tbody>
                 </table>
+                </div>
               </section>
 
               <section className="trn-rules-sec">
@@ -1359,6 +1361,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                   Na Campanha e modos de exploração não há relógio. A cronometragem vale apenas em
                   Torneios e partidas competitivas:
                 </p>
+                <div className="trn-table-wrap">
                 <table className="trn-table trn-bench-table">
                   <thead>
                     <tr>
@@ -1381,6 +1384,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                     ))}
                   </tbody>
                 </table>
+                </div>
               </section>
             </div>
           </div>
@@ -2347,16 +2351,16 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
       {/* TAB 2: CLASSIFICAÇÃO GERAL */}
       {detailTab === 'standings' && (
         <div className="trn-table-wrap">
-          <table className="trn-table">
+          <table className="trn-table trn-standings-table">
             <thead>
               <tr>
-                <th style={{ width: '52px' }}>#</th>
+                <th style={{ width: '44px' }}>#</th>
                 <th>Competidor</th>
                 <th style={{ textAlign: 'right' }}>Pts</th>
-                <th style={{ textAlign: 'right' }}>Buchholz</th>
-                <th style={{ textAlign: 'center' }}>V-E-D</th>
-                <th>Rodadas</th>
-                <th style={{ textAlign: 'right' }}>Saldo PV</th>
+                <th className="hide-on-mobile" style={{ textAlign: 'right' }}>Buchholz</th>
+                <th className="hide-on-mobile" style={{ textAlign: 'center' }}>V-E-D</th>
+                <th className="hide-on-mobile">Rodadas</th>
+                <th className="hide-on-mobile" style={{ textAlign: 'right' }}>Saldo PV</th>
                 <th style={{ textAlign: 'right' }}>ELO</th>
               </tr>
             </thead>
@@ -2397,11 +2401,11 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                       </div>
                     </td>
                     <td className="trn-num-strong">{formatPoints(row.points)}</td>
-                    <td className="trn-num-muted">{formatPoints(row.buchholz)}</td>
-                    <td className="trn-ved-cell">
+                    <td className="trn-num-muted hide-on-mobile">{formatPoints(row.buchholz)}</td>
+                    <td className="trn-ved-cell hide-on-mobile">
                       {row.wins}-{row.draws}-{row.losses}
                     </td>
-                    <td>
+                    <td className="hide-on-mobile">
                       {row.matchHistory.length === 0 ? (
                         <span className="trn-player-sub">—</span>
                       ) : (
@@ -2421,7 +2425,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                         </div>
                       )}
                     </td>
-                    <td className="trn-num-muted">{hpSign}</td>
+                    <td className="trn-num-muted hide-on-mobile">{hpSign}</td>
                     <td className="trn-num-muted">{row.eloRating}</td>
                   </tr>
                 );
@@ -2748,15 +2752,16 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                   Nenhuma rodada concluída nesta edição ainda.
                 </div>
               ) : (
+                <div className="trn-table-wrap">
                 <table className="trn-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '90px' }}>Mesa</th>
+                      <th style={{ width: '76px' }}>Mesa</th>
                       <th>Adversário</th>
-                      <th style={{ textAlign: 'center', width: '115px' }}>Resultado</th>
-                      <th style={{ textAlign: 'right', width: '105px' }}>Detalhe</th>
-                      <th style={{ textAlign: 'right', width: '62px' }}>Acum.</th>
-                      <th style={{ textAlign: 'right', width: '96px' }}>Partida</th>
+                      <th style={{ textAlign: 'center', width: '105px' }}>Resultado</th>
+                      <th className="hide-on-mobile" style={{ textAlign: 'right', width: '105px' }}>Detalhe</th>
+                      <th className="hide-on-mobile" style={{ textAlign: 'right', width: '62px' }}>Acum.</th>
+                      <th style={{ textAlign: 'right', width: '88px' }}>Partida</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2836,12 +2841,12 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                               {outcomeLabel}
                             </span>
                           </td>
-                          <td className="trn-num-muted">
+                          <td className="trn-num-muted hide-on-mobile">
                             {isLiveRow
                               ? `Turno ${m.liveTurnEstimate ?? 1}`
                               : `${hpStr}${m.turns > 0 ? ` · ${m.turns}t` : ''}`}
                           </td>
-                          <td className="trn-num-strong">{formatPoints(m.cumulativePoints)}</td>
+                          <td className="trn-num-strong hide-on-mobile">{formatPoints(m.cumulativePoints)}</td>
                           <td style={{ textAlign: 'right' }}>
                             {m.opponentId !== '__BYE__' ? (
                               <button
@@ -2876,6 +2881,7 @@ export const TournamentsView: React.FC<TournamentsViewProps> = ({
                     })}
                   </tbody>
                 </table>
+                </div>
               )}
 
               <div className="trn-buchholz-footnote">

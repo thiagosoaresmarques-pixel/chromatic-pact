@@ -53,6 +53,7 @@
 html, body, #root {
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--bg-obsidian);
   background-image:
     radial-gradient(circle at 15% 15%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
@@ -102,6 +103,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .top-navbar {
@@ -13302,8 +13304,9 @@ input:focus-visible,
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
-    font-size: 0.78rem !important;
-    padding: 0.35rem 0.5rem !important;
+    font-size: 16px !important;
+    padding: 0.42rem 0.6rem !important;
+    min-height: 40px !important;
     box-sizing: border-box !important;
   }
 
@@ -25395,3 +25398,566 @@ input:focus-visible,
   font-size: 0.58rem !important;
   padding: 0 4px !important;
 }
+
+/* ============================================================================
+   PACOTE MOBILE UX & HCI ERGONOMICS (v50)
+   - Preserves 100% of Desktop layout (> 768px & normal height)
+   - Enforces Fitts's Law (>= 34px-48px targets), iOS 16px input zoom prevention,
+     Safe-Area Insets, Progressive Disclosure, Z-Index Layering & 360px Grid Math
+   ============================================================================ */
+
+/* Desktop-safe base rules (zero visual change on desktop) */
+button.gold-pill {
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  text-align: left;
+}
+
+.db-search-row-mobile {
+  display: contents;
+}
+
+.db-advanced-filters-group {
+  display: contents;
+}
+
+.arena-turn1-guide-pill {
+  position: fixed;
+  top: 58px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1140;
+  max-width: min(680px, 94vw);
+  width: max-content;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(11, 15, 25, 0.94);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+/* Smartphone Portrait (<= 768px) & Touch Landscape (max-height: 540px + coarse pointer) */
+@media (max-width: 768px), ((max-height: 540px) and (pointer: coarse)) {
+  /* 1. Safe-Area Insets & Top/Bottom Navigation Ergonomics */
+  .top-navbar {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    padding-left: max(0.45rem, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(0.45rem, env(safe-area-inset-right, 0px)) !important;
+    min-height: calc(44px + env(safe-area-inset-top, 0px)) !important;
+    height: auto !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .top-navbar.is-arena-active {
+    min-height: calc(36px + env(safe-area-inset-top, 0px)) !important;
+    height: auto !important;
+  }
+
+  .nav-tabs {
+    justify-content: space-around !important;
+    padding-left: max(6px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(6px, env(safe-area-inset-right, 0px)) !important;
+  }
+
+  .nav-tabs.is-grouped-pillars .nav-tab-btn,
+  .nav-tabs .nav-tab-btn {
+    font-size: 0.64rem !important;
+    min-height: 48px !important;
+  }
+
+  /* Avoid dual gold active highlights when browsing another pillar's sheet */
+  .nav-tabs:has(.is-open-pillar) .nav-tab-btn.active:not(.is-open-pillar) {
+    background: rgba(20, 26, 38, 0.55) !important;
+    border-color: rgba(148, 163, 184, 0.2) !important;
+    color: #94a3b8 !important;
+  }
+
+  .nav-tabs .nav-tab-btn.is-open-pillar {
+    background: #181f2e !important;
+    border-color: rgba(212, 175, 55, 0.65) !important;
+    color: #f3e3b0 !important;
+  }
+
+  .nav-notif-popover {
+    top: calc(50px + env(safe-area-inset-top, 0px)) !important;
+    z-index: 2100 !important;
+  }
+
+  .nav-notif-toast {
+    bottom: calc(66px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Top right controls Fitts's Law hit area (>= 34px visual + expanded touch slop) */
+  .nav-right-controls .gold-pill,
+  .nav-right-controls .btn-fantasy,
+  .nav-right-controls .nav-notif-btn,
+  .nav-right-controls .nav-audio-btn,
+  .nav-right-controls .nav-admin-btn {
+    min-height: 34px !important;
+    height: 34px !important;
+    position: relative;
+  }
+
+  .nav-right-controls .nav-notif-btn,
+  .nav-right-controls .nav-audio-btn,
+  .nav-right-controls .nav-admin-btn {
+    width: 34px !important;
+    min-width: 34px !important;
+  }
+
+  .nav-right-controls .nav-notif-btn::after,
+  .nav-right-controls .nav-audio-btn::after,
+  .nav-right-controls .nav-admin-btn::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+  }
+
+  /* 2. Modal Z-Index & Virtual Keyboard Safety (Prevents bottom nav bleeding over modals) */
+  .modal-backdrop,
+  .mulligan-modal-backdrop,
+  .trn-modal-backdrop {
+    z-index: 2200 !important;
+    align-items: flex-start !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding: max(0.5rem, env(safe-area-inset-top, 0px))
+      max(0.5rem, env(safe-area-inset-right, 0px))
+      max(0.75rem, env(safe-area-inset-bottom, 0px))
+      max(0.5rem, env(safe-area-inset-left, 0px)) !important;
+  }
+
+  .modal-panel,
+  .trn-modal,
+  .mulligan-modal-backdrop,
+  .mulligan-modal-panel,
+  .mulligan-cards-grid {
+    scrollbar-width: none !important;
+  }
+
+  .modal-panel,
+  .trn-modal {
+    margin: auto !important;
+    max-height: calc(100dvh - 1.25rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .modal-panel::-webkit-scrollbar,
+  .trn-modal::-webkit-scrollbar,
+  .mulligan-modal-backdrop::-webkit-scrollbar,
+  .mulligan-modal-panel::-webkit-scrollbar,
+  .mulligan-cards-grid::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  /* 3. Universal 16px Input Font-Size (Prevents iOS Safari / Mobile Chromium Auto-Zoom) */
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  select,
+  textarea,
+  .myth-select-compact,
+  .myth-search-compact,
+  .db-modern-search,
+  .db-modern-select,
+  .trn-search-input,
+  .trn-domain-select,
+  .glb-search-input,
+  .glb-filter-select {
+    font-size: 16px !important;
+  }
+
+  /* 4. Home Live Duel Showcase: Zero Clipping & Contained Combat Floating Pills */
+  .cpa-battlefield-surface {
+    overflow: hidden !important;
+  }
+
+  .home-live-arena-shell {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .home-live-arena-shell .arena-main-column.cpa-arena-table {
+    height: calc(100dvh - 104px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+    max-height: calc(100dvh - 104px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .arena-spec-btn {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 0 9px !important;
+    font-size: 0.7rem !important;
+  }
+
+  .arena-spec-btn.primary {
+    min-height: 36px !important;
+    height: 36px !important;
+    padding: 0 13px !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+  }
+
+  /* 5. BattleArena Mobile HUD, Hand Drawer & Turn-1 Guide Separation */
+  .arena-turn1-guide-pill {
+    top: calc(78px + env(safe-area-inset-top, 0px)) !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: none !important;
+    transform: none !important;
+    padding: 0.45rem 0.65rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  .cpa-hand-drawer.is-expanded {
+    bottom: calc(118px + env(safe-area-inset-bottom, 0px)) !important;
+    z-index: 290 !important;
+  }
+
+  .cpa-hand-fan {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .cpa-hand-fan::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .hud-hand-trigger-btn,
+  .hud-action-cta,
+  .hud-pill-expand-btn,
+  .mccb-btn {
+    min-height: 34px !important;
+    padding: 0 10px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .hud-phase-segment {
+    gap: 6px !important;
+  }
+
+  .hud-gear-btn {
+    width: 36px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+
+  .card-inspect-btn {
+    opacity: 1 !important;
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* 6. Global Leaderboard (360px-430px Grid Math — Frees 145px+ for Sovereign Names) */
+  .glb-filter-bar {
+    width: 100% !important;
+  }
+
+  .glb-search-input {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+    min-height: 40px !important;
+  }
+
+  .glb-filter-select {
+    flex: 1 1 calc(50% - 0.25rem) !important;
+    min-width: 0 !important;
+    min-height: 40px !important;
+  }
+
+  .glb-filter-btn {
+    min-height: 38px !important;
+    padding: 0.4rem 0.7rem !important;
+  }
+
+  .glb-grid-row {
+    grid-template-columns: 32px minmax(0, 1fr) auto !important;
+    gap: 0.4rem !important;
+    padding: 0.55rem 0.55rem !important;
+  }
+
+  .glb-identity-col {
+    gap: 0.45rem !important;
+  }
+
+  .glb-right-cols {
+    gap: 0.45rem !important;
+  }
+
+  .glb-elo-col {
+    width: auto !important;
+    min-width: 44px !important;
+  }
+
+  .glb-elo-delta {
+    display: none !important;
+  }
+
+  .glb-action-col {
+    width: auto !important;
+  }
+
+  .glb-action-col button {
+    min-height: 34px !important;
+    padding: 0.32rem 0.55rem !important;
+  }
+
+  /* 7. Tournaments View: Zero Horizontal Table Overflow & Touch Controls */
+  .trn-search-input,
+  .trn-domain-select {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 40px !important;
+  }
+
+  .trn-pairings-table,
+  .trn-standings-table {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .trn-btn,
+  .trn-page-btn,
+  .trn-tab-btn,
+  .trn-round-chip {
+    min-height: 36px !important;
+  }
+
+  /* 8. DeckBuilder (Grimório): Progressive Disclosure Filter Drawer & 36px Steppers */
+  .db-search-row-mobile {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.45rem !important;
+    width: 100% !important;
+  }
+
+  .db-search-row-mobile .db-search-wrap {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+  }
+
+  .db-mobile-filters-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    min-height: 40px !important;
+    padding: 0 0.75rem !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+  }
+
+  .db-advanced-filters-group:not(.is-mobile-open) {
+    display: none !important;
+  }
+
+  .db-advanced-filters-group.is-mobile-open {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.45rem !important;
+    width: 100% !important;
+    padding-top: 0.35rem !important;
+    border-top: 1px solid rgba(148, 163, 184, 0.14) !important;
+  }
+
+  .db-step-btn,
+  .db-tile-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+  }
+
+  .db-card-stepper {
+    width: 142px !important;
+  }
+}
+
+/* Portrait Compact Height Tuning (e.g., 375x667 iPhone SE / Browser Toolbars Visible) */
+@media (max-width: 768px) and (max-height: 740px) and (min-height: 541px) {
+  .home-live-arena-shell .cpa-board-lane {
+    min-height: 64px !important;
+  }
+
+  .home-live-arena-shell .cpa-slot {
+    height: 64px !important;
+  }
+
+  .home-live-arena-shell .card-frame.mode-board.cpa-board-token,
+  .home-live-arena-shell .tabletop-facedown-card {
+    height: 60px !important;
+  }
+
+  .home-live-arena-shell .arena-spectator-bar {
+    padding: 4px 8px !important;
+    gap: 4px !important;
+  }
+}
+
+/* Narrow Smartphone Refinements (<= 640px) */
+@media (max-width: 640px) {
+  /* Hide tiny 6px unit names on 50px-wide mobile board slots; P/T plate + cost remain crystal-clear */
+  .cpa-board-token .cpa-token-name {
+    display: none !important;
+  }
+
+  .cpa-board-token .cpa-pt-plate {
+    font-size: 0.64rem !important;
+    height: 16px !important;
+    min-width: 28px !important;
+  }
+
+  .cpa-board-token .cpa-token-cost {
+    width: 14px !important;
+    height: 14px !important;
+    font-size: 0.54rem !important;
+  }
+
+  /* Compact Tournament cells so #, Competidor, Pts, ELO fit 360px with zero horizontal scroll */
+  .trn-standings-table {
+    table-layout: fixed !important;
+    width: 100% !important;
+  }
+
+  .trn-standings-table th,
+  .trn-standings-table td {
+    padding: 0.48rem 0.35rem !important;
+    font-size: 0.74rem !important;
+  }
+
+  .trn-standings-table th:first-child,
+  .trn-standings-table td:first-child {
+    width: 30px !important;
+  }
+
+  .trn-standings-table th:nth-child(3),
+  .trn-standings-table td:nth-child(3) {
+    width: 44px !important;
+  }
+
+  .trn-standings-table th:last-child,
+  .trn-standings-table td:last-child {
+    width: 50px !important;
+  }
+
+  .trn-standings-table .trn-player-cell,
+  .trn-standings-table .trn-player-text,
+  .trn-standings-table .trn-player-name-line {
+    min-width: 0 !important;
+  }
+
+  .trn-standings-table .trn-player-name,
+  .trn-standings-table .trn-player-sub {
+    display: block !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* PackOpener (Relicário): 2-column compact pack selector above the fold */
+  .aaa-packs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.55rem !important;
+  }
+}
+
+/* Smartphone Landscape Parity (e.g., 844x390 / 800x360 where width > 768px & pointer: coarse) */
+@media (min-width: 769px) and (max-height: 540px) and (pointer: coarse) {
+  .top-navbar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    transform: none !important;
+  }
+
+  .brand-subtitle,
+  .nav-group-popover,
+  .nav-tabs.is-grouped-pillars .nav-pillar-caret {
+    display: none !important;
+  }
+
+  .nav-tabs.is-grouped-pillars:not(.is-arena-tabs) {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    height: calc(50px + env(safe-area-inset-bottom, 0px)) !important;
+    z-index: 1900 !important;
+    margin: 0 !important;
+    padding: 3px max(8px, env(safe-area-inset-right, 0px)) calc(3px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)) !important;
+    border-radius: 12px 12px 0 0 !important;
+    background: linear-gradient(180deg, rgba(14, 18, 30, 0.98) 0%, rgba(7, 10, 18, 0.99) 100%) !important;
+    border-top: 1.5px solid rgba(212, 175, 55, 0.55) !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+  }
+
+  .nav-tabs.is-grouped-pillars:not(.is-arena-tabs) .nav-tab-btn {
+    min-height: 42px !important;
+    height: 42px !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+  }
+
+  .main-content:not(.is-arena-fullbleed) {
+    padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .nav-mobile-sheet-backdrop {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(2, 6, 23, 0.72) !important;
+    backdrop-filter: blur(3px) !important;
+    z-index: 1890 !important;
+  }
+
+  .nav-mobile-sheet {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.4rem !important;
+    position: fixed !important;
+    left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    right: max(12px, env(safe-area-inset-right, 0px)) !important;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px)) !important;
+    max-height: calc(100dvh - 104px) !important;
+    overflow-y: auto !important;
+    z-index: 1950 !important;
+    padding: 0.65rem !important;
+    border-radius: 12px !important;
+    background: linear-gradient(180deg, rgba(14, 19, 32, 0.99), rgba(7, 10, 18, 0.99)) !important;
+    border: 1.5px solid rgba(212, 175, 55, 0.58) !important;
+    box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.95) !important;
+  }
+
+  .nav-mobile-sheet-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 0.25rem 0.35rem !important;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.22) !important;
+    color: #fef08a !important;
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+  }
+
+  .nav-mobile-sheet-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.4rem !important;
+  }
+}
+

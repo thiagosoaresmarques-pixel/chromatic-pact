@@ -8,6 +8,7 @@ import {
   formatCardDetailedRules,
   formatCardFaceDescription,
 } from '../utils/cardTextFormatter';
+import { playCardHoverFoley, slotIndexToStereoPan } from '../utils/soundEngine';
 import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
 import {
   BoardUnit,
@@ -369,7 +370,10 @@ export const CardView: React.FC<CardViewProps> = ({
             .join(' ')}
           onClick={onClick}
           onContextMenu={handleContextMenu}
-          onMouseEnter={() => onHoverCard?.(displayCard, unit)}
+          onMouseEnter={() => {
+            playCardHoverFoley(unit ? slotIndexToStereoPan(unit.slotIndex) : 0);
+            onHoverCard?.(displayCard, unit);
+          }}
           onMouseMove={handle3DMouseMove}
           onMouseLeave={handle3DMouseLeave}
         >
@@ -612,7 +616,12 @@ export const CardView: React.FC<CardViewProps> = ({
           .join(' ')}
         onClick={onClick}
         onContextMenu={handleContextMenu}
-        onMouseEnter={() => onHoverCard?.(displayCard, unit)}
+        onMouseEnter={() => {
+          if (mode === 'hand') {
+            playCardHoverFoley(0);
+          }
+          onHoverCard?.(displayCard, unit);
+        }}
         onMouseMove={handle3DMouseMove}
         onMouseLeave={handle3DMouseLeave}
       >

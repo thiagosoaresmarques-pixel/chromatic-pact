@@ -86,7 +86,7 @@ import {
   useSovereignPower,
 } from '../engine/gameEngine';
 import { executeAiMulligan, executeAiTurnStep } from '../engine/aiEngine';
-import { playSfx } from '../utils/soundEngine';
+import { playSfx, slotIndexToStereoPan } from '../utils/soundEngine';
 import { MusicIntensityStage, setMusicState, startAdaptiveMusic } from '../utils/musicEngine';
 import {
   flipGameStatePerspective,
@@ -1085,6 +1085,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setTimeout(() => setArenaShake(null), intensity === 'heavy' ? 520 : 340);
   };
 
+  const sfxScale = tournamentSpectatorContext?.variant === 'home_live' ? 0.36 : 1;
+
   // --- Physical Tabletop Motion States (Row FLIP Slide, Draw Arc & Essence Channel Trajectory) ---
   const prevUnitPosRef = useRef<Record<string, { row: RowType; x: number; y: number }>>({});
   const [rowShiftMap, setRowShiftMap] = useState<Record<string, { dx: number; dy: number }>>({});
@@ -1332,6 +1334,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
 
     if (spawnedDrains.length > 0) {
+      playSfx('lifedrain', { volumeScale: sfxScale });
       setLifedrainFlights((prev) => [...prev, ...spawnedDrains]);
       const drainIds = new Set(spawnedDrains.map((d) => d.id));
       window.setTimeout(() => {
@@ -1349,6 +1352,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       );
       if (poppedTrap) {
         const [, trapMeta] = poppedTrap;
+        playSfx('trap_flip', {
+          domain: trapMeta.card.domain,
+          pan: slotIndexToStereoPan(trapMeta.slotIndex),
+          volumeScale: sfxScale,
+        });
         const revealId = `trap-flip-${Date.now()}`;
         setTrapRevealFx({
           id: revealId,
@@ -1364,6 +1372,26 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     const kwIds = Object.keys(triggeredKw);
     if (kwIds.length > 0) {
+      const primaryId =
+        kwIds.find((id) => triggeredKw[id] === 'shield_shatter') ??
+        kwIds.find((id) => triggeredKw[id] === 'reborn_rise') ??
+        kwIds.find((id) => triggeredKw[id] === 'molten_burst') ??
+        kwIds.find((id) => triggeredKw[id] === 'fury_surge');
+      if (primaryId) {
+        const kwKind = triggeredKw[primaryId];
+        const uMeta = nextUnits[primaryId];
+        const pan = uMeta ? slotIndexToStereoPan(uMeta.slotIndex) : 0;
+        if (kwKind === 'shield_shatter') {
+          playSfx('shield_shatter', { pan, volumeScale: sfxScale });
+        } else if (kwKind === 'reborn_rise') {
+          playSfx('reborn_rise', { domain: uMeta?.card.domain, pan, volumeScale: sfxScale });
+        } else if (kwKind === 'molten_burst') {
+          playSfx('molten_burst', { domain: 'red', pan, volumeScale: sfxScale });
+        } else if (kwKind === 'fury_surge') {
+          playSfx('fury_surge', { domain: uMeta?.card.domain, pan, volumeScale: sfxScale });
+        }
+      }
+
       setUnitKeywordFxMap((prev) => ({ ...prev, ...triggeredKw }));
       window.setTimeout(() => {
         setUnitKeywordFxMap((prev) => {
@@ -1375,7 +1403,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         });
       }, 680);
     }
-  }, [gameState, campaignBoss?.id, tacticalProblem?.id]);
+  }, [gameState, campaignBoss?.id, tacticalProblem?.id, sfxScale]);
 
   useLayoutEffect(() => {
     if (typeof document === 'undefined') return;
@@ -1408,6 +1436,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     const shiftedIds = Object.keys(shifted);
     if (shiftedIds.length > 0) {
+      if (gameState.activePlayer !== 'player' || isSpectatorMode) {
+        const firstMoved = allUnits.find((u) => shifted[u.instanceId]);
+        playSfx('row_slide', {
+          pan: firstMoved ? slotIndexToStereoPan(firstMoved.slotIndex) : 0,
+          volumeScale: sfxScale,
+        });
+      }
       setRowShiftMap((prev) => ({ ...prev, ...shifted }));
       const timer = window.setTimeout(() => {
         setRowShiftMap((prev) => {
@@ -1854,7 +1889,17 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       distancePx = Math.max(40, Math.round(Math.hypot(dx, dy)));
     }
 
-    playSfx('attack');
+    const vpW = Math.max(1, window.innerWidth);
+    const atkPan = Number((((startX / vpW) * 2 - 1) * 0.35).toFixed(2));
+    const hitPan = Number((((impactX / vpW) * 2 - 1) * 0.35).toFixed(2));
+
+    playSfx('attack', {
+      domain,
+      isRanged,
+      isHeavy: isHeavyHit,
+      pan: atkPan,
+      volumeScale: sfxScale,
+    });
     setCombatAnim({
       attackerId,
       targetId,
@@ -1872,7 +1917,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     });
 
     setTimeout(() => {
-      playSfx('hit');
+      playSfx('hit', {
+        domain,
+        isHeavy: isHeavyHit,
+        pan: hitPan,
+        volumeScale: sfxScale,
+      });
       triggerScreenShake(isHeavyHit ? 'heavy' : 'light');
       onImpactCommit();
     }, 230);
@@ -3478,7 +3528,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         );
       if (playedCard) {
         playSfx(
-          playedCard.type === 'spell' || playedCard.type === 'reaction' ? 'spell' : 'summon'
+          playedCard.type === 'spell' || playedCard.type === 'reaction' ? 'spell' : 'summon',
+          {
+            domain: playedCard.domain,
+            rarity: playedCard.rarity,
+            volumeScale: sfxScale,
+          }
         );
         triggerCardPlaySpectacle(
           actorOwner,
@@ -3487,19 +3542,23 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           nextLocalized.feedbacks[0]?.targetId
         );
       } else {
-        playSfx('summon');
+        playSfx('summon', { volumeScale: sfxScale });
       }
       setGameState(nextLocalized);
       return;
     }
 
     if (nextFrame.kind === 'ascend') {
-      playSfx('ascend');
       const prevActorUnits = getAllBoardUnits(prevLocalized[actorOwner]);
       const nextActorUnits = getAllBoardUnits(nextLocalized[actorOwner]);
       const ascendedUnit = nextActorUnits.find((nu) => {
         const pu = prevActorUnits.find((x) => x.instanceId === nu.instanceId);
         return pu && !pu.isAscended && nu.isAscended;
+      });
+      playSfx('ascend', {
+        domain: ascendedUnit?.card.domain,
+        pan: ascendedUnit ? slotIndexToStereoPan(ascendedUnit.slotIndex) : 0,
+        volumeScale: sfxScale,
       });
       if (ascendedUnit) {
         triggerAscendSpectacle(ascendedUnit);
@@ -3509,11 +3568,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
 
     if (nextFrame.kind === 'channel') {
-      playSfx('channel');
+      playSfx('channel', { volumeScale: sfxScale });
     } else if (nextFrame.kind === 'power') {
-      playSfx('spell');
+      playSfx('spell', { volumeScale: sfxScale });
     } else if (nextFrame.kind === 'end_turn') {
-      playSfx('draw');
+      playSfx('draw', { volumeScale: sfxScale });
     }
     setGameState(nextLocalized);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -3573,17 +3632,23 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         step.actionSummary.includes('canalizou') ||
         step.actionSummary.includes('reciclou')
       ) {
-        playSfx('channel');
+        const newLand = step.nextState.ai.channeledCards.slice(-1)[0];
+        playSfx('channel', { domain: newLand?.domain });
       } else if (step.actionSummary.includes('ascendeu')) {
-        playSfx('ascend');
         const nextAiUnits = getAllBoardUnits(step.nextState.ai);
         const ascendedUnit = nextAiUnits.find((nu) => {
           const prev = prevAiUnits.find((pu) => pu.instanceId === nu.instanceId);
           return prev && !prev.isAscended && nu.isAscended;
         });
+        playSfx('ascend', {
+          domain: ascendedUnit?.card.domain,
+          pan: ascendedUnit ? slotIndexToStereoPan(ascendedUnit.slotIndex) : 0,
+        });
         if (ascendedUnit) {
           triggerAscendSpectacle(ascendedUnit);
         }
+      } else if (step.actionSummary.includes('armou')) {
+        playSfx('trap_arm');
       } else if (step.actionSummary.includes('jogou')) {
         const playedCard = gameState.ai.hand.find(
           (c) =>
@@ -3592,7 +3657,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         );
         if (playedCard) {
           playSfx(
-            playedCard.type === 'spell' || playedCard.type === 'reaction' ? 'spell' : 'summon'
+            playedCard.type === 'spell' || playedCard.type === 'reaction' ? 'spell' : 'summon',
+            {
+              domain: playedCard.domain,
+              rarity: playedCard.rarity,
+            }
           );
           triggerCardPlaySpectacle('ai', playedCard, gameState);
         } else {
@@ -3868,7 +3937,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (slotIdx === -1) return;
     triggerCardPlaySpectacle('player', card, gameState);
     const next = playCard(gameState, 'player', handIdx, { row, slotIndex: slotIdx });
-    playSfx('summon');
+    playSfx('summon', {
+      domain: card.domain,
+      rarity: card.rarity,
+      pan: slotIndexToStereoPan(slotIdx),
+    });
     setGameState(next);
     clearHandSelectionAndDrawers();
   };
@@ -3879,9 +3952,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       hasTrackedFirstActionRef.current = true;
       trackAdsEvent('first_card_played', { action: 'channel_essence', isGuest });
     }
+    const chCard = gameState.player.hand[handIdx];
     triggerChannelOrBurnFlight(handIdx, 'channel');
     const next = channelCard(gameState, 'player', handIdx);
-    playSfx('channel');
+    playSfx('channel', { domain: chCard?.domain, pan: -0.18 });
     setGameState(next);
     clearHandSelectionAndDrawers();
   };
@@ -3892,9 +3966,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       hasTrackedFirstActionRef.current = true;
       trackAdsEvent('first_card_played', { action: 'burn_essence', isGuest });
     }
+    const bnCard = gameState.player.hand[handIdx];
     triggerChannelOrBurnFlight(handIdx, 'burn');
     const next = burnCardForEssence(gameState, 'player', handIdx);
-    playSfx('channel');
+    playSfx('channel', { domain: bnCard?.domain, pan: -0.18 });
     setGameState(next);
     clearHandSelectionAndDrawers();
   };
@@ -3910,7 +3985,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       pCard
     );
     const next = bloodPactForEssence(gameState, 'player');
-    playSfx('channel');
+    playSfx('channel', { domain: 'purple', pan: -0.22 });
     setGameState(next);
   };
 
@@ -3927,7 +4002,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       pCard
     );
     const next = useSovereignPower(gameState, 'player');
-    playSfx('spell');
+    playSfx('spell', { domain: pTerrain.domain });
     setGameState(next);
   };
 
@@ -3953,7 +4028,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       recordDailyQuestEvent('domain_clashed_or_broken', 1);
     }
     const next = invokeDomainExpansion(gameState, 'player');
-    playSfx(isClash ? 'domain_clash' : 'domain_expand');
+    playSfx(isClash ? 'domain_clash' : 'domain_expand', { domain: check.domain });
     setGameState(next);
   };
 
@@ -3970,7 +4045,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     );
     recordDailyQuestEvent('domain_clashed_or_broken', 1);
     const next = activateSimpleDomain(gameState, 'player');
-    playSfx('spell');
+    playSfx('spell', { domain: pTerrain.domain });
     setGameState(next);
   };
 
@@ -4001,7 +4076,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const handleMoveFriendlyUnitRow = (unit: BoardUnit) => {
     if (!canMoveUnitRow(gameState, 'player', unit.instanceId)) return;
     const next = moveUnitRow(gameState, 'player', unit.instanceId);
-    playSfx('summon');
+    playSfx('row_slide', { pan: slotIndexToStereoPan(unit.slotIndex) });
     setGameState(next);
   };
 
@@ -4013,7 +4088,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       triggerCardPlaySpectacle('player', card, gameState, effectiveTargetId);
     }
     const next = playCard(gameState, 'player', handIdx, { targetId: effectiveTargetId });
-    playSfx('spell');
+    playSfx('spell', { domain: card?.domain });
     setGameState(next);
     clearHandSelectionAndDrawers();
   };
@@ -4036,7 +4111,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       slotIndex: slotIdx,
       asTrap: true,
     });
-    playSfx('summon');
+    playSfx('trap_arm', {
+      domain: card.domain,
+      pan: slotIndexToStereoPan(slotIdx),
+    });
     setGameState(next);
     clearHandSelectionAndDrawers();
   };
@@ -4128,7 +4206,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         slotIndex,
         targetId: effectiveTargetId,
       });
-      playSfx('summon');
+      playSfx('summon', {
+        domain: selectedHandCard.domain,
+        rarity: selectedHandCard.rarity,
+        pan: slotIndexToStereoPan(slotIndex),
+      });
       setGameState(next);
       clearHandSelectionAndDrawers();
     }
@@ -4216,6 +4298,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         setSelectedAttackerId(null);
       }
     } else {
+      playSfx('card_select', { pan: slotIndexToStereoPan(unit.slotIndex) });
       setFocusedBoardUnitId(unit.instanceId);
       setSelectedHandIndex(null);
       setIsCommandDockMinimized(false);
@@ -4402,7 +4485,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     triggerAscendSpectacle(unit);
     recordDailyQuestEvent('unit_ascended', 1);
     const next = ascendUnit(gameState, 'player', unit.instanceId);
-    playSfx('ascend');
+    playSfx('ascend', {
+      domain: unit.card.domain,
+      pan: slotIndexToStereoPan(unit.slotIndex),
+    });
     setGameState(next);
   };
 
@@ -9082,6 +9168,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               isSelected={isSelected}
                               canChannel={isPlayerTurn && !gameState.player.hasChanneledThisTurn}
                               onClick={() => {
+                                playSfx('card_select', {
+                                  pan: Number(((offsetIdx / Math.max(1, total)) * 0.45).toFixed(2)),
+                                });
                                 setSelectedAttackerId(null);
                                 setFocusedBoardUnitId(null);
                                 setIsP2DrawerPinned(false);

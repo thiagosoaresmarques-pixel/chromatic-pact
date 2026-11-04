@@ -463,126 +463,142 @@ function loadSavedBattleSnapshot(
   }
 }
 
-type ClashSurgeMode =
-  | 'top_overwhelm'
-  | 'bottom_overwhelm'
-  | 'diagonal_lr'
-  | 'diagonal_rl'
-  | 'chaotic_sawtooth';
+const DOMAIN_TABLETOP_IMAGE_PATHS: Record<Domain, string> = {
+  red: '/tabletops/tabletop_domain_red.webp',
+  purple: '/tabletops/tabletop_domain_purple.webp',
+  blue: '/tabletops/tabletop_domain_blue.webp',
+  green: '/tabletops/tabletop_domain_green.webp',
+  gold: '/tabletops/tabletop_domain_gold.webp',
+  neutral: '/tabletops/tabletop_domain_neutral.webp',
+};
 
-interface ClashRealityBreach {
-  slot: number;
-  side: 'top' | 'bottom';
-  phase: 'hidden' | 'erupt' | 'writhe' | 'collapse';
-  cx: number;
-  cy: number;
-  pts: Array<[number, number]>;
-}
-
-const CLASH_X_STOPS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-
-function clampPct(v: number, min = 0, max = 100): number {
-  return Math.max(min, Math.min(max, Number(v.toFixed(2))));
-}
-
-function generateChaoticFrontierYs(mode: ClashSurgeMode): number[] {
-  const jitter = (amp: number) => (Math.random() * 2 - 1) * amp;
-  return CLASH_X_STOPS.map((x, idx) => {
-    const t = x / 100;
-    const tooth = (idx % 2 === 0 ? 1 : -1) * (6 + Math.random() * 11);
-    let base = 50;
-    switch (mode) {
-      case 'top_overwhelm':
-        // Top Domain violently surges deep into Bottom's half (60%..84%)
-        base = 64 + Math.sin(t * Math.PI) * 14 + jitter(9) + tooth * 0.65;
-        break;
-      case 'bottom_overwhelm':
-        // Bottom Domain erupts upward, pushing Top back to 16%..38%
-        base = 35 - Math.sin(t * Math.PI) * 15 + jitter(9) + tooth * 0.65;
-        break;
-      case 'diagonal_lr':
-        // Left flank swallowed by Top (~78%), Right flank ripped upward by Bottom (~22%)
-        base = 77 - t * 55 + jitter(9) + tooth * 0.7;
-        break;
-      case 'diagonal_rl':
-        // Left flank ripped upward by Bottom (~22%), Right flank swallowed by Top (~78%)
-        base = 23 + t * 55 + jitter(9) + tooth * 0.7;
-        break;
-      case 'chaotic_sawtooth':
-        // Wild interlocking shards colliding across the board
-        base = 50 + (idx % 2 === 0 ? 21 : -21) + jitter(10);
-        break;
+function parseHexColor01(hex: string): [number, number, number] {
+  const clean = hex.replace('#', '').trim();
+  if (clean.length === 6) {
+    const r = parseInt(clean.slice(0, 2), 16) / 255;
+    const g = parseInt(clean.slice(2, 4), 16) / 255;
+    const b = parseInt(clean.slice(4, 6), 16) / 255;
+    if (Number.isFinite(r) && Number.isFinite(g) && Number.isFinite(b)) {
+      return [r, g, b];
     }
-    return clampPct(base, 11, 89);
-  });
+  }
+  return [0.75, 0.78, 0.85];
 }
 
-function buildTopDomainClipPolygon(ys: number[]): string {
-  const rev = CLASH_X_STOPS.map((x, i) => `${x}% ${ys[i]}%`)
-    .reverse()
-    .join(', ');
-  return `polygon(0% 0%, 100% 0%, ${rev})`;
+const CLASH_VERTEX_SHADER = `
+attribute vec2 aPos;
+varying vec2 vUv;
+void main() {
+  vUv = vec2(aPos.x * 0.5 + 0.5, 0.5 - aPos.y * 0.5);
+  gl_Position = vec4(aPos, 0.0, 1.0);
+}
+`;
+
+const CLASH_FRAGMENT_SHADER = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+
+varying vec2 vUv;
+uniform sampler2D uTopTex;
+uniform sampler2D uBottomTex;
+uniform float uTime;
+uniform float uCanvasAspect;
+uniform float uTopImgAspect;
+uniform float uBottomImgAspect;
+uniform float uSurgeBias;
+uniform float uDipoleX;
+uniform vec2 uEpicenter;
+uniform float uEpicenterPull;
+uniform float uIsMirror;
+uniform vec3 uTopColor;
+uniform vec3 uBottomColor;
+
+vec2 coverUv(vec2 uv, float canvasAsp, float imgAsp) {
+  vec2 scale = canvasAsp > imgAsp
+    ? vec2(1.0, imgAsp / max(0.01, canvasAsp))
+    : vec2(canvasAsp / max(0.01, imgAsp), 1.0);
+  return clamp((uv - 0.5) * scale + 0.5, 0.002, 0.998);
 }
 
-function buildFrontierBandClipPolygon(ys: number[], halfBandPct: number): string {
-  const upper = CLASH_X_STOPS.map((x, i) => `${x}% ${clampPct(ys[i] - halfBandPct)}%`).join(', ');
-  const lower = CLASH_X_STOPS.map((x, i) => `${x}% ${clampPct(ys[i] + halfBandPct)}%`)
-    .reverse()
-    .join(', ');
-  return `polygon(${upper}, ${lower})`;
+float hash21(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
 }
 
-function createBreachVertices(
-  cx: number,
-  cy: number,
-  rx: number,
-  ry: number,
-  scale = 1
-): Array<[number, number]> {
-  const baseAngles = [-2.75, -1.95, -1.1, -0.25, 0.45, 1.25, 2.05, 2.72];
-  return baseAngles.map((ang, i) => {
-    const spike = (i % 2 === 0 ? 1.18 : 0.68) * (0.85 + Math.random() * 0.34) * scale;
-    const a = ang + (Math.random() * 2 - 1) * 0.16;
-    const px = clampPct(cx + Math.cos(a) * rx * spike, 1, 99);
-    const py = clampPct(cy + Math.sin(a) * ry * spike, 2, 98);
-    return [px, py];
-  });
+float vnoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 u = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+  float a = hash21(i);
+  float b = hash21(i + vec2(1.0, 0.0));
+  float c = hash21(i + vec2(0.0, 1.0));
+  float d = hash21(i + vec2(1.0, 1.0));
+  return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
 }
 
-function formatBreachClip(
-  cx: number,
-  cy: number,
-  pts: Array<[number, number]>,
-  rimExpand = 1
-): string {
-  const str = pts
-    .map(([px, py]) => {
-      const ex = clampPct(cx + (px - cx) * rimExpand, 0, 100);
-      const ey = clampPct(cy + (py - cy) * rimExpand, 0, 100);
-      return `${ex}% ${ey}%`;
-    })
-    .join(', ');
-  return `polygon(${str})`;
+float fbm(vec2 p) {
+  float val = 0.0;
+  float amp = 0.52;
+  mat2 rot = mat2(0.80, -0.60, 0.60, 0.80);
+  for (int i = 0; i < 4; i++) {
+    val += amp * vnoise(p);
+    p = rot * p * 2.03 + vec2(17.1, 31.7);
+    amp *= 0.5;
+  }
+  return val;
 }
 
-function spawnHiddenBreach(slot: number, side: 'top' | 'bottom'): ClashRealityBreach {
-  // 'top' domain tears open inside bottom/mid territory; 'bottom' domain tears open inside top/mid territory
-  const cx = 14 + Math.random() * 72;
-  const cy =
-    side === 'top'
-      ? 48 + Math.random() * 38 // y = 48%..86%
-      : 14 + Math.random() * 38; // y = 14%..52%
-  const rx = 14 + Math.random() * 11;
-  const ry = 10 + Math.random() * 9;
-  return {
-    slot,
-    side,
-    phase: 'hidden',
-    cx,
-    cy,
-    pts: createBreachVertices(cx, cy, rx, ry, 0.28),
-  };
+void main() {
+  vec2 aspectP = vec2((vUv.x - 0.5) * max(1.0, uCanvasAspect * 0.84), vUv.y - 0.5);
+
+  // Domain-warped organic turbulence: billowing clouds & smoky tendrils without a single straight line
+  vec2 q = vec2(
+    fbm(aspectP * 2.25 + vec2(uTime * 0.16, -uTime * 0.11)),
+    fbm(aspectP * 2.25 + vec2(5.2 - uTime * 0.13, 1.3 + uTime * 0.15))
+  );
+  vec2 r = vec2(
+    fbm(aspectP * 2.65 + 2.35 * q + vec2(1.7 + uTime * 0.22, 9.2 - uTime * 0.18)),
+    fbm(aspectP * 2.65 + 2.35 * q + vec2(8.3 - uTime * 0.19, 2.8 + uTime * 0.20))
+  );
+  float cloud = fbm(aspectP * 2.45 + 2.55 * r);
+  float centeredCloud = (cloud - 0.488) * 1.72;
+
+  // Soft Sovereign home anchor + living unpredictable surges & swirling pockets across the entire table
+  float homeAnchor = (0.5 - vUv.y) * 0.34;
+  float radialWave = (0.48 - length(vUv - uEpicenter)) * uEpicenterPull;
+  float lateralGust = (vUv.x - 0.5) * uDipoleX;
+  float field = centeredCloud + homeAnchor + uSurgeBias + lateralGust + radialWave;
+
+  // Wide velvety mist feather: zero corners, zero hard polygons
+  float mixTop = smoothstep(-0.26, 0.26, field);
+  float veil = 4.0 * mixTop * (1.0 - mixTop);
+
+  // Subtle ethereal refraction shimmer right where the two realities dissolve into each other
+  vec2 refractShift = (r - 0.5) * 0.013 * veil;
+
+  vec2 topUv = coverUv(vUv + refractShift, uCanvasAspect, uTopImgAspect);
+  vec2 botUv = coverUv(vUv - refractShift, uCanvasAspect, uBottomImgAspect);
+
+  vec3 topSample = texture2D(uTopTex, topUv).rgb;
+  vec3 botSample = texture2D(uBottomTex, botUv).rgb;
+
+  if (uIsMirror > 0.5) {
+    topSample = clamp(topSample * vec3(1.12, 1.06, 1.15), 0.0, 1.0);
+  }
+
+  vec3 col = mix(botSample, topSample, mixTop);
+
+  // Atmospheric dark-fantasy bioluminescent mist inside the swirling veil (never harsh white)
+  vec3 mistTint = mix(uBottomColor, uTopColor, mixTop);
+  col += mistTint * pow(veil, 1.75) * (0.09 + 0.12 * cloud);
+
+  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }
+`;
 
 const DomainClashStage: React.FC<{
   topDomain: Domain;
@@ -590,162 +606,224 @@ const DomainClashStage: React.FC<{
   topColor: string;
   bottomColor: string;
 }> = React.memo(({ topDomain, bottomDomain, topColor, bottomColor }) => {
-  const [surgeState, setSurgeState] = useState<{
-    mode: ClashSurgeMode;
-    ys: number[];
-    durMs: number;
-    boltSeed: number;
-  }>(() => ({
-    mode: 'chaotic_sawtooth',
-    ys: generateChaoticFrontierYs('chaotic_sawtooth'),
-    durMs: 480,
-    boltSeed: 1,
-  }));
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [shaderReady, setShaderReady] = useState(false);
 
-  const [breaches, setBreaches] = useState<ClashRealityBreach[]>(() => [
-    spawnHiddenBreach(0, 'top'),
-    spawnHiddenBreach(1, 'bottom'),
-    spawnHiddenBreach(2, 'top'),
-    spawnHiddenBreach(3, 'bottom'),
-  ]);
-
-  // 1. Unpredictable Tug-of-War Frontier Loop (either Domain can surge & nearly swallow the board at any moment)
   useEffect(() => {
+    setShaderReady(false);
     const reduced =
       typeof window !== 'undefined' &&
       typeof window.matchMedia === 'function' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) return;
 
-    let cancelled = false;
-    let timerId = 0;
-    const modes: ClashSurgeMode[] = [
-      'top_overwhelm',
-      'bottom_overwhelm',
-      'diagonal_lr',
-      'diagonal_rl',
-      'chaotic_sawtooth',
-    ];
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    const stepFrontier = (prevMode: ClashSurgeMode) => {
-      if (cancelled) return;
-      const candidates = modes.filter((m) => m !== prevMode);
-      const nextMode = candidates[Math.floor(Math.random() * candidates.length)];
-      const durMs = Math.round(360 + Math.random() * 360);
-      setSurgeState((prev) => ({
-        mode: nextMode,
-        ys: generateChaoticFrontierYs(nextMode),
-        durMs,
-        boltSeed: prev.boltSeed + 1,
-      }));
-      timerId = window.setTimeout(() => stepFrontier(nextMode), durMs + Math.round(40 + Math.random() * 140));
+    const gl = (canvas.getContext('webgl', {
+      alpha: false,
+      antialias: false,
+      depth: false,
+      stencil: false,
+      powerPreference: 'default',
+    }) ||
+      canvas.getContext('experimental-webgl')) as WebGLRenderingContext | null;
+    if (!gl) return;
+
+    const compileShader = (type: number, src: string): WebGLShader | null => {
+      const sh = gl.createShader(type);
+      if (!sh) return null;
+      gl.shaderSource(sh, src);
+      gl.compileShader(sh);
+      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+        gl.deleteShader(sh);
+        return null;
+      }
+      return sh;
     };
 
-    timerId = window.setTimeout(() => stepFrontier('chaotic_sawtooth'), 180);
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timerId);
-    };
-  }, []);
+    const vs = compileShader(gl.VERTEX_SHADER, CLASH_VERTEX_SHADER);
+    const fs = compileShader(gl.FRAGMENT_SHADER, CLASH_FRAGMENT_SHADER);
+    if (!vs || !fs) {
+      if (vs) gl.deleteShader(vs);
+      if (fs) gl.deleteShader(fs);
+      return;
+    }
 
-  // 2. Asynchronous Reality-Overlap Breaches (pockets of each Domain violently tearing open over the rival Domain)
-  useEffect(() => {
-    const reduced =
-      typeof window !== 'undefined' &&
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced) return;
+    const prog = gl.createProgram();
+    if (!prog) return;
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    gl.deleteShader(vs);
+    gl.deleteShader(fs);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      gl.deleteProgram(prog);
+      return;
+    }
+
+    const quadBuf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+      gl.STATIC_DRAW
+    );
+
+    const aPosLoc = gl.getAttribLocation(prog, 'aPos');
+    const uTopTexLoc = gl.getUniformLocation(prog, 'uTopTex');
+    const uBottomTexLoc = gl.getUniformLocation(prog, 'uBottomTex');
+    const uTimeLoc = gl.getUniformLocation(prog, 'uTime');
+    const uCanvasAspectLoc = gl.getUniformLocation(prog, 'uCanvasAspect');
+    const uTopImgAspectLoc = gl.getUniformLocation(prog, 'uTopImgAspect');
+    const uBottomImgAspectLoc = gl.getUniformLocation(prog, 'uBottomImgAspect');
+    const uSurgeBiasLoc = gl.getUniformLocation(prog, 'uSurgeBias');
+    const uDipoleXLoc = gl.getUniformLocation(prog, 'uDipoleX');
+    const uEpicenterLoc = gl.getUniformLocation(prog, 'uEpicenter');
+    const uEpicenterPullLoc = gl.getUniformLocation(prog, 'uEpicenterPull');
+    const uIsMirrorLoc = gl.getUniformLocation(prog, 'uIsMirror');
+    const uTopColorLoc = gl.getUniformLocation(prog, 'uTopColor');
+    const uBottomColorLoc = gl.getUniformLocation(prog, 'uBottomColor');
 
     let cancelled = false;
-    const timers: number[] = [0, 0, 0, 0];
+    let rafId = 0;
+    let texTop: WebGLTexture | null = null;
+    let texBot: WebGLTexture | null = null;
 
-    const runSlotCycle = (slot: number, side: 'top' | 'bottom', initialDelay: number) => {
-      timers[slot] = window.setTimeout(() => {
+    const loadImage = (src: string): Promise<HTMLImageElement> =>
+      new Promise((resolve, reject) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+
+    const createClampedTexture = (img: HTMLImageElement, unit: number): WebGLTexture | null => {
+      const tex = gl.createTexture();
+      if (!tex) return null;
+      gl.activeTexture(gl.TEXTURE0 + unit);
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 0);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      return tex;
+    };
+
+    Promise.all([
+      loadImage(DOMAIN_TABLETOP_IMAGE_PATHS[topDomain]),
+      loadImage(DOMAIN_TABLETOP_IMAGE_PATHS[bottomDomain]),
+    ])
+      .then(([topImg, botImg]) => {
         if (cancelled) return;
-        const seed = spawnHiddenBreach(slot, side);
-        const rx = 15 + Math.random() * 12;
-        const ry = 11 + Math.random() * 10;
+        texTop = createClampedTexture(topImg, 0);
+        texBot = createClampedTexture(botImg, 1);
+        if (!texTop || !texBot) return;
 
-        // Phase 0: Place collapsed polygon invisibly (no slide from previous coordinates!)
-        setBreaches((prev) => prev.map((b, idx) => (idx === slot ? seed : b)));
+        const topAspect = (topImg.naturalWidth || 16) / (topImg.naturalHeight || 9);
+        const botAspect = (botImg.naturalWidth || 16) / (botImg.naturalHeight || 9);
+        const [tr, tg, tb] = parseHexColor01(topColor);
+        const [br, bg, bb] = parseHexColor01(bottomColor);
 
-        // Phase 1: Erupt open violently over rival territory
-        timers[slot] = window.setTimeout(() => {
+        gl.useProgram(prog);
+        gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+        gl.enableVertexAttribArray(aPosLoc);
+        gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, false, 0, 0);
+
+        gl.uniform1i(uTopTexLoc, 0);
+        gl.uniform1i(uBottomTexLoc, 1);
+        gl.uniform1f(uTopImgAspectLoc, topAspect);
+        gl.uniform1f(uBottomImgAspectLoc, botAspect);
+        gl.uniform1f(uIsMirrorLoc, topDomain === bottomDomain ? 1.0 : 0.0);
+        gl.uniform3f(uTopColorLoc, tr, tg, tb);
+        gl.uniform3f(uBottomColorLoc, br, bg, bb);
+
+        // Smooth organic gust physics: random non-repeating tides of dominance
+        let curBias = (Math.random() < 0.5 ? 1 : -1) * 0.18;
+        let targetBias = -curBias;
+        let curDipole = (Math.random() * 2 - 1) * 0.28;
+        let targetDipole = -curDipole;
+        let curEpiX = 0.5;
+        let curEpiY = 0.5;
+        let targetEpiX = 0.25 + Math.random() * 0.5;
+        let targetEpiY = 0.25 + Math.random() * 0.5;
+        let curPull = 0.16;
+        let targetPull = -0.22;
+        let nextGustAtSec = 1.4;
+
+        const t0 = performance.now();
+        let prevSec = 0;
+        let revealed = false;
+
+        const renderFrame = (now: number) => {
           if (cancelled) return;
-          setBreaches((prev) =>
-            prev.map((b, idx) =>
-              idx === slot
-                ? {
-                    ...b,
-                    phase: 'erupt',
-                    pts: createBreachVertices(seed.cx, seed.cy, rx, ry, 1.0),
-                  }
-                : b
-            )
-          );
+          const elapsedSec = (now - t0) / 1000;
+          const dt = Math.min(0.08, Math.max(0.005, elapsedSec - prevSec));
+          prevSec = elapsedSec;
 
-          // Phase 2: Writhe & expand jagged reality edges
-          timers[slot] = window.setTimeout(() => {
-            if (cancelled) return;
-            setBreaches((prev) =>
-              prev.map((b, idx) =>
-                idx === slot
-                  ? {
-                      ...b,
-                      phase: 'writhe',
-                      pts: createBreachVertices(seed.cx, seed.cy, rx * 1.12, ry * 1.1, 1.06),
-                    }
-                  : b
-              )
-            );
+          // Sync resolution smoothly (capped at 1.4x DPR / 1600px for effortless 60fps)
+          const dpr = Math.min(window.devicePixelRatio || 1, 1.4);
+          const cw = Math.max(2, Math.min(1600, Math.round(canvas.clientWidth * dpr)));
+          const ch = Math.max(2, Math.min(1000, Math.round(canvas.clientHeight * dpr)));
+          if (canvas.width !== cw || canvas.height !== ch) {
+            canvas.width = cw;
+            canvas.height = ch;
+            gl.viewport(0, 0, cw, ch);
+          }
 
-            // Phase 3: Collapse shut before relocating elsewhere
-            timers[slot] = window.setTimeout(() => {
-              if (cancelled) return;
-              setBreaches((prev) =>
-                prev.map((b, idx) =>
-                  idx === slot
-                    ? {
-                        ...b,
-                        phase: 'collapse',
-                        pts: createBreachVertices(seed.cx, seed.cy, rx, ry, 0.22),
-                      }
-                    : b
-                )
-              );
+          if (elapsedSec >= nextGustAtSec) {
+            // Flip or shift dominance unpredictably so either Domain feels moments away from winning
+            const flipSign = Math.random() < 0.72 ? -Math.sign(targetBias || 1) : Math.sign(targetBias || 1);
+            targetBias = flipSign * (0.14 + Math.random() * 0.21);
+            targetDipole = (Math.random() * 2 - 1) * 0.36;
+            targetEpiX = 0.18 + Math.random() * 0.64;
+            targetEpiY = 0.2 + Math.random() * 0.6;
+            targetPull = (Math.random() < 0.5 ? 1 : -1) * (0.18 + Math.random() * 0.22);
+            nextGustAtSec = elapsedSec + 1.5 + Math.random() * 1.9;
+          }
 
-              runSlotCycle(slot, side, Math.round(280 + Math.random() * 260));
-            }, Math.round(460 + Math.random() * 340));
-          }, Math.round(360 + Math.random() * 220));
-        }, 45);
-      }, initialDelay);
-    };
+          const smooth = 1 - Math.exp(-dt * 1.45);
+          curBias += (targetBias - curBias) * smooth;
+          curDipole += (targetDipole - curDipole) * smooth;
+          curEpiX += (targetEpiX - curEpiX) * smooth;
+          curEpiY += (targetEpiY - curEpiY) * smooth;
+          curPull += (targetPull - curPull) * smooth;
 
-    runSlotCycle(0, 'top', 90);
-    runSlotCycle(1, 'bottom', 340);
-    runSlotCycle(2, 'top', 620);
-    runSlotCycle(3, 'bottom', 890);
+          gl.uniform1f(uTimeLoc, elapsedSec);
+          gl.uniform1f(uCanvasAspectLoc, cw / ch);
+          gl.uniform1f(uSurgeBiasLoc, curBias);
+          gl.uniform1f(uDipoleXLoc, curDipole);
+          gl.uniform2f(uEpicenterLoc, curEpiX, curEpiY);
+          gl.uniform1f(uEpicenterPullLoc, curPull);
+
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+          if (!revealed) {
+            revealed = true;
+            setShaderReady(true);
+          }
+
+          rafId = window.requestAnimationFrame(renderFrame);
+        };
+
+        rafId = window.requestAnimationFrame(renderFrame);
+      })
+      .catch(() => {
+        // Fallback CSS soft-mist blend stays visible automatically
+      });
 
     return () => {
       cancelled = true;
-      timers.forEach((id) => window.clearTimeout(id));
+      if (rafId) window.cancelAnimationFrame(rafId);
+      if (texTop) gl.deleteTexture(texTop);
+      if (texBot) gl.deleteTexture(texBot);
+      if (quadBuf) gl.deleteBuffer(quadBuf);
+      gl.deleteProgram(prog);
     };
-  }, []);
-
-  const topClip = useMemo(() => buildTopDomainClipPolygon(surgeState.ys), [surgeState.ys]);
-  const auraBandClip = useMemo(() => buildFrontierBandClipPolygon(surgeState.ys, 2.35), [surgeState.ys]);
-  const coreBandClip = useMemo(() => buildFrontierBandClipPolygon(surgeState.ys, 0.44), [surgeState.ys]);
-  const frontierTransition = `clip-path ${surgeState.durMs}ms cubic-bezier(0.22, 1, 0.36, 1)`;
-
-  // Secondary forked lightning arc jumping across the live clash zone
-  const lightningPoints = useMemo(() => {
-    return CLASH_X_STOPS.map((x, i) => {
-      const forkOffset = ((i * 7 + surgeState.boltSeed * 3) % 5 - 2) * 2.4;
-      return `${x},${clampPct(surgeState.ys[i] + forkOffset, 6, 94)}`;
-    }).join(' ');
-  }, [surgeState.ys, surgeState.boltSeed]);
-
-  const sameDomainMirror = topDomain === bottomDomain;
+  }, [topDomain, bottomDomain, topColor, bottomColor]);
 
   return (
     <div
@@ -757,114 +835,22 @@ const DomainClashStage: React.FC<{
         } as React.CSSProperties
       }
     >
-      {/* 1. Full Base Reality: Bottom Sovereign Domain */}
-      <div className={`tabletop-domain-clash-half bottom-base domain-${bottomDomain}`}>
+      {/* Soft Feathered Fallback Layer (instant zero-flash paint & reduced-motion support) */}
+      <div className={`tabletop-domain-clash-half bottom-fallback domain-${bottomDomain}`}>
         <div className={`tabletop-domain-flow-fx domain-${bottomDomain}`} />
       </div>
-
-      {/* 2. Surging Rival Reality: Top Sovereign Domain with Live Jagged Tug-of-War Clip */}
-      <div
-        className={`tabletop-domain-clash-half top-surge domain-${topDomain} ${
-          sameDomainMirror ? 'is-mirror-domain' : ''
-        }`}
-        style={{
-          clipPath: topClip,
-          WebkitClipPath: topClip,
-          transition: frontierTransition,
-        }}
-      >
+      <div className={`tabletop-domain-clash-half top-fallback domain-${topDomain}`}>
         <div className={`tabletop-domain-flow-fx domain-${topDomain}`} />
       </div>
 
-      {/* 3. Asynchronous Reality-Overlap Breaches (Fragments of each Domain tearing open over the other!) */}
-      {breaches.map((b) => {
-        const breachDom = b.side === 'top' ? topDomain : bottomDomain;
-        const breachColor = b.side === 'top' ? topColor : bottomColor;
-        const isVisible = b.phase === 'erupt' || b.phase === 'writhe';
-        const tr =
-          b.phase === 'hidden'
-            ? 'none'
-            : b.phase === 'erupt'
-            ? 'clip-path 360ms cubic-bezier(0.16, 1, 0.3, 1), opacity 160ms ease-out'
-            : b.phase === 'writhe'
-            ? 'clip-path 480ms ease-in-out, opacity 220ms ease'
-            : 'clip-path 250ms ease-in, opacity 220ms ease-in';
-        const innerClip = formatBreachClip(b.cx, b.cy, b.pts, 1.0);
-        const rimClip = formatBreachClip(b.cx, b.cy, b.pts, 1.085);
-
-        return (
-          <React.Fragment key={b.slot}>
-            <div
-              className="clash-breach-rim"
-              style={{
-                opacity: isVisible ? 0.92 : 0,
-                clipPath: rimClip,
-                WebkitClipPath: rimClip,
-                transition: tr,
-                background: `linear-gradient(135deg, #ffffff 0%, ${breachColor} 55%, #ffffff 100%)`,
-              }}
-            />
-            <div
-              className={`tabletop-domain-clash-half clash-breach-shard domain-${breachDom} ${
-                sameDomainMirror && b.side === 'top' ? 'is-mirror-domain' : ''
-              }`}
-              style={{
-                opacity: isVisible ? 0.96 : 0,
-                clipPath: innerClip,
-                WebkitClipPath: innerClip,
-                transition: tr,
-              }}
-            >
-              <div className={`tabletop-domain-flow-fx domain-${breachDom}`} />
-            </div>
-          </React.Fragment>
-        );
-      })}
-
-      {/* 4. Locked-Step Jagged Tectonic Faultline Ribbon (Aura + White-Hot Core) */}
-      <div
-        className="clash-jagged-aura-band"
-        style={{
-          clipPath: auraBandClip,
-          WebkitClipPath: auraBandClip,
-          transition: frontierTransition,
-        }}
-      />
-      <div
-        className="clash-jagged-core-band"
-        style={{
-          clipPath: coreBandClip,
-          WebkitClipPath: coreBandClip,
-          transition: frontierTransition,
-        }}
+      {/* Live 60fps WebGL Domain-Warped Organic Mist & Turbulence Compositor */}
+      <canvas
+        ref={canvasRef}
+        className={`tabletop-domain-clash-canvas ${shaderReady ? 'is-ready' : ''}`}
       />
 
-      {/* 5. Crackling Arcane Forked Lightning Discharge on Every Surge */}
-      <svg
-        key={surgeState.boltSeed}
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        className="clash-forked-lightning-svg"
-        aria-hidden="true"
-      >
-        <polyline
-          points={lightningPoints}
-          fill="none"
-          stroke={surgeState.boltSeed % 2 === 0 ? topColor : bottomColor}
-          strokeWidth="0.9"
-          strokeLinejoin="bevel"
-          opacity="0.78"
-        />
-        <polyline
-          points={lightningPoints}
-          fill="none"
-          stroke="#ffffff"
-          strokeWidth="0.32"
-          strokeLinejoin="bevel"
-          opacity="0.95"
-        />
-      </svg>
-
+      {/* Ambient Edge Vignette Tints for Both Sovereigns */}
+      <div className="clash-ambient-edge-glow" />
       <div className="clash-faultline-impact-pulse" />
     </div>
   );

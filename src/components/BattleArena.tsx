@@ -1,4 +1,12 @@
-import React, { Suspense, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, {
+  Suspense,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react';
 import {
   AiSkillTier,
   BoardUnit,
@@ -390,9 +398,9 @@ function getOrganicTabletopPose(
   const finalY = colArcY + jitterY + territoryAdvanceY + stackOffsetY;
 
   return {
-    transform: `translate(${finalX}px, ${finalY}px) rotate(${finalRot.toFixed(1)}deg)`,
     '--pose-x': `${finalX}px`,
     '--pose-y': `${finalY}px`,
+    '--pose-rot': `${finalRot.toFixed(1)}deg`,
     '--stack-rel': stackRel,
     '--stack-idx': stackIdx,
     zIndex: (isInvading ? 18 : isClashingAtBorder ? 14 : 10) + stackIdx * 2,
@@ -1074,6 +1082,250 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const triggerScreenShake = (intensity: 'light' | 'heavy') => {
     setArenaShake(intensity);
     setTimeout(() => setArenaShake(null), intensity === 'heavy' ? 520 : 340);
+  };
+
+  // --- Physical Tabletop Motion States (Row FLIP Slide, Draw Arc & Essence Channel Trajectory) ---
+  const prevUnitPosRef = useRef<Record<string, { row: RowType; x: number; y: number }>>({});
+  const [rowShiftMap, setRowShiftMap] = useState<Record<string, { dx: number; dy: number }>>({});
+
+  const [drawFlights, setDrawFlights] = useState<
+    Array<{
+      id: string;
+      card: CardDefinition;
+      startX: number;
+      startY: number;
+      dx: number;
+      dy: number;
+      delayMs: number;
+    }>
+  >([]);
+  const [newlyDrawnMinIdx, setNewlyDrawnMinIdx] = useState<number | null>(null);
+  const prevHandTrackerRef = useRef<{ matchSig: string; count: number; ready: boolean }>({
+    matchSig: '',
+    count: 0,
+    ready: false,
+  });
+
+  const [channelFlights, setChannelFlights] = useState<
+    Array<{
+      id: string;
+      card: CardDefinition;
+      mode: 'channel' | 'burn';
+      startX: number;
+      startY: number;
+      dx: number;
+      dy: number;
+    }>
+  >([]);
+  const [hudPulseTarget, setHudPulseTarget] = useState<'essence' | 'domain' | null>(null);
+
+  useLayoutEffect(() => {
+    if (typeof document === 'undefined') return;
+    const allUnits = [
+      ...getAllBoardUnits(gameState.player),
+      ...getAllBoardUnits(gameState.ai),
+    ];
+    const nextPos: Record<string, { row: RowType; x: number; y: number }> = {};
+    const shifted: Record<string, { dx: number; dy: number }> = {};
+
+    for (const u of allUnits) {
+      const el = document.querySelector(`[data-combat-id="${u.instanceId}"]`) as HTMLElement | null;
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      if (r.width <= 0 && r.height <= 0) continue;
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
+      const prev = prevUnitPosRef.current[u.instanceId];
+      if (prev && prev.row !== u.row) {
+        const scaleFactor = el.offsetWidth > 0 ? Math.max(0.35, r.width / el.offsetWidth) : 1;
+        const dx = Math.max(-280, Math.min(280, Math.round((prev.x - cx) / scaleFactor)));
+        const dy = Math.max(-280, Math.min(280, Math.round((prev.y - cy) / scaleFactor)));
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+          shifted[u.instanceId] = { dx, dy };
+        }
+      }
+      nextPos[u.instanceId] = { row: u.row, x: cx, y: cy };
+    }
+    prevUnitPosRef.current = nextPos;
+
+    const shiftedIds = Object.keys(shifted);
+    if (shiftedIds.length > 0) {
+      setRowShiftMap((prev) => ({ ...prev, ...shifted }));
+      const timer = window.setTimeout(() => {
+        setRowShiftMap((prev) => {
+          const copy = { ...prev };
+          for (const id of shiftedIds) {
+            delete copy[id];
+          }
+          return copy;
+        });
+      }, 290);
+      return () => window.clearTimeout(timer);
+    }
+  }, [
+    gameState.player.vanguard,
+    gameState.player.rearguard,
+    gameState.ai.vanguard,
+    gameState.ai.rearguard,
+  ]);
+
+  useEffect(() => {
+    if (isSpectatorMode || isMulliganOpen || typeof window === 'undefined') {
+      prevHandTrackerRef.current.ready = false;
+      return;
+    }
+    const matchSig = `${gameState.player.name}|${gameState.ai.name}|${campaignBoss?.id ?? ''}|${
+      tacticalProblem?.id ?? ''
+    }`;
+    const curLen = gameState.player.hand.length;
+    const tracker = prevHandTrackerRef.current;
+    const isFreshMatchStart =
+      gameState.turn === 1 &&
+      gameState.player.channeledCards.length === 0 &&
+      gameState.player.crypt.length === 0 &&
+      gameState.combatLog.length <= 3;
+
+    if (!tracker.ready || tracker.matchSig !== matchSig || (isFreshMatchStart && tracker.count > curLen + 1)) {
+      prevHandTrackerRef.current = { matchSig, count: curLen, ready: true };
+      return;
+    }
+
+    if (curLen > tracker.count) {
+      const prevCount = tracker.count;
+      const addedCount = curLen - prevCount;
+      const cardsToFly = gameState.player.hand.slice(-Math.min(3, addedCount));
+
+      let startX = 76;
+      let startY = window.innerHeight - 46;
+      const sovEl = document.querySelector(
+        '[data-combat-id="player-sovereign"]'
+      ) as HTMLElement | null;
+      if (sovEl) {
+        const sr = sovEl.getBoundingClientRect();
+        if (sr.width > 0) {
+          startX = Math.round(sr.left + Math.min(44, sr.width * 0.25));
+          startY = Math.round(sr.top);
+        }
+      }
+
+      let baseEndX = Math.round(window.innerWidth / 2);
+      let baseEndY = Math.round(window.innerHeight - 68);
+      const handBtnEl = document.querySelector(
+        '[data-combat-id="player-hand-trigger"]'
+      ) as HTMLElement | null;
+      if (handBtnEl) {
+        const hr = handBtnEl.getBoundingClientRect();
+        if (hr.width > 0) {
+          baseEndX = Math.round(hr.left + hr.width / 2);
+          baseEndY = Math.round(hr.top - 32);
+        }
+      }
+
+      const now = Date.now();
+      const spawned = cardsToFly.map((c, idx) => {
+        const spreadX = Math.round((idx - (cardsToFly.length - 1) / 2) * 34);
+        const endX = baseEndX + spreadX;
+        const endY = baseEndY;
+        return {
+          id: `draw_${now}_${idx}_${c.id}`,
+          card: c,
+          startX,
+          startY,
+          dx: endX - startX,
+          dy: endY - startY,
+          delayMs: idx * 80,
+        };
+      });
+
+      setDrawFlights((prev) => [...prev.slice(-3), ...spawned]);
+      setNewlyDrawnMinIdx(prevCount);
+
+      const idsToClean = new Set(spawned.map((s) => s.id));
+      window.setTimeout(() => {
+        setDrawFlights((prev) => prev.filter((item) => !idsToClean.has(item.id)));
+        setNewlyDrawnMinIdx(null);
+      }, 430 + (cardsToFly.length - 1) * 80);
+    }
+
+    prevHandTrackerRef.current = { matchSig, count: curLen, ready: true };
+  }, [
+    gameState.player.hand,
+    gameState.turn,
+    gameState.player.name,
+    gameState.ai.name,
+    gameState.player.channeledCards.length,
+    gameState.player.crypt.length,
+    gameState.combatLog.length,
+    campaignBoss?.id,
+    tacticalProblem?.id,
+    isMulliganOpen,
+    isSpectatorMode,
+  ]);
+
+  const triggerChannelOrBurnFlight = (handIdx: number, mode: 'channel' | 'burn') => {
+    if (typeof window === 'undefined' || isSpectatorMode) return;
+    const card = gameState.player.hand[handIdx];
+    if (!card) return;
+
+    let startX = Math.round(window.innerWidth / 2);
+    let startY = Math.round(window.innerHeight - 90);
+    const handSlotEl = document.querySelector(
+      `[data-hand-idx="${handIdx}"]`
+    ) as HTMLElement | null;
+    const dockEl = document.querySelector(
+      '.side-card-command-box, .mccb-info'
+    ) as HTMLElement | null;
+    const hRect = handSlotEl?.getBoundingClientRect();
+    const dRect = dockEl?.getBoundingClientRect();
+    if (hRect && hRect.width > 8 && hRect.height > 8) {
+      startX = Math.round(hRect.left + hRect.width / 2);
+      startY = Math.round(hRect.top + hRect.height / 2);
+    } else if (dRect && dRect.width > 8 && dRect.height > 8) {
+      startX = Math.round(dRect.left + dRect.width / 2);
+      startY = Math.round(dRect.top + dRect.height / 2);
+    }
+
+    let endX = 140;
+    let endY = window.innerHeight - 28;
+    const targetSelector =
+      mode === 'burn'
+        ? '[data-combat-id="player-essence-pill"]'
+        : '[data-combat-id="player-domain-pill"]';
+    const targetEl =
+      (document.querySelector(targetSelector) as HTMLElement | null) ??
+      (document.querySelector('[data-combat-id="player-essence-pill"]') as HTMLElement | null) ??
+      (document.querySelector('[data-combat-id="player-sovereign"]') as HTMLElement | null);
+    if (targetEl) {
+      const tr = targetEl.getBoundingClientRect();
+      if (tr.width > 4) {
+        endX = Math.round(tr.left + tr.width / 2);
+        endY = Math.round(tr.top + tr.height / 2);
+      }
+    }
+
+    const flightId = `chan_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    setChannelFlights((prev) => [
+      ...prev.slice(-2),
+      {
+        id: flightId,
+        card,
+        mode,
+        startX,
+        startY,
+        dx: endX - startX,
+        dy: endY - startY,
+      },
+    ]);
+
+    window.setTimeout(() => {
+      setHudPulseTarget(mode === 'burn' ? 'essence' : 'domain');
+    }, 200);
+    window.setTimeout(() => {
+      setChannelFlights((prev) => prev.filter((f) => f.id !== flightId));
+    }, 410);
+    window.setTimeout(() => {
+      setHudPulseTarget(null);
+    }, 620);
   };
 
   const hasTrackedFirstActionRef = useRef<boolean>(false);
@@ -3369,6 +3621,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       hasTrackedFirstActionRef.current = true;
       trackAdsEvent('first_card_played', { action: 'channel_essence', isGuest });
     }
+    triggerChannelOrBurnFlight(handIdx, 'channel');
     const next = channelCard(gameState, 'player', handIdx);
     playSfx('channel');
     setGameState(next);
@@ -3381,6 +3634,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       hasTrackedFirstActionRef.current = true;
       trackAdsEvent('first_card_played', { action: 'burn_essence', isGuest });
     }
+    triggerChannelOrBurnFlight(handIdx, 'burn');
     const next = burnCardForEssence(gameState, 'player', handIdx);
     playSfx('channel');
     setGameState(next);
@@ -4780,6 +5034,57 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           </svg>
         );
       })()}
+
+      {/* PHYSICAL CARD DRAW ARC (Grimoire -> Hand) */}
+      {drawFlights.map((df) => (
+        <div
+          key={df.id}
+          className={`card-draw-flight-fx domain-${df.card.domain}`}
+          style={
+            {
+              left: `${df.startX}px`,
+              top: `${df.startY}px`,
+              '--draw-dx': `${df.dx}px`,
+              '--draw-dy': `${df.dy}px`,
+              animationDelay: `${df.delayMs}ms`,
+            } as React.CSSProperties
+          }
+          aria-hidden="true"
+        >
+          <div className="card-draw-flight-face">
+            {df.card.imagePath ? (
+              <img src={df.card.imagePath} alt="" />
+            ) : (
+              <span>{DOMAIN_META[df.card.domain]?.icon ?? '❖'}</span>
+            )}
+            <span className="card-draw-flight-cost">{df.card.cost}</span>
+          </div>
+        </div>
+      ))}
+
+      {/* PHYSICAL CHANNEL / ESSENCE TRAJECTORY (Hand Card -> Essence / Domain Counter) */}
+      {channelFlights.map((cf) => (
+        <div
+          key={cf.id}
+          className={`card-channel-flight-fx domain-${cf.card.domain} mode-${cf.mode}`}
+          style={
+            {
+              left: `${cf.startX}px`,
+              top: `${cf.startY}px`,
+              '--chan-dx': `${cf.dx}px`,
+              '--chan-dy': `${cf.dy}px`,
+            } as React.CSSProperties
+          }
+          aria-hidden="true"
+        >
+          <div className="card-channel-flight-orb">
+            {cf.card.imagePath ? <img src={cf.card.imagePath} alt="" /> : null}
+            <span className="card-channel-flight-pip">
+              {DOMAIN_META[cf.card.domain]?.icon ?? '❖'}
+            </span>
+          </div>
+        </div>
+      ))}
 
       {/* DIRECTIONAL ELEMENTAL PROJECTILE & RANGED BEAM OVERLAY */}
       {combatAnim && combatAnim.isRanged && (
@@ -6268,6 +6573,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               const isValidTarget =
                                 validAttackTargets.includes(unit.instanceId) || isSpellTargetingEnemy;
                               const isLunging = combatAnim?.attackerId === unit.instanceId;
+                              const isRangedShot = Boolean(isLunging && combatAnim?.isRanged);
+                              const isMeleeLunge = Boolean(isLunging && !combatAnim?.isRanged);
+                              const rowShift = rowShiftMap[unit.instanceId];
                               const isHit = combatAnim?.targetId === unit.instanceId;
                               const isFocusedInStack = focusedBoardUnitId === unit.instanceId;
                               return (
@@ -6275,7 +6583,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                   key={unit.instanceId}
                                   data-combat-id={unit.instanceId}
                                   className={`organic-tabletop-card stacked-card-item ${
-                                    isLunging ? 'is-lunging-attacker' : ''
+                                    isMeleeLunge ? 'is-lunging-attacker' : ''
+                                  } ${isRangedShot ? 'is-ranged-attacker' : ''} ${
+                                    rowShift ? 'is-shifting-row' : ''
                                   } ${isHit ? 'is-hit-target' : ''} ${
                                     isFocusedInStack ? 'is-stack-focused' : ''
                                   }`}
@@ -6295,6 +6605,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                       ? ({
                                           '--lunge-x': `${combatAnim.lungeX}px`,
                                           '--lunge-y': `${combatAnim.lungeY}px`,
+                                          '--lunge-rot': `${Math.max(-8, Math.min(8, Math.round(combatAnim.lungeX * 0.04)))}deg`,
+                                        } as React.CSSProperties)
+                                      : {}),
+                                    ...(rowShift
+                                      ? ({
+                                          '--shift-from-x': `${rowShift.dx}px`,
+                                          '--shift-from-y': `${rowShift.dy}px`,
                                         } as React.CSSProperties)
                                       : {}),
                                   }}
@@ -6365,6 +6682,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                               const isValidTarget =
                                 validAttackTargets.includes(unit.instanceId) || isSpellTargetingEnemy;
                               const isLunging = combatAnim?.attackerId === unit.instanceId;
+                              const isRangedShot = Boolean(isLunging && combatAnim?.isRanged);
+                              const isMeleeLunge = Boolean(isLunging && !combatAnim?.isRanged);
+                              const rowShift = rowShiftMap[unit.instanceId];
                               const isHit = combatAnim?.targetId === unit.instanceId;
                               const isFocusedInStack = focusedBoardUnitId === unit.instanceId;
                               return (
@@ -6372,7 +6692,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                   key={unit.instanceId}
                                   data-combat-id={unit.instanceId}
                                   className={`organic-tabletop-card stacked-card-item ${
-                                    isLunging ? 'is-lunging-attacker' : ''
+                                    isMeleeLunge ? 'is-lunging-attacker' : ''
+                                  } ${isRangedShot ? 'is-ranged-attacker' : ''} ${
+                                    rowShift ? 'is-shifting-row' : ''
                                   } ${isHit ? 'is-hit-target' : ''} ${
                                     isInvading ? 'is-crossing-border-ai' : ''
                                   } ${isFocusedInStack ? 'is-stack-focused' : ''}`}
@@ -6392,6 +6714,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                       ? ({
                                           '--lunge-x': `${combatAnim.lungeX}px`,
                                           '--lunge-y': `${combatAnim.lungeY}px`,
+                                          '--lunge-rot': `${Math.max(-8, Math.min(8, Math.round(combatAnim.lungeX * 0.04)))}deg`,
+                                        } as React.CSSProperties)
+                                      : {}),
+                                    ...(rowShift
+                                      ? ({
+                                          '--shift-from-x': `${rowShift.dx}px`,
+                                          '--shift-from-y': `${rowShift.dy}px`,
                                         } as React.CSSProperties)
                                       : {}),
                                   }}
@@ -6492,6 +6821,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                   isPlayerTurn &&
                                   canMoveUnitRow(gameState, 'player', unit.instanceId);
                                 const isLunging = combatAnim?.attackerId === unit.instanceId;
+                                const isRangedShot = Boolean(isLunging && combatAnim?.isRanged);
+                                const isMeleeLunge = Boolean(isLunging && !combatAnim?.isRanged);
+                                const rowShift = rowShiftMap[unit.instanceId];
                                 const isHit = combatAnim?.targetId === unit.instanceId;
                                 const isFocusedInStack =
                                   selectedAttackerId === unit.instanceId ||
@@ -6502,7 +6834,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     key={unit.instanceId}
                                     data-combat-id={unit.instanceId}
                                     className={`organic-tabletop-card stacked-card-item ${
-                                      isLunging ? 'is-lunging-attacker' : ''
+                                      isMeleeLunge ? 'is-lunging-attacker' : ''
+                                    } ${isRangedShot ? 'is-ranged-attacker' : ''} ${
+                                      rowShift ? 'is-shifting-row' : ''
                                     } ${isHit ? 'is-hit-target' : ''} ${
                                       isInvading ? 'is-crossing-border-player' : ''
                                     } ${isFocusedInStack ? 'is-stack-focused' : ''}`}
@@ -6522,6 +6856,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                         ? ({
                                             '--lunge-x': `${combatAnim.lungeX}px`,
                                             '--lunge-y': `${combatAnim.lungeY}px`,
+                                            '--lunge-rot': `${Math.max(-8, Math.min(8, Math.round(combatAnim.lungeX * 0.04)))}deg`,
+                                          } as React.CSSProperties)
+                                        : {}),
+                                      ...(rowShift
+                                        ? ({
+                                            '--shift-from-x': `${rowShift.dx}px`,
+                                            '--shift-from-y': `${rowShift.dy}px`,
                                           } as React.CSSProperties)
                                         : {}),
                                     }}
@@ -6619,6 +6960,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                   isPlayerTurn &&
                                   canMoveUnitRow(gameState, 'player', unit.instanceId);
                                 const isLunging = combatAnim?.attackerId === unit.instanceId;
+                                const isRangedShot = Boolean(isLunging && combatAnim?.isRanged);
+                                const isMeleeLunge = Boolean(isLunging && !combatAnim?.isRanged);
+                                const rowShift = rowShiftMap[unit.instanceId];
                                 const isHit = combatAnim?.targetId === unit.instanceId;
                                 const isFocusedInStack =
                                   selectedAttackerId === unit.instanceId ||
@@ -6629,7 +6973,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     key={unit.instanceId}
                                     data-combat-id={unit.instanceId}
                                     className={`organic-tabletop-card stacked-card-item ${
-                                      isLunging ? 'is-lunging-attacker' : ''
+                                      isMeleeLunge ? 'is-lunging-attacker' : ''
+                                    } ${isRangedShot ? 'is-ranged-attacker' : ''} ${
+                                      rowShift ? 'is-shifting-row' : ''
                                     } ${isHit ? 'is-hit-target' : ''} ${
                                       isFocusedInStack ? 'is-stack-focused' : ''
                                     }`}
@@ -6649,6 +6995,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                         ? ({
                                             '--lunge-x': `${combatAnim.lungeX}px`,
                                             '--lunge-y': `${combatAnim.lungeY}px`,
+                                            '--lunge-rot': `${Math.max(-8, Math.min(8, Math.round(combatAnim.lungeX * 0.04)))}deg`,
+                                          } as React.CSSProperties)
+                                        : {}),
+                                      ...(rowShift
+                                        ? ({
+                                            '--shift-from-x': `${rowShift.dx}px`,
+                                            '--shift-from-y': `${rowShift.dy}px`,
                                           } as React.CSSProperties)
                                         : {}),
                                     }}
@@ -7420,7 +7773,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       <span className="hud-pill-stat hp" title="Seus Pontos de Vida">
                         {gameState.player.hp} PV
                       </span>
-                      <span className="hud-pill-stat mana" title="Essência disponível">
+                      <span
+                        data-combat-id="player-essence-pill"
+                        className={`hud-pill-stat mana ${
+                          hudPulseTarget === 'essence' ? 'is-pulsing-gain' : ''
+                        }`}
+                        title="Essência disponível"
+                      >
                         {gameState.player.currentEssence}/{gameState.player.maxEssence} Ess.
                       </span>
 
@@ -7446,7 +7805,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         </button>
                         <button
                           type="button"
-                          className={`hud-ritual-chip ${domExpCheck.allowed ? 'ready' : ''}`}
+                          data-combat-id="player-domain-pill"
+                          className={`hud-ritual-chip ${domExpCheck.allowed ? 'ready' : ''} ${
+                            hudPulseTarget === 'domain' ? 'is-pulsing-gain' : ''
+                          }`}
                           disabled={!domExpCheck.allowed}
                           onClick={handleInvokeDomainExpansion}
                           title="Expansão de Domínio (6 Afinidade + 3 Essência)"
@@ -7508,6 +7870,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     {/* Center Segment: Hand Drawer Handle */}
                     <button
                       type="button"
+                      data-combat-id="player-hand-trigger"
                       className={`hud-hand-trigger-btn ${
                         isHandPinnedOpen || isHandHovered ? 'active' : ''
                       }`}
@@ -8369,10 +8732,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         const rotDeg = isSelected ? 0 : offsetIdx * 2.2;
                         const liftY = isSelected ? -24 : Math.abs(offsetIdx) * 2.5;
 
+                        const isNewlyDrawn =
+                          newlyDrawnMinIdx !== null && idx >= newlyDrawnMinIdx;
+
                         return (
                           <div
                             key={`${card.id}-hand-${idx}`}
-                            className={`cpa-hand-card-slot ${isSelected ? 'is-selected-slot' : ''}`}
+                            data-hand-idx={idx}
+                            className={`cpa-hand-card-slot ${
+                              isSelected ? 'is-selected-slot' : ''
+                            } ${isNewlyDrawn ? 'is-newly-drawn' : ''}`}
                             style={{
                               transform: `translateY(${liftY}px) rotate(${rotDeg}deg)`,
                               zIndex: isSelected ? 60 : idx + 10,

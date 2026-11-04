@@ -1886,28 +1886,65 @@ html, body, #root {
 
 /* Organic Hand-Placed Card Wrapper on the Table */
 .organic-tabletop-card {
+  transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) rotate(var(--pose-rot, 0deg));
   transition: transform 0.24s cubic-bezier(0.2, 0.85, 0.25, 1), filter 0.2s ease;
   filter: drop-shadow(4px 10px 14px rgba(0, 0, 0, 0.78));
   will-change: transform;
-  animation: tabletopSummonSlam 0.34s cubic-bezier(0.22, 1.25, 0.36, 1) backwards;
+  animation: tabletopSummonSlam 0.32s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @keyframes tabletopSummonSlam {
   0% {
     opacity: 0;
-    filter: drop-shadow(0 28px 32px rgba(0, 229, 255, 0.65)) brightness(1.5);
+    transform: translate(var(--pose-x, 0px), calc(var(--pose-y, 0px) - 24px))
+      rotate(calc(var(--pose-rot, 0deg) - 2.5deg)) scale(1.12);
+    filter: drop-shadow(0 26px 30px rgba(0, 0, 0, 0.9)) brightness(1.32);
   }
-  70% {
+  72% {
     opacity: 1;
-    filter: drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.9)) brightness(1.1);
+    transform: translate(var(--pose-x, 0px), calc(var(--pose-y, 0px) + 2px))
+      rotate(var(--pose-rot, 0deg)) scale(0.97);
+    filter: drop-shadow(2px 4px 7px rgba(0, 0, 0, 0.92)) brightness(1.06);
   }
   100% {
     opacity: 1;
+    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) rotate(var(--pose-rot, 0deg))
+      scale(1);
+  }
+}
+
+/* Smooth FLIP Row Repositioning (Vanguard <-> Rearguard) */
+.organic-tabletop-card.is-shifting-row {
+  z-index: 95 !important;
+  pointer-events: none;
+  animation: tabletopRowSlide 0.26s cubic-bezier(0.22, 1, 0.36, 1) backwards !important;
+}
+
+@keyframes tabletopRowSlide {
+  0% {
+    transform: translate(
+        calc(var(--pose-x, 0px) + var(--shift-from-x, 0px)),
+        calc(var(--pose-y, 0px) + var(--shift-from-y, 0px))
+      )
+      rotate(var(--pose-rot, 0deg)) scale(1);
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.8));
+  }
+  45% {
+    transform: translate(
+        calc(var(--pose-x, 0px) + var(--shift-from-x, 0px) * 0.38),
+        calc(var(--pose-y, 0px) + var(--shift-from-y, 0px) * 0.38 - 8px)
+      )
+      rotate(calc(var(--pose-rot, 0deg) * 0.5)) scale(1.06);
+    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.9)) brightness(1.08);
+  }
+  100% {
+    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) rotate(var(--pose-rot, 0deg))
+      scale(1);
   }
 }
 
 .organic-tabletop-card:hover {
-  transform: translate(0px, -6px) rotate(0deg) scale(1.06) !important;
+  transform: translate(var(--pose-x, 0px), calc(var(--pose-y, 0px) - 6px)) rotate(0deg) scale(1.06) !important;
   filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.92));
   z-index: 48;
 }
@@ -1935,7 +1972,7 @@ html, body, #root {
   box-shadow: 0 0 8px rgba(249, 115, 22, 0.75);
 }
 
-/* PHYSICAL COMBAT LUNGE ANIMATION (Card leaps across the table onto the target!) */
+/* PHYSICAL MELEE COMBAT LUNGE ANIMATION (Card leaps across the table onto the target!) */
 .organic-tabletop-card.is-lunging-attacker {
   z-index: 160 !important;
   pointer-events: none;
@@ -1944,34 +1981,70 @@ html, body, #root {
 
 @keyframes cardPhysicalLunge {
   0% {
-    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) scale(1);
+    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) rotate(var(--pose-rot, 0deg))
+      scale(1);
     filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.8));
   }
-  22% {
+  20% {
     transform: translate(
-        calc(var(--pose-x, 0px) + var(--lunge-x, 0px) * -0.14),
-        calc(var(--pose-y, 0px) + var(--lunge-y, 0px) * -0.14)
+        calc(var(--pose-x, 0px) + var(--lunge-x, 0px) * -0.13),
+        calc(var(--pose-y, 0px) + var(--lunge-y, 0px) * -0.13)
       )
-      scale(1.16) rotate(-5deg);
-    filter: drop-shadow(0 18px 28px rgba(251, 191, 36, 0.85)) brightness(1.2);
+      rotate(calc(var(--pose-rot, 0deg) - 4deg)) scale(1.14);
+    filter: drop-shadow(0 18px 28px rgba(251, 191, 36, 0.75)) brightness(1.16);
   }
-  52% {
+  50% {
     transform: translate(
         calc(var(--pose-x, 0px) + var(--lunge-x, 0px)),
         calc(var(--pose-y, 0px) + var(--lunge-y, 0px))
       )
-      scale(1.24) rotate(6deg);
-    filter: drop-shadow(0 0 32px rgba(239, 68, 68, 1)) brightness(1.35);
+      rotate(var(--lunge-rot, 4deg)) scale(1.22);
+    filter: drop-shadow(0 0 30px rgba(239, 68, 68, 0.95)) brightness(1.32);
   }
-  75% {
+  76% {
     transform: translate(
-        calc(var(--pose-x, 0px) + var(--lunge-x, 0px) * 0.25),
-        calc(var(--pose-y, 0px) + var(--lunge-y, 0px) * 0.25)
+        calc(var(--pose-x, 0px) + var(--lunge-x, 0px) * 0.2),
+        calc(var(--pose-y, 0px) + var(--lunge-y, 0px) * 0.2)
       )
-      scale(1.06) rotate(-2deg);
+      rotate(calc(var(--pose-rot, 0deg) * 0.6)) scale(1.04);
   }
   100% {
-    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) scale(1);
+    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) rotate(var(--pose-rot, 0deg))
+      scale(1);
+  }
+}
+
+/* RANGED ATTACKER AIM LIFT & RELEASE RECOIL (Distinct from Melee Lunge!) */
+.organic-tabletop-card.is-ranged-attacker {
+  z-index: 155 !important;
+  pointer-events: none;
+  animation: cardRangedRecoil 0.44s cubic-bezier(0.2, 0.85, 0.3, 1) forwards !important;
+}
+
+@keyframes cardRangedRecoil {
+  0% {
+    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) rotate(var(--pose-rot, 0deg))
+      scale(1);
+  }
+  24% {
+    transform: translate(
+        calc(var(--pose-x, 0px) + var(--lunge-x, 0px) * 0.35),
+        calc(var(--pose-y, 0px) + var(--lunge-y, 0px) * 0.35 - 5px)
+      )
+      rotate(var(--lunge-rot, 0deg)) scale(1.08);
+    filter: drop-shadow(0 12px 22px rgba(56, 189, 248, 0.7)) brightness(1.22);
+  }
+  44% {
+    transform: translate(
+        calc(var(--pose-x, 0px) - var(--lunge-x, 0px) * 0.55),
+        calc(var(--pose-y, 0px) - var(--lunge-y, 0px) * 0.55 + 3px)
+      )
+      rotate(calc(var(--pose-rot, 0deg) - 2deg)) scale(0.96);
+    filter: drop-shadow(0 6px 14px rgba(250, 204, 21, 0.65)) brightness(1.12);
+  }
+  100% {
+    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) rotate(var(--pose-rot, 0deg))
+      scale(1);
   }
 }
 
@@ -1983,24 +2056,28 @@ html, body, #root {
 
 @keyframes targetHitShake {
   0%, 38% {
-    transform: translate(0, 0);
+    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) rotate(var(--pose-rot, 0deg));
   }
   46% {
-    transform: translate(-11px, 5px) rotate(-6deg) scale(0.94);
-    filter: brightness(2.1) sepia(1) hue-rotate(-45deg) saturate(4);
+    transform: translate(calc(var(--pose-x, 0px) - 10px), calc(var(--pose-y, 0px) + 5px))
+      rotate(calc(var(--pose-rot, 0deg) - 5deg)) scale(0.94);
+    filter: brightness(2) sepia(0.9) hue-rotate(-45deg) saturate(3.5);
   }
   58% {
-    transform: translate(11px, -5px) rotate(6deg) scale(0.95);
-    filter: brightness(1.8) drop-shadow(0 0 24px #ef4444);
+    transform: translate(calc(var(--pose-x, 0px) + 10px), calc(var(--pose-y, 0px) - 5px))
+      rotate(calc(var(--pose-rot, 0deg) + 5deg)) scale(0.95);
+    filter: brightness(1.75) drop-shadow(0 0 22px #ef4444);
   }
   72% {
-    transform: translate(-7px, 3px) rotate(-3deg);
+    transform: translate(calc(var(--pose-x, 0px) - 6px), calc(var(--pose-y, 0px) + 3px))
+      rotate(calc(var(--pose-rot, 0deg) - 2.5deg));
   }
   86% {
-    transform: translate(5px, -2px) rotate(2deg);
+    transform: translate(calc(var(--pose-x, 0px) + 4px), calc(var(--pose-y, 0px) - 2px))
+      rotate(calc(var(--pose-rot, 0deg) + 1.5deg));
   }
   100% {
-    transform: translate(0, 0);
+    transform: translate(var(--pose-x, 0px), var(--pose-y, 0px)) rotate(var(--pose-rot, 0deg));
     filter: none;
   }
 }
@@ -6105,9 +6182,215 @@ html, body, #root {
   }
 }
 
-/* Entrance Deal Animation for Hand Cards */
+/* Entrance Deal Animation for Hand Cards (applied on inner .card-frame so fan curvature transform is preserved!) */
 .cpa-hand-card-slot {
-  animation: cardDealIn3D 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), margin-left 0.2s ease;
+}
+
+.cpa-hand-card-slot > .card-frame {
+  animation: cardDealIn3D 0.32s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.cpa-hand-card-slot.is-newly-drawn > .card-frame {
+  animation: handCardSettleIn 0.36s cubic-bezier(0.2, 0.9, 0.3, 1) backwards;
+}
+
+@keyframes handCardSettleIn {
+  0% {
+    opacity: 0;
+    transform: translate(-36px, 18px) rotate(-8deg) scale(0.84);
+    filter: brightness(1.35);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(2px, -4px) rotate(1deg) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+}
+
+/* Physical Card Draw Arc (Grimoire -> Hand) & Essence Channel Flight (Hand -> Essence/Domain) */
+.card-draw-flight-fx {
+  position: fixed;
+  width: 54px;
+  height: 76px;
+  margin-left: -27px;
+  margin-top: -38px;
+  z-index: 225;
+  pointer-events: none !important;
+  will-change: transform, opacity;
+  animation: cardDrawArcFlight 0.38s cubic-bezier(0.22, 0.9, 0.32, 1) both;
+}
+
+.card-draw-flight-face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0b0f19;
+  border: 1.5px solid rgba(212, 175, 55, 0.72);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.85), 0 0 14px rgba(212, 175, 55, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fde68a;
+  font-size: 1.1rem;
+}
+
+.card-draw-flight-fx.domain-red .card-draw-flight-face { border-color: rgba(239, 68, 68, 0.8); }
+.card-draw-flight-fx.domain-blue .card-draw-flight-face { border-color: rgba(56, 189, 248, 0.8); }
+.card-draw-flight-fx.domain-purple .card-draw-flight-face { border-color: rgba(168, 85, 247, 0.8); }
+.card-draw-flight-fx.domain-green .card-draw-flight-face { border-color: rgba(16, 185, 129, 0.8); }
+.card-draw-flight-fx.domain-gold .card-draw-flight-face { border-color: rgba(245, 158, 11, 0.85); }
+
+.card-draw-flight-face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-draw-flight-cost {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  min-width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  background: rgba(11, 15, 25, 0.92);
+  border: 1px solid rgba(212, 175, 55, 0.65);
+  color: #fef3c7;
+  font-size: 0.56rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes cardDrawArcFlight {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px) rotate(-18deg) scale(0.54);
+  }
+  22% {
+    opacity: 1;
+    transform: translate(calc(var(--draw-dx, 0px) * 0.24), calc(var(--draw-dy, 0px) * 0.24 - 36px))
+      rotate(-8deg) scale(0.86);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(calc(var(--draw-dx, 0px) * 0.88), calc(var(--draw-dy, 0px) * 0.88 - 14px))
+      rotate(3deg) scale(0.98);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--draw-dx, 0px), var(--draw-dy, 0px)) rotate(0deg) scale(0.9);
+  }
+}
+
+.card-channel-flight-fx {
+  position: fixed;
+  width: 48px;
+  height: 64px;
+  margin-left: -24px;
+  margin-top: -32px;
+  z-index: 232;
+  pointer-events: none !important;
+  will-change: transform, opacity;
+  animation: cardChannelToEssence 0.39s cubic-bezier(0.24, 0.86, 0.32, 1) forwards;
+}
+
+.card-channel-flight-orb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.35), rgba(11, 15, 25, 0.92));
+  border: 1.5px solid rgba(250, 204, 21, 0.85);
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-channel-flight-fx.domain-red .card-channel-flight-orb {
+  border-color: #f87171;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.72);
+}
+.card-channel-flight-fx.domain-blue .card-channel-flight-orb {
+  border-color: #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.72);
+}
+.card-channel-flight-fx.domain-purple .card-channel-flight-orb {
+  border-color: #c084fc;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.72);
+}
+.card-channel-flight-fx.domain-green .card-channel-flight-orb {
+  border-color: #34d399;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.72);
+}
+.card-channel-flight-fx.domain-gold .card-channel-flight-orb {
+  border-color: #fbbf24;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.78);
+}
+
+.card-channel-flight-orb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.78;
+}
+
+.card-channel-flight-pip {
+  position: absolute;
+  font-size: 1rem;
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.95);
+}
+
+@keyframes cardChannelToEssence {
+  0% {
+    opacity: 0.96;
+    transform: translate(0px, 0px) scale(0.96) rotate(0deg);
+  }
+  38% {
+    opacity: 1;
+    transform: translate(calc(var(--chan-dx, 0px) * 0.36), calc(var(--chan-dy, 0px) * 0.36 - 32px))
+      scale(0.68) rotate(-10deg);
+    filter: brightness(1.35);
+  }
+  84% {
+    opacity: 0.95;
+    transform: translate(calc(var(--chan-dx, 0px) * 0.92), calc(var(--chan-dy, 0px) * 0.92 - 4px))
+      scale(0.36) rotate(12deg);
+    filter: brightness(1.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--chan-dx, 0px), var(--chan-dy, 0px)) scale(0.18) rotate(20deg);
+  }
+}
+
+.hud-pill-stat.is-pulsing-gain,
+.hud-ritual-chip.is-pulsing-gain {
+  animation: hudResourceGainPulse 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes hudResourceGainPulse {
+  0% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.16);
+    filter: brightness(1.45) drop-shadow(0 0 10px rgba(250, 204, 21, 0.75));
+  }
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
 }
 
 @keyframes cardDealIn3D {
@@ -15036,6 +15319,8 @@ input:focus-visible,
 .turn-rope-warning-banner,
 .combat-projectile-beam,
 .combat-impact-fx,
+.card-draw-flight-fx,
+.card-channel-flight-fx,
 .spectacle-target-burst,
 .legendary-entrance-backdrop,
 .aiming-trajectory-overlay,

@@ -1113,7 +1113,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setTimeout(() => setArenaShake(null), intensity === 'heavy' ? 520 : 340);
   };
 
-  const sfxScale = tournamentSpectatorContext?.variant === 'home_live' ? 0.36 : 1;
+  const sfxScale = tournamentSpectatorContext?.variant === 'home_live' ? 0.72 : 1;
 
   // --- Physical Tabletop Motion States (Row FLIP Slide, Draw Arc & Essence Channel Trajectory) ---
   const prevUnitPosRef = useRef<Record<string, { row: RowType; x: number; y: number }>>({});

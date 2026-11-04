@@ -114,10 +114,20 @@ export function getSfxVolume(): number {
   return sfxVolume;
 }
 
+function computeSfxBusGain(vol: number, isAudioMuted: boolean): number {
+  if (isAudioMuted || vol <= 0.004) return 0;
+  // Makeup gain calibrated so procedural Web Audio transients match -14 LUFS orchestral MP3s
+  return Math.pow(vol, 1.08) * 2.35;
+}
+
 export function setSfxVolume(vol: number): void {
   sfxVolume = Math.max(0, Math.min(1, Number.isFinite(vol) ? vol : 0.85));
   if (sfxMasterGain && audioCtx) {
-    sfxMasterGain.gain.setTargetAtTime(muted ? 0 : sfxVolume, audioCtx.currentTime, 0.02);
+    sfxMasterGain.gain.setTargetAtTime(
+      computeSfxBusGain(sfxVolume, muted),
+      audioCtx.currentTime,
+      0.02
+    );
   }
   if (typeof window !== 'undefined') {
     try {
@@ -132,14 +142,15 @@ export function setSfxVolume(vol: number): void {
 function ensureMasterBus(ctx: AudioContext): AudioNode {
   if (!sfxMasterGain || !sfxCompressor) {
     sfxCompressor = ctx.createDynamicsCompressor();
-    sfxCompressor.threshold.setValueAtTime(-14, ctx.currentTime);
-    sfxCompressor.knee.setValueAtTime(18, ctx.currentTime);
-    sfxCompressor.ratio.setValueAtTime(4, ctx.currentTime);
-    sfxCompressor.attack.setValueAtTime(0.003, ctx.currentTime);
-    sfxCompressor.release.setValueAtTime(0.14, ctx.currentTime);
+    // Transparent brickwall peak limiter: protects 0 dBFS while preserving full transient punch
+    sfxCompressor.threshold.setValueAtTime(-3.5, ctx.currentTime);
+    sfxCompressor.knee.setValueAtTime(6, ctx.currentTime);
+    sfxCompressor.ratio.setValueAtTime(12, ctx.currentTime);
+    sfxCompressor.attack.setValueAtTime(0.001, ctx.currentTime);
+    sfxCompressor.release.setValueAtTime(0.085, ctx.currentTime);
 
     sfxMasterGain = ctx.createGain();
-    sfxMasterGain.gain.setValueAtTime(muted ? 0 : sfxVolume, ctx.currentTime);
+    sfxMasterGain.gain.setValueAtTime(computeSfxBusGain(sfxVolume, muted), ctx.currentTime);
 
     sfxMasterGain.connect(sfxCompressor);
     sfxCompressor.connect(ctx.destination);
@@ -170,7 +181,7 @@ function getNoiseBank(ctx: AudioContext): CachedNoiseBank {
     b0 = 0.99765 * b0 + wn * 0.099046;
     b1 = 0.963 * b1 + wn * 0.2965164;
     b2 = 0.57 * b2 + wn * 1.0526913;
-    pData[i] = Math.max(-1, Math.min(1, (b0 + b1 + b2 + wn * 0.1848) * 0.22));
+    pData[i] = Math.max(-1, Math.min(1, (b0 + b1 + b2 + wn * 0.1848) * 0.56));
   }
 
   const bank = { white, pink };
@@ -249,7 +260,11 @@ export function isMuted(): boolean {
 export function setMuted(value: boolean): void {
   muted = Boolean(value);
   if (sfxMasterGain && audioCtx) {
-    sfxMasterGain.gain.setTargetAtTime(muted ? 0 : sfxVolume, audioCtx.currentTime, 0.015);
+    sfxMasterGain.gain.setTargetAtTime(
+      computeSfxBusGain(sfxVolume, muted),
+      audioCtx.currentTime,
+      0.015
+    );
   }
   if (typeof window !== 'undefined') {
     try {
@@ -313,11 +328,13 @@ function playTone(
 ): void {
   const pitchMul = params?.pitchSpread !== undefined ? randSpread(params.pitchSpread) : 1;
   const gScale = params?.gainScale ?? 1;
-  const effectiveGain = Math.max(0.0002, gainPeak * gScale * randSpread(0.04));
+  const effectiveGain = Math.max(0.0002, Math.min(0.95, gainPeak * gScale * randSpread(0.04)));
   if (effectiveGain <= 0.0003) return;
 
   const startTime = ctx.currentTime + delay;
   const endTime = startTime + duration;
+  const attackEnd = startTime + Math.min(0.012, duration * 0.16);
+  const holdEnd = startTime + Math.max(Math.min(0.014, duration * 0.18), duration * 0.44);
 
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -330,9 +347,13 @@ function playTone(
     osc.frequency.exponentialRampToValueAtTime(f1, endTime);
   }
 
-  gain.gain.setValueAtTime(0.0001, startTime);
-  gain.gain.linearRampToValueAtTime(effectiveGain, startTime + Math.min(0.022, duration * 0.24));
-  gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
+  // 3-stage transient envelope: crisp attack -> audible body sustain -> smooth exponential tail
+  gain.gain.setValueAtTime(0.0002, startTime);
+  gain.gain.linearRampToValueAtTime(effectiveGain, attackEnd);
+  if (holdEnd < endTime - 0.006) {
+    gain.gain.linearRampToValueAtTime(effectiveGain * 0.7, holdEnd);
+  }
+  gain.gain.exponentialRampToValueAtTime(0.0006, endTime);
 
   if (params?.filterFreq) {
     const filter = ctx.createBiquadFilter();
@@ -347,7 +368,7 @@ function playTone(
   routeToOutput(ctx, gain, params?.pan ?? 0);
 
   osc.start(startTime);
-  osc.stop(endTime + 0.012);
+  osc.stop(endTime + 0.015);
 }
 
 interface NoiseParams {
@@ -368,32 +389,46 @@ function playNoiseBurst(
   params?: NoiseParams
 ): void {
   const gScale = params?.gainScale ?? 1;
-  const effectiveGain = Math.max(0.0002, gainPeak * gScale * randSpread(0.05));
+  const filterType = params?.filterType ?? 'bandpass';
+  const qVal = params?.q ?? 1.25;
+  // Compensate narrow bandpass insertion loss so physical impacts/whooshes retain full body
+  const qMakeup = filterType === 'bandpass' ? 1 + Math.min(1.65, qVal * 0.62) : 1.0;
+  const effectiveGain = Math.max(
+    0.0002,
+    Math.min(0.95, gainPeak * gScale * qMakeup * randSpread(0.05))
+  );
   if (effectiveGain <= 0.0003) return;
 
   const bank = getNoiseBank(ctx);
   const buf = params?.color === 'pink' ? bank.pink : bank.white;
 
   const startTime = ctx.currentTime + delay;
+  const endTime = startTime + duration;
+  const attackEnd = startTime + Math.min(0.009, duration * 0.15);
+  const holdEnd = startTime + Math.max(Math.min(0.011, duration * 0.18), duration * 0.42);
+
   const source = ctx.createBufferSource();
   source.buffer = buf;
 
   const filter = ctx.createBiquadFilter();
-  filter.type = params?.filterType ?? 'bandpass';
+  filter.type = filterType;
   const fStart = Math.max(60, filterFreq * randSpread(0.06));
   filter.frequency.setValueAtTime(fStart, startTime);
   if (params?.filterEndFreq) {
     filter.frequency.exponentialRampToValueAtTime(
       Math.max(60, params.filterEndFreq * randSpread(0.05)),
-      startTime + duration
+      endTime
     );
   }
-  filter.Q.setValueAtTime(params?.q ?? 1.4, startTime);
+  filter.Q.setValueAtTime(qVal, startTime);
 
   const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.0001, startTime);
-  gain.gain.linearRampToValueAtTime(effectiveGain, startTime + Math.min(0.012, duration * 0.18));
-  gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+  gain.gain.setValueAtTime(0.0002, startTime);
+  gain.gain.linearRampToValueAtTime(effectiveGain, attackEnd);
+  if (holdEnd < endTime - 0.006) {
+    gain.gain.linearRampToValueAtTime(effectiveGain * 0.68, holdEnd);
+  }
+  gain.gain.exponentialRampToValueAtTime(0.0006, endTime);
 
   source.connect(filter);
   filter.connect(gain);
@@ -545,36 +580,44 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
     const g = Math.max(0.05, Math.min(1.25, options?.volumeScale ?? 1));
     const domain = options?.domain;
 
-    // Automatic musical ducking for full-stage dramatic moments (ignores attenuated showcase foley)
-    if (musicDuckHandler && g >= 0.65 && sfxVolume > 0.03) {
+    // Automatic musical ducking so combat impacts & dramatic moments always cut cleanly through the orchestra
+    if (musicDuckHandler && g >= 0.55 && sfxVolume > 0.03) {
       if (type === 'victory' || type === 'defeat') {
-        musicDuckHandler(0.24, 2150);
+        musicDuckHandler(0.22, 2150);
       } else if (
         type === 'domain_expand' ||
         type === 'domain_clash' ||
         type === 'wheel_domain_shatter' ||
         type === 'dragon_armada'
       ) {
-        musicDuckHandler(0.34, 1180);
+        musicDuckHandler(0.32, 1180);
       } else if (type === 'domain_shatter') {
-        musicDuckHandler(0.38, 860);
+        musicDuckHandler(0.36, 860);
       } else if (type === 'ascend') {
-        musicDuckHandler(0.5, 760);
+        musicDuckHandler(0.48, 760);
       } else if (type === 'summon' && options?.rarity === 'legendary') {
-        musicDuckHandler(0.54, 680);
+        musicDuckHandler(0.52, 680);
+      } else if (
+        type === 'attack' ||
+        type === 'hit' ||
+        type === 'trap_flip' ||
+        type === 'shield_shatter'
+      ) {
+        musicDuckHandler(options?.isHeavy ? 0.62 : 0.72, 260);
       }
     }
 
     switch (type) {
       case 'card_hover': {
-        // Ultra-quiet linen cardstock whisper (never intrusive)
-        playNoiseBurst(ctx, 0.042, 3100, 0.024, 0, {
-          filterEndFreq: 2100,
-          q: 1.9,
+        // Gentle linen cardstock whisper (audible yet polite)
+        playNoiseBurst(ctx, 0.048, 2800, 0.042, 0, {
+          filterEndFreq: 1850,
+          q: 1.5,
           pan,
           gainScale: g,
         });
-        playTone(ctx, 520, 640, 0.038, 'sine', 0.014, 0.004, {
+        playTone(ctx, 540, 680, 0.042, 'triangle', 0.028, 0.004, {
+          filterFreq: 2200,
           pan,
           pitchSpread: 0.05,
           gainScale: g,
@@ -583,15 +626,15 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
       }
 
       case 'card_select': {
-        // Crisp cardstock lift + subtle oak snap
-        playNoiseBurst(ctx, 0.055, 2400, 0.052, 0, {
-          filterEndFreq: 1500,
-          q: 1.6,
+        // Crisp cardstock lift + oak snap
+        playNoiseBurst(ctx, 0.068, 2350, 0.105, 0, {
+          filterEndFreq: 1450,
+          q: 1.35,
           pan,
           gainScale: g,
         });
-        playTone(ctx, 340, 510, 0.075, 'triangle', 0.05, 0.008, {
-          filterFreq: 1900,
+        playTone(ctx, 360, 560, 0.088, 'triangle', 0.115, 0.006, {
+          filterFreq: 2400,
           pan,
           pitchSpread: 0.035,
           gainScale: g,
@@ -600,20 +643,21 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
       }
 
       case 'draw': {
-        // Authentic parchment slide off the Grimoire stack + soft air flick
-        playNoiseBurst(ctx, 0.085, 2200, 0.072, 0, {
-          filterEndFreq: 1350,
-          q: 1.5,
+        // Crisp parchment slide off the Grimoire stack + snap flick
+        playNoiseBurst(ctx, 0.105, 2250, 0.145, 0, {
+          filterEndFreq: 1320,
+          q: 1.3,
           pan,
           gainScale: g,
         });
-        playNoiseBurst(ctx, 0.05, 950, 0.038, 0.022, {
+        playNoiseBurst(ctx, 0.075, 920, 0.105, 0.02, {
           color: 'pink',
-          q: 1.2,
+          q: 1.1,
           pan,
           gainScale: g,
         });
-        playTone(ctx, 410, 660, 0.09, 'sine', 0.052, 0.012, {
+        playTone(ctx, 430, 720, 0.105, 'triangle', 0.115, 0.012, {
+          filterFreq: 2600,
           pan,
           pitchSpread: 0.04,
           gainScale: g,
@@ -622,81 +666,99 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
       }
 
       case 'channel': {
-        playNoiseBurst(ctx, 0.11, 1650, 0.055, 0, {
-          filterEndFreq: 2800,
-          q: 1.7,
+        playNoiseBurst(ctx, 0.13, 1750, 0.125, 0, {
+          filterEndFreq: 2950,
+          q: 1.4,
           pan,
           gainScale: g,
         });
-        playTone(ctx, 261.63, 523.25, 0.26, 'triangle', 0.105, 0, {
-          filterFreq: 2100,
-          pan,
-          pitchSpread: 0.015,
-          gainScale: g,
-        });
-        playTone(ctx, 329.63, 659.25, 0.28, 'sine', 0.09, 0.055, {
+        playTone(ctx, 261.63, 523.25, 0.26, 'triangle', 0.175, 0, {
+          filterFreq: 2600,
           pan,
           pitchSpread: 0.015,
           gainScale: g,
         });
-        playTone(ctx, 392.0, 783.99, 0.32, 'sine', 0.08, 0.11, {
+        playTone(ctx, 329.63, 659.25, 0.28, 'triangle', 0.15, 0.055, {
+          filterFreq: 2800,
           pan,
           pitchSpread: 0.015,
           gainScale: g,
         });
-        playDomainSignatureLayer(ctx, domain, 'channel', pan, g);
+        playTone(ctx, 392.0, 783.99, 0.32, 'sine', 0.14, 0.11, {
+          pan,
+          pitchSpread: 0.015,
+          gainScale: g,
+        });
+        playDomainSignatureLayer(ctx, domain, 'channel', pan, g * 1.15);
         break;
       }
 
       case 'summon': {
         const isLegendary = options?.rarity === 'legendary';
-        // Physical wooden tabletop thud + cardstock slam
-        playTone(ctx, isLegendary ? 132 : 116, isLegendary ? 42 : 58, isLegendary ? 0.34 : 0.22, 'sine', isLegendary ? 0.2 : 0.145, 0, {
+        // Crisp cardstock-on-oak slap (midrange snap audible on all speakers) + deep wooden resonance
+        playNoiseBurst(ctx, isLegendary ? 0.14 : 0.1, 1650, isLegendary ? 0.21 : 0.165, 0, {
+          filterEndFreq: 760,
+          q: 1.2,
           pan,
-          pitchSpread: 0.035,
           gainScale: g,
         });
-        playNoiseBurst(ctx, isLegendary ? 0.2 : 0.14, 420, isLegendary ? 0.14 : 0.105, 0, {
+        playNoiseBurst(ctx, isLegendary ? 0.22 : 0.16, 480, isLegendary ? 0.24 : 0.185, 0, {
           color: 'pink',
-          filterEndFreq: 240,
-          q: 1.3,
+          filterEndFreq: 220,
+          q: 1.1,
           pan,
           gainScale: g,
         });
-        playTone(ctx, 220, 330, 0.2, 'triangle', 0.082, 0.065, {
-          filterFreq: 1700,
+        playTone(
+          ctx,
+          isLegendary ? 196 : 175,
+          isLegendary ? 58 : 72,
+          isLegendary ? 0.32 : 0.22,
+          'triangle',
+          isLegendary ? 0.26 : 0.21,
+          0,
+          {
+            filterFreq: 1600,
+            pan,
+            pitchSpread: 0.035,
+            gainScale: g,
+          }
+        );
+        playTone(ctx, 261.63, 392.0, 0.22, 'triangle', 0.155, 0.055, {
+          filterFreq: 2200,
           pan,
           pitchSpread: 0.03,
           gainScale: g,
         });
         if (isLegendary) {
           // Brushed-gold sovereign resonance tail for Legendary arrivals
-          playTone(ctx, 293.66, 440.0, 0.38, 'triangle', 0.095, 0.08, {
-            filterFreq: 2400,
+          playTone(ctx, 293.66, 440.0, 0.4, 'sawtooth', 0.165, 0.075, {
+            filterFreq: 2500,
             pan,
             pitchSpread: 0.01,
             gainScale: g,
           });
-          playTone(ctx, 587.33, 880.0, 0.42, 'sine', 0.075, 0.14, {
+          playTone(ctx, 587.33, 880.0, 0.44, 'triangle', 0.15, 0.13, {
             pan,
             pitchSpread: 0.01,
             gainScale: g,
           });
         }
-        playDomainSignatureLayer(ctx, domain, 'summon', pan, g);
+        playDomainSignatureLayer(ctx, domain, 'summon', pan, g * 1.15);
         break;
       }
 
       case 'row_slide': {
-        // Tactile felt-and-oak board slide (Vanguard <-> Rearguard maneuver)
-        playNoiseBurst(ctx, 0.15, 680, 0.078, 0, {
+        // Tactile felt-and-oak board slide + wooden slot settle
+        playNoiseBurst(ctx, 0.16, 980, 0.155, 0, {
           color: 'pink',
-          filterEndFreq: 1180,
-          q: 1.5,
+          filterEndFreq: 1650,
+          q: 1.25,
           pan,
           gainScale: g,
         });
-        playTone(ctx, 138, 86, 0.12, 'sine', 0.075, 0.085, {
+        playTone(ctx, 260, 145, 0.14, 'triangle', 0.155, 0.07, {
+          filterFreq: 1500,
           pan,
           pitchSpread: 0.04,
           gainScale: g,
@@ -705,20 +767,21 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
       }
 
       case 'trap_arm': {
-        // Hushed face-down placement + subtle obsidian lock click
-        playNoiseBurst(ctx, 0.09, 780, 0.068, 0, {
+        // Concealed placement + crisp mechanical obsidian lock click
+        playNoiseBurst(ctx, 0.11, 950, 0.145, 0, {
           color: 'pink',
-          filterEndFreq: 420,
+          filterEndFreq: 480,
+          q: 1.2,
           pan,
           gainScale: g,
         });
-        playTone(ctx, 196, 130.81, 0.16, 'triangle', 0.072, 0.015, {
-          filterFreq: 950,
+        playTone(ctx, 240, 146.83, 0.17, 'triangle', 0.155, 0.012, {
+          filterFreq: 1400,
           pan,
           pitchSpread: 0.03,
           gainScale: g,
         });
-        playTone(ctx, 987.77, 783.99, 0.07, 'sine', 0.042, 0.075, {
+        playTone(ctx, 1174.66, 880.0, 0.085, 'triangle', 0.12, 0.07, {
           pan,
           pitchSpread: 0.02,
           gainScale: g,
@@ -727,122 +790,173 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
       }
 
       case 'trap_flip': {
-        // Crisp 180-deg card whip + sharp reveal sting
-        playNoiseBurst(ctx, 0.095, 2600, 0.11, 0, {
-          filterEndFreq: 1400,
-          q: 1.6,
+        // Crisp 180-deg card whip + dramatic ambush sting
+        playNoiseBurst(ctx, 0.12, 2600, 0.22, 0, {
+          filterEndFreq: 1350,
+          q: 1.3,
           pan,
           gainScale: g,
         });
-        playTone(ctx, 293.66, 587.33, 0.2, 'sawtooth', 0.085, 0.02, {
-          filterFreq: 2200,
+        playTone(ctx, 293.66, 587.33, 0.22, 'sawtooth', 0.18, 0.018, {
+          filterFreq: 2600,
           pan,
           pitchSpread: 0.02,
           gainScale: g,
         });
-        playTone(ctx, 880.0, 1174.66, 0.24, 'triangle', 0.09, 0.065, {
+        playTone(ctx, 880.0, 1174.66, 0.26, 'triangle', 0.185, 0.06, {
           pan,
           pitchSpread: 0.015,
           gainScale: g,
         });
-        playDomainSignatureLayer(ctx, domain, 'spell', pan, g);
+        playDomainSignatureLayer(ctx, domain, 'spell', pan, g * 1.15);
         break;
       }
 
       case 'spell': {
-        playTone(ctx, 360, 880, 0.25, 'sine', 0.1, 0, {
+        playNoiseBurst(ctx, 0.19, 2200, 0.15, 0.015, {
+          filterEndFreq: 3500,
+          q: 1.35,
+          pan,
+          gainScale: g,
+        });
+        playTone(ctx, 360, 880, 0.26, 'triangle', 0.185, 0, {
+          filterFreq: 3000,
           pan,
           pitchSpread: 0.028,
           gainScale: g,
         });
-        playTone(ctx, 540, 1120, 0.23, 'triangle', 0.082, 0.048, {
-          filterFreq: 2800,
+        playTone(ctx, 540, 1174.66, 0.25, 'sawtooth', 0.145, 0.045, {
+          filterFreq: 2900,
           pan,
           pitchSpread: 0.028,
           gainScale: g,
         });
-        playNoiseBurst(ctx, 0.17, 2300, 0.058, 0.035, {
-          filterEndFreq: 3400,
-          q: 1.7,
-          pan,
-          gainScale: g,
-        });
-        playDomainSignatureLayer(ctx, domain, 'spell', pan, g);
+        playDomainSignatureLayer(ctx, domain, 'spell', pan, g * 1.15);
         break;
       }
 
       case 'attack': {
         if (options?.isRanged) {
-          // Bowstring / arcane projectile release whoosh
-          playNoiseBurst(ctx, 0.13, 1650, 0.095, 0, {
-            filterEndFreq: 2900,
-            q: 1.8,
+          // Taut bowstring / arcane snap + high-velocity projectile flight whoosh
+          playNoiseBurst(ctx, 0.075, 3200, 0.21, 0, {
+            filterEndFreq: 1800,
+            q: 1.3,
             pan,
             gainScale: g,
           });
-          playTone(ctx, 460, 240, 0.12, 'triangle', 0.085, 0.01, {
+          playTone(ctx, 1280, 420, 0.105, 'triangle', 0.22, 0, {
+            filterFreq: 3400,
             pan,
             pitchSpread: 0.04,
+            gainScale: g,
+          });
+          playNoiseBurst(ctx, 0.18, 1550, 0.21, 0.025, {
+            filterEndFreq: 3500,
+            q: 1.35,
+            pan,
+            gainScale: g,
+          });
+          playTone(ctx, 660, 1080, 0.16, 'sine', 0.145, 0.03, {
+            pan,
+            pitchSpread: 0.035,
             gainScale: g,
           });
         } else {
-          // Physical melee lunge cleave
-          playNoiseBurst(ctx, 0.12, 1080, 0.105, 0, {
-            color: 'pink',
-            filterEndFreq: 560,
-            q: 1.4,
+          // Visceral melee lunge: air-cleave whip + tempered steel slash + chest body punch
+          playNoiseBurst(ctx, 0.15, 2500, 0.23, 0, {
+            filterEndFreq: 860,
+            q: 1.2,
             pan,
             gainScale: g,
           });
-          playTone(ctx, 270, 104, 0.14, 'sawtooth', 0.098, 0, {
-            filterFreq: 1400,
+          playTone(ctx, 980, 310, 0.125, 'triangle', 0.195, 0.005, {
+            filterFreq: 3400,
             pan,
             pitchSpread: 0.04,
             gainScale: g,
           });
+          playTone(ctx, 520, 155, 0.16, 'sawtooth', 0.21, 0, {
+            filterFreq: 2600,
+            pan,
+            pitchSpread: 0.04,
+            gainScale: g,
+          });
+          playTone(ctx, 210, 76, 0.17, 'triangle', 0.22, 0.01, {
+            pan,
+            pitchSpread: 0.035,
+            gainScale: g,
+          });
         }
-        playDomainSignatureLayer(ctx, domain, 'combat', pan, g * 0.75);
+        playDomainSignatureLayer(ctx, domain, 'combat', pan, g * 1.1);
         break;
       }
 
       case 'hit': {
         const heavy = Boolean(options?.isHeavy);
-        playNoiseBurst(ctx, heavy ? 0.22 : 0.16, heavy ? 310 : 380, heavy ? 0.21 : 0.16, 0, {
-          color: 'pink',
-          filterEndFreq: 170,
-          q: 1.2,
+        // 1. Crisp armor/shield impact crack (cuts cleanly through any speaker)
+        playNoiseBurst(ctx, heavy ? 0.14 : 0.105, heavy ? 2200 : 1950, heavy ? 0.28 : 0.22, 0, {
+          filterEndFreq: 780,
+          q: 1.15,
           pan,
           gainScale: g,
         });
-        playTone(ctx, heavy ? 128 : 142, heavy ? 34 : 46, heavy ? 0.26 : 0.19, 'sine', heavy ? 0.22 : 0.155, 0, {
-          pan,
-          pitchSpread: 0.04,
-          gainScale: g,
-        });
-        playTone(ctx, heavy ? 185 : 160, 58, 0.14, 'triangle', heavy ? 0.12 : 0.085, 0.01, {
-          filterFreq: 900,
-          pan,
-          pitchSpread: 0.04,
-          gainScale: g,
-        });
-        if (heavy) {
-          playNoiseBurst(ctx, 0.11, 2100, 0.085, 0.015, {
-            q: 1.6,
+        playTone(
+          ctx,
+          heavy ? 480 : 410,
+          heavy ? 105 : 125,
+          heavy ? 0.17 : 0.135,
+          'triangle',
+          heavy ? 0.27 : 0.215,
+          0,
+          {
+            filterFreq: 2600,
             pan,
+            pitchSpread: 0.04,
+            gainScale: g,
+          }
+        );
+        // 2. Heavy physical body thud
+        playNoiseBurst(ctx, heavy ? 0.24 : 0.17, heavy ? 460 : 520, heavy ? 0.29 : 0.22, 0, {
+          color: 'pink',
+          filterEndFreq: 180,
+          q: 1.05,
+          pan,
+          gainScale: g,
+        });
+        playTone(
+          ctx,
+          heavy ? 168 : 178,
+          heavy ? 44 : 56,
+          heavy ? 0.27 : 0.2,
+          'sine',
+          heavy ? 0.29 : 0.225,
+          0,
+          {
+            pan,
+            pitchSpread: 0.04,
+            gainScale: g,
+          }
+        );
+        if (heavy) {
+          playTone(ctx, 320, 82, 0.2, 'sawtooth', 0.21, 0.012, {
+            filterFreq: 2300,
+            pan,
+            pitchSpread: 0.035,
             gainScale: g,
           });
         }
-        playDomainSignatureLayer(ctx, domain, 'combat', pan, g * 0.85);
+        playDomainSignatureLayer(ctx, domain, 'combat', pan, g * 1.15);
         break;
       }
 
       case 'heal': {
-        playTone(ctx, 440, 587.33, 0.18, 'sine', 0.095, 0, {
+        playTone(ctx, 440, 587.33, 0.2, 'triangle', 0.165, 0, {
+          filterFreq: 2600,
           pan,
           pitchSpread: 0.02,
           gainScale: g,
         });
-        playTone(ctx, 587.33, 880, 0.25, 'sine', 0.105, 0.085, {
+        playTone(ctx, 587.33, 880, 0.27, 'sine', 0.18, 0.08, {
           pan,
           pitchSpread: 0.02,
           gainScale: g,
@@ -851,19 +965,20 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
       }
 
       case 'freeze': {
-        playTone(ctx, 1200, 1950, 0.14, 'sine', 0.088, 0, {
+        playNoiseBurst(ctx, 0.16, 3600, 0.165, 0.01, {
+          filterEndFreq: 2200,
+          q: 1.5,
+          pan,
+          gainScale: g,
+        });
+        playTone(ctx, 1180, 1960, 0.16, 'triangle', 0.165, 0, {
           pan,
           pitchSpread: 0.03,
           gainScale: g,
         });
-        playTone(ctx, 1600, 2400, 0.16, 'triangle', 0.075, 0.05, {
+        playTone(ctx, 1580, 2480, 0.18, 'sine', 0.145, 0.045, {
           pan,
           pitchSpread: 0.03,
-          gainScale: g,
-        });
-        playNoiseBurst(ctx, 0.14, 3800, 0.068, 0.02, {
-          q: 2.2,
-          pan,
           gainScale: g,
         });
         break;
@@ -871,15 +986,21 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
 
       case 'shield_shatter': {
         // Crystalline golden Escudo Divino fracture + 3 sparkling glass shards
-        playNoiseBurst(ctx, 0.14, 3900, 0.115, 0, {
-          filterEndFreq: 2200,
-          q: 2.0,
+        playNoiseBurst(ctx, 0.16, 3600, 0.22, 0, {
+          filterEndFreq: 1900,
+          q: 1.4,
           pan,
           gainScale: g,
         });
-        const shards = [1760.0, 2349.32, 3135.96];
+        playTone(ctx, 680, 290, 0.14, 'sawtooth', 0.15, 0, {
+          filterFreq: 2800,
+          pan,
+          pitchSpread: 0.03,
+          gainScale: g,
+        });
+        const shards = [1567.98, 2093.0, 2793.83];
         shards.forEach((freq, idx) => {
-          playTone(ctx, freq, freq * 0.92, 0.14, 'triangle', 0.068, idx * 0.032, {
+          playTone(ctx, freq, freq * 0.91, 0.16, 'triangle', 0.145, idx * 0.034, {
             pan,
             pitchSpread: 0.03,
             gainScale: g,
@@ -890,17 +1011,17 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
 
       case 'reborn_rise': {
         // Rising emerald-gold phoenix breath (Renascer)
-        playNoiseBurst(ctx, 0.22, 1100, 0.065, 0, {
+        playNoiseBurst(ctx, 0.24, 1150, 0.15, 0, {
           color: 'pink',
-          filterEndFreq: 2400,
-          q: 1.5,
+          filterEndFreq: 2500,
+          q: 1.3,
           pan,
           gainScale: g,
         });
         const notes = [293.66, 440.0, 587.33, 739.99];
         notes.forEach((freq, idx) => {
-          playTone(ctx, freq * 0.98, freq, 0.22, 'triangle', 0.072, idx * 0.045, {
-            filterFreq: 2600,
+          playTone(ctx, freq * 0.98, freq, 0.24, 'triangle', 0.155, idx * 0.045, {
+            filterFreq: 2800,
             pan,
             pitchSpread: 0.015,
             gainScale: g,
@@ -911,13 +1032,21 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
 
       case 'lifedrain': {
         // Velvet siphon draw + emerald arrival chime (Dreno de Vida)
-        playTone(ctx, 246.94, 493.88, 0.22, 'sine', 0.082, 0, {
+        playNoiseBurst(ctx, 0.16, 1350, 0.12, 0, {
+          color: 'pink',
+          filterEndFreq: 2200,
+          q: 1.3,
+          pan,
+          gainScale: g,
+        });
+        playTone(ctx, 261.63, 523.25, 0.23, 'triangle', 0.165, 0, {
+          filterFreq: 2400,
           pan,
           pitchSpread: 0.02,
           gainScale: g,
         });
-        playTone(ctx, 587.33, 880.0, 0.24, 'triangle', 0.075, 0.14, {
-          filterFreq: 2400,
+        playTone(ctx, 587.33, 880.0, 0.26, 'triangle', 0.16, 0.13, {
+          filterFreq: 2800,
           pan: 0,
           pitchSpread: 0.018,
           gainScale: g,
@@ -926,16 +1055,16 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
       }
 
       case 'molten_burst': {
-        // Searing magma hiss + ember pop (Pele Incandescente)
-        playNoiseBurst(ctx, 0.16, 1550, 0.088, 0, {
+        // Searing magma hiss + ember blast (Pele Incandescente)
+        playNoiseBurst(ctx, 0.19, 1650, 0.2, 0, {
           color: 'pink',
           filterEndFreq: 680,
-          q: 1.7,
+          q: 1.3,
           pan,
           gainScale: g,
         });
-        playTone(ctx, 196.0, 92.5, 0.15, 'sawtooth', 0.078, 0.01, {
-          filterFreq: 1100,
+        playTone(ctx, 340.0, 110.0, 0.18, 'sawtooth', 0.185, 0.008, {
+          filterFreq: 2100,
           pan,
           pitchSpread: 0.035,
           gainScale: g,
@@ -944,14 +1073,15 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
       }
 
       case 'fury_surge': {
-        // Tight crimson war-drum punch + rising brass fifth (Fúria Crescente)
-        playTone(ctx, 130.81, 73.42, 0.16, 'sine', 0.11, 0, {
+        // Crimson war-drum punch + rising brass fifth (Fúria Crescente)
+        playTone(ctx, 196.0, 82.41, 0.18, 'triangle', 0.21, 0, {
+          filterFreq: 1800,
           pan,
           pitchSpread: 0.03,
           gainScale: g,
         });
-        playTone(ctx, 220.0, 329.63, 0.2, 'sawtooth', 0.075, 0.03, {
-          filterFreq: 1650,
+        playTone(ctx, 261.63, 392.0, 0.22, 'sawtooth', 0.175, 0.028, {
+          filterFreq: 2200,
           pan,
           pitchSpread: 0.025,
           gainScale: g,

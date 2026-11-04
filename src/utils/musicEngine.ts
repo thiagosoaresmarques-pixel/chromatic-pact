@@ -48,11 +48,11 @@ const STAGE_MP3_PATHS: Record<MusicIntensityStage, string> = {
 };
 
 export const STAGE_TARGET_VOLUMES: Record<MusicIntensityStage, number> = {
-  sanctuary: 0.52,
-  tactical: 0.58,
-  battle: 0.65,
-  domain_clash: 0.82,
-  climax: 1.0,
+  sanctuary: 0.42,
+  tactical: 0.46,
+  battle: 0.5,
+  domain_clash: 0.62,
+  climax: 0.76,
 };
 
 let musicVolume = (() => {

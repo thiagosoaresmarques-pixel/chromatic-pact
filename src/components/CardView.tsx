@@ -105,6 +105,13 @@ export const KEYWORD_TOOLTIPS: Record<Keyword, string> = {
   'Fúria Crescente': 'Ganha +2 de ATQ permanentemente sempre que sobrevive a dano.',
 };
 
+export type UnitKeywordFxType =
+  | 'shield_shatter'
+  | 'reborn_rise'
+  | 'lifedrain_pulse'
+  | 'molten_burst'
+  | 'fury_surge';
+
 export interface CardViewProps {
   card: CardDefinition;
   unit?: BoardUnit;
@@ -116,6 +123,8 @@ export interface CardViewProps {
   canAscend?: boolean;
   canMoveRow?: boolean;
   feedback?: FloatingFeedback | null;
+  keywordFx?: UnitKeywordFxType | null;
+  concealEnemyTrap?: boolean;
   onClick?: (e: React.MouseEvent) => void;
   onAscendClick?: (e: React.MouseEvent) => void;
   onMoveRowClick?: (e: React.MouseEvent) => void;
@@ -155,6 +164,8 @@ export const CardView: React.FC<CardViewProps> = ({
   canAscend = false,
   canMoveRow = false,
   feedback = null,
+  keywordFx = null,
+  concealEnemyTrap = false,
   onClick,
   onAscendClick,
   onMoveRowClick,
@@ -266,6 +277,69 @@ export const CardView: React.FC<CardViewProps> = ({
   // TRUE VERTICAL CARD PROPORTIONS ON BOARD (mode === 'board')
   // =========================================================================
   if (mode === 'board') {
+    if (concealEnemyTrap && unit?.isTrap && unit.owner === 'ai') {
+      return (
+        <div
+          ref={cardRef}
+          className={[
+            'tabletop-facedown-card',
+            'is-concealed-trap',
+            isValidTarget ? 'is-valid-target' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          onClick={onClick}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          title="Reação Oculta na Retaguarda"
+        >
+          {feedback && (
+            <div className={`floating-feedback-pill color-${feedback.color}`}>
+              {feedback.text}
+            </div>
+          )}
+          <svg
+            viewBox="0 0 96 130"
+            className="facedown-card-svg"
+            aria-hidden="true"
+          >
+            <rect
+              x="6"
+              y="6"
+              width="84"
+              height="118"
+              rx="6"
+              fill="none"
+              stroke="rgba(212, 175, 55, 0.42)"
+              strokeWidth="1.2"
+            />
+            <polygon
+              points="48,22 72,65 48,108 24,65"
+              fill="rgba(212, 175, 55, 0.08)"
+              stroke="rgba(212, 175, 55, 0.55)"
+              strokeWidth="1.3"
+            />
+            <circle
+              cx="48"
+              cy="65"
+              r="14"
+              fill="rgba(15, 23, 42, 0.9)"
+              stroke="rgba(253, 224, 71, 0.68)"
+              strokeWidth="1.4"
+            />
+            <polygon
+              points="48,55 55,65 48,75 41,65"
+              fill="rgba(253, 224, 71, 0.78)"
+            />
+          </svg>
+          <span className="concealed-trap-seal">Oculta</span>
+          {isValidTarget && <div className="board-target-banner">ALVO</div>}
+        </div>
+      );
+    }
+
     const isBuffedAtk = Boolean(unit && unit.currentAtk > displayCard.atk);
     const isBuffedHp = Boolean(unit && unit.maxHp > displayCard.hp);
     const isDamagedHp = Boolean(unit && unit.currentHp < unit.maxHp);
@@ -289,6 +363,7 @@ export const CardView: React.FC<CardViewProps> = ({
             unit?.isInvading ? 'is-invading-territory' : '',
             isTapped ? 'is-tapped' : '',
             isSummoningSick ? 'is-summoning-sick' : '',
+            keywordFx === 'reborn_rise' ? 'is-kw-reborn-rising' : '',
           ]
             .filter(Boolean)
             .join(' ')}
@@ -301,6 +376,44 @@ export const CardView: React.FC<CardViewProps> = ({
           {/* Dynamic 3D Specular Glare Overlay */}
           <div className="card-3d-glare" />
           <div className="board-summon-shockwave" />
+
+          {/* Keyword Combat Micro-VFX Layer (GPU-composited, pointer-events: none) */}
+          {keywordFx && (
+            <div className={`kw-vfx-layer fx-${keywordFx}`} aria-hidden="true">
+              {keywordFx === 'shield_shatter' && (
+                <>
+                  <span className="kw-shatter-ring" />
+                  {[0, 1, 2, 3, 4, 5].map((sIdx) => (
+                    <span
+                      key={sIdx}
+                      className="kw-shatter-shard"
+                      style={{ '--shard-idx': sIdx } as React.CSSProperties}
+                    />
+                  ))}
+                </>
+              )}
+              {keywordFx === 'reborn_rise' && (
+                <>
+                  <span className="kw-reborn-aura" />
+                  <span className="kw-reborn-crest" />
+                </>
+              )}
+              {keywordFx === 'lifedrain_pulse' && <span className="kw-lifedrain-ring" />}
+              {keywordFx === 'molten_burst' && (
+                <>
+                  <span className="kw-molten-wave" />
+                  {[0, 1, 2, 3].map((eIdx) => (
+                    <span
+                      key={eIdx}
+                      className="kw-molten-ember"
+                      style={{ '--ember-idx': eIdx } as React.CSSProperties}
+                    />
+                  ))}
+                </>
+              )}
+              {keywordFx === 'fury_surge' && <span className="kw-fury-flare" />}
+            </div>
+          )}
 
           {/* Floating Damage / Heal / Buff Feedback Pill */}
           {feedback && (
@@ -420,11 +533,19 @@ export const CardView: React.FC<CardViewProps> = ({
                 +1⚔️
               </span>
             ) : null}
-            {activeKeywords.slice(0, 2).map((kw) => (
-              <span key={kw} className="cpa-kw-hex">
-                {KEYWORD_ICONS[kw] ?? '✦'}
-              </span>
-            ))}
+            {activeKeywords.slice(0, 2).map((kw) => {
+              const isSpentKw =
+                (kw === 'Renascer' && Boolean(unit?.hasRebornTriggered)) ||
+                (kw === 'Escudo Divino' && Boolean(unit && !unit.hasDivineShield));
+              return (
+                <span
+                  key={kw}
+                  className={`cpa-kw-hex ${isSpentKw ? 'is-spent-keyword' : ''}`}
+                >
+                  {KEYWORD_ICONS[kw] ?? '✦'}
+                </span>
+              );
+            })}
           </div>
 
           {/* Bottom-Right Iconic Power/Toughness Plate (e.g. 3/2, 8/10) */}
@@ -442,6 +563,7 @@ export const CardView: React.FC<CardViewProps> = ({
                   'cpa-pt-plate',
                   isDamagedHp ? 'is-damaged' : '',
                   isBuffedAtk || isBuffedHp ? 'is-buffed' : '',
+                  keywordFx === 'fury_surge' ? 'is-fury-surge' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}

@@ -104,6 +104,7 @@ import {
   DOMAIN_META,
   formatCardFaceDescription,
   KEYWORD_TOOLTIPS,
+  UnitKeywordFxType,
 } from './CardView';
 const TacticalGuideView = React.lazy(() =>
   import('./TacticalGuideView').then((m) => ({ default: m.TacticalGuideView }))
@@ -1118,6 +1119,263 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }>
   >([]);
   const [hudPulseTarget, setHudPulseTarget] = useState<'essence' | 'domain' | null>(null);
+
+  const [unitKeywordFxMap, setUnitKeywordFxMap] = useState<Record<string, UnitKeywordFxType>>({});
+  const [lifedrainFlights, setLifedrainFlights] = useState<
+    Array<{
+      id: string;
+      startX: number;
+      startY: number;
+      dx: number;
+      dy: number;
+    }>
+  >([]);
+  const [trapRevealFx, setTrapRevealFx] = useState<{
+    id: string;
+    card: CardDefinition;
+    x: number;
+    y: number;
+  } | null>(null);
+  const [sovHealPulseOwner, setSovHealPulseOwner] = useState<'player' | 'ai' | null>(null);
+  const prevCombatUnitMetaRef = useRef<{
+    matchSig: string;
+    units: Record<
+      string,
+      {
+        hasDivineShield: boolean;
+        hasRebornTriggered: boolean;
+        currentHp: number;
+        currentAtk: number;
+        hasAttackedThisTurn: boolean;
+        isTrap: boolean;
+        hasLifedrain: boolean;
+        hasMoltenSkin: boolean;
+        slotIndex: number;
+        card: CardDefinition;
+        owner: 'player' | 'ai';
+        x: number;
+        y: number;
+      }
+    >;
+  }>({ matchSig: '', units: {} });
+
+  useLayoutEffect(() => {
+    if (typeof document === 'undefined' || typeof window === 'undefined') return;
+    const matchSig = `${gameState.player.name}|${gameState.ai.name}|${campaignBoss?.id ?? ''}|${
+      tacticalProblem?.id ?? ''
+    }`;
+    const allUnits = [
+      ...getAllBoardUnits(gameState.player),
+      ...getAllBoardUnits(gameState.ai),
+    ];
+
+    const nextUnits: typeof prevCombatUnitMetaRef.current.units = {};
+    for (const u of allUnits) {
+      const prevEntry = prevCombatUnitMetaRef.current.units[u.instanceId];
+      let cx = prevEntry?.x ?? Math.round(window.innerWidth / 2);
+      let cy = prevEntry?.y ?? Math.round(window.innerHeight / 2);
+      const el = document.querySelector(`[data-combat-id="${u.instanceId}"]`) as HTMLElement | null;
+      if (el) {
+        const r = el.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) {
+          cx = Math.round(r.left + r.width / 2);
+          cy = Math.round(r.top + r.height / 2);
+        }
+      }
+      nextUnits[u.instanceId] = {
+        hasDivineShield: Boolean(u.hasDivineShield),
+        hasRebornTriggered: Boolean(u.hasRebornTriggered),
+        currentHp: u.currentHp,
+        currentAtk: u.currentAtk,
+        hasAttackedThisTurn: Boolean(u.hasAttackedThisTurn),
+        isTrap: Boolean(u.isTrap),
+        hasLifedrain: u.keywords.includes('Dreno de Vida'),
+        hasMoltenSkin: u.keywords.includes('Pele Incandescente'),
+        slotIndex: u.slotIndex,
+        card: u.card,
+        owner: u.owner,
+        x: cx,
+        y: cy,
+      };
+    }
+
+    const prevSig = prevCombatUnitMetaRef.current.matchSig;
+    const prevUnits = prevCombatUnitMetaRef.current.units;
+    prevCombatUnitMetaRef.current = { matchSig, units: nextUnits };
+
+    const isFreshReset =
+      !prevSig ||
+      prevSig !== matchSig ||
+      (gameState.turn === 1 && gameState.combatLog.length <= 2 && Object.keys(prevUnits).length > 4);
+    if (isFreshReset) return;
+
+    const fbs = gameState.feedbacks ?? [];
+    const triggeredKw: Record<string, UnitKeywordFxType> = {};
+
+    // 1. Per-unit state transitions & direct keyword feedbacks
+    for (const u of allUnits) {
+      const prev = prevUnits[u.instanceId];
+      const unitFbs = fbs.filter((f) => f.targetId === u.instanceId);
+
+      if (
+        (prev && prev.hasDivineShield && !u.hasDivineShield) ||
+        unitFbs.some((f) => f.text.includes('Escudo Quebrado'))
+      ) {
+        triggeredKw[u.instanceId] = 'shield_shatter';
+      } else if (
+        (prev && !prev.hasRebornTriggered && u.hasRebornTriggered) ||
+        unitFbs.some((f) => f.text.includes('Renasceu'))
+      ) {
+        triggeredKw[u.instanceId] = 'reborn_rise';
+      } else if (unitFbs.some((f) => f.text.includes('Fúria'))) {
+        triggeredKw[u.instanceId] = 'fury_surge';
+      }
+    }
+
+    // 2. Pele Incandescente: highlight magma source (and burned melee attacker fallback)
+    const moltenFbs = fbs.filter((f) => f.text.includes('Pele Incandescente'));
+    for (const mf of moltenFbs) {
+      const burnedUnit = nextUnits[mf.targetId] ?? prevUnits[mf.targetId];
+      const defenderOwner: 'player' | 'ai' =
+        burnedUnit?.owner === 'player' ? 'ai' : 'player';
+      const moltenSource = allUnits.find(
+        (u) =>
+          u.owner === defenderOwner &&
+          u.keywords.includes('Pele Incandescente') &&
+          (burnedUnit ? u.slotIndex === burnedUnit.slotIndex : true)
+      ) ??
+        allUnits.find(
+          (u) => u.owner === defenderOwner && u.keywords.includes('Pele Incandescente')
+        );
+      if (moltenSource && !triggeredKw[moltenSource.instanceId]) {
+        triggeredKw[moltenSource.instanceId] = 'molten_burst';
+      } else if (nextUnits[mf.targetId] && !triggeredKw[mf.targetId]) {
+        triggeredKw[mf.targetId] = 'molten_burst';
+      }
+    }
+
+    // 3. Dreno de Vida: vitality siphon pulse + arcing orb from draining creature -> Sovereign HUD
+    const drainFbs = fbs.filter(
+      (f) =>
+        (f.targetId === 'player-sovereign' || f.targetId === 'ai-sovereign') &&
+        f.text.includes('Dreno de Vida')
+    );
+    const spawnedDrains: Array<{
+      id: string;
+      startX: number;
+      startY: number;
+      dx: number;
+      dy: number;
+    }> = [];
+
+    for (const df of drainFbs) {
+      const drainOwner: 'player' | 'ai' =
+        df.targetId === 'player-sovereign' ? 'player' : 'ai';
+
+      const liveDrainer =
+        allUnits.find(
+          (u) =>
+            u.owner === drainOwner &&
+            u.keywords.includes('Dreno de Vida') &&
+            !prevUnits[u.instanceId]?.hasAttackedThisTurn &&
+            u.hasAttackedThisTurn
+        ) ??
+        allUnits.find(
+          (u) =>
+            u.owner === drainOwner &&
+            u.keywords.includes('Dreno de Vida') &&
+            prevUnits[u.instanceId] &&
+            prevUnits[u.instanceId].currentHp !== u.currentHp
+        ) ??
+        allUnits.find(
+          (u) => u.owner === drainOwner && u.keywords.includes('Dreno de Vida')
+        );
+
+      const fallbackPrevDrainer = !liveDrainer
+        ? Object.values(prevUnits).find((pu) => pu.owner === drainOwner && pu.hasLifedrain)
+        : undefined;
+
+      if (liveDrainer && !triggeredKw[liveDrainer.instanceId]) {
+        triggeredKw[liveDrainer.instanceId] = 'lifedrain_pulse';
+      }
+
+      const srcX = liveDrainer
+        ? nextUnits[liveDrainer.instanceId]?.x ?? Math.round(window.innerWidth / 2)
+        : fallbackPrevDrainer?.x ?? Math.round(window.innerWidth / 2);
+      const srcY = liveDrainer
+        ? nextUnits[liveDrainer.instanceId]?.y ?? Math.round(window.innerHeight / 2)
+        : fallbackPrevDrainer?.y ?? Math.round(window.innerHeight / 2);
+
+      const sovEl = document.querySelector(
+        `[data-combat-id="${df.targetId}"]`
+      ) as HTMLElement | null;
+      if (sovEl) {
+        const sr = sovEl.getBoundingClientRect();
+        if (sr.width > 0) {
+          const endX = Math.round(sr.left + sr.width * 0.42);
+          const endY = Math.round(sr.top + sr.height * 0.5);
+          spawnedDrains.push({
+            id: `drain-${Date.now()}-${drainOwner}-${Math.random().toString(36).slice(2, 6)}`,
+            startX: srcX,
+            startY: srcY,
+            dx: endX - srcX,
+            dy: endY - srcY,
+          });
+        }
+      }
+
+      window.setTimeout(() => setSovHealPulseOwner(drainOwner), 220);
+      window.setTimeout(
+        () => setSovHealPulseOwner((prev) => (prev === drainOwner ? null : prev)),
+        680
+      );
+    }
+
+    if (spawnedDrains.length > 0) {
+      setLifedrainFlights((prev) => [...prev, ...spawnedDrains]);
+      const drainIds = new Set(spawnedDrains.map((d) => d.id));
+      window.setTimeout(() => {
+        setLifedrainFlights((prev) => prev.filter((d) => !drainIds.has(d.id)));
+      }, 480);
+    }
+
+    // 4. Armed Reaction / Ambush Triggered: 3D 180-deg Card-Flip Reveal at its Rearguard slot
+    const ambushTriggered =
+      fbs.some((f) => f.text.startsWith('Emboscada:')) ||
+      Boolean(gameState.combatLog[0]?.message?.includes('EMBOSCADA ATIVADA'));
+    if (ambushTriggered) {
+      const poppedTrap = Object.entries(prevUnits).find(
+        ([instId, pu]) => pu.isTrap && !nextUnits[instId]
+      );
+      if (poppedTrap) {
+        const [, trapMeta] = poppedTrap;
+        const revealId = `trap-flip-${Date.now()}`;
+        setTrapRevealFx({
+          id: revealId,
+          card: trapMeta.card,
+          x: trapMeta.x,
+          y: trapMeta.y,
+        });
+        window.setTimeout(() => {
+          setTrapRevealFx((prev) => (prev?.id === revealId ? null : prev));
+        }, 900);
+      }
+    }
+
+    const kwIds = Object.keys(triggeredKw);
+    if (kwIds.length > 0) {
+      setUnitKeywordFxMap((prev) => ({ ...prev, ...triggeredKw }));
+      window.setTimeout(() => {
+        setUnitKeywordFxMap((prev) => {
+          const copy = { ...prev };
+          for (const id of kwIds) {
+            delete copy[id];
+          }
+          return copy;
+        });
+      }, 680);
+    }
+  }, [gameState, campaignBoss?.id, tacticalProblem?.id]);
 
   useLayoutEffect(() => {
     if (typeof document === 'undefined') return;
@@ -5086,6 +5344,52 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         </div>
       ))}
 
+      {/* LIFEDRAIN VITALITY SIPHON ORB (Draining Creature -> Sovereign HP Pill) */}
+      {lifedrainFlights.map((lf) => (
+        <div
+          key={lf.id}
+          className="lifedrain-flight-fx"
+          style={
+            {
+              left: `${lf.startX}px`,
+              top: `${lf.startY}px`,
+              '--drain-dx': `${lf.dx}px`,
+              '--drain-dy': `${lf.dy}px`,
+            } as React.CSSProperties
+          }
+          aria-hidden="true"
+        >
+          <span className="lifedrain-orb-core" />
+        </div>
+      ))}
+
+      {/* 3D 180-DEGREE AMBUSH / REACTION CARD-FLIP REVEAL */}
+      {trapRevealFx && (
+        <div
+          key={trapRevealFx.id}
+          className={`trap-reveal-flip-fx domain-${trapRevealFx.card.domain}`}
+          style={{
+            left: `${trapRevealFx.x}px`,
+            top: `${trapRevealFx.y}px`,
+          }}
+          aria-hidden="true"
+        >
+          <div className="trap-reveal-flip-inner">
+            <div className="trap-reveal-face trap-reveal-back">
+              <span className="trap-reveal-back-diamond">❖</span>
+            </div>
+            <div className="trap-reveal-face trap-reveal-front">
+              {trapRevealFx.card.imagePath ? (
+                <img src={trapRevealFx.card.imagePath} alt="" />
+              ) : (
+                <span>{DOMAIN_META[trapRevealFx.card.domain]?.icon ?? '❖'}</span>
+              )}
+              <span className="trap-reveal-front-name">{trapRevealFx.card.name}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* DIRECTIONAL ELEMENTAL PROJECTILE & RANGED BEAM OVERLAY */}
       {combatAnim && combatAnim.isRanged && (
         <div
@@ -6014,7 +6318,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       </span>
                     );
                   })()}
-                  <span className="hud-pill-stat hp" title="Pontos de Vida do oponente">
+                  <span
+                    className={`hud-pill-stat hp ${
+                      sovHealPulseOwner === 'ai' ? 'is-pulsing-heal' : ''
+                    }`}
+                    title="Pontos de Vida do oponente"
+                  >
                     {gameState.ai.hp} PV
                   </span>
                   <span className="hud-pill-stat mana" title="Essência disponível do oponente">
@@ -6636,6 +6945,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     mode="board"
                                     isValidTarget={isValidTarget}
                                     feedback={feedbackMap[unit.instanceId]}
+                                    keywordFx={unitKeywordFxMap[unit.instanceId] ?? null}
+                                    concealEnemyTrap={!isSpectatorMode}
                                     onClick={(e) => handleClickEnemyUnit(unit, e)}
                                     onInspect={setInspectCard}
                                     onHoverCard={handleHoverCard}
@@ -6745,6 +7056,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     mode="board"
                                     isValidTarget={isValidTarget}
                                     feedback={feedbackMap[unit.instanceId]}
+                                    keywordFx={unitKeywordFxMap[unit.instanceId] ?? null}
+                                    concealEnemyTrap={!isSpectatorMode}
                                     onClick={(e) => handleClickEnemyUnit(unit, e)}
                                     onInspect={setInspectCard}
                                     onHoverCard={handleHoverCard}
@@ -6880,6 +7193,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                       canAscend={canUnitAscend}
                                       canMoveRow={canUnitMove}
                                       feedback={feedbackMap[unit.instanceId]}
+                                      keywordFx={unitKeywordFxMap[unit.instanceId] ?? null}
                                       onClick={(e) => handleClickFriendlyUnit(unit, e)}
                                       onAscendClick={() => handleAscendFriendlyUnit(unit)}
                                       onMoveRowClick={() => handleMoveFriendlyUnitRow(unit)}
@@ -7019,6 +7333,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                       canAscend={canUnitAscend}
                                       canMoveRow={canUnitMove}
                                       feedback={feedbackMap[unit.instanceId]}
+                                      keywordFx={unitKeywordFxMap[unit.instanceId] ?? null}
                                       onClick={(e) => handleClickFriendlyUnit(unit, e)}
                                       onAscendClick={() => handleAscendFriendlyUnit(unit)}
                                       onMoveRowClick={() => handleMoveFriendlyUnitRow(unit)}
@@ -7770,7 +8085,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       </div>
 
                       <span className="hud-pill-name player">{gameState.player.name}</span>
-                      <span className="hud-pill-stat hp" title="Seus Pontos de Vida">
+                      <span
+                        className={`hud-pill-stat hp ${
+                          sovHealPulseOwner === 'player' ? 'is-pulsing-heal' : ''
+                        }`}
+                        title="Seus Pontos de Vida"
+                      >
                         {gameState.player.hp} PV
                       </span>
                       <span

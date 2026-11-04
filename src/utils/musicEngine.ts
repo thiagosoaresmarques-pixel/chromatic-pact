@@ -1,5 +1,10 @@
 import { Domain } from '../types/game';
-import { isMuted, registerMuteListener } from './soundEngine';
+import {
+  isMuted,
+  notifyAudioSettingsChanged,
+  registerMuteListener,
+  registerMusicDuckHandler,
+} from './soundEngine';
 
 export type MusicIntensityStage =
   | 'sanctuary'     // 0: Home, Deckbuilder, Mythology, Codex (Medieval Lute, Cello & Harp)
@@ -15,12 +20,14 @@ export interface MusicStateDescriptor {
   label: string;
 }
 
+const MUSIC_VOL_STORAGE_KEY = 'chromatic_pact_music_vol_v1';
+
 const STAGE_LABELS: Record<MusicIntensityStage, string> = {
   sanctuary: 'Santuário Cromático',
   tactical: 'Abertura Tática',
   battle: 'Guerra de Formações',
-  domain_clash: ' Pressão Arcana',
-  climax: 'CLÍMAX MÁXIMO: Expansão de Domínio',
+  domain_clash: 'Pressão Arcana',
+  climax: 'Clímax: Expansão de Domínio',
 };
 
 const DOMAIN_MUSIC_TITLES: Record<Domain, string> = {
@@ -47,6 +54,22 @@ export const STAGE_TARGET_VOLUMES: Record<MusicIntensityStage, number> = {
   domain_clash: 0.82,
   climax: 1.0,
 };
+
+let musicVolume = (() => {
+  if (typeof window === 'undefined') return 0.75;
+  try {
+    const raw = window.localStorage.getItem(MUSIC_VOL_STORAGE_KEY);
+    if (raw !== null) {
+      const parsed = Number(raw);
+      if (Number.isFinite(parsed)) {
+        return Math.max(0, Math.min(1, parsed));
+      }
+    }
+  } catch {
+    // Ignore storage restrictions
+  }
+  return 0.75;
+})();
 
 let currentDescriptor: MusicStateDescriptor = {
   stage: 'sanctuary',
@@ -75,12 +98,53 @@ export function getCurrentMusicState(): MusicStateDescriptor {
   return currentDescriptor;
 }
 
+export function getMusicVolume(): number {
+  return musicVolume;
+}
+
+export function setMusicVolume(vol: number): void {
+  musicVolume = Math.max(0, Math.min(1, Number.isFinite(vol) ? vol : 0.75));
+  if (typeof window !== 'undefined') {
+    try {
+      window.localStorage.setItem(MUSIC_VOL_STORAGE_KEY, musicVolume.toFixed(2));
+    } catch {
+      // Ignore storage restrictions
+    }
+    const targetStage = currentDescriptor.stage;
+    const el = getOrCreateAudio(targetStage);
+    if (!isMuted() && !isDocumentHidden() && musicVolume > 0.004 && el.paused) {
+      el.play().catch(() => {});
+    }
+    ensureFadeLoop();
+  }
+  notifyAudioSettingsChanged();
+}
+
 // ============================================================================
-// REAL ORCHESTRAL MP3 ENGINE WITH SMOOTH CROSSFADE
+// REAL ORCHESTRAL MP3 ENGINE WITH SMOOTH CROSSFADE, VISIBILITY & AUDIO DUCKING
 // ============================================================================
 const audioElements: Partial<Record<MusicIntensityStage, HTMLAudioElement>> = {};
 let activeStage: MusicIntensityStage | null = null;
 let fadeTimer: number | null = null;
+let lastTickMs = 0;
+
+// Dynamic ducking envelope (1.0 = full target volume, < 1.0 = ducked during dramatic SFX)
+let duckTargetRatio = 1.0;
+let duckHoldUntilMs = 0;
+let currentDuckEnvelope = 1.0;
+
+function isDocumentHidden(): boolean {
+  return typeof document !== 'undefined' && document.visibilityState === 'hidden';
+}
+
+function safeSetElementVolume(el: HTMLAudioElement, nextVol: number): void {
+  const clamped = Math.max(0, Math.min(1, Number.isFinite(nextVol) ? nextVol : 0));
+  try {
+    el.volume = clamped;
+  } catch {
+    // Read-only hardware volume on certain iOS builds — handled gracefully via play/pause
+  }
+}
 
 function getOrCreateAudio(stage: MusicIntensityStage): HTMLAudioElement {
   let el = audioElements[stage];
@@ -88,38 +152,91 @@ function getOrCreateAudio(stage: MusicIntensityStage): HTMLAudioElement {
     el = new Audio(STAGE_MP3_PATHS[stage]);
     el.loop = true;
     el.preload = 'auto';
-    el.volume = 0;
+    safeSetElementVolume(el, 0);
     audioElements[stage] = el;
   }
   return el;
 }
 
+function ensureFadeLoop(): void {
+  if (typeof window === 'undefined') return;
+  if (fadeTimer === null) {
+    lastTickMs = performance.now();
+    fadeTimer = window.setInterval(runCrossfadeTick, 40);
+  }
+}
+
+export function duckMusic(ratio = 0.36, holdMs = 1000): void {
+  if (typeof window === 'undefined') return;
+  const clampedRatio = Math.max(0.18, Math.min(1, ratio));
+  const now = performance.now();
+  duckTargetRatio = Math.min(duckTargetRatio, clampedRatio);
+  duckHoldUntilMs = Math.max(duckHoldUntilMs, now + Math.max(150, holdMs));
+  ensureFadeLoop();
+}
+
+registerMusicDuckHandler(duckMusic);
+
 function runCrossfadeTick(): void {
   if (typeof window === 'undefined') return;
+  const now = performance.now();
+  const dtSec = Math.max(0.015, Math.min(0.15, (now - lastTickMs) / 1000 || 0.04));
+  lastTickMs = now;
+
+  // Advance smooth ducking envelope
+  let duckStillActive = false;
+  if (now < duckHoldUntilMs) {
+    duckStillActive = true;
+    const attackAlpha = 1 - Math.exp(-dtSec * 14);
+    currentDuckEnvelope += (duckTargetRatio - currentDuckEnvelope) * attackAlpha;
+  } else {
+    duckTargetRatio = 1.0;
+    if (Math.abs(1.0 - currentDuckEnvelope) > 0.008) {
+      duckStillActive = true;
+      const releaseAlpha = 1 - Math.exp(-dtSec * 3.1);
+      currentDuckEnvelope += (1.0 - currentDuckEnvelope) * releaseAlpha;
+    } else {
+      currentDuckEnvelope = 1.0;
+    }
+  }
+
   const muted = isMuted();
+  const hidden = isDocumentHidden();
+  const audiblyEnabled = !muted && !hidden && musicVolume > 0.004;
   const targetStage = currentDescriptor.stage;
-  let anyStillFading = false;
+  let anyStillFading = duckStillActive;
 
   (Object.keys(STAGE_MP3_PATHS) as MusicIntensityStage[]).forEach((st) => {
     const el = audioElements[st];
     if (!el) return;
 
-    const desiredVol = !muted && st === targetStage ? STAGE_TARGET_VOLUMES[st] : 0;
+    const isTarget = st === targetStage;
+    const desiredVol =
+      audiblyEnabled && isTarget
+        ? Math.max(0, Math.min(1, STAGE_TARGET_VOLUMES[st] * musicVolume * currentDuckEnvelope))
+        : 0;
 
-    if (!muted && st === targetStage && el.paused) {
+    if (audiblyEnabled && isTarget && el.paused) {
       el.play().catch(() => {});
     }
 
-    const diff = desiredVol - el.volume;
+    const currentVol = el.volume;
+    const diff = desiredVol - currentVol;
 
-    if (Math.abs(diff) > 0.02) {
+    if (Math.abs(diff) > 0.008) {
       anyStillFading = true;
-      const upStep = st === 'climax' ? 0.095 : 0.055;
-      const step = diff > 0 ? upStep : -0.065;
-      el.volume = Math.max(0, Math.min(1, el.volume + step));
+      // Exponential + linear floor for crisp, click-free organic crossfades
+      const rate =
+        diff > 0 ? (st === 'climax' ? 2.4 : 1.35) : hidden || muted ? 3.2 : 1.45;
+      const maxStep = rate * dtSec;
+      const nextVol =
+        Math.abs(diff) <= maxStep
+          ? desiredVol
+          : currentVol + Math.sign(diff) * Math.max(maxStep * 0.45, Math.abs(diff) * Math.min(0.35, rate * dtSec * 1.4));
+      safeSetElementVolume(el, nextVol);
     } else {
-      el.volume = desiredVol;
-      if (desiredVol === 0 && !el.paused && st !== targetStage) {
+      safeSetElementVolume(el, desiredVol);
+      if (desiredVol === 0 && !el.paused && (!isTarget || !audiblyEnabled)) {
         el.pause();
       }
     }
@@ -135,9 +252,17 @@ function triggerCrossfadeTo(stage: MusicIntensityStage): void {
   if (typeof window === 'undefined') return;
 
   const targetEl = getOrCreateAudio(stage);
-  if (!isMuted()) {
-    if (stage === 'climax' && targetEl.volume < 0.35) {
-      targetEl.volume = 0.35;
+  const audiblyEnabled = !isMuted() && !isDocumentHidden() && musicVolume > 0.004;
+
+  if (audiblyEnabled) {
+    if (stage === 'climax') {
+      const floorVol = Math.min(
+        STAGE_TARGET_VOLUMES.climax * musicVolume * currentDuckEnvelope,
+        0.28 * musicVolume
+      );
+      if (targetEl.volume < floorVol) {
+        safeSetElementVolume(targetEl, floorVol);
+      }
     }
     if (targetEl.paused) {
       targetEl.play().catch(() => {
@@ -146,10 +271,7 @@ function triggerCrossfadeTo(stage: MusicIntensityStage): void {
     }
   }
   activeStage = stage;
-
-  if (fadeTimer === null) {
-    fadeTimer = window.setInterval(runCrossfadeTick, 50);
-  }
+  ensureFadeLoop();
 }
 
 export function syncMusicMuteState(muted: boolean): void {
@@ -157,16 +279,26 @@ export function syncMusicMuteState(muted: boolean): void {
   const targetStage = currentDescriptor.stage;
   const el = getOrCreateAudio(targetStage);
 
-  if (!muted && el.paused) {
+  if (!muted && !isDocumentHidden() && musicVolume > 0.004 && el.paused) {
     el.play().catch(() => {});
   }
 
-  if (fadeTimer === null) {
-    fadeTimer = window.setInterval(runCrossfadeTick, 50);
-  }
+  ensureFadeLoop();
 }
 
 registerMuteListener(syncMusicMuteState);
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (!isDocumentHidden() && !isMuted() && musicVolume > 0.004 && activeStage) {
+      const el = getOrCreateAudio(currentDescriptor.stage);
+      if (el.paused) {
+        el.play().catch(() => {});
+      }
+    }
+    ensureFadeLoop();
+  });
+}
 
 let allStagesPreloaded = false;
 
@@ -180,8 +312,8 @@ export function startAdaptiveMusic(): void {
   }
   const stage = currentDescriptor.stage;
   const el = getOrCreateAudio(stage);
-  if (!isMuted() && el.paused) {
-    el.volume = STAGE_TARGET_VOLUMES[stage];
+  if (!isMuted() && !isDocumentHidden() && musicVolume > 0.004 && el.paused) {
+    safeSetElementVolume(el, STAGE_TARGET_VOLUMES[stage] * musicVolume * currentDuckEnvelope);
     el.play().catch(() => {});
   }
   triggerCrossfadeTo(stage);
@@ -211,7 +343,14 @@ export function setMusicState(
   }
 
   const targetEl = getOrCreateAudio(stage);
-  if (stageChanged || (!isMuted() && (targetEl.paused || targetEl.volume < STAGE_TARGET_VOLUMES[stage] - 0.03))) {
+  const targetFullVol = STAGE_TARGET_VOLUMES[stage] * musicVolume;
+  if (
+    stageChanged ||
+    (!isMuted() &&
+      !isDocumentHidden() &&
+      musicVolume > 0.004 &&
+      (targetEl.paused || targetEl.volume < targetFullVol * currentDuckEnvelope - 0.03))
+  ) {
     triggerCrossfadeTo(stage);
   }
 }

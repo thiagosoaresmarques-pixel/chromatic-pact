@@ -44,8 +44,17 @@ export interface SfxOptions {
 }
 
 const SFX_VOL_STORAGE_KEY = 'chromatic_pact_sfx_vol_v1';
+const AUDIO_MUTED_STORAGE_KEY = 'chromatic_pact_audio_muted_v1';
 
-let muted = false;
+let muted = (() => {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.localStorage.getItem(AUDIO_MUTED_STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
+})();
+
 let sfxVolume = (() => {
   if (typeof window === 'undefined') return 0.85;
   try {
@@ -65,7 +74,9 @@ let sfxVolume = (() => {
 let audioCtx: AudioContext | null = null;
 let sfxMasterGain: GainNode | null = null;
 let sfxCompressor: DynamicsCompressorNode | null = null;
-let onMuteChangeCallback: ((isMuted: boolean) => void) | null = null;
+const muteListeners = new Set<(isMuted: boolean) => void>();
+const audioSettingsListeners = new Set<() => void>();
+let musicDuckHandler: ((ratio: number, holdMs: number) => void) | null = null;
 let lastHoverFoleyAtMs = 0;
 
 interface CachedNoiseBank {
@@ -75,8 +86,28 @@ interface CachedNoiseBank {
 
 const noiseBankByCtx = new WeakMap<AudioContext, CachedNoiseBank>();
 
-export function registerMuteListener(cb: (isMuted: boolean) => void): void {
-  onMuteChangeCallback = cb;
+export function notifyAudioSettingsChanged(): void {
+  for (const fn of audioSettingsListeners) {
+    fn();
+  }
+}
+
+export function subscribeAudioSettings(cb: () => void): () => void {
+  audioSettingsListeners.add(cb);
+  return () => {
+    audioSettingsListeners.delete(cb);
+  };
+}
+
+export function registerMuteListener(cb: (isMuted: boolean) => void): () => void {
+  muteListeners.add(cb);
+  return () => {
+    muteListeners.delete(cb);
+  };
+}
+
+export function registerMusicDuckHandler(fn: (ratio: number, holdMs: number) => void): void {
+  musicDuckHandler = fn;
 }
 
 export function getSfxVolume(): number {
@@ -95,6 +126,7 @@ export function setSfxVolume(vol: number): void {
       // Ignore storage restrictions
     }
   }
+  notifyAudioSettingsChanged();
 }
 
 function ensureMasterBus(ctx: AudioContext): AudioNode {
@@ -215,11 +247,21 @@ export function isMuted(): boolean {
 }
 
 export function setMuted(value: boolean): void {
-  muted = value;
+  muted = Boolean(value);
   if (sfxMasterGain && audioCtx) {
     sfxMasterGain.gain.setTargetAtTime(muted ? 0 : sfxVolume, audioCtx.currentTime, 0.015);
   }
-  if (onMuteChangeCallback) onMuteChangeCallback(muted);
+  if (typeof window !== 'undefined') {
+    try {
+      window.localStorage.setItem(AUDIO_MUTED_STORAGE_KEY, muted ? '1' : '0');
+    } catch {
+      // Ignore storage restrictions
+    }
+  }
+  for (const cb of muteListeners) {
+    cb(muted);
+  }
+  notifyAudioSettingsChanged();
 }
 
 export function toggleMute(): boolean {
@@ -502,6 +544,26 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
     const pan = options?.pan ?? 0;
     const g = Math.max(0.05, Math.min(1.25, options?.volumeScale ?? 1));
     const domain = options?.domain;
+
+    // Automatic musical ducking for full-stage dramatic moments (ignores attenuated showcase foley)
+    if (musicDuckHandler && g >= 0.65 && sfxVolume > 0.03) {
+      if (type === 'victory' || type === 'defeat') {
+        musicDuckHandler(0.24, 2150);
+      } else if (
+        type === 'domain_expand' ||
+        type === 'domain_clash' ||
+        type === 'wheel_domain_shatter' ||
+        type === 'dragon_armada'
+      ) {
+        musicDuckHandler(0.34, 1180);
+      } else if (type === 'domain_shatter') {
+        musicDuckHandler(0.38, 860);
+      } else if (type === 'ascend') {
+        musicDuckHandler(0.5, 760);
+      } else if (type === 'summon' && options?.rarity === 'legendary') {
+        musicDuckHandler(0.54, 680);
+      }
+    }
 
     switch (type) {
       case 'card_hover': {

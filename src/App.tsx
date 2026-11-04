@@ -7,11 +7,22 @@ import {
   RiftMutatorId,
 } from './types/game';
 import { ALL_CARDS, CARDS_BY_ID } from './data/cards';
-import { getSharedAudioContext, isMuted, toggleMute } from './utils/soundEngine';
+import {
+  getSfxVolume,
+  getSharedAudioContext,
+  isMuted,
+  playSfx,
+  setMuted,
+  setSfxVolume,
+  subscribeAudioSettings,
+  toggleMute,
+} from './utils/soundEngine';
 import {
   getCurrentMusicState,
+  getMusicVolume,
   MusicStateDescriptor,
   setMusicState,
+  setMusicVolume,
   startAdaptiveMusic,
   subscribeMusicState,
 } from './utils/musicEngine';
@@ -440,6 +451,9 @@ export const App: React.FC = () => {
     return initialNavState?.activeTab ?? 'home';
   });
   const [soundMuted, setSoundMuted] = useState<boolean>(() => isMuted());
+  const [musicVol, setMusicVol] = useState<number>(() => getMusicVolume());
+  const [sfxVol, setSfxVol] = useState<number>(() => getSfxVolume());
+  const [isAudioOpen, setIsAudioOpen] = useState<boolean>(false);
   const [musicInfo, setMusicInfo] = useState<MusicStateDescriptor>(() => getCurrentMusicState());
 
   // Sovereign User Profile & 1v1 Multiplayer State
@@ -1504,14 +1518,39 @@ export const App: React.FC = () => {
     setSoundMuted(nextMuted);
   };
 
+  const handleMusicVolChange = (nextPct: number) => {
+    const clamped = Math.max(0, Math.min(1, nextPct / 100));
+    if (soundMuted && clamped > 0.01) {
+      setMuted(false);
+    }
+    startAdaptiveMusic();
+    setMusicVolume(clamped);
+    setMusicVol(clamped);
+  };
+
+  const handleSfxVolChange = (nextPct: number) => {
+    const clamped = Math.max(0, Math.min(1, nextPct / 100));
+    if (soundMuted && clamped > 0.01) {
+      setMuted(false);
+    }
+    getSharedAudioContext();
+    setSfxVolume(clamped);
+    setSfxVol(clamped);
+  };
+
   // Initialize Google Ads / UTM attribution telemetry on mount
   useEffect(() => {
     initAdsTelemetry();
   }, []);
 
-  // Subscribe to live music descriptor & start adaptive soundtrack on first user gesture
+  // Subscribe to live music descriptor, shared audio settings & start adaptive soundtrack on first gesture
   useEffect(() => {
-    const unsub = subscribeMusicState(setMusicInfo);
+    const unsubMusic = subscribeMusicState(setMusicInfo);
+    const unsubAudio = subscribeAudioSettings(() => {
+      setSoundMuted(isMuted());
+      setMusicVol(getMusicVolume());
+      setSfxVol(getSfxVolume());
+    });
     const unlockAudio = () => {
       getSharedAudioContext();
       startAdaptiveMusic();
@@ -1521,7 +1560,8 @@ export const App: React.FC = () => {
     window.addEventListener('keydown', unlockAudio, { passive: true });
     window.addEventListener('click', unlockAudio, { passive: true });
     return () => {
-      unsub();
+      unsubMusic();
+      unsubAudio();
       window.removeEventListener('pointerdown', unlockAudio);
       window.removeEventListener('touchstart', unlockAudio);
       window.removeEventListener('keydown', unlockAudio);
@@ -2391,6 +2431,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     setOpenNavPillar(null);
     setIsNotifOpen(false);
+    setIsAudioOpen(false);
   }, [activeTab, activeCampaignBoss, activeOnlineMatch, activeProblem]);
 
   // Global outside-tap dismissal for floating <details className="cp-floating-details"> menus
@@ -2413,11 +2454,12 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!openNavPillar && !isNotifOpen) return;
+    if (!openNavPillar && !isNotifOpen && !isAudioOpen) return;
     const handleKeyDown = (ev: KeyboardEvent) => {
       if (ev.key === 'Escape') {
         setOpenNavPillar(null);
         setIsNotifOpen(false);
+        setIsAudioOpen(false);
       }
     };
     const handleResize = () => {
@@ -2440,6 +2482,12 @@ export const App: React.FC = () => {
           setIsNotifOpen(false);
         }
       }
+      if (isAudioOpen) {
+        const insideAudio = target?.closest('.nav-audio-wrapper');
+        if (!insideAudio) {
+          setIsAudioOpen(false);
+        }
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('resize', handleResize);
@@ -2449,7 +2497,7 @@ export const App: React.FC = () => {
       window.removeEventListener('resize', handleResize);
       document.removeEventListener('pointerdown', handleDocPointerDown);
     };
-  }, [openNavPillar, isNotifOpen]);
+  }, [openNavPillar, isNotifOpen, isAudioOpen]);
 
   const handleSelectSubTab = (targetTab: ActiveTab) => {
     clearNavHoverCloseTimer();
@@ -2764,6 +2812,7 @@ export const App: React.FC = () => {
               }`}
               onClick={() => {
                 setIsArenaNavExpanded(false);
+                setIsAudioOpen(false);
                 setIsNotifOpen((prev) => {
                   const nextOpen = !prev;
                   if (nextOpen) markAllNotificationsRead();
@@ -3045,20 +3094,97 @@ export const App: React.FC = () => {
             </button>
           )}
 
-          <button
-            type="button"
-            className="btn-fantasy nav-audio-btn"
-            onClick={handleToggleSound}
-            style={{ padding: '4px 8px' }}
-            title={
-              soundMuted
-                ? 'Ativar áudio'
-                : `Áudio ativo (${musicInfo.label})`
-            }
-            aria-label={soundMuted ? 'Ativar áudio' : 'Silenciar áudio'}
-          >
-            <span>{soundMuted ? '🔇' : '🔊'}</span>
-          </button>
+          <div className="nav-audio-wrapper">
+            <button
+              type="button"
+              className={`btn-fantasy nav-audio-btn ${isAudioOpen ? 'active' : ''}`}
+              onClick={() => {
+                setOpenNavPillar(null);
+                setIsNotifOpen(false);
+                startAdaptiveMusic();
+                setIsAudioOpen((prev) => !prev);
+              }}
+              style={{ padding: '4px 8px' }}
+              title={
+                soundMuted
+                  ? 'Áudio silenciado — ajustar volumes'
+                  : `Áudio (${musicInfo.label})`
+              }
+              aria-label="Opções de áudio"
+              aria-expanded={isAudioOpen}
+            >
+              <span>{soundMuted ? '🔇' : '🔊'}</span>
+            </button>
+
+            {isAudioOpen && (
+              <div className="nav-audio-popover" onClick={(e) => e.stopPropagation()}>
+                <div className="nav-audio-header">
+                  <div className="nav-audio-header-copy">
+                    <span className="nav-audio-title">Áudio</span>
+                    <small className="nav-audio-subtitle">{musicInfo.label}</small>
+                  </div>
+                  <div className="nav-audio-header-actions">
+                    <button
+                      type="button"
+                      className={`nav-notif-mini-btn ${soundMuted ? 'is-muted-pill' : ''}`}
+                      onClick={handleToggleSound}
+                    >
+                      {soundMuted ? 'Ativar som' : 'Silenciar'}
+                    </button>
+                    <button
+                      type="button"
+                      className="nav-notif-mini-btn"
+                      onClick={() => setIsAudioOpen(false)}
+                      aria-label="Fechar opções de áudio"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                <div className="audio-mixer-rows">
+                  <label className="audio-slider-row">
+                    <span className="audio-slider-label">
+                      <span>Música</span>
+                      <strong>{soundMuted ? '0%' : `${Math.round(musicVol * 100)}%`}</strong>
+                    </span>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={soundMuted ? 0 : Math.round(musicVol * 100)}
+                      onChange={(e) => handleMusicVolChange(Number(e.target.value))}
+                      className="audio-range-input"
+                      aria-label="Volume da música"
+                    />
+                  </label>
+
+                  <label className="audio-slider-row">
+                    <span className="audio-slider-label">
+                      <span>Efeitos</span>
+                      <strong>{soundMuted ? '0%' : `${Math.round(sfxVol * 100)}%`}</strong>
+                    </span>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={soundMuted ? 0 : Math.round(sfxVol * 100)}
+                      onChange={(e) => handleSfxVolChange(Number(e.target.value))}
+                      onPointerUp={() => {
+                        if (!isMuted() && getSfxVolume() > 0.02) {
+                          playSfx('card_select', { volumeScale: 0.65 });
+                        }
+                      }}
+                      className="audio-range-input"
+                      aria-label="Volume dos efeitos sonoros"
+                    />
+                  </label>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

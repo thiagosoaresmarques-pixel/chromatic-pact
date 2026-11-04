@@ -86,8 +86,24 @@ import {
   useSovereignPower,
 } from '../engine/gameEngine';
 import { executeAiMulligan, executeAiTurnStep } from '../engine/aiEngine';
-import { playSfx, slotIndexToStereoPan } from '../utils/soundEngine';
-import { MusicIntensityStage, setMusicState, startAdaptiveMusic } from '../utils/musicEngine';
+import {
+  getSfxVolume,
+  getSharedAudioContext,
+  isMuted,
+  playSfx,
+  setMuted,
+  setSfxVolume,
+  slotIndexToStereoPan,
+  subscribeAudioSettings,
+  toggleMute,
+} from '../utils/soundEngine';
+import {
+  getMusicVolume,
+  MusicIntensityStage,
+  setMusicState,
+  setMusicVolume,
+  startAdaptiveMusic,
+} from '../utils/musicEngine';
 import {
   flipGameStatePerspective,
   MONOCHROMATIC_STARTER_DECKS,
@@ -478,6 +494,18 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   tournamentSpectatorContext,
 }) => {
   const isSpectatorMode = Boolean(tournamentSpectatorContext);
+
+  const [arenaMuted, setArenaMuted] = useState<boolean>(() => isMuted());
+  const [arenaMusicVol, setArenaMusicVol] = useState<number>(() => getMusicVolume());
+  const [arenaSfxVol, setArenaSfxVol] = useState<number>(() => getSfxVolume());
+
+  useEffect(() => {
+    return subscribeAudioSettings(() => {
+      setArenaMuted(isMuted());
+      setArenaMusicVol(getMusicVolume());
+      setArenaSfxVol(getSfxVolume());
+    });
+  }, []);
 
   const handleExitBattle = () => {
     if (tournamentSpectatorContext) {
@@ -8966,6 +8994,69 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             </div>
                           </div>
                         )}
+
+                        <div className="awmt-audio-box">
+                          <div className="awmt-audio-head">
+                            <span className="awmt-audio-label">Áudio</span>
+                            <button
+                              type="button"
+                              className={`awmt-audio-mute-btn ${arenaMuted ? 'is-muted' : ''}`}
+                              onClick={() => {
+                                startAdaptiveMusic();
+                                toggleMute();
+                              }}
+                            >
+                              {arenaMuted ? '🔇 Ativar som' : '🔊 Silenciar'}
+                            </button>
+                          </div>
+                          <label className="audio-slider-row compact">
+                            <span className="audio-slider-label">
+                              <span>Música</span>
+                              <strong>{arenaMuted ? '0%' : `${Math.round(arenaMusicVol * 100)}%`}</strong>
+                            </span>
+                            <input
+                              type="range"
+                              min={0}
+                              max={100}
+                              step={1}
+                              value={arenaMuted ? 0 : Math.round(arenaMusicVol * 100)}
+                              onChange={(e) => {
+                                const clamped = Math.max(0, Math.min(1, Number(e.target.value) / 100));
+                                if (arenaMuted && clamped > 0.01) setMuted(false);
+                                startAdaptiveMusic();
+                                setMusicVolume(clamped);
+                              }}
+                              className="audio-range-input"
+                              aria-label="Volume da música na partida"
+                            />
+                          </label>
+                          <label className="audio-slider-row compact">
+                            <span className="audio-slider-label">
+                              <span>Efeitos</span>
+                              <strong>{arenaMuted ? '0%' : `${Math.round(arenaSfxVol * 100)}%`}</strong>
+                            </span>
+                            <input
+                              type="range"
+                              min={0}
+                              max={100}
+                              step={1}
+                              value={arenaMuted ? 0 : Math.round(arenaSfxVol * 100)}
+                              onChange={(e) => {
+                                const clamped = Math.max(0, Math.min(1, Number(e.target.value) / 100));
+                                if (arenaMuted && clamped > 0.01) setMuted(false);
+                                getSharedAudioContext();
+                                setSfxVolume(clamped);
+                              }}
+                              onPointerUp={() => {
+                                if (!isMuted() && getSfxVolume() > 0.02) {
+                                  playSfx('card_select', { volumeScale: 0.65 });
+                                }
+                              }}
+                              className="audio-range-input"
+                              aria-label="Volume dos efeitos na partida"
+                            />
+                          </label>
+                        </div>
 
                         <div className="awmt-actions-grid">
                           <button

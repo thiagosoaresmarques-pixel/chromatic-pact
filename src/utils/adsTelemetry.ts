@@ -8,6 +8,7 @@ import { CloudVisitorSessionEntry, syncVisitorSessionToCloud } from './multiplay
 export type AdsConversionEventName =
   | 'ads_visitor_landed'
   | 'quick_play_clicked'
+  | 'spectate_match'
   | 'start_duel'
   | 'start_campaign_boss'
   | 'first_card_played'
@@ -124,6 +125,84 @@ const SESSION_LANDED_KEY = 'chromatic_pact_ads_session_landed_v1';
 const VISITOR_SESSION_STORAGE_KEY = 'chromatic_pact_visitor_session_v1';
 const MAX_AUDIT_EVENTS = 50;
 
+function getBrtDateKey(ms: number): string {
+  return new Date(ms - 3 * 3600 * 1000).toISOString().slice(0, 10);
+}
+
+/**
+ * Identifica sessões de ambiente local (localhost/preview), crawlers de buscadores/anúncios ou conta Admin Mestre.
+ */
+export function isBotOrInternalTelemetrySession(session: {
+  landingUrl?: string;
+  userAgentSummary?: string;
+  registeredUsername?: string;
+  screenSize?: string;
+}): boolean {
+  const url = (session.landingUrl || '').toLowerCase();
+  const ua = (session.userAgentSummary || '').toLowerCase();
+  const user = (session.registeredUsername || '').trim().toLowerCase();
+  if (user === 'tsm81') return true;
+  if (url.includes('localhost') || url.includes('127.0.0.1') || url.includes('.pages.dev')) {
+    return true;
+  }
+  if (
+    ua.includes('headless') ||
+    ua.includes('adsbot') ||
+    ua.includes('google-safety') ||
+    ua.includes('ahrefsbot') ||
+    ua.includes('antigravi') ||
+    ua.includes('nexus 5x') ||
+    ua.includes('compatible;')
+  ) {
+    return true;
+  }
+  return false;
+}
+
+export function isReturningVisitorSession(session: {
+  firstSeenAt: number;
+  lastSeenAt: number;
+  visitCount?: number;
+  activeDays?: string[];
+}): boolean {
+  if ((session.activeDays?.length ?? 0) >= 2) return true;
+  if ((session.visitCount ?? 1) >= 2) return true;
+  return session.lastSeenAt - session.firstSeenAt >= 30 * 60 * 1000;
+}
+
+export function isEngagedVisitorSession(session: {
+  firstSeenAt: number;
+  lastSeenAt: number;
+  engagedSec?: number;
+  events: string[];
+}): boolean {
+  if ((session.engagedSec ?? 0) >= 10) return true;
+  if (session.lastSeenAt - session.firstSeenAt >= 10_000) return true;
+  return session.events.some((e) => e !== 'ads_visitor_landed');
+}
+
+function isCurrentEnvironmentLocalOrBot(): boolean {
+  if (typeof window === 'undefined') return true;
+  const host = (window.location.hostname || '').toLowerCase();
+  if (
+    host === 'localhost' ||
+    host === '127.0.0.1' ||
+    host.endsWith('.pages.dev')
+  ) {
+    return true;
+  }
+  const ua = (typeof navigator !== 'undefined' ? navigator.userAgent || '' : '').toLowerCase();
+  return (
+    ua.includes('headless') ||
+    ua.includes('adsbot') ||
+    ua.includes('google-safety') ||
+    ua.includes('ahrefsbot') ||
+    ua.includes('antigravi') ||
+    ua.includes('nexus 5x') ||
+    ua.includes('compatible;')
+  );
+}
+
 export function getLocalAdsAuditEvents(): AdsEventAuditEntry[] {
   if (typeof window === 'undefined') return [];
   try {
@@ -137,11 +216,13 @@ export function getLocalAdsAuditEvents(): AdsEventAuditEntry[] {
 function recordVisitorSessionEvent(
   eventName: AdsConversionEventName,
   params: Record<string, string | number | boolean>,
-  attribution: AdsAttributionData | null
+  attribution: AdsAttributionData | null,
+  isNewTabSession = false
 ): void {
   if (typeof window === 'undefined') return;
   try {
     const now = Date.now();
+    const todayKey = getBrtDateKey(now);
     const raw = window.localStorage.getItem(VISITOR_SESSION_STORAGE_KEY);
     let session: CloudVisitorSessionEntry | null = raw ? JSON.parse(raw) : null;
     if (!session || !session.sessionId) {
@@ -158,9 +239,25 @@ function recordVisitorSessionEvent(
         events: [],
         userAgentSummary: navigator.userAgent ? navigator.userAgent.slice(0, 90) : undefined,
         screenSize: `${window.innerWidth}x${window.innerHeight}`,
+        visitCount: 0,
+        activeDays: [getBrtDateKey(attribution?.landedAt ?? now)],
+        engagedSec: 0,
       };
     }
     session.lastSeenAt = now;
+    if (isNewTabSession) {
+      session.visitCount = (session.visitCount ?? 0) + 1;
+    } else if (!session.visitCount) {
+      session.visitCount = 1;
+    }
+    const existingDays = Array.isArray(session.activeDays)
+      ? session.activeDays
+      : [getBrtDateKey(session.firstSeenAt)];
+    if (!existingDays.includes(todayKey)) {
+      session.activeDays = [...existingDays, todayKey].slice(-30);
+    } else {
+      session.activeDays = existingDays;
+    }
     if (attribution?.gclid) session.gclid = attribution.gclid;
     if (attribution?.utmSource) session.utmSource = attribution.utmSource;
     if (attribution?.utmMedium) session.utmMedium = attribution.utmMedium;
@@ -173,10 +270,72 @@ function recordVisitorSessionEvent(
       session.registeredUsername = params.username;
     }
     window.localStorage.setItem(VISITOR_SESSION_STORAGE_KEY, JSON.stringify(session));
-    syncVisitorSessionToCloud(session);
+    if (!isCurrentEnvironmentLocalOrBot() && !isBotOrInternalTelemetrySession(session)) {
+      void syncVisitorSessionToCloud(session);
+    }
   } catch {
     // Non-blocking
   }
+}
+
+let engagementHeartbeatStarted = false;
+
+function startVisitorEngagementHeartbeat(): void {
+  if (typeof window === 'undefined' || engagementHeartbeatStarted) return;
+  if (isCurrentEnvironmentLocalOrBot()) return;
+  engagementHeartbeatStarted = true;
+
+  let lastVisibleTickMs = Date.now();
+  let unsyncedVisibleSec = 0;
+  let cloudHeartbeatsSent = 0;
+
+  const flushSessionDuration = (forceSync: boolean) => {
+    try {
+      const now = Date.now();
+      if (document.visibilityState === 'visible') {
+        const deltaSec = Math.max(0, Math.min(45, Math.round((now - lastVisibleTickMs) / 1000)));
+        unsyncedVisibleSec += deltaSec;
+        lastVisibleTickMs = now;
+      }
+      if (unsyncedVisibleSec < 8 && !forceSync) return;
+      const raw = window.localStorage.getItem(VISITOR_SESSION_STORAGE_KEY);
+      if (!raw) return;
+      const session = JSON.parse(raw) as CloudVisitorSessionEntry;
+      if (!session || !session.sessionId || isBotOrInternalTelemetrySession(session)) return;
+      if (unsyncedVisibleSec > 0) {
+        session.engagedSec = (session.engagedSec ?? 0) + unsyncedVisibleSec;
+        session.lastSeenAt = now;
+        unsyncedVisibleSec = 0;
+        window.localStorage.setItem(VISITOR_SESSION_STORAGE_KEY, JSON.stringify(session));
+      }
+      if (cloudHeartbeatsSent < 12 && (session.engagedSec ?? 0) >= 8) {
+        cloudHeartbeatsSent += 1;
+        void syncVisitorSessionToCloud(session);
+      }
+    } catch {
+      // Ignore
+    }
+  };
+
+  window.setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      flushSessionDuration(false);
+    } else {
+      lastVisibleTickMs = Date.now();
+    }
+  }, 30_000);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      const now = Date.now();
+      const deltaSec = Math.max(0, Math.min(45, Math.round((now - lastVisibleTickMs) / 1000)));
+      unsyncedVisibleSec += deltaSec;
+      lastVisibleTickMs = now;
+      flushSessionDuration(true);
+    } else {
+      lastVisibleTickMs = Date.now();
+    }
+  });
 }
 
 /**
@@ -285,7 +444,12 @@ export function trackAdsEvent(
     // Ignora erros de quota de armazenamento
   }
 
-  recordVisitorSessionEvent(eventName, params, attribution);
+  recordVisitorSessionEvent(
+    eventName,
+    params,
+    attribution,
+    eventName === 'ads_visitor_landed'
+  );
 }
 
 /**
@@ -357,6 +521,8 @@ export function initAdsTelemetry(): AdsAttributionData | null {
         returning_attributed: !hasUrlParams && Boolean(attribution),
       });
     }
+
+    startVisitorEngagementHeartbeat();
 
     return attribution;
   } catch {

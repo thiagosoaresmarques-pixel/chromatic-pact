@@ -2193,6 +2193,9 @@ export interface CloudVisitorSessionEntry {
   registeredUsername?: string;
   userAgentSummary?: string;
   screenSize?: string;
+  visitCount?: number;
+  activeDays?: string[];
+  engagedSec?: number;
 }
 
 export interface GlobalAdminAnnouncement {

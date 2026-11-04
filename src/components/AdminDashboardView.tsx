@@ -26,6 +26,9 @@ import {
   getLocalAdsAuditEvents,
   GOOGLE_ADS_SIGNUP_CONVERSION_SEND_TO,
   GOOGLE_ADS_TAG_ID,
+  isBotOrInternalTelemetrySession,
+  isEngagedVisitorSession,
+  isReturningVisitorSession,
   TrafficChannelId,
 } from '../utils/adsTelemetry';
 import {
@@ -124,6 +127,10 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
 
   // Social & Multi-channel marketing tools state
   const [channelFilter, setChannelFilter] = useState<'all' | TrafficChannelId>('all');
+  const [telemetryPeriod, setTelemetryPeriod] = useState<
+    'post_optimizations' | '24h' | '7d' | 'all'
+  >('post_optimizations');
+  const [hideBotsAndInternal, setHideBotsAndInternal] = useState<boolean>(true);
   const [customUtmSource, setCustomUtmSource] = useState<string>('tiktok');
   const [customUtmMedium, setCustomUtmMedium] = useState<string>('video_organico');
   const [customUtmCampaign, setCustomUtmCampaign] = useState<string>('desafio_xequemate');
@@ -183,6 +190,48 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     return () => window.clearInterval(interval);
   }, [refreshCloudData]);
 
+  const activeTelemetrySessions = useMemo(() => {
+    const now = Date.now();
+    const POST_OPT_CUTOFF_MS = Date.parse('2026-11-03T12:20:00Z'); // v52 (03/11 09:20 BRT)
+    const minFirstSeenMs =
+      telemetryPeriod === '24h'
+        ? now - 24 * 3600 * 1000
+        : telemetryPeriod === '7d'
+        ? now - 7 * 24 * 3600 * 1000
+        : telemetryPeriod === 'post_optimizations'
+        ? POST_OPT_CUTOFF_MS
+        : 0;
+
+    // Detect synthetic multi-viewport scanner bursts (>=3 zero-duration non-paid hits within 5s)
+    const burstSessionIds = new Set<string>();
+    if (hideBotsAndInternal) {
+      for (let i = 0; i < visitorSessions.length; i++) {
+        const s = visitorSessions[i];
+        if (s.gclid || s.lastSeenAt - s.firstSeenAt > 0) continue;
+        const cluster = visitorSessions.filter(
+          (x) =>
+            !x.gclid &&
+            x.lastSeenAt - x.firstSeenAt === 0 &&
+            Math.abs(x.firstSeenAt - s.firstSeenAt) <= 5000
+        );
+        if (cluster.length >= 3) {
+          cluster.forEach((c) => burstSessionIds.add(c.sessionId));
+        }
+      }
+    }
+
+    return visitorSessions.filter((s) => {
+      const seenInWindow =
+        minFirstSeenMs === 0 || s.firstSeenAt >= minFirstSeenMs || s.lastSeenAt >= minFirstSeenMs;
+      if (!seenInWindow) return false;
+      if (hideBotsAndInternal) {
+        if (isBotOrInternalTelemetrySession(s)) return false;
+        if (burstSessionIds.has(s.sessionId)) return false;
+      }
+      return true;
+    });
+  }, [visitorSessions, telemetryPeriod, hideBotsAndInternal]);
+
   // Derived statistics
   const stats = useMemo(() => {
     const totalUsers = profiles.length;
@@ -193,31 +242,42 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
     const totalArenaWins = profiles.reduce((acc, p) => acc + (p.arenaWins ?? 0), 0);
     const totalCustomDecks = profiles.reduce((acc, p) => acc + (p.customDecks?.length ?? 0), 0);
 
-    const totalVisitors = visitorSessions.length;
-    const adsVisitors = visitorSessions.filter(
+    const totalVisitors = activeTelemetrySessions.length;
+    const rawTotalVisitors = visitorSessions.length;
+    const filteredOutCount = Math.max(0, rawTotalVisitors - totalVisitors);
+    const adsVisitors = activeTelemetrySessions.filter(
       (s) => Boolean(s.gclid || s.utmSource || s.utmCampaign || s.utmTerm)
     ).length;
-    const quickPlaySessions = visitorSessions.filter((s) =>
+    const engagedSessions = activeTelemetrySessions.filter((s) =>
+      isEngagedVisitorSession(s)
+    ).length;
+    const returningSessions = activeTelemetrySessions.filter((s) =>
+      isReturningVisitorSession(s)
+    ).length;
+    const spectateSessions = activeTelemetrySessions.filter((s) =>
+      s.events.includes('spectate_match')
+    ).length;
+    const quickPlaySessions = activeTelemetrySessions.filter((s) =>
       s.events.includes('quick_play_clicked')
     ).length;
-    const startedDuelSessions = visitorSessions.filter(
+    const startedDuelSessions = activeTelemetrySessions.filter(
       (s) => s.events.includes('start_duel') || s.events.includes('start_campaign_boss')
     ).length;
-    const firstCardSessions = visitorSessions.filter((s) =>
+    const firstCardSessions = activeTelemetrySessions.filter((s) =>
       s.events.includes('first_card_played')
     ).length;
-    const victorySessions = visitorSessions.filter((s) =>
+    const victorySessions = activeTelemetrySessions.filter((s) =>
       s.events.includes('match_victory')
     ).length;
-    const registeredFromSessions = visitorSessions.filter(
+    const registeredFromSessions = activeTelemetrySessions.filter(
       (s) => s.events.includes('register_account') || Boolean(s.registeredUsername)
     ).length;
-    const joinedTournamentSessions = visitorSessions.filter((s) =>
+    const joinedTournamentSessions = activeTelemetrySessions.filter((s) =>
       s.events.includes('join_tournament')
     ).length;
 
     const buildChannelMetric = (ch: TrafficChannelId) => {
-      const list = visitorSessions.filter((s) => classifyVisitorChannel(s) === ch);
+      const list = activeTelemetrySessions.filter((s) => classifyVisitorChannel(s) === ch);
       const visitors = list.length;
       const quickPlay = list.filter((s) => s.events.includes('quick_play_clicked')).length;
       const duels = list.filter(
@@ -248,7 +308,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       totalArenaWins,
       totalCustomDecks,
       totalVisitors,
+      rawTotalVisitors,
+      filteredOutCount,
       adsVisitors,
+      engagedSessions,
+      returningSessions,
+      spectateSessions,
       quickPlaySessions,
       startedDuelSessions,
       firstCardSessions,
@@ -257,7 +322,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       joinedTournamentSessions,
       channelBreakdown,
     };
-  }, [profiles, visitorSessions]);
+  }, [profiles, visitorSessions, activeTelemetrySessions]);
 
   const filteredProfiles = useMemo(() => {
     const q = userSearch.trim().toLowerCase();
@@ -774,13 +839,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               }}
             >
               <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: 800, textTransform: 'uppercase' }}>
-                Sessões de Visitantes
+                Visitantes Reais ({telemetryPeriod === 'post_optimizations' ? 'Pós-03/11' : telemetryPeriod === '24h' ? '24h' : telemetryPeriod === '7d' ? '7d' : 'Total'})
               </div>
               <div style={{ fontSize: '1.85rem', fontWeight: 900, color: '#38bdf8', margin: '0.2rem 0' }}>
                 {stats.totalVisitors}
               </div>
               <div style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>
-                {stats.adsVisitors} via Google Ads • {stats.startedDuelSessions} jogaram
+                {stats.adsVisitors} Ads · {stats.startedDuelSessions} duelos · {stats.returningSessions} retorno(s)
               </div>
             </div>
 
@@ -1029,7 +1094,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 }}
               >
                 <span style={{ fontWeight: 800, color: '#f8fafc', fontSize: '0.95rem' }}>
-                  📈 Últimos Visitantes & Sessões ({visitorSessions.length})
+                  Últimos Visitantes ({activeTelemetrySessions.length})
                 </span>
                 <button
                   type="button"
@@ -1039,13 +1104,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   Ver Funil →
                 </button>
               </div>
-              {visitorSessions.length === 0 ? (
+              {activeTelemetrySessions.length === 0 ? (
                 <div style={{ color: '#94a3b8', fontSize: '0.84rem', padding: '1rem 0' }}>
-                  Nenhuma sessão de visitante registrada ainda.
+                  Nenhuma sessão de visitante no filtro atual.
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-                  {visitorSessions.slice(0, 6).map((s) => {
+                  {activeTelemetrySessions.slice(0, 6).map((s) => {
                     const isAds = Boolean(s.gclid || s.utmSource || s.utmCampaign);
                     return (
                       <div
@@ -1773,6 +1838,74 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
          ===================================================================== */}
       {section === 'telemetry' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
+          {/* Cohort & Bot Filter Control Bar */}
+          <div
+            style={{
+              background: 'rgba(15, 23, 42, 0.88)',
+              border: '1px solid rgba(148, 163, 184, 0.2)',
+              borderRadius: '12px',
+              padding: '0.75rem 1rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.65rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.76rem', color: '#94a3b8', fontWeight: 700 }}>
+                Período:
+              </span>
+              {(
+                [
+                  { id: 'post_optimizations', label: 'Pós-ajustes (03/11+)' },
+                  { id: '24h', label: 'Últimas 24h' },
+                  { id: '7d', label: '7 dias' },
+                  { id: 'all', label: 'Histórico completo' },
+                ] as const
+              ).map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  className="nav-notif-mini-btn"
+                  onClick={() => setTelemetryPeriod(p.id)}
+                  style={{
+                    borderColor:
+                      telemetryPeriod === p.id
+                        ? 'rgba(212, 175, 55, 0.75)'
+                        : 'rgba(148, 163, 184, 0.22)',
+                    color: telemetryPeriod === p.id ? '#fde68a' : '#cbd5e1',
+                  }}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <label
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.76rem',
+                  color: '#cbd5e1',
+                  cursor: 'pointer',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={hideBotsAndInternal}
+                  onChange={(e) => setHideBotsAndInternal(e.target.checked)}
+                />
+                <span>Ocultar bots, localhost e admin</span>
+              </label>
+              <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                Exibindo {stats.totalVisitors} de {stats.rawTotalVisitors} registros
+              </span>
+            </div>
+          </div>
+
           {/* Multi-Channel Attribution Comparison Cards */}
           <div
             style={{
@@ -2453,37 +2586,50 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
               {[
                 {
-                  label: '1. Visitantes que Abriram o Site (ads_visitor_landed)',
+                  label: '1. Visitantes Reais no Período (ads_visitor_landed)',
                   count: stats.totalVisitors,
                   color: '#38bdf8',
                 },
                 {
-                  label: '2. Clicaram em "Jogar Agora / 1 Clique" (quick_play_clicked)',
+                  label: '2. Engajamento Ativo (≥10s na página ou ação)',
+                  count: stats.engagedSessions,
+                  color: '#22d3ee',
+                },
+                {
+                  label: '3. Visitantes Recorrentes / Retenção (2+ visitas ou dias)',
+                  count: stats.returningSessions,
+                  color: '#2dd4bf',
+                },
+                {
+                  label: '4. Clicaram em "Jogar agora" na Vitrine (quick_play_clicked)',
                   count: stats.quickPlaySessions,
                   color: '#818cf8',
                 },
                 {
-                  label: '3. Iniciaram Partida / Campanha (start_duel / start_campaign_boss)',
+                  label: '5. Iniciaram Partida / Campanha (start_duel / start_campaign_boss)',
                   count: stats.startedDuelSessions,
                   color: '#a78bfa',
                 },
                 {
-                  label: '4. Jogaram a 1ª Carta em Combate (first_card_played)',
+                  label: '6. Jogaram a 1ª Carta em Combate (first_card_played)',
                   count: stats.firstCardSessions,
                   color: '#f472b6',
                 },
                 {
-                  label: '5. Venceram uma Partida (match_victory)',
+                  label: '7. Venceram uma Partida (match_victory)',
                   count: stats.victorySessions,
                   color: '#34d399',
                 },
                 {
-                  label: '6. Criaram Conta Soberana (register_account)',
-                  count: Math.max(stats.registeredFromSessions, stats.totalUsers),
+                  label: '8. Criaram Conta Soberana (register_account)',
+                  count:
+                    telemetryPeriod === 'all' && !hideBotsAndInternal
+                      ? Math.max(stats.registeredFromSessions, stats.totalUsers)
+                      : stats.registeredFromSessions,
                   color: '#fbbf24',
                 },
                 {
-                  label: '7. Inscreveram-se em Torneio Diário (join_tournament)',
+                  label: '9. Inscreveram-se em Torneio Diário (join_tournament)',
                   count: stats.joinedTournamentSessions,
                   color: '#f97316',
                 },
@@ -2549,12 +2695,12 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               }}
             >
               <h3 style={{ margin: 0, fontSize: '1rem', color: '#f8fafc' }}>
-                Sessões de Visitantes Sincronizadas na Nuvem ({visitorSessions.length})
+                Sessões no Filtro Atual ({activeTelemetrySessions.length})
               </h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
                 {(
                   [
-                    { id: 'all', label: `Todos (${visitorSessions.length})` },
+                    { id: 'all', label: `Todos (${activeTelemetrySessions.length})` },
                     { id: 'google_ads', label: `🎯 Google Ads (${stats.channelBreakdown.google_ads.visitors})` },
                     { id: 'tiktok', label: `🎵 TikTok (${stats.channelBreakdown.tiktok.visitors})` },
                     { id: 'instagram', label: `📸 Instagram (${stats.channelBreakdown.instagram.visitors})` },
@@ -2587,13 +2733,13 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               </div>
             </div>
 
-            {visitorSessions.length === 0 ? (
+            {activeTelemetrySessions.length === 0 ? (
               <div style={{ color: '#94a3b8', fontSize: '0.84rem' }}>
-                Nenhuma sessão registrada ainda. Assim que visitantes acessarem o site, eles aparecerão aqui em tempo real.
+                Nenhuma sessão no filtro atual. Altere o período acima para consultar registros anteriores.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-                {visitorSessions
+                {activeTelemetrySessions
                   .filter((s) => channelFilter === 'all' || classifyVisitorChannel(s) === channelFilter)
                   .map((s) => {
                     const ch = classifyVisitorChannel(s);
@@ -2702,6 +2848,17 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                               hour: '2-digit',
                               minute: '2-digit',
                             })}
+                          </div>
+                          <div style={{ color: '#cbd5e1', marginTop: '0.12rem' }}>
+                            {(() => {
+                              const sec =
+                                s.engagedSec && s.engagedSec > 0
+                                  ? s.engagedSec
+                                  : Math.min(3600, Math.max(0, Math.round((s.lastSeenAt - s.firstSeenAt) / 1000)));
+                              const ret = isReturningVisitorSession(s);
+                              const visits = Math.max(s.visitCount ?? 1, s.activeDays?.length ?? 1);
+                              return `${sec}s ativo${ret ? ` · Recorrente (${visits > 1 ? `${visits} visitas` : 'retorno'})` : ''}`;
+                            })()}
                           </div>
                           <div style={{ opacity: 0.7, maxWidth: '260px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {s.landingUrl}

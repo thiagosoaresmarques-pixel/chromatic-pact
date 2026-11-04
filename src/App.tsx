@@ -3215,6 +3215,7 @@ export const App: React.FC = () => {
             onStartTournamentPvpMatch={handleStartTournamentPvpMatch}
             onSpectateTournamentMatch={(tournament, pairing) => {
               startAdaptiveMusic();
+              trackAdsEvent('spectate_match', { source: 'tournaments', isGuest });
               setActiveTournamentMatch(null);
               setActiveCampaignBoss(null);
               setActiveRankedSovereign(null);
@@ -3245,6 +3246,7 @@ export const App: React.FC = () => {
             onOpenDeckBuilder={() => setActiveTab('deckbuilder')}
             onInspectCard={setShowcaseInspectCard}
             onWatchSovereignMatch={(item) => {
+              trackAdsEvent('spectate_match', { source: 'leaderboard_sovereign', isGuest });
               setActivePersonalReplay(null);
               setActivePersonalReplayReturnTab(null);
               setActiveTournamentMatch(null);
@@ -3267,6 +3269,7 @@ export const App: React.FC = () => {
               setActiveTab('arena');
             }}
             onWatchUserReplay={(entry) => {
+              trackAdsEvent('spectate_match', { source: 'leaderboard_user_replay', isGuest });
               setActiveTournamentSpectate(null);
               setActiveTournamentMatch(null);
               setActiveCampaignBoss(null);
@@ -3841,6 +3844,7 @@ export const App: React.FC = () => {
             }
             onNotify={(item) => pushNotification(item, true)}
             onWatchUserReplay={(entry) => {
+              trackAdsEvent('spectate_match', { source: 'leaderboard_user_replay', isGuest });
               setActiveTournamentSpectate(null);
               setActiveTournamentMatch(null);
               setActiveCampaignBoss(null);

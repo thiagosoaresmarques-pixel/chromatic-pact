@@ -560,6 +560,26 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     initialSavedSnapshot?.mode === 'problem' ? initialSavedSnapshot.problemId : null
   );
 
+  const FIRST_TURN_GUIDE_STORAGE_KEY = 'chromatic_pact_first_turn_guide_done_v1';
+  const [firstTurnGuideDismissed, setFirstTurnGuideDismissed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(FIRST_TURN_GUIDE_STORAGE_KEY) === '1';
+    } catch {
+      return true;
+    }
+  });
+  const isFirstTimeOnboardingSoloGuest = Boolean(
+    isGuest &&
+      !firstTurnGuideDismissed &&
+      !tournamentSpectatorContext &&
+      !initialSavedSnapshot &&
+      !tacticalProblem &&
+      !onlineMatch &&
+      !campaignBoss &&
+      !tournamentContext &&
+      !rankedDuelContext
+  );
+
   const [selectedPlayerDeckId, setSelectedPlayerDeckId] = useState<string>(
     () =>
       initialSavedSnapshot?.selectedPlayerDeckId ??
@@ -568,7 +588,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       'deck_red_inferno'
   );
   const [selectedAiSkillTier, setSelectedAiSkillTier] = useState<AiSkillTier>(
-    () => initialSavedSnapshot?.gameState?.aiSkillTier ?? initialAiSkillTier ?? 3
+    () =>
+      initialSavedSnapshot?.gameState?.aiSkillTier ??
+      initialAiSkillTier ??
+      (isFirstTimeOnboardingSoloGuest ? 1 : 3)
   );
   const allAvailableAiDecks = useMemo(() => {
     const trainedMono = getTrainedMonocolorPrebuiltDecks(selectedAiSkillTier);
@@ -677,7 +700,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         : bossGraduatedSetup?.cardIds ?? bossDeckObj?.cardIds ?? []
       : bossDeckObj?.cardIds ?? [];
 
-    return createInitialGameState(
+    const freshState = createInitialGameState(
       resolveDeckCards(pDeckIds),
       resolveDeckCards(bossDeckCardIds),
       campaignBoss
@@ -704,6 +727,19 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiSkillTier: selectedAiSkillTier,
           }
     );
+
+    if (isFirstTimeOnboardingSoloGuest) {
+      const heavyIndices = freshState.player.hand
+        .map((c, idx) => (c.cost >= 5 ? idx : -1))
+        .filter((idx) => idx !== -1);
+      const smoothedPlayer =
+        heavyIndices.length > 0
+          ? mulliganCards(freshState, 'player', heavyIndices)
+          : freshState;
+      return executeAiMulligan(smoothedPlayer, 'ai');
+    }
+
+    return freshState;
   });
 
   const [selectedHandIndex, setSelectedHandIndex] = useState<number | null>(null);
@@ -795,14 +831,6 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
   const [arenaTutorialStep, setArenaTutorialStep] = useState<number | null>(null);
   const [showTacticalAdvisor, setShowTacticalAdvisor] = useState(false);
 
-  const FIRST_TURN_GUIDE_STORAGE_KEY = 'chromatic_pact_first_turn_guide_done_v1';
-  const [firstTurnGuideDismissed, setFirstTurnGuideDismissed] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(FIRST_TURN_GUIDE_STORAGE_KEY) === '1';
-    } catch {
-      return true;
-    }
-  });
   const dismissFirstTurnGuide = useCallback(() => {
     setFirstTurnGuideDismissed(true);
     try {
@@ -855,7 +883,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     'none' | 'cinematic' | 'modal' | 'dismissed'
   >('none');
   const [isMulliganOpen, setIsMulliganOpen] = useState<boolean>(() =>
-    isSpectatorMode
+    isSpectatorMode || isFirstTimeOnboardingSoloGuest
       ? false
       : initialSavedSnapshot !== null
       ? Boolean(initialSavedSnapshot.isMulliganOpen)
@@ -952,7 +980,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     gameState.turn,
     gameState.phase,
   ]);
-  const [isHandPinnedOpen, setIsHandPinnedOpen] = useState(false);
+  const [isHandPinnedOpen, setIsHandPinnedOpen] = useState<boolean>(() =>
+    Boolean(
+      !isSpectatorMode &&
+        !tacticalProblem &&
+        (isFirstTimeOnboardingSoloGuest ||
+          (isMobileViewport() &&
+            (initialSavedSnapshot !== null ? !initialSavedSnapshot.isMulliganOpen : false)))
+    )
+  );
   const [isHandHovered, setIsHandHovered] = useState(false);
   const [isCommandDockMinimized, setIsCommandDockMinimized] = useState(false);
   const [focusedBoardUnitId, setFocusedBoardUnitId] = useState<string | null>(null);
@@ -1583,6 +1619,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
     setIsMulliganOpen(false);
     setMulliganSwapIndices([]);
+    if (isMobileViewport() || !firstTurnGuideDismissed) {
+      setIsHandPinnedOpen(true);
+    }
   };
 
   const handleConfirmSurrender = () => {
@@ -3338,6 +3377,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
   const handleQuickBurnCard = (handIdx: number) => {
     if (!isPlayerTurn) return;
+    if (!isSpectatorMode && !hasTrackedFirstActionRef.current) {
+      hasTrackedFirstActionRef.current = true;
+      trackAdsEvent('first_card_played', { action: 'burn_essence', isGuest });
+    }
     const next = burnCardForEssence(gameState, 'player', handIdx);
     playSfx('channel');
     setGameState(next);
@@ -3472,6 +3515,10 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         ? preferredSlot
         : findBestDeploySlot('rearguard');
     if (slotIdx === -1) return;
+    if (!isSpectatorMode && !hasTrackedFirstActionRef.current) {
+      hasTrackedFirstActionRef.current = true;
+      trackAdsEvent('first_card_played', { action: 'arm_trap', isGuest });
+    }
     const next = playCard(gameState, 'player', handIdx, {
       row: 'rearguard',
       slotIndex: slotIdx,
@@ -7683,7 +7730,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
                               <button
                                 type="button"
-                                className="arena-spec-btn primary"
+                                className="arena-spec-btn primary home-play-cta"
                                 onClick={() => {
                                   startAdaptiveMusic();
                                   trackAdsEvent('quick_play_clicked', {
@@ -8289,8 +8336,16 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     type="button"
                     className={`hand-drawer-toggle-btn ${isHandPinnedOpen ? 'is-pinned' : ''}`}
                     onClick={() => {
-                      setIsHandPinnedOpen(false);
                       setIsHandHovered(false);
+                      setIsHandPinnedOpen((prev) => {
+                        const next = !isHandExpanded ? true : !prev;
+                        if (next) {
+                          setIsP2DrawerPinned(false);
+                          setIsP1DrawerPinned(false);
+                          setActiveRightDrawer(null);
+                        }
+                        return next;
+                      });
                     }}
                   >
                     {isHandExpanded
@@ -9562,9 +9617,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             ? 'Passo 2/3'
             : 'Passo 3/3';
           const stepMessage = !gameState.player.hasChanneledThisTurn
-            ? 'Toque em 1 carta da mão e selecione Canalizar para gerar Essência e Afinidade.'
+            ? 'Toque em 1 carta da mão e escolha Canalizar (+1 Essência e Afinidade).'
             : hasPlayableInHand
-            ? 'Selecione uma carta iluminada da mão e posicione-a na Vanguarda.'
+            ? 'Toque numa carta iluminada da mão para invocá-la na Vanguarda.'
             : 'Ataque com unidades prontas ou toque em Passar Turno.';
           const needsHandAction =
             !gameState.player.hasChanneledThisTurn || hasPlayableInHand;

@@ -1,4 +1,7 @@
-import type { SovereignAiLeaderboardEntry } from '../data/sovereignEloLadderData';
+import {
+  SOVEREIGN_AI_LEADERBOARD_ROSTER,
+  type SovereignAiLeaderboardEntry,
+} from '../data/sovereignEloLadderData';
 import { Domain } from '../types/game';
 import { getActiveRoomsList, MultiplayerRoom } from './multiplayerEngine';
 import {
@@ -11,6 +14,13 @@ import {
   ROLLING_TABLE_COUNT,
 } from './sovereignLiveEloEngine';
 import {
+  getActiveRefusalCooldowns,
+  getSovereignsBusyInTournamentAt,
+  isSovereignOnlineAt,
+  type SovereignPresenceStatus,
+} from './sovereignPresenceEngine';
+import {
+  buildScheduledOfficialTournaments,
   ComputedRoundPairing,
   ComputedTournamentStanding,
   computeTournamentSnapshot,
@@ -483,4 +493,224 @@ export function getRecentMatchesForSovereign(
   }
 
   return results;
+}
+
+export interface SovereignRealtimePresenceEntry {
+  sovereignId: string;
+  status: SovereignPresenceStatus;
+  statusLabel: string;
+  detailLabel: string;
+  liveWatchItem?: LiveArenaFeedItem;
+  justFinishedMatchAgoMs: number | null;
+}
+
+export interface SovereignPresenceDirectorySnapshot {
+  byId: Record<string, SovereignRealtimePresenceEntry>;
+  onlineIdleCount: number;
+  inMatchCount: number;
+  inTournamentCount: number;
+  offlineCount: number;
+}
+
+export function computeSovereignPresenceDirectory(
+  nowMs = getTournamentNowMs()
+): SovereignPresenceDirectorySnapshot {
+  const tourneyBusyMap = getSovereignsBusyInTournamentAt(nowMs);
+  const inMatchMap = new Map<
+    string,
+    { detailLabel: string; liveWatchItem?: LiveArenaFeedItem }
+  >();
+  const justFinishedAgoMap = new Map<string, number>();
+
+  // 1. Check active Swiss tournament live matches
+  const activeDefs =
+    cachedCloudCatalog?.tournaments ?? buildScheduledOfficialTournaments(nowMs);
+  for (const def of activeDefs) {
+    if (nowMs < def.startsAtMs || nowMs >= def.endsAtMs) continue;
+    const entries = cachedCloudCatalog?.entriesByTournament?.[def.id] ?? [];
+    const snap = computeTournamentSnapshot(def, entries, null, nowMs);
+    if (snap.phase === 'round_active' && snap.currentRound >= 1) {
+      const roundPairings = snap.roundsPairings[snap.currentRound] ?? [];
+      for (const p of roundPairings) {
+        if (p.result !== 'IN_PROGRESS' || !p.playerB) continue;
+        const watchItem: LiveArenaFeedItem = {
+          feedId: `trn::${def.id}::r${p.round}::t${p.tableNumber}`,
+          sourceKind: 'tournament_live',
+          tableBadge: `Torneio · Mesa #${p.tableNumber}`,
+          tournament: def,
+          pairing: p,
+        };
+        if (p.playerA.sovereignEntry) {
+          const oppShort = p.playerB.displayName.split(',')[0].trim();
+          inMatchMap.set(p.playerA.sovereignEntry.sovereignId, {
+            detailLabel: `Em duelo no torneio vs. ${oppShort}`,
+            liveWatchItem: watchItem,
+          });
+        }
+        if (p.playerB.sovereignEntry) {
+          const oppShort = p.playerA.displayName.split(',')[0].trim();
+          inMatchMap.set(p.playerB.sovereignEntry.sovereignId, {
+            detailLabel: `Em duelo no torneio vs. ${oppShort}`,
+            liveWatchItem: watchItem,
+          });
+        }
+      }
+    }
+  }
+
+  // 2. Check all 8 rolling Arena tables (active matches & recent post-match cooldowns)
+  for (let slotIdx = 0; slotIdx < ROLLING_TABLE_COUNT; slotIdx += 1) {
+    const slotOffset = slotIdx * ROLLING_STAGGER_MS;
+    const curBucket = Math.floor((nowMs - slotOffset) / ROLLING_CYCLE_MS);
+    const spec = resolveDeterministicRollingMatchup(curBucket, slotIdx);
+
+    if (spec) {
+      if (nowMs >= spec.matchStartMs && nowMs < spec.matchFinishMs) {
+        const watchItem =
+          buildRollingSovereignTable(slotIdx, nowMs, undefined, curBucket) ?? undefined;
+        const shortA = spec.sovA.sovereignName.split(',')[0].trim();
+        const shortB = spec.sovB.sovereignName.split(',')[0].trim();
+        inMatchMap.set(spec.sovA.sovereignId, {
+          detailLabel: `Em duelo na Arena vs. ${shortB}`,
+          liveWatchItem: watchItem,
+        });
+        inMatchMap.set(spec.sovB.sovereignId, {
+          detailLabel: `Em duelo na Arena vs. ${shortA}`,
+          liveWatchItem: watchItem,
+        });
+      } else if (nowMs >= spec.matchFinishMs) {
+        const ago = nowMs - spec.matchFinishMs;
+        justFinishedAgoMap.set(spec.sovA.sovereignId, ago);
+        justFinishedAgoMap.set(spec.sovB.sovereignId, ago);
+      }
+    }
+
+    const prevSpec = resolveDeterministicRollingMatchup(curBucket - 1, slotIdx);
+    if (prevSpec && nowMs >= prevSpec.matchFinishMs) {
+      const ago = nowMs - prevSpec.matchFinishMs;
+      if (ago < 60_000) {
+        const prevA = justFinishedAgoMap.get(prevSpec.sovA.sovereignId);
+        if (prevA === undefined || ago < prevA) {
+          justFinishedAgoMap.set(prevSpec.sovA.sovereignId, ago);
+        }
+        const prevB = justFinishedAgoMap.get(prevSpec.sovB.sovereignId);
+        if (prevB === undefined || ago < prevB) {
+          justFinishedAgoMap.set(prevSpec.sovB.sovereignId, ago);
+        }
+      }
+    }
+  }
+
+  const byId: Record<string, SovereignRealtimePresenceEntry> = {};
+  let onlineIdleCount = 0;
+  let inMatchCount = 0;
+  let inTournamentCount = 0;
+  let offlineCount = 0;
+
+  for (const sov of SOVEREIGN_AI_LEADERBOARD_ROSTER) {
+    const sid = sov.sovereignId;
+    const activeMatch = inMatchMap.get(sid);
+    const justFinishedMatchAgoMs = justFinishedAgoMap.get(sid) ?? null;
+
+    if (activeMatch) {
+      inMatchCount += 1;
+      byId[sid] = {
+        sovereignId: sid,
+        status: 'in_match',
+        statusLabel: 'Em duelo',
+        detailLabel: activeMatch.detailLabel,
+        liveWatchItem: activeMatch.liveWatchItem,
+        justFinishedMatchAgoMs: null,
+      };
+      continue;
+    }
+
+    const tourneyDuty = tourneyBusyMap.get(sid);
+    if (tourneyDuty) {
+      inTournamentCount += 1;
+      byId[sid] = {
+        sovereignId: sid,
+        status: 'in_tournament',
+        statusLabel: 'Em torneio',
+        detailLabel: tourneyDuty.isPreStartConcentration
+          ? `Concentrado para ${tourneyDuty.tournamentTitle}`
+          : `Disputando ${tourneyDuty.tournamentTitle}`,
+        justFinishedMatchAgoMs,
+      };
+      continue;
+    }
+
+    if (isSovereignOnlineAt(sid, nowMs, tourneyBusyMap)) {
+      onlineIdleCount += 1;
+      byId[sid] = {
+        sovereignId: sid,
+        status: 'online_idle',
+        statusLabel: 'Disponível',
+        detailLabel: 'Disponível para duelo',
+        justFinishedMatchAgoMs,
+      };
+    } else {
+      offlineCount += 1;
+      byId[sid] = {
+        sovereignId: sid,
+        status: 'offline',
+        statusLabel: 'Ausente',
+        detailLabel: 'Ausente no momento',
+        justFinishedMatchAgoMs: null,
+      };
+    }
+  }
+
+  return {
+    byId,
+    onlineIdleCount,
+    inMatchCount,
+    inTournamentCount,
+    offlineCount,
+  };
+}
+
+/**
+ * Selects the closest ELO Sovereign who is currently online, free (not in a match
+ * or tournament), and not on refusal cooldown.
+ */
+export function findBestAvailableOnlineSovereign(
+  playerElo: number,
+  recentOpponentIds: string[] = [],
+  nowMs = getTournamentNowMs()
+): SovereignAiLeaderboardEntry {
+  const liveRoster = getCachedHydratedLiveSovereignRoster(nowMs).roster;
+  const presence = computeSovereignPresenceDirectory(nowMs).byId;
+  const refusalCooldowns = getActiveRefusalCooldowns(Date.now());
+  const recentSet = new Set(recentOpponentIds.slice(-4));
+
+  const availableFresh = liveRoster.filter(
+    (s) =>
+      presence[s.sovereignId]?.status === 'online_idle' &&
+      !refusalCooldowns[s.sovereignId] &&
+      !recentSet.has(s.sovereignId)
+  );
+  const availableAny = liveRoster.filter(
+    (s) =>
+      presence[s.sovereignId]?.status === 'online_idle' &&
+      !refusalCooldowns[s.sovereignId]
+  );
+
+  const pool =
+    availableFresh.length > 0
+      ? availableFresh
+      : availableAny.length > 0
+      ? availableAny
+      : liveRoster;
+
+  let best = pool[0];
+  let bestDiff = Math.abs(best.eloRating - playerElo);
+  for (let i = 1; i < pool.length; i += 1) {
+    const diff = Math.abs(pool[i].eloRating - playerElo);
+    if (diff < bestDiff) {
+      best = pool[i];
+      bestDiff = diff;
+    }
+  }
+  return best;
 }

@@ -10,6 +10,10 @@ import {
   upsertCloudSystemRecord,
 } from './multiplayerEngine';
 import { getConfiguredSundayPixBrl } from './discordCommunityEngine';
+import {
+  getEnrolledTournamentSovereignsAt,
+  registerKnownTournamentWindows,
+} from './sovereignPresenceEngine';
 
 // ============================================================================
 // 1. TIME CONTROL EMPIRICAL BENCHMARKS & TOURNAMENT CADENCE PRESETS
@@ -468,7 +472,10 @@ export function getTournamentNowMs(): number {
  * when a round boundary is crossed (instead of every 1,000ms clock tick).
  */
 export function getTournamentStageKey(def: SwissTournamentDefinition, nowMs: number): string {
-  if (nowMs < def.startsAtMs) return 'registration';
+  if (nowMs < def.startsAtMs) {
+    const regTick30s = Math.floor(nowMs / 30_000);
+    return `registration_${regTick30s}`;
+  }
   if (nowMs >= def.endsAtMs) return 'finished';
   const elapsed = nowMs - def.startsAtMs;
   const rIdx = Math.min(def.totalRounds, Math.floor(elapsed / def.roundDurationMs) + 1);
@@ -981,7 +988,21 @@ export function computeTournamentSnapshot(
   const participantMap = new Map<string, ComputedTournamentStanding>();
 
   if (def.includeAllSovereigns) {
-    for (const sov of SOVEREIGN_AI_LEADERBOARD_ROSTER) {
+    const enrolledSovereigns = getEnrolledTournamentSovereignsAt(
+      {
+        id: def.id,
+        title: def.title,
+        startsAtMs: def.startsAtMs,
+        endsAtMs: def.endsAtMs,
+        createdAtMs: def.createdAtMs,
+        includeAllSovereigns: def.includeAllSovereigns,
+        isSpecialGrandCup:
+          def.prizeSpec.kind === 'cash_brl_pix' ||
+          def.title.toLowerCase().includes('dominical'),
+      },
+      nowMs
+    );
+    for (const sov of enrolledSovereigns) {
       const pid = `sov::${sov.sovereignId}`;
       const shortRealm = sov.realmOrigin.split(/\s*[—•·]\s*/)[0]?.trim() || sov.realmOrigin;
       participantMap.set(pid, {
@@ -1815,6 +1836,19 @@ function assembleCatalogFromRaw(
     if (aCat === 1) return a.startsAtMs - b.startsAtMs;
     return b.startsAtMs - a.startsAtMs;
   });
+
+  registerKnownTournamentWindows(
+    tournaments.map((t) => ({
+      id: t.id,
+      title: t.title,
+      startsAtMs: t.startsAtMs,
+      endsAtMs: t.endsAtMs,
+      createdAtMs: t.createdAtMs,
+      includeAllSovereigns: t.includeAllSovereigns,
+      isSpecialGrandCup:
+        t.prizeSpec.kind === 'cash_brl_pix' || t.title.toLowerCase().includes('dominical'),
+    }))
+  );
 
   const entriesByTournament: Record<string, HumanTournamentEntry[]> = {};
   for (const t of tournaments) {

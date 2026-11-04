@@ -1634,8 +1634,11 @@ export const App: React.FC = () => {
     playerDeckIds: string[],
     playerDeckId: string
   ) => {
-    const { findClosestRankedSovereignForElo } = await import('./data/sovereignEloLadder');
-    const matched = findClosestRankedSovereignForElo(
+    const { findBestAvailableOnlineSovereign, refreshLiveArenaCloudPool } = await import(
+      './utils/liveArenaFeedEngine'
+    );
+    await refreshLiveArenaCloudPool();
+    const matched = findBestAvailableOnlineSovereign(
       currentUser.eloRating ?? INITIAL_PLAYER_ELO,
       currentUser.recentRankedOpponentIds ?? []
     );

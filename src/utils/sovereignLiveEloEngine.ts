@@ -2,6 +2,11 @@ import {
   SOVEREIGN_AI_LEADERBOARD_ROSTER,
   SovereignAiLeaderboardEntry,
 } from '../data/sovereignEloLadderData';
+import {
+  getSovereignsBusyInTournamentAt,
+  isSovereignOnlineAt,
+  SOVEREIGN_PRESENCE_V2_CUTOFF_MS,
+} from './sovereignPresenceEngine';
 
 export const ROLLING_TABLE_COUNT = 8;
 export const ROLLING_CYCLE_MS = 132_000; // 2m 12s per table cycle
@@ -123,11 +128,9 @@ function round1(val: number): number {
   return Math.round(val * 10) / 10;
 }
 
-/**
- * Deterministic rolling matchup shared between Live Arena spectator tables
- * and the continuous Sovereign ELO ledger so every watched match moves real ELO.
- */
-export function resolveDeterministicRollingMatchup(
+const rollingBucketCache = new Map<number, Array<DeterministicRollingMatchup | null>>();
+
+function computeLegacyRollingMatchupV1(
   bucket: number,
   slotIdx: number
 ): DeterministicRollingMatchup | null {
@@ -160,7 +163,6 @@ export function resolveDeterministicRollingMatchup(
   }
   const sovB = roster[bestIdxB];
 
-  // Win probability calibrated to baseline ELO gap so expected drift is zero
   const expectedA = 1 / (1 + Math.pow(10, (sovB.eloRating - sovA.eloRating) / 400));
   const outcomeHash = hashLiveEloSeed(`vaeloria_live_outcome_v2::b${bucket}::s${slotIdx}`);
   const u = (outcomeHash % 100_000) / 100_000;
@@ -177,6 +179,142 @@ export function resolveDeterministicRollingMatchup(
     matchFinishMs,
     canonicalWinner,
   };
+}
+
+function resolveDisjointBucketSlotsV2(
+  bucket: number
+): Array<DeterministicRollingMatchup | null> {
+  const cached = rollingBucketCache.get(bucket);
+  if (cached) return cached;
+
+  const roster = SOVEREIGN_AI_LEADERBOARD_ROSTER;
+  const bucketStartMs = bucket * ROLLING_CYCLE_MS;
+  const midMs = bucketStartMs + Math.floor(ROLLING_CYCLE_MS / 2);
+
+  const tourneyBusy = getSovereignsBusyInTournamentAt(midMs);
+  const prevUsedIds = new Set<string>();
+  if (((bucket % 16) + 16) % 16 === 0) {
+    const prevSlots = resolveDisjointBucketSlotsV2(bucket - 1);
+    for (const ps of prevSlots) {
+      if (ps) {
+        prevUsedIds.add(ps.sovA.sovereignId);
+        prevUsedIds.add(ps.sovB.sovereignId);
+      }
+    }
+  }
+
+  const epoch = Math.floor(bucket / 16);
+  const bucketParity = ((bucket % 2) + 2) % 2;
+
+  const onlineFreeAll: number[] = [];
+  const parityPool: number[] = [];
+
+  for (let i = 0; i < roster.length; i += 1) {
+    const sov = roster[i];
+    if (tourneyBusy.has(sov.sovereignId)) continue;
+    if (prevUsedIds.has(sov.sovereignId)) continue;
+    if (!isSovereignOnlineAt(sov.sovereignId, midMs, tourneyBusy)) continue;
+
+    onlineFreeAll.push(i);
+    const p = hashLiveEloSeed(`parity_v2::e${epoch}::${sov.sovereignId}`) % 2;
+    if (p === bucketParity) {
+      parityPool.push(i);
+    }
+  }
+
+  const candidateIndices =
+    parityPool.length >= ROLLING_TABLE_COUNT * 2 ? parityPool : onlineFreeAll;
+
+  const usedInBucket = new Set<number>();
+  const slots: Array<DeterministicRollingMatchup | null> = [];
+
+  for (let slotIdx = 0; slotIdx < ROLLING_TABLE_COUNT; slotIdx += 1) {
+    const remaining = candidateIndices.filter((idx) => !usedInBucket.has(idx));
+    if (remaining.length < 2) {
+      slots.push(null);
+      continue;
+    }
+
+    const seed = hashLiveEloSeed(`vaeloria_live_table_v2::b${bucket}::s${slotIdx}`);
+    // Alternate top-division spotlight on even slots and full online roster on odd slots
+    const spotlightCap =
+      slotIdx % 2 === 0 ? Math.min(Math.ceil(remaining.length * 0.45), remaining.length) : remaining.length;
+    const pickPosA = seed % Math.max(1, spotlightCap);
+    const idxA = remaining[pickPosA];
+    usedInBucket.add(idxA);
+
+    const sovA = roster[idxA];
+    const domA = sovA.domains[0] ?? 'red';
+
+    let bestIdxB = -1;
+    let bestScore = Number.POSITIVE_INFINITY;
+    const others = remaining.filter((idx) => idx !== idxA);
+    const step = Math.max(1, Math.floor(others.length / 24));
+
+    for (let p = 0; p < others.length; p += step) {
+      const candIdx = others[(p + (seed >>> 6)) % others.length];
+      const cand = roster[candIdx];
+      const eloGap = Math.abs(cand.eloRating - sovA.eloRating);
+      const sameDomPenalty = (cand.domains[0] ?? 'blue') === domA ? 130 : 0;
+      const jitter = hashLiveEloSeed(`pair_jit::b${bucket}::s${slotIdx}::${cand.sovereignId}`) % 45;
+      const score = eloGap + sameDomPenalty + jitter;
+      if (score < bestScore) {
+        bestScore = score;
+        bestIdxB = candIdx;
+      }
+    }
+
+    if (bestIdxB < 0) {
+      bestIdxB = others[0];
+    }
+    usedInBucket.add(bestIdxB);
+
+    const sovB = roster[bestIdxB];
+    const slotOffset = slotIdx * ROLLING_STAGGER_MS;
+    const matchStartMs = bucket * ROLLING_CYCLE_MS + slotOffset;
+    const matchFinishMs = matchStartMs + ROLLING_MATCH_SPAN_MS;
+
+    const expectedA = 1 / (1 + Math.pow(10, (sovB.eloRating - sovA.eloRating) / 400));
+    const outcomeHash = hashLiveEloSeed(`vaeloria_live_outcome_v2::b${bucket}::s${slotIdx}`);
+    const u = (outcomeHash % 100_000) / 100_000;
+    const canonicalWinner: 'A_WIN' | 'B_WIN' = u < expectedA ? 'A_WIN' : 'B_WIN';
+
+    slots.push({
+      bucket,
+      slotIdx,
+      idxA,
+      idxB: bestIdxB,
+      sovA,
+      sovB,
+      matchStartMs,
+      matchFinishMs,
+      canonicalWinner,
+    });
+  }
+
+  if (rollingBucketCache.size > 96) {
+    const oldestKey = rollingBucketCache.keys().next().value;
+    if (oldestKey !== undefined) rollingBucketCache.delete(oldestKey);
+  }
+  rollingBucketCache.set(bucket, slots);
+  return slots;
+}
+
+/**
+ * Deterministic rolling matchup shared between Live Arena spectator tables
+ * and the continuous Sovereign ELO ledger so every watched match moves real ELO.
+ */
+export function resolveDeterministicRollingMatchup(
+  bucket: number,
+  slotIdx: number
+): DeterministicRollingMatchup | null {
+  if (slotIdx < 0 || slotIdx >= ROLLING_TABLE_COUNT) return null;
+  const bucketStartMs = bucket * ROLLING_CYCLE_MS;
+  if (bucketStartMs <= SOVEREIGN_PRESENCE_V2_CUTOFF_MS) {
+    return computeLegacyRollingMatchupV1(bucket, slotIdx);
+  }
+  const slots = resolveDisjointBucketSlotsV2(bucket);
+  return slots[slotIdx] ?? null;
 }
 
 function getFullyCompletedBucket(nowMs: number): number {

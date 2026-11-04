@@ -14,9 +14,17 @@ import {
 } from '../data/sovereignEloLadder';
 import { CardDefinition, Domain } from '../types/game';
 import {
+  computeSovereignPresenceDirectory,
   getRecentMatchesForSovereign,
+  refreshLiveArenaCloudPool,
   type LiveArenaFeedItem,
+  type SovereignPresenceDirectorySnapshot,
 } from '../utils/liveArenaFeedEngine';
+import {
+  evaluateSovereignChallengeInvite,
+  getActiveRefusalCooldowns,
+  type SovereignRefusalCooldownEntry,
+} from '../utils/sovereignPresenceEngine';
 import {
   fetchUnifiedPlatformLeaderboard,
   SovereignSavedDeck,
@@ -97,9 +105,22 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
   const [snapshot, setSnapshot] = useState<UnifiedLeaderboardSnapshot | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [includeRegionalCommanders, setIncludeRegionalCommanders] = useState<boolean>(true);
+  const [onlyAvailableNow, setOnlyAvailableNow] = useState<boolean>(false);
   const [divisionFilter, setDivisionFilter] = useState<'all' | EloDivisionId>('all');
   const [domainFilter, setDomainFilter] = useState<'all' | Domain>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [presenceDir, setPresenceDir] = useState<SovereignPresenceDirectorySnapshot>(() =>
+    computeSovereignPresenceDirectory()
+  );
+  const [refusalCooldowns, setRefusalCooldowns] = useState<
+    Record<string, SovereignRefusalCooldownEntry>
+  >(() => getActiveRefusalCooldowns());
+  const [invitingSovereignId, setInvitingSovereignId] = useState<string | null>(null);
+  const [refusalNotice, setRefusalNotice] = useState<{
+    sovereignName: string;
+    reason: string;
+    watchItem?: LiveArenaFeedItem;
+  } | null>(null);
   const [dossierSovereign, setDossierSovereign] =
     useState<SovereignAiLeaderboardEntry | null>(null);
   const [dossierHuman, setDossierHuman] = useState<UnifiedLeaderboardEntry | null>(null);
@@ -154,10 +175,13 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
   const loadLeaderboard = useCallback(
     async (silent = false) => {
       if (!silent) setIsLoading(true);
+      void refreshLiveArenaCloudPool();
       const snap = await fetchUnifiedPlatformLeaderboard(currentUser, {
         includeRegionalCommanders,
       });
       setSnapshot(snap);
+      setPresenceDir(computeSovereignPresenceDirectory());
+      setRefusalCooldowns(getActiveRefusalCooldowns());
       setDossierSovereign((prev) => {
         if (!prev) return null;
         const updated = snap.entries.find(
@@ -175,7 +199,14 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
     const timer = window.setInterval(() => {
       void loadLeaderboard(true);
     }, 18_000);
-    return () => window.clearInterval(timer);
+    const presenceTimer = window.setInterval(() => {
+      setPresenceDir(computeSovereignPresenceDirectory());
+      setRefusalCooldowns(getActiveRefusalCooldowns());
+    }, 8_000);
+    return () => {
+      window.clearInterval(timer);
+      window.clearInterval(presenceTimer);
+    };
   }, [loadLeaderboard]);
 
   useEffect(() => {
@@ -242,24 +273,73 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
     [availableDecks, selectedDeckId]
   );
 
-  const handleLaunchChallenge = (entry: SovereignAiLeaderboardEntry) => {
-    if (!isGuest && customDecks.length === 0) {
-      onOpenDeckBuilder();
-      return;
-    }
-    if (!activeDeck) return;
-    onChallengeSovereign(entry, activeDeck.cardIds, activeDeck.id);
-  };
-
   const playerElo = currentUser.eloRating ?? INITIAL_PLAYER_ELO;
   const playerDiv = getEloDivisionMeta(playerElo);
   const playerWins = (currentUser.pvpWins ?? 0) + (currentUser.rankedSovereignWins ?? 0);
   const playerLosses = (currentUser.pvpLosses ?? 0) + (currentUser.rankedSovereignLosses ?? 0);
 
+  const handleLaunchChallenge = (entry: SovereignAiLeaderboardEntry) => {
+    if (!isGuest && customDecks.length === 0) {
+      onOpenDeckBuilder();
+      return;
+    }
+    if (!activeDeck || invitingSovereignId) return;
+
+    const freshDir = computeSovereignPresenceDirectory();
+    setPresenceDir(freshDir);
+    const pres = freshDir.byId[entry.sovereignId];
+
+    if (pres && pres.status !== 'online_idle') {
+      setDossierSovereign(null);
+      setRefusalNotice({
+        sovereignName: entry.sovereignName,
+        reason:
+          pres.status === 'in_match'
+            ? `${pres.detailLabel} neste momento.`
+            : pres.status === 'in_tournament'
+            ? `${pres.detailLabel} e não pode aceitar desafios avulsos.`
+            : 'Acabou de se ausentar do salão.',
+        watchItem: pres.liveWatchItem,
+      });
+      return;
+    }
+
+    setRefusalNotice(null);
+    setInvitingSovereignId(entry.sovereignId);
+
+    window.setTimeout(() => {
+      const evalRes = evaluateSovereignChallengeInvite({
+        sovereign: entry,
+        playerElo,
+        recentOpponentIds: currentUser.recentRankedOpponentIds ?? [],
+        justFinishedMatchAgoMs: pres?.justFinishedMatchAgoMs ?? null,
+      });
+      setInvitingSovereignId(null);
+      setRefusalCooldowns(getActiveRefusalCooldowns());
+
+      if (!evalRes.accepted) {
+        setDossierSovereign(null);
+        setRefusalNotice({
+          sovereignName: entry.sovereignName,
+          reason: evalRes.reason,
+        });
+        return;
+      }
+
+      setDossierSovereign(null);
+      onChallengeSovereign(entry, activeDeck.cardIds, activeDeck.id);
+    }, 1300);
+  };
+
   const filteredEntries = useMemo(() => {
     if (!snapshot) return [];
     const q = searchQuery.trim().toLowerCase();
     return snapshot.entries.filter((e) => {
+      if (onlyAvailableNow && e.sovereignEntry && !e.isCurrentUser) {
+        const st = presenceDir.byId[e.sovereignEntry.sovereignId]?.status;
+        const onCd = Boolean(refusalCooldowns[e.sovereignEntry.sovereignId]);
+        if (st !== 'online_idle' || onCd) return false;
+      }
       if (divisionFilter !== 'all' && getEloDivisionMeta(e.eloRating).id !== divisionFilter) {
         return false;
       }
@@ -270,11 +350,19 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
       }
       return true;
     });
-  }, [snapshot, divisionFilter, domainFilter, searchQuery]);
+  }, [
+    snapshot,
+    onlyAvailableNow,
+    presenceDir,
+    refusalCooldowns,
+    divisionFilter,
+    domainFilter,
+    searchQuery,
+  ]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [divisionFilter, domainFilter, searchQuery, includeRegionalCommanders]);
+  }, [divisionFilter, domainFilter, searchQuery, includeRegionalCommanders, onlyAvailableNow]);
 
   const totalPages = Math.max(1, Math.ceil(filteredEntries.length / PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
@@ -307,44 +395,91 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
     return map;
   }, []);
 
-  const renderPortrait = (avatarCardId: string, size = 36, highlight = false) => {
+  const renderPortrait = (
+    avatarCardId: string,
+    size = 36,
+    highlight = false,
+    statusDot?: { color: string; title: string }
+  ) => {
     const card = CARDS_BY_ID[avatarCardId];
     return (
-      <button
-        type="button"
-        onClick={(ev) => {
-          ev.stopPropagation();
-          if (card) onInspectCard(card);
-        }}
-        title={card ? `Inspecionar carta: ${card.name}` : undefined}
-        style={{
-          width: `${size}px`,
-          height: `${size}px`,
-          borderRadius: '50%',
-          overflow: 'hidden',
-          border: highlight
-            ? '1.5px solid rgba(234, 179, 8, 0.7)'
-            : '1px solid rgba(148, 163, 184, 0.28)',
-          background: '#0f172a',
-          padding: 0,
-          cursor: card ? 'pointer' : 'default',
-          flexShrink: 0,
-        }}
-      >
-        {card?.imagePath ? (
-          <img
-            src={card.imagePath}
-            alt={card.name}
-            loading="lazy"
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+      <div style={{ position: 'relative', width: `${size}px`, height: `${size}px`, flexShrink: 0 }}>
+        <button
+          type="button"
+          onClick={(ev) => {
+            ev.stopPropagation();
+            if (card) onInspectCard(card);
+          }}
+          title={card ? `Inspecionar carta: ${card.name}` : undefined}
+          style={{
+            width: `${size}px`,
+            height: `${size}px`,
+            borderRadius: '50%',
+            overflow: 'hidden',
+            border: highlight
+              ? '1.5px solid rgba(234, 179, 8, 0.7)'
+              : '1px solid rgba(148, 163, 184, 0.28)',
+            background: '#0f172a',
+            padding: 0,
+            cursor: card ? 'pointer' : 'default',
+            display: 'block',
+          }}
+        >
+          {card?.imagePath ? (
+            <img
+              src={card.imagePath}
+              alt={card.name}
+              loading="lazy"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          ) : null}
+        </button>
+        {statusDot && (
+          <span
+            title={statusDot.title}
+            style={{
+              position: 'absolute',
+              right: '-1px',
+              bottom: '-1px',
+              width: size >= 48 ? '10px' : '8px',
+              height: size >= 48 ? '10px' : '8px',
+              borderRadius: '50%',
+              background: statusDot.color,
+              border: '1.5px solid #0b0f19',
+              pointerEvents: 'none',
+            }}
           />
-        ) : null}
-      </button>
+        )}
+      </div>
     );
   };
 
-  const nextRival = snapshot?.nextSovereignTarget?.sovereignEntry ?? null;
-  const nextRivalRank = snapshot?.nextSovereignTarget?.globalRank ?? null;
+  const nextAvailableRivalRow = useMemo<UnifiedLeaderboardEntry | null>(() => {
+    if (!snapshot) return null;
+    for (let i = snapshot.entries.length - 1; i >= 0; i -= 1) {
+      const entryItem: UnifiedLeaderboardEntry = snapshot.entries[i];
+      const sid = entryItem.sovereignEntry?.sovereignId;
+      if (
+        sid &&
+        entryItem.eloRating > playerElo &&
+        presenceDir.byId[sid]?.status === 'online_idle' &&
+        !refusalCooldowns[sid]
+      ) {
+        return entryItem;
+      }
+    }
+    return (
+      snapshot.entries.find((entryItem: UnifiedLeaderboardEntry) => {
+        const sid = entryItem.sovereignEntry?.sovereignId;
+        return Boolean(
+          sid && presenceDir.byId[sid]?.status === 'online_idle' && !refusalCooldowns[sid]
+        );
+      }) ?? null
+    );
+  }, [snapshot, playerElo, presenceDir, refusalCooldowns]);
+
+  const nextRival = nextAvailableRivalRow?.sovereignEntry ?? null;
+  const nextRivalRank = nextAvailableRivalRow?.globalRank ?? null;
 
   return (
     <div
@@ -566,15 +701,87 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
             <button
               type="button"
               className="aaa-btn aaa-btn-primary"
+              disabled={Boolean(invitingSovereignId)}
               style={{ padding: '6px 12px', fontSize: '0.76rem', whiteSpace: 'nowrap' }}
               onClick={() => handleLaunchChallenge(nextRival)}
-              title={`Desafiar o próximo colocado acima do seu ELO: ${nextRival.sovereignName} (${nextRival.eloRating} ELO)`}
+              title={`Desafiar o próximo Soberano disponível acima do seu ELO: ${nextRival.sovereignName} (${nextRival.eloRating} ELO)`}
             >
-              Desafiar #{nextRivalRank} ({nextRival.eloRating})
+              {invitingSovereignId === nextRival.sovereignId
+                ? 'Convidando...'
+                : `Desafiar #${nextRivalRank} (${nextRival.eloRating})`}
             </button>
           )}
         </div>
       </section>
+
+      {refusalNotice && (
+        <div
+          role="status"
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.65rem',
+            padding: '0.6rem 0.9rem',
+            marginBottom: '0.85rem',
+            borderRadius: '8px',
+            background: 'rgba(15, 23, 42, 0.72)',
+            border: '1px solid rgba(245, 158, 11, 0.28)',
+            fontSize: '0.77rem',
+            color: '#e2e8f0',
+          }}
+        >
+          <div>
+            <strong style={{ color: '#fde68a' }}>{refusalNotice.sovereignName}:</strong>{' '}
+            <span style={{ color: '#cbd5e1' }}>{refusalNotice.reason}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+            {refusalNotice.watchItem && onWatchSovereignMatch ? (
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-secondary"
+                style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+                onClick={() => {
+                  const target = refusalNotice.watchItem!;
+                  setRefusalNotice(null);
+                  onWatchSovereignMatch(target);
+                }}
+              >
+                Assistir mesa
+              </button>
+            ) : nextRival ? (
+              <button
+                type="button"
+                className="aaa-btn aaa-btn-secondary"
+                disabled={Boolean(invitingSovereignId)}
+                style={{ padding: '4px 10px', fontSize: '0.72rem' }}
+                onClick={() => {
+                  setRefusalNotice(null);
+                  handleLaunchChallenge(nextRival);
+                }}
+              >
+                Desafiar #{nextRivalRank} ({nextRival.eloRating})
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setRefusalNotice(null)}
+              aria-label="Fechar aviso"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                padding: '2px 6px',
+                fontSize: '0.78rem',
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 3. SINGLE-ROW MINIMALIST FILTER BAR */}
       <div
@@ -595,7 +802,12 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
           }}
         >
           Classificação Oficial ·{' '}
-          <strong style={{ color: '#e2e8f0' }}>{filteredEntries.length}</strong> Soberanos
+          <strong style={{ color: '#e2e8f0' }}>{filteredEntries.length}</strong> listados ·{' '}
+          <span style={{ color: '#6ee7b7' }}>{presenceDir.onlineIdleCount} disponíveis</span>
+          {presenceDir.inMatchCount > 0 ? ` · ${presenceDir.inMatchCount} em duelo` : ''}
+          {presenceDir.inTournamentCount > 0
+            ? ` · ${presenceDir.inTournamentCount} em torneio`
+            : ''}
         </div>
 
         <div className="glb-filter-bar" style={{ display: 'flex', gap: '0.45rem', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -659,6 +871,28 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
               </option>
             ))}
           </select>
+
+          <button
+            type="button"
+            className="glb-filter-btn"
+            onClick={() => setOnlyAvailableNow((v) => !v)}
+            style={{
+              padding: '6px 10px',
+              borderRadius: '7px',
+              background: onlyAvailableNow
+                ? 'rgba(16, 185, 129, 0.14)'
+                : 'rgba(15, 23, 42, 0.65)',
+              border: onlyAvailableNow
+                ? '1px solid rgba(16, 185, 129, 0.42)'
+                : '1px solid rgba(148, 163, 184, 0.18)',
+              color: onlyAvailableNow ? '#6ee7b7' : '#94a3b8',
+              fontSize: '0.75rem',
+              cursor: 'pointer',
+            }}
+            title="Mostrar apenas Soberanos online e livres para desafio neste momento"
+          >
+            Apenas disponíveis
+          </button>
 
           <button
             type="button"
@@ -755,7 +989,30 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
               const div = getEloDivisionMeta(row.eloRating);
               const isMe = Boolean(row.isCurrentUser);
               const sov = row.sovereignEntry ?? null;
-              const cleanSubtitle = sov ? sov.archetypeName : row.subtitle;
+              const sovPresence = sov ? presenceDir.byId[sov.sovereignId] : undefined;
+              const sovRefusalCd = sov ? refusalCooldowns[sov.sovereignId] : undefined;
+              const isInvitingThis = Boolean(sov && invitingSovereignId === sov.sovereignId);
+
+              const cleanSubtitle = sov
+                ? sovPresence?.status === 'in_match'
+                  ? sovPresence.detailLabel
+                  : sov.archetypeName
+                : row.subtitle;
+
+              const statusDot = sov
+                ? sovPresence?.status === 'online_idle' && !sovRefusalCd
+                  ? { color: '#10b981', title: 'Disponível para duelo' }
+                  : sovPresence?.status === 'in_match' ||
+                    sovPresence?.status === 'in_tournament' ||
+                    sovRefusalCd
+                  ? {
+                      color: '#f59e0b',
+                      title: sovRefusalCd ? sovRefusalCd.reason : sovPresence?.detailLabel ?? '',
+                    }
+                  : { color: '#475569', title: 'Ausente no momento' }
+                : isMe
+                ? { color: '#10b981', title: 'Conectado' }
+                : undefined;
 
               const rankColor =
                 row.globalRank === 1
@@ -813,7 +1070,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
 
                   {/* Identity */}
                   <div className="glb-identity-col" style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: 0 }}>
-                    {renderPortrait(row.avatarCardId, 36, isMe)}
+                    {renderPortrait(row.avatarCardId, 36, isMe, statusDot)}
                     <div style={{ minWidth: 0 }}>
                       <div
                         style={{
@@ -854,7 +1111,7 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                       <div
                         style={{
                           fontSize: '0.75rem',
-                          color: '#64748b',
+                          color: sovPresence?.status === 'in_match' ? '#fcd34d' : '#64748b',
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -976,18 +1233,73 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                     {/* Single Action */}
                     <div
                       className="glb-action-col"
-                      style={{ width: '88px', display: 'flex', justifyContent: 'flex-end' }}
+                      style={{ width: '96px', display: 'flex', justifyContent: 'flex-end' }}
                       onClick={(ev) => ev.stopPropagation()}
                     >
                       {sov ? (
-                        <button
-                          type="button"
-                          className="aaa-btn aaa-btn-secondary"
-                          style={{ padding: '5px 11px', fontSize: '0.73rem' }}
-                          onClick={() => handleLaunchChallenge(sov)}
-                        >
-                          Desafiar
-                        </button>
+                        isInvitingThis ? (
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-secondary"
+                            disabled
+                            style={{ padding: '5px 9px', fontSize: '0.71rem', opacity: 0.8 }}
+                          >
+                            Convidando...
+                          </button>
+                        ) : sovPresence?.status === 'in_match' &&
+                          sovPresence.liveWatchItem &&
+                          onWatchSovereignMatch ? (
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-secondary"
+                            style={{
+                              padding: '5px 11px',
+                              fontSize: '0.73rem',
+                              borderColor: 'rgba(245, 158, 11, 0.35)',
+                              color: '#fde68a',
+                            }}
+                            title={sovPresence.detailLabel}
+                            onClick={() => onWatchSovereignMatch(sovPresence.liveWatchItem!)}
+                          >
+                            Assistir
+                          </button>
+                        ) : sovRefusalCd ? (
+                          <span
+                            title={sovRefusalCd.reason}
+                            style={{
+                              fontSize: '0.71rem',
+                              color: '#94a3b8',
+                              fontVariantNumeric: 'tabular-nums',
+                              padding: '5px 4px',
+                            }}
+                          >
+                            Recusou (
+                            {Math.max(1, Math.ceil((sovRefusalCd.untilMs - Date.now()) / 60_000))}
+                            m)
+                          </span>
+                        ) : sovPresence?.status === 'online_idle' ? (
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-secondary"
+                            disabled={Boolean(invitingSovereignId)}
+                            style={{ padding: '5px 11px', fontSize: '0.73rem' }}
+                            onClick={() => handleLaunchChallenge(sov)}
+                          >
+                            Desafiar
+                          </button>
+                        ) : (
+                          <span
+                            title={sovPresence?.detailLabel}
+                            style={{
+                              fontSize: '0.71rem',
+                              color:
+                                sovPresence?.status === 'in_tournament' ? '#cbd5e1' : '#64748b',
+                              padding: '5px 4px',
+                            }}
+                          >
+                            {sovPresence?.status === 'in_tournament' ? 'Em torneio' : 'Ausente'}
+                          </span>
+                        )
                       ) : isMe ? (
                         <button
                           type="button"
@@ -1637,27 +1949,107 @@ export const GlobalLeaderboardView: React.FC<GlobalLeaderboardViewProps> = ({
                     );
                   })()}
 
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                    <button
-                      type="button"
-                      className="aaa-btn aaa-btn-secondary"
-                      style={{ padding: '7px 14px', fontSize: '0.78rem' }}
-                      onClick={() => setDossierSovereign(null)}
-                    >
-                      Fechar
-                    </button>
-                    <button
-                      type="button"
-                      className="aaa-btn aaa-btn-primary"
-                      style={{ padding: '7px 16px', fontSize: '0.78rem' }}
-                      onClick={() => {
-                        const target = s;
-                        setDossierSovereign(null);
-                        handleLaunchChallenge(target);
-                      }}
-                    >
-                      Desafiar ({s.eloRating} ELO)
-                    </button>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <span style={{ fontSize: '0.74rem', color: '#94a3b8' }}>
+                      {(() => {
+                        const p = presenceDir.byId[s.sovereignId];
+                        const cd = refusalCooldowns[s.sovereignId];
+                        if (cd) return cd.reason;
+                        return p?.detailLabel ?? 'Disponível para duelo';
+                      })()}
+                    </span>
+
+                    <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto' }}>
+                      <button
+                        type="button"
+                        className="aaa-btn aaa-btn-secondary"
+                        style={{ padding: '7px 14px', fontSize: '0.78rem' }}
+                        onClick={() => setDossierSovereign(null)}
+                      >
+                        Fechar
+                      </button>
+                      {(() => {
+                        const p = presenceDir.byId[s.sovereignId];
+                        const cd = refusalCooldowns[s.sovereignId];
+                        const isInvitingModal = invitingSovereignId === s.sovereignId;
+
+                        if (isInvitingModal) {
+                          return (
+                            <button
+                              type="button"
+                              className="aaa-btn aaa-btn-primary"
+                              disabled
+                              style={{ padding: '7px 16px', fontSize: '0.78rem', opacity: 0.8 }}
+                            >
+                              Convidando...
+                            </button>
+                          );
+                        }
+                        if (p?.status === 'in_match' && p.liveWatchItem && onWatchSovereignMatch) {
+                          return (
+                            <button
+                              type="button"
+                              className="aaa-btn aaa-btn-primary"
+                              style={{ padding: '7px 16px', fontSize: '0.78rem' }}
+                              onClick={() => {
+                                const targetMatch = p.liveWatchItem!;
+                                setDossierSovereign(null);
+                                onWatchSovereignMatch(targetMatch);
+                              }}
+                            >
+                              Assistir partida ao vivo
+                            </button>
+                          );
+                        }
+                        if (cd) {
+                          const mins = Math.max(
+                            1,
+                            Math.ceil((cd.untilMs - Date.now()) / 60_000)
+                          );
+                          return (
+                            <button
+                              type="button"
+                              className="aaa-btn aaa-btn-secondary"
+                              disabled
+                              style={{ padding: '7px 16px', fontSize: '0.76rem', opacity: 0.6 }}
+                            >
+                              Recusou · aguarde {mins} min
+                            </button>
+                          );
+                        }
+                        if (p && p.status !== 'online_idle') {
+                          return (
+                            <button
+                              type="button"
+                              className="aaa-btn aaa-btn-secondary"
+                              disabled
+                              style={{ padding: '7px 16px', fontSize: '0.76rem', opacity: 0.6 }}
+                            >
+                              {p.status === 'in_tournament' ? 'Em torneio oficial' : 'Ausente agora'}
+                            </button>
+                          );
+                        }
+                        return (
+                          <button
+                            type="button"
+                            className="aaa-btn aaa-btn-primary"
+                            disabled={Boolean(invitingSovereignId)}
+                            style={{ padding: '7px 16px', fontSize: '0.78rem' }}
+                            onClick={() => handleLaunchChallenge(s)}
+                          >
+                            Desafiar ({s.eloRating} ELO)
+                          </button>
+                        );
+                      })()}
+                    </div>
                   </div>
                 </>
               );

@@ -2433,17 +2433,17 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
           <div
             style={{
               background: 'rgba(15, 23, 42, 0.88)',
-              border: '1px solid rgba(192, 132, 252, 0.35)',
+              border: '1px solid rgba(148, 163, 184, 0.2)',
               borderRadius: '16px',
               padding: '1.15rem 1.35rem',
             }}
           >
             <div style={{ marginBottom: '0.85rem' }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: 900, color: '#c084fc', textTransform: 'uppercase' }}>
-                🎬 ROTEIROS VIRAIS & LEGENDAS PRONTAS (TIKTOK & INSTAGRAM REELS — 15 A 25 SEGUNDOS)
+              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#e2e8f0' }}>
+                Roteiros & Legendas Prontas para TikTok e Reels (12s a 20s)
               </div>
-              <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.15rem' }}>
-                Grave a tela vertical (9:16) usando estes 3 formatos de alta retenção e copie a legenda com hashtags em 1 clique:
+              <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                1ª linha curta (&lt;60 caracteres antes do &quot;... mais&quot;), pergunta final para gerar loop de comentários e 5 hashtags de nicho:
               </div>
             </div>
 
@@ -2456,38 +2456,99 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             >
               {[
                 {
-                  tag: '🔥 FORMATO #1 • TOPO DE FUNIL VIRAL (COMENTÁRIOS)',
-                  title: 'Desafio de Xeque-Mate Tático em 1 Turno',
-                  hook: '0–3s (Gancho): "95% dos jogadores erram essa jogada. Você consegue achar o letal em 1 turno com apenas 5 de Mana?"',
-                  scene: '3–15s (Tela): Abra o Problema #01 ou #05 na aba Problemas, mostre a mão e o campo adversário sem jogar a última carta.',
-                  cta: '15–20s (CTA): "Pausa o vídeo e comenta qual carta você jogaria primeiro! Ou teste ao vivo sem baixar nada no link da Bio."',
-                  caption:
-                    '95% erram essa sequência tática! ♟️🔥 Você consegue achar o Xeque-Mate em 1 turno com apenas 5 de Mana? Comente sua jogada abaixo ou resolva os 100 Problemas Táticos direto no navegador (link na bio: chromaticpact.com)! #cardgame #tcg #jogosdecartas #estrategia #xadrez #rpgbrasil #chromaticpact #indiegamebrasil',
+                  tag: 'Formato #1 · Comentários & Replay',
+                  title: 'Desafio de Problema Tático (Letal em 1 Turno)',
+                  hook: '0–3s: "Você acha a vitória em 1 turno aqui? Pausa a tela."',
+                  scene: '3–14s: Abra um desafio da aba Problemas, mostre a Essência disponível, Vanguarda/Retaguarda e a mão, cortando antes da última carta.',
+                  cta: '14–18s: "Comenta qual carta jogaria primeiro — ou teste a sequência direto no link da bio."',
+                  caption: `Você acha a vitória em 1 turno aqui? Pausa a tela.
+
+Olhe a Essência disponível, as linhas de Vanguarda e Retaguarda e a mão. Qual carta você jogaria primeiro para fechar o letal?
+
+Comenta a sua sequência abaixo — ou teste a jogada direto no navegador pelo link da bio (chromaticpact.com).
+
+#cardgamebrasil #tcgbrasil #jogosdeestrategia #xadrez #rpgbrasil`,
                 },
                 {
-                  tag: '⚡ FORMATO #2 • MECÂNICA ÚNICA (RETENÇÃO VISUAL)',
-                  title: 'Confronto de Expansão de Domínio 50/50',
-                  hook: '0–3s (Gancho): "Esqueça jogos de cartas lentos: aqui o seu Domínio Elemental toma o território físico da arena!"',
-                  scene: '3–15s (Tela): Grave o momento em que Ignis (Forja Rubra) e Glacius (Abismo Glacial) ativam seus Domínios dividindo o tabuleiro 50/50.',
-                  cta: '15–20s (CTA): "Qual dos 5 Domínios Soberanos você escolheria? Jogue de graça em 1 clique no celular ou PC pelo link da Bio!"',
-                  caption:
-                    'Quando dois Domínios Soberanos colidem na arena, o tabuleiro se divide ao meio! 🔥❄️ Qual facção você domina em Vaeloria: Forja Rubra, Abismo Glacial, Selva Titânica, Eclipse Cinzento ou Sol Soberano? Jogue grátis direto no navegador (link na bio)! #tcgbrasil #cardgamebrasil #estrategia #fantasiamedieval #rpgdemesa #jogosonline #chromaticpact',
+                  tag: 'Formato #2 · Impacto Visual (Modo Cinema)',
+                  title: 'Colisão de Expansão de Domínio na Mesa',
+                  hook: '0–3s: "Quando dois Domínios colidem, o próprio tabuleiro se divide."',
+                  scene: '3–15s: Grave no Modo Cinema (tecla F na Arena) o momento em que dois Domínios dividem o campo de batalha ao meio.',
+                  cta: '15–19s: "Qual Domínio você comandaria? Jogue grátis sem instalar nada no link da bio."',
+                  caption: `Quando dois Domínios colidem, o próprio tabuleiro se divide.
+
+Em Pacto Cromático, conquistar o campo altera as regras da arena inteira. Posicionamento em 6 colunas, reações ocultas e grimórios de 100 cartas.
+
+Jogue grátis no celular ou PC sem instalar nada — link na bio. Qual Domínio você comandaria?
+
+#cardgame #fantasiamedieval #jogosdecartas #indiegamebrasil #estrategia`,
                 },
                 {
-                  tag: '👑 FORMATO #3 • CONVERSÃO DE CONTA & RECOMPENSA',
-                  title: '+160 Ouro de Boas-Vindas & +500 Cartas no Navegador',
-                  hook: '0–3s (Gancho): "Quer jogar um TCG completo com mais de 500 cartas sem instalar 10 GB no celular ou PC?"',
-                  scene: '3–15s (Tela): Mostre a abertura de um Pacote Místico no Mercado revelando uma carta Mítica e os 5 Grimórios Soberanos prontos.',
-                  cta: '15–20s (CTA): "Crie sua conta gratuita agora e receba +160 de Ouro + 5 Decks completos para duelar contra os Soberanos ou 1×1!"',
-                  caption:
-                    'Mais de 500 cartas originais, 7 Chefes de Campanha, 100 Problemas Táticos e Duelos 1×1 direto no navegador — sem precisar baixar nada! 👑🐉 Crie sua conta Soberana grátis e comece com +160 de Ouro no link da bio (chromaticpact.com)! #jogosgratis #browsergames #cardgames #dndbrasil #fantasia #gamerbrasil #chromaticpact',
+                  tag: 'Formato #3 · Cliques na Bio (Zero Atrito)',
+                  title: 'Entrada Instantânea no Celular ou PC (Turno 1 com 3 de Essência)',
+                  hook: '0–3s: "Um card game tático completo direto no navegador (sem baixar 10 GB)."',
+                  scene: '3–15s: Mostre tocar em "Jogar agora" no celular e já abrir no Turno 1 com a mão visível e 3 de Essência.',
+                  cta: '15–19s: "Teste uma partida em 1 clique pelo link da bio: chromaticpact.com."',
+                  caption: `Um card game tático completo direto no navegador (sem baixar 10 GB).
+
+Turno 1 já na mesa com 3 de Essência, mais de 1.000 cartas originais, Campanha nos 5 Reinos de Vaeloria e duelos contra Soberanos ou 1x1.
+
+Teste uma partida agora em 1 clique pelo link da bio: chromaticpact.com
+
+#jogosgratis #jogosonline #browsergames #gamerbrasil #tcg`,
+                },
+                {
+                  tag: 'Formato #4 · Público de TCG & Tabuleiro',
+                  title: 'Xadrez com Cartas: Vanguarda, Retaguarda & Essência',
+                  hook: '0–3s: "Não basta ter a carta forte — importa onde você posiciona."',
+                  scene: '3–15s: Mostre uma unidade de Vanguarda protegendo um atirador na Retaguarda e canalizando uma carta da mão para ganhar Essência e Afinidade.',
+                  cta: '15–19s: "Prefere grimório agressivo ou controle? Link para jogar na bio."',
+                  caption: `Não basta ter a carta forte — importa onde você posiciona.
+
+Vanguarda absorve o impacto, Retaguarda dispara à distância e qualquer carta da mão pode ser canalizada para gerar Essência e Afinidade. Zero sorte vazia, pura leitura de mesa.
+
+Você prefere grimório agressivo ou controle? Link para jogar na bio.
+
+#magicbrasil #jogosdetabuleiro #estrategia #rpgdemesa #cardgamebrasil`,
+                },
+                {
+                  tag: 'Formato #5 · Engajamento de Comunidade',
+                  title: 'Escolha de Facção: Os 5 Reinos de Vaeloria',
+                  hook: '0–3s: "5 Reinos em guerra por Vaeloria. Qual seria o seu juramento?"',
+                  scene: '3–15s: Passe pelas artes lendárias de Pyros, Vórtex, Veridia, Eclipse e Solária e abra um pacote no Relicário.',
+                  cta: '15–20s: "Crie sua conta gratuita com 160 de Ouro (5 pacotes) e comenta o seu Domínio."',
+                  caption: `5 Reinos em guerra por Vaeloria. Qual seria o seu juramento?
+
+- Pyros (Chama & Fúria Dracônica)
+- Vórtex (Gelo & Cronomancia)
+- Veridia (Selva Ancestral)
+- Eclipse (Abismo Astral & Sacrifício Vital)
+- Solária (Ordem & Alvorada Dourada)
+
+Crie sua conta gratuita e comece com 160 de Ouro (5 pacotes no Relicário) pelo link da bio. Comenta o seu Domínio!
+
+#fantasia #lore #worldbuilding #rpgbrasil #jogosdecartas`,
+                },
+                {
+                  tag: 'Formato #6 · Competitivo & Retenção',
+                  title: 'Torneio Suíço Diário às 19h & Ranking ELO',
+                  hook: '0–3s: "Torneio Suíço todo dia às 19h direto no navegador."',
+                  scene: '3–15s: Mostre a tabela de Ranking desafiando ou assistindo a um Soberano ao vivo e a tela de inscrição do Torneio das 19h.',
+                  cta: '15–19s: "Inscrição gratuita no link da bio. Qual seu ELO atual?"',
+                  caption: `Torneio Suíço todo dia às 19h direto no navegador.
+
+Suba no Ranking ELO desafiando os Soberanos de Vaeloria, assista às partidas da arena ao vivo e prepare seu grimório de 100 cartas para a disputa das 19h.
+
+Inscrição gratuita no link da bio (chromaticpact.com). Qual seu ELO atual?
+
+#esportsbrasil #competitivo #tcgbrasil #cardgame #jogosdeestrategia`,
                 },
               ].map((script) => (
                 <div
                   key={script.title}
                   style={{
-                    background: 'rgba(2, 6, 23, 0.76)',
-                    border: '1px solid rgba(192, 132, 252, 0.28)',
+                    background: 'rgba(11, 15, 25, 0.78)',
+                    border: '1px solid rgba(148, 163, 184, 0.14)',
                     borderRadius: '12px',
                     padding: '0.85rem 0.95rem',
                     display: 'flex',
@@ -2497,21 +2558,42 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                   }}
                 >
                   <div>
-                    <div style={{ fontSize: '0.63rem', fontWeight: 900, color: '#e879f9', letterSpacing: '0.05em' }}>
+                    <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#d4af37' }}>
                       {script.tag}
                     </div>
-                    <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#f8fafc', margin: '0.2rem 0 0.45rem' }}>
+                    <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#f8fafc', margin: '0.18rem 0 0.45rem' }}>
                       {script.title}
                     </div>
-                    <div style={{ fontSize: '0.74rem', color: '#fde68a', marginBottom: '0.28rem', lineHeight: 1.4 }}>
-                      🎤 {script.hook}
+                    <div style={{ fontSize: '0.73rem', color: '#e2e8f0', marginBottom: '0.26rem', lineHeight: 1.4 }}>
+                      <strong>Gancho:</strong> {script.hook}
                     </div>
-                    <div style={{ fontSize: '0.73rem', color: '#cbd5e1', marginBottom: '0.28rem', lineHeight: 1.4 }}>
-                      🎥 {script.scene}
+                    <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginBottom: '0.26rem', lineHeight: 1.4 }}>
+                      <strong>Cena:</strong> {script.scene}
                     </div>
-                    <div style={{ fontSize: '0.73rem', color: '#6ee7b7', lineHeight: 1.4 }}>
-                      🚀 {script.cta}
+                    <div style={{ fontSize: '0.72rem', color: '#cbd5e1', lineHeight: 1.4 }}>
+                      <strong>Chamada:</strong> {script.cta}
                     </div>
+                    <details style={{ marginTop: '0.45rem' }}>
+                      <summary style={{ fontSize: '0.7rem', color: '#94a3b8', cursor: 'pointer' }}>
+                        Ver legenda completa
+                      </summary>
+                      <pre
+                        style={{
+                          margin: '0.35rem 0 0',
+                          padding: '0.5rem',
+                          borderRadius: '8px',
+                          background: 'rgba(2, 6, 23, 0.85)',
+                          border: '1px solid rgba(148, 163, 184, 0.14)',
+                          color: '#cbd5e1',
+                          fontSize: '0.68rem',
+                          lineHeight: 1.4,
+                          whiteSpace: 'pre-wrap',
+                          fontFamily: 'inherit',
+                        }}
+                      >
+                        {script.caption}
+                      </pre>
+                    </details>
                   </div>
 
                   <button
@@ -2520,21 +2602,21 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                     style={{
                       width: '100%',
                       justifyContent: 'center',
-                      borderColor: 'rgba(192, 132, 252, 0.55)',
-                      color: '#f3e8ff',
+                      borderColor: 'rgba(212, 175, 55, 0.45)',
+                      color: '#fef3c7',
                       padding: '0.4rem 0.6rem',
                       fontSize: '0.73rem',
                     }}
                     onClick={() => {
                       navigator.clipboard?.writeText(script.caption);
                       onNotify({
-                        kicker: 'LEGENDA + HASHTAGS COPIADAS',
+                        kicker: 'Legenda copiada',
                         title: script.title,
-                        message: 'Cole diretamente na descrição do seu TikTok ou Instagram Reels.',
+                        message: 'Legenda com quebras de linha e hashtags pronta para colar no TikTok ou Reels.',
                       });
                     }}
                   >
-                    📋 Copiar Legenda Pronta + Hashtags
+                    Copiar legenda pronta
                   </button>
                 </div>
               ))}

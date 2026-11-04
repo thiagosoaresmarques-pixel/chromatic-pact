@@ -463,6 +463,413 @@ function loadSavedBattleSnapshot(
   }
 }
 
+type ClashSurgeMode =
+  | 'top_overwhelm'
+  | 'bottom_overwhelm'
+  | 'diagonal_lr'
+  | 'diagonal_rl'
+  | 'chaotic_sawtooth';
+
+interface ClashRealityBreach {
+  slot: number;
+  side: 'top' | 'bottom';
+  phase: 'hidden' | 'erupt' | 'writhe' | 'collapse';
+  cx: number;
+  cy: number;
+  pts: Array<[number, number]>;
+}
+
+const CLASH_X_STOPS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+
+function clampPct(v: number, min = 0, max = 100): number {
+  return Math.max(min, Math.min(max, Number(v.toFixed(2))));
+}
+
+function generateChaoticFrontierYs(mode: ClashSurgeMode): number[] {
+  const jitter = (amp: number) => (Math.random() * 2 - 1) * amp;
+  return CLASH_X_STOPS.map((x, idx) => {
+    const t = x / 100;
+    const tooth = (idx % 2 === 0 ? 1 : -1) * (6 + Math.random() * 11);
+    let base = 50;
+    switch (mode) {
+      case 'top_overwhelm':
+        // Top Domain violently surges deep into Bottom's half (60%..84%)
+        base = 64 + Math.sin(t * Math.PI) * 14 + jitter(9) + tooth * 0.65;
+        break;
+      case 'bottom_overwhelm':
+        // Bottom Domain erupts upward, pushing Top back to 16%..38%
+        base = 35 - Math.sin(t * Math.PI) * 15 + jitter(9) + tooth * 0.65;
+        break;
+      case 'diagonal_lr':
+        // Left flank swallowed by Top (~78%), Right flank ripped upward by Bottom (~22%)
+        base = 77 - t * 55 + jitter(9) + tooth * 0.7;
+        break;
+      case 'diagonal_rl':
+        // Left flank ripped upward by Bottom (~22%), Right flank swallowed by Top (~78%)
+        base = 23 + t * 55 + jitter(9) + tooth * 0.7;
+        break;
+      case 'chaotic_sawtooth':
+        // Wild interlocking shards colliding across the board
+        base = 50 + (idx % 2 === 0 ? 21 : -21) + jitter(10);
+        break;
+    }
+    return clampPct(base, 11, 89);
+  });
+}
+
+function buildTopDomainClipPolygon(ys: number[]): string {
+  const rev = CLASH_X_STOPS.map((x, i) => `${x}% ${ys[i]}%`)
+    .reverse()
+    .join(', ');
+  return `polygon(0% 0%, 100% 0%, ${rev})`;
+}
+
+function buildFrontierBandClipPolygon(ys: number[], halfBandPct: number): string {
+  const upper = CLASH_X_STOPS.map((x, i) => `${x}% ${clampPct(ys[i] - halfBandPct)}%`).join(', ');
+  const lower = CLASH_X_STOPS.map((x, i) => `${x}% ${clampPct(ys[i] + halfBandPct)}%`)
+    .reverse()
+    .join(', ');
+  return `polygon(${upper}, ${lower})`;
+}
+
+function createBreachVertices(
+  cx: number,
+  cy: number,
+  rx: number,
+  ry: number,
+  scale = 1
+): Array<[number, number]> {
+  const baseAngles = [-2.75, -1.95, -1.1, -0.25, 0.45, 1.25, 2.05, 2.72];
+  return baseAngles.map((ang, i) => {
+    const spike = (i % 2 === 0 ? 1.18 : 0.68) * (0.85 + Math.random() * 0.34) * scale;
+    const a = ang + (Math.random() * 2 - 1) * 0.16;
+    const px = clampPct(cx + Math.cos(a) * rx * spike, 1, 99);
+    const py = clampPct(cy + Math.sin(a) * ry * spike, 2, 98);
+    return [px, py];
+  });
+}
+
+function formatBreachClip(
+  cx: number,
+  cy: number,
+  pts: Array<[number, number]>,
+  rimExpand = 1
+): string {
+  const str = pts
+    .map(([px, py]) => {
+      const ex = clampPct(cx + (px - cx) * rimExpand, 0, 100);
+      const ey = clampPct(cy + (py - cy) * rimExpand, 0, 100);
+      return `${ex}% ${ey}%`;
+    })
+    .join(', ');
+  return `polygon(${str})`;
+}
+
+function spawnHiddenBreach(slot: number, side: 'top' | 'bottom'): ClashRealityBreach {
+  // 'top' domain tears open inside bottom/mid territory; 'bottom' domain tears open inside top/mid territory
+  const cx = 14 + Math.random() * 72;
+  const cy =
+    side === 'top'
+      ? 48 + Math.random() * 38 // y = 48%..86%
+      : 14 + Math.random() * 38; // y = 14%..52%
+  const rx = 14 + Math.random() * 11;
+  const ry = 10 + Math.random() * 9;
+  return {
+    slot,
+    side,
+    phase: 'hidden',
+    cx,
+    cy,
+    pts: createBreachVertices(cx, cy, rx, ry, 0.28),
+  };
+}
+
+const DomainClashStage: React.FC<{
+  topDomain: Domain;
+  bottomDomain: Domain;
+  topColor: string;
+  bottomColor: string;
+}> = React.memo(({ topDomain, bottomDomain, topColor, bottomColor }) => {
+  const [surgeState, setSurgeState] = useState<{
+    mode: ClashSurgeMode;
+    ys: number[];
+    durMs: number;
+    boltSeed: number;
+  }>(() => ({
+    mode: 'chaotic_sawtooth',
+    ys: generateChaoticFrontierYs('chaotic_sawtooth'),
+    durMs: 480,
+    boltSeed: 1,
+  }));
+
+  const [breaches, setBreaches] = useState<ClashRealityBreach[]>(() => [
+    spawnHiddenBreach(0, 'top'),
+    spawnHiddenBreach(1, 'bottom'),
+    spawnHiddenBreach(2, 'top'),
+    spawnHiddenBreach(3, 'bottom'),
+  ]);
+
+  // 1. Unpredictable Tug-of-War Frontier Loop (either Domain can surge & nearly swallow the board at any moment)
+  useEffect(() => {
+    const reduced =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
+
+    let cancelled = false;
+    let timerId = 0;
+    const modes: ClashSurgeMode[] = [
+      'top_overwhelm',
+      'bottom_overwhelm',
+      'diagonal_lr',
+      'diagonal_rl',
+      'chaotic_sawtooth',
+    ];
+
+    const stepFrontier = (prevMode: ClashSurgeMode) => {
+      if (cancelled) return;
+      const candidates = modes.filter((m) => m !== prevMode);
+      const nextMode = candidates[Math.floor(Math.random() * candidates.length)];
+      const durMs = Math.round(360 + Math.random() * 360);
+      setSurgeState((prev) => ({
+        mode: nextMode,
+        ys: generateChaoticFrontierYs(nextMode),
+        durMs,
+        boltSeed: prev.boltSeed + 1,
+      }));
+      timerId = window.setTimeout(() => stepFrontier(nextMode), durMs + Math.round(40 + Math.random() * 140));
+    };
+
+    timerId = window.setTimeout(() => stepFrontier('chaotic_sawtooth'), 180);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timerId);
+    };
+  }, []);
+
+  // 2. Asynchronous Reality-Overlap Breaches (pockets of each Domain violently tearing open over the rival Domain)
+  useEffect(() => {
+    const reduced =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
+
+    let cancelled = false;
+    const timers: number[] = [0, 0, 0, 0];
+
+    const runSlotCycle = (slot: number, side: 'top' | 'bottom', initialDelay: number) => {
+      timers[slot] = window.setTimeout(() => {
+        if (cancelled) return;
+        const seed = spawnHiddenBreach(slot, side);
+        const rx = 15 + Math.random() * 12;
+        const ry = 11 + Math.random() * 10;
+
+        // Phase 0: Place collapsed polygon invisibly (no slide from previous coordinates!)
+        setBreaches((prev) => prev.map((b, idx) => (idx === slot ? seed : b)));
+
+        // Phase 1: Erupt open violently over rival territory
+        timers[slot] = window.setTimeout(() => {
+          if (cancelled) return;
+          setBreaches((prev) =>
+            prev.map((b, idx) =>
+              idx === slot
+                ? {
+                    ...b,
+                    phase: 'erupt',
+                    pts: createBreachVertices(seed.cx, seed.cy, rx, ry, 1.0),
+                  }
+                : b
+            )
+          );
+
+          // Phase 2: Writhe & expand jagged reality edges
+          timers[slot] = window.setTimeout(() => {
+            if (cancelled) return;
+            setBreaches((prev) =>
+              prev.map((b, idx) =>
+                idx === slot
+                  ? {
+                      ...b,
+                      phase: 'writhe',
+                      pts: createBreachVertices(seed.cx, seed.cy, rx * 1.12, ry * 1.1, 1.06),
+                    }
+                  : b
+              )
+            );
+
+            // Phase 3: Collapse shut before relocating elsewhere
+            timers[slot] = window.setTimeout(() => {
+              if (cancelled) return;
+              setBreaches((prev) =>
+                prev.map((b, idx) =>
+                  idx === slot
+                    ? {
+                        ...b,
+                        phase: 'collapse',
+                        pts: createBreachVertices(seed.cx, seed.cy, rx, ry, 0.22),
+                      }
+                    : b
+                )
+              );
+
+              runSlotCycle(slot, side, Math.round(280 + Math.random() * 260));
+            }, Math.round(460 + Math.random() * 340));
+          }, Math.round(360 + Math.random() * 220));
+        }, 45);
+      }, initialDelay);
+    };
+
+    runSlotCycle(0, 'top', 90);
+    runSlotCycle(1, 'bottom', 340);
+    runSlotCycle(2, 'top', 620);
+    runSlotCycle(3, 'bottom', 890);
+
+    return () => {
+      cancelled = true;
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, []);
+
+  const topClip = useMemo(() => buildTopDomainClipPolygon(surgeState.ys), [surgeState.ys]);
+  const auraBandClip = useMemo(() => buildFrontierBandClipPolygon(surgeState.ys, 2.35), [surgeState.ys]);
+  const coreBandClip = useMemo(() => buildFrontierBandClipPolygon(surgeState.ys, 0.44), [surgeState.ys]);
+  const frontierTransition = `clip-path ${surgeState.durMs}ms cubic-bezier(0.22, 1, 0.36, 1)`;
+
+  // Secondary forked lightning arc jumping across the live clash zone
+  const lightningPoints = useMemo(() => {
+    return CLASH_X_STOPS.map((x, i) => {
+      const forkOffset = ((i * 7 + surgeState.boltSeed * 3) % 5 - 2) * 2.4;
+      return `${x},${clampPct(surgeState.ys[i] + forkOffset, 6, 94)}`;
+    }).join(' ');
+  }, [surgeState.ys, surgeState.boltSeed]);
+
+  const sameDomainMirror = topDomain === bottomDomain;
+
+  return (
+    <div
+      className="tabletop-domain-clash-stage"
+      style={
+        {
+          '--top-clash-color': topColor,
+          '--bottom-clash-color': bottomColor,
+        } as React.CSSProperties
+      }
+    >
+      {/* 1. Full Base Reality: Bottom Sovereign Domain */}
+      <div className={`tabletop-domain-clash-half bottom-base domain-${bottomDomain}`}>
+        <div className={`tabletop-domain-flow-fx domain-${bottomDomain}`} />
+      </div>
+
+      {/* 2. Surging Rival Reality: Top Sovereign Domain with Live Jagged Tug-of-War Clip */}
+      <div
+        className={`tabletop-domain-clash-half top-surge domain-${topDomain} ${
+          sameDomainMirror ? 'is-mirror-domain' : ''
+        }`}
+        style={{
+          clipPath: topClip,
+          WebkitClipPath: topClip,
+          transition: frontierTransition,
+        }}
+      >
+        <div className={`tabletop-domain-flow-fx domain-${topDomain}`} />
+      </div>
+
+      {/* 3. Asynchronous Reality-Overlap Breaches (Fragments of each Domain tearing open over the other!) */}
+      {breaches.map((b) => {
+        const breachDom = b.side === 'top' ? topDomain : bottomDomain;
+        const breachColor = b.side === 'top' ? topColor : bottomColor;
+        const isVisible = b.phase === 'erupt' || b.phase === 'writhe';
+        const tr =
+          b.phase === 'hidden'
+            ? 'none'
+            : b.phase === 'erupt'
+            ? 'clip-path 360ms cubic-bezier(0.16, 1, 0.3, 1), opacity 160ms ease-out'
+            : b.phase === 'writhe'
+            ? 'clip-path 480ms ease-in-out, opacity 220ms ease'
+            : 'clip-path 250ms ease-in, opacity 220ms ease-in';
+        const innerClip = formatBreachClip(b.cx, b.cy, b.pts, 1.0);
+        const rimClip = formatBreachClip(b.cx, b.cy, b.pts, 1.085);
+
+        return (
+          <React.Fragment key={b.slot}>
+            <div
+              className="clash-breach-rim"
+              style={{
+                opacity: isVisible ? 0.92 : 0,
+                clipPath: rimClip,
+                WebkitClipPath: rimClip,
+                transition: tr,
+                background: `linear-gradient(135deg, #ffffff 0%, ${breachColor} 55%, #ffffff 100%)`,
+              }}
+            />
+            <div
+              className={`tabletop-domain-clash-half clash-breach-shard domain-${breachDom} ${
+                sameDomainMirror && b.side === 'top' ? 'is-mirror-domain' : ''
+              }`}
+              style={{
+                opacity: isVisible ? 0.96 : 0,
+                clipPath: innerClip,
+                WebkitClipPath: innerClip,
+                transition: tr,
+              }}
+            >
+              <div className={`tabletop-domain-flow-fx domain-${breachDom}`} />
+            </div>
+          </React.Fragment>
+        );
+      })}
+
+      {/* 4. Locked-Step Jagged Tectonic Faultline Ribbon (Aura + White-Hot Core) */}
+      <div
+        className="clash-jagged-aura-band"
+        style={{
+          clipPath: auraBandClip,
+          WebkitClipPath: auraBandClip,
+          transition: frontierTransition,
+        }}
+      />
+      <div
+        className="clash-jagged-core-band"
+        style={{
+          clipPath: coreBandClip,
+          WebkitClipPath: coreBandClip,
+          transition: frontierTransition,
+        }}
+      />
+
+      {/* 5. Crackling Arcane Forked Lightning Discharge on Every Surge */}
+      <svg
+        key={surgeState.boltSeed}
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        className="clash-forked-lightning-svg"
+        aria-hidden="true"
+      >
+        <polyline
+          points={lightningPoints}
+          fill="none"
+          stroke={surgeState.boltSeed % 2 === 0 ? topColor : bottomColor}
+          strokeWidth="0.9"
+          strokeLinejoin="bevel"
+          opacity="0.78"
+        />
+        <polyline
+          points={lightningPoints}
+          fill="none"
+          stroke="#ffffff"
+          strokeWidth="0.32"
+          strokeLinejoin="bevel"
+          opacity="0.95"
+        />
+      </svg>
+
+      <div className="clash-faultline-impact-pulse" />
+    </div>
+  );
+});
+
 export const BattleArena: React.FC<BattleArenaProps> = ({
   customDecks,
   isGuest = false,
@@ -1113,7 +1520,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     setTimeout(() => setArenaShake(null), intensity === 'heavy' ? 520 : 340);
   };
 
-  const sfxScale = tournamentSpectatorContext?.variant === 'home_live' ? 0.72 : 1;
+  const sfxScale = tournamentSpectatorContext?.variant === 'home_live' ? 0.48 : 1;
 
   // --- Physical Tabletop Motion States (Row FLIP Slide, Draw Arc & Essence Channel Trajectory) ---
   const prevUnitPosRef = useRef<Record<string, { row: RowType; x: number; y: number }>>({});
@@ -6844,7 +7251,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     </div>
                   )}
 
-                  {/* 2. DOMAIN CLASH: TWO DOMAINS FIGHTING (50/50 Organic Blend + Subtle Energy Seam) */}
+                  {/* 2. DOMAIN CLASH: LIVING CHAOTIC REALITY TUG-OF-WAR & RANDOM POCKET OVERLAPS */}
                   {gameState.domainExpansion && gameState.domainExpansion.clashRival && (() => {
                     const exp = gameState.domainExpansion;
                     const rival = exp.clashRival!;
@@ -6859,29 +7266,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         ? '#e2e8f0'
                         : DOMAIN_META[bottomDom.domain]?.color || '#ef4444';
                     return (
-                      <div
+                      <DomainClashStage
                         key={`domain-clash-${topDom.domain}-${bottomDom.domain}`}
-                        className="tabletop-domain-clash-stage"
-                        style={
-                          {
-                            '--top-clash-color': topColor,
-                            '--bottom-clash-color': bottomColor,
-                          } as React.CSSProperties
-                        }
-                      >
-                        <div className={`tabletop-domain-clash-half top-half domain-${topDom.domain}`}>
-                          <div className={`tabletop-domain-flow-fx domain-${topDom.domain}`} />
-                        </div>
-
-                        <div className={`tabletop-domain-clash-half bottom-half domain-${bottomDom.domain}`}>
-                          <div className={`tabletop-domain-flow-fx domain-${bottomDom.domain}`} />
-                        </div>
-
-                        <div className="tabletop-domain-clash-faultline">
-                          <div className="clash-faultline-core-beam" />
-                          <div className="clash-faultline-impact-pulse" />
-                        </div>
-                      </div>
+                        topDomain={topDom.domain}
+                        bottomDomain={bottomDom.domain}
+                        topColor={topColor}
+                        bottomColor={bottomColor}
+                      />
                     );
                   })()}
 

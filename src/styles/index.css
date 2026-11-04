@@ -10256,7 +10256,7 @@ html, body, #root {
 }
 
 /* =========================================================
-   DOMAIN CLASH (2 DOMAINS FIGHTING: ORGANIC 50/50 BLEND + SEAM)
+   DOMAIN CLASH (LIVING CHAOTIC REALITY TUG-OF-WAR & OVERLAPS)
    ========================================================= */
 .tabletop-domain-clash-stage {
   position: absolute;
@@ -10264,17 +10264,31 @@ html, body, #root {
   z-index: 2;
   pointer-events: none;
   overflow: hidden;
-  animation: clashStageEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation:
+    clashStageEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    clashTectonicTremor 3.4s ease-in-out infinite alternate;
 }
 
 @keyframes clashStageEnter {
   0% {
     opacity: 0;
-    filter: brightness(1.35);
+    filter: brightness(1.45) contrast(1.12);
   }
   100% {
     opacity: 1;
-    filter: brightness(1);
+    filter: brightness(1) contrast(1.04);
+  }
+}
+
+@keyframes clashTectonicTremor {
+  0% {
+    transform: scale(1.008) translate3d(-0.25%, 0.2%, 0);
+  }
+  50% {
+    transform: scale(1.016) translate3d(0.25%, -0.25%, 0);
+  }
+  100% {
+    transform: scale(1.012) translate3d(-0.15%, 0.15%, 0);
   }
 }
 
@@ -10284,75 +10298,121 @@ html, body, #root {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  will-change: clip-path, opacity;
 }
 
-.tabletop-domain-clash-half.top-half {
-  -webkit-mask-image: linear-gradient(180deg, #000000 0%, #000000 43%, transparent 57%);
-  mask-image: linear-gradient(180deg, #000000 0%, #000000 43%, transparent 57%);
-  box-shadow: inset 0 18px 36px -12px var(--top-clash-color, rgba(56, 189, 248, 0.45));
+.tabletop-domain-clash-half.bottom-base {
+  z-index: 1;
+  box-shadow: inset 0 -22px 44px -10px var(--bottom-clash-color, rgba(239, 68, 68, 0.55));
 }
 
-.tabletop-domain-clash-half.bottom-half {
-  -webkit-mask-image: linear-gradient(0deg, #000000 0%, #000000 43%, transparent 57%);
-  mask-image: linear-gradient(0deg, #000000 0%, #000000 43%, transparent 57%);
-  box-shadow: inset 0 -18px 36px -12px var(--bottom-clash-color, rgba(239, 68, 68, 0.45));
+.tabletop-domain-clash-half.top-surge {
+  z-index: 2;
+  box-shadow: inset 0 22px 44px -10px var(--top-clash-color, rgba(56, 189, 248, 0.55));
 }
 
-.tabletop-domain-clash-faultline {
+.tabletop-domain-clash-half.is-mirror-domain {
+  filter: brightness(1.14) saturate(1.18) contrast(1.06);
+}
+
+/* Asynchronous Overlapping Reality Rifts (Each Domain ripping open over the rival!) */
+.clash-breach-rim {
   position: absolute;
-  left: 2%;
-  right: 2%;
-  top: 50%;
-  height: 6px;
-  transform: translateY(-50%);
+  inset: 0;
   z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  mix-blend-mode: screen;
+  filter: brightness(1.25);
+  will-change: clip-path, opacity;
   pointer-events: none;
 }
 
-.clash-faultline-core-beam {
+.tabletop-domain-clash-half.clash-breach-shard {
+  z-index: 4;
+  filter: contrast(1.08) brightness(1.05);
+  will-change: clip-path, opacity;
+}
+
+/* Locked-Step Jagged Faultline Ribbon (Aura + Incandescent Core) */
+.clash-jagged-aura-band {
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 4px;
-  border-radius: 999px;
+  inset: 0;
+  z-index: 5;
   background: linear-gradient(
     90deg,
-    transparent 0%,
-    var(--top-clash-color, #38bdf8) 15%,
-    #ffffff 50%,
-    var(--bottom-clash-color, #ef4444) 85%,
-    transparent 100%
+    var(--top-clash-color, #38bdf8) 0%,
+    #ffffff 28%,
+    var(--bottom-clash-color, #ef4444) 54%,
+    #ffffff 78%,
+    var(--top-clash-color, #38bdf8) 100%
   );
-  box-shadow:
-    0 -4px 16px var(--top-clash-color, rgba(56, 189, 248, 0.85)),
-    0 4px 16px var(--bottom-clash-color, rgba(239, 68, 68, 0.85)),
-    0 0 12px rgba(255, 255, 255, 0.95);
-  animation: clashSeamPulse 1.6s ease-in-out infinite alternate;
+  opacity: 0.58;
+  mix-blend-mode: screen;
+  filter: blur(5px);
+  will-change: clip-path;
+  animation: clashSeamPulse 0.9s ease-in-out infinite alternate;
+}
+
+.clash-jagged-core-band {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: linear-gradient(
+    90deg,
+    var(--top-clash-color, #38bdf8) 0%,
+    #ffffff 18%,
+    #ffffff 50%,
+    #ffffff 82%,
+    var(--bottom-clash-color, #ef4444) 100%
+  );
+  opacity: 0.96;
+  will-change: clip-path;
+}
+
+.clash-forked-lightning-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 7;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  animation: clashLightningDischarge 0.42s ease-out forwards;
+}
+
+@keyframes clashLightningDischarge {
+  0% {
+    opacity: 0.98;
+  }
+  45% {
+    opacity: 0.72;
+  }
+  100% {
+    opacity: 0.14;
+  }
 }
 
 @keyframes clashSeamPulse {
   0% {
-    opacity: 0.68;
-    filter: brightness(0.95);
+    opacity: 0.44;
   }
   100% {
-    opacity: 1;
-    filter: brightness(1.2);
+    opacity: 0.76;
   }
 }
 
 .clash-faultline-impact-pulse {
   position: absolute;
-  width: 100%;
-  height: 24px;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 36px;
+  margin-top: -18px;
+  z-index: 8;
   background: radial-gradient(
     ellipse at 50% 50%,
-    rgba(255, 255, 255, 0.85) 0%,
-    var(--top-clash-color, rgba(56, 189, 248, 0.45)) 38%,
-    transparent 72%
+    rgba(255, 255, 255, 0.9) 0%,
+    var(--top-clash-color, rgba(56, 189, 248, 0.5)) 42%,
+    transparent 74%
   );
   animation: clashInitialFlash 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -10360,11 +10420,19 @@ html, body, #root {
 @keyframes clashInitialFlash {
   0% {
     opacity: 1;
-    transform: scaleY(2.2);
+    transform: scaleY(3.2);
   }
   100% {
     opacity: 0;
     transform: scaleY(0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tabletop-domain-clash-stage,
+  .clash-jagged-aura-band,
+  .clash-forked-lightning-svg {
+    animation: none !important;
   }
 }
 

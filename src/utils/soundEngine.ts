@@ -73,6 +73,7 @@ let sfxVolume = (() => {
 
 let audioCtx: AudioContext | null = null;
 let sfxMasterGain: GainNode | null = null;
+let sfxWarmthFilter: BiquadFilterNode | null = null;
 let sfxCompressor: DynamicsCompressorNode | null = null;
 const muteListeners = new Set<(isMuted: boolean) => void>();
 const audioSettingsListeners = new Set<() => void>();
@@ -116,8 +117,8 @@ export function getSfxVolume(): number {
 
 function computeSfxBusGain(vol: number, isAudioMuted: boolean): number {
   if (isAudioMuted || vol <= 0.004) return 0;
-  // Makeup gain calibrated so procedural Web Audio transients match -14 LUFS orchestral MP3s
-  return Math.pow(vol, 1.08) * 2.35;
+  // Balanced studio gain (~28% softer than v64) so SFX sit warmly inside the orchestral mix
+  return Math.pow(vol, 1.15) * 1.66;
 }
 
 export function setSfxVolume(vol: number): void {
@@ -140,19 +141,26 @@ export function setSfxVolume(vol: number): void {
 }
 
 function ensureMasterBus(ctx: AudioContext): AudioNode {
-  if (!sfxMasterGain || !sfxCompressor) {
+  if (!sfxMasterGain || !sfxWarmthFilter || !sfxCompressor) {
+    // Gentle high-shelf warmth filter (-3.2 dB @ 2.75 kHz) prevents harshness & ear fatigue
+    sfxWarmthFilter = ctx.createBiquadFilter();
+    sfxWarmthFilter.type = 'highshelf';
+    sfxWarmthFilter.frequency.setValueAtTime(2750, ctx.currentTime);
+    sfxWarmthFilter.gain.setValueAtTime(-3.2, ctx.currentTime);
+
+    // Musical bus glue compressor: rounds off sharp multi-voice spikes smoothly
     sfxCompressor = ctx.createDynamicsCompressor();
-    // Transparent brickwall peak limiter: protects 0 dBFS while preserving full transient punch
-    sfxCompressor.threshold.setValueAtTime(-3.5, ctx.currentTime);
-    sfxCompressor.knee.setValueAtTime(6, ctx.currentTime);
-    sfxCompressor.ratio.setValueAtTime(12, ctx.currentTime);
-    sfxCompressor.attack.setValueAtTime(0.001, ctx.currentTime);
-    sfxCompressor.release.setValueAtTime(0.085, ctx.currentTime);
+    sfxCompressor.threshold.setValueAtTime(-9, ctx.currentTime);
+    sfxCompressor.knee.setValueAtTime(14, ctx.currentTime);
+    sfxCompressor.ratio.setValueAtTime(4.5, ctx.currentTime);
+    sfxCompressor.attack.setValueAtTime(0.003, ctx.currentTime);
+    sfxCompressor.release.setValueAtTime(0.12, ctx.currentTime);
 
     sfxMasterGain = ctx.createGain();
     sfxMasterGain.gain.setValueAtTime(computeSfxBusGain(sfxVolume, muted), ctx.currentTime);
 
-    sfxMasterGain.connect(sfxCompressor);
+    sfxMasterGain.connect(sfxWarmthFilter);
+    sfxWarmthFilter.connect(sfxCompressor);
     sfxCompressor.connect(ctx.destination);
   }
   return sfxMasterGain;
@@ -391,8 +399,8 @@ function playNoiseBurst(
   const gScale = params?.gainScale ?? 1;
   const filterType = params?.filterType ?? 'bandpass';
   const qVal = params?.q ?? 1.25;
-  // Compensate narrow bandpass insertion loss so physical impacts/whooshes retain full body
-  const qMakeup = filterType === 'bandpass' ? 1 + Math.min(1.65, qVal * 0.62) : 1.0;
+  // Gentle bandpass insertion-loss makeup without harsh high-mid boost
+  const qMakeup = filterType === 'bandpass' ? 1 + Math.min(1.15, qVal * 0.42) : 1.0;
   const effectiveGain = Math.max(
     0.0002,
     Math.min(0.95, gainPeak * gScale * qMakeup * randSpread(0.05))
@@ -580,30 +588,23 @@ function dispatchSfxOnContext(ctx: AudioContext, type: SfxType, options?: SfxOpt
     const g = Math.max(0.05, Math.min(1.25, options?.volumeScale ?? 1));
     const domain = options?.domain;
 
-    // Automatic musical ducking so combat impacts & dramatic moments always cut cleanly through the orchestra
-    if (musicDuckHandler && g >= 0.55 && sfxVolume > 0.03) {
+    // Gentle musical ducking reserved strictly for grand cinematic events (no pumping on routine attacks)
+    if (musicDuckHandler && g >= 0.65 && sfxVolume > 0.03) {
       if (type === 'victory' || type === 'defeat') {
-        musicDuckHandler(0.22, 2150);
+        musicDuckHandler(0.28, 2100);
       } else if (
         type === 'domain_expand' ||
         type === 'domain_clash' ||
         type === 'wheel_domain_shatter' ||
         type === 'dragon_armada'
       ) {
-        musicDuckHandler(0.32, 1180);
+        musicDuckHandler(0.38, 1150);
       } else if (type === 'domain_shatter') {
-        musicDuckHandler(0.36, 860);
+        musicDuckHandler(0.44, 820);
       } else if (type === 'ascend') {
-        musicDuckHandler(0.48, 760);
+        musicDuckHandler(0.56, 700);
       } else if (type === 'summon' && options?.rarity === 'legendary') {
-        musicDuckHandler(0.52, 680);
-      } else if (
-        type === 'attack' ||
-        type === 'hit' ||
-        type === 'trap_flip' ||
-        type === 'shield_shatter'
-      ) {
-        musicDuckHandler(options?.isHeavy ? 0.62 : 0.72, 260);
+        musicDuckHandler(0.6, 640);
       }
     }
 

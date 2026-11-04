@@ -54,7 +54,8 @@ export function classifyVisitorChannel(session: {
     src.includes('discord') ||
     med.includes('discord') ||
     camp.includes('discord') ||
-    url.includes('utm_source=discord')
+    url.includes('utm_source=discord') ||
+    /(?:^|\/)(?:dc|discord)(?:[/?#]|$)/.test(url)
   ) {
     return 'discord';
   }
@@ -64,7 +65,8 @@ export function classifyVisitorChannel(session: {
     src === 'tt' ||
     camp.includes('tiktok') ||
     url.includes('ttclid=') ||
-    url.includes('utm_source=tiktok')
+    url.includes('utm_source=tiktok') ||
+    /(?:^|\/)(?:tt|tiktok)(?:[/?#]|$)/.test(url)
   ) {
     return 'tiktok';
   }
@@ -78,7 +80,8 @@ export function classifyVisitorChannel(session: {
     camp.includes('instagram') ||
     camp.includes('reels') ||
     url.includes('fbclid=') ||
-    url.includes('utm_source=instagram')
+    url.includes('utm_source=instagram') ||
+    /(?:^|\/)(?:ig|insta)(?:[/?#]|$)/.test(url)
   ) {
     return 'instagram';
   }
@@ -461,6 +464,8 @@ export function initAdsTelemetry(): AdsAttributionData | null {
   if (typeof window === 'undefined') return null;
 
   try {
+    const originalLandingHref = window.location.href;
+    const cleanPath = window.location.pathname.toLowerCase().replace(/\/+$/, '');
     const searchParams = new URLSearchParams(window.location.search);
     const gclid =
       searchParams.get('gclid') ??
@@ -474,9 +479,27 @@ export function initAdsTelemetry(): AdsAttributionData | null {
     const fbclid = searchParams.get('fbclid') ?? undefined;
     let utmSource = searchParams.get('utm_source') ?? undefined;
     let utmMedium = searchParams.get('utm_medium') ?? undefined;
-    const utmCampaign =
+    let utmCampaign =
       searchParams.get('utm_campaign') ?? searchParams.get('gad_campaignid') ?? undefined;
     const utmTerm = searchParams.get('utm_term') ?? undefined;
+
+    // Atalhos curtos de Bio digitados manualmente (ex: chromaticpact.com/tt, /ig, /dc)
+    if (cleanPath === '/tt' || cleanPath === '/tiktok') {
+      utmSource = utmSource ?? 'tiktok';
+      utmMedium = utmMedium ?? 'bio_curto';
+      utmCampaign = utmCampaign ?? 'perfil_oficial';
+      window.history.replaceState(null, '', `/${window.location.search}${window.location.hash}`);
+    } else if (cleanPath === '/ig' || cleanPath === '/insta') {
+      utmSource = utmSource ?? 'instagram';
+      utmMedium = utmMedium ?? 'bio_curto';
+      utmCampaign = utmCampaign ?? 'perfil_oficial';
+      window.history.replaceState(null, '', `/${window.location.search}${window.location.hash}`);
+    } else if (cleanPath === '/dc' || cleanPath === '/discord') {
+      utmSource = utmSource ?? 'discord';
+      utmMedium = utmMedium ?? 'bio_curto';
+      utmCampaign = utmCampaign ?? 'comunidade';
+      window.history.replaceState(null, '', `/${window.location.search || '?tab=tournaments'}${window.location.hash}`);
+    }
 
     // Fallback inteligente para cliques vindos da Bio/Vídeo do TikTok, Instagram ou Google Ads sem gclid
     const ref = (typeof document !== 'undefined' ? document.referrer || '' : '').toLowerCase();
@@ -508,7 +531,7 @@ export function initAdsTelemetry(): AdsAttributionData | null {
         utmCampaign: utmCampaign ?? attribution?.utmCampaign,
         utmTerm: utmTerm ?? attribution?.utmTerm,
         landedAt: Date.now(),
-        landingUrl: window.location.href,
+        landingUrl: originalLandingHref,
       };
       window.localStorage.setItem(ATTRIBUTION_STORAGE_KEY, JSON.stringify(attribution));
     }

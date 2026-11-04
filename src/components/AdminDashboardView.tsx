@@ -2242,9 +2242,15 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
             >
               {[
                 {
-                  badge: '🎵 TIKTOK BIO',
+                  badge: '🎵 TIKTOK CURTO (DESCRIÇÃO)',
                   color: '#f43f5e',
-                  label: 'Link Oficial da Bio do TikTok',
+                  label: 'Link Curto p/ Digitar na Bio (<1.000 seg)',
+                  url: 'chromaticpact.com/tt',
+                },
+                {
+                  badge: '🎵 TIKTOK BIO (CLICÁVEL)',
+                  color: '#fb7185',
+                  label: 'Link Oficial Clicável da Bio do TikTok',
                   url: 'https://chromaticpact.com/?utm_source=tiktok&utm_medium=bio&utm_campaign=perfil_oficial',
                 },
                 {

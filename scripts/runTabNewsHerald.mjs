@@ -1,6 +1,6 @@
 /**
- * Arauto Cloud — Publicação Automática no TabNews (GitHub Actions / Serverless)
- * Idempotente: consulta o histórico público do autor antes de publicar para nunca duplicar.
+ * Arauto Cloud — Publicação & Sincronização Automática no TabNews (GitHub Actions)
+ * Idempotente: consulta o histórico público do autor antes de publicar e aplica PATCH automático se o texto base mudar.
  */
 
 const TABNEWS_API = 'https://www.tabnews.com.br/api/v1';
@@ -20,7 +20,7 @@ Nos últimos meses venho construindo o **Chromatic Pact**, um híbrido de Card G
 2. **Tabuleiro Tático 6×2 (Vanguarda e Retaguarda) + Choque de Domínios:**
    Em vez de apenas somar atributos, o posicionamento em colunas protege unidades de suporte na retaguarda, enquanto *Expansões de Domínio* disputam o controle territorial do tabuleiro.
 3. **Replays Determinísticos com Links de Clímax (\`?replay=...&tframe=...\`):**
-   Qualquer duelo pode ser compartilhado apontando exatamente para o turno decisivo da virada, além de contarmos com Torneios Suíços automatizados diários (12h30 e 20h00 BRT) e campanha com 190 confrontos contra Soberanos.
+   Qualquer duelo pode ser compartilhado apontando exatamente para o turno decisivo da virada, além de contarmos com Torneios Suíços automatizados todos os dias (segunda a sexta às 19h00 e sábados/domingos às 14h00 BRT, incluindo a Grande Copa Dominical) e campanha com 190 confrontos contra Soberanos.
 
 ### Teste ao vivo
 
@@ -64,7 +64,7 @@ async function main() {
   const user = await userRes.json();
   console.log(`[TabNews Herald] Conectado como @${user.username} (TabCoins: ${user.tabcoins})`);
 
-  // 3. Checagem idempotente: verificar se já publicamos sobre o Chromatic Pact
+  // 3. Checagem idempotente + sincronização de texto se houver ajuste de horários
   const existingRes = await fetch(`${TABNEWS_API}/contents/${user.username}?per_page=30`, {
     headers: { Cookie: cookieHeader },
   });
@@ -82,14 +82,38 @@ async function main() {
       : null;
 
     if (already) {
+      const detailRes = await fetch(`${TABNEWS_API}/contents/${user.username}/${already.slug}`, {
+        headers: { Cookie: cookieHeader },
+      });
+      if (detailRes.ok) {
+        const detail = await detailRes.json();
+        if ((detail.body || '').trim() !== POST_PAYLOAD.body.trim()) {
+          const patchRes = await fetch(`${TABNEWS_API}/contents/${user.username}/${already.slug}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Cookie: cookieHeader,
+            },
+            body: JSON.stringify({
+              title: POST_PAYLOAD.title,
+              body: POST_PAYLOAD.body,
+              source_url: POST_PAYLOAD.source_url,
+            }),
+          });
+          if (patchRes.ok) {
+            console.log(`[TabNews Herald] ATUALIZADO AUTOMATICAMENTE: https://www.tabnews.com.br/${user.username}/${already.slug}`);
+            return;
+          }
+        }
+      }
       console.log(
-        `[TabNews Herald] Post já publicado anteriormente: https://www.tabnews.com.br/${user.username}/${already.slug} — encerrando em modo noop.`
+        `[TabNews Herald] Post já publicado e sincronizado: https://www.tabnews.com.br/${user.username}/${already.slug} — noop.`
       );
       return;
     }
   }
 
-  // 4. Publicar artigo
+  // 4. Publicar artigo pela 1ª vez
   const pubRes = await fetch(`${TABNEWS_API}/contents`, {
     method: 'POST',
     headers: {

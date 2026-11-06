@@ -1043,7 +1043,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     () =>
       initialSavedSnapshot?.selectedAiDeckId ??
       initialAiDeckId ??
-      PREBUILT_DECKS[1]?.id ??
+      (isFirstTimeOnboardingSoloGuest ? 'mono_purple_crypt' : PREBUILT_DECKS[1]?.id) ??
       'deck_blue_tempest'
   );
 
@@ -1152,6 +1152,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiName: bossDeckObj?.name ?? 'Arconte Rival',
             aiTitle: bossDeckObj?.subtitle ?? 'Mestre do Domínio',
             aiAvatarCardId: bossDeckObj?.coverCardId,
+            playerStartingHp: isFirstTimeOnboardingSoloGuest ? 20 : undefined,
+            aiStartingHp: isFirstTimeOnboardingSoloGuest ? 16 : undefined,
             playerDeckId: defaultPlayerDeck?.id,
             aiDeckId: bossDeckObj?.id,
             aiSkillTier: selectedAiSkillTier,
@@ -2951,6 +2953,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (tacticalProblem) {
       restartCurrentProblem();
       return;
+    }
+    if (!firstTurnGuideDismissed) {
+      dismissFirstTurnGuide();
     }
     try {
       localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
@@ -6524,7 +6529,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     </div>
                   )}
 
-                <div className="side-cmd-actions">
+                  <div className="side-cmd-actions">
                   {isPlayerTurn &&
                     activePlayCheck.allowed &&
                     (activeHandCard.type === 'spell' ||
@@ -6541,7 +6546,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   {isPlayerTurn && !gameState.player.hasChanneledThisTurn && (
                     <button
                       type="button"
-                      className="quick-act-btn act-channel"
+                      className={`quick-act-btn ${
+                        !activePlayCheck.allowed ||
+                        (!firstTurnGuideDismissed && gameState.turn === 1)
+                          ? 'act-spell'
+                          : 'act-channel'
+                      }`}
                       onClick={() => handleQuickChannelCard(selectedHandIndex)}
                     >
                       ⛰️ Canalizar (+1 Afin. & Compra) [C]
@@ -6894,29 +6904,31 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     </span>
                   )}
 
-                  <button
-                    type="button"
-                    className={`hud-pill-expand-btn ${isP2DrawerPinned ? 'active' : ''}`}
-                    style={{ width: 'auto', padding: '0 7px', gap: '3px', fontWeight: 600, textTransform: 'none' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsP2DrawerPinned((prev) => {
-                        const next = !prev;
-                        if (next) {
-                          setIsP1DrawerPinned(false);
-                          setIsHandPinnedOpen(false);
-                          setIsHandHovered(false);
-                          setActiveRightDrawer(null);
-                          setSelectedHandIndex(null);
-                          setSelectedAttackerId(null);
-                          setFocusedBoardUnitId(null);
-                        }
-                        return next;
-                      });
-                    }}
-                  >
-                    {isP2DrawerPinned ? 'Ocultar' : 'Detalhes'}
-                  </button>
+                  {!isHomeLiveShowcase && (
+                    <button
+                      type="button"
+                      className={`hud-pill-expand-btn ${isP2DrawerPinned ? 'active' : ''}`}
+                      style={{ width: 'auto', padding: '0 7px', gap: '3px', fontWeight: 600, textTransform: 'none' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsP2DrawerPinned((prev) => {
+                          const next = !prev;
+                          if (next) {
+                            setIsP1DrawerPinned(false);
+                            setIsHandPinnedOpen(false);
+                            setIsHandHovered(false);
+                            setActiveRightDrawer(null);
+                            setSelectedHandIndex(null);
+                            setSelectedAttackerId(null);
+                            setFocusedBoardUnitId(null);
+                          }
+                          return next;
+                        });
+                      }}
+                    >
+                      {isP2DrawerPinned ? 'Ocultar' : 'Detalhes'}
+                    </button>
+                  )}
 
                   {isAiSovereignTarget && (
                     <div className="attack-sovereign-cta">
@@ -7908,6 +7920,11 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     ? '🎯 Toque no alvo'
                     : '✨ Pronto';
 
+                  const shouldPrioritizeChannel =
+                    isPlayerTurn &&
+                    !gameState.player.hasChanneledThisTurn &&
+                    (!playCheck.allowed || (!firstTurnGuideDismissed && gameState.turn === 1));
+
                   return (
                     <div
                       className="mobile-context-command-bar"
@@ -7931,7 +7948,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           hasEmptyVanguard && (
                             <button
                               type="button"
-                              className="mccb-btn act-cast"
+                              className={`mccb-btn ${shouldPrioritizeChannel ? 'act-move' : 'act-cast'}`}
                               onClick={() => handleQuickDeployToRow(selectedHandIndex, 'vanguard')}
                               title="Invocar automaticamente na Vanguarda"
                             >
@@ -7957,7 +7974,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           hasEmptyRearguard && (
                             <button
                               type="button"
-                              className="mccb-btn act-cast"
+                              className={`mccb-btn ${shouldPrioritizeChannel ? 'act-move' : 'act-cast'}`}
                               onClick={() => handleQuickDeployToRow(selectedHandIndex, 'rearguard')}
                               title="Forjar Relíquia na Retaguarda"
                             >
@@ -7969,7 +7986,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                           (activeHand.type === 'spell' || activeHand.type === 'reaction') && (
                             <button
                               type="button"
-                              className="mccb-btn act-cast"
+                              className={`mccb-btn ${shouldPrioritizeChannel ? 'act-move' : 'act-cast'}`}
                               onClick={() => handleQuickCastSpell(selectedHandIndex)}
                             >
                               Lançar
@@ -8028,7 +8045,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         {isPlayerTurn && !gameState.player.hasChanneledThisTurn && (
                           <button
                             type="button"
-                            className="mccb-btn act-channel"
+                            className={`mccb-btn ${shouldPrioritizeChannel ? 'act-cast' : 'act-channel'}`}
                             onClick={() => handleQuickChannelCard(selectedHandIndex)}
                             title="Canalizar (+1 Afinidade, +1 Essência e Compra)"
                           >
@@ -8651,79 +8668,85 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                       </div>
                       )}
 
-                      <button
-                        type="button"
-                        className={`hud-pill-expand-btn ${isP1DrawerPinned ? 'active' : ''}`}
-                        style={{ width: 'auto', padding: '0 7px', gap: '3px', fontWeight: 600, textTransform: 'none' }}
-                        title={`Terrenos (${gameState.player.channeledCards.length}) · Grimório (${gameState.player.deck.length}) · Cripta (${gameState.player.crypt.length})`}
-                        onClick={() =>
-                          setIsP1DrawerPinned((prev) => {
-                            const next = !prev;
-                            if (next) {
-                              setIsP2DrawerPinned(false);
-                              setIsHandPinnedOpen(false);
-                              setIsHandHovered(false);
-                              setActiveRightDrawer(null);
-                              setSelectedHandIndex(null);
-                              setSelectedAttackerId(null);
-                              setFocusedBoardUnitId(null);
-                            }
-                            return next;
-                          })
-                        }
-                      >
-                        {isP1DrawerPinned ? 'Ocultar' : 'Terrenos'}
-                      </button>
+                      {!isHomeLiveShowcase && (
+                        <button
+                          type="button"
+                          className={`hud-pill-expand-btn ${isP1DrawerPinned ? 'active' : ''}`}
+                          style={{ width: 'auto', padding: '0 7px', gap: '3px', fontWeight: 600, textTransform: 'none' }}
+                          title={`Terrenos (${gameState.player.channeledCards.length}) · Grimório (${gameState.player.deck.length}) · Cripta (${gameState.player.crypt.length})`}
+                          onClick={() =>
+                            setIsP1DrawerPinned((prev) => {
+                              const next = !prev;
+                              if (next) {
+                                setIsP2DrawerPinned(false);
+                                setIsHandPinnedOpen(false);
+                                setIsHandHovered(false);
+                                setActiveRightDrawer(null);
+                                setSelectedHandIndex(null);
+                                setSelectedAttackerId(null);
+                                setFocusedBoardUnitId(null);
+                              }
+                              return next;
+                            })
+                          }
+                        >
+                          {isP1DrawerPinned ? 'Ocultar' : 'Terrenos'}
+                        </button>
+                      )}
                     </div>
 
-                    <div className="hud-strip-divider" />
+                    {!isHomeLiveShowcase && (
+                      <>
+                        <div className="hud-strip-divider" />
 
-                    {/* Center Segment: Hand Drawer Handle */}
-                    <button
-                      type="button"
-                      data-combat-id="player-hand-trigger"
-                      className={`hud-hand-trigger-btn ${
-                        isHandPinnedOpen || isHandHovered ? 'active' : ''
-                      }`}
-                      style={{ textTransform: 'none', letterSpacing: '0.02em' }}
-                      onMouseEnter={() => {
-                        if (
-                          isDesktopHoverDevice() &&
-                          !isP1DrawerPinned &&
-                          !isP2DrawerPinned &&
-                          !activeRightDrawer &&
-                          selectedHandIndex === null
-                        ) {
-                          setIsHandHovered(true);
-                        }
-                      }}
-                      onClick={() => {
-                        setIsHandHovered(false);
-                        setSelectedAttackerId(null);
-                        setFocusedBoardUnitId(null);
-                        if (selectedHandIndex !== null) {
-                          setSelectedHandIndex(null);
-                          setIsCommandDockMinimized(false);
-                          setIsP2DrawerPinned(false);
-                          setIsP1DrawerPinned(false);
-                          setActiveRightDrawer(null);
-                          setIsHandPinnedOpen(true);
-                        } else {
-                          setIsHandPinnedOpen((prev) => {
-                            const next = !prev;
-                            if (next) {
+                        {/* Center Segment: Hand Drawer Handle */}
+                        <button
+                          type="button"
+                          data-combat-id="player-hand-trigger"
+                          className={`hud-hand-trigger-btn ${
+                            isHandPinnedOpen || isHandHovered ? 'active' : ''
+                          }`}
+                          style={{ textTransform: 'none', letterSpacing: '0.02em' }}
+                          onMouseEnter={() => {
+                            if (
+                              isDesktopHoverDevice() &&
+                              !isP1DrawerPinned &&
+                              !isP2DrawerPinned &&
+                              !activeRightDrawer &&
+                              selectedHandIndex === null
+                            ) {
+                              setIsHandHovered(true);
+                            }
+                          }}
+                          onClick={() => {
+                            setIsHandHovered(false);
+                            setSelectedAttackerId(null);
+                            setFocusedBoardUnitId(null);
+                            if (selectedHandIndex !== null) {
+                              setSelectedHandIndex(null);
+                              setIsCommandDockMinimized(false);
                               setIsP2DrawerPinned(false);
                               setIsP1DrawerPinned(false);
                               setActiveRightDrawer(null);
+                              setIsHandPinnedOpen(true);
+                            } else {
+                              setIsHandPinnedOpen((prev) => {
+                                const next = !prev;
+                                if (next) {
+                                  setIsP2DrawerPinned(false);
+                                  setIsP1DrawerPinned(false);
+                                  setActiveRightDrawer(null);
+                                }
+                                return next;
+                              });
                             }
-                            return next;
-                          });
-                        }
-                      }}
-                    >
-                      Mão ({gameState.player.hand.length}){' '}
-                      {isHandPinnedOpen || isHandHovered ? '▾' : '▴'}
-                    </button>
+                          }}
+                        >
+                          Mão ({gameState.player.hand.length}){' '}
+                          {isHandPinnedOpen || isHandHovered ? '▾' : '▴'}
+                        </button>
+                      </>
+                    )}
 
                     <div className="hud-strip-divider" />
 
@@ -8916,9 +8939,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                     tournamentSpectatorContext.onExitSpectator;
                                   act();
                                 }}
-                                title="Entrar em combate agora na Arena"
+                                title="Iniciar seu próprio duelo agora na Arena"
                               >
-                                Jogar agora
+                                Entrar em Duelo
                               </button>
                             </div>
                           );
@@ -10470,7 +10493,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                         act();
                       }}
                     >
-                      Jogar Agora
+                      Entrar em Duelo
                     </button>
                     {tournamentSpectatorContext.onCycleNextLiveMatch && (
                       <button

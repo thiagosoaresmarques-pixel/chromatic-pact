@@ -25937,6 +25937,17 @@ button.gold-pill {
     font-weight: 700 !important;
   }
 
+  .arena-spec-btn.home-play-cta {
+    min-height: 38px !important;
+    height: 38px !important;
+    padding: 0 15px !important;
+    background: #d4af37 !important;
+    border-color: #e6c65c !important;
+    color: #0b0f19 !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+  }
+
   /* 5. BattleArena Mobile HUD, Hand Drawer & Turn-1 Guide Separation */
   .arena-turn1-guide-pill {
     top: calc(78px + env(safe-area-inset-top, 0px)) !important;

@@ -1,14 +1,22 @@
-name: Arauto Divulgação Cloud — TabNews
+name: Arauto Divulgação Cloud — TabNews & Boletim Semanal
 
 on:
   workflow_dispatch:
+    inputs:
+      send_weekly_bulletin:
+        description: 'Disparar também o Boletim Semanal de Vaeloria agora?'
+        required: false
+        default: 'false'
   schedule:
-    # Janelas nobres no TabNews (11h20 BRT = 14h20 UTC | 18h20 BRT = 21h20 UTC)
-    # O script é 100% idempotente: publica apenas 1 vez e vira noop automático depois.
+    # 1. Janelas diárias idempotentes no TabNews (11h20 BRT = 14h20 UTC | 18h20 BRT = 21h20 UTC)
     - cron: '20 14,21 * * *'
+    # 2. Convocação de Fim de Semana — toda Sexta às 17h30 BRT (20h30 UTC)
+    - cron: '30 20 * * 5'
+    # 3. Crônica Pós-Grande Copa Dominical — todo Domingo às 15h25 BRT (18h25 UTC)
+    - cron: '25 18 * * 0'
 
 jobs:
-  publish-tabnews:
+  publish-tabnews-series:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
@@ -20,8 +28,33 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Run TabNews Cloud Herald
+      - name: Run TabNews Cloud Herald (Idempotent Multi-Edition Series)
         env:
           TABNEWS_EMAIL: ${{ secrets.TABNEWS_EMAIL }}
           TABNEWS_PASSWORD: ${{ secrets.TABNEWS_PASSWORD }}
         run: node scripts/runTabNewsHerald.mjs
+
+  weekly-vaeloria-bulletin:
+    if: >-
+      github.event.schedule == '30 20 * * 5' ||
+      github.event.schedule == '25 18 * * 0' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.send_weekly_bulletin == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Weekly Vaeloria Cloud Bulletin
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: node --import tsx scripts/runWeeklyCommunityBulletin.ts

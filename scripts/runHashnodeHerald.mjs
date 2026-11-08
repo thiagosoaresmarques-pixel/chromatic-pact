@@ -6,7 +6,7 @@
  * - Textos e ângulos originais complementares ao Dev.to e Medium para indexação independente no Google.
  */
 
-const HASHNODE_GQL = 'https://gql.hashnode.com/';
+const HASHNODE_GQL = 'https://gql.hashnode.com';
 const MIN_HOURS_BETWEEN_POSTS = 70;
 
 const ARTICLES = [

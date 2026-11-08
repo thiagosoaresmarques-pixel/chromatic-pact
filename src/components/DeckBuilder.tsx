@@ -47,9 +47,11 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
         (e) =>
           e.type === 'freeze_enemy' ||
           e.type === 'freeze_enemy_vanguard' ||
-          e.type === 'bounce_enemy'
+          e.type === 'bounce_enemy' ||
+          e.type === 'coordinate_inversion' ||
+          e.type === 'horizon_singularity'
       ) ||
-      /congel|tempo|crono|ampulheta|paradoxo|temporal|relógio|eterno/i.test(
+      /congel|tempo|crono|ampulheta|paradoxo|temporal|relógio|eterno|singularidade|coordenada/i.test(
         `${c.name} ${c.subtype} ${c.description}`
       ),
   },
@@ -61,7 +63,7 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
     matches: (c) =>
       c.type === 'spell' ||
       c.type === 'reaction' ||
-      c.effects.some((e) => e.trigger === 'spell_cast' || e.type === 'draw_cards'),
+      c.effects.some((e) => e.trigger === 'spell_cast' || e.type === 'draw_cards' || e.type === 'royal_prism_convergence'),
   },
   {
     id: 'relic_forge',
@@ -73,7 +75,12 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
       c.armor >= 2 ||
       c.keywords.includes('Escudo Divino') ||
       c.keywords.includes('Guardião') ||
-      c.effects.some((e) => e.type === 'shield_all_allies'),
+      c.effects.some(
+        (e) =>
+          e.type === 'shield_all_allies' ||
+          e.type === 'solar_spear_phalanx' ||
+          e.type === 'undefeated_champion_oath'
+      ),
   },
   {
     id: 'crypt_reborn',
@@ -82,7 +89,9 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
     shortDesc: 'Unidades com Renascer, gatilhos de morte (on_death) e reanimação da Cripta.',
     matches: (c) =>
       c.keywords.includes('Renascer') ||
-      c.effects.some((e) => e.trigger === 'on_death' || e.type === 'revive_from_crypt'),
+      c.effects.some(
+        (e) => e.trigger === 'on_death' || e.type === 'revive_from_crypt' || e.type === 'twilight_procession'
+      ),
   },
   {
     id: 'abyssal_corruption',
@@ -93,7 +102,7 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
       (c.corruptionCost ?? 0) > 0 ||
       c.keywords.includes('Dreno de Vida') ||
       c.keywords.includes('Toque Letal') ||
-      c.effects.some((e) => e.type === 'damage_enemy_sovereign'),
+      c.effects.some((e) => e.type === 'damage_enemy_sovereign' || e.type === 'shared_shadow_link'),
   },
   {
     id: 'dragon_breath',
@@ -104,7 +113,13 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
       (c.breathDamage ?? 0) > 0 ||
       c.keywords.includes('Pele Incandescente') ||
       c.keywords.includes('Fúria Crescente') ||
-      c.effects.some((e) => e.type === 'damage_enemy_row' || e.type === 'damage_all_units'),
+      c.effects.some(
+        (e) =>
+          e.type === 'damage_enemy_row' ||
+          e.type === 'damage_all_units' ||
+          e.type === 'magmatic_subduction' ||
+          e.type === 'red_anvil_march'
+      ),
   },
   {
     id: 'primal_swarm',
@@ -115,7 +130,13 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
       c.keywords.includes('Atropelar') ||
       c.keywords.includes('Ímpeto') ||
       (c.regeneration ?? 0) > 0 ||
-      c.effects.some((e) => e.type === 'buff_all_allies' || e.type === 'summon_token'),
+      c.effects.some(
+        (e) =>
+          e.type === 'buff_all_allies' ||
+          e.type === 'summon_token' ||
+          e.type === 'food_chain_law' ||
+          e.type === 'primordial_apex_evolution'
+      ),
   },
   {
     id: 'ascension_evo',
@@ -123,7 +144,13 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
     label: 'Ascensão & Aceleração de Mana',
     shortDesc: 'Criaturas que evoluem em campo (Ascensão) e cartas que geram Essência extra.',
     matches: (c) =>
-      Boolean(c.ascension) || c.effects.some((e) => e.type === 'grant_bonus_essence'),
+      Boolean(c.ascension) ||
+      c.effects.some(
+        (e) =>
+          e.type === 'grant_bonus_essence' ||
+          e.type === 'primordial_apex_evolution' ||
+          e.type === 'royal_prism_convergence'
+      ),
   },
 ];
 
@@ -374,11 +401,22 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     matches: (c) =>
       c.armor > 0 ||
       (c.ascension?.newArmor ?? 0) > 0 ||
-      c.effects.some((e) => e.type === 'shield_all_allies' && (e.secondaryValue ?? 0) > 0),
+      c.effects.some(
+        (e) =>
+          (e.type === 'shield_all_allies' && (e.secondaryValue ?? 0) > 0) ||
+          e.type === 'magmatic_subduction' ||
+          e.type === 'solar_spear_phalanx' ||
+          e.type === 'undefeated_champion_oath'
+      ),
   },
   { id: 'mech:regeneration', group: 'mechanics', label: 'Regeneração', matches: (c) => (c.regeneration ?? 0) > 0 },
   { id: 'mech:breath', group: 'mechanics', label: 'Sopro Elemental', matches: (c) => (c.breathDamage ?? 0) > 0 },
-  { id: 'mech:ascension', group: 'mechanics', label: 'Ascensão (Evolução)', matches: (c) => Boolean(c.ascension) },
+  {
+    id: 'mech:ascension',
+    group: 'mechanics',
+    label: 'Ascensão (Evolução)',
+    matches: (c) => Boolean(c.ascension) || c.effects.some((e) => e.type === 'primordial_apex_evolution'),
+  },
   {
     id: 'mech:break_domain',
     group: 'mechanics',
@@ -407,7 +445,14 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     id: 'eff:freeze',
     group: 'effects',
     label: 'Congelar',
-    matches: (c) => c.effects.some((e) => e.type === 'freeze_enemy' || e.type === 'freeze_enemy_vanguard'),
+    matches: (c) =>
+      c.effects.some(
+        (e) =>
+          e.type === 'freeze_enemy' ||
+          e.type === 'freeze_enemy_vanguard' ||
+          e.type === 'coordinate_inversion' ||
+          e.type === 'horizon_singularity'
+      ),
   },
   {
     id: 'eff:aoe_damage',
@@ -415,14 +460,27 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     label: 'Dano em Área / Fileira',
     matches: (c) =>
       (c.breathDamage ?? 0) > 0 ||
-      c.effects.some((e) => e.type === 'damage_enemy_row' || e.type === 'damage_all_units'),
+      c.effects.some(
+        (e) =>
+          e.type === 'damage_enemy_row' ||
+          e.type === 'damage_all_units' ||
+          e.type === 'magmatic_subduction' ||
+          e.type === 'solar_spear_phalanx'
+      ),
   },
   {
     id: 'eff:single_damage',
     group: 'effects',
     label: 'Dano Direto (Alvo / Soberano)',
     matches: (c) =>
-      c.effects.some((e) => e.type === 'damage_single_enemy' || e.type === 'damage_enemy_sovereign'),
+      c.effects.some(
+        (e) =>
+          e.type === 'damage_single_enemy' ||
+          e.type === 'damage_enemy_sovereign' ||
+          e.type === 'shared_shadow_link' ||
+          e.type === 'food_chain_law' ||
+          e.type === 'royal_prism_convergence'
+      ),
   },
   {
     id: 'eff:removal',
@@ -430,20 +488,26 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     label: 'Destruir / Devolver / Roubar',
     matches: (c) =>
       c.effects.some(
-        (e) => e.type === 'destroy_enemy' || e.type === 'bounce_enemy' || e.type === 'steal_small_enemy'
+        (e) =>
+          e.type === 'destroy_enemy' ||
+          e.type === 'bounce_enemy' ||
+          e.type === 'steal_small_enemy' ||
+          e.type === 'coordinate_inversion' ||
+          e.type === 'horizon_singularity' ||
+          e.type === 'food_chain_law'
       ),
   },
   {
     id: 'eff:draw',
     group: 'effects',
     label: 'Comprar Cartas',
-    matches: (c) => c.effects.some((e) => e.type === 'draw_cards'),
+    matches: (c) => c.effects.some((e) => e.type === 'draw_cards' || e.type === 'royal_prism_convergence'),
   },
   {
     id: 'eff:essence',
     group: 'effects',
     label: 'Gerar Essência',
-    matches: (c) => c.effects.some((e) => e.type === 'grant_bonus_essence'),
+    matches: (c) => c.effects.some((e) => e.type === 'grant_bonus_essence' || e.type === 'royal_prism_convergence'),
   },
   {
     id: 'eff:heal',
@@ -451,7 +515,11 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     label: 'Cura / Restauração',
     matches: (c) =>
       c.effects.some(
-        (e) => e.type === 'heal_sovereign' || e.type === 'heal_all_allies' || e.type === 'heal_target_ally'
+        (e) =>
+          e.type === 'heal_sovereign' ||
+          e.type === 'heal_all_allies' ||
+          e.type === 'heal_target_ally' ||
+          e.type === 'royal_prism_convergence'
       ),
   },
   {
@@ -460,7 +528,14 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     label: 'Fortalecer / Escudar Aliados',
     matches: (c) =>
       c.effects.some(
-        (e) => e.type === 'buff_target_ally' || e.type === 'buff_all_allies' || e.type === 'shield_all_allies'
+        (e) =>
+          e.type === 'buff_target_ally' ||
+          e.type === 'buff_all_allies' ||
+          e.type === 'shield_all_allies' ||
+          e.type === 'red_anvil_march' ||
+          e.type === 'primordial_apex_evolution' ||
+          e.type === 'solar_spear_phalanx' ||
+          e.type === 'undefeated_champion_oath'
       ),
   },
   {
@@ -473,7 +548,7 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     id: 'eff:revive',
     group: 'effects',
     label: 'Reanimar da Cripta',
-    matches: (c) => c.effects.some((e) => e.type === 'revive_from_crypt'),
+    matches: (c) => c.effects.some((e) => e.type === 'revive_from_crypt' || e.type === 'twilight_procession'),
   },
   {
     id: 'eff:summon',

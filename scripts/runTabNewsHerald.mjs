@@ -135,6 +135,21 @@ async function main() {
   const user = await userRes.json();
   console.log(`[TabNews Herald] Conectado como @${user.username} (TabCoins: ${user.tabcoins})`);
 
+  // 2B. Garantir descrição e link oficial no perfil público do TabNews
+  const targetDescription =
+    'Card Game Tático & RPG Dark Fantasy direto no navegador (~460 KB, 1.038 cartas em português, tabuleiro 6×2 de Vanguarda e Retaguarda e Torneios Suíços diários gratuitos).\n\nJogue sem instalar nada: https://chromaticpact.com';
+  if (!isDryRun && (!user.description || !user.description.includes('chromaticpact.com'))) {
+    const profPatch = await fetch(`${TABNEWS_API}/users/${user.username}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: cookieHeader,
+      },
+      body: JSON.stringify({ description: targetDescription }),
+    });
+    console.log(`[TabNews Herald] Atualização de bio/link do perfil: HTTP ${profPatch.status}`);
+  }
+
   // 3. Consultar histórico do autor
   const existingRes = await fetch(`${TABNEWS_API}/contents/${user.username}?per_page=50`, {
     headers: { Cookie: cookieHeader },

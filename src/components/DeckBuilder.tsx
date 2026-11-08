@@ -79,7 +79,7 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
         (e) =>
           e.type === 'shield_all_allies' ||
           e.type === 'solar_spear_phalanx' ||
-          e.type === 'undefeated_champion_oath'
+          e.type === 'unconquered_champion_oath'
       ),
   },
   {
@@ -118,7 +118,7 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
           e.type === 'damage_enemy_row' ||
           e.type === 'damage_all_units' ||
           e.type === 'magmatic_subduction' ||
-          e.type === 'red_anvil_march'
+          e.type === 'crimson_anvil_march'
       ),
   },
   {
@@ -135,7 +135,7 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
           e.type === 'buff_all_allies' ||
           e.type === 'summon_token' ||
           e.type === 'food_chain_law' ||
-          e.type === 'primordial_apex_evolution'
+          e.type === 'primordial_evolution_apex'
       ),
   },
   {
@@ -148,7 +148,7 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
       c.effects.some(
         (e) =>
           e.type === 'grant_bonus_essence' ||
-          e.type === 'primordial_apex_evolution' ||
+          e.type === 'primordial_evolution_apex' ||
           e.type === 'royal_prism_convergence'
       ),
   },
@@ -406,7 +406,7 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
           (e.type === 'shield_all_allies' && (e.secondaryValue ?? 0) > 0) ||
           e.type === 'magmatic_subduction' ||
           e.type === 'solar_spear_phalanx' ||
-          e.type === 'undefeated_champion_oath'
+          e.type === 'unconquered_champion_oath'
       ),
   },
   { id: 'mech:regeneration', group: 'mechanics', label: 'Regeneração', matches: (c) => (c.regeneration ?? 0) > 0 },
@@ -415,7 +415,7 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     id: 'mech:ascension',
     group: 'mechanics',
     label: 'Ascensão (Evolução)',
-    matches: (c) => Boolean(c.ascension) || c.effects.some((e) => e.type === 'primordial_apex_evolution'),
+    matches: (c) => Boolean(c.ascension) || c.effects.some((e) => e.type === 'primordial_evolution_apex'),
   },
   {
     id: 'mech:break_domain',
@@ -532,10 +532,10 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
           e.type === 'buff_target_ally' ||
           e.type === 'buff_all_allies' ||
           e.type === 'shield_all_allies' ||
-          e.type === 'red_anvil_march' ||
-          e.type === 'primordial_apex_evolution' ||
+          e.type === 'crimson_anvil_march' ||
+          e.type === 'primordial_evolution_apex' ||
           e.type === 'solar_spear_phalanx' ||
-          e.type === 'undefeated_champion_oath'
+          e.type === 'unconquered_champion_oath'
       ),
   },
   {

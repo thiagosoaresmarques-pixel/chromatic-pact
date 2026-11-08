@@ -1,4 +1,4 @@
-name: Arauto Divulgação Cloud — Dev.to, Hashnode, TabNews & Boletim Semanal
+name: Arauto Divulgação Cloud — Dev.to, TabNews & Boletim Semanal
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         required: false
         default: 'false'
   schedule:
-    # 1. Janelas diárias idempotentes no Dev.to, Hashnode & TabNews (11h20 BRT = 14h20 UTC | 18h20 BRT = 21h20 UTC)
+    # 1. Janelas diárias idempotentes no Dev.to & TabNews (11h20 BRT = 14h20 UTC | 18h20 BRT = 21h20 UTC)
     - cron: '20 14,21 * * *'
     # 2. Convocação de Fim de Semana — toda Sexta às 17h30 BRT (20h30 UTC)
     - cron: '30 20 * * 5'
@@ -32,24 +32,6 @@ jobs:
         env:
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
         run: node scripts/runDevToHerald.mjs
-
-  publish-hashnode-editorial-series:
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Run Hashnode Editorial Cloud Herald (Card Games SEO Series)
-        env:
-          HASHNODE_TOKEN: ${{ secrets.HASHNODE_TOKEN }}
-          HASHNODE_PUBLICATION_ID: ${{ secrets.HASHNODE_PUBLICATION_ID }}
-        run: node scripts/runHashnodeHerald.mjs
 
   publish-tabnews-series:
     runs-on: ubuntu-latest

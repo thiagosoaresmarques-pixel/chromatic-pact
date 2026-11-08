@@ -705,7 +705,7 @@ export const MythologyAtlasView: React.FC<MythologyAtlasViewProps> = ({
                         title={`Clique para inspecionar ${card.name}`}
                       >
                         <img
-                          src={`${card.imagePath}?v=27`}
+                          src={`${card.imagePath}?v=56`}
                           alt={card.name}
                           className="poem-card-medallion-img"
                           loading="lazy"

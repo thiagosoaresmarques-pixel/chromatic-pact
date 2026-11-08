@@ -5983,7 +5983,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           >
             <div className="spectacle-herald-art">
               {spectacleFx.card.imagePath ? (
-                <img src={`${spectacleFx.card.imagePath}?v=5`} alt={spectacleFx.card.name} />
+                <img src={`${spectacleFx.card.imagePath}?v=56`} alt={spectacleFx.card.name} />
               ) : (
                 <span>{DOMAIN_META[spectacleFx.domain]?.icon}</span>
               )}

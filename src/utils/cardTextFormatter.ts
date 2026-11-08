@@ -329,6 +329,89 @@ export function formatEffectActionClause(
       return 'quebra imediatamente qualquer Expansão de Domínio inimiga ativa, inclusive ao atacar, e impõe 2 rodadas de exaustão de barreira ao oponente';
     }
 
+    case 'magmatic_subduction': {
+      const colDmg = effect.secondaryValue ?? 2;
+      if (!detailed) {
+        return `zera a Armadura na coluna do alvo, causa ${v} de dano à Vanguarda e a empurra para a Retaguarda com +${colDmg} de choque`;
+      }
+      return `estilhaça toda a Armadura na coluna do inimigo escolhido nesta rodada, causa ${v} de dano à Vanguarda daquela coluna e empurra os sobreviventes para a Retaguarda, causando +${colDmg} de dano de colisão a toda a coluna se a Retaguarda já estava ocupada`;
+    }
+
+    case 'crimson_anvil_march': {
+      const siege = effect.secondaryValue ?? 2;
+      if (!detailed) {
+        return `coloca seus aliados em Ataque com +${v} de Ataque neste turno para golpear a coluna rival imediatamente ou causar ${siege} ao Soberano`;
+      }
+      return `coloca todas as suas criaturas em postura de Ataque com +${v} de Ataque neste turno e faz cada uma golpear imediatamente o inimigo frontal da sua coluna sem gastar o ataque normal da rodada, ou causar ${siege} de dano de cerco ao Soberano rival se a coluna estiver livre`;
+    }
+
+    case 'coordinate_inversion': {
+      if (!detailed) {
+        return 'inverte Vanguarda e Retaguarda na coluna inimiga escolhida, congela quem recuar e compra 1 carta';
+      }
+      return 'troca imediatamente as posições de todas as unidades visíveis entre a Vanguarda e a Retaguarda da coluna inimiga escolhida, congela por 1 rodada as unidades enviadas para a Retaguarda e compra 1 carta';
+    }
+
+    case 'horizon_singularity': {
+      if (!detailed) {
+        return `puxa a Vanguarda inimiga para o centro, devolve o excedente à mão com +1 de custo, causa ${v} de dano e congela os retidos`;
+      }
+      return `arrasta todas as unidades laterais da Vanguarda inimiga para a coluna central; unidades acima do limite da pilha voltam à mão do dono custando +1 de Essência, e todas as retidas na coluna central sofrem ${v} de dano e ficam congeladas por 1 rodada`;
+    }
+
+    case 'shared_shadow_link': {
+      if (!detailed) {
+        return 'vincula 1 inimigo ao seu aliado de maior Vida neste turno, replicando nele todo dano sofrido por esse aliado';
+      }
+      return 'vincula a unidade inimiga escolhida à sua criatura aliada de maior Vida atual até o fim do turno: todo dano de combate, feitiço ou Sacrifício Vital sofrido por esse aliado é replicado no inimigo vinculado até o limite da Vida máxima do aliado';
+    }
+
+    case 'twilight_procession': {
+      if (!detailed) {
+        return `ergue até ${v} Espectros distintos da Cripta com Ímpeto e Dreno de Vida neste turno, legando +1/+1 aos aliados por golpe`;
+      }
+      return `invoca temporariamente até ${v} criaturas distintas da sua Cripta nas colunas menos povoadas como Espectros Efêmeros com Ímpeto e Dreno de Vida; no fim do turno eles retornam à Cripta e concedem +1/+1 permanente aos demais aliados sobreviventes para cada Espectro que atacou`;
+    }
+
+    case 'food_chain_law': {
+      const heal = effect.secondaryValue ?? 3;
+      if (!detailed) {
+        return `faz seu aliado de maior Ataque emboscar 1 inimigo, herdando suas Habilidades e curando ${heal} de Vida se o abater`;
+      }
+      return `faz sua criatura aliada de maior Ataque emboscar imediatamente o inimigo escolhido em qualquer fileira, sem sofrer contra-ataque se tiver maior Vida máxima; se abater a presa, herda permanentemente todas as palavras-chave dela e restaura ${heal} de Vida`;
+    }
+
+    case 'primordial_evolution_apex': {
+      const regen = effect.secondaryValue ?? 2;
+      if (!detailed) {
+        return `ascende de graça seus aliados com Ascensão e concede +${v}/+${v}, Atropelar e +${regen} de Regeneração aos demais`;
+      }
+      return `evolui gratuitamente todas as suas criaturas aliadas com Ascensão não ativada restaurando toda a sua Vida, enquanto aliados já Ascendidos ou sem Ascensão recebem permanentemente +${v}/+${v}, Atropelar e +${regen} de Regeneração`;
+    }
+
+    case 'solar_spear_phalanx': {
+      const minArm = effect.secondaryValue ?? 2;
+      if (!detailed) {
+        return `iguala a Armadura da sua Vanguarda à maior entre seus aliados, mínimo ${minArm}, e colunas vizinhas retaliam em ${v} de dano`;
+      }
+      return `eleva a Armadura de todas as criaturas na sua Vanguarda até a maior Armadura entre seus aliados com mínimo de ${minArm} e forma uma Falange Solar até o seu próximo turno: sempre que sua Vanguarda for atacada, colunas vizinhas da sua Vanguarda causam ${v} de dano de retaliação ao atacante`;
+    }
+
+    case 'unconquered_champion_oath': {
+      const hpBonus = effect.secondaryValue ?? 4;
+      if (!detailed) {
+        return `coroa 1 aliado como Protetor do Trono com +${v}/+${hpBonus}, +3 de Armadura, Guardião e Escudo Divino para interceptar dano ao Soberano`;
+      }
+      return `coroa a criatura aliada escolhida como Protetor do Trono, concedendo +${v} de Ataque, +${hpBonus} de Vida, +3 de Armadura, Guardião e Escudo Divino; enquanto permanecer viva em campo, ela intercepta todo dano inimigo que atingiria o seu Soberano`;
+    }
+
+    case 'royal_prism_convergence': {
+      if (!detailed) {
+        return 'dispara simultaneamente até 5 decretos elementais, um para cada cor distinta entre seus Terrenos canalizados';
+      }
+      return 'conta quantos Domínios coloridos distintos existem entre seus Terrenos canalizados e dispara todos os decretos correspondentes de uma só vez: Vermelho causa 3 de dano à Vanguarda inimiga, Azul congela 2 inimigos e compra 1 carta, Roxo drena 3 de Vida do Soberano rival, Verde concede +2/+2 e Regeneração 1 aos aliados e Dourado concede Escudo Divino à sua Vanguarda';
+    }
+
     default:
       return (effect.description || '').replace(/[()]/g, '');
   }

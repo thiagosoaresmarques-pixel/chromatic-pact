@@ -40,7 +40,18 @@ export type TriggerEffectType =
   | 'summon_token'
   | 'shield_all_allies'
   | 'steal_small_enemy'
-  | 'break_domain_expansion';
+  | 'break_domain_expansion'
+  | 'magmatic_subduction'
+  | 'crimson_anvil_march'
+  | 'coordinate_inversion'
+  | 'horizon_singularity'
+  | 'shared_shadow_link'
+  | 'twilight_procession'
+  | 'food_chain_law'
+  | 'primordial_evolution_apex'
+  | 'solar_spear_phalanx'
+  | 'unconquered_champion_oath'
+  | 'royal_prism_convergence';
 
 export interface CardEffect {
   trigger: 'on_enter' | 'on_death' | 'on_attack' | 'turn_start' | 'turn_end' | 'spell_cast';
@@ -123,6 +134,12 @@ export interface BoardUnit {
   riftArmorBonus?: number;
   isConcealedDeploy?: boolean;
   isTrap?: boolean;
+  armorShatteredThisRound?: boolean;
+  tempTurnAtkBonus?: number;
+  sharedShadowTargetId?: string;
+  sharedShadowRemainingCap?: number;
+  isEphemeralSpecter?: boolean;
+  isCrownProtector?: boolean;
 }
 
 export type AffinityMap = Record<Domain, number>;
@@ -169,6 +186,9 @@ export interface PlayerState {
   hasUsedBloodPactThisTurn?: boolean;
   hasUsedSimpleDomainThisTurn?: boolean;
   domainExhaustionTurns?: number;
+  solarPhalanxTurns?: number;
+  tempCardCostPenalties?: Record<string, number>;
+  twilightSpecterAttacksThisRound?: number;
   affinities: AffinityMap;
   channeledCards: CardDefinition[];
   deck: CardDefinition[];

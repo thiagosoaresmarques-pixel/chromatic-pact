@@ -1037,6 +1037,173 @@ function evaluateCardPlayValue(
         }
         break;
       }
+      case 'magmatic_subduction': {
+        if (enemyUnits.length > 0) {
+          const vanEnemies = enemyUnits.filter((u) => u.row === 'vanguard');
+          const pool = vanEnemies.length > 0 ? vanEnemies : enemyUnits;
+          const scored = pool
+            .map((u) => {
+              const rearOccupied = getSlotUnits(playerState, 'rearguard', u.slotIndex).some(
+                (r) => !r.isTrap && r.currentHp > 0
+              );
+              const colArmor =
+                u.currentArmor +
+                getSlotUnits(playerState, 'rearguard', u.slotIndex).reduce(
+                  (acc, r) => acc + r.currentArmor,
+                  0
+                );
+              return {
+                unit: u,
+                val: u.currentAtk * 2 + colArmor * 6 + (rearOccupied ? 16 : 0),
+              };
+            })
+            .sort((a, b) => b.val - a.val);
+          usefulEffectFound = true;
+          targetId = scored[0].unit.instanceId;
+          spellScore += 34 + Math.min(30, scored[0].val);
+        }
+        break;
+      }
+      case 'crimson_anvil_march': {
+        const creatureAllies = friendlyUnits.filter((u) => u.card.type === 'creature');
+        if (creatureAllies.length >= 2 || (creatureAllies.length === 1 && playerState.hp <= 8)) {
+          usefulEffectFound = true;
+          spellScore += creatureAllies.length * 24 + (playerState.hp <= 10 ? 25 : 0);
+        }
+        break;
+      }
+      case 'coordinate_inversion': {
+        if (enemyUnits.length > 0) {
+          const scoredCols = [0, 1, 2, 3, 4, 5]
+            .map((col) => {
+              const van = enemyUnits.filter((u) => u.slotIndex === col && u.row === 'vanguard');
+              const rear = enemyUnits.filter((u) => u.slotIndex === col && u.row === 'rearguard');
+              if (van.length === 0 && rear.length === 0) return null;
+              const guardianBonus = van.some((u) => u.keywords.includes('Guardião')) ? 20 : 0;
+              const swapBonus = van.length > 0 && rear.length > 0 ? 18 : 0;
+              const pick = van[0] ?? rear[0];
+              return {
+                pick,
+                val: van.length * 14 + rear.length * 10 + guardianBonus + swapBonus,
+              };
+            })
+            .filter((x): x is { pick: (typeof enemyUnits)[number]; val: number } => Boolean(x))
+            .sort((a, b) => b.val - a.val);
+          if (scoredCols.length > 0) {
+            usefulEffectFound = true;
+            targetId = scoredCols[0].pick.instanceId;
+            spellScore += 24 + Math.min(36, scoredCols[0].val);
+          }
+        }
+        break;
+      }
+      case 'horizon_singularity': {
+        const vanEnemies = enemyUnits.filter((u) => u.row === 'vanguard');
+        if (vanEnemies.length >= 2) {
+          usefulEffectFound = true;
+          spellScore += vanEnemies.length * 26;
+        }
+        break;
+      }
+      case 'shared_shadow_link': {
+        const creatureAllies = friendlyUnits.filter((u) => u.card.type === 'creature');
+        if (creatureAllies.length > 0 && enemyUnits.length > 0) {
+          const sortedEnemies = [...enemyUnits].sort(
+            (a, b) => b.currentAtk * 2 + b.currentHp - (a.currentAtk * 2 + a.currentHp)
+          );
+          usefulEffectFound = true;
+          targetId = sortedEnemies[0].instanceId;
+          spellScore += 36 + Math.min(24, sortedEnemies[0].currentHp * 3);
+        }
+        break;
+      }
+      case 'twilight_procession': {
+        const distinctCryptCreatures = new Set(
+          aiState.crypt.filter((c) => c.type === 'creature').map((c) => c.id)
+        ).size;
+        const hasBoardSpace = [0, 1, 2, 3, 4, 5].some(
+          (col) =>
+            canDeployToSlot(aiState, 'vanguard', col) ||
+            canDeployToSlot(aiState, 'rearguard', col)
+        );
+        if (distinctCryptCreatures >= 2 && hasBoardSpace) {
+          usefulEffectFound = true;
+          spellScore += Math.min(3, distinctCryptCreatures) * 28;
+        }
+        break;
+      }
+      case 'food_chain_law': {
+        const creatureAllies = friendlyUnits.filter((u) => u.card.type === 'creature');
+        if (creatureAllies.length > 0 && enemyUnits.length > 0) {
+          const sortedAllies = [...creatureAllies].sort(
+            (a, b) => b.currentAtk - a.currentAtk || b.maxHp - a.maxHp
+          );
+          const predator = sortedAllies[0];
+          const killablePrey = enemyUnits.filter(
+            (e) =>
+              !e.hasDivineShield &&
+              e.currentHp <= Math.max(1, predator.currentAtk - e.currentArmor)
+          );
+          const pool = killablePrey.length > 0 ? killablePrey : enemyUnits;
+          const sortedPrey = [...pool].sort(
+            (a, b) =>
+              b.keywords.length * 6 + b.currentAtk * 2 - (a.keywords.length * 6 + a.currentAtk * 2)
+          );
+          usefulEffectFound = true;
+          targetId = sortedPrey[0].instanceId;
+          spellScore += (killablePrey.length > 0 ? 44 : 26) + sortedPrey[0].keywords.length * 6;
+        }
+        break;
+      }
+      case 'primordial_evolution_apex': {
+        const creatureAllies = friendlyUnits.filter((u) => u.card.type === 'creature');
+        if (creatureAllies.length >= 2) {
+          const unascendedCount = creatureAllies.filter(
+            (u) => Boolean(u.card.ascension) && !u.isAscended
+          ).length;
+          usefulEffectFound = true;
+          spellScore += creatureAllies.length * 25 + unascendedCount * 15;
+        }
+        break;
+      }
+      case 'solar_spear_phalanx': {
+        const vanAllies = friendlyUnits.filter(
+          (u) => u.card.type === 'creature' && u.row === 'vanguard'
+        );
+        if (vanAllies.length >= 2 && enemyUnits.length > 0) {
+          usefulEffectFound = true;
+          spellScore += vanAllies.length * 22;
+        }
+        break;
+      }
+      case 'unconquered_champion_oath': {
+        const creatureAllies = friendlyUnits.filter(
+          (u) => u.card.type === 'creature' && !u.isCrownProtector
+        );
+        if (creatureAllies.length > 0) {
+          creatureAllies.sort(
+            (a, b) =>
+              (b.row === 'vanguard' ? 10 : 0) +
+              b.maxHp * 2 +
+              b.currentArmor * 4 -
+              ((a.row === 'vanguard' ? 10 : 0) + a.maxHp * 2 + a.currentArmor * 4)
+          );
+          usefulEffectFound = true;
+          targetId = creatureAllies[0].instanceId;
+          spellScore += 48 + (aiState.hp <= 18 ? 26 : 0);
+        }
+        break;
+      }
+      case 'royal_prism_convergence': {
+        const distinctColors = new Set(
+          aiState.channeledCards.map((c) => c.domain).filter((d) => d !== 'neutral')
+        ).size;
+        if (distinctColors >= 2 || (distinctColors >= 1 && enemyUnits.length >= 2)) {
+          usefulEffectFound = true;
+          spellScore += distinctColors * 24;
+        }
+        break;
+      }
     }
   }
 
@@ -2035,7 +2202,11 @@ function getSpellArcaneSpeedTier(card: CardDefinition): 1 | 2 | 3 {
       eff.type === 'buff_target_ally' ||
       eff.type === 'buff_all_allies' ||
       eff.type === 'shield_all_allies' ||
-      eff.type === 'grant_bonus_essence'
+      eff.type === 'grant_bonus_essence' ||
+      eff.type === 'solar_spear_phalanx' ||
+      eff.type === 'unconquered_champion_oath' ||
+      eff.type === 'primordial_evolution_apex' ||
+      eff.type === 'twilight_procession'
     ) {
       return 1;
     }
@@ -2044,7 +2215,10 @@ function getSpellArcaneSpeedTier(card: CardDefinition): 1 | 2 | 3 {
       eff.type === 'freeze_enemy_vanguard' ||
       eff.type === 'bounce_enemy' ||
       eff.type === 'debuff_enemy_vanguard_atk' ||
-      eff.type === 'steal_small_enemy'
+      eff.type === 'steal_small_enemy' ||
+      eff.type === 'coordinate_inversion' ||
+      eff.type === 'horizon_singularity' ||
+      eff.type === 'shared_shadow_link'
     ) {
       return 2;
     }

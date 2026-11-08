@@ -480,7 +480,13 @@ export const CardView: React.FC<CardViewProps> = ({
               {displayCard.cost}
             </span>
             <span className="cpa-token-name">
-              {unit?.isAscended ? `★ ${displayName}` : displayName}
+              {unit?.isCrownProtector
+                ? `♛ ${displayName}`
+                : unit?.isEphemeralSpecter
+                ? `❖ ${displayName}`
+                : unit?.isAscended
+                ? `★ ${displayName}`
+                : displayName}
             </span>
           </div>
 

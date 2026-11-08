@@ -154,6 +154,7 @@ export function cloneGameState(state: GameState): GameState {
     );
     const cloned: PlayerState = {
       ...p,
+      tempCardCostPenalties: p.tempCardCostPenalties ? { ...p.tempCardCostPenalties } : undefined,
       affinities: { ...p.affinities },
       channeledCards: [...p.channeledCards],
       deck: [...p.deck],
@@ -1155,6 +1156,12 @@ export function recalculateFormationBonuses(state: GameState): void {
         }
       }
     }
+
+    for (const u of getAllBoardUnits(pState)) {
+      if (u.armorShatteredThisRound) {
+        u.currentArmor = 0;
+      }
+    }
   }
 }
 
@@ -1752,6 +1759,7 @@ export function breakDomainExpansionWithSacrifice(
       found.unit.currentHp -= actual;
       totalPaid += actual;
       addFeedback(next, found.unit.instanceId, `-${actual}❤️ Romper Domínio`, 'damage');
+      replicateSharedShadowDamage(next, found.unit, actual, 'Sacrifício Vital');
     }
   }
 
@@ -1982,7 +1990,10 @@ export function burnCardForEssence(
 export function canUseBloodPact(state: GameState, actor: 'player' | 'ai'): boolean {
   if (state.phase === 'gameover' || (actor === 'player' && state.activePlayer !== 'player')) return false;
   const actorState = state[actor];
-  return !actorState.hasUsedBloodPactThisTurn && actorState.hp > 3;
+  const hasShadowLinkedSacrificeHost = getAllBoardUnits(actorState).some(
+    (u) => !u.isTrap && u.currentHp > 0 && Boolean(u.sharedShadowTargetId)
+  );
+  return !actorState.hasUsedBloodPactThisTurn && (actorState.hp > 3 || hasShadowLinkedSacrificeHost);
 }
 
 export function bloodPactForEssence(state: GameState, actor: 'player' | 'ai'): GameState {
@@ -1990,7 +2001,23 @@ export function bloodPactForEssence(state: GameState, actor: 'player' | 'ai'): G
 
   const next = cloneGameState(state);
   const actorState = next[actor];
-  actorState.hp -= 3;
+  const shadowHost = getAllBoardUnits(actorState).find(
+    (u) => !u.isTrap && u.currentHp > 0 && Boolean(u.sharedShadowTargetId)
+  );
+
+  if (shadowHost) {
+    const unitPaid = Math.min(3, shadowHost.currentHp);
+    const sovRemainder = 3 - unitPaid;
+    shadowHost.currentHp -= unitPaid;
+    if (sovRemainder > 0) {
+      actorState.hp = Math.max(1, actorState.hp - sovRemainder);
+    }
+    addFeedback(next, shadowHost.instanceId, `-${unitPaid}❤️ Sacrifício Vital`, 'damage');
+    replicateSharedShadowDamage(next, shadowHost, unitPaid, 'Sacrifício Vital');
+  } else {
+    actorState.hp -= 3;
+  }
+
   actorState.currentEssence += 1;
   actorState.hasUsedBloodPactThisTurn = true;
   actorState.corruption = Math.min(10, actorState.corruption + 1);
@@ -2002,6 +2029,7 @@ export function bloodPactForEssence(state: GameState, actor: 'player' | 'ai'): G
     'corruption',
     `${actorState.name} ativou Sacrifício Vital (-3❤️ Vida, +1 Sobrecarga -> +1⚡ Essência imediata)!`
   );
+  cleanupDeadUnits(next);
   return next;
 }
 
@@ -2195,14 +2223,10 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
         enemies.sort((a, b) => a.currentHp - b.currentHp || b.currentAtk - a.currentAtk);
         const target = enemies[0];
         dealEffectDamageToUnit(next, target, 2, info.name);
-        enemyState.hp = Math.max(0, enemyState.hp - 1);
-        registerSovereignDamageForDomainConcentration(next, enemyActor, 1);
-        addFeedback(next, `${enemyActor}-sovereign`, '-1🔥 Chama Soberana', 'damage');
+        dealEnemyDamageToSovereign(next, enemyActor, 1, info.name, '-1🔥 Chama Soberana');
         addLog(next, actor, 'spell', `Poder do Soberano [${info.name}] queimou [${target.card.name}] em 2🔥 e ${enemyState.name} em 1🔥!`);
       } else {
-        enemyState.hp = Math.max(0, enemyState.hp - 3);
-        registerSovereignDamageForDomainConcentration(next, enemyActor, 3);
-        addFeedback(next, `${enemyActor}-sovereign`, '-3🔥 Chama Soberana', 'damage');
+        dealEnemyDamageToSovereign(next, enemyActor, 3, info.name, '-3🔥 Chama Soberana');
         addLog(next, actor, 'spell', `Poder do Soberano [${info.name}] atingiu ${enemyState.name} em 3 de dano!`);
       }
       break;
@@ -2217,9 +2241,7 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
         addFeedback(next, target.instanceId, '❄️ Congelado (-2)!', 'freeze');
         addLog(next, actor, 'spell', `Poder do Soberano [${info.name}] congelou [${target.card.name}] e causou 2❄️ de dano!`);
       } else {
-        enemyState.hp = Math.max(0, enemyState.hp - 2);
-        registerSovereignDamageForDomainConcentration(next, enemyActor, 2);
-        addFeedback(next, `${enemyActor}-sovereign`, '-2❄️ Pulso Rúnico', 'damage');
+        dealEnemyDamageToSovereign(next, enemyActor, 2, info.name, '-2❄️ Pulso Rúnico');
       }
       const allies = getAllBoardUnits(actorState).filter((u) => u.card.type === 'creature' && !u.isTrap);
       if (allies.length > 0) {
@@ -2243,11 +2265,9 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
         addFeedback(next, `${actor}-sovereign`, '+2❤️ Dreno Umbroso', 'heal');
         addLog(next, actor, 'spell', `Poder do Soberano [${info.name}] drenou 2💀 de [${target.card.name}] e curou +2❤️!`);
       } else {
-        enemyState.hp = Math.max(0, enemyState.hp - 2);
-        registerSovereignDamageForDomainConcentration(next, enemyActor, 2);
+        dealEnemyDamageToSovereign(next, enemyActor, 2, info.name, '-2💀 Dreno Umbroso');
         actorState.hp = Math.min(actorState.maxHp, actorState.hp + 2);
         actorState.corruption = Math.min(10, actorState.corruption + 1);
-        addFeedback(next, `${enemyActor}-sovereign`, '-2💀 Dreno Umbroso', 'damage');
         addFeedback(next, `${actor}-sovereign`, '+2❤️ Dreno Umbroso', 'heal');
         addLog(next, actor, 'spell', `Poder do Soberano [${info.name}] drenou 2 de Vida de ${enemyState.name}!`);
       }
@@ -2303,9 +2323,7 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
           `Poder do Soberano [${info.name}] descarregou 2⚙️ do Ponto Zero em [${target.card.name}]!`
         );
       } else {
-        enemyState.hp = Math.max(0, enemyState.hp - 2);
-        registerSovereignDamageForDomainConcentration(next, enemyActor, 2);
-        addFeedback(next, `${enemyActor}-sovereign`, '-2⚙️ Pulso da Matriz', 'damage');
+        dealEnemyDamageToSovereign(next, enemyActor, 2, info.name, '-2⚙️ Pulso da Matriz');
         addLog(
           next,
           actor,
@@ -2355,6 +2373,10 @@ export function getEffectiveCardCost(
   }
   if (rift === 'living_forge' && card.type === 'relic') {
     cost = Math.max(0, cost - 2);
+  }
+  const bouncePenalty = state[actor].tempCardCostPenalties?.[card.id] ?? 0;
+  if (bouncePenalty > 0) {
+    cost += bouncePenalty;
   }
   return Math.max(0, cost);
 }
@@ -2539,6 +2561,105 @@ function createBoardUnit(
   };
 }
 
+function replicateSharedShadowDamage(
+  state: GameState,
+  allyUnit: BoardUnit,
+  rawLostHp: number,
+  sourceLabel: string
+): void {
+  if (
+    rawLostHp <= 0 ||
+    !allyUnit.sharedShadowTargetId ||
+    (allyUnit.sharedShadowRemainingCap ?? 0) <= 0
+  ) {
+    return;
+  }
+
+  const targetFound = findUnitOnBoard(state, allyUnit.sharedShadowTargetId);
+  if (
+    !targetFound ||
+    targetFound.owner === allyUnit.owner ||
+    targetFound.unit.isTrap ||
+    targetFound.unit.currentHp <= 0
+  ) {
+    allyUnit.sharedShadowTargetId = undefined;
+    allyUnit.sharedShadowRemainingCap = 0;
+    return;
+  }
+
+  const mirrored = Math.min(rawLostHp, allyUnit.sharedShadowRemainingCap ?? rawLostHp);
+  if (mirrored <= 0) return;
+  allyUnit.sharedShadowRemainingCap = Math.max(
+    0,
+    (allyUnit.sharedShadowRemainingCap ?? 0) - mirrored
+  );
+
+  const boundEnemy = targetFound.unit;
+  if (boundEnemy.hasDivineShield) {
+    boundEnemy.hasDivineShield = false;
+    addFeedback(state, boundEnemy.instanceId, 'Escudo Quebrado (Elo)!', 'shield');
+    addLog(
+      state,
+      allyUnit.owner,
+      'effect',
+      `Elo da Sombra Partilhada de [${allyUnit.card.name}] quebrou o Escudo Divino de [${boundEnemy.card.name}]!`
+    );
+    return;
+  }
+
+  boundEnemy.currentHp = Math.max(0, boundEnemy.currentHp - mirrored);
+  addFeedback(state, boundEnemy.instanceId, `-${mirrored} (Elo!)`, 'damage');
+  addLog(
+    state,
+    allyUnit.owner,
+    'effect',
+    `Elo da Sombra Partilhada replicou ${mirrored} de dano de [${allyUnit.card.name}] (${sourceLabel}) em [${boundEnemy.card.name}]!`
+  );
+}
+
+function findLivingCrownProtector(playerState: PlayerState): BoardUnit | null {
+  for (const u of getAllBoardUnits(playerState)) {
+    if (u.isCrownProtector && !u.isTrap && u.card.type === 'creature' && u.currentHp > 0) {
+      return u;
+    }
+  }
+  return null;
+}
+
+function dealEnemyDamageToSovereign(
+  state: GameState,
+  defenderOwner: 'player' | 'ai',
+  rawDamage: number,
+  sourceLabel: string,
+  customFeedback?: string
+): number {
+  if (rawDamage <= 0) return 0;
+
+  const defenderState = state[defenderOwner];
+  const protector = findLivingCrownProtector(defenderState);
+  if (protector) {
+    dealEffectDamageToUnit(
+      state,
+      protector,
+      rawDamage,
+      `Interceptação Real (${sourceLabel})`
+    );
+    addFeedback(state, `${defenderOwner}-sovereign`, '🛡️ Protetor Interceptou!', 'shield');
+    addLog(
+      state,
+      defenderOwner,
+      'effect',
+      `[${protector.card.name}] (Protetor do Trono) interceptou ${rawDamage} de dano de ${sourceLabel} direcionado a ${defenderState.name}!`
+    );
+    return 0;
+  }
+
+  defenderState.hp = Math.max(0, defenderState.hp - rawDamage);
+  registerSovereignDamageForDomainConcentration(state, defenderOwner, rawDamage);
+  addFeedback(state, `${defenderOwner}-sovereign`, customFeedback ?? `-${rawDamage}`, 'damage');
+  return rawDamage;
+}
+
 function dealEffectDamageToUnit(
   state: GameState,
   target: BoardUnit,
@@ -2571,6 +2692,7 @@ function dealEffectDamageToUnit(
 
   target.currentHp -= dmgAfterArmor;
   addFeedback(state, target.instanceId, `-${dmgAfterArmor}`, 'damage');
+  replicateSharedShadowDamage(state, target, dmgAfterArmor, sourceLabel);
 
   return dmgAfterArmor;
 }
@@ -2701,15 +2823,15 @@ function executeCardEffect(
           `[${sourceCard.name}] atingiu [${targetUnit.card.name}] com ${dmg} de dano!`
         );
       } else {
-        enemyState.hp = Math.max(0, enemyState.hp - dmg);
-        registerSovereignDamageForDomainConcentration(state, enemyActor, dmg);
-        addFeedback(state, `${enemyActor}-sovereign`, `-${dmg}`, 'damage');
-        addLog(
-          state,
-          actor,
-          'effect',
-          `[${sourceCard.name}] atingiu ${enemyState.name} diretamente com ${dmg} de dano!`
-        );
+        const dealtSov = dealEnemyDamageToSovereign(state, enemyActor, dmg, sourceCard.name);
+        if (dealtSov > 0) {
+          addLog(
+            state,
+            actor,
+            'effect',
+            `[${sourceCard.name}] atingiu ${enemyState.name} diretamente com ${dmg} de dano!`
+          );
+        }
       }
       break;
     }
@@ -2734,15 +2856,15 @@ function executeCardEffect(
 
     case 'damage_enemy_sovereign': {
       const dmg = effect.value + bonusDmg;
-      enemyState.hp = Math.max(0, enemyState.hp - dmg);
-      registerSovereignDamageForDomainConcentration(state, enemyActor, dmg);
-      addFeedback(state, `${enemyActor}-sovereign`, `-${dmg}`, 'damage');
-      addLog(
-        state,
-        actor,
-        'effect',
-        `[${sourceCard.name}] causou ${dmg} de dano direto a ${enemyState.name}!`
-      );
+      const dealtSov = dealEnemyDamageToSovereign(state, enemyActor, dmg, sourceCard.name);
+      if (dealtSov > 0) {
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] causou ${dmg} de dano direto a ${enemyState.name}!`
+        );
+      }
       break;
     }
 
@@ -3287,6 +3409,887 @@ function executeCardEffect(
       );
       break;
     }
+
+    case 'magmatic_subduction': {
+      syncPlayerBoardSlots(enemyState);
+      let targetCol = -1;
+      if (options?.targetId) {
+        const found = findUnitOnBoard(state, options.targetId);
+        if (
+          found &&
+          found.owner === enemyActor &&
+          !found.unit.isTrap &&
+          !(state.roundSubPhase === 'deploy' && found.unit.isConcealedDeploy)
+        ) {
+          targetCol = found.slotIndex;
+        }
+      }
+      if (targetCol < 0) {
+        let bestColScore = -1;
+        for (let c = 0; c < BOARD_COLS; c++) {
+          const van = getSlotUnits(enemyState, 'vanguard', c).filter(
+            (u) => !u.isTrap && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+          );
+          const rear = getSlotUnits(enemyState, 'rearguard', c).filter(
+            (u) => !u.isTrap && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+          );
+          if (van.length === 0 && rear.length === 0) continue;
+          const armorSum = [...van, ...rear].reduce((acc, u) => acc + u.currentArmor, 0);
+          const score = van.length * 4 + rear.length * 3 + armorSum * 2;
+          if (score > bestColScore) {
+            bestColScore = score;
+            targetCol = c;
+          }
+        }
+      }
+      if (targetCol < 0) break;
+
+      const vanDmg = (effect.value || 3) + bonusDmg;
+      const collisionDmg = effect.secondaryValue ?? 2;
+      const colAllVisible = [
+        ...getSlotUnits(enemyState, 'vanguard', targetCol),
+        ...getSlotUnits(enemyState, 'rearguard', targetCol),
+      ].filter((u) => !u.isTrap && u.currentHp > 0 && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy));
+
+      for (const u of colAllVisible) {
+        if (u.currentArmor > 0) {
+          u.currentArmor = 0;
+          addFeedback(state, u.instanceId, 'Armadura Fundida!', 'damage');
+        }
+        u.armorShatteredThisRound = true;
+      }
+
+      const vanTargets = getSlotUnits(enemyState, 'vanguard', targetCol).filter(
+        (u) => !u.isTrap && u.currentHp > 0 && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+      );
+      for (const vUnit of vanTargets) {
+        dealEffectDamageToUnit(state, vUnit, vanDmg, sourceCard.name);
+      }
+
+      const rearHadOccupants = getSlotUnits(enemyState, 'rearguard', targetCol).some(
+        (u) => !u.isTrap && u.currentHp > 0 && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+      );
+      const survivingVan = enemyState.vanguardStacks[targetCol].filter(
+        (u) => !u.isTrap && u.currentHp > 0 && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+      );
+
+      let pushedCount = 0;
+      for (const survivor of survivingVan) {
+        if (enemyState.rearguardStacks[targetCol].length < MAX_UNITS_PER_SLOT) {
+          const idxInVan = enemyState.vanguardStacks[targetCol].findIndex(
+            (x) => x.instanceId === survivor.instanceId
+          );
+          if (idxInVan !== -1) {
+            enemyState.vanguardStacks[targetCol].splice(idxInVan, 1);
+            survivor.row = 'rearguard';
+            enemyState.rearguardStacks[targetCol].push(survivor);
+            pushedCount += 1;
+            addFeedback(state, survivor.instanceId, 'Empurrado!', 'damage');
+          }
+        } else {
+          pushedCount += 1;
+        }
+      }
+      syncPlayerBoardSlots(enemyState);
+
+      if (survivingVan.length > 0 && rearHadOccupants) {
+        const afterUnits = [
+          ...getSlotUnits(enemyState, 'vanguard', targetCol),
+          ...getSlotUnits(enemyState, 'rearguard', targetCol),
+        ].filter((u) => !u.isTrap && u.currentHp > 0 && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy));
+        for (const colUnit of afterUnits) {
+          dealEffectDamageToUnit(state, colUnit, collisionDmg, `Colisão de ${sourceCard.name}`);
+        }
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] fundiu as Armaduras da Coluna ${targetCol + 1}, empurrou a Vanguarda (${pushedCount}) e causou +${collisionDmg} de dano de colisão na Retaguarda ocupada!`
+        );
+      } else {
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] fundiu as Armaduras inimigas na Coluna ${targetCol + 1}, causou ${vanDmg} de dano e empurrou os sobreviventes para a Retaguarda!`
+        );
+      }
+      break;
+    }
+
+    case 'crimson_anvil_march': {
+      const atkBuff = effect.value || 2;
+      const siegeDmg = effect.secondaryValue ?? 2;
+      const chargers = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      if (chargers.length === 0) break;
+
+      let strikesCount = 0;
+      let totalSiege = 0;
+
+      for (const ally of chargers) {
+        ally.stance = 'attack';
+        ally.currentAtk += atkBuff;
+        ally.tempTurnAtkBonus = (ally.tempTurnAtkBonus ?? 0) + atkBuff;
+        addFeedback(state, ally.instanceId, `+${atkBuff} ATQ (Carga!)`, 'buff');
+
+        if (ally.isEphemeralSpecter) {
+          actorState.twilightSpecterAttacksThisRound =
+            (actorState.twilightSpecterAttacksThisRound ?? 0) + 1;
+        }
+
+        const enemyColVan = getSlotUnits(enemyState, 'vanguard', ally.slotIndex).filter(
+          (e) => !e.isTrap && e.currentHp > 0 && !(state.roundSubPhase === 'deploy' && e.isConcealedDeploy)
+        );
+        const enemyColRear = getSlotUnits(enemyState, 'rearguard', ally.slotIndex).filter(
+          (e) => !e.isTrap && e.currentHp > 0 && !(state.roundSubPhase === 'deploy' && e.isConcealedDeploy)
+        );
+        const frontEnemy = enemyColVan[0] ?? enemyColRear[0] ?? null;
+
+        if (frontEnemy) {
+          strikesCount += 1;
+          if (frontEnemy.hasDivineShield) {
+            frontEnemy.hasDivineShield = false;
+            addFeedback(state, frontEnemy.instanceId, 'Escudo Quebrado!', 'shield');
+          } else {
+            const rawAtk = ally.currentAtk;
+            const dmgToDef =
+              rawAtk > 0
+                ? frontEnemy.currentArmor < rawAtk
+                  ? Math.max(1, rawAtk - frontEnemy.currentArmor)
+                  : 0
+                : 0;
+            const hpBefore = frontEnemy.currentHp;
+            frontEnemy.currentHp -= dmgToDef;
+            if (dmgToDef > 0) {
+              addFeedback(state, frontEnemy.instanceId, `-${dmgToDef}`, 'damage');
+              replicateSharedShadowDamage(state, frontEnemy, dmgToDef, sourceCard.name);
+              if (ally.keywords.includes('Toque Letal')) {
+                const execDmg = Math.max(0, frontEnemy.currentHp);
+                frontEnemy.currentHp = 0;
+                if (execDmg > 0) {
+                  replicateSharedShadowDamage(state, frontEnemy, execDmg, 'Toque Letal');
+                }
+                addFeedback(state, frontEnemy.instanceId, 'Toque Letal!', 'damage');
+              }
+              if (ally.keywords.includes('Dreno de Vida')) {
+                actorState.hp = Math.min(actorState.maxHp, actorState.hp + 1);
+                addFeedback(state, `${actor}-sovereign`, '+1 Dreno de Vida', 'heal');
+              }
+              if (dmgToDef > hpBefore && ally.keywords.includes('Atropelar')) {
+                const excess = dmgToDef - hpBefore;
+                dealEnemyDamageToSovereign(
+                  state,
+                  enemyActor,
+                  excess,
+                  `Atropelar (${ally.card.name})`,
+                  `-${excess} (Atropelar!)`
+                );
+              }
+            } else {
+              addFeedback(state, frontEnemy.instanceId, '0 (Armadura)', 'shield');
+            }
+          }
+        } else {
+          totalSiege += siegeDmg;
+          dealEnemyDamageToSovereign(
+            state,
+            enemyActor,
+            siegeDmg,
+            `Cerco de ${ally.card.name}`,
+            `-${siegeDmg}🔥 Cerco`
+          );
+        }
+      }
+
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] comandou Carga Fora de Fase (+${atkBuff} ATQ): ${strikesCount} golpe(s) direto(s) nas colunas e ${totalSiege} de dano de cerco!`
+      );
+      break;
+    }
+
+    case 'coordinate_inversion': {
+      syncPlayerBoardSlots(enemyState);
+      let targetCol = -1;
+      if (options?.targetId) {
+        const found = findUnitOnBoard(state, options.targetId);
+        if (
+          found &&
+          found.owner === enemyActor &&
+          !found.unit.isTrap &&
+          !(state.roundSubPhase === 'deploy' && found.unit.isConcealedDeploy)
+        ) {
+          targetCol = found.slotIndex;
+        }
+      }
+      if (targetCol < 0) {
+        let bestScore = -1;
+        for (let c = 0; c < BOARD_COLS; c++) {
+          const van = getSlotUnits(enemyState, 'vanguard', c).filter(
+            (u) => !u.isTrap && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+          );
+          const rear = getSlotUnits(enemyState, 'rearguard', c).filter(
+            (u) => !u.isTrap && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+          );
+          if (van.length === 0 && rear.length === 0) continue;
+          const hasVanGuardian = van.some((u) => u.keywords.includes('Guardião'));
+          const score =
+            (van.length > 0 && rear.length > 0 ? 12 : 0) +
+            rear.length * 5 +
+            (hasVanGuardian ? 6 : 2);
+          if (score > bestScore) {
+            bestScore = score;
+            targetCol = c;
+          }
+        }
+      }
+
+      if (targetCol >= 0) {
+        const rawVan = enemyState.vanguardStacks[targetCol];
+        const rawRear = enemyState.rearguardStacks[targetCol];
+
+        const hiddenVan = rawVan.filter(
+          (u) => u.isTrap || (state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+        );
+        const visibleVan = rawVan.filter(
+          (u) => !u.isTrap && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+        );
+
+        const hiddenRear = rawRear.filter(
+          (u) => u.isTrap || (state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+        );
+        const visibleRear = rawRear.filter(
+          (u) => !u.isTrap && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+        );
+
+        for (const u of visibleVan) {
+          u.isFrozen = true;
+          u.row = 'rearguard';
+          addFeedback(state, u.instanceId, 'Invertido & Congelado!', 'freeze');
+        }
+        for (const u of visibleRear) {
+          u.row = 'vanguard';
+          addFeedback(state, u.instanceId, 'Puxado à Vanguarda!', 'freeze');
+        }
+
+        const nextVan = [...hiddenVan, ...visibleRear].slice(0, MAX_UNITS_PER_SLOT);
+        const nextRear = [...visibleVan, ...hiddenRear].slice(0, MAX_UNITS_PER_SLOT);
+
+        enemyState.vanguardStacks[targetCol] = nextVan;
+        enemyState.rearguardStacks[targetCol] = nextRear;
+        syncPlayerBoardSlots(enemyState);
+
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] inverteu Vanguarda e Retaguarda da Coluna ${targetCol + 1} inimiga e congelou os recuados!`
+        );
+      }
+
+      drawCardsForActor(state, actor, effect.value || 1);
+      break;
+    }
+
+    case 'horizon_singularity': {
+      syncPlayerBoardSlots(enemyState);
+      const col2Count = getSlotUnits(enemyState, 'vanguard', 2).filter((u) => !u.isTrap).length;
+      const col3Count = getSlotUnits(enemyState, 'vanguard', 3).filter((u) => !u.isTrap).length;
+      const centerCol = col3Count > col2Count ? 3 : 2;
+
+      const pullOrder = [2, 3, 1, 4, 0, 5].filter((c) => c !== centerCol);
+      let pulledCount = 0;
+      let bouncedCount = 0;
+
+      for (const col of pullOrder) {
+        const moving = enemyState.vanguardStacks[col].filter(
+          (u) => !u.isTrap && u.currentHp > 0 && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+        );
+        for (const unit of moving) {
+          const idx = enemyState.vanguardStacks[col].findIndex(
+            (x) => x.instanceId === unit.instanceId
+          );
+          if (idx === -1) continue;
+          enemyState.vanguardStacks[col].splice(idx, 1);
+
+          if (enemyState.vanguardStacks[centerCol].length < MAX_UNITS_PER_SLOT) {
+            unit.slotIndex = centerCol;
+            enemyState.vanguardStacks[centerCol].push(unit);
+            pulledCount += 1;
+          } else {
+            bouncedCount += 1;
+            if (!unit.card.id.startsWith('token_')) {
+              if (enemyState.hand.length < MAX_HAND_SIZE) {
+                enemyState.hand.push(unit.card);
+              } else {
+                enemyState.crypt.push(unit.card);
+              }
+              const prevPen = enemyState.tempCardCostPenalties?.[unit.card.id] ?? 0;
+              enemyState.tempCardCostPenalties = {
+                ...(enemyState.tempCardCostPenalties ?? {}),
+                [unit.card.id]: prevPen + (effect.secondaryValue ?? 1),
+              };
+            }
+          }
+        }
+      }
+
+      syncPlayerBoardSlots(enemyState);
+
+      const dmg = (effect.value || 3) + bonusDmg;
+      const trappedCenter = getSlotUnits(enemyState, 'vanguard', centerCol).filter(
+        (u) => !u.isTrap && u.currentHp > 0 && !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+      );
+      for (const u of trappedCenter) {
+        u.isFrozen = true;
+        dealEffectDamageToUnit(state, u, dmg, sourceCard.name);
+        addFeedback(state, u.instanceId, '❄️ Singularidade!', 'freeze');
+      }
+
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] arrastou ${pulledCount} unidade(s) para a Coluna ${centerCol + 1} (${bouncedCount} excedente(s) devolvida(s) à mão com +1⚡ de custo), causando ${dmg} de dano e Congelando a pilha!`
+      );
+      break;
+    }
+
+    case 'shared_shadow_link': {
+      const livingAllies = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      if (livingAllies.length === 0) break;
+
+      livingAllies.sort((a, b) => b.currentHp - a.currentHp || b.maxHp - a.maxHp);
+      const hostAlly = livingAllies[0];
+
+      let targetEnemy: BoardUnit | null = null;
+      if (options?.targetId) {
+        const found = findUnitOnBoard(state, options.targetId);
+        if (
+          found &&
+          found.owner === enemyActor &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0 &&
+          !(state.roundSubPhase === 'deploy' && found.unit.isConcealedDeploy)
+        ) {
+          targetEnemy = found.unit;
+        }
+      }
+      if (!targetEnemy) {
+        const candidates = getAllBoardUnits(enemyState).filter(
+          (u) =>
+            !u.isTrap &&
+            u.currentHp > 0 &&
+            !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+        );
+        if (candidates.length > 0) {
+          candidates.sort(
+            (a, b) => b.currentAtk * 2 + b.currentHp - (a.currentAtk * 2 + a.currentHp)
+          );
+          targetEnemy = candidates[0];
+        }
+      }
+      if (!targetEnemy) break;
+
+      hostAlly.sharedShadowTargetId = targetEnemy.instanceId;
+      hostAlly.sharedShadowRemainingCap = hostAlly.maxHp;
+
+      addFeedback(state, hostAlly.instanceId, '🔗 Elo da Sombra!', 'buff');
+      addFeedback(state, targetEnemy.instanceId, '🔗 Sombra Vinculada!', 'damage');
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] vinculou [${hostAlly.card.name}] (teto ${hostAlly.maxHp}❤️) a [${targetEnemy.card.name}] até o fim deste turno!`
+      );
+      break;
+    }
+
+    case 'twilight_procession': {
+      const maxCount = effect.value || 3;
+      const seenCardIds = new Set<string>();
+      const cryptCandidates = actorState.crypt
+        .map((card, idx) => ({ card, idx }))
+        .filter((entry) => entry.card.type === 'creature');
+
+      cryptCandidates.sort(
+        (a, b) => b.card.atk + b.card.hp + b.card.cost - (a.card.atk + a.card.hp + a.card.cost)
+      );
+
+      const chosenIndices: number[] = [];
+      for (const cand of cryptCandidates) {
+        if (chosenIndices.length >= maxCount) break;
+        if (seenCardIds.has(cand.card.id)) continue;
+        seenCardIds.add(cand.card.id);
+        chosenIndices.push(cand.idx);
+      }
+      if (chosenIndices.length === 0) break;
+
+      // Remove chosen cards from crypt in descending index order so indices stay valid
+      const summonedCards: CardDefinition[] = [];
+      for (const rmIdx of [...chosenIndices].sort((a, b) => b - a)) {
+        const [removed] = actorState.crypt.splice(rmIdx, 1);
+        if (removed) summonedCards.unshift(removed);
+      }
+
+      const corruptionBonus = actorState.corruption >= 5 ? 1 : 0;
+      let summonedCount = 0;
+
+      for (const specCard of summonedCards) {
+        // Find column with fewest total allied units that has room in vanguard (or rearguard)
+        const colRanking = [0, 1, 2, 3, 4, 5]
+          .map((c) => ({
+            col: c,
+            total:
+              getSlotUnits(actorState, 'vanguard', c).length +
+              getSlotUnits(actorState, 'rearguard', c).length,
+            canVan: canDeployToSlot(actorState, 'vanguard', c),
+            canRear: canDeployToSlot(actorState, 'rearguard', c),
+          }))
+          .filter((x) => x.canVan || x.canRear)
+          .sort((a, b) => {
+            if (a.canVan !== b.canVan) return a.canVan ? -1 : 1;
+            return a.total - b.total;
+          });
+
+        if (colRanking.length === 0) {
+          actorState.crypt.push(specCard);
+          continue;
+        }
+
+        const dest = colRanking[0];
+        const targetRow: RowType = dest.canVan ? 'vanguard' : 'rearguard';
+        const specter = createBoardUnit(
+          specCard,
+          actor,
+          targetRow,
+          dest.col,
+          corruptionBonus
+        );
+        specter.isEphemeralSpecter = true;
+        specter.stance = 'attack';
+        specter.hasSummoningSickness = false;
+        if (!specter.keywords.includes('Ímpeto')) {
+          specter.keywords.push('Ímpeto');
+        }
+        if (!specter.keywords.includes('Dreno de Vida')) {
+          specter.keywords.push('Dreno de Vida');
+        }
+
+        addUnitToSlot(actorState, targetRow, dest.col, specter);
+        consumeColumnRuneOnDeploy(state, actor, targetRow, dest.col, specter);
+        addFeedback(state, specter.instanceId, '👻 Espectro Efêmero!', 'buff');
+        summonedCount += 1;
+      }
+
+      if (summonedCount > 0) {
+        addLog(
+          state,
+          actor,
+          'summon',
+          `[${sourceCard.name}] ergueu ${summonedCount} Espectro(s) Crepuscular(es) da Cripta com Ímpeto e Dreno de Vida até o fim do turno!`
+        );
+      }
+      break;
+    }
+
+    case 'food_chain_law': {
+      const livingAllies = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      if (livingAllies.length === 0) break;
+
+      livingAllies.sort((a, b) => b.currentAtk - a.currentAtk || b.maxHp - a.maxHp);
+      const predator = livingAllies[0];
+
+      let prey: BoardUnit | null = null;
+      if (options?.targetId) {
+        const found = findUnitOnBoard(state, options.targetId);
+        if (
+          found &&
+          found.owner === enemyActor &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0 &&
+          !(state.roundSubPhase === 'deploy' && found.unit.isConcealedDeploy)
+        ) {
+          prey = found.unit;
+        }
+      }
+      if (!prey) {
+        const enemies = getAllBoardUnits(enemyState).filter(
+          (u) =>
+            !u.isTrap &&
+            u.currentHp > 0 &&
+            !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+        );
+        if (enemies.length > 0) {
+          enemies.sort((a, b) => {
+            const aKillable =
+              !a.hasDivineShield &&
+              a.currentHp <= Math.max(1, predator.currentAtk - a.currentArmor)
+                ? 1
+                : 0;
+            const bKillable =
+              !b.hasDivineShield &&
+              b.currentHp <= Math.max(1, predator.currentAtk - b.currentArmor)
+                ? 1
+                : 0;
+            if (aKillable !== bKillable) return bKillable - aKillable;
+            return b.keywords.length * 4 + b.currentAtk - (a.keywords.length * 4 + a.currentAtk);
+          });
+          prey = enemies[0];
+        }
+      }
+      if (!prey) break;
+
+      const preyKeywordsSnapshot = [...prey.keywords];
+      const noCounterAttack = predator.maxHp > prey.maxHp;
+
+      if (prey.hasDivineShield) {
+        prey.hasDivineShield = false;
+        addFeedback(state, prey.instanceId, 'Escudo Quebrado!', 'shield');
+      } else {
+        const rawAtk = predator.currentAtk;
+        const dmg =
+          rawAtk > 0
+            ? prey.currentArmor < rawAtk
+              ? Math.max(1, rawAtk - prey.currentArmor)
+              : 0
+            : 0;
+        prey.currentHp -= dmg;
+        if (dmg > 0) {
+          addFeedback(state, prey.instanceId, `-${dmg} (Predação!)`, 'damage');
+          replicateSharedShadowDamage(state, prey, dmg, sourceCard.name);
+          if (predator.keywords.includes('Toque Letal')) {
+            const execDmg = Math.max(0, prey.currentHp);
+            prey.currentHp = 0;
+            if (execDmg > 0) {
+              replicateSharedShadowDamage(state, prey, execDmg, 'Toque Letal');
+            }
+          }
+        } else {
+          addFeedback(state, prey.instanceId, '0 (Armadura)', 'shield');
+        }
+      }
+
+      if (!noCounterAttack && prey.card.type !== 'relic' && prey.currentAtk > 0) {
+        if (predator.hasDivineShield) {
+          predator.hasDivineShield = false;
+          addFeedback(state, predator.instanceId, 'Escudo Quebrado!', 'shield');
+        } else {
+          const counterDmg =
+            predator.currentArmor < prey.currentAtk
+              ? Math.max(1, prey.currentAtk - predator.currentArmor)
+              : 0;
+          if (counterDmg > 0) {
+            predator.currentHp -= counterDmg;
+            addFeedback(state, predator.instanceId, `-${counterDmg}`, 'damage');
+            replicateSharedShadowDamage(state, predator, counterDmg, prey.card.name);
+          }
+        }
+      }
+
+      if (prey.currentHp <= 0 && predator.currentHp > 0) {
+        const absorbed: Keyword[] = [];
+        for (const kw of preyKeywordsSnapshot) {
+          if (!predator.keywords.includes(kw)) {
+            predator.keywords.push(kw);
+            absorbed.push(kw);
+          }
+          if (kw === 'Escudo Divino') {
+            predator.hasDivineShield = true;
+          }
+          if (kw === 'Ímpeto') {
+            predator.hasSummoningSickness = false;
+          }
+        }
+        const healVal = effect.value || 3;
+        predator.currentHp = Math.min(predator.maxHp, predator.currentHp + healVal);
+        addFeedback(
+          state,
+          predator.instanceId,
+          absorbed.length > 0 ? `+${healVal}❤️ & Evoluiu!` : `+${healVal}❤️ Predador!`,
+          'heal'
+        );
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}]: [${predator.card.name}] abateu [${prey.card.name}]${
+            noCounterAttack ? ' sem contra-ataque' : ''
+          }, restaurou ${healVal}❤️${
+            absorbed.length > 0 ? ` e absorveu [${absorbed.join(', ')}]` : ''
+          }!`
+        );
+      } else {
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}]: [${predator.card.name}] emboscou [${prey.card.name}]${
+            noCounterAttack ? ' (sem contra-ataque)' : ''
+          }!`
+        );
+      }
+      break;
+    }
+
+    case 'primordial_evolution_apex': {
+      const livingAllies = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      if (livingAllies.length === 0) break;
+
+      const buffStat = effect.value || 3;
+      const regenGain = effect.secondaryValue ?? 2;
+      let ascendedCount = 0;
+      let mutatedCount = 0;
+
+      for (const unit of livingAllies) {
+        if (!unit.isAscended && unit.card.ascension) {
+          const spec = unit.card.ascension;
+          const baseAtkDelta = Math.max(0, spec.newAtk - unit.card.atk);
+          const baseArmorDelta = Math.max(0, spec.newArmor - unit.card.armor);
+          const baseHpDelta = Math.max(1, spec.newMaxHp - unit.card.hp);
+          unit.isAscended = true;
+          unit.currentAtk = Math.max(spec.newAtk, unit.currentAtk + baseAtkDelta);
+          unit.currentArmor = Math.max(spec.newArmor, unit.currentArmor + baseArmorDelta);
+          unit.maxHp = Math.max(spec.newMaxHp, unit.maxHp + baseHpDelta);
+          unit.currentHp = unit.maxHp;
+
+          for (const kw of spec.addedKeywords) {
+            if (!unit.keywords.includes(kw)) {
+              unit.keywords.push(kw);
+            }
+            if (kw === 'Escudo Divino') {
+              unit.hasDivineShield = true;
+            }
+            if (kw === 'Ímpeto') {
+              unit.hasSummoningSickness = false;
+            }
+          }
+          ascendedCount += 1;
+          addFeedback(state, unit.instanceId, `Ascensão: ${spec.newName}!`, 'buff');
+        } else {
+          unit.currentAtk += buffStat;
+          unit.maxHp += buffStat;
+          unit.currentHp += buffStat;
+          unit.regeneration += regenGain;
+          if (!unit.keywords.includes('Atropelar')) {
+            unit.keywords.push('Atropelar');
+          }
+          mutatedCount += 1;
+          addFeedback(state, unit.instanceId, `+${buffStat}/+${buffStat} & Atropelar!`, 'buff');
+        }
+      }
+
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] despertou metamorfose total: ${ascendedCount} Ascensão(ões) gratuita(s) e ${mutatedCount} evolução(ões) alfa (+${buffStat}/+${buffStat}, Atropelar, Regen +${regenGain})!`
+      );
+      break;
+    }
+
+    case 'solar_spear_phalanx': {
+      const allLiving = getAllBoardUnits(actorState).filter(
+        (u) => !u.isTrap && u.currentHp > 0
+      );
+      const vanAllies = getRowUnits(actorState, 'vanguard').filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      const minArmor = effect.value || 2;
+      const highestArmor = Math.max(
+        minArmor,
+        ...allLiving.map((u) => u.currentArmor)
+      );
+
+      for (const van of vanAllies) {
+        van.currentArmor = Math.max(van.currentArmor, highestArmor);
+        addFeedback(state, van.instanceId, `🛡️ Armadura ${van.currentArmor} (Falange)!`, 'shield');
+      }
+
+      actorState.solarPhalanxTurns = 1;
+      addFeedback(state, `${actor}-sovereign`, '🛡️ Falange Solar Ativa!', 'shield');
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] alinhou a Vanguarda em Armadura ${highestArmor} e ativou retaliação das colunas vizinhas até o próximo turno!`
+      );
+      break;
+    }
+
+    case 'unconquered_champion_oath': {
+      const livingCreatures = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      if (livingCreatures.length === 0) break;
+
+      let chosen: BoardUnit | null = null;
+      if (options?.targetId) {
+        const found = findUnitOnBoard(state, options.targetId);
+        if (
+          found &&
+          found.owner === actor &&
+          found.unit.card.type === 'creature' &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0
+        ) {
+          chosen = found.unit;
+        }
+      }
+      if (!chosen) {
+        livingCreatures.sort((a, b) => {
+          const aVan = a.row === 'vanguard' ? 1 : 0;
+          const bVan = b.row === 'vanguard' ? 1 : 0;
+          if (aVan !== bVan) return bVan - aVan;
+          return b.maxHp + b.currentArmor * 2 - (a.maxHp + a.currentArmor * 2);
+        });
+        chosen = livingCreatures[0];
+      }
+
+      for (const u of livingCreatures) {
+        u.isCrownProtector = false;
+      }
+
+      const atkGain = effect.value || 2;
+      const hpGain = effect.secondaryValue ?? 4;
+      chosen.currentAtk += atkGain;
+      chosen.maxHp += hpGain;
+      chosen.currentHp += hpGain;
+      chosen.currentArmor += 3;
+      chosen.hasDivineShield = true;
+      chosen.isCrownProtector = true;
+      if (!chosen.keywords.includes('Guardião')) {
+        chosen.keywords.push('Guardião');
+      }
+      if (!chosen.keywords.includes('Escudo Divino')) {
+        chosen.keywords.push('Escudo Divino');
+      }
+
+      addFeedback(state, chosen.instanceId, '👑 Protetor do Trono!', 'shield');
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] sagrou [${chosen.card.name}] como Protetor do Trono (+${atkGain}/+${hpGain}, +3 ARM, Guardião, Escudo Divino)!`
+      );
+      break;
+    }
+
+    case 'royal_prism_convergence': {
+      const activeDomains = new Set<Exclude<Domain, 'neutral'>>();
+      let neutralChanneled = 0;
+      for (const land of actorState.channeledCards) {
+        if (land.domain !== 'neutral') {
+          activeDomains.add(land.domain);
+        } else {
+          neutralChanneled += 1;
+        }
+      }
+      if (neutralChanneled > 0) {
+        const coloredList: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
+        for (const d of coloredList) {
+          if (neutralChanneled <= 0) break;
+          if (!activeDomains.has(d) && (actorState.affinities[d] ?? 0) > 0) {
+            activeDomains.add(d);
+            neutralChanneled -= 1;
+          }
+        }
+      }
+      if (activeDomains.size === 0) {
+        const coloredList: Exclude<Domain, 'neutral'>[] = ['red', 'blue', 'purple', 'green', 'gold'];
+        for (const d of coloredList) {
+          if ((actorState.affinities[d] ?? 0) >= 3) {
+            activeDomains.add(d);
+            break;
+          }
+        }
+      }
+
+      const decrees: string[] = [];
+
+      if (activeDomains.has('green')) {
+        const allies = getAllBoardUnits(actorState).filter(
+          (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+        );
+        for (const ally of allies) {
+          ally.currentAtk += 2;
+          ally.maxHp += 2;
+          ally.currentHp += 2;
+          ally.regeneration += 1;
+          addFeedback(state, ally.instanceId, '+2/+2 & Regen (Prisma)!', 'buff');
+        }
+        decrees.push('Verde (+2/+2 & Regen 1)');
+      }
+
+      if (activeDomains.has('gold')) {
+        const vanAllies = getRowUnits(actorState, 'vanguard').filter(
+          (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+        );
+        for (const van of vanAllies) {
+          van.hasDivineShield = true;
+          addFeedback(state, van.instanceId, 'Escudo Divino (Prisma)!', 'shield');
+        }
+        decrees.push('Dourado (Escudo Divino)');
+      }
+
+      if (activeDomains.has('blue')) {
+        const enemies = getAllBoardUnits(enemyState).filter(
+          (u) =>
+            u.card.type === 'creature' &&
+            !u.isTrap &&
+            u.currentHp > 0 &&
+            !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+        );
+        enemies.sort((a, b) => b.currentAtk - a.currentAtk || b.currentHp - a.currentHp);
+        for (const tgt of enemies.slice(0, 2)) {
+          tgt.isFrozen = true;
+          addFeedback(state, tgt.instanceId, '❄️ Congelado (Prisma)!', 'freeze');
+        }
+        drawCardsForActor(state, actor, 1);
+        decrees.push('Azul (Congelar 2 & +1 Carta)');
+      }
+
+      if (activeDomains.has('red')) {
+        const redDmg = 3 + bonusDmg;
+        const vanEnemies = getRowUnits(enemyState, 'vanguard').filter(
+          (u) =>
+            !u.isTrap &&
+            u.currentHp > 0 &&
+            !(state.roundSubPhase === 'deploy' && u.isConcealedDeploy)
+        );
+        for (const enemy of vanEnemies) {
+          dealEffectDamageToUnit(state, enemy, redDmg, sourceCard.name);
+        }
+        decrees.push(`Vermelho (${redDmg} dano à Vanguarda)`);
+      }
+
+      if (activeDomains.has('purple')) {
+        dealEnemyDamageToSovereign(state, enemyActor, 3, sourceCard.name, '-3🔮 Prisma Umbral');
+        actorState.hp = Math.min(actorState.maxHp, actorState.hp + 3);
+        addFeedback(state, `${actor}-sovereign`, '+3❤️ Prisma Umbral', 'heal');
+        decrees.push('Roxo (Drenar 3 VIDA)');
+      }
+
+      addLog(
+        state,
+        actor,
+        'effect',
+        decrees.length > 0
+          ? `[${sourceCard.name}] ressoou com ${activeDomains.size} cor(es) de Terreno: ${decrees.join(' • ')}!`
+          : `[${sourceCard.name}] foi lançado sem Terrenos coloridos canalizados.`
+      );
+      break;
+    }
   }
 }
 
@@ -3355,8 +4358,13 @@ function cleanupDeadUnits(state: GameState): void {
         const enemyOwner: 'player' | 'ai' = owner === 'player' ? 'ai' : 'player';
         const enemyState = state[enemyOwner];
         if (isDomainTerrainAwakened(ownerState, 'purple')) {
-          enemyState.hp = Math.max(0, enemyState.hp - 1);
-          addFeedback(state, `${enemyOwner}-sovereign`, '-1💀 Eco Necrótico', 'damage');
+          dealEnemyDamageToSovereign(
+            state,
+            enemyOwner,
+            1,
+            'Eco Necrótico',
+            '-1💀 Eco Necrótico'
+          );
           addLog(
             state,
             owner,
@@ -3407,6 +4415,9 @@ export function playCard(
   const [card] = actorState.hand.splice(handIndex, 1);
   const effectiveCost = getEffectiveCardCost(next, actor, card);
   actorState.currentEssence -= effectiveCost;
+  if (actorState.tempCardCostPenalties?.[card.id]) {
+    delete actorState.tempCardCostPenalties[card.id];
+  }
   addFeedback(
     next,
     `${actor}-sovereign`,
@@ -3820,6 +4831,29 @@ export function playCard(
   }
 
   cleanupDeadUnits(next);
+  if (next.phase !== 'gameover' && next.roundSubPhase === 'combat_plan') {
+    for (const owner of ['player', 'ai'] as const) {
+      for (const u of getAllBoardUnits(next[owner])) {
+        if (u.isTrap || u.card.type === 'relic') continue;
+        if (
+          u.isFrozen ||
+          (u.hasSummoningSickness && !u.keywords.includes('Ímpeto')) ||
+          u.currentAtk <= 0
+        ) {
+          u.stance = 'defend';
+          u.plannedTargetId = null;
+          continue;
+        }
+        if (u.stance === 'attack') {
+          const validTargets = getValidAttackTargets(next, u.instanceId, true);
+          if (!u.plannedTargetId || !validTargets.includes(u.plannedTargetId)) {
+            u.plannedTargetId = pickSmartDefaultTargetForUnit(next, u);
+          }
+        }
+      }
+    }
+    recalculateFormationBonuses(next);
+  }
   return next;
 }
 
@@ -4124,11 +5158,13 @@ export function previewAttackOutcome(
     attacker.row === 'rearguard' && attacker.keywords.includes('Alcance');
 
   if (targetId === `${defenderOwner}-sovereign`) {
-    const dmg = Math.max(0, attacker.currentAtk);
+    const rawDmg = Math.max(0, attacker.currentAtk);
+    const hasCrownProtector = Boolean(findLivingCrownProtector(defenderPlayer));
+    const dmg = hasCrownProtector ? 0 : rawDmg;
     const targetHpBefore = defenderPlayer.hp;
     const targetHpAfter = Math.max(0, targetHpBefore - dmg);
     const lifestealHealForAttacker =
-      attacker.keywords.includes('Dreno de Vida') && dmg > 0 ? 2 : 0;
+      attacker.keywords.includes('Dreno de Vida') && rawDmg > 0 ? 2 : 0;
 
     return {
       attackerId: attacker.instanceId,
@@ -4146,7 +5182,7 @@ export function previewAttackOutcome(
       attackerDies: false,
       targetReborn: false,
       attackerReborn: false,
-      breaksTargetShield: false,
+      breaksTargetShield: hasCrownProtector,
       breaksAttackerShield: false,
       isRangedFreeHit,
       lethalTouchTriggeredOnTarget: false,
@@ -4363,6 +5399,10 @@ export function executeAttack(
   attacker.hasAttackedThisTurn = true;
   attacker.hasSummoningSickness = false;
   attacker.plannedTargetId = null;
+  if (attacker.isEphemeralSpecter) {
+    attackerPlayer.twilightSpecterAttacksThisRound =
+      (attackerPlayer.twilightSpecterAttacksThisRound ?? 0) + 1;
+  }
 
   // Trigger on_attack effects before combat resolution
   const attackerDisplayName =
@@ -4433,16 +5473,22 @@ export function executeAttack(
   // Case 1: Attacking Enemy Sovereign directly
   if (targetId === `${defenderOwner}-sovereign`) {
     const dmg = Math.max(0, attacker.currentAtk);
-    defenderPlayer.hp = Math.max(0, defenderPlayer.hp - dmg);
-    registerSovereignDamageForDomainConcentration(next, defenderOwner, dmg);
     const sureHitTag = isSureHitActiveFor(next, attackerOwner) ? ' [⛩️ Acerto Garantido!]' : '';
-    addFeedback(next, targetId, `-${dmg}${sureHitTag ? ' ⛩️' : ''}`, 'damage');
-    addLog(
+    const dealtToSov = dealEnemyDamageToSovereign(
       next,
-      attackerOwner,
-      'combat',
-      `[${attackerDisplayName}] atacou ${defenderPlayer.name} causando ${dmg} de dano${sureHitTag}!`
+      defenderOwner,
+      dmg,
+      attackerDisplayName,
+      `-${dmg}${sureHitTag ? ' ⛩️' : ''}`
     );
+    if (dealtToSov > 0 || dmg === 0) {
+      addLog(
+        next,
+        attackerOwner,
+        'combat',
+        `[${attackerDisplayName}] atacou ${defenderPlayer.name} causando ${dealtToSov} de dano${sureHitTag}!`
+      );
+    }
 
     if (attacker.keywords.includes('Dreno de Vida') && dmg > 0) {
       attackerPlayer.hp = Math.min(attackerPlayer.maxHp, attackerPlayer.hp + 2);
@@ -4513,13 +5559,20 @@ export function executeAttack(
       dmgToDef > 0 ? `-${dmgToDef}` : '0 (Armadura)',
       dmgToDef > 0 ? 'damage' : 'shield'
     );
+    if (dmgToDef > 0) {
+      replicateSharedShadowDamage(next, defender, dmgToDef, attackerDisplayName);
+    }
 
     const isRangedShot =
       attacker.row === 'rearguard' && attacker.keywords.includes('Alcance');
 
     if (dmgToDef > 0 && attacker.keywords.includes('Toque Letal')) {
       if (!isRangedShot) {
+        const execLost = Math.max(0, defender.currentHp);
         defender.currentHp = 0;
+        if (execLost > 0) {
+          replicateSharedShadowDamage(next, defender, execLost, 'Toque Letal');
+        }
         addFeedback(next, defender.instanceId, 'Toque Letal!', 'damage');
         addLog(
           next,
@@ -4529,6 +5582,7 @@ export function executeAttack(
         );
       } else {
         defender.currentHp -= 1;
+        replicateSharedShadowDamage(next, defender, 1, 'Veneno à Distância');
         addFeedback(next, defender.instanceId, '-1 (Veneno à Distância)', 'damage');
       }
     }
@@ -4551,15 +5605,21 @@ export function executeAttack(
         remainingExcess = Math.max(0, remainingExcess - Math.max(1, dealtToSib || sibHpBefore));
       }
       if (remainingExcess > 0) {
-        defenderPlayer.hp = Math.max(0, defenderPlayer.hp - remainingExcess);
-        registerSovereignDamageForDomainConcentration(next, defenderOwner, remainingExcess);
-        addFeedback(next, `${defenderOwner}-sovereign`, `-${remainingExcess} (Atropelar!)`, 'damage');
-        addLog(
+        const dealtExcess = dealEnemyDamageToSovereign(
           next,
-          attackerOwner,
-          'combat',
-          `Atropelar de [${attackerDisplayName}] varreu o slot e causou ${remainingExcess} de dano excedente a ${defenderPlayer.name}!`
+          defenderOwner,
+          remainingExcess,
+          `Atropelar de ${attackerDisplayName}`,
+          `-${remainingExcess} (Atropelar!)`
         );
+        if (dealtExcess > 0) {
+          addLog(
+            next,
+            attackerOwner,
+            'combat',
+            `Atropelar de [${attackerDisplayName}] varreu o slot e causou ${dealtExcess} de dano excedente a ${defenderPlayer.name}!`
+          );
+        }
       } else if (siblingUnitsInSlot.length > 0) {
         addLog(
           next,
@@ -4628,10 +5688,15 @@ export function executeAttack(
         attacker.currentHp -= dmgToAttacker;
         if (dmgToAttacker > 0) {
           addFeedback(next, attacker.instanceId, `-${dmgToAttacker}`, 'damage');
+          replicateSharedShadowDamage(next, attacker, dmgToAttacker, defenderDisplayName);
         }
 
         if (dmgToAttacker > 0 && defender.keywords.includes('Toque Letal')) {
+          const execAtkLost = Math.max(0, attacker.currentHp);
           attacker.currentHp = 0;
+          if (execAtkLost > 0) {
+            replicateSharedShadowDamage(next, attacker, execAtkLost, 'Toque Letal');
+          }
           addFeedback(next, attacker.instanceId, 'Toque Letal!', 'damage');
         }
 
@@ -4650,7 +5715,35 @@ export function executeAttack(
       } else {
         attacker.currentHp -= 1;
         addFeedback(next, attacker.instanceId, '-1 (Pele Incandescente)', 'damage');
+        replicateSharedShadowDamage(next, attacker, 1, 'Pele Incandescente');
       }
+    }
+  }
+
+  // Falange de Lanças Solares: Adjacent allied Vanguard columns retaliate for 2 damage each!
+  if (
+    defender.row === 'vanguard' &&
+    (defenderPlayer.solarPhalanxTurns ?? 0) > 0 &&
+    attacker.currentHp > 0
+  ) {
+    let phalanxFlanks = 0;
+    for (const adjCol of [defender.slotIndex - 1, defender.slotIndex + 1]) {
+      if (adjCol < 0 || adjCol >= BOARD_COLS || attacker.currentHp <= 0) continue;
+      const hasFlankSpear = getSlotUnits(defenderPlayer, 'vanguard', adjCol).some(
+        (u) => !u.isTrap && u.card.type === 'creature' && u.currentHp > 0
+      );
+      if (hasFlankSpear) {
+        phalanxFlanks += 1;
+        dealEffectDamageToUnit(next, attacker, 2, 'Falange de Lanças Solares');
+      }
+    }
+    if (phalanxFlanks > 0) {
+      addLog(
+        next,
+        defenderOwner,
+        'effect',
+        `☀️ FALANGE DE LANÇAS SOLARES: ${phalanxFlanks} coluna(s) adjacente(s) retaliaram [${attackerDisplayName}]!`
+      );
     }
   }
 
@@ -4901,6 +5994,65 @@ export function resolveActualAttackVisualTarget(
   return defenderSovId;
 }
 
+function resolveEndOfRoundSpellStates(
+  state: GameState,
+  actors: readonly ('player' | 'ai')[]
+): void {
+  for (const owner of ['player', 'ai'] as const) {
+    for (const u of getAllBoardUnits(state[owner])) {
+      if (u.armorShatteredThisRound) {
+        u.armorShatteredThisRound = false;
+        u.currentArmor = u.isAscended && u.card.ascension ? u.card.ascension.newArmor : u.card.armor;
+      }
+    }
+  }
+
+  for (const actor of actors) {
+    const actorState = state[actor];
+    for (const u of getAllBoardUnits(actorState)) {
+      if (u.tempTurnAtkBonus && u.tempTurnAtkBonus > 0) {
+        u.currentAtk = Math.max(0, u.currentAtk - u.tempTurnAtkBonus);
+        u.tempTurnAtkBonus = 0;
+      }
+      u.sharedShadowTargetId = undefined;
+      u.sharedShadowRemainingCap = 0;
+    }
+
+    const survivingSpecters = getAllBoardUnits(actorState).filter((u) => u.isEphemeralSpecter);
+    for (const spec of survivingSpecters) {
+      removeUnitFromBoard(actorState, spec.instanceId);
+      if (!spec.card.id.startsWith('token_')) {
+        actorState.crypt.push(spec.card);
+      }
+    }
+
+    const specterAtks = actorState.twilightSpecterAttacksThisRound ?? 0;
+    actorState.twilightSpecterAttacksThisRound = 0;
+
+    if (specterAtks > 0) {
+      const recipients = getAllBoardUnits(actorState).filter(
+        (u) => !u.isTrap && !u.isEphemeralSpecter && u.card.type === 'creature' && u.currentHp > 0
+      );
+      for (const ally of recipients) {
+        ally.currentAtk += specterAtks;
+        ally.maxHp += specterAtks;
+        ally.currentHp += specterAtks;
+        addFeedback(state, ally.instanceId, `+${specterAtks}/+${specterAtks} Crepúsculo!`, 'buff');
+      }
+      if (recipients.length > 0) {
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[Procissão do Crepúsculo] Os Espectros retornaram à Cripta e legaram +${specterAtks}/+${specterAtks} permanentes a ${recipients.length} aliado(s)!`
+        );
+      }
+    }
+  }
+
+  recalculateFormationBonuses(state);
+}
+
 export function endTurn(state: GameState): GameState {
   if (state.phase === 'gameover') {
     return state;
@@ -4924,6 +6076,7 @@ export function endTurn(state: GameState): GameState {
     }
   }
 
+  resolveEndOfRoundSpellStates(next, [endingActor]);
   cleanupDeadUnits(next);
   if (next.phase === 'gameover') {
     return next;
@@ -4959,6 +6112,9 @@ export function endTurn(state: GameState): GameState {
 
   if ((newActiveState.domainExhaustionTurns ?? 0) > 0) {
     newActiveState.domainExhaustionTurns = Math.max(0, (newActiveState.domainExhaustionTurns ?? 0) - 1);
+  }
+  if ((newActiveState.solarPhalanxTurns ?? 0) > 0) {
+    newActiveState.solarPhalanxTurns = Math.max(0, (newActiveState.solarPhalanxTurns ?? 0) - 1);
   }
   newActiveState.hasUsedSimpleDomainThisTurn = false;
 
@@ -5722,6 +6878,7 @@ export function resolveCombatPhaseAndAdvanceRound(
     }
   }
 
+  resolveEndOfRoundSpellStates(next, ['player', 'ai']);
   cleanupDeadUnits(next);
   if ((next.phase as string) === 'gameover') {
     return next;
@@ -5797,6 +6954,9 @@ export function resolveCombatPhaseAndAdvanceRound(
 
     if ((actorState.domainExhaustionTurns ?? 0) > 0) {
       actorState.domainExhaustionTurns = Math.max(0, (actorState.domainExhaustionTurns ?? 0) - 1);
+    }
+    if ((actorState.solarPhalanxTurns ?? 0) > 0) {
+      actorState.solarPhalanxTurns = Math.max(0, (actorState.solarPhalanxTurns ?? 0) - 1);
     }
     actorState.hasUsedSimpleDomainThisTurn = false;
 

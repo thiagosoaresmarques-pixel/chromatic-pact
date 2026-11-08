@@ -328,11 +328,19 @@ function doesCardUseTarget(card: CardDefinition): 'enemy' | 'ally' | 'any_row' |
         eff.type === 'freeze_enemy' ||
         eff.type === 'bounce_enemy' ||
         eff.type === 'steal_small_enemy' ||
-        eff.type === 'damage_enemy_row'
+        eff.type === 'damage_enemy_row' ||
+        eff.type === 'magmatic_subduction' ||
+        eff.type === 'coordinate_inversion' ||
+        eff.type === 'shared_shadow_link' ||
+        eff.type === 'food_chain_law'
       ) {
         return 'enemy';
       }
-      if (eff.type === 'buff_target_ally' || eff.type === 'heal_target_ally') {
+      if (
+        eff.type === 'buff_target_ally' ||
+        eff.type === 'heal_target_ally' ||
+        eff.type === 'unconquered_champion_oath'
+      ) {
         return 'ally';
       }
     }

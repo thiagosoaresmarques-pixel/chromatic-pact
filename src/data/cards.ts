@@ -1,10 +1,10 @@
 import { CardDefinition } from '../types/game';
 
 /**
- * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.038 CARTAS)
+ * CATÁLOGO OFICIAL DE CARTAS — CHROMATIC PACT (1.049 CARTAS)
  * 100% Original Dark Fantasy IP — Sem Nomes, Anatomias ou Frases Protegidos por Direito Autoral.
  */
-export const ALL_CARDS: CardDefinition[] = [
+const ALL_CARDS_PART_1: CardDefinition[] = [
   {
     "id": "red_01_kobold",
     "name": "Batedor Escamado das Brasas",
@@ -18667,7 +18667,10 @@ export const ALL_CARDS: CardDefinition[] = [
     "description": "Voo, Guardião. Armadura 2. Sopro 2. Ao Entrar: Concede +1⚡ Essência neste turno.",
     "flavorText": "Suas escamas são feitas de ferro fundido resfriado às pressas.",
     "imagePath": "/assets/cards/red_114_draco_escoria.webp"
-  },
+  }
+];
+
+const ALL_CARDS_PART_2: CardDefinition[] = [
   {
     "id": "red_115_centuriao_obsidiana",
     "name": "Centurião de Obsidiana",
@@ -31580,8 +31583,303 @@ export const ALL_CARDS: CardDefinition[] = [
     "description": "Ao entrar, quebra Expansões de Domínio inimigas, concede Escudo Divino e +1 de Armadura a todas as suas criaturas aliadas e restaura 3 de Vida delas e do seu Soberano. No início do seu turno, regenera 2 de Vida.",
     "flavorText": "Sob o giro dos oito sóis de bronze, todo falso firmamento se desfaz em poeira luminosa.",
     "imagePath": "/assets/cards/gold_173_general_roda_sol.webp"
+  },
+  {
+    "id": "red_174_subduccao_magmatica",
+    "name": "Subducção Magmática",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Tectônico",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "magmatic_subduction",
+        "value": 3,
+        "secondaryValue": 2,
+        "description": "Destrói a Armadura inimiga na coluna alvo, causa 3 de dano à Vanguarda dela e empurra os sobreviventes para a Retaguarda (+2 de dano de colisão se já ocupada)."
+      }
+    ],
+    "description": "Destrói toda a Armadura dos inimigos na coluna do alvo e causa 3 de dano à Vanguarda dela. Empurra os sobreviventes da Vanguarda para a Retaguarda (causando +2 de dano de colisão a toda a coluna se a Retaguarda já estiver ocupada).",
+    "flavorText": "Quando as placas de Pyros cedem, nem o aço temperado nem a segunda linha escapam da fornalha.",
+    "imagePath": "/assets/cards/red_174_subduccao_magmatica.webp"
+  },
+  {
+    "id": "red_175_marcha_bigorna_rubra",
+    "name": "Marcha da Bigorna Rubra",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Comando Lendário",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "crimson_anvil_march",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Aliados assumem Postura de Ataque com +2 ATQ neste turno e desferem um golpe imediato na sua coluna (ou 2 de dano de cerco ao Soberano rival se desimpedida)."
+      }
+    ],
+    "description": "Todas as suas unidades assumem Postura de Ataque, recebem +2 ATQ neste turno e golpeiam imediatamente o inimigo à sua frente na mesma coluna (sem gastar o ataque normal do turno). Aliados sem inimigo na coluna causam 2 de dano de cerco ao Soberano rival.",
+    "flavorText": "Ao soar do malho celeste, cada guerreiro golpeia duas vezes antes que a cinza toque o chão.",
+    "imagePath": "/assets/cards/red_175_marcha_bigorna_rubra.webp"
+  },
+  {
+    "id": "blue_174_inversao_coordenadas",
+    "name": "Inversão de Coordenadas",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Geometria Astral",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "coordinate_inversion",
+        "value": 1,
+        "description": "Inverte imediatamente a Vanguarda e a Retaguarda da coluna inimiga alvo, Congela os recuados e compra 1 carta."
+      }
+    ],
+    "description": "Inverte imediatamente todas as unidades entre a Vanguarda e a Retaguarda da coluna inimiga alvo. As unidades jogadas para a Retaguarda ficam Congeladas por 1 turno. Compra 1 carta.",
+    "flavorText": "No Vórtex, 'frente' e 'retaguarda' são apenas convenções à espera de uma equação superior.",
+    "imagePath": "/assets/cards/blue_174_inversao_coordenadas.webp"
+  },
+  {
+    "id": "blue_175_singularidade_horizonte",
+    "name": "Singularidade do Horizonte",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Gravidade Lendária",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "horizon_singularity",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Arrasta a Vanguarda inimiga lateral para a coluna central (excedentes voltam à mão custando +1 Essência), causando 3 de dano e Congelando a pilha."
+      }
+    ],
+    "description": "Arrasta todas as unidades da Vanguarda inimiga das colunas laterais para se empilharem na coluna central. Unidades que excederem o limite da pilha (3) voltam para a mão do oponente custando +1 de Essência; as que ficam presas na coluna central sofrem 3 de dano e são Congeladas.",
+    "flavorText": "Toda linha de batalha converge para um único ponto quando o próprio espaço se curva.",
+    "imagePath": "/assets/cards/blue_175_singularidade_horizonte.webp"
+  },
+  {
+    "id": "purple_174_elo_sombra_partilhada",
+    "name": "Elo da Sombra Partilhada",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Vínculo Umbral",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shared_shadow_link",
+        "value": 1,
+        "description": "Vincula o inimigo alvo ao seu aliado de maior VIDA até o fim do turno: todo dano ou Sacrifício Vital sofrido pelo aliado é replicado no alvo."
+      }
+    ],
+    "description": "Vincula a unidade inimiga alvo ao seu aliado de maior VIDA atual até o fim deste turno (respeitando Escudo Divino no primeiro impacto): todo dano de combate ou Sacrifício Vital sofrido por esse aliado neste turno é replicado na unidade vinculada (até o limite da VIDA máxima do aliado).",
+    "flavorText": "Duas sombras costuradas pelo crepúsculo partilham o mesmo fôlego e a mesma ruína.",
+    "imagePath": "/assets/cards/purple_174_elo_sombra_partilhada.webp"
+  },
+  {
+    "id": "purple_175_procissao_crepusculo",
+    "name": "Procissão do Crepúsculo",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Memória Lendária",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "corruptionCost": 2,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "twilight_procession",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Sobrecarga +2. Convoca até 3 criaturas distintas da Cripta como Espectros com Ímpeto e Dreno de Vida neste turno; ao retornarem, concedem +1/+1 permanente por Espectro que atacou."
+      }
+    ],
+    "description": "Sobrecarga +2. Convoca temporariamente até 3 criaturas distintas da sua Cripta como Espectros nas suas colunas mais vazias, com Ímpeto e Dreno de Vida neste turno. Ao encerrar o turno, os Espectros retornam à Cripta e concedem +1/+1 permanente aos demais aliados vivos para cada Espectro que atacou.",
+    "flavorText": "Os heróis adormecidos atendem a um último chamado antes que a estrela vespertina se apague.",
+    "imagePath": "/assets/cards/purple_175_procissao_crepusculo.webp"
+  },
+  {
+    "id": "green_174_lei_cadeia_alimentar",
+    "name": "Lei da Cadeia Alimentar",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Predação",
+    "rarity": "rare",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "food_chain_law",
+        "value": 3,
+        "description": "Seu aliado de maior ATQ embosca o inimigo alvo (sem contra-ataque se tiver mais VIDA máxima). Se abater, herda suas Palavras-Chave e cura 3 de VIDA."
+      }
+    ],
+    "description": "Seu aliado de maior ATQ embosca imediatamente a unidade inimiga alvo em qualquer fileira (se seu aliado tiver mais VIDA máxima que a presa, não sofre contra-ataque). Se abater o alvo, seu aliado herda permanentemente todas as Palavras-Chave dele e restaura 3 de VIDA.",
+    "flavorText": "Na mata primordial de Verídia, o topo do dossel pertence a quem devora o predador anterior.",
+    "imagePath": "/assets/cards/green_174_lei_cadeia_alimentar.webp"
+  },
+  {
+    "id": "green_175_apice_evolucao_primordial",
+    "name": "Ápice da Evolução Primordial",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Metamorfose Lendária",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "primordial_evolution_apex",
+        "value": 3,
+        "secondaryValue": 2,
+        "description": "Ascende gratuitamente todas as suas unidades com Ascensão (curando toda a VIDA); demais aliados ganham +3/+3, Atropelar e Regeneração 2."
+      }
+    ],
+    "description": "Ascende gratuitamente todas as suas unidades em campo que possuam forma Ascendida (restaurando toda a sua VIDA). Aliados que já estejam Ascendidos ou não possuam Ascensão ganham permanentemente +3/+3, Atropelar e Regeneração 2.",
+    "flavorText": "Milênios de seleção selvagem condensados num único pulsar da Árvore-Mundo.",
+    "imagePath": "/assets/cards/green_175_apice_evolucao_primordial.webp"
+  },
+  {
+    "id": "gold_174_falange_lancas_solares",
+    "name": "Falange de Lanças Solares",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Tática Imperial",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "solar_spear_phalanx",
+        "value": 2,
+        "description": "Iguala a Armadura da sua Vanguarda à maior Armadura aliada (mínimo 2) e ativa retaliação de 2 de dano das colunas vizinhas até o próximo turno."
+      }
+    ],
+    "description": "Iguala a Armadura de toda a sua Vanguarda à maior Armadura entre seus aliados (mínimo +2 Armadura) e forma uma Falange até o seu próximo turno: sempre que um aliado na Vanguarda for atacado, seus aliados nas colunas imediatamente vizinhas (esquerda e direita) causam 2 de dano de retaliação ao atacante.",
+    "flavorText": "Nenhum escudo de Solária luta sozinho; golpear um é despertar duas lanças de luz.",
+    "imagePath": "/assets/cards/gold_174_falange_lancas_solares.webp"
+  },
+  {
+    "id": "gold_175_juramento_campeao_invicto",
+    "name": "Juramento do Campeão Invicto",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Investidura Lendária",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "unconquered_champion_oath",
+        "value": 2,
+        "secondaryValue": 4,
+        "description": "Coroa o aliado alvo como Protetor do Trono (+2/+4, +3 Armadura, Guardião, Escudo Divino), redirecionando todo dano inimigo do seu Soberano para ele."
+      }
+    ],
+    "description": "Coroa o aliado alvo como Protetor do Trono: concede +2/+4, +3 Armadura, Guardião e Escudo Divino. Enquanto ele permanecer vivo em campo, todo dano inimigo que atingiria seu Soberano é redirecionado para o Protetor.",
+    "flavorText": "Enquanto minha égide respirar, nenhuma flecha ou chama alcançará os degraus do trono.",
+    "imagePath": "/assets/cards/gold_175_juramento_campeao_invicto.webp"
+  },
+  {
+    "id": "neutral_174_convergencia_prisma_real",
+    "name": "Convergência do Prisma Real",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Harmonia Pentacromática",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "royal_prism_convergence",
+        "value": 3,
+        "description": "Dispara simultaneamente os decretos de cada cor distinta entre seus Terrenos Canalizados (Vermelho, Azul, Roxo, Verde e Dourado)."
+      }
+    ],
+    "description": "Para cada Domínio colorido distinto entre seus Terrenos Canalizados (1 a 5), dispara seu decreto: Vermelho: 3 de dano à Vanguarda inimiga; Azul: Congela os 2 inimigos de maior ATQ e compra 1 carta; Roxo: Drena 3 de VIDA do Soberano rival; Verde: +2/+2 e Regeneração 1 aos aliados; Dourado: Escudo Divino à sua Vanguarda.",
+    "flavorText": "Separadas, as cinco coroas guerreiam; reunidas no Prisma, o próprio mundo se ajoelha.",
+    "imagePath": "/assets/cards/neutral_174_convergencia_prisma_real.webp"
   }
 ];
+
+export const ALL_CARDS: CardDefinition[] = [...ALL_CARDS_PART_1, ...ALL_CARDS_PART_2];
 
 export const CARD_MAP: Record<string, CardDefinition> = Object.fromEntries(
   ALL_CARDS.map(card => [card.id, card])

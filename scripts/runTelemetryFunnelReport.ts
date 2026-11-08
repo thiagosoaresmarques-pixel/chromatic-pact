@@ -48,6 +48,15 @@ function classifyDetailedSource(s: CloudVisitorSessionEntry): string {
   if (src.startsWith('tabnews') || url.includes('utm_source=tabnews')) {
     return 'TabNews (@ChromaticPact)';
   }
+  if (src.startsWith('medium') || url.includes('utm_source=medium') || (s.referrer || '').toLowerCase().includes('medium.com')) {
+    return 'Medium (Artigos Card Games)';
+  }
+  if (src.startsWith('devto') || src.includes('dev.to') || url.includes('utm_source=devto') || (s.referrer || '').toLowerCase().includes('dev.to')) {
+    return 'Dev.to (Artigos Card Games)';
+  }
+  if (src.startsWith('hashnode') || url.includes('utm_source=hashnode') || (s.referrer || '').toLowerCase().includes('hashnode')) {
+    return 'Hashnode (Artigos Card Games)';
+  }
   if (src.startsWith('reddit') || url.includes('utm_source=reddit')) {
     return `Reddit (${src || 'orgânico'})`;
   }

@@ -115,8 +115,96 @@ Qual desses sistemas de combate e economia mais combina com o seu estilo de jogo
     },
   },
   {
+    id: 'devto_01b_3_quebra_cabecas_taticos_cardgame_ptbr',
+    unlockAfterIso: '2026-11-10T11:00:00Z',
+    matchKeywords: ['3 quebra-cabeças táticos', '1 ponto de dano decide tudo'],
+    payload: {
+      title: '3 Quebra-Cabeças Táticos de Card Game em que 1 Ponto de Dano Decide Tudo (Teste no Navegador)',
+      description: 'Desafios de xeque-mate em 1 turno estilo xadrez aplicados a um tabuleiro tático 6x2 de card game: calcule a linha exata ou teste a jogada ao vivo sem instalar nada.',
+      tags: ['gaming', 'puzzles', 'gamedev', 'rpg'],
+      series: 'Guia de Card Games Estratégicos',
+      main_image: 'https://chromaticpact.com/press/enigma-01-caldeira.png',
+      body_markdown: `Nos melhores card games táticos — assim como nos problemas diários de xadrez — a diferença entre a derrota e o **xeque-mate em 1 turno (*Spot the Lethal*)** costuma morar em **1 único ponto de dano** ou na ordem exata entre duas ações.
+
+Separamos abaixo **3 quebra-cabeças reais** da trilha de *Problemas Táticos* do **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_puzzles&utm_medium=puzzle&utm_campaign=tactical_puzzles)**. Você não precisa conhecer o jogo antes: cada imagem traz as regras necessárias em 3 linhas para você calcular mentalmente — e um **link direto** que abre aquele exato tabuleiro no navegador em 2 segundos (sem download e sem cadastro) para testar sua jogada na prática.
+
+---
+
+### Quebra-Cabeça #01 — O Despertar da Caldeira (Alvo: 18 PV)
+
+![Enigma 01 - O Despertar da Caldeira](https://chromaticpact.com/press/enigma-01-caldeira.png)
+
+- **Situação na mesa:** O Soberano rival tem **18 PV** protegido por **3 Muralhas com Guarda e Escudo Divino** na Vanguarda. Você tem **7 de Essência** disponível e 3 atacantes prontos na linha de frente (\`3/3\`, \`3/2\` e \`2/1\` antes dos bônus).
+- **Opções na sua mão e mesa:**
+  1. **Bigorna do Rei da Fornalha (Custo 4 — Relíquia de Retaguarda):** Ao ser instalada na Retaguarda \`[R]\`, concede **+1/+1** a todos os seus aliados e invoca uma **Cria Dracônica 2/1**.
+  2. **Salamandra (Custo 3):** Criatura terrestre comum (sem Ímpeto).
+  3. **Expansão de Domínio Carmesim (\`DOMÍNIO 6/6\`, Custo 3):** Concede **+1/+1**, **Ímpeto** e **Acerto Garantido** (permite atacar diretamente o Soberano ignorando a Guarda inimiga neste turno) a todas as suas unidades em campo.
+
+**Pergunta:** Qual a única sequência que causa exatos **18 de dano** neste turno? *(Dica: inverter a ordem reduz o dano para 11!)*
+
+👉 **[Testar esta jogada ao vivo no tabuleiro (abre direto no Enigma #01)](https://chromaticpact.com/?problem=prob_01_forja_impeto&utm_source=devto_puzzles&utm_medium=puzzle&utm_campaign=tactical_puzzles)**
+
+<details>
+<summary><strong>Ver Solução Matemática Exata (Spoiler)</strong></summary>
+
+1. **Primeiro**, instale a **Bigorna do Rei da Fornalha** na Retaguarda \`[R]\` (**4 de Essência** — sobram 3): ela dá \`+1/+1\` aos seus 3 guerreiros e coloca a **4ª criatura** (Cria Dracônica) em campo *antes* da Expansão.
+2. **Segundo**, ative **DOMÍNIO 6/6** (**3 de Essência**): como a Cria Dracônica já estava na mesa, **todas as 4 criaturas** recebem \`+1/+1\`, *Ímpeto* e *Acerto Garantido*.
+3. **Terceiro**, clique em **ATACAR**: ignorando as 3 Muralhas com Escudo Divino, suas 4 criaturas conectam \`5 + 5 + 4 + 4 = 18\` de dano cravado!
+
+</details>
+
+---
+
+### Quebra-Cabeça #02 — Geometria de Cobertura e Invasão (Alvo: 12 PV com apenas 2 de Essência)
+
+![Enigma 02 - Geometria de Cobertura e Invasão](https://chromaticpact.com/press/enigma-02-geometria.png)
+
+- **Regra espacial da grade 6×2:**
+  - **Invasão (+1 ATQ):** Toda unidade na Vanguarda \`[V]\` cuja coluna inimiga à frente esteja **vazia** recebe \`+1 ATQ\`.
+  - **Cobertura (+1 ATQ):** Toda unidade na Vanguarda \`[V]\` que tenha um aliado posicionado atrás dela na **Retaguarda \`[R]\` da mesma coluna** recebe \`+1 ATQ\`.
+- **Recursos:** O rival tem **12 PV** (sem Guarda, mas ocupando a Coluna 2) e você tem apenas **2 de Essência** e duas cartas de custo \`1\` na mão: **Batedor Escamado** (\`2/1\` com *Ímpeto* que causa **1 de dano direto** ao entrar; há um Altar global dando \`+1 ATQ\` na Coluna 1 \`[R]\`) e **Diabrete de Escória** (\`1/1\` sem Ímpeto). Seu **Mastim** na Coluna 3 \`[V]\` já está pronto para atacar com \`5 ATQ\`.
+
+**Pergunta:** Em quais casas exatas (\`Coluna\` e \`Vanguarda/Retaguarda\`) você deve posicionar cada carta para somar **12** em vez de **10** ou **11**?
+
+👉 **[Resolver o Enigma #02 direto no navegador](https://chromaticpact.com/?problem=prob_02_cobertura_invasao&utm_source=devto_puzzles&utm_medium=puzzle&utm_campaign=tactical_puzzles)**
+
+<details>
+<summary><strong>Ver Solução Matemática Exata (Spoiler)</strong></summary>
+
+1. Invoque o **Batedor Escamado (1⚡)** especificamente na **Vanguarda da Coluna 1** (logo à frente do Altar que já ocupa a Retaguarda da Coluna 1, e em coluna livre de inimigos): ele causa **1 de dano** ao entrar e acumula \`2 base + 1 Altar + 1 Invasão + 1 Cobertura = 5 ATQ\`!
+2. Invoque o **Diabrete de Escória (1⚡)** na **Retaguarda da Coluna 3** (exatamente atrás do Mastim): mesmo sem Ímpeto para atacar, a presença dele na Retaguarda concede \`+1 ATQ\` de **Cobertura** ao Mastim (\`5 → 6 ATQ\`).
+3. Ataque com ambos: \`1 (entrada) + 5 (Batedor) + 6 (Mastim) = 12\`!
+
+</details>
+
+---
+
+### Quebra-Cabeça #03 — O Juramento de Asas e Fogo (Alvo: 9 PV atrás de Guarda Terrestre)
+
+![Enigma 03 - O Juramento de Asas e Fogo](https://chromaticpact.com/press/enigma-03-ascensao.png)
+
+- **Situação na mesa:** Uma Muralha com **Guarda terrestre e Escudo Divino** trava a coluna do seu **Campeão Dracônico** (que já recebe \`+1 ATQ\` de Cobertura do aliado atrás dele). O Soberano rival tem **9 PV** e você dispõe de **5 de Essência** + um **Batedor Escamado (1⚡, 1 de dano ao entrar)** na mão.
+- **Mecânica-chave:** Unidades em campo com a estrela **★ Ascender** podem evoluir durante o turno pagando Essência. Ao Ascender por \`4⚡\`, o Campeão Dracônico desperta como **Soberano Meio-Dragão (7/7 com Voo)** — e unidades com **Voo** ignoram Guardiões terrestres que não possuam *Alcance*.
+
+👉 **[Testar o Enigma #03 ao vivo na mesa](https://chromaticpact.com/?problem=prob_03_ascensao_draconica&utm_source=devto_puzzles&utm_medium=puzzle&utm_campaign=tactical_puzzles)**
+
+<details>
+<summary><strong>Ver Solução Matemática Exata (Spoiler)</strong></summary>
+
+1. Clique no **Campeão Dracônico** em campo e ative **★ Ascender (4⚡)**: ele passa a \`7 ATQ base + 1 Cobertura = 8 ATQ\` com **Voo**.
+2. Jogue o **Batedor Escamado (1⚡)** da mão para causar **1 de dano** ao entrar (\`9 PV → 8 PV\`).
+3. Ataque diretamente por cima da Muralha terrestre com o Meio-Dragão Ascendido para fechar os **8 de dano restantes**!
+
+</details>
+
+---
+
+Conseguiu acertar os três de primeira antes de abrir os spoilers? Se curtir esse tipo de cálculo, há mais de **100 Problemas Táticos** graduados (incluindo o **[Problema do Dia](https://chromaticpact.com/?problem=daily&utm_source=devto_puzzles&utm_medium=puzzle&utm_campaign=tactical_puzzles)**) liberados gratuitamente direto no navegador.`,
+    },
+  },
+  {
     id: 'devto_02_best_free_browser_tcgs_en',
-    unlockAfterIso: '2026-11-10T14:00:00Z',
+    unlockAfterIso: '2026-11-13T14:00:00Z',
     matchKeywords: ['7 best free tactical card games', 'play in your browser'],
     payload: {
       title: '7 Best Free Tactical Card Games You Can Play in Your Browser (No Download, Zero Pay-to-Win)',

@@ -440,6 +440,7 @@ export const App: React.FC = () => {
     try {
       const sp = new URLSearchParams(window.location.search);
       if (sp.get('deck')) return 'deckbuilder';
+      if (sp.get('problem')) return 'problems';
       if (sp.get('tid') && !(sp.get('tround') && sp.get('ttable'))) return 'tournaments';
       const urlTab = sp.get('tab') as ActiveTab | null;
       if (urlTab && resolvePillarForTab(urlTab) !== null) {
@@ -674,7 +675,7 @@ export const App: React.FC = () => {
     setMultiplayerPollingActive(needsRealtimeRooms);
   }, [activeTab, activeOnlineMatch, activeTournamentSpectate]);
 
-  // Shareable Deep-Link Router (?deck=..., ?replay=..., ?live=..., ?tid=...&tround=...&ttable=...)
+  // Shareable Deep-Link Router (?deck=..., ?problem=..., ?replay=..., ?live=..., ?tid=...&tround=...&ttable=...)
   useEffect(() => {
     let sp: URLSearchParams;
     try {
@@ -684,6 +685,7 @@ export const App: React.FC = () => {
     }
 
     const deckParam = sp.get('deck');
+    const problemParam = sp.get('problem');
     const replayParam = sp.get('replay');
     const liveParam = sp.get('live');
     const tidParam = sp.get('tid');
@@ -717,6 +719,59 @@ export const App: React.FC = () => {
       cleanQueryKeys(['deck']);
       setPendingSharedDeckCode(deckParam);
       setActiveTab('deckbuilder');
+      return;
+    }
+
+    if (problemParam) {
+      cleanQueryKeys(['problem']);
+      const normalized = problemParam.trim().toLowerCase();
+      if (normalized === 'list' || normalized === 'all') {
+        setActiveProblem(null);
+        setActiveTab('problems');
+        return;
+      }
+      void (async () => {
+        const [{ TACTICAL_PROBLEMS }, { getDailyState }] = await Promise.all([
+          import('./data/problems'),
+          import('./utils/dailyQuestsEngine'),
+        ]);
+        let target: TacticalProblem | null = null;
+        if (normalized === 'daily' || normalized === 'dia' || normalized === 'hoje') {
+          const ds = getDailyState();
+          target =
+            TACTICAL_PROBLEMS.find((p) => p.id === ds.dailyProblemId) ?? TACTICAL_PROBLEMS[0] ?? null;
+        } else {
+          const asNum = Number(normalized.replace(/^#/, ''));
+          target =
+            TACTICAL_PROBLEMS.find((p) => p.id.toLowerCase() === normalized) ??
+            (Number.isFinite(asNum) && asNum >= 1
+              ? TACTICAL_PROBLEMS.find((p) => p.number === Math.floor(asNum)) ?? null
+              : null);
+        }
+        if (!target) {
+          setActiveProblem(null);
+          setActiveTab('problems');
+          return;
+        }
+        try {
+          localStorage.removeItem(ACTIVE_BATTLE_STORAGE_KEY);
+        } catch {
+          // ignore
+        }
+        setActivePersonalReplay(null);
+        setActiveTournamentSpectate(null);
+        setActiveTournamentMatch(null);
+        setActiveOnlineMatch(null);
+        setActiveCampaignBoss(null);
+        setActiveRankedSovereign(null);
+        setIsExpeditionBattle(false);
+        setIsDraftBattle(false);
+        setActiveRiftId(null);
+        setActiveConquestContext(null);
+        setActiveGeoModifiers(null);
+        setActiveProblem(target);
+        setActiveTab('arena');
+      })();
       return;
     }
 

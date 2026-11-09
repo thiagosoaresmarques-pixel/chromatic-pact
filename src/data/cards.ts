@@ -32847,6 +32847,138 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Guardião, Ímpeto, Atropelar, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos seus aliados.",
     "flavorText": "Um único olho lhe basta para enxergar o ponto exato onde a linha inimiga irá ruir.",
     "imagePath": "/assets/cards/neutral_181_vaelor_lorde_comandante_olho_ferro.webp"
+  },
+  {
+    "id": "green_179_brennus_marechal_manto_musgo",
+    "name": "Brennus, Marechal do Manto de Musgo",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Humano • General Silvestre",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 3,
+    "atk": 4,
+    "armor": 2,
+    "hp": 6,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Ao entrar, gera +2 de Essência neste turno."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "No início do seu turno, gera +1 de Essência."
+      }
+    ],
+    "description": "Guardião, Atropelar, Armadura 2, Regeneração 2. Ao entrar, dá +1/+1 aos seus aliados e gera +2 de Essência. No início do turno, gera +1 de Essência.",
+    "flavorText": "A própria floresta brota de sua couraça, alimentando as tropas com a seiva das raízes antigas.",
+    "imagePath": "/assets/cards/green_179_brennus_marechal_manto_musgo.webp"
+  },
+  {
+    "id": "green_180_flora_dama_florescer_perene",
+    "name": "Flora, Dama do Florescer Perene",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Humano • General Florescente",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Ao entrar, gera +2 de Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 3,
+        "description": "Ao entrar, restaura 3 de Vida dos seus aliados e do seu Soberano."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "No início do seu turno, gera +1 de Essência."
+      }
+    ],
+    "description": "Guardião, Escudo Divino, Armadura 1, Regeneração 2. Ao entrar, dá +1/+1 aos seus aliados, cura 3 de Vida deles e gera +2 de Essência. No início do turno, gera +1 de Essência.",
+    "flavorText": "Onde sua montante toca o solo, pétalas desabrocham em pura essência vital.",
+    "imagePath": "/assets/cards/green_180_flora_dama_florescer_perene.webp"
+  },
+  {
+    "id": "green_181_verbena_marechal_cardo_real",
+    "name": "Verbena, Marechal do Cardo Real",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Humano • General do Cardo",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 2,
+    "hp": 7,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Alcance", "Toque Letal"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 3,
+        "description": "Ao entrar, gera +3 de Essência neste turno."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Ao atacar, gera +2 de Essência neste turno."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "No início do seu turno, gera +1 de Essência."
+      }
+    ],
+    "description": "Guardião, Alcance, Toque Letal, Armadura 2, Regeneração 2. Ao entrar, dá +1/+1 aos seus aliados e gera +3 de Essência. Ao atacar, gera +2; no início do turno, +1.",
+    "flavorText": "Sob a coroa do Cardo Real, cada espinho drena o vigor da terra para abastecer a ofensiva.",
+    "imagePath": "/assets/cards/green_181_verbena_marechal_cardo_real.webp"
   }
 ];
 

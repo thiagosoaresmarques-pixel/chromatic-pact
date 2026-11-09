@@ -1186,6 +1186,30 @@ const BESPOKE_RECENT_CARD_RULES: Record<string, BespokeCardTextEntry> = {
       'Sempre que atacar, concede +1/+1 permanente aos seus aliados em campo.',
     ],
   },
+  green_179_brennus_marechal_manto_musgo: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e gera +2 de Essência. No início do turno, gera +1 de Essência e regenera 2 de Vida.',
+    detailed: [
+      'Possui 2 de Armadura e regenera 2 de Vida no início do seu turno.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e gera +2 de Essência extra neste turno.',
+      'No início de cada um dos seus turnos, gera +1 de Essência adicional.',
+    ],
+  },
+  green_180_flora_dama_florescer_perene: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados, cura 3 de Vida deles e gera +2 de Essência. No início do turno, gera +1 de Essência.',
+    detailed: [
+      'Possui 1 de Armadura e regenera 2 de Vida no início do seu turno.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados, restaura 3 de Vida dos aliados e do seu Soberano e gera +2 de Essência extra neste turno.',
+      'No início de cada um dos seus turnos, gera +1 de Essência adicional.',
+    ],
+  },
+  green_181_verbena_marechal_cardo_real: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e gera +3 de Essência. Ao atacar, gera +2 de Essência; no início do turno, +1.',
+    detailed: [
+      'Possui 2 de Armadura e regenera 2 de Vida no início do seu turno.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e gera +3 de Essência extra neste turno.',
+      'Sempre que atacar, gera +2 de Essência extra; no início do seu turno, gera +1 de Essência.',
+    ],
+  },
 };
 
 export function getAscensionBonusNote(cardId: string): string | null {

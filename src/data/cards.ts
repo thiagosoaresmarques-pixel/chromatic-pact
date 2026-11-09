@@ -32979,6 +32979,117 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Guardião, Alcance, Toque Letal, Armadura 2, Regeneração 2. Ao entrar, dá +1/+1 aos seus aliados e gera +3 de Essência. Ao atacar, gera +2; no início do turno, +1.",
     "flavorText": "Sob a coroa do Cardo Real, cada espinho drena o vigor da terra para abastecer a ofensiva.",
     "imagePath": "/assets/cards/green_181_verbena_marechal_cardo_real.webp"
+  },
+  {
+    "id": "purple_179_morgause_dama_ferro_abissal",
+    "name": "Morgause, Dama do Ferro Abissal",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Humano • General Abissal",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Dreno de Vida", "Renascer"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "revive_from_crypt",
+        "value": 1,
+        "description": "Ao entrar, reanima da sua Cripta a criatura aliada mais forte."
+      }
+    ],
+    "description": "Guardião, Dreno de Vida, Renascer, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e reanima da Cripta o aliado mais forte.",
+    "flavorText": "Nem a própria morte ousa dispensar um soldado que jurou lealdade ao seu escudo negro.",
+    "imagePath": "/assets/cards/purple_179_morgause_dama_ferro_abissal.webp"
+  },
+  {
+    "id": "purple_180_corvina_marechal_bico_praga",
+    "name": "Corvina, Marechal do Bico da Praga",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Humano • General da Praga",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 3,
+    "atk": 4,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Toque Letal", "Dreno de Vida"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Ao entrar, reduz em 2 o Ataque da Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "drain_enemy_sovereign",
+        "value": 3,
+        "description": "Ao entrar, drena 3 de Vida do Soberano rival para o seu Soberano."
+      }
+    ],
+    "description": "Toque Letal, Dreno de Vida, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados, reduz em 2 o Ataque da Vanguarda inimiga e drena 3 de Vida do Soberano rival.",
+    "flavorText": "Quando a máscara de corvo cruza a névoa, o fôlego dos vivos torna-se tributo para o Abismo.",
+    "imagePath": "/assets/cards/purple_180_corvina_marechal_bico_praga.webp"
+  },
+  {
+    "id": "purple_181_nyxara_comandante_laminas_veu",
+    "name": "Nyxara, Comandante das Lâminas do Véu",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Humano • General das Sombras",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Ímpeto", "Toque Letal", "Dreno de Vida"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "destroy_enemy",
+        "value": 1,
+        "description": "Ao entrar, destrói 1 criatura inimiga."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "drain_enemy_sovereign",
+        "value": 2,
+        "description": "Ao atacar, drena 2 de Vida do Soberano rival para o seu Soberano."
+      }
+    ],
+    "description": "Ímpeto, Toque Letal, Dreno de Vida, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e destrói 1 inimigo. Ao atacar, drena 2 de Vida do Soberano rival.",
+    "flavorText": "Duas lâminas curvas bastam para cortar o fio do destino do campeão mais poderoso.",
+    "imagePath": "/assets/cards/purple_181_nyxara_comandante_laminas_veu.webp"
   }
 ];
 

@@ -1210,6 +1210,28 @@ const BESPOKE_RECENT_CARD_RULES: Record<string, BespokeCardTextEntry> = {
       'Sempre que atacar, gera +2 de Essência extra; no início do seu turno, gera +1 de Essência.',
     ],
   },
+  purple_179_morgause_dama_ferro_abissal: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e reanima da Cripta o aliado mais forte.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e reanima da sua Cripta a criatura aliada mais forte.',
+    ],
+  },
+  purple_180_corvina_marechal_bico_praga: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados, reduz em 2 o Ataque da Vanguarda inimiga e drena 3 de Vida do Soberano rival.',
+    detailed: [
+      'Possui 1 de Armadura: absorve ataques de até 1 e reduz em 1 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados, reduz em 2 o Ataque da Vanguarda inimiga e drena 3 de Vida do Soberano rival para o seu Soberano.',
+    ],
+  },
+  purple_181_nyxara_comandante_laminas_veu: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e destrói 1 inimigo. Ao atacar, drena 2 de Vida do Soberano rival.',
+    detailed: [
+      'Possui 1 de Armadura: absorve ataques de até 1 e reduz em 1 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e destrói imediatamente 1 criatura inimiga, ignorando Escudo Divino e Armadura.',
+      'Sempre que atacar, drena 2 de Vida do Soberano rival para o seu Soberano.',
+    ],
+  },
 };
 
 export function getAscensionBonusNote(cardId: string): string | null {

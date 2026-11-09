@@ -49,7 +49,9 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
           e.type === 'freeze_enemy_vanguard' ||
           e.type === 'bounce_enemy' ||
           e.type === 'coordinate_inversion' ||
-          e.type === 'horizon_singularity'
+          e.type === 'horizon_singularity' ||
+          e.type === 'lyriel_astral_zero' ||
+          e.type === 'chrono_prism_volley'
       ) ||
       /congel|tempo|crono|ampulheta|paradoxo|temporal|relógio|eterno|singularidade|coordenada/i.test(
         `${c.name} ${c.subtype} ${c.description}`
@@ -79,7 +81,9 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
         (e) =>
           e.type === 'shield_all_allies' ||
           e.type === 'solar_spear_phalanx' ||
-          e.type === 'unconquered_champion_oath'
+          e.type === 'unconquered_champion_oath' ||
+          e.type === 'lanca_cantora_ward' ||
+          e.type === 'aelion_solar_edict'
       ),
   },
   {
@@ -90,7 +94,11 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
     matches: (c) =>
       c.keywords.includes('Renascer') ||
       c.effects.some(
-        (e) => e.trigger === 'on_death' || e.type === 'revive_from_crypt' || e.type === 'twilight_procession'
+        (e) =>
+          e.trigger === 'on_death' ||
+          e.type === 'revive_from_crypt' ||
+          e.type === 'twilight_procession' ||
+          e.type === 'vaelen_astral_stigma'
       ),
   },
   {
@@ -102,7 +110,14 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
       (c.corruptionCost ?? 0) > 0 ||
       c.keywords.includes('Dreno de Vida') ||
       c.keywords.includes('Toque Letal') ||
-      c.effects.some((e) => e.type === 'damage_enemy_sovereign' || e.type === 'shared_shadow_link'),
+      c.effects.some(
+        (e) =>
+          e.type === 'damage_enemy_sovereign' ||
+          e.type === 'shared_shadow_link' ||
+          e.type === 'drain_enemy_sovereign' ||
+          e.type === 'astral_obsidian_strike' ||
+          e.type === 'vaelen_astral_stigma'
+      ),
   },
   {
     id: 'dragon_breath',
@@ -118,7 +133,8 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
           e.type === 'damage_enemy_row' ||
           e.type === 'damage_all_units' ||
           e.type === 'magmatic_subduction' ||
-          e.type === 'crimson_anvil_march'
+          e.type === 'crimson_anvil_march' ||
+          e.type === 'kaelith_phoenix_nova'
       ),
   },
   {
@@ -135,7 +151,9 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
           e.type === 'buff_all_allies' ||
           e.type === 'summon_token' ||
           e.type === 'food_chain_law' ||
-          e.type === 'primordial_evolution_apex'
+          e.type === 'primordial_evolution_apex' ||
+          e.type === 'emerald_antler_hunt' ||
+          e.type === 'sylvaris_fullmoon_bloom'
       ),
   },
   {
@@ -149,8 +167,16 @@ const SYNERGY_PACKAGES: SynergyPackageDef[] = [
         (e) =>
           e.type === 'grant_bonus_essence' ||
           e.type === 'primordial_evolution_apex' ||
-          e.type === 'royal_prism_convergence'
+          e.type === 'royal_prism_convergence' ||
+          e.type === 'sylvaris_fullmoon_bloom'
       ),
+  },
+  {
+    id: 'elf_council',
+    icon: '🏹',
+    label: 'Concílio das Cortes Élficas',
+    shortDesc: 'Elfos com Alcance, precisão à distância e sinergias tribais das Seis Cortes.',
+    matches: (c) => /\belf[oa]s?\b/i.test(c.subtype || ''),
   },
 ];
 
@@ -425,6 +451,12 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
   },
   { id: 'mech:corruption', group: 'mechanics', label: 'Custo de Sobrecarga', matches: (c) => (c.corruptionCost ?? 0) > 0 },
   {
+    id: 'tribe:elf',
+    group: 'mechanics',
+    label: 'Estirpe: Elfo',
+    matches: (c) => /\belf[oa]s?\b/i.test(c.subtype || ''),
+  },
+  {
     id: 'row:vanguard',
     group: 'mechanics',
     label: 'Fileira: Vanguarda',
@@ -451,7 +483,8 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
           e.type === 'freeze_enemy' ||
           e.type === 'freeze_enemy_vanguard' ||
           e.type === 'coordinate_inversion' ||
-          e.type === 'horizon_singularity'
+          e.type === 'horizon_singularity' ||
+          e.type === 'lyriel_astral_zero'
       ),
   },
   {
@@ -465,7 +498,8 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
           e.type === 'damage_enemy_row' ||
           e.type === 'damage_all_units' ||
           e.type === 'magmatic_subduction' ||
-          e.type === 'solar_spear_phalanx'
+          e.type === 'solar_spear_phalanx' ||
+          e.type === 'kaelith_phoenix_nova'
       ),
   },
   {
@@ -479,7 +513,12 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
           e.type === 'damage_enemy_sovereign' ||
           e.type === 'shared_shadow_link' ||
           e.type === 'food_chain_law' ||
-          e.type === 'royal_prism_convergence'
+          e.type === 'royal_prism_convergence' ||
+          e.type === 'drain_enemy_sovereign' ||
+          e.type === 'astral_obsidian_strike' ||
+          e.type === 'chrono_prism_volley' ||
+          e.type === 'living_ash_arrow' ||
+          e.type === 'vaelen_astral_stigma'
       ),
   },
   {
@@ -494,14 +533,23 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
           e.type === 'steal_small_enemy' ||
           e.type === 'coordinate_inversion' ||
           e.type === 'horizon_singularity' ||
-          e.type === 'food_chain_law'
+          e.type === 'food_chain_law' ||
+          e.type === 'lyriel_astral_zero'
       ),
   },
   {
     id: 'eff:draw',
     group: 'effects',
     label: 'Comprar Cartas',
-    matches: (c) => c.effects.some((e) => e.type === 'draw_cards' || e.type === 'royal_prism_convergence'),
+    matches: (c) =>
+      c.effects.some(
+        (e) =>
+          e.type === 'draw_cards' ||
+          e.type === 'royal_prism_convergence' ||
+          e.type === 'chrono_prism_volley' ||
+          e.type === 'mirror_blade_envoy' ||
+          e.type === 'thalassion_council_decree'
+      ),
   },
   {
     id: 'eff:essence',
@@ -519,7 +567,9 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
           e.type === 'heal_sovereign' ||
           e.type === 'heal_all_allies' ||
           e.type === 'heal_target_ally' ||
-          e.type === 'royal_prism_convergence'
+          e.type === 'royal_prism_convergence' ||
+          e.type === 'lanca_cantora_ward' ||
+          e.type === 'drain_enemy_sovereign'
       ),
   },
   {
@@ -535,20 +585,36 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
           e.type === 'crimson_anvil_march' ||
           e.type === 'primordial_evolution_apex' ||
           e.type === 'solar_spear_phalanx' ||
-          e.type === 'unconquered_champion_oath'
+          e.type === 'unconquered_champion_oath' ||
+          e.type === 'lanca_cantora_ward' ||
+          e.type === 'aelion_solar_edict' ||
+          e.type === 'emerald_antler_hunt' ||
+          e.type === 'sylvaris_fullmoon_bloom' ||
+          e.type === 'kaelith_phoenix_nova' ||
+          e.type === 'crystal_guard_resonance' ||
+          e.type === 'thalassion_council_decree'
       ),
   },
   {
     id: 'eff:debuff',
     group: 'effects',
     label: 'Reduzir Ataque (-ATQ)',
-    matches: (c) => c.effects.some((e) => e.type === 'debuff_enemy_vanguard_atk'),
+    matches: (c) =>
+      c.effects.some(
+        (e) => e.type === 'debuff_enemy_vanguard_atk' || e.type === 'vaelen_astral_stigma'
+      ),
   },
   {
     id: 'eff:revive',
     group: 'effects',
     label: 'Reanimar da Cripta',
-    matches: (c) => c.effects.some((e) => e.type === 'revive_from_crypt' || e.type === 'twilight_procession'),
+    matches: (c) =>
+      c.effects.some(
+        (e) =>
+          e.type === 'revive_from_crypt' ||
+          e.type === 'twilight_procession' ||
+          e.type === 'vaelen_astral_stigma'
+      ),
   },
   {
     id: 'eff:summon',
@@ -830,7 +896,10 @@ export const DeckBuilder: React.FC<DeckBuilderProps> = ({
     let archetypeTitle = '⚔️ Falange Tática Equilibrada';
     let archetypeSubtitle = 'Equilíbrio versátil entre linha de frente, magias de suporte e relíquias.';
 
-    if ((packageCounts['chrono_freeze'] ?? 0) >= 12) {
+    if ((packageCounts['elf_council'] ?? 0) >= 10) {
+      archetypeTitle = '🏹 Concílio das Cortes Élficas';
+      archetypeSubtitle = 'Precisão de Alcance, auras élficas e sinergia entre as Seis Cortes.';
+    } else if ((packageCounts['chrono_freeze'] ?? 0) >= 12) {
       archetypeTitle = '⏳ Ordem Cronomante & Stasis';
       archetypeSubtitle = 'Paralisia temporal, controle de turnos e relíquias de precisão.';
     } else if (typeCounts.relic >= 12) {

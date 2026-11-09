@@ -31876,6 +31876,523 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Para cada Domínio colorido distinto entre seus Terrenos Canalizados (1 a 5), dispara seu decreto: Vermelho: 3 de dano à Vanguarda inimiga; Azul: Congela os 2 inimigos de maior ATQ e compra 1 carta; Roxo: Drena 3 de VIDA do Soberano rival; Verde: +2/+2 e Regeneração 1 aos aliados; Dourado: Escudo Divino à sua Vanguarda.",
     "flavorText": "Separadas, as cinco coroas guerreiam; reunidas no Prisma, o próprio mundo se ajoelha.",
     "imagePath": "/assets/cards/neutral_174_convergencia_prisma_real.webp"
+  },
+  {
+    "id": "gold_176_arauto_louros_alvorada",
+    "name": "Arauto de Louros da Alvorada",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Elfo • Arqueiro Solar",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 2,
+    "armor": 1,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": ["Alcance", "Escudo Divino"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Guardião de Louros Solares",
+      "newAtk": 4,
+      "newArmor": 2,
+      "newMaxHp": 5,
+      "addedKeywords": ["Guardião"]
+    },
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao entrar, restaura +2 de VIDA do seu Soberano."
+      }
+    ],
+    "description": "Alcance, Escudo Divino. Ao entrar, restaura +2 de VIDA do seu Soberano. Ascensão (4): Evolui para Guardião de Louros Solares (4/5, Armadura 2, Guardião).",
+    "flavorText": "Cada folha de ouro em sua fronte foi forjada no primeiro raio de Aethelgard.",
+    "imagePath": "/assets/cards/gold_176_arauto_louros_alvorada.webp"
+  },
+  {
+    "id": "gold_177_lanca_cantora_coro_solar",
+    "name": "Lança-Cantora do Coro Solar",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Elfo • Cantora de Égide",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "turn_start",
+        "type": "lanca_cantora_ward",
+        "value": 1,
+        "description": "No início do seu turno, concede +1 de Armadura e restaura 1 de VIDA ao aliado mais ferido na Vanguarda."
+      }
+    ],
+    "description": "Alcance, Escudo Divino. No início do seu turno, concede +1 de Armadura e restaura 1 de VIDA ao aliado mais ferido na sua Vanguarda.",
+    "flavorText": "Seu hino endurece o aço dos escudos antes mesmo que a primeira seta toque o chão.",
+    "imagePath": "/assets/cards/gold_177_lanca_cantora_coro_solar.webp"
+  },
+  {
+    "id": "gold_178_aelion_hierofante_coroa_aurea",
+    "name": "Aelion, Hierofante da Coroa Áurea",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Elfo • Hierofante Solar",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 4,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "aelion_solar_edict",
+        "value": 2,
+        "description": "Concede Escudo Divino a um aliado sem escudo. Enquanto Aelion viver, aliados com Escudo Divino recebem +2 de ATQ."
+      },
+      {
+        "trigger": "spell_cast",
+        "type": "aelion_solar_edict",
+        "value": 2,
+        "description": "Ao conjurar Feitiço, concede Escudo Divino a um aliado sem escudo."
+      }
+    ],
+    "description": "Alcance, Escudo Divino. Ao entrar e ao conjurar Feitiço, concede Escudo Divino a um aliado desprotegido. Enquanto Aelion viver, todos os seus aliados com Escudo Divino recebem +2 de ATQ.",
+    "flavorText": "Onde repousa sua bênção dourada, nenhuma lâmina profana encontra carne.",
+    "imagePath": "/assets/cards/gold_178_aelion_hierofante_coroa_aurea.webp"
+  },
+  {
+    "id": "purple_176_tecela_lagrimas_negras",
+    "name": "Tecelã de Lágrimas Negras",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Elfo • Tecelã Astral",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 1,
+    "corruptionCost": 1,
+    "atk": 3,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance", "Dreno de Vida"],
+    "effects": [
+      {
+        "trigger": "on_death",
+        "type": "drain_enemy_sovereign",
+        "value": 2,
+        "description": "Ao morrer, drena 2 de VIDA do Soberano rival, curando +2 no seu Soberano."
+      }
+    ],
+    "description": "Alcance, Dreno de Vida. Custo +1 Sobrecarga. Último Suspiro: Drena 2 de VIDA do Soberano adversário, restaurando +2 de VIDA no seu Soberano.",
+    "flavorText": "Fios de obsidiana estelar costuram o destino dos reis que ousam encará-la.",
+    "imagePath": "/assets/cards/purple_176_tecela_lagrimas_negras.webp"
+  },
+  {
+    "id": "purple_177_inquisidor_obsidiana_astral",
+    "name": "Inquisidor de Obsidiana Astral",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Elfo • Inquisidor do Eclipse",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "corruptionCost": 2,
+    "atk": 4,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": ["Alcance", "Toque Letal", "Renascer"],
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "astral_obsidian_strike",
+        "value": 2,
+        "description": "Ao atacar com 5+ de Sobrecarga, causa 2 de dano direto ao alvo antes do combate."
+      }
+    ],
+    "description": "Alcance, Toque Letal, Renascer. Custo +2 Sobrecarga. Ao atacar com 5 ou mais de Sobrecarga, desfere 2 de dano direto ao defensor antes do choque.",
+    "flavorText": "Forjado sob o eclipse negro, seu arco dispara estilhaços de estrelas mortas.",
+    "imagePath": "/assets/cards/purple_177_inquisidor_obsidiana_astral.webp"
+  },
+  {
+    "id": "purple_178_vaelen_oraculo_choro_dourado",
+    "name": "Vaelen, Oráculo do Choro Dourado",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Elfo • Oráculo do Abismo",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "corruptionCost": 2,
+    "atk": 4,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance", "Dreno de Vida"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "vaelen_astral_stigma",
+        "value": 2,
+        "secondaryValue": 4,
+        "description": "Marca o inimigo mais forte com Estigma Astral (-2 ATQ; ao morrer, reanima um Elfo ou criatura de custo até 4 da Cripta com 1 de VIDA). Sempre que você acumular Sobrecarga ou Sacrifício Vital, causa 2 de dano ao Soberano rival."
+      }
+    ],
+    "description": "Alcance, Dreno de Vida. Custo +2 Sobrecarga. Ao entrar, marca o inimigo mais forte com Estigma Astral (-2 ATQ; quando morrer, reanima da Cripta um Elfo ou criatura de custo até 4 com 1 de VIDA). Sempre que você pagar Sobrecarga ou Sacrifício Vital, causa 2 de dano ao Soberano rival.",
+    "flavorText": "Chora ouro líquido pelos impérios que ainda não sabem que já caíram.",
+    "imagePath": "/assets/cards/purple_178_vaelen_oraculo_choro_dourado.webp"
+  },
+  {
+    "id": "blue_176_sentinela_capuz_estelar",
+    "name": "Sentinela do Capuz Estelar",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Elfo • Vigia Astral",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 2,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Vigia do Prisma Boreal",
+      "newAtk": 4,
+      "newArmor": 0,
+      "newMaxHp": 6,
+      "addedKeywords": ["Alcance"]
+    },
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao entrar, congela 1 criatura inimiga por 1 rodada."
+      }
+    ],
+    "description": "Alcance. Ao entrar, congela 1 criatura inimiga por 1 rodada. Ascensão (4): Evolui para Vigia do Prisma Boreal (4/6) e passa a comprar 1 carta sempre que atacar um inimigo Congelado.",
+    "flavorText": "Sob seu capuz bordado de constelações, o próprio vento esquece como soprar.",
+    "imagePath": "/assets/cards/blue_176_sentinela_capuz_estelar.webp"
+  },
+  {
+    "id": "blue_177_cronomante_terceiro_prisma",
+    "name": "Cronomante do Terceiro Prisma",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Elfo • Cronomante",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 0,
+    "hp": 5,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance"],
+    "effects": [
+      {
+        "trigger": "spell_cast",
+        "type": "chrono_prism_volley",
+        "value": 2,
+        "secondaryValue": 4,
+        "description": "1x por turno ao conjurar Feitiço, causa 2 de dano a um inimigo — ou 4 de dano e compra 1 carta se ele já estiver Congelado."
+      }
+    ],
+    "description": "Alcance. Uma vez por turno, ao conjurar um Feitiço, dispara um raio prismático causando 2 de dano a um inimigo — ou 4 de dano e comprando 1 carta se o alvo estiver Congelado.",
+    "flavorText": "Três segundos bastam para que o gelo eterno devore um exército inteiro.",
+    "imagePath": "/assets/cards/blue_177_cronomante_terceiro_prisma.webp"
+  },
+  {
+    "id": "blue_178_lyriel_vidente_zero_astral",
+    "name": "Lyriel, Vidente do Zero Astral",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Elfo • Vidente Boreal",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 4,
+    "armor": 0,
+    "hp": 6,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance", "Voo"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "lyriel_astral_zero",
+        "value": 2,
+        "description": "Congela até 2 inimigos e puxa o inimigo mais fraco da Retaguarda para a Vanguarda. Enquanto Lyriel viver, inimigos Congelados perdem Guardião e sofrem +2 de dano das suas fontes."
+      }
+    ],
+    "description": "Alcance, Voo. Ao entrar, congela até 2 criaturas inimigas e puxa o inimigo de menor ATQ da Retaguarda para a Vanguarda. Enquanto Lyriel viver, inimigos Congelados perdem Guardião e sofrem +2 de dano das suas fontes.",
+    "flavorText": "No instante zero entre duas estrelas, todo escudo é vidro prestes a estilhaçar.",
+    "imagePath": "/assets/cards/blue_178_lyriel_vidente_zero_astral.webp"
+  },
+  {
+    "id": "green_176_sussurrador_seiva_lunar",
+    "name": "Sussurrador da Seiva Lunar",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Elfo • Druida Lunar",
+    "rarity": "uncommon",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 1,
+    "armor": 0,
+    "hp": 4,
+    "regeneration": 2,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Arauto do Dossel Lunar",
+      "newAtk": 3,
+      "newArmor": 0,
+      "newMaxHp": 6,
+      "addedKeywords": ["Alcance"]
+    },
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao entrar, concede +1 de Essência extra neste turno."
+      }
+    ],
+    "description": "Alcance, Regeneração 2. Ao entrar, gera +1 de Essência extra neste turno. Ascensão (4): Evolui para Arauto do Dossel Lunar (3/6) e concede +1/+1 aos outros Elfos e aliados Verdes.",
+    "flavorText": "As raízes antigas respondem ao luar antes mesmo de ouvirem a voz dos druidas.",
+    "imagePath": "/assets/cards/green_176_sussurrador_seiva_lunar.webp"
+  },
+  {
+    "id": "green_177_cacador_galhada_esmeralda",
+    "name": "Caçador de Galhada Esmeralda",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Elfo • Patrulheiro do Dossel",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 0,
+    "hp": 5,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": ["Alcance", "Ímpeto", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "emerald_antler_hunt",
+        "value": 1,
+        "secondaryValue": 3,
+        "description": "Ao atacar, recebe +1/+1 permanente para cada outro Elfo aliado ou criatura com Regeneração (máx. +3/+3)."
+      }
+    ],
+    "description": "Alcance, Ímpeto, Atropelar, Regeneração 2. Ao atacar, recebe +1/+1 permanente para cada outro Elfo aliado ou aliado com Regeneração em campo (até +3/+3 por ataque).",
+    "flavorText": "Nenhum invasor escapa quando toda a floresta respira no ritmo da sua corda.",
+    "imagePath": "/assets/cards/green_177_cacador_galhada_esmeralda.webp"
+  },
+  {
+    "id": "green_178_sylvaris_arquidruida_plenilunio",
+    "name": "Sylvaris, Arquidruida do Plenilúnio",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Elfo • Arquidruida Lunar",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 0,
+    "hp": 7,
+    "regeneration": 3,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "sylvaris_fullmoon_bloom",
+        "value": 2,
+        "description": "Concede +2/+2 e +2 de Regeneração à sua Vanguarda e ativa gratuitamente a Ascensão de 1 aliado elegível."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "No início do seu turno, concede +1 de Essência extra."
+      }
+    ],
+    "description": "Alcance, Regeneração 3. Ao entrar, concede +2/+2 e +2 de Regeneração à sua Vanguarda e ascende gratuitamente 1 aliado com Ascensão. No início do seu turno, gera +1 de Essência extra.",
+    "flavorText": "Quando a lua cheia coroa Verídia, brotos tornam-se titãs em um único suspiro.",
+    "imagePath": "/assets/cards/green_178_sylvaris_arquidruida_plenilunio.webp"
+  },
+  {
+    "id": "red_176_dancarino_plumas_brasa",
+    "name": "Dançarino de Plumas em Brasa",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Elfo • Dançarino de Fênix",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 3,
+    "armor": 0,
+    "hp": 2,
+    "preferredRow": "vanguard",
+    "keywords": ["Alcance", "Voo", "Ímpeto", "Pele Incandescente"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Lâmina-Fênix Escarlate",
+      "newAtk": 5,
+      "newArmor": 0,
+      "newMaxHp": 4,
+      "addedKeywords": ["Renascer"]
+    },
+    "effects": [],
+    "description": "Alcance, Voo, Ímpeto, Pele Incandescente. Ascensão (4): Evolui para Lâmina-Fênix Escarlate (5/4, Renascer).",
+    "flavorText": "Suas plumas cortam o ar como fagulhas vivas dançando sobre a cratera rubra.",
+    "imagePath": "/assets/cards/red_176_dancarino_plumas_brasa.webp"
+  },
+  {
+    "id": "red_177_arqueiro_solar_cinza_viva",
+    "name": "Arqueiro Solar da Cinza Viva",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Elfo • Arqueiro de Fênix",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 0,
+    "hp": 3,
+    "breathDamage": 1,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance", "Fúria Crescente"],
+    "effects": [
+      {
+        "trigger": "spell_cast",
+        "type": "living_ash_arrow",
+        "value": 2,
+        "description": "Ao conjurar Feitiço, causa 2 de dano perfurante (ignorando Armadura) a um inimigo na Vanguarda."
+      }
+    ],
+    "description": "Alcance, Fúria Crescente, Sopro Elemental 1. Ao conjurar Feitiço, dispara uma flecha incandescente que causa 2 de dano perfurante (ignorando Armadura) a um inimigo na Vanguarda.",
+    "flavorText": "Cada encantamento entoado acende uma nova seta em sua aljava de brasa.",
+    "imagePath": "/assets/cards/red_177_arqueiro_solar_cinza_viva.webp"
+  },
+  {
+    "id": "red_178_kaelith_principe_asas_fenix",
+    "name": "Kaelith, Príncipe das Asas de Fênix",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Elfo • Príncipe Fênix",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 0,
+    "hp": 5,
+    "breathDamage": 2,
+    "preferredRow": "vanguard",
+    "keywords": ["Alcance", "Voo", "Ímpeto", "Renascer"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "kaelith_phoenix_nova",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Ao entrar e ao ativar Renascer, causa 3 de dano a toda a Vanguarda inimiga e concede +1 de ATQ neste turno aos demais aliados."
+      }
+    ],
+    "description": "Alcance, Voo, Ímpeto, Renascer, Sopro Elemental 2. Ao entrar e sempre que ativar Renascer, explode em uma Nova de Fênix causando 3 de dano à Vanguarda inimiga e concedendo +1 de ATQ neste turno aos demais aliados.",
+    "flavorText": "Abatê-lo uma vez é apenas convidar o próprio sol carmesim a descer sobre a arena.",
+    "imagePath": "/assets/cards/red_178_kaelith_principe_asas_fenix.webp"
+  },
+  {
+    "id": "neutral_175_emissario_lamina_espelho",
+    "name": "Emissário de Lâmina-Espelho",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elfo • Emissário Real",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": ["Alcance"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "mirror_blade_envoy",
+        "value": 1,
+        "description": "Ao entrar, se você controlar outro Elfo ou aliados de 2+ cores distintas, compra 1 carta."
+      }
+    ],
+    "description": "Alcance, Armadura 1. Ao entrar, se você controlar outro Elfo ou unidades aliadas de 2 ou mais Domínios coloridos distintos, compra 1 carta.",
+    "flavorText": "Suas adagas espelhadas refletem os pactos selados entre todas as cortes.",
+    "imagePath": "/assets/cards/neutral_175_emissario_lamina_espelho.webp"
+  },
+  {
+    "id": "neutral_176_mestre_arqueiro_guarda_cristalina",
+    "name": "Mestre-Arqueiro da Guarda Cristalina",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elfo • Mestre-Arqueiro Real",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "crystal_guard_resonance",
+        "value": 1,
+        "description": "Ao entrar, concede +1/+1 aos outros Elfos aliados; se você controlar 2+ outros Elfos, recebe Escudo Divino e +1 de ATQ."
+      }
+    ],
+    "description": "Alcance. Ao entrar, concede +1/+1 permanente aos outros Elfos aliados; se você controlar 2 ou mais outros Elfos, recebe também Escudo Divino e +1 de ATQ.",
+    "flavorText": "Setas lapidadas em cristal axial voam em uníssono quando o Concílio marcha.",
+    "imagePath": "/assets/cards/neutral_176_mestre_arqueiro_guarda_cristalina.webp"
+  },
+  {
+    "id": "neutral_177_thalassion_alto_rei_concilio_elfico",
+    "name": "Thalassion, Alto-Rei do Concílio Élfico",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elfo • Alto-Rei do Concílio",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "thalassion_council_decree",
+        "value": 1,
+        "description": "Concede +1/+1 a todos os Elfos aliados e busca 1 carta de Elfo do seu Grimório para a mão. Enquanto viver, outros Elfos aliados recebem +1 de Armadura."
+      }
+    ],
+    "description": "Alcance, Escudo Divino, Armadura 1. Ao entrar, concede +1/+1 a todos os Elfos aliados e busca 1 Elfo do seu Grimório para a mão. Enquanto Thalassion viver, outros Elfos aliados recebem +1 de Armadura.",
+    "flavorText": "Cinco joias na coroa prateada, uma só voz soberana ecoando através das eras.",
+    "imagePath": "/assets/cards/neutral_177_thalassion_alto_rei_concilio_elfico.webp"
   }
 ];
 

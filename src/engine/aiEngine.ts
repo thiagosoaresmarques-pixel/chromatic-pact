@@ -783,7 +783,9 @@ function evaluateCardPlayValue(
           eff.type === 'damage_single_enemy' ||
           eff.type === 'destroy_enemy' ||
           eff.type === 'freeze_enemy' ||
-          eff.type === 'bounce_enemy'
+          eff.type === 'bounce_enemy' ||
+          eff.type === 'vaelen_astral_stigma' ||
+          eff.type === 'lyriel_astral_zero'
         ) {
           if (enemyUnits.length > 0) {
             const sorted = [...enemyUnits].sort(
@@ -791,9 +793,17 @@ function evaluateCardPlayValue(
             );
             bestTargetId = sorted[0].instanceId;
           }
-        } else if (eff.type === 'buff_target_ally' || eff.type === 'heal_target_ally') {
-          if (friendlyUnits.length > 0) {
-            const sorted = [...friendlyUnits].sort((a, b) => b.currentAtk - a.currentAtk);
+        } else if (
+          eff.type === 'buff_target_ally' ||
+          eff.type === 'heal_target_ally' ||
+          eff.type === 'aelion_solar_edict'
+        ) {
+          const pool =
+            eff.type === 'aelion_solar_edict'
+              ? friendlyUnits.filter((u) => !u.hasDivineShield)
+              : friendlyUnits;
+          if (pool.length > 0) {
+            const sorted = [...pool].sort((a, b) => b.currentAtk - a.currentAtk);
             bestTargetId = sorted[0].instanceId;
           }
         }
@@ -824,7 +834,9 @@ function evaluateCardPlayValue(
           eff.type === 'damage_single_enemy' ||
           eff.type === 'destroy_enemy' ||
           eff.type === 'freeze_enemy' ||
-          eff.type === 'bounce_enemy'
+          eff.type === 'bounce_enemy' ||
+          eff.type === 'vaelen_astral_stigma' ||
+          eff.type === 'lyriel_astral_zero'
         ) {
           if (enemyUnits.length > 0) {
             const sorted = [...enemyUnits].sort(
@@ -832,9 +844,17 @@ function evaluateCardPlayValue(
             );
             bestTargetId = sorted[0].instanceId;
           }
-        } else if (eff.type === 'buff_target_ally' || eff.type === 'heal_target_ally') {
-          if (friendlyUnits.length > 0) {
-            const sorted = [...friendlyUnits].sort((a, b) => b.currentAtk - a.currentAtk);
+        } else if (
+          eff.type === 'buff_target_ally' ||
+          eff.type === 'heal_target_ally' ||
+          eff.type === 'aelion_solar_edict'
+        ) {
+          const pool =
+            eff.type === 'aelion_solar_edict'
+              ? friendlyUnits.filter((u) => !u.hasDivineShield)
+              : friendlyUnits;
+          if (pool.length > 0) {
+            const sorted = [...pool].sort((a, b) => b.currentAtk - a.currentAtk);
             bestTargetId = sorted[0].instanceId;
           }
         }

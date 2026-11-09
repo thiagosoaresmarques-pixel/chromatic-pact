@@ -51,7 +51,21 @@ export type TriggerEffectType =
   | 'primordial_evolution_apex'
   | 'solar_spear_phalanx'
   | 'unconquered_champion_oath'
-  | 'royal_prism_convergence';
+  | 'royal_prism_convergence'
+  | 'lanca_cantora_ward'
+  | 'aelion_solar_edict'
+  | 'drain_enemy_sovereign'
+  | 'astral_obsidian_strike'
+  | 'vaelen_astral_stigma'
+  | 'chrono_prism_volley'
+  | 'lyriel_astral_zero'
+  | 'emerald_antler_hunt'
+  | 'sylvaris_fullmoon_bloom'
+  | 'living_ash_arrow'
+  | 'kaelith_phoenix_nova'
+  | 'mirror_blade_envoy'
+  | 'crystal_guard_resonance'
+  | 'thalassion_council_decree';
 
 export interface CardEffect {
   trigger: 'on_enter' | 'on_death' | 'on_attack' | 'turn_start' | 'turn_end' | 'spell_cast';
@@ -140,6 +154,11 @@ export interface BoardUnit {
   sharedShadowRemainingCap?: number;
   isEphemeralSpecter?: boolean;
   isCrownProtector?: boolean;
+  astralStigmaBy?: 'player' | 'ai';
+  lastSpellTriggerTurn?: number;
+  drawOnAttackFrozen?: boolean;
+  elvenAuraAtkBonus?: number;
+  elvenAuraArmorBonus?: number;
 }
 
 export type AffinityMap = Record<Domain, number>;

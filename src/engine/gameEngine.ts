@@ -977,6 +977,125 @@ export function channelCard(
  * - Invasão de Território (Vanguarda Desimpedida): Criatura na Vanguarda cuja coluna oposta na
  *   Vanguarda inimiga esteja vazia avança para o terreno adversário e ganha +1 ATQ (invasionAtkBonus = 1, isInvading = true).
  */
+export function isElfCard(card: CardDefinition): boolean {
+  return /\belf[oa]s?\b/i.test(card.subtype || '');
+}
+
+function hasLivingUnitWithCardId(pState: PlayerState, cardId: string): boolean {
+  return getAllBoardUnits(pState).some(
+    (u) => !u.isTrap && !u.isConcealedDeploy && u.currentHp > 0 && u.card.id === cardId
+  );
+}
+
+function applyAscensionSideEffects(
+  state: GameState,
+  actor: 'player' | 'ai',
+  unit: BoardUnit
+): void {
+  if (unit.card.id === 'blue_176_sentinela_capuz_estelar') {
+    unit.drawOnAttackFrozen = true;
+  } else if (unit.card.id === 'green_176_sussurrador_seiva_lunar') {
+    const actorState = state[actor];
+    const recipients = getAllBoardUnits(actorState).filter(
+      (u) =>
+        u.instanceId !== unit.instanceId &&
+        u.card.type === 'creature' &&
+        !u.isTrap &&
+        u.currentHp > 0 &&
+        (isElfCard(u.card) || u.card.domain === 'green')
+    );
+    for (const ally of recipients) {
+      ally.currentAtk += 1;
+      ally.maxHp += 1;
+      ally.currentHp += 1;
+      addFeedback(state, ally.instanceId, '+1/+1 Dossel Lunar!', 'buff');
+    }
+    if (recipients.length > 0) {
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[Arauto do Dossel Lunar] concedeu +1/+1 a ${recipients.length} aliado(s) Élfico(s)/Verde(s)!`
+      );
+    }
+  }
+}
+
+function triggerVaelenOverloadChime(state: GameState, actor: 'player' | 'ai'): void {
+  const actorState = state[actor];
+  const vaelenUnits = getAllBoardUnits(actorState).filter(
+    (u) =>
+      !u.isTrap &&
+      !u.isConcealedDeploy &&
+      u.currentHp > 0 &&
+      u.card.id === 'purple_178_vaelen_oraculo_choro_dourado'
+  );
+  if (vaelenUnits.length === 0) return;
+  const enemyActor: 'player' | 'ai' = actor === 'player' ? 'ai' : 'player';
+  const totalDmg = 2 * vaelenUnits.length;
+  const dealt = dealEnemyDamageToSovereign(
+    state,
+    enemyActor,
+    totalDmg,
+    'Vaelen, Oráculo do Choro Dourado',
+    `-${totalDmg} Choro Dourado`
+  );
+  if (dealt > 0) {
+    addLog(
+      state,
+      actor,
+      'effect',
+      `[Vaelen, Oráculo do Choro Dourado] converteu o tributo sombrio em ${dealt} de dano ao Soberano rival!`
+    );
+  }
+}
+
+function triggerKaelithPhoenixNova(
+  state: GameState,
+  actor: 'player' | 'ai',
+  sourceInstanceId?: string,
+  novaDmg = 3,
+  allyAtkBuff = 1
+): void {
+  const actorState = state[actor];
+  const enemyActor: 'player' | 'ai' = actor === 'player' ? 'ai' : 'player';
+  const enemyState = state[enemyActor];
+
+  const enemyVanguard = getRowUnits(enemyState, 'vanguard').filter(
+    (u) => !u.isTrap && u.currentHp > 0
+  );
+  for (const enemy of enemyVanguard) {
+    dealEffectDamageToUnit(
+      state,
+      enemy,
+      novaDmg,
+      'Nova de Fênix de Kaelith'
+    );
+  }
+
+  const otherAllies = getAllBoardUnits(actorState).filter(
+    (u) =>
+      u.instanceId !== sourceInstanceId &&
+      u.card.type === 'creature' &&
+      !u.isTrap &&
+      u.currentHp > 0
+  );
+  for (const ally of otherAllies) {
+    ally.currentAtk += allyAtkBuff;
+    ally.tempTurnAtkBonus = (ally.tempTurnAtkBonus ?? 0) + allyAtkBuff;
+    addFeedback(state, ally.instanceId, `+${allyAtkBuff} ATQ Fênix!`, 'buff');
+  }
+
+  if (enemyVanguard.length > 0 || otherAllies.length > 0) {
+    addLog(
+      state,
+      actor,
+      'effect',
+      `[Kaelith, Príncipe das Asas de Fênix] detonou Nova de Fênix (${novaDmg} de dano à Vanguarda inimiga e +${allyAtkBuff} ATQ neste turno aos demais aliados)!`
+    );
+  }
+}
+
 export function recalculateFormationBonuses(state: GameState): void {
   const isAshStormActive = state.weather?.type === 'ash_storm';
 
@@ -1031,6 +1150,14 @@ export function recalculateFormationBonuses(state: GameState): void {
       if (u.riftArmorBonus) {
         u.currentArmor = Math.max(0, u.currentArmor - u.riftArmorBonus);
         u.riftArmorBonus = 0;
+      }
+      if (u.elvenAuraAtkBonus) {
+        u.currentAtk = Math.max(0, u.currentAtk - u.elvenAuraAtkBonus);
+        u.elvenAuraAtkBonus = 0;
+      }
+      if (u.elvenAuraArmorBonus) {
+        u.currentArmor = Math.max(0, u.currentArmor - u.elvenAuraArmorBonus);
+        u.elvenAuraArmorBonus = 0;
       }
       u.isInvading = false;
     }
@@ -1152,6 +1279,43 @@ export function recalculateFormationBonuses(state: GameState): void {
               colUnit.riftArmorBonus = 1;
               colUnit.currentArmor += 1;
             }
+          }
+        }
+      }
+    }
+
+    // 4. Apply Sovereign Elven Court Auras (Aelion: +2 ATK to shielded allies; Thalassion: +1 Armor to other allied Elves)
+    const allMyUnits = getAllBoardUnits(pState);
+    const livingAelions = allMyUnits.filter(
+      (u) =>
+        !u.isTrap &&
+        !u.isConcealedDeploy &&
+        u.currentHp > 0 &&
+        u.card.id === 'gold_178_aelion_hierofante_coroa_aurea'
+    );
+    const livingThalassions = allMyUnits.filter(
+      (u) =>
+        !u.isTrap &&
+        !u.isConcealedDeploy &&
+        u.currentHp > 0 &&
+        u.card.id === 'neutral_177_thalassion_alto_rei_concilio_elfico'
+    );
+
+    if (livingAelions.length > 0 || livingThalassions.length > 0) {
+      for (const u of allMyUnits) {
+        if (u.isTrap || u.card.type !== 'creature' || u.currentHp <= 0) continue;
+        if (livingAelions.length > 0 && u.hasDivineShield) {
+          const atkGain = 2 * livingAelions.length;
+          u.elvenAuraAtkBonus = (u.elvenAuraAtkBonus ?? 0) + atkGain;
+          u.currentAtk += atkGain;
+        }
+        if (livingThalassions.length > 0 && isElfCard(u.card)) {
+          const otherThalassions = livingThalassions.filter(
+            (t) => t.instanceId !== u.instanceId
+          ).length;
+          if (otherThalassions > 0) {
+            u.elvenAuraArmorBonus = (u.elvenAuraArmorBonus ?? 0) + otherThalassions;
+            u.currentArmor += otherThalassions;
           }
         }
       }
@@ -2029,6 +2193,7 @@ export function bloodPactForEssence(state: GameState, actor: 'player' | 'ai'): G
     'corruption',
     `${actorState.name} ativou Sacrifício Vital (-3❤️ Vida, +1 Sobrecarga -> +1⚡ Essência imediata)!`
   );
+  triggerVaelenOverloadChime(next, actor);
   cleanupDeadUnits(next);
   return next;
 }
@@ -2271,6 +2436,7 @@ export function useSovereignPower(state: GameState, actor: 'player' | 'ai'): Gam
         addFeedback(next, `${actor}-sovereign`, '+2❤️ Dreno Umbroso', 'heal');
         addLog(next, actor, 'spell', `Poder do Soberano [${info.name}] drenou 2 de Vida de ${enemyState.name}!`);
       }
+      triggerVaelenOverloadChime(next, actor);
       break;
     }
     case 'green': {
@@ -2664,12 +2830,14 @@ function dealEffectDamageToUnit(
   state: GameState,
   target: BoardUnit,
   rawDamage: number,
-  sourceLabel: string
+  sourceLabel: string,
+  options?: { ignoreArmor?: boolean }
 ): number {
   if (rawDamage <= 0 || target.currentHp <= 0) return 0;
 
   if (target.hasDivineShield) {
     target.hasDivineShield = false;
+    recalculateFormationBonuses(state);
     addFeedback(state, target.instanceId, 'Escudo Quebrado!', 'shield');
     addLog(
       state,
@@ -2680,10 +2848,19 @@ function dealEffectDamageToUnit(
     return 0;
   }
 
-  const dmgAfterArmor =
-    target.currentArmor < rawDamage
-      ? Math.max(1, rawDamage - Math.floor(target.currentArmor / 2))
-      : Math.max(1, rawDamage - target.currentArmor);
+  const enemyOfTarget: 'player' | 'ai' = target.owner === 'player' ? 'ai' : 'player';
+  const lyrielBonus =
+    target.isFrozen &&
+    hasLivingUnitWithCardId(state[enemyOfTarget], 'blue_178_lyriel_vidente_zero_astral')
+      ? 2
+      : 0;
+  const effectiveRaw = rawDamage + lyrielBonus;
+
+  const dmgAfterArmor = options?.ignoreArmor
+    ? effectiveRaw
+    : target.currentArmor < effectiveRaw
+    ? Math.max(1, effectiveRaw - Math.floor(target.currentArmor / 2))
+    : Math.max(1, effectiveRaw - target.currentArmor);
 
   if (dmgAfterArmor <= 0) {
     addFeedback(state, target.instanceId, '0 (Armadura)', 'shield');
@@ -4074,6 +4251,7 @@ function executeCardEffect(
               unit.hasSummoningSickness = false;
             }
           }
+          applyAscensionSideEffects(state, actor, unit);
           ascendedCount += 1;
           addFeedback(state, unit.instanceId, `Ascensão: ${spec.newName}!`, 'buff');
         } else {
@@ -4290,6 +4468,522 @@ function executeCardEffect(
       );
       break;
     }
+
+    case 'lanca_cantora_ward': {
+      const vanAllies = getRowUnits(actorState, 'vanguard').filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      const fallbackAllies = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      const pool = vanAllies.length > 0 ? vanAllies : fallbackAllies;
+      if (pool.length === 0) break;
+
+      pool.sort(
+        (a, b) =>
+          a.currentHp - a.maxHp - (b.currentHp - b.maxHp) ||
+          b.currentAtk - a.currentAtk
+      );
+      const target = pool[0];
+      const gain = Math.max(1, effect.value);
+      target.currentArmor += gain;
+      target.currentHp = Math.min(target.maxHp, target.currentHp + gain);
+      addFeedback(state, target.instanceId, `+${gain} ARM / +${gain} VID!`, 'shield');
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] entoou Égide Solar em [${target.card.name}] (+${gain} Armadura e +${gain} de Vida)!`
+      );
+      break;
+    }
+
+    case 'aelion_solar_edict': {
+      const livingAllies = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      const unshielded = livingAllies.filter((u) => !u.hasDivineShield);
+      if (unshielded.length === 0) break;
+
+      let chosen: BoardUnit | null = null;
+      if (options?.targetId) {
+        const found = findUnitOnBoard(state, options.targetId);
+        if (
+          found &&
+          found.owner === actor &&
+          !found.unit.isTrap &&
+          found.unit.card.type === 'creature' &&
+          found.unit.currentHp > 0 &&
+          !found.unit.hasDivineShield
+        ) {
+          chosen = found.unit;
+        }
+      }
+      if (!chosen) {
+        unshielded.sort((a, b) => {
+          const aPrio = (isElfCard(a.card) ? 2 : 0) + (a.keywords.includes('Guardião') ? 1 : 0);
+          const bPrio = (isElfCard(b.card) ? 2 : 0) + (b.keywords.includes('Guardião') ? 1 : 0);
+          if (bPrio !== aPrio) return bPrio - aPrio;
+          return b.currentAtk + b.currentHp - (a.currentAtk + a.currentHp);
+        });
+        chosen = unshielded[0];
+      }
+
+      chosen.hasDivineShield = true;
+      recalculateFormationBonuses(state);
+      addFeedback(state, chosen.instanceId, 'Escudo Divino (+2 ATQ)!', 'shield');
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] abençoou [${chosen.card.name}] com Escudo Divino!`
+      );
+      break;
+    }
+
+    case 'drain_enemy_sovereign': {
+      const drain = Math.max(1, effect.value);
+      const dealt = dealEnemyDamageToSovereign(
+        state,
+        enemyActor,
+        drain,
+        sourceCard.name,
+        `-${drain} Dreno Astral`
+      );
+      actorState.hp = Math.min(actorState.maxHp, actorState.hp + drain);
+      addFeedback(state, `${actor}-sovereign`, `+${drain} Dreno Astral`, 'heal');
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] drenou ${dealt || drain} de Vida de ${enemyState.name} e restaurou +${drain} em ${actorState.name}!`
+      );
+      break;
+    }
+
+    case 'astral_obsidian_strike': {
+      if (actorState.corruption < 5) break;
+      let targetUnit: BoardUnit | null = null;
+      if (options?.targetId) {
+        const found = findUnitOnBoard(state, options.targetId);
+        if (found && found.owner === enemyActor && !found.unit.isTrap && found.unit.currentHp > 0) {
+          targetUnit = found.unit;
+        }
+      }
+      if (!targetUnit) {
+        const enemies = getAllBoardUnits(enemyState).filter(
+          (u) => !u.isTrap && u.currentHp > 0
+        );
+        if (enemies.length > 0) {
+          enemies.sort((a, b) => b.currentAtk - a.currentAtk || a.currentHp - b.currentHp);
+          targetUnit = enemies[0];
+        }
+      }
+      if (targetUnit) {
+        const dmg = Math.max(1, effect.value);
+        dealEffectDamageToUnit(state, targetUnit, dmg, sourceCard.name);
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] disparou Estilhaço de Obsidiana (${dmg} de dano pré-combate) contra [${targetUnit.card.name}]!`
+        );
+      }
+      break;
+    }
+
+    case 'vaelen_astral_stigma': {
+      const enemies = getAllBoardUnits(enemyState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      if (enemies.length === 0) break;
+
+      let target: BoardUnit | null = null;
+      if (options?.targetId) {
+        const found = findUnitOnBoard(state, options.targetId);
+        if (
+          found &&
+          found.owner === enemyActor &&
+          found.unit.card.type === 'creature' &&
+          !found.unit.isTrap &&
+          found.unit.currentHp > 0
+        ) {
+          target = found.unit;
+        }
+      }
+      if (!target) {
+        enemies.sort((a, b) => b.currentAtk - a.currentAtk || b.currentHp - a.currentHp);
+        target = enemies[0];
+      }
+
+      const debuff = Math.max(1, effect.value);
+      target.currentAtk = Math.max(0, target.currentAtk - debuff);
+      target.astralStigmaBy = actor;
+      addFeedback(state, target.instanceId, `-${debuff} ATQ • Estigma Astral!`, 'freeze');
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] marcou [${target.card.name}] com Estigma Astral (-${debuff} ATQ)!`
+      );
+      break;
+    }
+
+    case 'chrono_prism_volley': {
+      if (options?.sourceInstanceId) {
+        const srcFound = findUnitOnBoard(state, options.sourceInstanceId);
+        if (srcFound) {
+          if (srcFound.unit.lastSpellTriggerTurn === state.turn) {
+            break;
+          }
+          srcFound.unit.lastSpellTriggerTurn = state.turn;
+        }
+      }
+
+      const enemies = getAllBoardUnits(enemyState).filter(
+        (u) => !u.isTrap && u.currentHp > 0
+      );
+      if (enemies.length === 0) {
+        const baseDmg = Math.max(1, effect.value);
+        dealEnemyDamageToSovereign(state, enemyActor, baseDmg, sourceCard.name);
+        break;
+      }
+
+      let target: BoardUnit | null = null;
+      if (options?.targetId) {
+        const found = findUnitOnBoard(state, options.targetId);
+        if (found && found.owner === enemyActor && !found.unit.isTrap && found.unit.currentHp > 0) {
+          target = found.unit;
+        }
+      }
+      if (!target) {
+        enemies.sort((a, b) => {
+          const aFrz = a.isFrozen ? 1 : 0;
+          const bFrz = b.isFrozen ? 1 : 0;
+          if (bFrz !== aFrz) return bFrz - aFrz;
+          return b.currentAtk - a.currentAtk || a.currentHp - b.currentHp;
+        });
+        target = enemies[0];
+      }
+
+      const wasFrozen = target.isFrozen;
+      const dmg =
+        (wasFrozen ? effect.secondaryValue ?? 4 : effect.value) +
+        (options?.spellDamageBonus ?? 0);
+      dealEffectDamageToUnit(state, target, dmg, sourceCard.name);
+      if (wasFrozen) {
+        drawCardsForActor(state, actor, 1);
+      }
+      addLog(
+        state,
+        actor,
+        'effect',
+        wasFrozen
+          ? `[${sourceCard.name}] fendeu o gelo em [${target.card.name}] causando ${dmg} de dano e comprando 1 carta!`
+          : `[${sourceCard.name}] disparou feixe prismático de ${dmg} de dano em [${target.card.name}]!`
+      );
+      break;
+    }
+
+    case 'lyriel_astral_zero': {
+      const maxFreeze = Math.max(1, effect.value);
+      const enemies = getAllBoardUnits(enemyState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      if (enemies.length > 0) {
+        const sorted = [...enemies].sort((a, b) => {
+          if (options?.targetId) {
+            if (a.instanceId === options.targetId) return -1;
+            if (b.instanceId === options.targetId) return 1;
+          }
+          const aUnfrz = !a.isFrozen ? 1 : 0;
+          const bUnfrz = !b.isFrozen ? 1 : 0;
+          if (bUnfrz !== aUnfrz) return bUnfrz - aUnfrz;
+          return b.currentAtk - a.currentAtk;
+        });
+
+        const frozenTargets = sorted.slice(0, maxFreeze);
+        for (const t of frozenTargets) {
+          t.isFrozen = true;
+          addFeedback(state, t.instanceId, 'Zero Astral!', 'freeze');
+        }
+      }
+
+      const rearEnemies = getRowUnits(enemyState, 'rearguard').filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      let pulledName: string | null = null;
+      if (rearEnemies.length > 0) {
+        rearEnemies.sort((a, b) => a.currentAtk - b.currentAtk || a.currentHp - b.currentHp);
+        const pullTarget = rearEnemies[0];
+        const destSlot = findAvailableSlot(
+          enemyState,
+          'vanguard',
+          'vanguard',
+          pullTarget.slotIndex,
+          false
+        );
+        if (destSlot && destSlot.row === 'vanguard') {
+          removeUnitFromBoard(enemyState, pullTarget.instanceId);
+          pullTarget.row = 'vanguard';
+          pullTarget.slotIndex = destSlot.slotIndex;
+          addUnitToSlot(enemyState, 'vanguard', destSlot.slotIndex, pullTarget);
+          pulledName = pullTarget.card.name;
+          addFeedback(state, pullTarget.instanceId, 'Puxado p/ Vanguarda!', 'freeze');
+        }
+      }
+
+      recalculateFormationBonuses(state);
+      addLog(
+        state,
+        actor,
+        'effect',
+        pulledName
+          ? `[${sourceCard.name}] decretou Zero Astral: congelou até ${maxFreeze} inimigo(s) e arrastou [${pulledName}] para a Vanguarda!`
+          : `[${sourceCard.name}] decretou Zero Astral congelando até ${maxFreeze} inimigo(s)!`
+      );
+      break;
+    }
+
+    case 'emerald_antler_hunt': {
+      if (!options?.sourceInstanceId) break;
+      const srcFound = findUnitOnBoard(state, options.sourceInstanceId);
+      if (!srcFound || srcFound.unit.currentHp <= 0) break;
+
+      const cap = effect.secondaryValue ?? 3;
+      const matchingAllies = getAllBoardUnits(actorState).filter(
+        (u) =>
+          u.instanceId !== srcFound.unit.instanceId &&
+          u.card.type === 'creature' &&
+          !u.isTrap &&
+          u.currentHp > 0 &&
+          (isElfCard(u.card) || u.regeneration > 0)
+      );
+      const gain = Math.min(cap, matchingAllies.length * Math.max(1, effect.value));
+      if (gain > 0) {
+        srcFound.unit.currentAtk += gain;
+        srcFound.unit.maxHp += gain;
+        srcFound.unit.currentHp += gain;
+        addFeedback(state, srcFound.unit.instanceId, `+${gain}/+${gain} Caçada!`, 'buff');
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] cresceu +${gain}/+${gain} em sintonia com o dossel!`
+        );
+      }
+      break;
+    }
+
+    case 'sylvaris_fullmoon_bloom': {
+      const buff = Math.max(1, effect.value);
+      const vanAllies = getRowUnits(actorState, 'vanguard').filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      for (const u of vanAllies) {
+        u.currentAtk += buff;
+        u.maxHp += buff;
+        u.currentHp += buff;
+        u.regeneration += buff;
+        addFeedback(state, u.instanceId, `+${buff}/+${buff} & +${buff} Regen!`, 'buff');
+      }
+
+      const ascCandidates = getAllBoardUnits(actorState).filter(
+        (u) =>
+          u.instanceId !== options?.sourceInstanceId &&
+          u.card.type === 'creature' &&
+          !u.isTrap &&
+          u.currentHp > 0 &&
+          !u.isAscended &&
+          Boolean(u.card.ascension)
+      );
+      let ascendedName: string | null = null;
+      if (ascCandidates.length > 0) {
+        ascCandidates.sort((a, b) => {
+          const aElf = isElfCard(a.card) ? 1 : 0;
+          const bElf = isElfCard(b.card) ? 1 : 0;
+          if (bElf !== aElf) return bElf - aElf;
+          return (b.card.ascension?.cost ?? 0) - (a.card.ascension?.cost ?? 0);
+        });
+        const chosen = ascCandidates[0];
+        const spec = chosen.card.ascension!;
+        const baseAtkDelta = Math.max(0, spec.newAtk - chosen.card.atk);
+        const baseArmorDelta = Math.max(0, spec.newArmor - chosen.card.armor);
+        const baseHpDelta = Math.max(1, spec.newMaxHp - chosen.card.hp);
+        chosen.isAscended = true;
+        chosen.currentAtk = Math.max(spec.newAtk, chosen.currentAtk + baseAtkDelta);
+        chosen.currentArmor = Math.max(spec.newArmor, chosen.currentArmor + baseArmorDelta);
+        chosen.maxHp = Math.max(spec.newMaxHp, chosen.maxHp + baseHpDelta);
+        chosen.currentHp = chosen.maxHp;
+        for (const kw of spec.addedKeywords) {
+          if (!chosen.keywords.includes(kw)) {
+            chosen.keywords.push(kw);
+          }
+          if (kw === 'Escudo Divino') {
+            chosen.hasDivineShield = true;
+          }
+          if (kw === 'Ímpeto') {
+            chosen.hasSummoningSickness = false;
+          }
+        }
+        applyAscensionSideEffects(state, actor, chosen);
+        ascendedName = spec.newName;
+        addFeedback(state, chosen.instanceId, `Ascensão Lunar: ${spec.newName}!`, 'buff');
+      }
+
+      recalculateFormationBonuses(state);
+      addLog(
+        state,
+        actor,
+        'effect',
+        ascendedName
+          ? `[${sourceCard.name}] floresceu a Vanguarda (+${buff}/+${buff}, +${buff} Regen) e ascendeu gratuitamente [${ascendedName}]!`
+          : `[${sourceCard.name}] floresceu a Vanguarda com +${buff}/+${buff} e +${buff} de Regeneração!`
+      );
+      break;
+    }
+
+    case 'living_ash_arrow': {
+      const vanEnemies = getRowUnits(enemyState, 'vanguard').filter(
+        (u) => !u.isTrap && u.currentHp > 0
+      );
+      const rearEnemies = getRowUnits(enemyState, 'rearguard').filter(
+        (u) => !u.isTrap && u.currentHp > 0
+      );
+      const pool = vanEnemies.length > 0 ? vanEnemies : rearEnemies;
+      if (pool.length === 0) break;
+
+      let target: BoardUnit | null = null;
+      if (options?.targetId) {
+        target = pool.find((u) => u.instanceId === options.targetId) ?? null;
+      }
+      if (!target) {
+        pool.sort((a, b) => b.currentArmor - a.currentArmor || a.currentHp - b.currentHp);
+        target = pool[0];
+      }
+
+      const dmg = Math.max(1, effect.value) + (options?.spellDamageBonus ?? 0);
+      dealEffectDamageToUnit(state, target, dmg, sourceCard.name, { ignoreArmor: true });
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] disparou Flecha de Cinza Viva (${dmg} perfurante) em [${target.card.name}]!`
+      );
+      break;
+    }
+
+    case 'kaelith_phoenix_nova': {
+      const novaDmg = Math.max(1, effect.value) + (options?.spellDamageBonus ?? 0);
+      const atkBuff = effect.secondaryValue ?? 1;
+      triggerKaelithPhoenixNova(state, actor, options?.sourceInstanceId, novaDmg, atkBuff);
+      break;
+    }
+
+    case 'mirror_blade_envoy': {
+      const allLiving = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+      );
+      const hasOtherElf = allLiving.some(
+        (u) => u.instanceId !== options?.sourceInstanceId && isElfCard(u.card)
+      );
+      const coloredDomains = new Set(
+        allLiving.map((u) => u.card.domain).filter((d) => d !== 'neutral')
+      );
+      if (hasOtherElf || coloredDomains.size >= 2) {
+        const count = Math.max(1, effect.value);
+        drawCardsForActor(state, actor, count);
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] selou diplomacia entre as cortes e comprou ${count} carta(s)!`
+        );
+      }
+      break;
+    }
+
+    case 'crystal_guard_resonance': {
+      const otherElves = getAllBoardUnits(actorState).filter(
+        (u) =>
+          u.instanceId !== options?.sourceInstanceId &&
+          u.card.type === 'creature' &&
+          !u.isTrap &&
+          u.currentHp > 0 &&
+          isElfCard(u.card)
+      );
+      const buff = Math.max(1, effect.value);
+      for (const elf of otherElves) {
+        elf.currentAtk += buff;
+        elf.maxHp += buff;
+        elf.currentHp += buff;
+        addFeedback(state, elf.instanceId, `+${buff}/+${buff} Guarda Cristalina`, 'buff');
+      }
+
+      if (otherElves.length >= 2 && options?.sourceInstanceId) {
+        const srcFound = findUnitOnBoard(state, options.sourceInstanceId);
+        if (srcFound && srcFound.unit.currentHp > 0) {
+          srcFound.unit.hasDivineShield = true;
+          if (!srcFound.unit.keywords.includes('Escudo Divino')) {
+            srcFound.unit.keywords.push('Escudo Divino');
+          }
+          srcFound.unit.currentAtk += 1;
+          addFeedback(state, srcFound.unit.instanceId, 'Escudo Divino & +1 ATQ!', 'shield');
+        }
+      }
+
+      recalculateFormationBonuses(state);
+      if (otherElves.length > 0) {
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] fortaleceu ${otherElves.length} Elfo(s) aliado(s) com +${buff}/+${buff}${
+            otherElves.length >= 2 ? ' e despertou Escudo Divino +1 ATQ!' : '!'
+          }`
+        );
+      }
+      break;
+    }
+
+    case 'thalassion_council_decree': {
+      const alliedElves = getAllBoardUnits(actorState).filter(
+        (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0 && isElfCard(u.card)
+      );
+      const buff = Math.max(1, effect.value);
+      for (const elf of alliedElves) {
+        elf.currentAtk += buff;
+        elf.maxHp += buff;
+        elf.currentHp += buff;
+        addFeedback(state, elf.instanceId, `+${buff}/+${buff} Concílio!`, 'buff');
+      }
+
+      const elfDeckIdx = actorState.deck.findIndex((c) => isElfCard(c));
+      let tutoredName: string | null = null;
+      if (elfDeckIdx !== -1) {
+        const [elfCard] = actorState.deck.splice(elfDeckIdx, 1);
+        if (actorState.hand.length < MAX_HAND_SIZE) {
+          actorState.hand.push(elfCard);
+          tutoredName = elfCard.name;
+          addFeedback(state, `${actor}-sovereign`, `+1 Elfo: ${elfCard.name}`, 'buff');
+        } else {
+          actorState.crypt.push(elfCard);
+        }
+      } else {
+        drawCardsForActor(state, actor, 1);
+      }
+
+      recalculateFormationBonuses(state);
+      addLog(
+        state,
+        actor,
+        'effect',
+        tutoredName
+          ? `[${sourceCard.name}] fortaleceu o Concílio Élfico (+${buff}/+${buff}) e convocou [${tutoredName}] para a mão!`
+          : `[${sourceCard.name}] fortaleceu o Concílio Élfico (+${buff}/+${buff}) e comprou 1 carta!`
+      );
+      break;
+    }
   }
 }
 
@@ -4303,6 +4997,7 @@ function cleanupDeadUnits(state: GameState): void {
     safetyCounter += 1;
 
     const dyingQueue: { unit: BoardUnit; owner: 'player' | 'ai' }[] = [];
+    const rebornKaeliths: { unit: BoardUnit; owner: 'player' | 'ai' }[] = [];
 
     for (const owner of ['player', 'ai'] as const) {
       const pState = state[owner];
@@ -4326,6 +5021,9 @@ function cleanupDeadUnits(state: GameState): void {
                   'effect',
                   `[${unit.card.name}] desafiou a morte e ativou Renascer com 1 de Vida!`
                 );
+                if (unit.card.id === 'red_178_kaelith_principe_asas_fenix') {
+                  rebornKaeliths.push({ unit, owner });
+                }
               } else {
                 stack.splice(s, 1);
                 s--;
@@ -4342,6 +5040,11 @@ function cleanupDeadUnits(state: GameState): void {
       syncPlayerBoardSlots(pState);
     }
 
+    for (const { unit, owner } of rebornKaeliths) {
+      triggerKaelithPhoenixNova(state, owner, unit.instanceId, 3, 1);
+      hadDeaths = true;
+    }
+
     for (const { unit, owner } of dyingQueue) {
       addLog(state, owner, 'combat', `[${unit.card.name}] tombou e foi para a Cripta.`);
       for (const eff of unit.card.effects) {
@@ -4349,6 +5052,43 @@ function cleanupDeadUnits(state: GameState): void {
           executeCardEffect(state, owner, unit.card, eff, {
             sourceInstanceId: unit.instanceId,
           });
+        }
+      }
+
+      if (unit.astralStigmaBy) {
+        const stigmaOwner = unit.astralStigmaBy;
+        const stigmaState = state[stigmaOwner];
+        const eligibleCreatures = stigmaState.crypt
+          .map((c, idx) => ({ card: c, idx }))
+          .filter(({ card }) => card.type === 'creature' && card.cost <= 4);
+        if (eligibleCreatures.length > 0) {
+          eligibleCreatures.sort((a, b) => {
+            const aElf = isElfCard(a.card) ? 1 : 0;
+            const bElf = isElfCard(b.card) ? 1 : 0;
+            if (bElf !== aElf) return bElf - aElf;
+            return b.card.cost - a.card.cost || b.card.atk - a.card.atk;
+          });
+          const picked = eligibleCreatures[0];
+          const revSlot = findAvailableSlot(stigmaState, picked.card.preferredRow);
+          if (revSlot) {
+            stigmaState.crypt.splice(picked.idx, 1);
+            const revUnit = createBoardUnit(
+              picked.card,
+              stigmaOwner,
+              revSlot.row,
+              revSlot.slotIndex,
+              stigmaState.corruption >= 5 ? 1 : 0
+            );
+            revUnit.currentHp = 1;
+            addUnitToSlot(stigmaState, revSlot.row, revSlot.slotIndex, revUnit);
+            addFeedback(state, revUnit.instanceId, 'Estigma Astral (1 VID)!', 'buff');
+            addLog(
+              state,
+              stigmaOwner,
+              'summon',
+              `Estigma Astral de [Vaelen] reanimou [${picked.card.name}] da Cripta com 1 de Vida!`
+            );
+          }
         }
       }
 
@@ -4445,6 +5185,7 @@ export function playCard(
         `Limite de Sobrecarga (10/10)! ${actorState.name} sofreu 2 de dano de desgaste!`
       );
     }
+    triggerVaelenOverloadChime(next, actor);
   }
 
   const hasDarkPower = actorState.corruption >= 5;
@@ -4921,6 +5662,7 @@ export function ascendUnit(
     }
   }
 
+  applyAscensionSideEffects(next, actor, unit);
   recalculateFormationBonuses(next);
   addFeedback(next, unit.instanceId, `Ascensão: ${spec.newName}!`, 'buff');
   addLog(
@@ -4986,11 +5728,17 @@ export function getValidAttackTargets(
 
   const attackerHasVoo = attacker.keywords.includes('Voo');
   const attackerHasAlcance = attacker.keywords.includes('Alcance');
+  const lyrielNullifiesFrozenGuardians = hasLivingUnitWithCardId(
+    state[found.owner],
+    'blue_178_lyriel_vidente_zero_astral'
+  );
+  const isActiveGuardian = (u: BoardUnit): boolean =>
+    u.keywords.includes('Guardião') && !(lyrielNullifiesFrozenGuardians && u.isFrozen);
 
   if (attackerHasVoo) {
     // Flying units are only blocked by enemy Guardião with Voo
     const flyingGuardians = allEnemyUnits.filter(
-      (u) => u.keywords.includes('Guardião') && u.keywords.includes('Voo')
+      (u) => isActiveGuardian(u) && u.keywords.includes('Voo')
     );
     if (flyingGuardians.length > 0) {
       return flyingGuardians.map((u) => u.instanceId);
@@ -5004,7 +5752,7 @@ export function getValidAttackTargets(
 
   if (attackerHasAlcance) {
     // Ranged units can hit flying or ground units; if enemy Vanguard has Guardião, must target Guardião first
-    const vanguardGuardians = enemyVanguard.filter((u) => u.keywords.includes('Guardião'));
+    const vanguardGuardians = enemyVanguard.filter((u) => isActiveGuardian(u));
     if (vanguardGuardians.length > 0) {
       return vanguardGuardians.map((u) => u.instanceId);
     }
@@ -5024,9 +5772,9 @@ export function getValidAttackTargets(
 
   if (attacker.row === 'vanguard') {
     const interceptingGuardians = [
-      ...groundVanguard.filter((u) => u.keywords.includes('Guardião')),
+      ...groundVanguard.filter((u) => isActiveGuardian(u)),
       ...groundRearguard.filter(
-        (u) => u.keywords.includes('Guardião') && Math.abs(u.slotIndex - col) <= 1
+        (u) => isActiveGuardian(u) && Math.abs(u.slotIndex - col) <= 1
       ),
     ];
     if (interceptingGuardians.length > 0) {
@@ -5057,7 +5805,7 @@ export function getValidAttackTargets(
   }
 
   // Atacante está na RETAGUARDA
-  const vanguardGuardians = groundVanguard.filter((u) => u.keywords.includes('Guardião'));
+  const vanguardGuardians = groundVanguard.filter((u) => isActiveGuardian(u));
   if (vanguardGuardians.length > 0) {
     return vanguardGuardians.map((u) => u.instanceId);
   }
@@ -5232,7 +5980,12 @@ export function previewAttackOutcome(
     breaksTargetShield = true;
     damageToTarget = 0;
   } else {
-    const rawAtk = attacker.currentAtk;
+    const lyrielBonus =
+      defender.isFrozen &&
+      hasLivingUnitWithCardId(state[attackerOwner], 'blue_178_lyriel_vidente_zero_astral')
+        ? 2
+        : 0;
+    const rawAtk = attacker.currentAtk > 0 ? attacker.currentAtk + lyrielBonus : 0;
     const baseDmg =
       rawAtk > 0
         ? defender.currentArmor < rawAtk
@@ -5519,6 +6272,15 @@ export function executeAttack(
   }
 
   const { unit: defender } = defenderFound;
+  if (attacker.drawOnAttackFrozen && defender.isFrozen) {
+    drawCardsForActor(next, attackerOwner, 1);
+    addLog(
+      next,
+      attackerOwner,
+      'effect',
+      `[${attackerDisplayName}] comprou 1 carta ao golpear um alvo Congelado!`
+    );
+  }
   const defenderDisplayName =
     defender.isAscended && defender.card.ascension
       ? defender.card.ascension.newName
@@ -5531,10 +6293,12 @@ export function executeAttack(
   ).filter((u) => u.instanceId !== defender.instanceId && !u.isTrap && u.currentHp > 0);
 
   const defenderHpBefore = defender.currentHp;
+  const defenderWasFrozen = defender.isFrozen;
   let actualDamageToDefender = 0;
 
   if (defender.hasDivineShield) {
     defender.hasDivineShield = false;
+    recalculateFormationBonuses(next);
     addFeedback(next, defender.instanceId, 'Escudo Quebrado!', 'shield');
     addLog(
       next,
@@ -5543,7 +6307,12 @@ export function executeAttack(
       `[${attackerDisplayName}] atacou [${defenderDisplayName}], quebrando seu Escudo Divino!`
     );
   } else {
-    const rawAtk = attacker.currentAtk;
+    const lyrielBonus =
+      defenderWasFrozen &&
+      hasLivingUnitWithCardId(attackerPlayer, 'blue_178_lyriel_vidente_zero_astral')
+        ? 2
+        : 0;
+    const rawAtk = attacker.currentAtk > 0 ? attacker.currentAtk + lyrielBonus : 0;
     const dmgToDef =
       rawAtk > 0
         ? defender.currentArmor < rawAtk

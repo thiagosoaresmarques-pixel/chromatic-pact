@@ -412,6 +412,112 @@ export function formatEffectActionClause(
       return 'conta quantos Domínios coloridos distintos existem entre seus Terrenos canalizados e dispara todos os decretos correspondentes de uma só vez: Vermelho causa 3 de dano à Vanguarda inimiga, Azul congela 2 inimigos e compra 1 carta, Roxo drena 3 de Vida do Soberano rival, Verde concede +2/+2 e Regeneração 1 aos aliados e Dourado concede Escudo Divino à sua Vanguarda';
     }
 
+    case 'lanca_cantora_ward': {
+      if (!detailed) {
+        return `concede +${v} de Armadura e restaura ${v} de Vida ao aliado mais ferido na sua Vanguarda`;
+      }
+      return `concede permanentemente +${v} de Armadura e restaura ${v} de Vida à criatura aliada mais ferida na sua Vanguarda`;
+    }
+
+    case 'aelion_solar_edict': {
+      if (!detailed) {
+        return effect.trigger === 'on_enter'
+          ? `concede Escudo Divino a 1 aliado sem escudo; enquanto Aelion viver, aliados com Escudo Divino recebem +${v} de Ataque`
+          : 'concede Escudo Divino a 1 aliado sem escudo';
+      }
+      return effect.trigger === 'on_enter'
+        ? `concede Escudo Divino a 1 criatura aliada sem escudo, priorizando Elfos e Guardiões; enquanto Aelion permanecer vivo em campo, todos os seus aliados com Escudo Divino recebem +${v} de Ataque`
+        : 'concede Escudo Divino a 1 criatura aliada sem escudo';
+    }
+
+    case 'drain_enemy_sovereign': {
+      if (!detailed) {
+        return `drena ${v} de Vida do Soberano adversário, curando ${v} no seu Soberano`;
+      }
+      return `causa ${v} de dano ao Soberano adversário e restaura ${v} de Vida no seu Soberano`;
+    }
+
+    case 'astral_obsidian_strike': {
+      if (!detailed) {
+        return `se você tiver 5 ou mais de Sobrecarga, causa ${v} de dano direto ao defensor antes do combate`;
+      }
+      return `se o seu Soberano tiver 5 ou mais de Sobrecarga, desfere ${v} de dano direto contra o alvo antes da resolução do choque de combate`;
+    }
+
+    case 'vaelen_astral_stigma': {
+      const cap = effect.secondaryValue ?? 4;
+      if (!detailed) {
+        return `marca o inimigo mais forte com -${v} de Ataque e Estigma Astral para reanimar um Elfo de custo até ${cap} com 1 de Vida; seus custos de Sobrecarga e Sacrifício Vital causam 2 de dano ao Soberano rival`;
+      }
+      return `reduz em -${v} o Ataque da criatura inimiga mais forte e a marca com Estigma Astral: quando ela morrer, reanima da sua Cripta um Elfo ou criatura de custo até ${cap} com 1 de Vida; além disso, enquanto Vaelen viver, sempre que você acumular Sobrecarga ou ativar Sacrifício Vital, causa 2 de dano ao Soberano adversário`;
+    }
+
+    case 'chrono_prism_volley': {
+      const frzDmg = effect.secondaryValue ?? 4;
+      if (!detailed) {
+        return `uma vez por turno, causa ${v} de dano a 1 inimigo, ou ${frzDmg} de dano e compra 1 carta se ele estiver congelado`;
+      }
+      return `uma vez por turno, dispara um feixe prismático que causa ${v} de dano a 1 criatura inimiga, ou ${frzDmg} de dano e compra 1 carta se o alvo já estiver congelado`;
+    }
+
+    case 'lyriel_astral_zero': {
+      if (!detailed) {
+        return `congela até ${v} inimigos e puxa o mais fraco da Retaguarda para a Vanguarda; enquanto Lyriel viver, inimigos congelados perdem Guardião e sofrem +2 de dano das suas fontes`;
+      }
+      return `congela até ${v} criaturas inimigas por 1 rodada e arrasta a criatura de menor Ataque da Retaguarda inimiga para a Vanguarda; enquanto Lyriel permanecer viva em campo, inimigos congelados perdem Guardião e sofrem +2 de dano adicional das suas criaturas e feitiços`;
+    }
+
+    case 'emerald_antler_hunt': {
+      const cap = effect.secondaryValue ?? 3;
+      if (!detailed) {
+        return `recebe +${v}/+${v} permanente para cada outro Elfo aliado ou aliado com Regeneração, até +${cap}/+${cap}`;
+      }
+      return `recebe permanentemente +${v} de Ataque e +${v} de Vida para cada outro Elfo aliado ou criatura aliada com Regeneração em campo, até o máximo de +${cap}/+${cap} por ataque`;
+    }
+
+    case 'sylvaris_fullmoon_bloom': {
+      if (!detailed) {
+        return `concede +${v}/+${v} e +${v} de Regeneração à sua Vanguarda e ascende gratuitamente 1 aliado elegível`;
+      }
+      return `concede permanentemente +${v} de Ataque, +${v} de Vida e +${v} de Regeneração a todas as criaturas na sua Vanguarda e ativa gratuitamente a Ascensão de 1 criatura aliada elegível, restaurando toda a sua Vida`;
+    }
+
+    case 'living_ash_arrow': {
+      if (!detailed) {
+        return `causa ${v} de dano perfurante ignorando Armadura a 1 inimigo na Vanguarda`;
+      }
+      return `dispara uma flecha incandescente que causa ${v} de dano perfurante ignorando Armadura a 1 criatura na Vanguarda inimiga`;
+    }
+
+    case 'kaelith_phoenix_nova': {
+      const atkGain = effect.secondaryValue ?? 1;
+      if (!detailed) {
+        return `causa ${v} de dano à Vanguarda inimiga e concede +${atkGain} de Ataque neste turno aos demais aliados, repetindo esta Nova ao ativar Renascer`;
+      }
+      return `explode em uma Nova de Fênix causando ${v} de dano a todas as unidades na Vanguarda inimiga e concedendo +${atkGain} de Ataque neste turno aos seus outros aliados; esta mesma Nova de Fênix dispara novamente quando Kaelith ativa Renascer`;
+    }
+
+    case 'mirror_blade_envoy': {
+      if (!detailed) {
+        return `se você controlar outro Elfo ou aliados de 2 ou mais cores distintas, compra ${v} ${v === 1 ? 'carta' : 'cartas'}`;
+      }
+      return `se você controlar outro Elfo aliado ou unidades aliadas de pelo menos 2 Domínios coloridos distintos em campo, compra ${v} ${v === 1 ? 'carta' : 'cartas'}`;
+    }
+
+    case 'crystal_guard_resonance': {
+      if (!detailed) {
+        return `concede +${v}/+${v} aos outros Elfos aliados; com 2 ou mais outros Elfos, recebe Escudo Divino e +1 de Ataque`;
+      }
+      return `concede permanentemente +${v} de Ataque e +${v} de Vida aos seus outros Elfos aliados; se você controlar pelo menos 2 outros Elfos, esta unidade também recebe Escudo Divino e +1 de Ataque`;
+    }
+
+    case 'thalassion_council_decree': {
+      if (!detailed) {
+        return `concede +${v}/+${v} a todos os Elfos aliados e busca 1 Elfo do seu Grimório; enquanto viver, outros Elfos aliados recebem +1 de Armadura`;
+      }
+      return `concede permanentemente +${v} de Ataque e +${v} de Vida a todos os Elfos aliados e busca 1 carta de Elfo do seu Grimório para a sua mão; enquanto Thalassion permanecer vivo em campo, seus outros Elfos aliados recebem +1 de Armadura`;
+    }
+
     default:
       return (effect.description || '').replace(/[()]/g, '');
   }
@@ -830,9 +936,19 @@ export function formatCardFaceDescription(
   }
 
   if (card.ascension) {
-    sentences.push(
-      `Ascensão ${card.ascension.cost}: evolui para ${card.ascension.newName} ${card.ascension.newAtk}/${card.ascension.newMaxHp}.`
-    );
+    if (card.id === 'blue_176_sentinela_capuz_estelar') {
+      sentences.push(
+        `Ascensão ${card.ascension.cost}: evolui para ${card.ascension.newName} ${card.ascension.newAtk}/${card.ascension.newMaxHp} e compra 1 carta ao atacar alvos congelados.`
+      );
+    } else if (card.id === 'green_176_sussurrador_seiva_lunar') {
+      sentences.push(
+        `Ascensão ${card.ascension.cost}: evolui para ${card.ascension.newName} ${card.ascension.newAtk}/${card.ascension.newMaxHp} e concede +1/+1 aos outros Elfos e aliados Verdes.`
+      );
+    } else {
+      sentences.push(
+        `Ascensão ${card.ascension.cost}: evolui para ${card.ascension.newName} ${card.ascension.newAtk}/${card.ascension.newMaxHp}.`
+      );
+    }
   }
 
   if (sentences.length > 0) {

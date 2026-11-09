@@ -7,6 +7,7 @@ import type { CardMythologyEntry } from '../data/mythologyLore';
 import {
   formatCardDetailedRules,
   formatCardFaceDescription,
+  getAscensionBonusNote,
 } from '../utils/cardTextFormatter';
 import { playCardHoverFoley, slotIndexToStereoPan } from '../utils/soundEngine';
 import { resolvePrimaryBossDomain } from '../data/vaeloriaMapData';
@@ -270,9 +271,10 @@ export const CardView: React.FC<CardViewProps> = ({
   };
 
   // Generate clear, natural Portuguese sentence description from the card's actual engine parameters
+  const isAscendedUnit = Boolean(unit?.isAscended);
   const cleanDescription = React.useMemo(() => {
-    return formatCardFaceDescription(displayCard, activeKeywords);
-  }, [displayCard, activeKeywords]);
+    return formatCardFaceDescription(displayCard, activeKeywords, isAscendedUnit);
+  }, [displayCard, activeKeywords, isAscendedUnit]);
 
   // =========================================================================
   // TRUE VERTICAL CARD PROPORTIONS ON BOARD (mode === 'board')
@@ -1107,25 +1109,32 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
                 </div>
               )}
 
-              {card.ascension && (
-                <div
-                  style={{
-                    marginTop: '0.75rem',
-                    paddingTop: '0.6rem',
-                    borderTop: '1px dashed rgba(212, 175, 55, 0.32)',
-                    fontSize: '0.82rem',
-                    color: '#e5c97b',
-                  }}
-                >
-                  <strong>Ascensão ({card.ascension.cost} Essência):</strong>{' '}
-                  Evolui em campo para <em>{card.ascension.newName}</em> (
-                  <strong>
-                    ATQ {card.ascension.newAtk} • ARM {card.ascension.newArmor} • PV{' '}
-                    {card.ascension.newMaxHp}
-                  </strong>
-                  ).
-                </div>
-              )}
+              {card.ascension && (() => {
+                const newlyAddedKws = card.ascension.addedKeywords.filter(
+                  (kw) => !card.keywords.includes(kw)
+                );
+                const bonusNote = getAscensionBonusNote(card.id);
+                return (
+                  <div
+                    style={{
+                      marginTop: '0.75rem',
+                      paddingTop: '0.6rem',
+                      borderTop: '1px dashed rgba(212, 175, 55, 0.32)',
+                      fontSize: '0.82rem',
+                      color: '#e5c97b',
+                    }}
+                  >
+                    <strong>Ascensão ({card.ascension.cost} Essência):</strong>{' '}
+                    Evolui para <em>{card.ascension.newName}</em> (
+                    <strong>
+                      ATQ {card.ascension.newAtk} • ARM {card.ascension.newArmor} • PV{' '}
+                      {card.ascension.newMaxHp}
+                      {newlyAddedKws.length > 0 ? ` • +${newlyAddedKws.join(', +')}` : ''}
+                    </strong>
+                    ).{bonusNote ? ` ${bonusNote}` : ''}
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Flavor Text */}

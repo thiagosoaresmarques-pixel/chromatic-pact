@@ -33206,6 +33206,122 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Ímpeto, Escudo Divino, Fúria Crescente, Armadura 2. Ao entrar, dá +2/+1 aos seus aliados, causa 3 de dano à Vanguarda inimiga e 3 ao Soberano rival. Ao atacar, causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "No ápice do Coro da Chama, oito asas ardentes coroam o aço negro-dourado enquanto sua espada incendeia o campo de batalha.",
     "imagePath": "/assets/cards/red_184_azariel_serafim_dez_asas_chama.webp"
+  },
+  {
+    "id": "blue_182_arauto_duas_asas_geada",
+    "name": "Arauto das Duas Asas da Geada",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Celestial • Anjo",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao entrar, congela 1 criatura inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao entrar, compra 1 carta."
+      }
+    ],
+    "description": "Voo, Escudo Divino, Armadura 1. Ao entrar, congela 1 inimigo e compra 1 carta.",
+    "flavorText": "Do Primeiro Coro Boreal descem os guardiões de duas asas glaciais, trazendo o silêncio cristalino das alturas.",
+    "imagePath": "/assets/cards/blue_182_arauto_duas_asas_geada.webp"
+  },
+  {
+    "id": "blue_183_zadkiel_arcanjo_quatro_asas_gelo",
+    "name": "Zadkiel, Arcanjo das Quatro Asas Boreais",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Celestial • Arcanjo",
+    "rarity": "rare",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Escudo Divino", "Alcance"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Ao entrar, congela toda a Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao atacar, compra 1 carta."
+      }
+    ],
+    "description": "Voo, Escudo Divino, Alcance, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e congela a Vanguarda inimiga. Ao atacar, compra 1 carta.",
+    "flavorText": "No Segundo Coro Boreal, quatro asas de safira imobilizam exércitos inteiros sob o prisma do inverno eterno.",
+    "imagePath": "/assets/cards/blue_183_zadkiel_arcanjo_quatro_asas_gelo.webp"
+  },
+  {
+    "id": "blue_184_cassiel_serafim_seis_asas_inverno",
+    "name": "Cassiel, Serafim das Seis Asas Boreais",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Celestial • Serafim",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 2,
+    "hp": 8,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Escudo Divino", "Guardião", "Alcance"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Ao entrar, concede +1/+2 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Ao entrar, congela toda a Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Ao entrar, compra 2 cartas."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao atacar, congela 1 criatura inimiga."
+      }
+    ],
+    "description": "Voo, Escudo Divino, Guardião, Alcance, Armadura 2. Ao entrar, dá +1/+2 aos seus aliados, congela a Vanguarda inimiga e compra 2 cartas. Ao atacar, congela 1 inimigo.",
+    "flavorText": "No ápice do Coro Boreal, seis asas de gelo eterno suspendem o próprio fluxo do tempo diante de sua espada.",
+    "imagePath": "/assets/cards/blue_184_cassiel_serafim_seis_asas_inverno.webp"
   }
 ];
 

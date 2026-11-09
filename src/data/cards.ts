@@ -32504,6 +32504,119 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Guardião, Ímpeto, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Forjada em escamas de dragão solar e safira astral, sua couraça avança como um cometa em terra.",
     "imagePath": "/assets/cards/gold_181_wolfgang_marechal_escama_solar.webp"
+  },
+  {
+    "id": "red_179_khorvus_tirano_mascara_auricrania",
+    "name": "Khorvus, Tirano da Máscara Auricrânia",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Humano • General Tirano",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Ímpeto", "Fúria Crescente", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "crimson_anvil_march",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +2 de Ataque, +1 de Armadura e Ímpeto à sua Vanguarda."
+      }
+    ],
+    "description": "Ímpeto, Fúria Crescente, Atropelar, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e concede +2 de Ataque, +1 de Armadura e Ímpeto à sua Vanguarda.",
+    "flavorText": "Por trás do sorriso de ouro fundido, sua ordem de ataque é um decreto de aniquilação.",
+    "imagePath": "/assets/cards/red_179_khorvus_tirano_mascara_auricrania.webp"
+  },
+  {
+    "id": "red_180_malakor_general_lamina_colossal",
+    "name": "Malakor, General da Lâmina Colossal",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Humano • General Berserker",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Ímpeto", "Atropelar", "Fúria Crescente"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 4,
+        "description": "Ao entrar, causa 4 de dano a 1 inimigo."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao atacar, concede +1/+1 aos seus aliados."
+      }
+    ],
+    "description": "Ímpeto, Atropelar, Fúria Crescente, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos aliados.",
+    "flavorText": "Sua montante de ferro negro pesa tanto quanto um aríete — e parte muralhas com a mesma facilidade.",
+    "imagePath": "/assets/cards/red_180_malakor_general_lamina_colossal.webp"
+  },
+  {
+    "id": "red_181_ignis_marechal_coroa_cinzas",
+    "name": "Ignis, Marechal da Coroa de Cinzas",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Humano • General Vulcânico",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 7,
+    "armor": 2,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Ímpeto", "Pele Incandescente"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 3,
+        "description": "Ao entrar, causa 3 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 3,
+        "description": "Ao atacar, causa 3 de dano ao Soberano inimigo."
+      }
+    ],
+    "description": "Guardião, Ímpeto, Pele Incandescente, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 3 de dano à Vanguarda inimiga. Ao atacar, causa 3 ao Soberano.",
+    "flavorText": "Onde a ponta incandescente de sua espada toca a pedra, nascem vulcões.",
+    "imagePath": "/assets/cards/red_181_ignis_marechal_coroa_cinzas.webp"
   }
 ];
 

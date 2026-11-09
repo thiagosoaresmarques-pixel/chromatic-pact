@@ -1118,6 +1118,29 @@ const BESPOKE_RECENT_CARD_RULES: Record<string, BespokeCardTextEntry> = {
       'Ao atacar, dispara uma onda solar que causa 2 de dano a todas as criaturas na Vanguarda inimiga.',
     ],
   },
+  red_179_khorvus_tirano_mascara_auricrania: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e concede +2 de Ataque, +1 de Armadura e Ímpeto à sua Vanguarda.',
+    detailed: [
+      'Possui 1 de Armadura: absorve ataques de 1 e reduz em 1 os maiores.',
+      'Ao entrar, concede +1/+1 permanente a todos os seus aliados e outorga +2 de Ataque, +1 de Armadura e Ímpeto às suas criaturas na Vanguarda.',
+    ],
+  },
+  red_180_malakor_general_lamina_colossal: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos aliados.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e causa 4 de dano a 1 criatura inimiga.',
+      'Sempre que ataca, concede mais +1/+1 permanente a todas as suas criaturas aliadas.',
+    ],
+  },
+  red_181_ignis_marechal_coroa_cinzas: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e causa 3 de dano à Vanguarda inimiga. Ao atacar, causa 3 ao Soberano.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e causa 3 de dano a todas as criaturas na Vanguarda inimiga.',
+      'Ao atacar, causa 3 de dano direto ao Soberano inimigo.',
+    ],
+  },
 };
 
 export function getAscensionBonusNote(cardId: string): string | null {

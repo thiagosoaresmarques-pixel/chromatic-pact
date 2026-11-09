@@ -1141,6 +1141,29 @@ const BESPOKE_RECENT_CARD_RULES: Record<string, BespokeCardTextEntry> = {
       'Ao atacar, causa 3 de dano direto ao Soberano inimigo.',
     ],
   },
+  blue_179_arcturus_rei_juiz_coroa_safira: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e congela a Vanguarda inimiga. Ao atacar, causa 2 à Vanguarda.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e congela todas as criaturas na Vanguarda inimiga por 1 rodada.',
+      'Ao atacar, causa 2 de dano a todas as criaturas na Vanguarda inimiga.',
+    ],
+  },
+  blue_180_leona_marechal_leao_branco_inverno: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados, congela 1 inimigo por 1 rodada e compra 1 carta.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados, congela 1 criatura inimiga por 1 rodada e compra 1 carta.',
+    ],
+  },
+  blue_181_selene_estrategista_egide_lunar: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e devolve 1 inimigo à mão. No início do turno, compra 1 carta.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e devolve 1 criatura inimiga para a mão do oponente.',
+      'No início de cada um dos seus turnos, compra 1 carta adicional.',
+    ],
+  },
 };
 
 export function getAscensionBonusNote(cardId: string): string | null {

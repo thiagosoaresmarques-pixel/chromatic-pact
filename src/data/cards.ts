@@ -32617,6 +32617,123 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Guardião, Ímpeto, Pele Incandescente, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 3 de dano à Vanguarda inimiga. Ao atacar, causa 3 ao Soberano.",
     "flavorText": "Onde a ponta incandescente de sua espada toca a pedra, nascem vulcões.",
     "imagePath": "/assets/cards/red_181_ignis_marechal_coroa_cinzas.webp"
+  },
+  {
+    "id": "blue_179_arcturus_rei_juiz_coroa_safira",
+    "name": "Arcturus, Rei-Juiz da Coroa de Safira",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Humano • General Juiz",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Ao entrar, Congela a Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao atacar, causa 2 de dano à Vanguarda inimiga."
+      }
+    ],
+    "description": "Guardião, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e congela a Vanguarda inimiga. Ao atacar, causa 2 à Vanguarda.",
+    "flavorText": "Sua sentença desce como o inverno astral: estática, irrevogável e absoluta.",
+    "imagePath": "/assets/cards/blue_179_arcturus_rei_juiz_coroa_safira.webp"
+  },
+  {
+    "id": "blue_180_leona_marechal_leao_branco_inverno",
+    "name": "Leona, Marechal do Leão Branco de Inverno",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Humano • General Glacial",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 3,
+    "atk": 4,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Escudo Divino", "Ímpeto"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao entrar, Congela 1 inimigo por 1 rodada."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao entrar, compra 1 carta."
+      }
+    ],
+    "description": "Guardião, Escudo Divino, Ímpeto, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados, congela 1 inimigo por 1 rodada e compra 1 carta.",
+    "flavorText": "Sob a juba alva do Leão Boreal, a nevasca marcha em formação cerrada.",
+    "imagePath": "/assets/cards/blue_180_leona_marechal_leao_branco_inverno.webp"
+  },
+  {
+    "id": "blue_181_selene_estrategista_egide_lunar",
+    "name": "Selene, Estrategista da Égide Lunar",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Humano • General Estrategista",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 2,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Alcance", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "bounce_enemy",
+        "value": 1,
+        "description": "Ao entrar, devolve 1 criatura inimiga para a mão do oponente."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "No início do seu turno, compra 1 carta."
+      }
+    ],
+    "description": "Guardião, Alcance, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e devolve 1 inimigo à mão. No início do turno, compra 1 carta.",
+    "flavorText": "Cada fase do seu escudo crescente redesenha as linhas de batalha antes do primeiro choque.",
+    "imagePath": "/assets/cards/blue_181_selene_estrategista_egide_lunar.webp"
   }
 ];
 

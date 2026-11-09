@@ -33090,6 +33090,122 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Ímpeto, Toque Letal, Dreno de Vida, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e destrói 1 inimigo. Ao atacar, drena 2 de Vida do Soberano rival.",
     "flavorText": "Duas lâminas curvas bastam para cortar o fio do destino do campeão mais poderoso.",
     "imagePath": "/assets/cards/purple_181_nyxara_comandante_laminas_veu.webp"
+  },
+  {
+    "id": "red_182_arauto_duas_asas_pira",
+    "name": "Arauto das Duas Asas da Pira",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Celestial • Anjo",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Ímpeto", "Pele Incandescente"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Ao entrar, causa 2 de dano a 1 inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Ao entrar, causa 2 de dano diretamente ao Soberano rival."
+      }
+    ],
+    "description": "Voo, Ímpeto, Pele Incandescente, Armadura 1. Ao entrar, causa 2 de dano a 1 inimigo e 2 de dano ao Soberano rival.",
+    "flavorText": "Do Primeiro Coro da Chama descem os guardiões de duas asas, portando o escudo do olho ardente e a espada da sentença.",
+    "imagePath": "/assets/cards/red_182_arauto_duas_asas_pira.webp"
+  },
+  {
+    "id": "red_183_kamael_arcanjo_seis_asas_brasa",
+    "name": "Kamael, Arcanjo das Seis Asas de Brasa",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Celestial • Arcanjo",
+    "rarity": "rare",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Ímpeto", "Fúria Crescente"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao entrar, causa 2 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Ao atacar, causa 2 de dano diretamente ao Soberano rival."
+      }
+    ],
+    "description": "Voo, Ímpeto, Fúria Crescente, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e causa 2 de dano à Vanguarda inimiga. Ao atacar, causa 2 de dano ao Soberano rival.",
+    "flavorText": "No Segundo Coro da Pira, seis asas cravadas de olhos de brasa derramam o cálice da ira sobre os perjuros.",
+    "imagePath": "/assets/cards/red_183_kamael_arcanjo_seis_asas_brasa.webp"
+  },
+  {
+    "id": "red_184_azariel_serafim_dez_asas_chama",
+    "name": "Azariel, Serafim das Dez Asas da Chama",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Celestial • Serafim",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 7,
+    "armor": 2,
+    "hp": 8,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Ímpeto", "Escudo Divino", "Fúria Crescente"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +2/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 3,
+        "description": "Ao entrar, causa 3 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 3,
+        "description": "Ao entrar, causa 3 de dano diretamente ao Soberano rival."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao atacar, causa 2 de dano à Vanguarda inimiga."
+      }
+    ],
+    "description": "Voo, Ímpeto, Escudo Divino, Fúria Crescente, Armadura 2. Ao entrar, dá +2/+1 aos seus aliados, causa 3 de dano à Vanguarda inimiga e 3 ao Soberano rival. Ao atacar, causa 2 de dano à Vanguarda inimiga.",
+    "flavorText": "No ápice do Coro da Chama, dez asas de fogo carmesim velam sua face enquanto a espada e o turíbulo consomem o firmamento.",
+    "imagePath": "/assets/cards/red_184_azariel_serafim_dez_asas_chama.webp"
   }
 ];
 

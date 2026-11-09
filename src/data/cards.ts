@@ -32734,6 +32734,119 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Guardião, Alcance, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e devolve 1 inimigo à mão. No início do turno, compra 1 carta.",
     "flavorText": "Cada fase do seu escudo crescente redesenha as linhas de batalha antes do primeiro choque.",
     "imagePath": "/assets/cards/blue_181_selene_estrategista_egide_lunar.webp"
+  },
+  {
+    "id": "neutral_179_aldric_marechal_lobo_prateado",
+    "name": "Aldric, Marechal do Lobo Prateado",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • General Mercenário",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao entrar, compra 1 carta."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao entrar, gera +1 de Essência neste turno."
+      }
+    ],
+    "description": "Guardião, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados, compra 1 carta e gera +1 de Essência neste turno.",
+    "flavorText": "Nenhuma bandeira o prende, mas todo reino conhece o peso da sua palavra e do seu aço.",
+    "imagePath": "/assets/cards/neutral_179_aldric_marechal_lobo_prateado.webp"
+  },
+  {
+    "id": "neutral_180_garruk_bastiao_ferro_veterano",
+    "name": "Garruk, Bastião de Ferro Veterano",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • General de Cerco",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 3,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1 de Armadura e Escudo Divino aos seus aliados."
+      }
+    ],
+    "description": "Guardião, Atropelar, Armadura 3. Ao entrar, dá +1/+1, +1 de Armadura e Escudo Divino a todos os seus aliados.",
+    "flavorText": "Cem cercos deixaram marcas em sua couraça, mas nenhuma lâmina jamais o fez recuar um passo.",
+    "imagePath": "/assets/cards/neutral_180_garruk_bastiao_ferro_veterano.webp"
+  },
+  {
+    "id": "neutral_181_vaelor_lorde_comandante_olho_ferro",
+    "name": "Vaelor, Lorde-Comandante do Olho de Ferro",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Humano • Lorde-Comandante",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 0,
+    "atk": 6,
+    "armor": 2,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Ímpeto", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 4,
+        "description": "Ao entrar, causa 4 de dano a 1 inimigo."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao atacar, concede +1/+1 aos seus aliados."
+      }
+    ],
+    "description": "Guardião, Ímpeto, Atropelar, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos seus aliados.",
+    "flavorText": "Um único olho lhe basta para enxergar o ponto exato onde a linha inimiga irá ruir.",
+    "imagePath": "/assets/cards/neutral_181_vaelor_lorde_comandante_olho_ferro.webp"
   }
 ];
 

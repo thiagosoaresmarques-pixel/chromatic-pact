@@ -1164,6 +1164,28 @@ const BESPOKE_RECENT_CARD_RULES: Record<string, BespokeCardTextEntry> = {
       'No início de cada um dos seus turnos, compra 1 carta adicional.',
     ],
   },
+  neutral_179_aldric_marechal_lobo_prateado: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados, compra 1 carta e gera +1 de Essência neste turno.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados, compra 1 carta e gera +1 de Essência extra neste turno.',
+    ],
+  },
+  neutral_180_garruk_bastiao_ferro_veterano: {
+    face: 'Ao entrar, dá +1/+1, +1 de Armadura e Escudo Divino a todos os seus aliados.',
+    detailed: [
+      'Possui 3 de Armadura: absorve ataques de até 3 e reduz em 3 os maiores.',
+      'Ao entrar, concede +1/+1, +1 de Armadura e Escudo Divino a todos os seus aliados em campo.',
+    ],
+  },
+  neutral_181_vaelor_lorde_comandante_olho_ferro: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos seus aliados.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e causa 4 de dano a 1 criatura inimiga.',
+      'Sempre que atacar, concede +1/+1 permanente aos seus aliados em campo.',
+    ],
+  },
 };
 
 export function getAscensionBonusNote(cardId: string): string | null {

@@ -33125,7 +33125,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "red_183_kamael_arcanjo_seis_asas_brasa",
-    "name": "Kamael, Arcanjo das Seis Asas de Brasa",
+    "name": "Kamael, Arcanjo das Quatro Asas de Brasa",
     "domain": "red",
     "type": "creature",
     "subtype": "Celestial • Arcanjo",
@@ -33159,12 +33159,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       }
     ],
     "description": "Voo, Ímpeto, Fúria Crescente, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e causa 2 de dano à Vanguarda inimiga. Ao atacar, causa 2 de dano ao Soberano rival.",
-    "flavorText": "No Segundo Coro da Pira, seis asas cravadas de olhos de brasa derramam o cálice da ira sobre os perjuros.",
+    "flavorText": "No Segundo Coro da Pira, quatro asas em chamas erguem o aço antigo e conjuram a adaga incandescente da sentença.",
     "imagePath": "/assets/cards/red_183_kamael_arcanjo_seis_asas_brasa.webp"
   },
   {
     "id": "red_184_azariel_serafim_dez_asas_chama",
-    "name": "Azariel, Serafim das Dez Asas da Chama",
+    "name": "Azariel, Serafim das Oito Asas da Chama",
     "domain": "red",
     "type": "creature",
     "subtype": "Celestial • Serafim",
@@ -33204,7 +33204,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       }
     ],
     "description": "Voo, Ímpeto, Escudo Divino, Fúria Crescente, Armadura 2. Ao entrar, dá +2/+1 aos seus aliados, causa 3 de dano à Vanguarda inimiga e 3 ao Soberano rival. Ao atacar, causa 2 de dano à Vanguarda inimiga.",
-    "flavorText": "No ápice do Coro da Chama, dez asas de fogo carmesim velam sua face enquanto a espada e o turíbulo consomem o firmamento.",
+    "flavorText": "No ápice do Coro da Chama, oito asas ardentes coroam o aço negro-dourado enquanto sua espada incendeia o campo de batalha.",
     "imagePath": "/assets/cards/red_184_azariel_serafim_dez_asas_chama.webp"
   }
 ];

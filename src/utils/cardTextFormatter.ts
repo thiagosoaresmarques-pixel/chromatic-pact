@@ -1095,6 +1095,29 @@ const BESPOKE_RECENT_CARD_RULES: Record<string, BespokeCardTextEntry> = {
       'Aura: enquanto Thalassion estiver em campo, seus outros Elfos têm +1 de Armadura.',
     ],
   },
+  gold_179_leoric_grao_marechal_leao_solar: {
+    face: 'Ao entrar, dá +1/+1, +1 de Armadura e Escudo Divino a todos os seus aliados.',
+    detailed: [
+      'Possui 3 de Armadura: absorve ataques de até 3 e reduz em 3 os maiores.',
+      'Ao entrar, concede +1/+1 permanente, +1 de Armadura e Escudo Divino a todas as suas criaturas aliadas.',
+    ],
+  },
+  gold_180_valerius_comandante_aguia_imperial: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e invoca 2 Guardas 2/2. No início do turno, cura 2 de Vida dos aliados.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e invoca 2 Guardas Solares 2/2 na sua Vanguarda.',
+      'No início do seu turno, restaura 2 de Vida de todas as suas criaturas aliadas e do seu Soberano.',
+    ],
+  },
+  gold_181_wolfgang_marechal_escama_solar: {
+    face: 'Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, causa 2 à Vanguarda inimiga.',
+    detailed: [
+      'Possui 2 de Armadura: absorve ataques de até 2 e reduz em 2 os maiores.',
+      'Ao entrar, concede +1/+1 permanente aos seus aliados e causa 4 de dano a 1 criatura inimiga.',
+      'Ao atacar, dispara uma onda solar que causa 2 de dano a todas as criaturas na Vanguarda inimiga.',
+    ],
+  },
 };
 
 export function getAscensionBonusNote(cardId: string): string | null {

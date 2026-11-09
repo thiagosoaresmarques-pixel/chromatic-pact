@@ -32392,6 +32392,118 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Alcance, Escudo Divino, Armadura 1. Ao entrar, concede +1/+1 aos seus Elfos e busca 1 Elfo do Grimório para a mão. Seus outros Elfos têm +1 de Armadura.",
     "flavorText": "Cinco joias na coroa prateada, uma só voz soberana ecoando através das eras.",
     "imagePath": "/assets/cards/neutral_177_thalassion_alto_rei_concilio_elfico.webp"
+  },
+  {
+    "id": "gold_179_leoric_grao_marechal_leao_solar",
+    "name": "Leoric, Grão-Marechal do Leão Solar",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Humano • General Imperial",
+    "rarity": "legendary",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 3,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Escudo Divino", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede Escudo Divino e +1 de Armadura aos seus aliados."
+      }
+    ],
+    "description": "Guardião, Escudo Divino, Atropelar, Armadura 3. Ao entrar, dá +1/+1, +1 de Armadura e Escudo Divino a todos os seus aliados.",
+    "flavorText": "Quando o Leão de Solária apoia a montante no ombro, nenhuma muralha inimiga permanece de pé.",
+    "imagePath": "/assets/cards/gold_179_leoric_grao_marechal_leao_solar.webp"
+  },
+  {
+    "id": "gold_180_valerius_comandante_aguia_imperial",
+    "name": "Valerius, Comandante da Águia Imperial",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Humano • General Estrategista",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 3,
+    "atk": 4,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "description": "Ao entrar, invoca 2 Guardas Solares 2/2 na Vanguarda."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "heal_all_allies",
+        "value": 2,
+        "description": "No início do seu turno, restaura 2 de Vida dos seus aliados e do seu Soberano."
+      }
+    ],
+    "description": "Guardião, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e invoca 2 Guardas 2/2. No início do turno, cura 2 de Vida dos aliados.",
+    "flavorText": "Sob o capuz alvo da Águia Imperial, cada ordem transforma recrutas em bastiões.",
+    "imagePath": "/assets/cards/gold_180_valerius_comandante_aguia_imperial.webp"
+  },
+  {
+    "id": "gold_181_wolfgang_marechal_escama_solar",
+    "name": "Wolfgang, Marechal da Escama Solar",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Humano • General Dracônico",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 6,
+    "armor": 2,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Ímpeto", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 4,
+        "description": "Ao entrar, causa 4 de dano a 1 inimigo."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Ao atacar, causa 2 de dano à Vanguarda inimiga."
+      }
+    ],
+    "description": "Guardião, Ímpeto, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, causa 2 de dano à Vanguarda inimiga.",
+    "flavorText": "Forjada em escamas de dragão solar e safira astral, sua couraça avança como um cometa em terra.",
+    "imagePath": "/assets/cards/gold_181_wolfgang_marechal_escama_solar.webp"
   }
 ];
 

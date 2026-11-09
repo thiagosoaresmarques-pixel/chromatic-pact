@@ -457,6 +457,12 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
     matches: (c) => /\belf[oa]s?\b/i.test(c.subtype || ''),
   },
   {
+    id: 'tribe:human_general',
+    group: 'mechanics',
+    label: 'Estirpe: General / Humano',
+    matches: (c) => /\b(humano|general|marechal|comandante)\b/i.test(c.subtype || ''),
+  },
+  {
     id: 'row:vanguard',
     group: 'mechanics',
     label: 'Fileira: Vanguarda',

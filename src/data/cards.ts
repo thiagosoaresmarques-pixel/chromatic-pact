@@ -33441,6 +33441,116 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Escudo Divino, Guardião, Atropelar, Armadura 2, Regeneração 2. Ao entrar, dá +2/+2 e cura 3 de Vida dos seus aliados, além de +3 de Essência. No início do turno, dá +1 de Essência.",
     "flavorText": "No ápice do Coro do Éden, seis asas de esmeralda e ouro despertam o florescer imortal em toda a fileira aliada.",
     "imagePath": "/assets/cards/green_184_raphael_serafim_seis_asas_eden.webp"
+  },
+  {
+    "id": "purple_182_arauto_duas_asas_eclipse",
+    "name": "Arauto das Duas Asas do Eclipse",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Celestial • Anjo",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Dreno de Vida", "Toque Letal"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "drain_enemy_sovereign",
+        "value": 2,
+        "description": "Ao entrar, drena 2 de Vida do Soberano rival para o seu Soberano."
+      }
+    ],
+    "description": "Voo, Dreno de Vida, Toque Letal, Armadura 1. Ao entrar, drena 2 de Vida do Soberano rival para o seu Soberano.",
+    "flavorText": "Do Primeiro Coro do Sol Eclipsado descem os ceifadores de duas asas negras, colhendo o tributo das almas perjuras.",
+    "imagePath": "/assets/cards/purple_182_arauto_duas_asas_eclipse.webp"
+  },
+  {
+    "id": "purple_183_sariel_arcanjo_quatro_asas_abismo",
+    "name": "Sariel, Arcanjo das Quatro Asas Umbrais",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Celestial • Arcanjo",
+    "rarity": "rare",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Dreno de Vida", "Renascer"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Ao entrar, reduz em 2 o Ataque da Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "drain_enemy_sovereign",
+        "value": 2,
+        "description": "Ao atacar, drena 2 de Vida do Soberano rival para o seu Soberano."
+      }
+    ],
+    "description": "Voo, Dreno de Vida, Renascer, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e reduz em 2 o Ataque da Vanguarda inimiga. Ao atacar, drena 2 de Vida do Soberano rival.",
+    "flavorText": "No Segundo Coro do Eclipse, quatro asas sombrias extinguem a coragem dos vivos e alimentam o trono abissal.",
+    "imagePath": "/assets/cards/purple_183_sariel_arcanjo_quatro_asas_abismo.webp"
+  },
+  {
+    "id": "purple_184_samael_serafim_seis_asas_eclipse",
+    "name": "Samael, Serafim das Seis Asas do Eclipse",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Celestial • Serafim",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 7,
+    "armor": 2,
+    "hp": 7,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Dreno de Vida", "Toque Letal", "Renascer"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +2/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "destroy_enemy",
+        "value": 1,
+        "description": "Ao entrar, destrói 1 criatura inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "revive_from_crypt",
+        "value": 1,
+        "description": "Ao entrar, reanima da sua Cripta a criatura aliada mais forte."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "drain_enemy_sovereign",
+        "value": 3,
+        "description": "Ao atacar, drena 3 de Vida do Soberano rival para o seu Soberano."
+      }
+    ],
+    "description": "Voo, Dreno de Vida, Toque Letal, Renascer, Armadura 2. Ao entrar, dá +2/+1 aos seus aliados, destrói 1 inimigo e reanima da Cripta o aliado mais forte. Ao atacar, drena 3 de Vida do Soberano rival.",
+    "flavorText": "No ápice do Coro do Sol Eclipsado, seis asas de obsidiana decretam o fim dos inimigos e erguem os caídos da Cripta.",
+    "imagePath": "/assets/cards/purple_184_samael_serafim_seis_asas_eclipse.webp"
   }
 ];
 

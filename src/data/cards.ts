@@ -34257,6 +34257,85 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Guardião, Armadura 2. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
     "flavorText": "Sem jurar lealdade a nenhuma coroa cromática, pesa três destinos em mercúrio e cobra o mesmo tributo de todos.",
     "imagePath": "/assets/cards/neutral_188_qamar_genio_tres_esferas.webp"
+  },
+  {
+    "id": "purple_185_xama_mascaras_vazias",
+    "name": "Xamã das Máscaras Vazias",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Fada • Xamã",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 2,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "rearguard",
+    "keywords": ["Voo", "Alcance", "Dreno de Vida"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Ao entrar, reduz em 1 o Ataque da Vanguarda inimiga."
+      }
+    ],
+    "description": "Voo, Alcance, Dreno de Vida. Ao entrar, reduz em 1 o Ataque da Vanguarda inimiga.",
+    "flavorText": "Cada máscara pendurada em seu manto guarda a voz e o último medo de quem tentou atravessar a névoa.",
+    "imagePath": "/assets/cards/purple_185_xama_mascaras_vazias.webp"
+  },
+  {
+    "id": "purple_186_anciao_copa_umbrosa",
+    "name": "Ancião da Copa Umbrosa",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Planta • Ente",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Dreno de Vida"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Patriarca da Raiz do Eclipse",
+      "newAtk": 6,
+      "newArmor": 2,
+      "newMaxHp": 8,
+      "addedKeywords": ["Guardião", "Dreno de Vida", "Renascer"]
+    },
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "drain_enemy_sovereign",
+        "value": 2,
+        "description": "Ao entrar, drena 2 de Vida do Soberano rival para o seu Soberano."
+      }
+    ],
+    "description": "Guardião, Dreno de Vida, Armadura 1. Ao entrar, drena 2 de Vida do Soberano rival para o seu Soberano. Ascensão (4): Patriarca da Raiz do Eclipse (6/8, ARM 2, Renascer).",
+    "flavorText": "Suas raízes não bebem água da chuva, mas a memória adormecida sob os campos de batalha.",
+    "imagePath": "/assets/cards/purple_186_anciao_copa_umbrosa.webp"
+  },
+  {
+    "id": "purple_187_aparicao_chama_negra",
+    "name": "Aparição da Chama Negra",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Morto-Vivo • Espectro",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Ímpeto", "Renascer"],
+    "effects": [],
+    "description": "Voo, Ímpeto, Renascer.",
+    "flavorText": "Apagar sua primeira forma apenas espalha a fuligem faminta para o segundo bote.",
+    "imagePath": "/assets/cards/purple_187_aparicao_chama_negra.webp"
   }
 ];
 

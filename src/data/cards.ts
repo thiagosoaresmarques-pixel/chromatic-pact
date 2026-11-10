@@ -33125,7 +33125,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "red_183_kamael_arcanjo_seis_asas_brasa",
-    "name": "Kamael, Arcanjo das Quatro Asas de Brasa",
+    "name": "Kamael, Arcanjo de Quatro Asas",
     "domain": "red",
     "type": "creature",
     "subtype": "Celestial • Arcanjo",
@@ -33164,7 +33164,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "red_184_azariel_serafim_dez_asas_chama",
-    "name": "Azariel, Serafim das Oito Asas da Chama",
+    "name": "Azariel, Serafim de Oito Asas",
     "domain": "red",
     "type": "creature",
     "subtype": "Celestial • Serafim",
@@ -33241,7 +33241,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "blue_183_zadkiel_arcanjo_quatro_asas_gelo",
-    "name": "Zadkiel, Arcanjo das Quatro Asas Boreais",
+    "name": "Zadkiel, Arcanjo de Quatro Asas",
     "domain": "blue",
     "type": "creature",
     "subtype": "Celestial • Arcanjo",
@@ -33280,7 +33280,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "blue_184_cassiel_serafim_seis_asas_inverno",
-    "name": "Cassiel, Serafim das Seis Asas Boreais",
+    "name": "Cassiel, Serafim de Seis Asas",
     "domain": "blue",
     "type": "creature",
     "subtype": "Celestial • Serafim",
@@ -33358,7 +33358,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "green_183_sachiel_arcanjo_quatro_asas_seiva",
-    "name": "Sachiel, Arcanjo das Quatro Asas Silvestres",
+    "name": "Sachiel, Arcanjo de Quatro Asas",
     "domain": "green",
     "type": "creature",
     "subtype": "Celestial • Arcanjo",
@@ -33398,7 +33398,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "green_184_raphael_serafim_seis_asas_eden",
-    "name": "Raphael, Serafim das Seis Asas do Éden",
+    "name": "Raphael, Serafim de Seis Asas",
     "domain": "green",
     "type": "creature",
     "subtype": "Celestial • Serafim",
@@ -33470,7 +33470,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "purple_183_sariel_arcanjo_quatro_asas_abismo",
-    "name": "Sariel, Arcanjo das Quatro Asas Umbrais",
+    "name": "Sariel, Arcanjo de Quatro Asas",
     "domain": "purple",
     "type": "creature",
     "subtype": "Celestial • Arcanjo",
@@ -33509,7 +33509,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "purple_184_samael_serafim_seis_asas_eclipse",
-    "name": "Samael, Serafim das Seis Asas do Eclipse",
+    "name": "Samael, Serafim de Seis Asas",
     "domain": "purple",
     "type": "creature",
     "subtype": "Celestial • Serafim",
@@ -33580,7 +33580,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "neutral_183_jophiel_arcanjo_quatro_asas_prata",
-    "name": "Jophiel, Arcanjo das Quatro Asas de Prata",
+    "name": "Jophiel, Arcanjo de Quatro Asas",
     "domain": "neutral",
     "type": "creature",
     "subtype": "Celestial • Arcanjo",
@@ -33619,7 +33619,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "neutral_184_metatron_serafim_seis_asas_prisma",
-    "name": "Metatron, Serafim das Seis Asas de Platina",
+    "name": "Metatron, Serafim de Seis Asas",
     "domain": "neutral",
     "type": "creature",
     "subtype": "Celestial • Serafim",

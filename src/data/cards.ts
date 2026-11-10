@@ -35031,6 +35031,319 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Invoca até 3 criaturas da Cripta com Ímpeto e Dreno de Vida, destrói 1 inimigo e drena 3 de Vida do Soberano rival.",
     "flavorText": "Quando o Sol Negro atinge o zênite sobre a catedral, os mortos marcham e os vivos caem de joelhos.",
     "imagePath": "/assets/cards/purple_198_sinfonia_ultimo_eclipse.webp"
+  },
+  {
+    "id": "red_189_esmalte_bigorna",
+    "name": "Esmalte da Bigorna",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Forja Rubra",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Causa 2 de dano a 1 inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Causa 2 de dano ao Soberano rival."
+      }
+    ],
+    "description": "Causa 2 de dano a 1 inimigo e 2 de dano ao Soberano rival.",
+    "flavorText": "Quando o malho de ferro negro desce, as fagulhas não poupam nem o escudo nem o trono.",
+    "imagePath": "/assets/cards/red_189_esmalte_bigorna.webp"
+  },
+  {
+    "id": "red_190_fole_fornalha",
+    "name": "Fole da Fornalha",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Forja Rubra",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 1,
+        "description": "Causa 1 de dano ao Soberano rival."
+      }
+    ],
+    "description": "Gera +2 de Essência neste turno e causa 1 de dano ao Soberano rival.",
+    "flavorText": "Um único sopro nos canais de basalto alimenta a forja e chamusca as bandeiras inimigas.",
+    "imagePath": "/assets/cards/red_190_fole_fornalha.webp"
+  },
+  {
+    "id": "red_191_tempera_incandescente",
+    "name": "Têmpera Incandescente",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Forja Rubra",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Concede +3/+1 a 1 aliado."
+      }
+    ],
+    "description": "Concede +3/+1 a 1 aliado.",
+    "flavorText": "Mergulhada diretamente no magma vivo, a lâmina corta antes mesmo de tocar o aço adversário.",
+    "imagePath": "/assets/cards/red_191_tempera_incandescente.webp"
+  },
+  {
+    "id": "red_192_chuva_escoria",
+    "name": "Chuva de Escória",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Tectônico",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Causa 2 de dano à Vanguarda inimiga."
+      }
+    ],
+    "description": "Causa 2 de dano à Vanguarda inimiga.",
+    "flavorText": "As chaminés de Pyros devolvem ao céu tudo o que a montanha derreteu em suas entranhas.",
+    "imagePath": "/assets/cards/red_192_chuva_escoria.webp"
+  },
+  {
+    "id": "red_193_fissura_fundicao",
+    "name": "Fissura de Fundição",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Tectônico",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "magmatic_subduction",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Zera a Armadura na coluna alvo, causa 2 de dano à Vanguarda e a recua."
+      }
+    ],
+    "description": "Zera a Armadura na coluna alvo, causa 2 de dano à Vanguarda e a recua.",
+    "flavorText": "Nenhuma couraça resiste quando o próprio chão sob as botas se abre em lava líquida.",
+    "imagePath": "/assets/cards/red_193_fissura_fundicao.webp"
+  },
+  {
+    "id": "red_194_salva_piroclastica",
+    "name": "Salva Piroclástica",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Artilharia Rubra",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Causa 2 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 3,
+        "description": "Causa 3 de dano ao Soberano rival."
+      }
+    ],
+    "description": "Causa 2 de dano à Vanguarda inimiga e 3 de dano ao Soberano rival.",
+    "flavorText": "Os morteiros de boca-de-dragão rugem em uníssono, cobrindo da primeira fileira até a sala do trono.",
+    "imagePath": "/assets/cards/red_194_salva_piroclastica.webp"
+  },
+  {
+    "id": "red_195_clamor_forja_guerra",
+    "name": "Clamor da Forja de Guerra",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Forja Rubra",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Concede +2/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Causa 2 de dano ao Soberano rival."
+      }
+    ],
+    "description": "Concede +2/+1 aos seus aliados e causa 2 de dano ao Soberano rival.",
+    "flavorText": "Ao som dos martelos cruzados, cada guerreiro avança com o calor da caldeira no peito.",
+    "imagePath": "/assets/cards/red_195_clamor_forja_guerra.webp"
+  },
+  {
+    "id": "red_196_colapso_caldeira",
+    "name": "Colapso da Caldeira",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Tectônico",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "magmatic_subduction",
+        "value": 3,
+        "secondaryValue": 2,
+        "description": "Zera a Armadura na coluna alvo, causa 3 de dano à Vanguarda e a recua."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 3,
+        "description": "Causa 3 de dano ao Soberano rival."
+      }
+    ],
+    "description": "Zera a Armadura na coluna alvo, causa 3 de dano à Vanguarda (recuando-a) e 3 de dano ao Soberano rival.",
+    "flavorText": "Quando o domo de basalto cede sobre o lago de magma, fortificações inteiras afundam num só instante.",
+    "imagePath": "/assets/cards/red_196_colapso_caldeira.webp"
+  },
+  {
+    "id": "red_197_fornalha_soberana",
+    "name": "Fornalha Soberana",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Forja Rubra",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 3,
+        "description": "Causa 3 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Concede +2/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      }
+    ],
+    "description": "Causa 3 de dano à Vanguarda inimiga, concede +2/+1 aos seus aliados e gera +2 de Essência.",
+    "flavorText": "Três colunas de fogo alimentam a cidadela de ferro: uma incinera o inimigo, outra forja as armas e a terceira move o império.",
+    "imagePath": "/assets/cards/red_197_fornalha_soberana.webp"
+  },
+  {
+    "id": "red_198_decreto_bigorna_vulcanica",
+    "name": "Decreto da Bigorna Vulcânica",
+    "domain": "red",
+    "type": "spell",
+    "subtype": "Feitiço • Comando Lendário",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "crimson_anvil_march",
+        "value": 2,
+        "description": "Seus aliados ganham +2 de Ataque neste turno e golpeiam sua coluna ou o Soberano rival."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 3,
+        "description": "Causa 3 de dano à Vanguarda inimiga."
+      }
+    ],
+    "description": "Seus aliados ganham +2 de Ataque e golpeiam sua coluna ou o Soberano rival; além disso, causa 3 de dano à Vanguarda inimiga.",
+    "flavorText": "Ao impacto final dos malhos colossais, a linha inimiga racha em brasa antes da investida total.",
+    "imagePath": "/assets/cards/red_198_decreto_bigorna_vulcanica.webp"
   }
 ];
 

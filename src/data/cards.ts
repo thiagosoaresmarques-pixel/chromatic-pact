@@ -33470,10 +33470,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
   },
   {
     "id": "purple_183_sariel_arcanjo_quatro_asas_abismo",
-    "name": "Sariel, Arcanjo de Quatro Asas",
+    "name": "Sariel, Arcanja de Quatro Asas",
     "domain": "purple",
     "type": "creature",
-    "subtype": "Celestial • Arcanjo",
+    "subtype": "Celestial • Arcanja",
     "rarity": "rare",
     "cost": 6,
     "affinityReq": 3,
@@ -33662,6 +33662,102 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Guardião, Escudo Divino, Atropelar, Armadura 3. Ao entrar, dá +1/+1, +1 de Armadura e Escudo Divino aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos seus aliados.",
     "flavorText": "No ápice do Coro de Alabastro, seis asas de platina preservam a memória incorruptível da Era Zero.",
     "imagePath": "/assets/cards/neutral_184_metatron_serafim_seis_asas_prisma.webp"
+  },
+  {
+    "id": "green_185_sentinela_galhada_musgo",
+    "name": "Sentinela da Galhada de Musgo",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Planta • Cavaleiro",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Campeão da Lâmina Silvestre",
+      "newAtk": 6,
+      "newArmor": 2,
+      "newMaxHp": 7,
+      "addedKeywords": ["Guardião", "Escudo Divino", "Atropelar"]
+    },
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Ao entrar, concede +1/+2 a um aliado."
+      }
+    ],
+    "description": "Guardião, Armadura 1, Regeneração 1. Ao entrar, dá +1/+2 a um aliado. Ascensão (4): Campeão da Lâmina Silvestre (6/7, ARM 2, Escudo Divino, Atropelar).",
+    "flavorText": "Forjado de casca viva e musgo eterno, sua espada de luz guarda as trilhas onde nenhum machado ousa tocar.",
+    "imagePath": "/assets/cards/green_185_sentinela_galhada_musgo.webp"
+  },
+  {
+    "id": "green_186_guardiao_runico_carvalho",
+    "name": "Guardião Rúnico do Carvalho",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Planta • Ente",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 1,
+    "hp": 6,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao entrar, concede +1 de Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao entrar, cura 2 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Guardião, Atropelar, Armadura 1, Regeneração 1. Ao entrar, dá +1 de Essência neste turno e cura 2 de Vida do seu Soberano.",
+    "flavorText": "Runas douradas ardem sob o cerne milenar, canalizando a seiva das raízes profundas para o pacto druídico.",
+    "imagePath": "/assets/cards/green_186_guardiao_runico_carvalho.webp"
+  },
+  {
+    "id": "green_187_errante_galhos_charco",
+    "name": "Errante de Galhos do Charco",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Planta • Monstruosidade",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 0,
+    "hp": 4,
+    "regeneration": 1,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance", "Toque Letal"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao entrar, enraíza (Congela) 1 criatura inimiga."
+      }
+    ],
+    "description": "Alcance, Toque Letal, Regeneração 1. Ao entrar, enraíza (Congela) 1 criatura inimiga.",
+    "flavorText": "Nas águas paradas do pântano antigo, galhos retorcidos ganham olhos frios e garras que nunca soltam a presa.",
+    "imagePath": "/assets/cards/green_187_errante_galhos_charco.webp"
   }
 ];
 

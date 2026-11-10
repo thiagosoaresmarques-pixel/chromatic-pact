@@ -34693,6 +34693,344 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Ascende seus aliados sem custo; os demais ganham +3/+3, Atropelar e Regeneração 2, e restaura 4 de Vida.",
     "flavorText": "Atravessada pelo pilar esmeralda do próprio continente, ela desperta a forma suprema de toda vida selvagem.",
     "imagePath": "/assets/cards/green_198_convergencia_alma_veridia.webp"
+  },
+  {
+    "id": "purple_189_sifao_crepuscular",
+    "name": "Sifão Crepuscular",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Umbral",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "drain_enemy_sovereign",
+        "value": 2,
+        "description": "Drena 2 de Vida do Soberano rival."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Reduz em 1 o Ataque dos inimigos."
+      }
+    ],
+    "description": "Drena 2 de Vida do Soberano rival e reduz em 1 o Ataque dos inimigos.",
+    "flavorText": "O cálice de obsidiana bebe o vigor da coroa adversária até restar apenas cinza violeta.",
+    "imagePath": "/assets/cards/purple_189_sifao_crepuscular.webp"
+  },
+  {
+    "id": "purple_190_tributo_veia_negra",
+    "name": "Tributo da Veia Negra",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Pacto de Sangue",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards_at_hp_cost",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Compra 2 cartas pagando 1 de Vida cada."
+      }
+    ],
+    "description": "Compra 2 cartas pagando 1 de Vida cada.",
+    "flavorText": "A adaga ritual nunca pergunta o que você busca no grimório — apenas cobra duas gotas na lâmina.",
+    "imagePath": "/assets/cards/purple_190_tributo_veia_negra.webp"
+  },
+  {
+    "id": "purple_191_grilhoes_agonia",
+    "name": "Grilhões da Agonia",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Umbral",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Causa 2 de dano a 1 inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "drain_enemy_sovereign",
+        "value": 2,
+        "description": "Drena 2 de Vida do Soberano rival."
+      }
+    ],
+    "description": "Causa 2 de dano a 1 inimigo e drena 2 de Vida do Soberano rival.",
+    "flavorText": "Cada elo que aperta a carne do soldado transmite o mesmo suplício ao trono que o enviou.",
+    "imagePath": "/assets/cards/purple_191_grilhoes_agonia.webp"
+  },
+  {
+    "id": "purple_192_chamado_ossario",
+    "name": "Chamado do Ossário",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Necromancia",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "revive_from_crypt",
+        "value": 1,
+        "description": "Reanima 1 criatura da sua Cripta."
+      }
+    ],
+    "description": "Reanima 1 criatura da sua Cripta.",
+    "flavorText": "Sob a lanterna de chama ametista, nenhuma queda é definitiva.",
+    "imagePath": "/assets/cards/purple_192_chamado_ossario.webp"
+  },
+  {
+    "id": "purple_193_fios_marionete_umbral",
+    "name": "Fios da Marionete Umbral",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Subjugação",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "steal_small_enemy",
+        "value": 2,
+        "description": "Toma o controle de 1 inimigo com Ataque 2 ou menor."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "drain_enemy_sovereign",
+        "value": 2,
+        "description": "Drena 2 de Vida do Soberano rival."
+      }
+    ],
+    "description": "Toma o controle de 1 inimigo com Ataque 2 ou menor e drena 2 de Vida do Soberano rival.",
+    "flavorText": "Quando as cordas violetas se prendem à armadura, a espada muda de mestre sem hesitar.",
+    "imagePath": "/assets/cards/purple_193_fios_marionete_umbral.webp"
+  },
+  {
+    "id": "purple_194_costura_sombras_gemeas",
+    "name": "Costura das Sombras Gêmeas",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Vínculo Umbral",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shared_shadow_link",
+        "value": 1,
+        "description": "Vincula 1 inimigo ao seu aliado de maior Vida: o dano sofrido pelo aliado atinge o alvo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Vincula 1 inimigo ao seu aliado de maior Vida (refletindo o dano sofrido) e compra 1 carta.",
+    "flavorText": "Agulhas de obsidiana prendem duas silhuetas ao mesmo espelho; ferir uma é sangrar a outra.",
+    "imagePath": "/assets/cards/purple_194_costura_sombras_gemeas.webp"
+  },
+  {
+    "id": "purple_195_exumacao_sangue_real",
+    "name": "Exumação de Sangue Real",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Necromancia",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "corruptionCost": 2,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "revive_from_crypt",
+        "value": 1,
+        "description": "Reanima 1 criatura da sua Cripta."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Concede +2/+1 a 1 aliado."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      }
+    ],
+    "description": "Reanima 1 criatura da sua Cripta, concede +2/+1 a 1 aliado e gera +2 de Essência.",
+    "flavorText": "O sarcófago de obsidiana se estilhaça quando o sangue real toca as runas da Cripta.",
+    "imagePath": "/assets/cards/purple_195_exumacao_sangue_real.webp"
+  },
+  {
+    "id": "purple_196_guilhotina_sol_negro",
+    "name": "Guilhotina do Sol Negro",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Execução Abissal",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "destroy_enemy",
+        "value": 1,
+        "description": "Destrói 1 inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "drain_enemy_sovereign",
+        "value": 3,
+        "description": "Drena 3 de Vida do Soberano rival."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Destrói 1 inimigo, drena 3 de Vida do Soberano rival e compra 1 carta.",
+    "flavorText": "Sob a coroa do eclipse, nem a armadura mais espessa nem o maior colosso escapam do corte.",
+    "imagePath": "/assets/cards/purple_196_guilhotina_sol_negro.webp"
+  },
+  {
+    "id": "purple_197_convergencia_sepulcral",
+    "name": "Convergência Sepulcral",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Necromancia",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "corruptionCost": 2,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "revive_from_crypt",
+        "value": 1,
+        "description": "Reanima 1 criatura da sua Cripta."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shared_shadow_link",
+        "value": 1,
+        "description": "Vincula 1 inimigo ao seu aliado de maior Vida."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "drain_enemy_sovereign",
+        "value": 3,
+        "description": "Drena 3 de Vida do Soberano rival."
+      }
+    ],
+    "description": "Reanima 1 criatura da Cripta, vincula 1 inimigo ao seu maior aliado e drena 3 de Vida do Soberano rival.",
+    "flavorText": "Três rios de almas convergem no relicário de ossos: um ergue os caídos, outro ata os vivos e o terceiro sacia o trono.",
+    "imagePath": "/assets/cards/purple_197_convergencia_sepulcral.webp"
+  },
+  {
+    "id": "purple_198_sinfonia_ultimo_eclipse",
+    "name": "Sinfonia do Último Eclipse",
+    "domain": "purple",
+    "type": "spell",
+    "subtype": "Feitiço • Memória Lendária",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "corruptionCost": 3,
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "twilight_procession",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Invoca até 3 criaturas da Cripta com Ímpeto e Dreno de Vida."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "destroy_enemy",
+        "value": 1,
+        "description": "Destrói 1 inimigo."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "drain_enemy_sovereign",
+        "value": 3,
+        "description": "Drena 3 de Vida do Soberano rival."
+      }
+    ],
+    "description": "Invoca até 3 criaturas da Cripta com Ímpeto e Dreno de Vida, destrói 1 inimigo e drena 3 de Vida do Soberano rival.",
+    "flavorText": "Quando o Sol Negro atinge o zênite sobre a catedral, os mortos marcham e os vivos caem de joelhos.",
+    "imagePath": "/assets/cards/purple_198_sinfonia_ultimo_eclipse.webp"
   }
 ];
 

@@ -33843,6 +33843,92 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Guardião, Pele Incandescente, Armadura 2. Ao entrar, causa 2 de dano a 1 criatura inimiga.",
     "flavorText": "Forjado em ferro escuro para guerras esquecidas, seu coração de âmbar ainda pulsa em brasa viva.",
     "imagePath": "/assets/cards/neutral_187_colosso_nucleo_ambar.webp"
+  },
+  {
+    "id": "blue_185_urso_garras_geada",
+    "name": "Urso das Garras de Geada",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Fera • Glacial",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 4,
+    "armor": 0,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": ["Ímpeto", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_attack",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao atacar, congela 1 criatura inimiga."
+      }
+    ],
+    "description": "Ímpeto, Atropelar. Ao atacar, congela 1 criatura inimiga.",
+    "flavorText": "Suas presas trazem o primeiro frio; suas garras de gelo vivo encerram a caçada antes do grito.",
+    "imagePath": "/assets/cards/blue_185_urso_garras_geada.webp"
+  },
+  {
+    "id": "blue_186_gigante_clava_glacial",
+    "name": "Gigante da Clava Glacial",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Gigante • Glacial",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 5,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Atropelar"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Jarl da Geleira Trovejante",
+      "newAtk": 8,
+      "newArmor": 2,
+      "newMaxHp": 8,
+      "addedKeywords": ["Atropelar", "Guardião", "Escudo Divino"]
+    },
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao entrar, congela 1 criatura inimiga."
+      }
+    ],
+    "description": "Atropelar, Armadura 1. Ao entrar, congela 1 criatura inimiga. Ascensão (4): Jarl da Geleira Trovejante (8/8, ARM 2, Guardião, Escudo Divino).",
+    "flavorText": "Arrancou um pilar inteiro da geleira norte e gravou no peito a runa do inverno eterno.",
+    "imagePath": "/assets/cards/blue_186_gigante_clava_glacial.webp"
+  },
+  {
+    "id": "blue_187_colosso_gelo_ferro",
+    "name": "Colosso de Gelo e Ferro",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Elemental • Constructo",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Ao entrar, congela 1 criatura inimiga."
+      }
+    ],
+    "description": "Guardião, Escudo Divino, Armadura 2. Ao entrar, congela 1 criatura inimiga.",
+    "flavorText": "Placas de ferro antigo prendem em seu peito o coração pulsante de uma avalanche.",
+    "imagePath": "/assets/cards/blue_187_colosso_gelo_ferro.webp"
   }
 ];
 

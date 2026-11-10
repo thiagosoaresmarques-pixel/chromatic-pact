@@ -33551,6 +33551,117 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Dreno de Vida, Toque Letal, Renascer, Armadura 2. Ao entrar, dá +2/+1 aos seus aliados, destrói 1 inimigo e reanima da Cripta o aliado mais forte. Ao atacar, drena 3 de Vida do Soberano rival.",
     "flavorText": "No ápice do Coro do Sol Eclipsado, seis asas de obsidiana decretam o fim dos inimigos e erguem os caídos da Cripta.",
     "imagePath": "/assets/cards/purple_184_samael_serafim_seis_asas_eclipse.webp"
+  },
+  {
+    "id": "neutral_182_arauto_duas_asas_alabastro",
+    "name": "Arauto das Duas Asas de Alabastro",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Celestial • Anjo",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 3,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao entrar, compra 1 carta."
+      }
+    ],
+    "description": "Voo, Guardião, Escudo Divino, Armadura 1. Ao entrar, compra 1 carta.",
+    "flavorText": "Do Primeiro Coro de Alabastro descem os sentinelas imparciais que guardam os tratados antigos da Fronteira.",
+    "imagePath": "/assets/cards/neutral_182_arauto_duas_asas_alabastro.webp"
+  },
+  {
+    "id": "neutral_183_jophiel_arcanjo_quatro_asas_prata",
+    "name": "Jophiel, Arcanjo das Quatro Asas de Prata",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Celestial • Arcanjo",
+    "rarity": "rare",
+    "cost": 6,
+    "affinityReq": 0,
+    "atk": 5,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao entrar, concede +1 de Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao entrar, compra 1 carta."
+      }
+    ],
+    "description": "Voo, Guardião, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados, dá +1 de Essência e compra 1 carta.",
+    "flavorText": "No Segundo Coro de Alabastro, quatro asas prateadas calibram a esfera celeste sem pender a nenhum domínio.",
+    "imagePath": "/assets/cards/neutral_183_jophiel_arcanjo_quatro_asas_prata.webp"
+  },
+  {
+    "id": "neutral_184_metatron_serafim_seis_asas_prisma",
+    "name": "Metatron, Serafim das Seis Asas de Platina",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Celestial • Serafim",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 0,
+    "atk": 6,
+    "armor": 3,
+    "hp": 8,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Guardião", "Escudo Divino", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Ao entrar, concede +1 de Armadura e Escudo Divino aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 4,
+        "description": "Ao entrar, causa 4 de dano a 1 inimigo."
+      },
+      {
+        "trigger": "on_attack",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao atacar, concede +1/+1 aos seus aliados."
+      }
+    ],
+    "description": "Voo, Guardião, Escudo Divino, Atropelar, Armadura 3. Ao entrar, dá +1/+1, +1 de Armadura e Escudo Divino aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos seus aliados.",
+    "flavorText": "No ápice do Coro de Alabastro, seis asas de platina preservam a memória incorruptível da Era Zero.",
+    "imagePath": "/assets/cards/neutral_184_metatron_serafim_seis_asas_prisma.webp"
   }
 ];
 

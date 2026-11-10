@@ -99,10 +99,10 @@ export interface PolycolorTrainingSummary {
 }
 
 export const POLYCOLOR_TRAINING_SUMMARY: PolycolorTrainingSummary = {
-  "generatedAt": "2026-11-01T03:58:00.948Z",
-  "totalMatchesSimulated": 55840,
-  "totalStateTrajectoriesTrained": 233969,
-  "elapsedSeconds": 298.2,
+  "generatedAt": "2026-11-10T20:32:54.782Z",
+  "totalMatchesSimulated": 64342,
+  "totalStateTrajectoriesTrained": 272482,
+  "elapsedSeconds": 332.4,
   "archetypesCount": 13,
   "tricolorCount": 10,
   "pentachromaticCount": 3,
@@ -229,186 +229,3633 @@ export const POLYCOLOR_TRAINING_SUMMARY: PolycolorTrainingSummary = {
   }
 };
 
-export const POLYCOLOR_ARCHETYPE_MASTERY: Record<PolycolorArchetypeId, PolycolorArchetypeMastery> = unpackMasteryRecord<PolycolorArchetypeId, PolycolorArchetypeMastery>({
+export const POLYCOLOR_ARCHETYPE_MASTERY: Record<
+  PolycolorArchetypeId,
+  PolycolorArchetypeMastery
+> = unpackMasteryRecord<PolycolorArchetypeId, PolycolorArchetypeMastery>({
   "tri_red_blue_purple": {
     "archetypeId": "tri_red_blue_purple",
     "tierFormat": "tricolor",
-    "domains": ["blue","red","purple"],
+    "domains": [
+      "blue",
+      "red",
+      "purple"
+    ],
     "conclaveId": "cataclysm_triads",
-    "classicDeckIds": ["deck_tri_arcane_cataclysm","deck_tri_astral_cataclysm"],
+    "classicDeckIds": [
+      "deck_tri_arcane_cataclysm",
+      "deck_tri_astral_cataclysm"
+    ],
     "name": "Cataclismo da Convergência Astral",
     "subtitle": "Tríade ❄️+🔥+💀 • Estase, Fogo Piroclástico & Execução Umbral",
     "strategySummary": "Une Congelamento e compra rúnica de Vórtex à artilharia vulcânica de Pyros e ceifadores letais de Eclipse para domínio absoluto de tempo e remoção.",
     "tacticalIdentity": "control",
     "coverCardId": "blue_98_soberano_mares",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6224,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7028,
     "seedWinRate": 0.458,
-    "championWinRate": 0.463,
+    "championWinRate": 0.468,
     "vsMonocolorWinRate": 0.594,
     "vsBicolorWinRate": 0.5,
-    "championDeckJaccardStability": 0.961,
+    "championDeckJaccardStability": 0.887,
     "medianCardCi95HalfWidth": 0.0893,
-    "domainCardBreakdown": {"blue":43,"neutral":12,"red":23,"purple":22},
-    "crossDomainCombos": [[816,839,1,0.567,8," (100% WR em 8 duelos cruzados)"],[811,1033,0.889,0.456,9," (89% WR em 9 duelos cruzados)"],[54,1033,0.889,0.456,9," (89% WR em 9 duelos cruzados)"],[209,300,0.909,0.446,11," (91% WR em 11 duelos cruzados)"],[591,839,0.875,0.442,8," (88% WR em 8 duelos cruzados)"],[811,839,0.875,0.442,8," (88% WR em 8 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_red_blue_purple","deckName":"Cataclismo da Convergência Astral","archetypeTag":"control","generationsTrained":13,"matchesSimulated":6224,"baselineWinRate":0.458,"trainedWinRate":0.458,"weights":{"aggroFaceBias":1.11,"tradeValueBias":1.28,"guardianPriority":1,"flyingEvasionBias":1.28,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":1.27,"relicPriority":1,"ascensionEagerness":1,"bloodPactThresholdHp":24,"domainExpansionEagerness":1.02,"sovPowerTempoBias":1.04,"synergyHoldBonus":26,"mulliganCurveTarget":2.9},"mk":[300,591,648,909,922],"cp":[106,816,22,715,93,838,717,839,38,190],"ca":[54,93,205,300,346,605,800,811,816,839,922,1029],"hb":[[11,6.7],[54,17.7],[93,24],[205,9.1],[221,6.9],[300,24],[346,13.4],[605,23.7],[800,23.2],[811,22.6],[816,24],[839,17],[922,18.7],[1029,24],[1033,24],[1034,19.6],[1035,24]],"sp":[[1033,300],[816,922],[816,300],[922,1033],[816,54],[816,3],[816,1034],[1029,221],[54,1033],[816,221]],"dc":[[816,839,1,0.567,8," (100% WR em 8 duelos cruzados)"],[811,1033,0.889,0.456,9," (89% WR em 9 duelos cruzados)"],[54,1033,0.889,0.456,9," (89% WR em 9 duelos cruzados)"],[209,300,0.909,0.446,11," (91% WR em 11 duelos cruzados)"],[591,839,0.875,0.442,8," (88% WR em 8 duelos cruzados)"],[811,839,0.875,0.442,8," (88% WR em 8 duelos cruzados)"]]},
-    "topShapleyCards": [[1029,0.4306,0.3044,0.1262,0.933,0.8,15],[800,0.367,0.1378,0.2292,0.875,0.907,8],[1034,0.2488,0.059,0.1898,0.75,0.77,20],[839,0.2048,0.0656,0.1393,0.707,0.796,41],[1033,0.1667,-0.0219,0.1886,0.667,0.745,24],[838,0.1588,-0.059,0.2178,0.667,0.904,18],[209,0.1392,-0.0333,0.1724,0.633,0.63,30],[816,0.1263,0.0389,0.0873,0.608,0.388,120],[54,0.1124,0.0523,0.06,0.583,0.159,259],[346,0.0965,-0.0543,0.1508,0.585,0.523,41],[93,0.0848,-0.0565,0.1414,0.574,0.539,47],[605,0.0796,-0.0109,0.0905,0.552,0.189,116]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AAADAwEBAAAAAAAAAwMDAgICAAAAAAAAAQEBAwMDAwMAAAAAAgIAAAABAwICAgAAAAAAAAMDAAICAAAAAAICAAIAAAMDAwAAAAAAAQEAAAAAAgICAQEBAgACAQAAAgEAAAIAAN+7jY3Jyb6+vlNTUysrK09PT93d3QsLCywsLCwsLC4u5eXo6G1tJiYmQy5eXl0DAwPNzc0bG1mCgllZW1sdHUsdW0uamprf3zY2NkNDRUVF5W9dXpOTk29qb8xA+IhcakBdS+g=",0,0,78,22,3.15,0.049,0.025],[2,"Tier II • Guarnição Regular","AAADAwEBAAAAAAAAAwMDAgICAAAAAAAAAQEBAwMDAwMAAAAAAQEAAAABAwICAgAAAAAAAAMDAAAAAAAAAAEBAAIAAAMDAwAAAAAAAQEAAAAAAgICAQEBAgACAQAAAgEAAAIAAN+7jY3Jyb6+vlNTUysrK09PT93d3QsLCywsLCwsLC4u5eXo6EVFJiYmQy5eXl0DAwPNzc0bG1lMTFlZW1u8vEsdW0uamprf3zY2NkNDRUVF5W9dXpOTk29qb8xA+IhcakBdS+g=",0,6,72,22,3.17,0.341,0.025],[3,"Tier III • Bastião Veterano","AgMDAwEBAAAAAAAAAwMDAgICAAAAAAAAAQEBBAMDAQMDAwAAAQEAAAABAQICAgAAAAAAAAMDBAAAAAAAAAEBAAAAAAMDAwMAAAAAAAAAAAACAgICAQEBAgACAQAAAgEAAAIAAQ16jY3Jyb6+vlNTUysrK09PT93d3QsLCywsLAssLEMuLi5GRkVFJiYmQ0NeXl0DAwPNzc0bGwlMTFlZWVu8vEtLW1uampos3zY2Nt/fRUVFdnZdXpOTk8tqy8xA+IhcakBdS0o=",3,14,61,22,3.29,0.651,0.025],[4,"Tier IV • Elite do Alto Trono","AgMDAwEBAAAAAAAAAwMDAgICAAAAAAAAAQEBBAMDAwMBAQAAAQEAAAABAQQDAgAAAAAAAAICBAAAAwAAAAEBAQEAAAMDAwMAAAAAAAAAAAACAgICAQEBAgACAQAAAgEAAAIAAQ16jY3Jyb6+vlNTUysrK09PT93d3QsLCywsLAssLDAwT09GRkVFJiYmQ0MKIF0DAwPNzc0BAQlMTFFZWVm8vF5eW1uampos3zY2Nt/fRUVFdnZdXpOTk8tqy8xA+IhcakBdW0o=",6,22,50,22,3.39,0.703,0.025],[5,"Tier V • Campeão Soberano Ápice","AgMDAwEBAAAAAAAAAwMDAgICAAAAAAAAAQEBBAQBAwMBAQAAAQEAAAAAAAQDAAAAAAAAAAICBAAAAwEDAwEBAQEDAwMDAwAAAAAAAgIAAAACAgIAAQEBAgACAQAAAgEAAAIAAQ16jY3Jyb6+vlNTUysrK09PT93d3QsLCywsLAsFSzAwT09GRkVFJiYmOTkKINEDAwPNzc0BAQlMTFFaR0e8vF5eRkaamprn5zY2Ns3NRUVFdnZdFpOTk8tqy8xA+IhcakBdXUo=",10,34,34,22,3.75,0.739,0.025]]
+    "domainCardBreakdown": {
+      "blue": 43,
+      "neutral": 12,
+      "red": 23,
+      "purple": 22
+    },
+    "crossDomainCombos": [
+      [
+        811,
+        1033,
+        1,
+        0.562,
+        12,
+        " (100% WR em 12 duelos cruzados)"
+      ],
+      [
+        54,
+        1033,
+        0.923,
+        0.485,
+        13,
+        " (92% WR em 13 duelos cruzados)"
+      ],
+      [
+        69,
+        1033,
+        0.909,
+        0.471,
+        11,
+        " (91% WR em 11 duelos cruzados)"
+      ],
+      [
+        1033,
+        300,
+        0.909,
+        0.471,
+        11,
+        " (91% WR em 11 duelos cruzados)"
+      ],
+      [
+        1074,
+        83,
+        0.889,
+        0.451,
+        9,
+        " (89% WR em 9 duelos cruzados)"
+      ],
+      [
+        816,
+        460,
+        0.889,
+        0.451,
+        9,
+        " (89% WR em 9 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_red_blue_purple",
+      "deckName": "Cataclismo da Convergência Astral",
+      "archetypeTag": "control",
+      "generationsTrained": 19,
+      "matchesSimulated": 7028,
+      "baselineWinRate": 0.458,
+      "trainedWinRate": 0.468,
+      "weights": {
+        "aggroFaceBias": 1.11,
+        "tradeValueBias": 1.28,
+        "guardianPriority": 1,
+        "flyingEvasionBias": 1.28,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1.27,
+        "relicPriority": 1,
+        "ascensionEagerness": 1,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 1.02,
+        "sovPowerTempoBias": 1.04,
+        "synergyHoldBonus": 26,
+        "mulliganCurveTarget": 2.9
+      },
+      "mk": [
+        300,
+        591,
+        648,
+        909,
+        922
+      ],
+      "cp": [
+        106,
+        816,
+        22,
+        715,
+        93,
+        838,
+        717,
+        839,
+        38,
+        190
+      ],
+      "ca": [
+        54,
+        93,
+        205,
+        300,
+        346,
+        605,
+        800,
+        811,
+        816,
+        839,
+        922,
+        1029
+      ],
+      "hb": [
+        [
+          11,
+          6.7
+        ],
+        [
+          54,
+          17.7
+        ],
+        [
+          93,
+          24
+        ],
+        [
+          205,
+          9.1
+        ],
+        [
+          221,
+          13.2
+        ],
+        [
+          300,
+          24
+        ],
+        [
+          346,
+          15.9
+        ],
+        [
+          460,
+          16.1
+        ],
+        [
+          605,
+          23.7
+        ],
+        [
+          800,
+          23.2
+        ],
+        [
+          811,
+          22.6
+        ],
+        [
+          816,
+          24
+        ],
+        [
+          839,
+          17
+        ],
+        [
+          922,
+          18.7
+        ],
+        [
+          1029,
+          24
+        ],
+        [
+          1033,
+          24
+        ],
+        [
+          1034,
+          21.6
+        ],
+        [
+          1035,
+          24
+        ],
+        [
+          1038,
+          15
+        ],
+        [
+          1071,
+          13.5
+        ],
+        [
+          1074,
+          15.6
+        ],
+        [
+          1088,
+          11
+        ],
+        [
+          1107,
+          11
+        ],
+        [
+          1151,
+          15
+        ]
+      ],
+      "sp": [
+        [
+          1033,
+          300
+        ],
+        [
+          816,
+          922
+        ],
+        [
+          816,
+          300
+        ],
+        [
+          922,
+          1033
+        ],
+        [
+          816,
+          54
+        ],
+        [
+          816,
+          3
+        ],
+        [
+          816,
+          1034
+        ],
+        [
+          1029,
+          221
+        ],
+        [
+          54,
+          1033
+        ],
+        [
+          816,
+          221
+        ]
+      ],
+      "dc": [
+        [
+          811,
+          1033,
+          1,
+          0.562,
+          12,
+          " (100% WR em 12 duelos cruzados)"
+        ],
+        [
+          54,
+          1033,
+          0.923,
+          0.485,
+          13,
+          " (92% WR em 13 duelos cruzados)"
+        ],
+        [
+          69,
+          1033,
+          0.909,
+          0.471,
+          11,
+          " (91% WR em 11 duelos cruzados)"
+        ],
+        [
+          1033,
+          300,
+          0.909,
+          0.471,
+          11,
+          " (91% WR em 11 duelos cruzados)"
+        ],
+        [
+          1074,
+          83,
+          0.889,
+          0.451,
+          9,
+          " (89% WR em 9 duelos cruzados)"
+        ],
+        [
+          816,
+          460,
+          0.889,
+          0.451,
+          9,
+          " (89% WR em 9 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        1033,
+        0.4076,
+        0.2925,
+        0.1152,
+        0.913,
+        0.755,
+        23
+      ],
+      [
+        1034,
+        0.2587,
+        0.0297,
+        0.229,
+        0.769,
+        0.857,
+        13
+      ],
+      [
+        816,
+        0.1456,
+        0.0641,
+        0.0815,
+        0.63,
+        0.328,
+        135
+      ],
+      [
+        460,
+        0.1356,
+        0.0006,
+        0.135,
+        0.633,
+        0.588,
+        49
+      ],
+      [
+        346,
+        0.132,
+        -0.018,
+        0.15,
+        0.625,
+        0.506,
+        40
+      ],
+      [
+        1074,
+        0.1245,
+        -0.012,
+        0.1364,
+        0.612,
+        0.402,
+        49
+      ],
+      [
+        839,
+        0.0881,
+        -0.0701,
+        0.1582,
+        0.595,
+        0.776,
+        37
+      ],
+      [
+        1071,
+        0.0779,
+        -0.201,
+        0.2789,
+        0.583,
+        0.755,
+        12
+      ],
+      [
+        221,
+        0.0717,
+        -0.0212,
+        0.0929,
+        0.555,
+        0.304,
+        110
+      ],
+      [
+        922,
+        0.0714,
+        0.0055,
+        0.066,
+        0.555,
+        0.319,
+        218
+      ],
+      [
+        1035,
+        0.0635,
+        -0.1957,
+        0.2592,
+        0.571,
+        0.806,
+        14
+      ],
+      [
+        54,
+        0.0601,
+        0.0006,
+        0.0595,
+        0.533,
+        0.112,
+        270
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAQDAwEBAAAAAAAAAwMDAgICBAQAAAAAAQEBAwMDBAQEBAAAAAEAAAAEBAQEAgAAAAAAAAQCBAAABAQAAAAAAgIAAgMDAwQEAAAABAQAAAAEBAICAQEBAwADAQAAAgEAAAIAA1RJjY3Jyb6+vlNTUysrK09PT0BT3QsLCywsLCwsLFJSZGQ0NDRDJiYmVFRZWV0DAwPNzc1ZXmJZS2JiaVtZWYKCW4KamppTUzY2NkBARUVFZFJdXpOTky5qLsxA+IhcakBdWy4=",
+        0,
+        0,
+        75,
+        25,
+        3.14,
+        0.049,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAQDAwEBAAAAAAAAAwMDAgICBAQAAAAAAQEBAwMDBAQEBAAAAQEAAAAEBAQEAgAAAAAAAAQCBAAABAQEAAAAAgIAAgMDAwQEAAAABAQAAAAEBAICAQEBAwADAQAAAgEAAAIAA1RJjY3Jyb6+vlNTUysrK09PT0BT3QsLCywsLCwsLFJSZGQ0RkVFJiYmVFRZWV0DAwPNzc1ZXmJMTGJif1tZWYKCW4KamppTUzY2NkBARUVFZFJdXpOTky5qLsxA+IhcakBdWy4=",
+        0,
+        6,
+        69,
+        25,
+        3.17,
+        0.341,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "AgQDAwEBAAAAAAAAAwMDAgICBAQAAAAAAQEBBAQDBAQEBAAAAQEAAAADAwQEAgAAAAAAAAQCBAAABAQEAAEBAgIAAgMDAwQEAAAABAQAAAAEAgIEAQEBAgACAQAAAgEAAAIAAQ1JjY3Jyb6+vlNTUysrK09PT0BT3QsLCywsLAsyLFNAQGRGRkVFJiYmLCxZWV0DAwPNzc1ZXmJMTGJif1u8vIKCW4KamppUVDY2NlRTRUVFZHZdDpOTk8tqy8xA+IhcakBdW0o=",
+        3,
+        14,
+        59,
+        24,
+        3.28,
+        0.651,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "AgQDAwEBAAAAAAAAAwMDAgICBAQAAAAAAQEBBAQDBAMBAQAAAQEAAAADAwQEAgAAAAAAAAICBAAAAwQEBAEBAQEEAAMDAwQEAAAABAQAAAACAgIEAQEBAgACAQAAAgEAAAIAAQ1JjY3Jyb6+vlNTUysrK09PT0BT3QsLCywsLAsyLFMwT09GRkVFJiYmLCxZL10DAwPNzc0BAQlMTFFif2K8vF5eYluamppUVDY2NlRTRUVFdnZdDpOTk8tqy8xA+IhcakBdW0o=",
+        6,
+        22,
+        50,
+        22,
+        3.38,
+        0.703,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "AgMDAwEBAAAAAAAAAwMDAgICBAQAAAAAAQEBBAQBAwMBAQAAAQEAAAAAAAQEAAAAAAAAAAICBAAAAwEEAwEBAQEDAwMDAwAAAAAAAgIAAAACAgIEAQEBAgACAQAAAgEAAAIAAQ16jY3Jyb6+vlNTUysrK09PT0BT3QsLCywsLAsySzAwT09GRkVFJiYmOTkKL9EDAwPNzc0BAQlMTFFaf0e8vF5eR0aamprn5zY2Ns3NRUVFdnZdDpOTk8tqy8xA+IhcakBdXUo=",
+        10,
+        34,
+        34,
+        22,
+        3.7,
+        0.739,
+        0.025
+      ]
+    ]
   },
   "tri_red_green_gold": {
     "archetypeId": "tri_red_green_gold",
     "tierFormat": "tricolor",
-    "domains": ["red","green","gold"],
+    "domains": [
+      "red",
+      "green",
+      "gold"
+    ],
     "conclaveId": "cataclysm_triads",
-    "classicDeckIds": ["deck_tri_primal_titans","deck_tri_primordial_forge"],
+    "classicDeckIds": [
+      "deck_tri_primal_titans",
+      "deck_tri_primordial_forge"
+    ],
     "name": "Tríade dos Titãs da Forja Primordial",
     "subtitle": "Tríade 🔥+🌿+☀️ • Rampa Colossal, Escudo Divino & Sopro Dracônico",
     "strategySummary": "Acelera Essência com rampa de Veridia para erguer Colossos e Dragões de Pyros blindados pelos Escudos Divinos e hinos imperiais de Solária.",
     "tacticalIdentity": "ramp",
     "coverCardId": "green_67_tiranossauro_alfa",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6328,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7132,
     "seedWinRate": 0.556,
-    "championWinRate": 0.509,
+    "championWinRate": 0.525,
     "vsMonocolorWinRate": 0.656,
     "vsBicolorWinRate": 0.533,
-    "championDeckJaccardStability": 0.961,
+    "championDeckJaccardStability": 0.869,
     "medianCardCi95HalfWidth": 0.0671,
-    "domainCardBreakdown": {"green":22,"gold":41,"neutral":12,"red":25},
-    "crossDomainCombos": [[421,116,1,0.521,10," (100% WR em 10 duelos cruzados)"],[159,1034,1,0.521,8," (100% WR em 8 duelos cruzados)"],[114,116,1,0.491,9," (100% WR em 9 duelos cruzados)"],[126,707,0.941,0.462,17," (94% WR em 17 duelos cruzados)"],[116,300,0.917,0.438,12," (92% WR em 12 duelos cruzados)"],[116,126,0.929,0.42,14," (93% WR em 14 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_red_green_gold","deckName":"Tríade dos Titãs da Forja Primordial","archetypeTag":"ramp","generationsTrained":13,"matchesSimulated":6328,"baselineWinRate":0.556,"trainedWinRate":0.49,"weights":{"aggroFaceBias":1.14,"tradeValueBias":1.18,"guardianPriority":1.26,"flyingEvasionBias":0.94,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":0.95,"relicPriority":1,"ascensionEagerness":1.3,"bloodPactThresholdHp":24,"domainExpansionEagerness":1.28,"sovPowerTempoBias":0.93,"synergyHoldBonus":21,"mulliganCurveTarget":3},"mk":[278,300,591,159,784,126],"cp":[665,300,178,664,798,151,799,278,680,432],"ca":[114,116,126,151,159,178,272,278,300,421,473,664],"hb":[[114,10.5],[116,24],[126,17.3],[151,24],[159,12.9],[166,13],[178,14.4],[272,19],[278,20.7],[300,24],[421,10.7],[473,18.3],[664,22.6],[784,20],[798,17.6],[799,24],[800,24],[862,24],[863,24],[880,24],[881,24],[892,11.1],[983,24],[1031,24],[1034,24],[1036,19],[1037,24]],"sp":[[862,300],[1034,300],[1037,272],[421,799],[147,1034],[892,799],[1037,421],[126,1034],[421,116],[421,862]],"dc":[[421,116,1,0.521,10," (100% WR em 10 duelos cruzados)"],[159,1034,1,0.521,8," (100% WR em 8 duelos cruzados)"],[114,116,1,0.491,9," (100% WR em 9 duelos cruzados)"],[126,707,0.941,0.462,17," (94% WR em 17 duelos cruzados)"],[116,300,0.917,0.438,12," (92% WR em 12 duelos cruzados)"],[116,126,0.929,0.42,14," (93% WR em 14 duelos cruzados)"]]},
-    "topShapleyCards": [[880,0.4473,0.3853,0.062,1,0.88,10],[800,0.3479,0.1619,0.1859,0.9,0.868,10],[1036,0.3473,0.1614,0.1859,0.9,0.88,10],[1034,0.3429,0.1977,0.1452,0.889,0.746,18],[1037,0.3365,0.1834,0.1532,0.882,0.742,17],[1031,0.3034,0.0441,0.2592,0.857,0.901,7],[116,0.2884,0.1603,0.1281,0.824,0.528,34],[799,0.2298,0.0613,0.1686,0.783,0.881,23],[879,0.2148,-0.0143,0.229,0.769,0.915,13],[151,0.1746,-0.0323,0.2069,0.722,0.778,18],[863,0.1572,-0.0247,0.1818,0.708,0.849,24],[707,0.1557,0.0383,0.1175,0.695,0.609,59]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AQAAAAEBAQAAAQEBAQEBAQICAQEBAwMDAAAAAAAAAAICAgEBAQIAAQEBAgICAgEBAgICAgICAgIAAQEAAQMDAAAAAAABAQEBAQEBAAADAwICAAAAAAAAAQEAAAIBAgEAAgMAA2l3d3ewsLCurhAQEKWlpSZPTywsLHx8fAICAs7Nzc1dXV3MzMzDzgMDA5T09PRpaTExlJSTkzGTnnd3rhtra5OTk56eFhYWjCaMjK2tn59AQJ+fnx8fHxsbzhJAd8PZ16txrWs=",0,0,81,19,2.96,0.049,0.025],[2,"Tier II • Guarnição Regular","AQAAAAEBAQAAAQEBAQEBAAICAQEBAwMDAAAAAAAAAAICAgEBAQIAAQEBAgAAAAEBAgICAgICAgIAAQEAAQMDAAAAAAABAQEBAQEBAAADAwAAAAAAAAAAAQEAAAIBAgEAAgMAA2l3d3ewsLCurhAQEKWlpcJPTywsLHx8fAICAs7Nzc1dXV3MzMzDzgMDA5Ryj49paTExlJSTkzGTnnd3rhtra5OTk56eFhYWjCaMjK2tn5+lpZ+fnx8fHxsbzhJAd8PZ16txrWs=",0,6,75,19,3,0.341,0.025],[3,"Tier III • Bastião Veterano","AQAAAAEBAQAAAQEBAQEBAAICAQEBAwMDAAAABAAAAAICAgEBAQIAAQEBAAAAAAEBAQEBAQICAgIAAQEAAQMDAAAAAAABAQEDAwEBAAADAwAAAAAAAAAAAQEAAAIBAgEAAgMAA253d3ewsLCurhAQEKWlpcJPTywsLHx8fAICAgrNzc1dXV3MzMzDzgMDCnJyj48DaWlp4+MxkzExnnd3rhtra5OTk56eFhYW19eMjK2tr6+lpZ+fnx8fHxsbzs5Ad8PZ16txr2s=",3,14,64,19,3.1,0.651,0.025],[4,"Tier IV • Elite do Alto Trono","AQAAAAEBAQAAAQEBAQEBAAICAQEBAwMDAAAABAAAAAICAgEBAQIABAABAAAAAAEBAQEBAQAAAQEEAQEAAQMDAAAAAAABAQEDAwAAAAADAwAAAAAAAAAAAAAAAAMBAgEAAgMAAG53d3ewsLCurhAQEKWlpcJPTywsLHx8fAICAgrNzc1dXV3MzMzDzgx0CnJyj48DAwNp4+N+fmlpDXd3rhtra5OTk56eFhYW19fGxpmZr6+lpZ+fnx8fH7Kyzs5rd8PZ16txr54=",6,22,53,19,3.19,0.703,0.025],[5,"Tier V • Campeão Soberano Ápice","AQAAAAEBAQAAAQEBAQEBAAICAQEBAwMDAAAABAAAAAICAgMBAQIDBAABAAAAAAMDAwMBAQAAAgIEAwQDAwICAAAAAwMBAQEDAwAAAAADAwAAAAAAAAAAAAADAwADAgEAAgMAAG53d3ewsLCrqxAQEKWlpcJPTywsLHx8fAICAgrNzc1dXV0gzMzDHgx0CnJyj49eXl9f4+N+fpiYDXAHEBCoqJOTk29vFhYW19fGxpmZr6+lpZ+fnx8fH7KyHx+mDcPZ16txr5c=",10,41,30,19,3.75,0.739,0.025]]
+    "domainCardBreakdown": {
+      "green": 22,
+      "gold": 41,
+      "neutral": 12,
+      "red": 25
+    },
+    "crossDomainCombos": [
+      [
+        278,
+        799,
+        1,
+        0.505,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        159,
+        1079,
+        1,
+        0.505,
+        10,
+        " (100% WR em 10 duelos cruzados)"
+      ],
+      [
+        151,
+        605,
+        1,
+        0.505,
+        9,
+        " (100% WR em 9 duelos cruzados)"
+      ],
+      [
+        151,
+        591,
+        1,
+        0.505,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        683,
+        983,
+        1,
+        0.505,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        1079,
+        983,
+        1,
+        0.505,
+        9,
+        " (100% WR em 9 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_red_green_gold",
+      "deckName": "Tríade dos Titãs da Forja Primordial",
+      "archetypeTag": "ramp",
+      "generationsTrained": 19,
+      "matchesSimulated": 7132,
+      "baselineWinRate": 0.556,
+      "trainedWinRate": 0.525,
+      "weights": {
+        "aggroFaceBias": 1.14,
+        "tradeValueBias": 1.18,
+        "guardianPriority": 1.26,
+        "flyingEvasionBias": 0.94,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 0.95,
+        "relicPriority": 1,
+        "ascensionEagerness": 1.3,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 1.28,
+        "sovPowerTempoBias": 0.93,
+        "synergyHoldBonus": 21,
+        "mulliganCurveTarget": 3
+      },
+      "mk": [
+        278,
+        300,
+        591,
+        159,
+        784,
+        126
+      ],
+      "cp": [
+        665,
+        300,
+        178,
+        664,
+        798,
+        151,
+        799,
+        278,
+        680,
+        432
+      ],
+      "ca": [
+        114,
+        116,
+        126,
+        151,
+        159,
+        178,
+        272,
+        278,
+        300,
+        421,
+        473,
+        664
+      ],
+      "hb": [
+        [
+          114,
+          10.5
+        ],
+        [
+          116,
+          24
+        ],
+        [
+          126,
+          17.3
+        ],
+        [
+          151,
+          24
+        ],
+        [
+          159,
+          12.9
+        ],
+        [
+          166,
+          13
+        ],
+        [
+          175,
+          24
+        ],
+        [
+          178,
+          14.4
+        ],
+        [
+          272,
+          19
+        ],
+        [
+          278,
+          20.7
+        ],
+        [
+          300,
+          24
+        ],
+        [
+          421,
+          10.7
+        ],
+        [
+          473,
+          18.3
+        ],
+        [
+          664,
+          22.6
+        ],
+        [
+          683,
+          18.6
+        ],
+        [
+          781,
+          19.2
+        ],
+        [
+          784,
+          20
+        ],
+        [
+          798,
+          17.6
+        ],
+        [
+          799,
+          24
+        ],
+        [
+          800,
+          24
+        ],
+        [
+          862,
+          24
+        ],
+        [
+          863,
+          24
+        ],
+        [
+          879,
+          17
+        ],
+        [
+          880,
+          24
+        ],
+        [
+          881,
+          24
+        ],
+        [
+          892,
+          11.1
+        ],
+        [
+          983,
+          24
+        ],
+        [
+          1031,
+          24
+        ],
+        [
+          1034,
+          24
+        ],
+        [
+          1036,
+          19
+        ],
+        [
+          1037,
+          24
+        ],
+        [
+          1059,
+          15
+        ],
+        [
+          1079,
+          20
+        ],
+        [
+          1081,
+          20
+        ],
+        [
+          1092,
+          15
+        ],
+        [
+          1115,
+          20
+        ]
+      ],
+      "sp": [
+        [
+          862,
+          300
+        ],
+        [
+          1034,
+          300
+        ],
+        [
+          1037,
+          272
+        ],
+        [
+          421,
+          799
+        ],
+        [
+          147,
+          1034
+        ],
+        [
+          892,
+          799
+        ],
+        [
+          1037,
+          421
+        ],
+        [
+          126,
+          1034
+        ],
+        [
+          421,
+          116
+        ],
+        [
+          421,
+          862
+        ]
+      ],
+      "dc": [
+        [
+          278,
+          799,
+          1,
+          0.505,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          159,
+          1079,
+          1,
+          0.505,
+          10,
+          " (100% WR em 10 duelos cruzados)"
+        ],
+        [
+          151,
+          605,
+          1,
+          0.505,
+          9,
+          " (100% WR em 9 duelos cruzados)"
+        ],
+        [
+          151,
+          591,
+          1,
+          0.505,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          683,
+          983,
+          1,
+          0.505,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          1079,
+          983,
+          1,
+          0.505,
+          9,
+          " (100% WR em 9 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        175,
+        0.4271,
+        0.3394,
+        0.0877,
+        1,
+        0.961,
+        5
+      ],
+      [
+        1031,
+        0.3063,
+        0.0771,
+        0.2292,
+        0.875,
+        0.877,
+        8
+      ],
+      [
+        799,
+        0.3052,
+        0.1431,
+        0.1621,
+        0.875,
+        0.899,
+        16
+      ],
+      [
+        151,
+        0.2849,
+        0.179,
+        0.1059,
+        0.844,
+        0.694,
+        45
+      ],
+      [
+        800,
+        0.2621,
+        -0.0361,
+        0.2982,
+        0.833,
+        0.927,
+        6
+      ],
+      [
+        983,
+        0.2392,
+        0.16,
+        0.0791,
+        0.792,
+        0.561,
+        101
+      ],
+      [
+        781,
+        0.2034,
+        -0.0257,
+        0.229,
+        0.769,
+        0.819,
+        13
+      ],
+      [
+        1037,
+        0.1933,
+        0.0433,
+        0.15,
+        0.75,
+        0.636,
+        32
+      ],
+      [
+        683,
+        0.1905,
+        0.0405,
+        0.15,
+        0.75,
+        0.692,
+        32
+      ],
+      [
+        863,
+        0.1802,
+        -0.032,
+        0.2122,
+        0.75,
+        0.899,
+        16
+      ],
+      [
+        879,
+        0.1557,
+        -0.1075,
+        0.2632,
+        0.727,
+        0.934,
+        11
+      ],
+      [
+        664,
+        0.1148,
+        -0.0092,
+        0.124,
+        0.673,
+        0.66,
+        55
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAAAAAEBAQQEAQEBAQEBBAICAQEBAwMDAAAABAAAAAICAgQAAQIEBAQEAQEEBAIBBAQBAQQEBAEBBAQEBAQEAAAAAQEBAQEBBAEBAAAEBAQEAAAAAAAABAQBAQQEAgEAAgMABE13d3ewsLCSkRAQEKWlpZpPTywsLHx8fAICAlrNzc1dXV1a18zDWkNDQ2lpcnIxaU1NAwMiIiIDd1VVkpJWVpOTk3d3FhYWjE+MjK6uT0+goJ+fnx8fH5GRzMxWVcPZ16txrqA=",
+        0,
+        0,
+        81,
+        19,
+        2.92,
+        0.049,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAAAAAEBAQQEAQEBAQEBAAICAQEBAwMDAAAABAAAAAICAgQAAQIEBAQEAQEAAAQBBAQBAQQEBAEBBAQEBAQEAAAAAQEBAQEBBAEBAAAEBAAAAAAAAAAABAQBAQQEAgEAAgMABE13d3ewsLCSkRAQEKWlpcJPTywsLHx8fAICAlrNzc1dXV1a18zDWkNDQ2lpj49EaU1NAwMiIiIDd1VVkpJWVpOTk3d3FhYWjE+MjK6uT0+lpZ+fnx8fH5GRzMxWVcPZ16txrqA=",
+        0,
+        6,
+        75,
+        19,
+        2.97,
+        0.341,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "AQAAAAEBAQQEAQEBAQEBAAICAQEBAwMDAAAABAAAAAICAgQAAQIEBAQEAAAAAAQEBAQBAQQEBAQBBAQEBAQEAAAAAQEBAQEDAwEBAAAEBAAAAAAAAAAABAQBAQQEAgEAAgMABG53d3ewsLCSkRAQEKWlpcJPTywsLHx8fAICAlrNzc1dXV1a18zDWkM3OXJyj49EI0ND4+NNTU0id1VVkpJWVpOTk3d3FhYW19eMjK6uT0+lpZ+fnx8fH5GRzMxWVcPZ16txr6A=",
+        3,
+        14,
+        64,
+        19,
+        3.12,
+        0.651,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "AQAAAAEBAQQEAQEBAQEBAAICAQEBAwMDAAAABAAAAAICAgQAAQIEBAQEAAAAAAQEBAQBAQQEBAQEBAQEBAQBAAAAAQEBAQEDAwAAAAADAwAAAAAAAAAAAAAEAQQEAgEAAgMABG53d3ewsLCSkRAQEKWlpcJPTywsLHx8fAICAgrNzc1dXV1a18zDWls3OXJyj49EI0ND4+NDTU1NDVVVkpJWd5OTk3d3FhYW19fGxpmZr6+lpZ+fnx8fH7KyWsxWVcPZ16txr1Y=",
+        6,
+        22,
+        53,
+        19,
+        3.21,
+        0.703,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "AQAAAAEBAQAAAQEBAQEBAAICAQEBAwMDAAAABAAAAAICAgMAAQIDBAQEAAAAAAQEAwMBAQAAAgIEAwQDAwACAAAAAwMBAQEDAwAAAAADAwAAAAAAAAAAAAADAwADAgEAAgMAAG53d3ewsLCrqxAQEKWlpcJPTywsLHx8fAICAgrNzc1dXV0g18zDHls3OXJyj49EI19f4+N+fpiYDXAHEBCXqJOTk29vFhYW19fGxpmZr6+lpZ+fnx8fH7KyHx+mDcPZ16txr5c=",
+        10,
+        41,
+        30,
+        19,
+        3.69,
+        0.739,
+        0.025
+      ]
+    ]
   },
   "tri_blue_purple_gold": {
     "archetypeId": "tri_blue_purple_gold",
     "tierFormat": "tricolor",
-    "domains": ["gold","blue","purple"],
+    "domains": [
+      "gold",
+      "blue",
+      "purple"
+    ],
     "conclaveId": "imperial_triads",
-    "classicDeckIds": ["deck_tri_eternal_reliquary"],
+    "classicDeckIds": [
+      "deck_tri_eternal_reliquary"
+    ],
     "name": "Relicário do Trono Eterno",
     "subtitle": "Tríade ☀️+❄️+💀 • Cidadela de Relíquias, Cronomancia & Veredito",
     "strategySummary": "Fortifica o Soberano com Guardiões celestes, Relíquias imperiais, Congelamento e reanimação inquisitorial em uma muralha intransponível.",
     "tacticalIdentity": "control",
     "coverCardId": "blue_97_draco_relampago",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6108,
+    "generationsEvolved": 25,
+    "matchesSimulated": 6912,
     "seedWinRate": 0.486,
-    "championWinRate": 0.577,
+    "championWinRate": 0.598,
     "vsMonocolorWinRate": 0.766,
     "vsBicolorWinRate": 0.533,
-    "championDeckJaccardStability": 1,
+    "championDeckJaccardStability": 0.887,
     "medianCardCi95HalfWidth": 0.18,
-    "domainCardBreakdown": {"gold":24,"neutral":12,"blue":42,"purple":22},
-    "crossDomainCombos": [[816,226,1,0.423,8," (100% WR em 8 duelos cruzados)"],[1035,76,0.917,0.37,12," (92% WR em 12 duelos cruzados)"],[48,226,0.944,0.367,18," (94% WR em 18 duelos cruzados)"],[54,1033,0.9,0.353,10," (90% WR em 10 duelos cruzados)"],[69,1037,0.882,0.335,17," (88% WR em 17 duelos cruzados)"],[816,1037,0.875,0.328,8," (88% WR em 8 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_blue_purple_gold","deckName":"Relicário do Trono Eterno","archetypeTag":"control","generationsTrained":13,"matchesSimulated":6108,"baselineWinRate":0.486,"trainedWinRate":0.417,"weights":{"aggroFaceBias":0.97,"tradeValueBias":1.41,"guardianPriority":1.38,"flyingEvasionBias":1,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":1.22,"relicPriority":1.2,"ascensionEagerness":1.01,"bloodPactThresholdHp":24,"domainExpansionEagerness":1,"sovPowerTempoBias":1.06,"synergyHoldBonus":21,"mulliganCurveTarget":2.9},"mk":[913,105,272,714],"cp":[145,717,815,322,432,37,40,48,190,38],"ca":[54,105,226,272,816,880,913,1033,1035,1037],"hb":[[54,14],[105,20.2],[226,23.3],[272,12.6],[816,24],[880,22.9],[913,18.6],[1033,22.4],[1035,24],[1037,16.7]],"sp":[[816,1035],[1035,105],[816,913],[1035,272],[1035,913],[816,105],[54,1037],[621,1033],[226,105],[816,1033]],"dc":[[816,226,1,0.423,8," (100% WR em 8 duelos cruzados)"],[1035,76,0.917,0.37,12," (92% WR em 12 duelos cruzados)"],[48,226,0.944,0.367,18," (94% WR em 18 duelos cruzados)"],[54,1033,0.9,0.353,10," (90% WR em 10 duelos cruzados)"],[69,1037,0.882,0.335,17," (88% WR em 17 duelos cruzados)"],[816,1037,0.875,0.328,8," (88% WR em 8 duelos cruzados)"]]},
-    "topShapleyCards": [[1035,0.1703,0.0577,0.1127,0.774,0.523,53],[1037,0.1396,-0.0019,0.1415,0.75,0.667,36],[226,0.1256,0.0131,0.1125,0.721,0.371,61],[880,0.0888,-0.0835,0.1722,0.704,0.757,27],[272,0.0684,0.0185,0.0499,0.65,0.081,351],[816,0.0569,-0.0204,0.0773,0.651,0.333,146],[1033,0.0559,-0.1128,0.1687,0.667,0.674,30],[913,0.0532,0.0034,0.0498,0.633,0.06,360],[105,0.0487,-0.009,0.0577,0.637,0.217,267],[54,0.0248,-0.0298,0.0546,0.611,0.184,306],[40,0.0193,-0.1228,0.1421,0.636,0.799,44],[278,0.0187,-0.0423,0.061,0.612,0.329,245]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AQEBAwMDAAAAAwMDAwMDAwMAAAAAAQEAAAABAQEAAAACAgIAAAABAQEBAQMBAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEBAQEBAQEBAQEBAQEBAQEBAQEBArCwsBEREb6+vsLClJSUKioqk5OZmUVFJiYmXFxc+Pj4iIiIZGRkQkJCGxtKG0olJSUxMTE1NTVAQEBKSkpVVVWbm5ucnJydnZ3c3Nzv7+8TExMVFRVISEh4eHiampqtrba2thk=",0,4,28,68,2.77,0.029,null],[2,"Tier II • Guarnição Regular","AQEBAQMDAwAAAAMDAwMDAwMDAAAAAAAAAAABAQAAAQEAAAAAAAEBAQEAAAACAgIAAAACAgIBAQEAAAABAQMBAwMDAwAAAAICAgMDAwMAAAAAAAAAAAAAAAAAAAAAAgICAAAAAIWwsLARERG+vr7CwpSUlCoqKt3d3TAwMJOTfX2ZmUVFJiYmTExeXFxc+Pj4iIiIZGRkbW1tQkJCRUVFGxtKG0r5+fnc3NzKysqampqWk5+fn5GRkTU1NTMzM0NDQ3R051tbW1k=",1,9,63,27,2.76,0.363,null],[3,"Tier III • Bastião Veterano","AQEBAQMDAwAAAAMDAwMDAwMDAQEBAAAAAAAAAAABAQEBAQAAAQEBAAAAAAABAQEBAQAAAAICAgAAAAMCAgIBAQECAgICAAAAAQEDAwEDAwMDAAMDAwAAAAAAAAAAAAICAwICAoWwsLARERG+vr7CwpSUlCoqKhAQEN3d3TAwMJOTfX0WFhaZmZhFRSYmJkxMXl5cXFz4+PiIiIhkZGSvbW1tQkJCzc3Ly0VFRRsbMUobSpqampP5+fnc3Nyfn5+RkZHKykrn5+c=",3,15,55,27,2.81,0.67,null],[4,"Tier IV • Elite do Alto Trono","AQEBAQMDAwAAAAMDAwMDAwMDAQEBAwMDAAAAAAAABAMAAAEBAQEBAAAAAAABAQEAAAAAAAEBAQEBAAAAAgICAAAAAwICAgEBAQICAgIAAAAAAAIBAQMDAQMBAAMDAwICAwICAoWwsLARERG+vr7CwpSUlCoqKhAQEJGRkd3d3TAwMA1wk5N9fRYWFpmZNjY2mEVFJiYmTExeXlxcXPj4+IiIiGRkZK9tbW1CQkLNzcvLRUVFKCgKGxsxShtKSpP5+flwcErn5+c=",5,21,50,24,3.03,0.712,null],[5,"Tier V • Campeão Soberano Ápice","AQEBAQMDAwAAAAMDAwMDAwMDAQEBAwMDAAAAAAAABAMAAAEBAQEBAAAEAAAAAwMAAQEBAAAABAAAAQEBAQEAAAAAAAACAgIAAAADAgICAQEBAgICAgAAAAAAAgEBAwIDAQMBAYWwsLARERG+vr7CwpSUlCoqKhAQEJGRkd3d3TAwMA1wk5N9fRYWFpmZCzY2NjAw4phFRSYmJglMTF5eXFxcaWlp+Pj4iIiIZGRkr21tbUJCQs3Ny8tFRUUoKAobGzEMShtKl0o=",10,21,46,23,3.23,0.75,null]]
+    "domainCardBreakdown": {
+      "gold": 24,
+      "neutral": 12,
+      "blue": 42,
+      "purple": 22
+    },
+    "crossDomainCombos": [
+      [
+        226,
+        381,
+        1,
+        0.432,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        1035,
+        913,
+        0.962,
+        0.393,
+        26,
+        " (96% WR em 26 duelos cruzados)"
+      ],
+      [
+        1037,
+        913,
+        0.938,
+        0.369,
+        16,
+        " (94% WR em 16 duelos cruzados)"
+      ],
+      [
+        48,
+        226,
+        0.933,
+        0.335,
+        15,
+        " (93% WR em 15 duelos cruzados)"
+      ],
+      [
+        226,
+        76,
+        0.9,
+        0.332,
+        10,
+        " (90% WR em 10 duelos cruzados)"
+      ],
+      [
+        1035,
+        278,
+        0.9,
+        0.332,
+        10,
+        " (90% WR em 10 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_blue_purple_gold",
+      "deckName": "Relicário do Trono Eterno",
+      "archetypeTag": "control",
+      "generationsTrained": 19,
+      "matchesSimulated": 6912,
+      "baselineWinRate": 0.486,
+      "trainedWinRate": 0.598,
+      "weights": {
+        "aggroFaceBias": 0.97,
+        "tradeValueBias": 1.41,
+        "guardianPriority": 1.38,
+        "flyingEvasionBias": 1,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1.22,
+        "relicPriority": 1.2,
+        "ascensionEagerness": 1.01,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 1,
+        "sovPowerTempoBias": 1.06,
+        "synergyHoldBonus": 21,
+        "mulliganCurveTarget": 2.9
+      },
+      "mk": [
+        913,
+        105,
+        272,
+        714
+      ],
+      "cp": [
+        145,
+        717,
+        815,
+        322,
+        432,
+        37,
+        40,
+        48,
+        190,
+        38
+      ],
+      "ca": [
+        54,
+        105,
+        226,
+        272,
+        816,
+        880,
+        913,
+        1033,
+        1035,
+        1037
+      ],
+      "hb": [
+        [
+          54,
+          14
+        ],
+        [
+          105,
+          20.2
+        ],
+        [
+          226,
+          23.3
+        ],
+        [
+          272,
+          12.6
+        ],
+        [
+          816,
+          24
+        ],
+        [
+          880,
+          22.9
+        ],
+        [
+          913,
+          18.6
+        ],
+        [
+          1033,
+          22.4
+        ],
+        [
+          1035,
+          24
+        ],
+        [
+          1037,
+          16.7
+        ],
+        [
+          1068,
+          11.9
+        ],
+        [
+          1074,
+          20
+        ],
+        [
+          1108,
+          11
+        ],
+        [
+          1119,
+          20
+        ],
+        [
+          1151,
+          15
+        ]
+      ],
+      "sp": [
+        [
+          816,
+          1035
+        ],
+        [
+          1035,
+          105
+        ],
+        [
+          816,
+          913
+        ],
+        [
+          1035,
+          272
+        ],
+        [
+          1035,
+          913
+        ],
+        [
+          816,
+          105
+        ],
+        [
+          54,
+          1037
+        ],
+        [
+          621,
+          1033
+        ],
+        [
+          226,
+          105
+        ],
+        [
+          816,
+          1033
+        ]
+      ],
+      "dc": [
+        [
+          226,
+          381,
+          1,
+          0.432,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          1035,
+          913,
+          0.962,
+          0.393,
+          26,
+          " (96% WR em 26 duelos cruzados)"
+        ],
+        [
+          1037,
+          913,
+          0.938,
+          0.369,
+          16,
+          " (94% WR em 16 duelos cruzados)"
+        ],
+        [
+          48,
+          226,
+          0.933,
+          0.335,
+          15,
+          " (93% WR em 15 duelos cruzados)"
+        ],
+        [
+          226,
+          76,
+          0.9,
+          0.332,
+          10,
+          " (90% WR em 10 duelos cruzados)"
+        ],
+        [
+          1035,
+          278,
+          0.9,
+          0.332,
+          10,
+          " (90% WR em 10 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        226,
+        0.195,
+        0.0914,
+        0.1036,
+        0.815,
+        0.432,
+        54
+      ],
+      [
+        1035,
+        0.1545,
+        0.0436,
+        0.1109,
+        0.778,
+        0.5,
+        54
+      ],
+      [
+        1033,
+        0.103,
+        -0.0327,
+        0.1356,
+        0.732,
+        0.61,
+        41
+      ],
+      [
+        816,
+        0.0863,
+        0.0107,
+        0.0756,
+        0.697,
+        0.253,
+        142
+      ],
+      [
+        1037,
+        0.0839,
+        -0.0658,
+        0.1497,
+        0.714,
+        0.643,
+        35
+      ],
+      [
+        913,
+        0.0766,
+        0.0281,
+        0.0485,
+        0.68,
+        0.099,
+        356
+      ],
+      [
+        105,
+        0.0551,
+        0.0026,
+        0.0526,
+        0.662,
+        0.179,
+        311
+      ],
+      [
+        1068,
+        0.0422,
+        -0.0912,
+        0.1334,
+        0.667,
+        0.525,
+        48
+      ],
+      [
+        1074,
+        0.0247,
+        -0.1027,
+        0.1274,
+        0.648,
+        0.505,
+        54
+      ],
+      [
+        221,
+        0.0206,
+        -0.062,
+        0.0827,
+        0.643,
+        0.49,
+        129
+      ],
+      [
+        278,
+        0.0128,
+        -0.0514,
+        0.0642,
+        0.631,
+        0.405,
+        217
+      ],
+      [
+        272,
+        0.0114,
+        -0.0385,
+        0.05,
+        0.614,
+        0.081,
+        365
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAEBAQMDAwAAAAMDAwMDAwMDAQEBAwMDBAAAAAAABAQAAAMDAQEBAwAEAAAABAQDAwQCAAAABAQEBAQBAQEAAAAAAAACAgIAAAAEBAICAQEBAAQEBAAAAAAABAEBBAQDAQMDBFWwsLARERG+vr7CwpSUlCoqKhAQEJGRkVTd3TAwMFVVk5NqahYWFmqTUjY2NlNTLCwfbSYmJmJiYn19XFxcaWlp+Pj4iIiIZGRkSVRtbUJCQjRUHx9FRUU0NFMbG1JSShtKLGQ=",
+        0,
+        0,
+        76,
+        24,
+        2.7,
+        0.029,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAEBAQMDAwAAAAMDAwMDAwMDAQEBAwMDBAAAAAAABAQAAAMDAQEBAwAEAAAABAQDAwEBAAAABAAABAQBAQEAAAAAAAACAgIAAAADBAICAQEBAAQEBAAAAAAABAEBBAQDAQMDBFWwsLARERG+vr7CwpSUlCoqKhAQEJGRkVTd3TAwMFVVk5NqahYWFmqTUjY2NlNTLCxFRSYmJmJMTH99XFxcaWlp+Pj4iIiIZGRkr1RtbUJCQjRUHx9FRUU0NFMbG1JSShtKLGQ=",
+        0,
+        6,
+        70,
+        24,
+        2.73,
+        0.363,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "BAEBAQMDAwAAAAMDAwMDAwMDAQEBAwMDBAAAAAAABAQAAAEBAQEBAAAEAAAAAAQDAwEBAAAABAAABAEBAQEAAAAAAAACAgIAAAADBAICAQEBAAACAgAAAAQEBAEBBAIDAQMDAVWwsLARERG+vr7CwpSUlCoqKhAQEJGRkVTd3TAwMFVfk5N9fRYWFpmZCzY2NjRULCxFRSYmJmJMTH9eXFxcaWlp+Pj4iIiIZGRkr1RtbUJCQjQ0y8tFRUVSUlMbG1IMShtKLEo=",
+        3,
+        14,
+        60,
+        23,
+        2.87,
+        0.67,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "BAEBAQMDAwAAAAMDAwMDAwMDAQEBAwMDBAAAAAAABAQAAAEBAQEBAAAEAAAAAwMDAwEBAAAABAAABAEBAQEAAAAAAAACAgIAAAADBAICAQEBAgICAgAAAAAAAgEBBAIDAQMDASywsLARERG+vr7CwpSUlCoqKhAQEJGRkVTd3TAwMFVfk5N9fRYWFpmZCzY2NjAwLCxFRSYmJglMTH9eXFxcaWlp+Pj4iIiIZGRkr1RtbUJCQs3Ny8tFRUUoKAobGzIMShtKLEo=",
+        6,
+        21,
+        50,
+        23,
+        3.09,
+        0.712,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "BAEBAQMDAwAAAAMDAwMDAwMDAQEBAwMDBAAAAAAABAQAAAEBAQEBAAAEAAAAAwMAAQEBAAAABAAABAEBAQEAAAAAAAACAgIAAAADBAICAQEBAgICAgAAAAAAAgEBBAIDAQMBASywsLARERG+vr7CwpSUlCoqKhAQEJGRkVTd3TAwMA1fk5N9fRYWFpmZCzY2NjAw4phFRSYmJglMTH9eXFxcaWlp+Pj4iIiIZGRkr1RtbUJCQs3Ny8tFRUUoKAobGzIMShtKl0o=",
+        10,
+        21,
+        46,
+        23,
+        3.22,
+        0.75,
+        0.025
+      ]
+    ]
   },
   "tri_red_purple_green": {
     "archetypeId": "tri_red_purple_green",
     "tierFormat": "tricolor",
-    "domains": ["red","purple","green"],
+    "domains": [
+      "red",
+      "purple",
+      "green"
+    ],
     "conclaveId": "cataclysm_triads",
-    "classicDeckIds": ["deck_tri_blood_moon"],
+    "classicDeckIds": [
+      "deck_tri_blood_moon"
+    ],
     "name": "Corte da Lua Sangrenta",
     "subtitle": "Tríade 🔥+💀+🌿 • Frenesi Predatório, Cripta & Atropelar",
     "strategySummary": "Alimenta enxames ferozes com Ímpeto, Toque Letal, Dreno de Vida e reanimação da Cripta para esmagar linhas defensivas por pressão incessante.",
     "tacticalIdentity": "aggro",
     "coverCardId": "purple_138_soberano_carnica",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6092,
+    "generationsEvolved": 25,
+    "matchesSimulated": 6896,
     "seedWinRate": 0.694,
-    "championWinRate": 0.693,
+    "championWinRate": 0.689,
     "vsMonocolorWinRate": 0.844,
     "vsBicolorWinRate": 0.583,
-    "championDeckJaccardStability": 0.961,
+    "championDeckJaccardStability": 0.869,
     "medianCardCi95HalfWidth": 0.0463,
-    "domainCardBreakdown": {"purple":43,"green":23,"neutral":12,"red":22},
-    "crossDomainCombos": [[554,644,1,0.337,11," (100% WR em 11 duelos cruzados)"],[644,34,1,0.337,10," (100% WR em 10 duelos cruzados)"],[554,210,1,0.337,11," (100% WR em 11 duelos cruzados)"],[910,644,1,0.337,12," (100% WR em 12 duelos cruzados)"],[838,205,1,0.337,8," (100% WR em 8 duelos cruzados)"],[336,210,1,0.337,10," (100% WR em 10 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_red_purple_green","deckName":"Corte da Lua Sangrenta","archetypeTag":"aggro","generationsTrained":13,"matchesSimulated":6092,"baselineWinRate":0.694,"trainedWinRate":0.625,"weights":{"aggroFaceBias":1.26,"tradeValueBias":1.14,"guardianPriority":1,"flyingEvasionBias":1,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":1,"relicPriority":1,"ascensionEagerness":1,"bloodPactThresholdHp":18,"domainExpansionEagerness":1,"sovPowerTempoBias":1.22,"synergyHoldBonus":20,"mulliganCurveTarget":2.7},"mk":[591,913,922,910,11],"cp":[35,90,99,644,236,838,862,734,736,460],"ca":[11,34,101,114,346,487,545,830,853,910,913,922],"hb":[[2,8.7],[11,13.6],[34,9.4],[93,8.2],[101,14.9],[114,16.1],[236,6.3],[346,16.5],[487,14.6],[545,21.5],[554,7.7],[830,13.9],[839,10.7],[853,14.4],[910,16.7],[913,21.5],[922,14],[1033,19.3]],"sp":[[853,1033],[830,1033],[545,11],[910,1033],[554,545],[487,736],[913,545],[545,34],[853,913],[922,346]],"dc":[[554,644,1,0.337,11," (100% WR em 11 duelos cruzados)"],[644,34,1,0.337,10," (100% WR em 10 duelos cruzados)"],[554,210,1,0.337,11," (100% WR em 11 duelos cruzados)"],[910,644,1,0.337,12," (100% WR em 12 duelos cruzados)"],[838,205,1,0.337,8," (100% WR em 8 duelos cruzados)"],[336,210,1,0.337,10," (100% WR em 10 duelos cruzados)"]]},
-    "topShapleyCards": [[1034,0.262,0.1879,0.0741,1,0.904,7],[1033,0.2117,0.0998,0.1119,0.941,0.734,17],[210,0.1577,0.0464,0.1114,0.879,0.566,33],[644,0.1541,0.0356,0.1185,0.889,0.839,27],[545,0.1356,0.0338,0.1018,0.851,0.453,47],[799,0.1167,-0.1425,0.2592,0.857,0.953,7],[101,0.0983,0.0267,0.0716,0.8,0.178,120],[1028,0.095,-0.2032,0.2982,0.833,0.912,6],[862,0.0939,-0.117,0.2109,0.833,0.933,12],[866,0.0866,-0.1413,0.2279,0.818,0.776,11],[853,0.0751,0.0226,0.0525,0.782,0.272,238],[336,0.0697,0.016,0.0537,0.776,0.268,232]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AwMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgEAAgEBAAAAAQEBAAAAAAADAwMBAQAAAgIDAwMDAAAAAgABAQAAAAABAQEBAgIBAgICAgAAAwMDAAADAAICAgICAgAAAEJVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKir3A7X3983NzczMzCIiIgMD9/f3ubnwVoCAQkJBQW9vfJJvZ2d6enx83Nxn3JKSuYDd3d1RUZqamlFqQfDe3t4bGxtl8GU=",0,0,71,29,2.55,0.049,0.025],[2,"Tier II • Guarnição Regular","AwMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgEAAAEBAAAAAQEBAAAAAAADAwMBAQICAgIDAwMDAAAAAgABAQAAAAABAQEBAgIBAgICAgAAAwMDAgIDAAICAgICAgAAAEJVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKir3IyP3983NzczMzCIiIgMD9/f3ubng4ICAQkJBQW9vfJJvZ2d6enx83Nxn3JKSuYDd3d1RUZqamo2NQfDe3t4bGxtl8GU=",0,6,65,29,2.61,0.341,0.025],[3,"Tier III • Bastião Veterano","AQMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgEAAAABAAAAAQEBAAAAAQADAwMDAQICAgIDAwIDAAAAAwEAAQMDAAABAQEBAQEBAQICAgAAAwMDAgICAgICAgICAgAAAFpVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKir3IyPS983NzczMzCIiIvcD9/f3Qrng4ICAQkKAQW9vb2IKfGcBAXx83NxnZ+fnubnd3d1RUZqamo2NhITe3t4bGxtlWmU=",3,14,56,27,2.8,0.651,0.025],[4,"Tier IV • Elite do Alto Trono","AQMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgQAAAAEAAAAAQEBAAAAAQEDAgMDAwICAwMDAwAAAAAAAwEAAQMDAAAAAAEBAQEAAAICAgAAAwMDAgICAgICAgICAgAAAFpVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKioKIyPSBM3NzczMzCIiIvf39yH3QkLg4EZG90JdXW9vb2IKfGcBAXx8cnJnZ+fnTEzd3d1RUZqamo2NhITe3t4bGxtlWmU=",6,22,45,27,3.09,0.703,0.025],[5,"Tier V • Campeão Soberano Ápice","AQMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgQAAAAEAAAAAQEBAAAAAwMEAgIDAwICAwMDAwAABAMDAwEAAAMDAwMAAAEBAQEAAAICAgAAAwMDAgICAgICAgICAgAAAFpVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKioKIyPSBM3NzczMzCIiIh8fCSHlR0fg4EZGRUVdXQxeXmIKc3MBAV9fcnLj4+fnTEzd3d1jY5qamo2NhITe3t4bGxtlWmU=",9,38,26,27,3.71,0.739,0.025]]
+    "domainCardBreakdown": {
+      "purple": 43,
+      "green": 23,
+      "neutral": 12,
+      "red": 22
+    },
+    "crossDomainCombos": [
+      [
+        114,
+        838,
+        1,
+        0.341,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        115,
+        76,
+        1,
+        0.341,
+        10,
+        " (100% WR em 10 duelos cruzados)"
+      ],
+      [
+        115,
+        830,
+        1,
+        0.341,
+        20,
+        " (100% WR em 20 duelos cruzados)"
+      ],
+      [
+        866,
+        910,
+        1,
+        0.341,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        922,
+        838,
+        1,
+        0.341,
+        9,
+        " (100% WR em 9 duelos cruzados)"
+      ],
+      [
+        866,
+        913,
+        1,
+        0.341,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_red_purple_green",
+      "deckName": "Corte da Lua Sangrenta",
+      "archetypeTag": "aggro",
+      "generationsTrained": 19,
+      "matchesSimulated": 6896,
+      "baselineWinRate": 0.694,
+      "trainedWinRate": 0.689,
+      "weights": {
+        "aggroFaceBias": 1.26,
+        "tradeValueBias": 1.14,
+        "guardianPriority": 1,
+        "flyingEvasionBias": 1,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1,
+        "relicPriority": 1,
+        "ascensionEagerness": 1,
+        "bloodPactThresholdHp": 18,
+        "domainExpansionEagerness": 1,
+        "sovPowerTempoBias": 1.22,
+        "synergyHoldBonus": 20,
+        "mulliganCurveTarget": 2.7
+      },
+      "mk": [
+        591,
+        913,
+        922,
+        910,
+        11
+      ],
+      "cp": [
+        35,
+        90,
+        99,
+        644,
+        236,
+        838,
+        862,
+        734,
+        736,
+        460
+      ],
+      "ca": [
+        11,
+        34,
+        101,
+        114,
+        346,
+        487,
+        545,
+        830,
+        853,
+        910,
+        913,
+        922
+      ],
+      "hb": [
+        [
+          2,
+          8.7
+        ],
+        [
+          11,
+          13.6
+        ],
+        [
+          34,
+          9.4
+        ],
+        [
+          93,
+          8.2
+        ],
+        [
+          101,
+          14.9
+        ],
+        [
+          114,
+          16.1
+        ],
+        [
+          115,
+          14.2
+        ],
+        [
+          236,
+          6.3
+        ],
+        [
+          346,
+          16.5
+        ],
+        [
+          487,
+          14.6
+        ],
+        [
+          545,
+          21.5
+        ],
+        [
+          554,
+          7.7
+        ],
+        [
+          653,
+          15.4
+        ],
+        [
+          830,
+          13.9
+        ],
+        [
+          838,
+          12.4
+        ],
+        [
+          839,
+          15.2
+        ],
+        [
+          853,
+          14.4
+        ],
+        [
+          866,
+          16.5
+        ],
+        [
+          910,
+          16.7
+        ],
+        [
+          913,
+          21.5
+        ],
+        [
+          922,
+          14
+        ],
+        [
+          1033,
+          19.3
+        ],
+        [
+          1034,
+          16.5
+        ],
+        [
+          1061,
+          11
+        ],
+        [
+          1112,
+          11
+        ],
+        [
+          1115,
+          20
+        ],
+        [
+          1116,
+          20
+        ],
+        [
+          1117,
+          20
+        ]
+      ],
+      "sp": [
+        [
+          853,
+          1033
+        ],
+        [
+          830,
+          1033
+        ],
+        [
+          545,
+          11
+        ],
+        [
+          910,
+          1033
+        ],
+        [
+          554,
+          545
+        ],
+        [
+          487,
+          736
+        ],
+        [
+          913,
+          545
+        ],
+        [
+          545,
+          34
+        ],
+        [
+          853,
+          913
+        ],
+        [
+          922,
+          346
+        ]
+      ],
+      "dc": [
+        [
+          114,
+          838,
+          1,
+          0.341,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          115,
+          76,
+          1,
+          0.341,
+          10,
+          " (100% WR em 10 duelos cruzados)"
+        ],
+        [
+          115,
+          830,
+          1,
+          0.341,
+          20,
+          " (100% WR em 20 duelos cruzados)"
+        ],
+        [
+          866,
+          910,
+          1,
+          0.341,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          922,
+          838,
+          1,
+          0.341,
+          9,
+          " (100% WR em 9 duelos cruzados)"
+        ],
+        [
+          866,
+          913,
+          1,
+          0.341,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        866,
+        0.1446,
+        -0.0174,
+        0.1621,
+        0.875,
+        0.826,
+        16
+      ],
+      [
+        1034,
+        0.1445,
+        -0.0175,
+        0.1621,
+        0.875,
+        0.828,
+        16
+      ],
+      [
+        653,
+        0.1197,
+        -0.1395,
+        0.2592,
+        0.857,
+        0.967,
+        7
+      ],
+      [
+        839,
+        0.1153,
+        -0.0006,
+        0.1159,
+        0.842,
+        0.755,
+        38
+      ],
+      [
+        545,
+        0.1005,
+        -0.0158,
+        0.1163,
+        0.814,
+        0.488,
+        43
+      ],
+      [
+        115,
+        0.0927,
+        -0.0109,
+        0.1036,
+        0.815,
+        0.66,
+        54
+      ],
+      [
+        101,
+        0.0764,
+        0.0144,
+        0.062,
+        0.776,
+        0.209,
+        174
+      ],
+      [
+        487,
+        0.0563,
+        -0.011,
+        0.0672,
+        0.765,
+        0.388,
+        153
+      ],
+      [
+        838,
+        0.0529,
+        -0.0903,
+        0.1432,
+        0.781,
+        0.785,
+        32
+      ],
+      [
+        922,
+        0.0526,
+        -0.0023,
+        0.0549,
+        0.754,
+        0.251,
+        236
+      ],
+      [
+        910,
+        0.0494,
+        -0.0008,
+        0.0502,
+        0.741,
+        0.042,
+        293
+      ],
+      [
+        913,
+        0.0482,
+        -0.0005,
+        0.0487,
+        0.738,
+        0.016,
+        313
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgQEBAQEAAAAAQEBBAQABAIEBAMEBAIDAwMDAwQDAAAAAgAAAQECAQABAgEBAgIBAQICAgAAAwMDAAABAgICAgICAgACAGNVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKioliIglWM3NzczMzCVYIli1Y2P3YWGAQUJC9/dhQm98fPNvfGdn82dv3JLc3JKSubnd3d1qapqammr4uYDe3t4bGxtlgGU=",
+        0,
+        0,
+        73,
+        27,
+        2.55,
+        0.049,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgQAAAQEAAAAAQEBBAQABAIEBAMEBAICAwMDAwQDAAAAAgAAAQECAQABAgEBAgIBAQICAgAAAwMDAgIBAgICAgICAgACAGNVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKiolIyMlWM3NzczMzCVYIli1Y2P3YWHg4EJC9/dhQm98fPNvfGdn82dv3JLc3JKSubnd3d1qapqamo2NuYDe3t4bGxtlgGU=",
+        0,
+        6,
+        67,
+        27,
+        2.61,
+        0.341,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "BAMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgQAAAQEAAAAAQEBBAQABAIEBAIDAwICBAMEAwQEBAAAAwAAAAEDAQABAAEBAQEDAwICAgAAAwMDAgICAgICAgICAgAAAGNVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKiolIyMlWM3NzczMzCVYIli1XWPl9/fg4GFCY/dhYVtvfGJvfHxnAWdv3HJn3OfnQkLd3d1qapqamo2NhITe3t4bGxtlWmU=",
+        3,
+        14,
+        56,
+        27,
+        2.81,
+        0.651,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "BAMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgQAAAQEAAAAAQEBBAQAAwMEBAIDAwICAwMEAwQABAAAAwEAAAADAQAAAAEBAQEAAAICAgAAAwMDAgICAgICAgICAgAAAGNVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKioKIyMlXM3NzczMzCVYIh8fXWPl9/fg4EZGY/dhXVtvb2IKfHx8AWdvcnJnZ+fnTEzd3d1qapqamo2NhITe3t4bGxtlWmU=",
+        6,
+        22,
+        45,
+        27,
+        3.09,
+        0.703,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "AQMDAwMDAwMDAwAAAAICAgMDAwAAAAEBAQAAAAICAgQAAAAEAAAAAQEBBAQAAwMEAgIDAwICAwMDAwAABAMDAwEAAAIDAgMAAAEBAQEAAAICAgAAAwMDAgICAgICAgICAgAAAFpVVVWRkZGOjo4LCwtPT08+Pj7s7OxQUFACAgIqKioKIyPSXM3NzczMzCVYIh8fXSHlR0fg4EZGRUVdXVteXmIKc3OZAZlfcnLj4+fnTEzd3d1jY5qamo2NhITe3t4bGxtlWmU=",
+        9,
+        38,
+        26,
+        27,
+        3.68,
+        0.739,
+        0.025
+      ]
+    ]
   },
   "tri_blue_green_gold": {
     "archetypeId": "tri_blue_green_gold",
     "tierFormat": "tricolor",
-    "domains": ["gold","green","blue"],
+    "domains": [
+      "gold",
+      "green",
+      "blue"
+    ],
     "conclaveId": "imperial_triads",
-    "classicDeckIds": ["deck_tri_celestial_scales","deck_tri_eternal_horizon"],
+    "classicDeckIds": [
+      "deck_tri_celestial_scales",
+      "deck_tri_eternal_horizon"
+    ],
     "name": "Escamas do Horizonte Eterno",
     "subtitle": "Tríade ☀️+🌿+❄️ • Falange Radiante, Rampa & Voo Astral",
     "strategySummary": "Une rampa silvestre e compra arcana aos Serafins e Dragões Imperiais de Solária, dominando chão e ar com Escudo Divino e Regeneração.",
     "tacticalIdentity": "midrange",
     "coverCardId": "gold_100_dragao_imperial_ouro",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6328,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7132,
     "seedWinRate": 0.486,
-    "championWinRate": 0.56,
+    "championWinRate": 0.52,
     "vsMonocolorWinRate": 0.547,
     "vsBicolorWinRate": 0.467,
-    "championDeckJaccardStability": 0.923,
+    "championDeckJaccardStability": 0.905,
     "medianCardCi95HalfWidth": 0.0882,
-    "domainCardBreakdown": {"gold":28,"neutral":12,"green":24,"blue":36},
-    "crossDomainCombos": [[1035,591,1,0.47,8," (100% WR em 8 duelos cruzados)"],[1035,278,1,0.47,10," (100% WR em 10 duelos cruzados)"],[581,114,1,0.47,10," (100% WR em 10 duelos cruzados)"],[421,853,1,0.47,12," (100% WR em 12 duelos cruzados)"],[226,487,1,0.47,8," (100% WR em 8 duelos cruzados)"],[784,983,0.933,0.404,15," (93% WR em 15 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_blue_green_gold","deckName":"Escamas do Horizonte Eterno","archetypeTag":"midrange","generationsTrained":13,"matchesSimulated":6328,"baselineWinRate":0.486,"trainedWinRate":0.417,"weights":{"aggroFaceBias":1.08,"tradeValueBias":1.22,"guardianPriority":1.33,"flyingEvasionBias":1.27,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":0.99,"relicPriority":1,"ascensionEagerness":1.21,"bloodPactThresholdHp":24,"domainExpansionEagerness":0.96,"sovPowerTempoBias":0.92,"synergyHoldBonus":20,"mulliganCurveTarget":3.1},"mk":[278,272,591,909,126],"cp":[1011,767,421,862,578,190,717,115,909,780],"ca":[58,115,226,272,278,487,581,682,781,784,816,862],"hb":[[54,6],[58,18.3],[114,8.2],[115,13.4],[126,8.6],[226,11.6],[270,18.5],[272,18.2],[278,17.3],[487,17.9],[581,24],[682,12.3],[781,16.6],[784,13.5],[816,24],[853,8.6],[862,22.3],[863,13.3],[864,17.4],[983,24],[1035,24],[1037,23.1]],"sp":[[581,119],[816,1035],[1035,784],[1035,54],[816,278],[278,983],[1035,126],[581,853],[272,983],[1035,272]],"dc":[[1035,591,1,0.47,8," (100% WR em 8 duelos cruzados)"],[1035,278,1,0.47,10," (100% WR em 10 duelos cruzados)"],[581,114,1,0.47,10," (100% WR em 10 duelos cruzados)"],[421,853,1,0.47,12," (100% WR em 12 duelos cruzados)"],[226,487,1,0.47,8," (100% WR em 8 duelos cruzados)"],[784,983,0.933,0.404,15," (93% WR em 15 duelos cruzados)"]]},
-    "topShapleyCards": [[1035,0.3058,0.1984,0.1074,0.9,0.691,30],[581,0.1932,0.0691,0.1241,0.786,0.656,42],[226,0.154,0.0236,0.1304,0.744,0.609,43],[862,0.1474,-0.013,0.1604,0.75,0.858,28],[983,0.1346,0.0088,0.1257,0.729,0.698,48],[58,0.1333,0.0464,0.0869,0.718,0.51,103],[816,0.1076,0.0189,0.0887,0.692,0.5,104],[784,0.1024,0.0406,0.0618,0.671,0.181,222],[780,0.0885,-0.0889,0.1774,0.692,0.881,26],[864,0.0645,-0.174,0.2386,0.667,0.848,15],[863,0.064,-0.1047,0.1687,0.667,0.859,30],[278,0.0419,-0.0145,0.0564,0.61,0.163,287]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AAMDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgABAQAAAAABAAEBAQEBAQEAAAABAQEBAQEAAAACAgAAAAEBAQICAAAAAQIBAQEDAwABAQECAgIAAQEBAAAAAAABAQEBAAEAAQABAKGYjY1VVVV3d3ewsLAREREQEBC+vr5PT0/fPj6hkpKhp5Onp94FBQUJioqKA2kDA97eMt/fbW0mJiZCQkJubjY2NkNuk5OTmJi7FhYWQUFtNBsbGysrMjKSQ2lDaTOlMwkzCSs=",0,0,84,16,3.17,0.029,0.025],[2,"Tier II • Guarnição Regular","AAMDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgABAQAAAAABAAEBAQEBAQEAAAABAQEBAQEAAAABAQAAAAEBAQICAAAAAQIBAQEDAwABAQECAgICAQEBAQEAAAABAQEBAAEAAQABAKGYjY1VVVV3d3ewsLAREREQEBC+vr5PT0/fPj6hkpKhp5Onp94FBQUJioqKA2kDA97eMt/fRUUmJiZCQkJubjY2NkNuk5OTmJi7FhYWQUHLyxsbG0pKMjKSQ2lDaTOlMwkzCSs=",0,6,78,16,3.23,0.363,0.025],[3,"Tier III • Bastião Veterano","AgMDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgABAQAAAAAAAAEBAwEBAQEAAAABAQEBAQEEAAABAQAAAAEBAQECAAAAAQEBAQEDAwMBAQEBAgICAQEBAQEAAAAAAQABAAEAAQABAEXXjY1VVVV3d3ewsLAREREQEBC+vr5PT0/fPj6hkpKhoZOnp2IFBQUJioqKA2kDA+PjC9/iRUUmJiZCQkJDbjY2NkNDk5OTr6/XFhYWp0HLyxsbG0pK3zKSMmky5zOlMwkzCSs=",3,14,67,16,3.31,0.67,0.025],[4,"Tier IV • Elite do Alto Trono","AgMDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgABAQQAAwAAAAAAAwEBAQEAAAAAAAEAAQEEAAABAQAAAAEBAQICAAAAAQEBAQEDAwMBAQEAAAICAQEBAQEAAAMAAQABAAEAAQABAEXXjY1VVVV3d3ewsLAREREQEBC+vr5PT0/fPj4Nkg2SkpOhoWIFBQUJioqKcnIDfuPjC9/iRUUmJiZCQkLNzTY2NkNDk5OTr6/XFhYWmZnLyxsbG0pK3zIVMucy5zOlMwkzCSs=",6,22,56,16,3.37,0.712,0.025],[5,"Tier V • Campeão Soberano Ápice","AgMDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgIBAQQCAwMDAAMDAwMDAwIAAwMAAAAAAQEEBAABAQAAAAEBAQICAAAAAwMBAQEDAwMBAQEAAAICAQEBAQEAAAMDAQMBAAEAAgACAEXXjY1VVVV3d3ewsLAREREQEBC+vr5PT08NPj4Nqg0QEJMMDGJgXl6Yc19fcnJ+fuPjCwXiRUUmJiZCQkLNzTY2NjAwk5OTr6/XFhYWmZnLyxsbG0pKOjoV8+fz5zOlM/8zmOc=",10,42,32,16,3.83,0.75,0.025]]
+    "domainCardBreakdown": {
+      "gold": 28,
+      "neutral": 12,
+      "green": 24,
+      "blue": 36
+    },
+    "crossDomainCombos": [
+      [
+        126,
+        983,
+        1,
+        0.51,
+        14,
+        " (100% WR em 14 duelos cruzados)"
+      ],
+      [
+        784,
+        983,
+        1,
+        0.51,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        853,
+        983,
+        0.933,
+        0.443,
+        15,
+        " (93% WR em 15 duelos cruzados)"
+      ],
+      [
+        54,
+        983,
+        0.9,
+        0.41,
+        20,
+        " (90% WR em 20 duelos cruzados)"
+      ],
+      [
+        278,
+        983,
+        0.889,
+        0.399,
+        27,
+        " (89% WR em 27 duelos cruzados)"
+      ],
+      [
+        581,
+        278,
+        0.909,
+        0.389,
+        11,
+        " (91% WR em 11 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_blue_green_gold",
+      "deckName": "Escamas do Horizonte Eterno",
+      "archetypeTag": "midrange",
+      "generationsTrained": 19,
+      "matchesSimulated": 7132,
+      "baselineWinRate": 0.486,
+      "trainedWinRate": 0.52,
+      "weights": {
+        "aggroFaceBias": 1.08,
+        "tradeValueBias": 1.22,
+        "guardianPriority": 1.33,
+        "flyingEvasionBias": 1.27,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 0.99,
+        "relicPriority": 1,
+        "ascensionEagerness": 1.21,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 0.96,
+        "sovPowerTempoBias": 0.92,
+        "synergyHoldBonus": 20,
+        "mulliganCurveTarget": 3.1
+      },
+      "mk": [
+        278,
+        272,
+        591,
+        909,
+        126
+      ],
+      "cp": [
+        1011,
+        767,
+        421,
+        862,
+        578,
+        190,
+        717,
+        115,
+        909,
+        780
+      ],
+      "ca": [
+        58,
+        115,
+        226,
+        272,
+        278,
+        487,
+        581,
+        682,
+        781,
+        784,
+        816,
+        862
+      ],
+      "hb": [
+        [
+          54,
+          6
+        ],
+        [
+          58,
+          18.3
+        ],
+        [
+          114,
+          8.2
+        ],
+        [
+          115,
+          13.4
+        ],
+        [
+          126,
+          8.6
+        ],
+        [
+          226,
+          11.6
+        ],
+        [
+          270,
+          18.5
+        ],
+        [
+          272,
+          18.2
+        ],
+        [
+          278,
+          17.3
+        ],
+        [
+          487,
+          17.9
+        ],
+        [
+          581,
+          24
+        ],
+        [
+          682,
+          12.3
+        ],
+        [
+          780,
+          13.7
+        ],
+        [
+          781,
+          17.8
+        ],
+        [
+          784,
+          15.9
+        ],
+        [
+          816,
+          24
+        ],
+        [
+          853,
+          8.6
+        ],
+        [
+          862,
+          22.3
+        ],
+        [
+          863,
+          13.3
+        ],
+        [
+          864,
+          17.4
+        ],
+        [
+          866,
+          22
+        ],
+        [
+          983,
+          24
+        ],
+        [
+          1035,
+          24
+        ],
+        [
+          1037,
+          23.1
+        ],
+        [
+          1050,
+          15
+        ],
+        [
+          1059,
+          15
+        ],
+        [
+          1068,
+          20
+        ],
+        [
+          1074,
+          17
+        ],
+        [
+          1079,
+          20
+        ]
+      ],
+      "sp": [
+        [
+          581,
+          119
+        ],
+        [
+          816,
+          1035
+        ],
+        [
+          1035,
+          784
+        ],
+        [
+          1035,
+          54
+        ],
+        [
+          816,
+          278
+        ],
+        [
+          278,
+          983
+        ],
+        [
+          1035,
+          126
+        ],
+        [
+          581,
+          853
+        ],
+        [
+          272,
+          983
+        ],
+        [
+          1035,
+          272
+        ]
+      ],
+      "dc": [
+        [
+          126,
+          983,
+          1,
+          0.51,
+          14,
+          " (100% WR em 14 duelos cruzados)"
+        ],
+        [
+          784,
+          983,
+          1,
+          0.51,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          853,
+          983,
+          0.933,
+          0.443,
+          15,
+          " (93% WR em 15 duelos cruzados)"
+        ],
+        [
+          54,
+          983,
+          0.9,
+          0.41,
+          20,
+          " (90% WR em 20 duelos cruzados)"
+        ],
+        [
+          278,
+          983,
+          0.889,
+          0.399,
+          27,
+          " (89% WR em 27 duelos cruzados)"
+        ],
+        [
+          581,
+          278,
+          0.909,
+          0.389,
+          11,
+          " (91% WR em 11 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        983,
+        0.279,
+        0.1861,
+        0.0929,
+        0.836,
+        0.743,
+        61
+      ],
+      [
+        866,
+        0.2658,
+        -0.0324,
+        0.2982,
+        0.833,
+        0.953,
+        6
+      ],
+      [
+        862,
+        0.2238,
+        0.0088,
+        0.2149,
+        0.786,
+        0.841,
+        14
+      ],
+      [
+        581,
+        0.192,
+        0.0472,
+        0.1448,
+        0.743,
+        0.62,
+        35
+      ],
+      [
+        1035,
+        0.1823,
+        0.0028,
+        0.1795,
+        0.739,
+        0.739,
+        23
+      ],
+      [
+        781,
+        0.1729,
+        0.021,
+        0.152,
+        0.727,
+        0.689,
+        33
+      ],
+      [
+        487,
+        0.1614,
+        0.0605,
+        0.1009,
+        0.714,
+        0.659,
+        77
+      ],
+      [
+        1074,
+        0.1547,
+        0.0015,
+        0.1532,
+        0.706,
+        0.626,
+        34
+      ],
+      [
+        784,
+        0.1311,
+        0.0478,
+        0.0833,
+        0.661,
+        0.205,
+        124
+      ],
+      [
+        816,
+        0.1026,
+        0.0084,
+        0.0942,
+        0.646,
+        0.479,
+        99
+      ],
+      [
+        780,
+        0.0825,
+        -0.0859,
+        0.1684,
+        0.645,
+        0.855,
+        31
+      ],
+      [
+        278,
+        0.064,
+        0.004,
+        0.06,
+        0.595,
+        0.228,
+        257
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAQDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgQBAQQCAgQEAAQEBAQBAQEBBAQAAAQEAAEEBAQAAAAAAAEBAQQEAAAABAQBAQEEBAQBAQEEBAABAQEBAAAEBAIEBAQEAAEABAAEAFVRjY1VVVV3d3ewsLAREREQEBC+vr5PT09TPj5VQUGgVZNWVnNDCQUFBUNDiopNTYoJVFRUMjImJiZCQkJSUjY2NkBAk5OTUVFJFhYWVqAyQxsbGysrU1NBQHRSdDOlM3QzTSs=",
+        0,
+        0,
+        84,
+        16,
+        3.17,
+        0.029,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAQDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgQBAQQCAgQEAAQEBAQEAQEBBAQAAAQEAAEEBAQBAQAAAAEBAQQEAAAABAQBAQEEBAQBAQEEBAICAQEBAAAEBAIEBAQEAAEABAAEAFVRjY1VVVV3d3ewsLAREREQEBC+vr5PT09TPj5VQUEaVZNWVnNDIwUFBUNDiopNTYoJVFRURUUmJiZCQkJSUjY2NkBAk5OTUVFJFhYWVqDLyxsbGysrU1NBQHRSdDOlM3QzTSs=",
+        0,
+        6,
+        78,
+        16,
+        3.17,
+        0.363,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "AgMDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgQBAQQCAgQEAAQEAwQEAQEBBAQAAAQEAAEEBAQBAQAAAAEBAQQEAAAABAQBAQEDAwMBAQEEBAICAQEBAQEEBAIEBAQEAAEABAAEAEXXjY1VVVV3d3ewsLAREREQEBC+vr5PT08yPj4sQUEaVZNVVWJDIwUFBUNDiopNTYrjVFRURUUmJiZCQkJSUjY2NlNAk5OTr6/XFhYWVlbLyxsbG0pKU1NBQHRAdDOlM3QzTSs=",
+        3,
+        14,
+        67,
+        16,
+        3.26,
+        0.67,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "AgMDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgQBAQQCAgQEAAQEAwQEBAEBBAQEAAQEAQEEBAABAQAAAAEBAQICAAAABAQBAQEDAwMBAQEAAAICAQEBAQEEBAIEAQQBAAEABAABAEXXjY1VVVV3d3ewsLAREREQEBC+vr5PT08yPj4sQUEaVZNVVWI3I0MFBUNDTXJNTePjC1TiRUUmJiZCQkLNzTY2NlNTk5OTr6/XFhYWmZnLyxsbG0pKVFRBU+dA5zOlM3QzBSs=",
+        6,
+        22,
+        56,
+        16,
+        3.37,
+        0.712,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "AgMDAwMDAwAAAAEBAQMDAwEBAQAAAAICAgQBAQQCAwQDAAMDAwQEAwIAAwMAAAAAAQEEBAABAQAAAAEBAQICAAAAAwMBAQEDAwMBAQEAAAICAQEBAQEAAAMDAQMBAAEAAgACAEXXjY1VVVV3d3ewsLAREREQEBC+vr5PT08yPj4sqg0aEJMMDGI3I16Yc19fcnJ+fuPjCwXiRUUmJiZCQkLNzTY2NjAwk5OTr6/XFhYWmZnLyxsbG0pKOjoV8+fz5zOlM/8zmOc=",
+        10,
+        42,
+        32,
+        16,
+        3.75,
+        0.75,
+        0.025
+      ]
+    ]
   },
   "tri_blue_purple_green": {
     "archetypeId": "tri_blue_purple_green",
     "tierFormat": "tricolor",
-    "domains": ["blue","purple","green"],
+    "domains": [
+      "blue",
+      "purple",
+      "green"
+    ],
     "conclaveId": "imperial_triads",
-    "classicDeckIds": ["deck_tri_abyssal_chimera"],
+    "classicDeckIds": [
+      "deck_tri_abyssal_chimera"
+    ],
     "name": "Quimera da Fossa Abissal",
     "subtitle": "Tríade ❄️+💀+🌿 • Evolução Necrótica, Estase & Cripta Viva",
     "strategySummary": "Recicla feras primordiais e Leviatãs da Cripta enquanto congela a frente inimiga e acumula vantagem de cartas e Essência.",
     "tacticalIdentity": "attrition",
     "coverCardId": "purple_83_arquidemonio_tempo",
-    "generationsEvolved": 19,
-    "matchesSimulated": 5720,
+    "generationsEvolved": 25,
+    "matchesSimulated": 6524,
     "seedWinRate": 0.569,
-    "championWinRate": 0.558,
+    "championWinRate": 0.544,
     "vsMonocolorWinRate": 0.703,
     "vsBicolorWinRate": 0.533,
-    "championDeckJaccardStability": 0.961,
+    "championDeckJaccardStability": 0.905,
     "medianCardCi95HalfWidth": 0.0687,
-    "domainCardBreakdown": {"purple":22,"neutral":12,"blue":40,"green":26},
-    "crossDomainCombos": [[52,446,1,0.472,8," (100% WR em 8 duelos cruzados)"],[126,547,1,0.472,8," (100% WR em 8 duelos cruzados)"],[922,839,1,0.472,18," (100% WR em 18 duelos cruzados)"],[54,1033,1,0.472,9," (100% WR em 9 duelos cruzados)"],[487,839,1,0.472,10," (100% WR em 10 duelos cruzados)"],[1035,69,1,0.442,9," (100% WR em 9 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_blue_purple_green","deckName":"Quimera da Fossa Abissal","archetypeTag":"attrition","generationsTrained":13,"matchesSimulated":5720,"baselineWinRate":0.569,"trainedWinRate":0.49,"weights":{"aggroFaceBias":1.01,"tradeValueBias":1.35,"guardianPriority":1.15,"flyingEvasionBias":1.02,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":1,"relicPriority":1.01,"ascensionEagerness":1.13,"bloodPactThresholdHp":24,"domainExpansionEagerness":1.05,"sovPowerTempoBias":1,"synergyHoldBonus":25,"mulliganCurveTarget":2.9},"mk":[591,84,126,922,101,810],"cp":[838,36,335,349,816,543,93,487,736,91],"ca":[54,84,101,116,266,349,446,487,736,816,839,922],"hb":[[54,14.3],[84,16.9],[101,23.9],[116,17.7],[266,11.6],[349,20.7],[446,10.9],[487,23.7],[736,11.5],[816,24],[839,19.5],[922,14.5],[1029,24],[1033,24],[1035,22.9]],"sp":[[816,101],[1029,109],[487,101],[101,349],[839,349],[816,1033],[69,1033],[816,93],[816,839],[816,487]],"dc":[[52,446,1,0.472,8," (100% WR em 8 duelos cruzados)"],[126,547,1,0.472,8," (100% WR em 8 duelos cruzados)"],[922,839,1,0.472,18," (100% WR em 18 duelos cruzados)"],[54,1033,1,0.472,9," (100% WR em 9 duelos cruzados)"],[487,839,1,0.472,10," (100% WR em 10 duelos cruzados)"],[1035,69,1,0.442,9," (100% WR em 9 duelos cruzados)"]]},
-    "topShapleyCards": [[1027,0.3944,0.3144,0.08,1,0.942,6],[1029,0.2053,0.0786,0.1267,0.795,0.621,39],[1035,0.187,0.0398,0.1472,0.774,0.575,31],[866,0.1749,-0.0172,0.1921,0.778,0.889,18],[487,0.1743,0.0977,0.0766,0.758,0.512,120],[1033,0.1739,0.012,0.162,0.769,0.737,26],[547,0.1621,-0.0201,0.1822,0.762,0.828,21],[446,0.1594,0.0179,0.1415,0.75,0.644,36],[545,0.1407,-0.0573,0.198,0.737,0.753,19],[736,0.1372,0.0581,0.079,0.724,0.559,123],[349,0.121,0.0333,0.0877,0.709,0.585,103],[839,0.1162,0.0131,0.103,0.707,0.641,75]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AAAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAIAAAACAgIAAgIAAAACAgIAAAAAAAAAAAAAAgIAAAIAAgEBAQAAAQEBAQEBAwMDAAAAAAEBAQACAgIAAAEBAAAAAAAAAAACAgEBAFm+vr5PT0/d3d2NjY1tbW0qKiorKytUVFRuNjY2EBAQNG5uM0Mrf39/WVlbW2VlZXFxcZGRe3uReyxqamqKigQEBAkJCZqamkVFRUNCVVVb39/fNDRCQiY1JiszJjNDLCxcVSs=",0,0,75,25,3.07,0.029,0.025],[2,"Tier II • Guarnição Regular","AAAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAIAAAACAgIAAgIAAAACAgIAAAAAAAAAAAAAAgIAAAIAAgEBAQEBAQEBAQEBAwMDAAAAAAEBAQACAgIAAAEBAAAAAAAAAAACAgECAFm+vr5PT0/d3d2NjY1tbW0qKiorKytUVFRuNjY2EBAQNG5uM0Mrf39/WVlbW2VlZXFxcZGRe3uReyxqamrn5wQEBAkJCZqamkVFRUNCXV1b39/gNDRCQiY1JiszJjNDLCxcIys=",0,6,69,25,3.07,0.363,0.025],[3,"Tier III • Bastião Veterano","AgAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAIAAAACAgIAAgIAAQAEAgICAAAAAAAAAAABAAIBAAIAAgEAAQEBAQEBAQEBAwMDAAAAAQEBAQAAAgIAAAEBAAAAAAAAAAACAgECACG+vr5PT0/d3d2NjY1tbW0qKiorKytUVFRuNjY2EBAQNG5uM08rCX9/f1lZWWVlZXFxCnuRanuRe5FqcWrn5wQEBAkJCZqamkVFRUpKXV1bW+DgNDRFRSY1JiszJjND//9cIys=",3,14,61,22,3.22,0.67,0.025],[4,"Tier IV • Elite do Alto Trono","AgAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAQAAAACAgAAAgIBAQEEAQICAgAAAAAAAAABAAABAAMAAwEAAQEBAQEBAQEBAwMDAAAAAQEBAQEBAgIAAAEBAAAAAgAAAAACAgECAiG+vr5PT0/d3d2NjY1tbW0qKiorKytUVFQLNjY2EBA/NG5uT0+gCb5/f39ZWWVlZXFxCnJyantie2JqcWrn5wQEBAkJCZqamkVFRUpKXV1eXuDgNDRFRSY1JhAzJjND//9cI24=",6,22,50,22,3.34,0.712,0.025],[5,"Tier V • Campeão Soberano Ápice","AgAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAQAAAAAAAAEAwMBAQEEAQQDAwAAAAAABAABAAAAAAMDAwADAwEBAQEBAQEBAwMDAAAAAQEBAQEBAgIAAAEBAAAAAAAAAAACAgECACG+vr5PT0/d3d2NjY1tbW0qKiorKytUVFQLNjY2RkY/BTAwT0+gCb4DR0ddXWVlZQx0CnJyfn5iXmJzX1/n5wQEBAkJCZqamkVFRUpKXV1eXuDgNDRFRSY1JuczJjND//9cI+c=",10,38,30,22,3.76,0.75,0.025]]
+    "domainCardBreakdown": {
+      "purple": 22,
+      "neutral": 12,
+      "blue": 40,
+      "green": 26
+    },
+    "crossDomainCombos": [
+      [
+        53,
+        487,
+        1,
+        0.486,
+        12,
+        " (100% WR em 12 duelos cruzados)"
+      ],
+      [
+        811,
+        866,
+        1,
+        0.486,
+        9,
+        " (100% WR em 9 duelos cruzados)"
+      ],
+      [
+        53,
+        349,
+        1,
+        0.486,
+        11,
+        " (100% WR em 11 duelos cruzados)"
+      ],
+      [
+        109,
+        866,
+        1,
+        0.456,
+        13,
+        " (100% WR em 13 duelos cruzados)"
+      ],
+      [
+        866,
+        265,
+        1,
+        0.456,
+        9,
+        " (100% WR em 9 duelos cruzados)"
+      ],
+      [
+        69,
+        1033,
+        0.909,
+        0.396,
+        11,
+        " (91% WR em 11 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_blue_purple_green",
+      "deckName": "Quimera da Fossa Abissal",
+      "archetypeTag": "attrition",
+      "generationsTrained": 19,
+      "matchesSimulated": 6524,
+      "baselineWinRate": 0.569,
+      "trainedWinRate": 0.544,
+      "weights": {
+        "aggroFaceBias": 1.01,
+        "tradeValueBias": 1.35,
+        "guardianPriority": 1.15,
+        "flyingEvasionBias": 1.02,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1,
+        "relicPriority": 1.01,
+        "ascensionEagerness": 1.13,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 1.05,
+        "sovPowerTempoBias": 1,
+        "synergyHoldBonus": 25,
+        "mulliganCurveTarget": 2.9
+      },
+      "mk": [
+        591,
+        84,
+        126,
+        922,
+        101,
+        810
+      ],
+      "cp": [
+        838,
+        36,
+        335,
+        349,
+        816,
+        543,
+        93,
+        487,
+        736,
+        91
+      ],
+      "ca": [
+        54,
+        84,
+        101,
+        116,
+        266,
+        349,
+        446,
+        487,
+        736,
+        816,
+        839,
+        922
+      ],
+      "hb": [
+        [
+          53,
+          17.1
+        ],
+        [
+          54,
+          14.3
+        ],
+        [
+          84,
+          16.9
+        ],
+        [
+          93,
+          14.7
+        ],
+        [
+          101,
+          23.9
+        ],
+        [
+          116,
+          17.7
+        ],
+        [
+          266,
+          11.6
+        ],
+        [
+          349,
+          20.7
+        ],
+        [
+          446,
+          10.9
+        ],
+        [
+          487,
+          23.7
+        ],
+        [
+          736,
+          11.5
+        ],
+        [
+          816,
+          24
+        ],
+        [
+          839,
+          19.5
+        ],
+        [
+          862,
+          24
+        ],
+        [
+          866,
+          24
+        ],
+        [
+          922,
+          14.5
+        ],
+        [
+          1029,
+          24
+        ],
+        [
+          1033,
+          24
+        ],
+        [
+          1035,
+          22.9
+        ],
+        [
+          1036,
+          16
+        ],
+        [
+          1053,
+          15
+        ],
+        [
+          1083,
+          20
+        ],
+        [
+          1117,
+          20
+        ],
+        [
+          1149,
+          11
+        ],
+        [
+          1151,
+          15
+        ]
+      ],
+      "sp": [
+        [
+          816,
+          101
+        ],
+        [
+          1029,
+          109
+        ],
+        [
+          487,
+          101
+        ],
+        [
+          101,
+          349
+        ],
+        [
+          839,
+          349
+        ],
+        [
+          816,
+          1033
+        ],
+        [
+          69,
+          1033
+        ],
+        [
+          816,
+          93
+        ],
+        [
+          816,
+          839
+        ],
+        [
+          816,
+          487
+        ]
+      ],
+      "dc": [
+        [
+          53,
+          487,
+          1,
+          0.486,
+          12,
+          " (100% WR em 12 duelos cruzados)"
+        ],
+        [
+          811,
+          866,
+          1,
+          0.486,
+          9,
+          " (100% WR em 9 duelos cruzados)"
+        ],
+        [
+          53,
+          349,
+          1,
+          0.486,
+          11,
+          " (100% WR em 11 duelos cruzados)"
+        ],
+        [
+          109,
+          866,
+          1,
+          0.456,
+          13,
+          " (100% WR em 13 duelos cruzados)"
+        ],
+        [
+          866,
+          265,
+          1,
+          0.456,
+          9,
+          " (100% WR em 9 duelos cruzados)"
+        ],
+        [
+          69,
+          1033,
+          0.909,
+          0.396,
+          11,
+          " (91% WR em 11 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        866,
+        0.3416,
+        0.2462,
+        0.0954,
+        0.929,
+        0.87,
+        28
+      ],
+      [
+        862,
+        0.3203,
+        0.1504,
+        0.1699,
+        0.909,
+        0.906,
+        11
+      ],
+      [
+        1029,
+        0.2519,
+        0.1028,
+        0.1491,
+        0.833,
+        0.758,
+        24
+      ],
+      [
+        1033,
+        0.1694,
+        0.0246,
+        0.1448,
+        0.743,
+        0.598,
+        35
+      ],
+      [
+        53,
+        0.1569,
+        0.0515,
+        0.1054,
+        0.725,
+        0.485,
+        69
+      ],
+      [
+        816,
+        0.1421,
+        0.067,
+        0.0751,
+        0.704,
+        0.372,
+        142
+      ],
+      [
+        1036,
+        0.1323,
+        -0.0609,
+        0.1932,
+        0.714,
+        0.769,
+        21
+      ],
+      [
+        349,
+        0.1071,
+        0.0143,
+        0.0928,
+        0.68,
+        0.596,
+        97
+      ],
+      [
+        487,
+        0.1064,
+        0.0298,
+        0.0766,
+        0.669,
+        0.38,
+        145
+      ],
+      [
+        93,
+        0.1049,
+        -0.0262,
+        0.1311,
+        0.688,
+        0.781,
+        48
+      ],
+      [
+        922,
+        0.0985,
+        0.0318,
+        0.0667,
+        0.663,
+        0.424,
+        193
+      ],
+      [
+        101,
+        0.0896,
+        0.0293,
+        0.0603,
+        0.65,
+        0.337,
+        240
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAIAAAAEBAQAAgIEBAIEBAQABAQEAAAAAAAAAAAEBAAEAgEBAQICAQEBAQEBAwMDAAAABAAEBAQEBAQAAAEBAAAAAgAAAAACAgQEAka+vr5PT0/d3d2NjY1tbW0qKiorKytUVFRuNjY2aGhoNG5uaWkQRmNGUWJjY2VlZXFxcXt7Tk57TpFqamosLAQEBAkJCZqamkVFRWkrfn59fWJiNDRCQiY1JhAzJjNDkZF9fhA=",
+        0,
+        0,
+        76,
+        24,
+        3.06,
+        0.029,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAIAAAAEBAQAAgIEBAIEBAQEBAQEAAAAAAAAAAAEBAAEAgEBAQEBAQEBAQEBAwMDAAAABAABAQQEBAQAAAEBAAAAAgAAAAACAgQEAka+vr5PT0/d3d2NjY1tbW0qKiorKytUVFRuNjY2aGhoNG5uaWkQRmNGfx1jY2VlZXFxcXt7Tk57TpFqamrn5wQEBAkJCZqamkVFRWkrXV19fWJiNDRCQiY1JhAzJjNDkZF9fhA=",
+        0,
+        6,
+        72,
+        22,
+        3.1,
+        0.363,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "BAAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAIAAAAEBAQAAgIEBAIEAQQEBAQEAAAAAAAAAAAEBAAEAgEBAQEBAQEBAQEBAwMDAAAABAEBAQQEAgIAAAEBAAAAAgAAAAACAgQCAju+vr5PT0/d3d2NjY1tbW0qKiorKytUVFRuNjY2aGhoNG5uaWkQRr5dfx1GRmVlZXFxcXt7Tk57TpFqamrn5wQEBAkJCZqamkVFRWlKXV19feDgNDRFRSY1JhAzJjND//99IxA=",
+        3,
+        14,
+        61,
+        22,
+        3.23,
+        0.67,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "BAAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAQAAAAEBAQAAgIBAQEEAQQEBAQEAAAAAAABBAABBAMEAwEAAQEBAQEBAQEBAwMDAAAAAQEBAQEBAgIAAAEBAAAAAgAAAAACAgQCAju+vr5PT0/d3d2NjY1tbW0qKiorKytUVFQLNjY2aGhoNG5uT0+gCb5dfx1GRmVlZXFxCk57ak5iTmJqcWrn5wQEBAkJCZqamkVFRUpKXV1eXuDgNDRFRSY1JhAzJjND//99IxA=",
+        6,
+        22,
+        50,
+        22,
+        3.32,
+        0.712,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "BAAAAAICAgAAAAMDAwAAAAMDAwMDAwAAAAQAAAAAAAAEAwMBAQEEAQQEBAAAAAAABAABAAAAAAMDAwADAwEBAQEBAQEBAwMDAAAAAQEBAQEBAgIAAAEBAAAAAAAAAAACAgQCADu+vr5PT0/d3d2NjY1tbW0qKiorKytUVFQLNjY2RkY/BTAwT0+gCb5dfx1dXWVlZQx0CnJyfn5iXmJzX1/n5wQEBAkJCZqamkVFRUpKXV1eXuDgNDRFRSY1JuczJjND//99I+c=",
+        10,
+        38,
+        30,
+        22,
+        3.67,
+        0.75,
+        0.025
+      ]
+    ]
   },
   "tri_red_purple_gold": {
     "archetypeId": "tri_red_purple_gold",
     "tierFormat": "tricolor",
-    "domains": ["gold","red","purple"],
+    "domains": [
+      "gold",
+      "red",
+      "purple"
+    ],
     "conclaveId": "cataclysm_triads",
-    "classicDeckIds": ["deck_tri_crimson_sun"],
+    "classicDeckIds": [
+      "deck_tri_crimson_sun"
+    ],
     "name": "Eclipse do Sol Carmesim",
     "subtitle": "Tríade ☀️+🔥+💀 • Serafins Sanguinários, Dreno & Artilharia",
     "strategySummary": "Marcha sob estandartes de Escudo Divino e Renascer enquanto drena vida e incinera bloqueadores com fogo vulcânico e vereditos sombrios.",
     "tacticalIdentity": "midrange",
     "coverCardId": "red_119_soberano_piroclasma",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6252,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7056,
     "seedWinRate": 0.514,
-    "championWinRate": 0.618,
+    "championWinRate": 0.581,
     "vsMonocolorWinRate": 0.719,
     "vsBicolorWinRate": 0.583,
-    "championDeckJaccardStability": 0.961,
+    "championDeckJaccardStability": 0.869,
     "medianCardCi95HalfWidth": 0.0539,
-    "domainCardBreakdown": {"gold":34,"neutral":12,"red":32,"purple":22},
-    "crossDomainCombos": [[272,346,1,0.412,8," (100% WR em 8 duelos cruzados)"],[278,839,1,0.412,8," (100% WR em 8 duelos cruzados)"],[576,935,1,0.412,9," (100% WR em 9 duelos cruzados)"],[576,503,1,0.412,10," (100% WR em 10 duelos cruzados)"],[1037,272,1,0.382,9," (100% WR em 9 duelos cruzados)"],[784,935,0.95,0.362,20," (95% WR em 20 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_red_purple_gold","deckName":"Eclipse do Sol Carmesim","archetypeTag":"midrange","generationsTrained":13,"matchesSimulated":6252,"baselineWinRate":0.514,"trainedWinRate":0.542,"weights":{"aggroFaceBias":1.24,"tradeValueBias":1.24,"guardianPriority":1.27,"flyingEvasionBias":1.28,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":1.11,"relicPriority":1,"ascensionEagerness":1,"bloodPactThresholdHp":24,"domainExpansionEagerness":1.05,"sovPowerTempoBias":1,"synergyHoldBonus":18,"mulliganCurveTarget":2.9},"mk":[278,913,317,272,201,784,421,11],"cp":[680,95,839,791,278,935,779,144,149,913],"ca":[3,11,83,144,201,205,272,278,346,421,460,576],"hb":[[3,17.6],[11,18.8],[83,11.4],[144,15.2],[201,14.7],[205,11],[272,16.8],[278,16.6],[346,19.8],[421,14.7],[460,17.3],[576,13.7],[580,10.9],[644,18.2],[735,8.9],[784,24],[791,10.9],[834,10.8],[839,24],[880,24],[892,7.4],[913,18.3],[1031,24],[1033,24]],"sp":[[913,1033],[278,1033],[784,201],[580,83],[644,11],[784,791],[346,460],[735,460],[1033,11],[791,460]],"dc":[[272,346,1,0.412,8," (100% WR em 8 duelos cruzados)"],[278,839,1,0.412,8," (100% WR em 8 duelos cruzados)"],[576,935,1,0.412,9," (100% WR em 9 duelos cruzados)"],[576,503,1,0.412,10," (100% WR em 10 duelos cruzados)"],[1037,272,1,0.382,9," (100% WR em 9 duelos cruzados)"],[784,935,0.95,0.362,20," (95% WR em 20 duelos cruzados)"]]},
-    "topShapleyCards": [[880,0.3363,0.2563,0.08,1,0.91,6],[839,0.2652,0.1303,0.1349,0.929,0.904,14],[610,0.2651,0.1202,0.1449,0.923,0.797,13],[739,0.2273,0.022,0.2053,0.889,0.868,9],[935,0.2005,0.1335,0.0669,0.842,0.47,114],[1037,0.1888,0.0248,0.164,0.842,0.703,19],[346,0.1548,0.0189,0.1359,0.794,0.424,34],[317,0.1525,-0.0755,0.2279,0.818,0.951,11],[1034,0.1362,-0.2145,0.3506,0.8,0.914,5],[503,0.1132,0.0043,0.1089,0.772,0.811,57],[460,0.0704,0.012,0.0584,0.697,0.179,238],[576,0.058,-0.0298,0.0877,0.709,0.652,103]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AAMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAAAAQAAAAMDAQECAgAAAAEBAQMDAwICAAAAAAACAgMDAwICAgEBAQIDAwMDAwAAAAEBAQICAgAAAQEBAwEAAwICAAAAAJKRkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1OSkhuTk5MEBBsbXV3Nzc3MzMwcHBy1tVlZWVtbHYJCQkLf399TU1MdmJhpaWkDAwMWFhZAQECtn/f395gXWwQdXdXV1Z8=",0,0,73,27,2.84,0.049,0.025],[2,"Tier II • Guarnição Regular","AAMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAAAAAAAAAMDAQECAgAAAAEBAQMDAwICAAAAAAACAgMDAwICAgEBAQIDAwMDAwAAAAEBAQICAgAAAQEBAwEAAwICAAAAAJKRkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1OSkq+Tk5MEBBsbXV3Nzc3MzMwcHBy1tVlZWVtbHYJCQkLf399TU1Mdp6dpaWkDAwMWFhZAQECtn/f3968XWwQdXdXVI68=",0,6,67,27,2.86,0.341,0.025],[3,"Tier III • Bastião Veterano","AgMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAAAAAAAAAMDAwMEAgAAAAEBAQMDAwICBAAAAAAAAAMDAwICAgABAQEDAwMDAwAAAAEBAQICAgADAQEBAwEAAAICAQEAAESRkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1OSkq+Tk5MEBBAQCl3Nzc3MzMwcHBxdtQlZWVtbTExCQkLf399bU1NTp6dpaWkDAwMWFhZAQECtbvf3968XWZLgXT09I68=",3,14,56,27,2.97,0.651,0.025],[4,"Tier IV • Elite do Alto Trono","AgMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAQDAAAAAAAAAwMEBAAAAAEBAQMDAwICBAAAAAMAAAMDAwICAgICAgIDAwMDAwAAAAEBAQICAgADAQEBAwEAAwICAQEAAESRkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1MNcK+Tk5OmphAQCgTNzc3MzMwcHBxdXQlZWVtHTExCQkLf39+EhOHhp6dpaWkDAwMWFhZAQECtbvf3968XWW/gXT09I68=",6,22,45,27,3.33,0.703,0.025],[5,"Tier V • Campeão Soberano Ápice","AgMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAQDAAAAAAAAAwMEBAAAAAEBAQMDAwICBAECAwMAAAMDAwICAgICAgIDAwMDAwAAAAEBAQICAgADAQEBAwECAwICAQEAAESRkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1MNcK+Tk5OmphAQCgTNzc3MzMwcHBy8vAlaIUdHTExCQkLf39+EhOHhp6dpaWkDAwMWFhZAQECtbvf3968X42/gYj09I68=",9,26,38,27,3.5,0.739,0.025]]
+    "domainCardBreakdown": {
+      "gold": 34,
+      "neutral": 12,
+      "red": 32,
+      "purple": 22
+    },
+    "crossDomainCombos": [
+      [
+        278,
+        346,
+        1,
+        0.449,
+        11,
+        " (100% WR em 11 duelos cruzados)"
+      ],
+      [
+        892,
+        1033,
+        1,
+        0.449,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        1068,
+        892,
+        1,
+        0.449,
+        10,
+        " (100% WR em 10 duelos cruzados)"
+      ],
+      [
+        1068,
+        201,
+        0.938,
+        0.387,
+        16,
+        " (94% WR em 16 duelos cruzados)"
+      ],
+      [
+        935,
+        913,
+        0.923,
+        0.342,
+        13,
+        " (92% WR em 13 duelos cruzados)"
+      ],
+      [
+        1068,
+        11,
+        0.889,
+        0.338,
+        18,
+        " (89% WR em 18 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_red_purple_gold",
+      "deckName": "Eclipse do Sol Carmesim",
+      "archetypeTag": "midrange",
+      "generationsTrained": 19,
+      "matchesSimulated": 7056,
+      "baselineWinRate": 0.514,
+      "trainedWinRate": 0.581,
+      "weights": {
+        "aggroFaceBias": 1.24,
+        "tradeValueBias": 1.24,
+        "guardianPriority": 1.27,
+        "flyingEvasionBias": 1.28,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1.11,
+        "relicPriority": 1,
+        "ascensionEagerness": 1,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 1.05,
+        "sovPowerTempoBias": 1,
+        "synergyHoldBonus": 18,
+        "mulliganCurveTarget": 2.9
+      },
+      "mk": [
+        278,
+        913,
+        317,
+        272,
+        201,
+        784,
+        421,
+        11
+      ],
+      "cp": [
+        680,
+        95,
+        839,
+        791,
+        278,
+        935,
+        779,
+        144,
+        149,
+        913
+      ],
+      "ca": [
+        3,
+        11,
+        83,
+        144,
+        201,
+        205,
+        272,
+        278,
+        346,
+        421,
+        460,
+        576
+      ],
+      "hb": [
+        [
+          3,
+          17.6
+        ],
+        [
+          11,
+          18.8
+        ],
+        [
+          35,
+          24
+        ],
+        [
+          83,
+          11.4
+        ],
+        [
+          144,
+          15.2
+        ],
+        [
+          173,
+          19.2
+        ],
+        [
+          201,
+          14.7
+        ],
+        [
+          205,
+          11
+        ],
+        [
+          272,
+          16.8
+        ],
+        [
+          278,
+          16.6
+        ],
+        [
+          346,
+          19.8
+        ],
+        [
+          421,
+          14.7
+        ],
+        [
+          460,
+          17.3
+        ],
+        [
+          545,
+          15.1
+        ],
+        [
+          576,
+          13.7
+        ],
+        [
+          580,
+          10.9
+        ],
+        [
+          610,
+          17.5
+        ],
+        [
+          644,
+          18.2
+        ],
+        [
+          735,
+          14.3
+        ],
+        [
+          784,
+          24
+        ],
+        [
+          791,
+          10.9
+        ],
+        [
+          834,
+          10.8
+        ],
+        [
+          839,
+          24
+        ],
+        [
+          880,
+          24
+        ],
+        [
+          892,
+          7.4
+        ],
+        [
+          913,
+          18.3
+        ],
+        [
+          935,
+          15.7
+        ],
+        [
+          1031,
+          24
+        ],
+        [
+          1033,
+          24
+        ],
+        [
+          1034,
+          18.8
+        ],
+        [
+          1050,
+          15
+        ],
+        [
+          1051,
+          20
+        ],
+        [
+          1068,
+          17.1
+        ],
+        [
+          1071,
+          20.2
+        ],
+        [
+          1119,
+          20
+        ]
+      ],
+      "sp": [
+        [
+          913,
+          1033
+        ],
+        [
+          278,
+          1033
+        ],
+        [
+          784,
+          201
+        ],
+        [
+          580,
+          83
+        ],
+        [
+          644,
+          11
+        ],
+        [
+          784,
+          791
+        ],
+        [
+          346,
+          460
+        ],
+        [
+          735,
+          460
+        ],
+        [
+          1033,
+          11
+        ],
+        [
+          791,
+          460
+        ]
+      ],
+      "dc": [
+        [
+          278,
+          346,
+          1,
+          0.449,
+          11,
+          " (100% WR em 11 duelos cruzados)"
+        ],
+        [
+          892,
+          1033,
+          1,
+          0.449,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          1068,
+          892,
+          1,
+          0.449,
+          10,
+          " (100% WR em 10 duelos cruzados)"
+        ],
+        [
+          1068,
+          201,
+          0.938,
+          0.387,
+          16,
+          " (94% WR em 16 duelos cruzados)"
+        ],
+        [
+          935,
+          913,
+          0.923,
+          0.342,
+          13,
+          " (92% WR em 13 duelos cruzados)"
+        ],
+        [
+          1068,
+          11,
+          0.889,
+          0.338,
+          18,
+          " (89% WR em 18 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        35,
+        0.3711,
+        0.2835,
+        0.0877,
+        1,
+        0.96,
+        5
+      ],
+      [
+        1033,
+        0.247,
+        0.075,
+        0.172,
+        0.867,
+        0.776,
+        15
+      ],
+      [
+        1071,
+        0.2274,
+        0.0634,
+        0.164,
+        0.842,
+        0.678,
+        19
+      ],
+      [
+        173,
+        0.2052,
+        -0.093,
+        0.2982,
+        0.833,
+        0.945,
+        6
+      ],
+      [
+        1034,
+        0.1955,
+        -0.0324,
+        0.2279,
+        0.818,
+        0.836,
+        11
+      ],
+      [
+        610,
+        0.1667,
+        -0.0482,
+        0.2149,
+        0.786,
+        0.763,
+        14
+      ],
+      [
+        1068,
+        0.1578,
+        0.0322,
+        0.1256,
+        0.756,
+        0.338,
+        45
+      ],
+      [
+        935,
+        0.1272,
+        0.0439,
+        0.0832,
+        0.727,
+        0.385,
+        110
+      ],
+      [
+        839,
+        0.1233,
+        -0.1217,
+        0.245,
+        0.75,
+        0.917,
+        12
+      ],
+      [
+        545,
+        0.1137,
+        -0.1101,
+        0.2238,
+        0.733,
+        0.776,
+        15
+      ],
+      [
+        735,
+        0.096,
+        0.0198,
+        0.0762,
+        0.703,
+        0.521,
+        138
+      ],
+      [
+        201,
+        0.0955,
+        0.0375,
+        0.058,
+        0.684,
+        0.157,
+        247
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "AgMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAICAQAAAAQEAQEEBAAAAAEBAQMDAwQEBAQEAAABAQMDAwICAgICAgAEBAMDAwAAAAEBAQICAgAEAQEBBAEEBAEEBAQEBEGRkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1NBQRuTk5NWVhsbWlrNzc3MzMwcHBw9PWJiYltbt7dCQkLf39+CgoJbUVFpaWkDAwMWFhZAQECtVvf391EXfVW3WoiIiFU=",
+        0,
+        0,
+        73,
+        27,
+        2.9,
+        0.049,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "AgMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAICAAAAAAQEAQEEBAAAAAEBAQMDAwQEBAQEAAABAQMDAwICAgICAgADAwMDAwAAAAEBAQICAgAEAQEBAwEEBAEEBAQEAEGRkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1NBQa+Tk5NWVhsbWlrNzc3MzMwcHBw9PWJiYltbt7dCQkLf39+CgoJbp6dpaWkDAwMWFhZAQECtVvf3968XfRq3WoiIiK8=",
+        0,
+        6,
+        67,
+        27,
+        2.9,
+        0.341,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "BAMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAIEAAAAAAICAwMEBAAAAAEBAQMDAwQEBAQEAAAAAAMDAwICAgICAgADAwMDAwAAAAEBAQICAgADAQEBAwEEBAECAQEAAF+RkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1NBLK+Tk5NBQRAQWlrNzc3MzMwcHBxaPWJiYltbTExCQkLf39+CgoJbp6dpaWkDAwMWFhZAQECtbvf3968XfRq3Yj09I68=",
+        3,
+        14,
+        56,
+        27,
+        3.01,
+        0.651,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "BAMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAQEAAAAAAAAAwMEBAAAAAEBAQMDAwQEBAQEBAAAAAMDAwICAgICAgIDAwMDAwAAAAEBAQICAgADAQEBAwEABAICAQEAAF+RkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1MbLK+Tk5OmphAQWi/Nzc3MzMwcHBxaWgliYmJbTExCQkLf39+EhODhp6dpaWkDAwMWFhZAQECtbvf3968XYxrgYj09I68=",
+        6,
+        22,
+        45,
+        27,
+        3.2,
+        0.703,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "BAMDAwAAAAMDAwMDAwAAAAEBAQEBAQMDAwAAAAAAAAQEAAAAAAAAAwMEBAAAAAEBAQMDAwICBAECAwMAAAMDAwICAgICAgIDAwMDAwAAAAEBAQICAgADAQEBAwEABAICAQEAAF+RkZELCwuNjY18fHyQkJAQEBClpaUXFxfJyclTU1MbLK+Tk5OmphAQCi/Nzc3MzMwcHBy8vAlaIUdHTExCQkLf39+EhODhp6dpaWkDAwMWFhZAQECtbvf3968XYxrgYj09I68=",
+        9,
+        26,
+        38,
+        27,
+        3.38,
+        0.739,
+        0.025
+      ]
+    ]
   },
   "tri_purple_green_gold": {
     "archetypeId": "tri_purple_green_gold",
     "tierFormat": "tricolor",
-    "domains": ["gold","green","purple"],
+    "domains": [
+      "gold",
+      "green",
+      "purple"
+    ],
     "conclaveId": "imperial_triads",
     "classicDeckIds": [],
     "name": "Armada do Zênite Umbral",
@@ -416,24 +3863,541 @@ export const POLYCOLOR_ARCHETYPE_MASTERY: Record<PolycolorArchetypeId, Polycolor
     "strategySummary": "Ergue a linha de frente mais resiliente de Vaeloria unindo Guardiões dourados, Regeneração silvestre, Toque Letal e ressurreição da Cripta.",
     "tacticalIdentity": "attrition",
     "coverCardId": "gold_138_imperador_sol_supremo",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6352,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7156,
     "seedWinRate": 0.417,
-    "championWinRate": 0.616,
+    "championWinRate": 0.612,
     "vsMonocolorWinRate": 0.734,
     "vsBicolorWinRate": 0.517,
-    "championDeckJaccardStability": 0.961,
+    "championDeckJaccardStability": 0.869,
     "medianCardCi95HalfWidth": 0.0592,
-    "domainCardBreakdown": {"gold":33,"neutral":12,"green":33,"purple":22},
-    "crossDomainCombos": [[1037,853,1,0.414,8," (100% WR em 8 duelos cruzados)"],[272,267,1,0.414,10," (100% WR em 10 duelos cruzados)"],[381,140,1,0.414,8," (100% WR em 8 duelos cruzados)"],[655,140,1,0.384,10," (100% WR em 10 duelos cruzados)"],[863,126,1,0.384,9," (100% WR em 9 duelos cruzados)"],[678,101,0.929,0.343,14," (93% WR em 14 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_purple_green_gold","deckName":"Armada do Zênite Umbral","archetypeTag":"attrition","generationsTrained":13,"matchesSimulated":6352,"baselineWinRate":0.417,"trainedWinRate":0.573,"weights":{"aggroFaceBias":1.06,"tradeValueBias":1.32,"guardianPriority":1.37,"flyingEvasionBias":1,"stackConsolidationBias":1.22,"antiAoeSpreadBias":1,"spellHoldPatience":1,"relicPriority":1.02,"ascensionEagerness":1,"bloodPactThresholdHp":24,"domainExpansionEagerness":1.05,"sovPowerTempoBias":1.04,"synergyHoldBonus":20,"mulliganCurveTarget":2.9},"mk":[910,913,278,126,272,784,421],"cp":[380,858,916,678,944,126,780,90,101,854],"ca":[99,101,114,119,126,140,145,175,272,278,421,483],"hb":[[99,24],[101,21.3],[114,21.1],[119,20.6],[126,13.3],[140,17.3],[145,15.9],[175,14.2],[272,13.4],[278,14.4],[421,13.6],[483,13.2],[545,20.9],[682,17.4],[781,12.7],[784,22],[838,13.7],[839,17.4],[853,12.2],[863,15.8],[910,20.4],[913,19.4],[1031,24],[1033,24],[1036,15.3],[1037,24]],"sp":[[421,1033],[145,1033],[784,1033],[119,1033],[1037,126],[910,1033],[119,863],[1037,853],[1033,101],[545,101]],"dc":[[1037,853,1,0.414,8," (100% WR em 8 duelos cruzados)"],[272,267,1,0.414,10," (100% WR em 10 duelos cruzados)"],[381,140,1,0.414,8," (100% WR em 8 duelos cruzados)"],[655,140,1,0.384,10," (100% WR em 10 duelos cruzados)"],[863,126,1,0.384,9," (100% WR em 9 duelos cruzados)"],[678,101,0.929,0.343,14," (93% WR em 14 duelos cruzados)"]]},
-    "topShapleyCards": [[1015,0.2163,0.0542,0.1621,0.875,0.861,16],[140,0.1886,0.0638,0.1249,0.829,0.485,35],[99,0.1745,0.0254,0.1491,0.833,0.864,24],[1033,0.1586,-0.0327,0.1913,0.813,0.765,16],[781,0.1473,-0.028,0.1753,0.8,0.74,20],[1036,0.1391,-0.0442,0.1833,0.789,0.694,19],[862,0.1374,-0.2132,0.3506,0.8,0.939,5],[863,0.1084,-0.0204,0.1288,0.762,0.757,42],[119,0.0894,0.0365,0.0529,0.71,0.104,283],[678,0.0816,-0.0476,0.1292,0.733,0.72,45],[483,0.0743,-0.0102,0.0844,0.705,0.309,112],[1037,0.0724,-0.1036,0.176,0.72,0.638,25]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AQEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAMDAwMDAwEBAAMAAAAAAAABAQACAgABAQAAAAAAAwABAQICAAACAgICAAAAAQEBAgEDAwMBAwMDAwMBAQEBAAADAAADAQMBA3cQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3dAQEAFBQUbG55rrq6Tk5NxBARxkZFxamp7e1lZWfdbVVXf31tbf39/32VlZQkJCZFqV1dXBFZWVmtrFhYWd557mq6emhv3d5o=",0,0,79,21,2.87,0.029,0.025],[2,"Tier II • Guarnição Regular","AQEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAMDAwMDAwEBAAMAAAAAAAABAQACAgABAQAAAAAAAwAAAAAAAAACAgAAAAAAAQEBAgEDAwMBAwMDAwMBAQEBAAADAAADAQMBA3cQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3dAQEAFBQUbG55rrq6Tk5NxBARxkZFxamp7e1lZWfdbTExjY1tbf39aWmVlZQkJCZFqV1dXBFZWVmtrFhYWd557mq6emhv3d5o=",0,6,73,21,2.92,0.363,0.025],[3,"Tier III • Bastião Veterano","BAEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAMDAwMDAwAAAAAAAAAAAAAAAAACAgABAQAABAIAAwAAAAAAAAAAAAAAAAAAAQEBAgEDAwMBAwMDAwMBAQEBAQADAAADAAMBAwcQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3dAQEAFBQWvr56erq6Tk5NxcnJxkZFxamp7ewkhWfdbTExjY1lZW1taWmVlZQkJCZFqV1dXBFZWVmtrFhYWd3d7r5mer5n3d5o=",3,14,62,21,3.06,0.67,0.025],[4,"Tier IV • Elite do Alto Trono","BAEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAMDAwQDAwAAAAAAAAAAAAQAAAAAAAAAAQAABAIBAwMAAAAAAQEDAwAAAAAAAQEBAwEDAwMDAwMDAAMBAQEBAQEDAAEDAAMDAwcQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3dAQEANBQWvr56erq6Tk5MMcnJxe35xcWp7ewkhvvdHTExjY1lZRkZaWmVlZQkJCV5qV1dXXlZWVp5rFhYWd3dqr5l3r5n3BZo=",6,22,51,21,3.34,0.712,0.025],[5,"Tier V • Campeão Soberano Ápice","BAEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAMDAwQCAwAAAgIDAwAAAAQAAAAAAAEDAwEBBAIBAwMAAAAAAQEDAwAAAAAAAQEBAwIDAwMDAwMDAQEBAQEDAwMDAAADAAMAAwcQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3dAQEANqg2vr6amEBCTk5MMcnKMfn4LX1/j4wkhvvdHTExjY1lZRkZaWmVlZQkJCV6YV1dXXlZWVn19FhYWDAxar5mmr5n3l7A=",10,40,29,21,3.82,0.75,0.025]]
+    "domainCardBreakdown": {
+      "gold": 33,
+      "neutral": 12,
+      "green": 33,
+      "purple": 22
+    },
+    "crossDomainCombos": [
+      [
+        682,
+        119,
+        1,
+        0.418,
+        9,
+        " (100% WR em 9 duelos cruzados)"
+      ],
+      [
+        682,
+        784,
+        1,
+        0.388,
+        10,
+        " (100% WR em 10 duelos cruzados)"
+      ],
+      [
+        682,
+        272,
+        1,
+        0.388,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        682,
+        913,
+        0.923,
+        0.341,
+        13,
+        " (92% WR em 13 duelos cruzados)"
+      ],
+      [
+        126,
+        838,
+        0.909,
+        0.327,
+        11,
+        " (91% WR em 11 duelos cruzados)"
+      ],
+      [
+        853,
+        1033,
+        0.909,
+        0.327,
+        11,
+        " (91% WR em 11 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_purple_green_gold",
+      "deckName": "Armada do Zênite Umbral",
+      "archetypeTag": "attrition",
+      "generationsTrained": 19,
+      "matchesSimulated": 7156,
+      "baselineWinRate": 0.417,
+      "trainedWinRate": 0.612,
+      "weights": {
+        "aggroFaceBias": 1.06,
+        "tradeValueBias": 1.32,
+        "guardianPriority": 1.37,
+        "flyingEvasionBias": 1,
+        "stackConsolidationBias": 1.22,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1,
+        "relicPriority": 1.02,
+        "ascensionEagerness": 1,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 1.05,
+        "sovPowerTempoBias": 1.04,
+        "synergyHoldBonus": 20,
+        "mulliganCurveTarget": 2.9
+      },
+      "mk": [
+        910,
+        913,
+        278,
+        126,
+        272,
+        784,
+        421
+      ],
+      "cp": [
+        380,
+        858,
+        916,
+        678,
+        944,
+        126,
+        780,
+        90,
+        101,
+        854
+      ],
+      "ca": [
+        99,
+        101,
+        114,
+        119,
+        126,
+        140,
+        145,
+        175,
+        272,
+        278,
+        421,
+        483
+      ],
+      "hb": [
+        [
+          99,
+          24
+        ],
+        [
+          101,
+          21.3
+        ],
+        [
+          114,
+          21.1
+        ],
+        [
+          119,
+          20.6
+        ],
+        [
+          126,
+          13.3
+        ],
+        [
+          140,
+          17.3
+        ],
+        [
+          145,
+          15.9
+        ],
+        [
+          151,
+          24
+        ],
+        [
+          175,
+          18.9
+        ],
+        [
+          272,
+          13.4
+        ],
+        [
+          278,
+          14.4
+        ],
+        [
+          421,
+          13.6
+        ],
+        [
+          483,
+          13.2
+        ],
+        [
+          487,
+          16.9
+        ],
+        [
+          545,
+          20.9
+        ],
+        [
+          682,
+          24
+        ],
+        [
+          781,
+          20.5
+        ],
+        [
+          784,
+          22
+        ],
+        [
+          838,
+          13.7
+        ],
+        [
+          839,
+          17.4
+        ],
+        [
+          853,
+          12.2
+        ],
+        [
+          862,
+          20.3
+        ],
+        [
+          863,
+          15.8
+        ],
+        [
+          910,
+          20.4
+        ],
+        [
+          913,
+          19.4
+        ],
+        [
+          1031,
+          24
+        ],
+        [
+          1033,
+          24
+        ],
+        [
+          1036,
+          16.6
+        ],
+        [
+          1037,
+          24
+        ],
+        [
+          1053,
+          15
+        ],
+        [
+          1083,
+          16
+        ],
+        [
+          1117,
+          20
+        ],
+        [
+          1149,
+          11
+        ],
+        [
+          1151,
+          15
+        ]
+      ],
+      "sp": [
+        [
+          421,
+          1033
+        ],
+        [
+          145,
+          1033
+        ],
+        [
+          784,
+          1033
+        ],
+        [
+          119,
+          1033
+        ],
+        [
+          1037,
+          126
+        ],
+        [
+          910,
+          1033
+        ],
+        [
+          119,
+          863
+        ],
+        [
+          1037,
+          853
+        ],
+        [
+          1033,
+          101
+        ],
+        [
+          545,
+          101
+        ]
+      ],
+      "dc": [
+        [
+          682,
+          119,
+          1,
+          0.418,
+          9,
+          " (100% WR em 9 duelos cruzados)"
+        ],
+        [
+          682,
+          784,
+          1,
+          0.388,
+          10,
+          " (100% WR em 10 duelos cruzados)"
+        ],
+        [
+          682,
+          272,
+          1,
+          0.388,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          682,
+          913,
+          0.923,
+          0.341,
+          13,
+          " (92% WR em 13 duelos cruzados)"
+        ],
+        [
+          126,
+          838,
+          0.909,
+          0.327,
+          11,
+          " (91% WR em 11 duelos cruzados)"
+        ],
+        [
+          853,
+          1033,
+          0.909,
+          0.327,
+          11,
+          " (91% WR em 11 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        151,
+        0.3426,
+        0.2733,
+        0.0693,
+        1,
+        0.909,
+        8
+      ],
+      [
+        682,
+        0.3161,
+        0.2421,
+        0.0739,
+        0.962,
+        0.671,
+        26
+      ],
+      [
+        781,
+        0.2327,
+        0.0796,
+        0.1532,
+        0.882,
+        0.754,
+        17
+      ],
+      [
+        862,
+        0.2299,
+        0.0245,
+        0.2053,
+        0.889,
+        0.942,
+        9
+      ],
+      [
+        1031,
+        0.2139,
+        0.0418,
+        0.172,
+        0.867,
+        0.817,
+        15
+      ],
+      [
+        175,
+        0.1986,
+        0.0152,
+        0.1833,
+        0.857,
+        0.933,
+        14
+      ],
+      [
+        487,
+        0.1542,
+        -0.0607,
+        0.2149,
+        0.786,
+        0.391,
+        14
+      ],
+      [
+        1036,
+        0.1477,
+        -0.0548,
+        0.2024,
+        0.8,
+        0.808,
+        15
+      ],
+      [
+        1033,
+        0.1371,
+        -0.0315,
+        0.1686,
+        0.783,
+        0.671,
+        23
+      ],
+      [
+        1083,
+        0.1327,
+        -0.0822,
+        0.2149,
+        0.786,
+        0.821,
+        14
+      ],
+      [
+        863,
+        0.1233,
+        -0.0158,
+        0.1391,
+        0.771,
+        0.724,
+        35
+      ],
+      [
+        101,
+        0.1135,
+        0.057,
+        0.0564,
+        0.738,
+        0.256,
+        233
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "AwEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAQDAwMDBAAAAQQEBAAAAAACAgAAAAABAQQEBAQEAwQEBAQEAgQEBAIEAAAAAQEBAAEBAwMCAwMDBAQBAQEEAQQDBAQDAAMBAwUQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3d9QEAFBVWurndWkZGTk5NxkZFxe3txampOTkZGRvd+YmJ9fd9jY2PfYmVlZQkJCXtqBFdXkVZWVlZWFhYWVXdOmpFVmq73d5o=",
+        0,
+        0,
+        79,
+        21,
+        2.87,
+        0.029,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "AwEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAQDAwMDBAAAAQQEBAAAAAACAgAAAAABAQQEBAQEAwQAAAQEBAQEBAQEAAAAAQEBAAEBAwMCAwMDBAQBAQEEAQQDBAQDAAMBAwUQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3d9QEAFBVWurndWkZGTk5NxkZFxe3txampOTkZGRvd/TEx9fR1jY2MdYmVlZQkJCXtq51dXkVZWVlZWFhYWVXdOmpFVmq73d5o=",
+        0,
+        6,
+        73,
+        21,
+        2.88,
+        0.363,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "AwEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAQDAwMDAwAAAQEEBAAAAAACAgAAAAABAQQEBAQEAwQAAAAABAQEBAQAAAAAAQEBAAEBAwMCAwMDBAQBAQEEBAQDAAQDAAMBAwUQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3d9QEAFBQ2vr3d3kZGTk5NxkZFxe3txampOTkZdO/d/TExjYx1jRkYdWmVlZQkJCXtq51dXkVZWVlZWFhYWVVVOmplVr5n3d5o=",
+        3,
+        14,
+        62,
+        21,
+        3.02,
+        0.67,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "AwEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAQDAwQDAwAAAQEEBAAAAAQAAAAEAAAAAQQEBAQEAwQAAAAABAEDAwQAAAAAAQEBAwEBAwMDAwMDAQQBAQEEBAEDAAMDAAMEAwUQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3d9QEANBQ2vr3d3kZGTk5MMcnJxTntxcWpOTgldO/d/TExjYx1ZRkYdWmVlZQkJCV5q51dXXlZWVndWFhYWVVVqr5kFr5n3VZo=",
+        6,
+        22,
+        51,
+        21,
+        3.3,
+        0.712,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "BAEBAQMDAwEBAQMDAwAAAAMDAwMDAwICAgAAAAQDAwQCAwAAAgIDAwAAAAQAAAAAAAEDAwEBBAQEAwQAAAAABAEDAwQAAAAAAQEBAwIBAwMDAwMDAQEBAQEDAwMDAAADAAMAAwcQEBCRkZGlpaWOjo6RkZGUlJRVVVWPj493d3d9QEANqg2vr6amEBCTk5MMcnKMfn4LX1/j4wldO/d/TExjYx1ZRkYdWmVlZQkJCV6Y51dXXlZWVn19FhYWDAxar5mmr5n3l7A=",
+        10,
+        41,
+        28,
+        21,
+        3.75,
+        0.75,
+        0.025
+      ]
+    ]
   },
   "tri_red_blue_green": {
     "archetypeId": "tri_red_blue_green",
     "tierFormat": "tricolor",
-    "domains": ["red","green","blue"],
+    "domains": [
+      "red",
+      "green",
+      "blue"
+    ],
     "conclaveId": "cataclysm_triads",
     "classicDeckIds": [],
     "name": "Tempestade Elemental Primeva",
@@ -441,24 +4405,477 @@ export const POLYCOLOR_ARCHETYPE_MASTERY: Record<PolycolorArchetypeId, Polycolor
     "strategySummary": "Acelera Essência e compra cartas simultaneamente para despejar Dragões, Hidras e Arcontes com Ímpeto, Voo e Congelamento de linha.",
     "tacticalIdentity": "tempo",
     "coverCardId": "red_47_arquiduque_ferro",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6336,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7140,
     "seedWinRate": 0.444,
-    "championWinRate": 0.586,
+    "championWinRate": 0.542,
     "vsMonocolorWinRate": 0.766,
     "vsBicolorWinRate": 0.567,
-    "championDeckJaccardStability": 0.923,
+    "championDeckJaccardStability": 0.869,
     "medianCardCi95HalfWidth": 0.18,
-    "domainCardBreakdown": {"green":22,"neutral":12,"red":22,"blue":44},
-    "crossDomainCombos": [[862,126,1,0.414,8," (100% WR em 8 duelos cruzados)"],[1035,300,0.917,0.361,12," (92% WR em 12 duelos cruzados)"],[116,922,0.875,0.319,8," (88% WR em 8 duelos cruzados)"],[1035,54,0.889,0.303,9," (89% WR em 9 duelos cruzados)"],[114,863,0.875,0.289,8," (88% WR em 8 duelos cruzados)"],[58,114,0.828,0.272,29," (83% WR em 29 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_red_blue_green","deckName":"Tempestade Elemental Primeva","archetypeTag":"tempo","generationsTrained":13,"matchesSimulated":6336,"baselineWinRate":0.444,"trainedWinRate":0.51,"weights":{"aggroFaceBias":1.16,"tradeValueBias":1.24,"guardianPriority":1.01,"flyingEvasionBias":1.28,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":1.03,"relicPriority":1,"ascensionEagerness":1.37,"bloodPactThresholdHp":24,"domainExpansionEagerness":0.99,"sovPowerTempoBias":1.01,"synergyHoldBonus":20,"mulliganCurveTarget":2.9},"mk":[300,126,318,457,11,591],"cp":[1011,798,664,38,767,190,909,403,269,483],"ca":[58,126,300,816,1035],"hb":[[54,8.8],[58,16.9],[114,9],[126,12],[300,23],[605,6.1],[816,21.7],[922,6.7],[1035,23.7]],"sp":[[1035,11],[58,300],[816,1035],[816,119],[1035,114],[1036,3],[816,605],[1036,300],[816,126],[1035,58]],"dc":[[862,126,1,0.414,8," (100% WR em 8 duelos cruzados)"],[1035,300,0.917,0.361,12," (92% WR em 12 duelos cruzados)"],[116,922,0.875,0.319,8," (88% WR em 8 duelos cruzados)"],[1035,54,0.889,0.303,9," (89% WR em 9 duelos cruzados)"],[114,863,0.875,0.289,8," (88% WR em 8 duelos cruzados)"],[58,114,0.828,0.272,29," (83% WR em 29 duelos cruzados)"]]},
-    "topShapleyCards": [[1035,0.2781,0.1466,0.1315,0.9,0.722,20],[58,0.1083,0.0297,0.0785,0.711,0.337,128],[1036,0.0963,-0.1106,0.2069,0.722,0.802,18],[922,0.0911,0.0112,0.0799,0.71,0.655,124],[126,0.073,0.0107,0.0622,0.668,0.188,220],[1034,0.0598,-0.1673,0.2271,0.688,0.837,16],[11,0.0567,-0.0035,0.0602,0.66,0.343,238],[37,0.0534,-0.0362,0.0895,0.657,0.365,108],[54,0.0397,-0.0163,0.0561,0.636,0.209,283],[816,0.0389,-0.0418,0.0807,0.64,0.299,136],[300,0.038,-0.0108,0.0488,0.626,0.043,377],[114,0.0196,-0.0501,0.0697,0.615,0.19,187]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AAICAgEBAQMDAwAAAAEBAQAAAAAAAAEBAQEAAAACAgIBAAAAAAAAAAEBAAEAAAEBAQACAgAAAAAAAAAAAAEAAwMDAQEBAAACAgICAAAAAAADAwMCAgEAAgABAAMAAAAAAgAAAnFPT08sLCyNjY13d3fMycm+vr4LCws+Pj7Mzc3NXV1dzAMDcXt7fHzf33vfiYng4EIlbW0mJibo6Og2NjZC35qampOTkzQ0yG3IyN/fRUVFLCwsbm5CiW404I05H3xxH9EfJdE=",0,0,73,27,2.9,0.049,0.025],[2,"Tier II • Guarnição Regular","AAICAgEBAQMDAwAAAAEBAQAAAAAAAAEBAQEAAAACAgIBAAAAAAAAAAEBAAEAAAEBAQABAQAAAAAAAAAAAAEAAwMDAQEBAgICAgICAAAAAAADAwMCAgEBAgIBAAMAAAAAAgAAAnFPT08sLCyNjY13d3fMycm+vr4LCws+Pj7Mzc3NXV1dzAMDcXt7fHzf33vfiYng4EIlRUUmJibo6Og2NjZC35qampOTk8vLyG3IyN/fRUVFLCwsbm5CDW574I05H3xxH9EfJdE=",0,6,67,27,2.96,0.341,0.025],[3,"Tier III • Bastião Veterano","BAICAgEBAQMDAwAAAAEBAQAAAAAAAAEBAQEAAAACAgIBAAAAAQAAAAABAAECAgEBBAABAQAAAAAAAAAAAAEBAwMDAQEBAgIBAQMDAQAAAAADAwMCAgABAgIBAAMAAAAAAgAAAgxPT08sLCyNjY13d3fMycm+vr4LCws+Pj7Mzc3NXV1dzAMDceB7j49x33vf///g4AslRUUmJibo6Og2NjZCQpqampOTk8vLSkrz80LfRUVFLCwsbm4/DW573405H3txH9EfJdE=",3,14,56,27,3.15,0.651,0.025],[4,"Tier IV • Elite do Alto Trono","BAICAgEBAQMDAwAAAAABAQAAAAAAAAEBAQEAAAACAgIBAAAAAAAAAAAAAwECAgAABAABAQAAAAAAAAAAAAIBAwMDAQEBAgIBAQMDAAAAAAADAwMCAgABAgIBAAMAAwAAAgAAAgxPT08sLCyNjY13d3fSycm+vr4LCws+Pj7Mzc3NXV1dzAMDdHJyj49xcQHf//9+fgslRUUmJibo6Og2NjZuQpqampOTk8vLSkrz8zo6RUVFLCwsbm4/DQx73405H2JxH9EfJdE=",6,22,45,27,3.27,0.703,0.025],[5,"Tier V • Campeão Soberano Ápice","BAICAgEBAQMDAwAAAAABAQAAAAAAAAEBAQQAAAACAgIDAAAAAAAAAAMDAwMCAgAABAABAQAAAAAAAAAAAAMDAwMDAQEBAgIBAQMDAAAAAAADAwMDAgABAgIBAAMAAwIAAgAAAgxPT08sLCyNjY13d3fSycm+vr4LCws+Pj4Kzc3NXV1dIAMDdHJyj49eXgFf//9+fgslRUUmJibo6Og2NjYwMJqampOTk8vLSkrz8zo6RUVFLCwsMc8/DQx7c405H2KZH9EfJdE=",10,29,34,27,3.58,0.739,0.025]]
+    "domainCardBreakdown": {
+      "green": 22,
+      "neutral": 12,
+      "red": 22,
+      "blue": 44
+    },
+    "crossDomainCombos": [
+      [
+        816,
+        58,
+        1,
+        0.458,
+        12,
+        " (100% WR em 12 duelos cruzados)"
+      ],
+      [
+        119,
+        210,
+        0.9,
+        0.388,
+        10,
+        " (90% WR em 10 duelos cruzados)"
+      ],
+      [
+        866,
+        605,
+        0.875,
+        0.363,
+        8,
+        " (88% WR em 8 duelos cruzados)"
+      ],
+      [
+        54,
+        210,
+        0.833,
+        0.321,
+        12,
+        " (83% WR em 12 duelos cruzados)"
+      ],
+      [
+        58,
+        11,
+        0.781,
+        0.269,
+        32,
+        " (78% WR em 32 duelos cruzados)"
+      ],
+      [
+        54,
+        863,
+        0.778,
+        0.265,
+        9,
+        " (78% WR em 9 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_red_blue_green",
+      "deckName": "Tempestade Elemental Primeva",
+      "archetypeTag": "tempo",
+      "generationsTrained": 19,
+      "matchesSimulated": 7140,
+      "baselineWinRate": 0.444,
+      "trainedWinRate": 0.542,
+      "weights": {
+        "aggroFaceBias": 1.16,
+        "tradeValueBias": 1.24,
+        "guardianPriority": 1.01,
+        "flyingEvasionBias": 1.28,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1.03,
+        "relicPriority": 1,
+        "ascensionEagerness": 1.37,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 0.99,
+        "sovPowerTempoBias": 1.01,
+        "synergyHoldBonus": 20,
+        "mulliganCurveTarget": 2.9
+      },
+      "mk": [
+        300,
+        126,
+        318,
+        457,
+        11,
+        591
+      ],
+      "cp": [
+        1011,
+        798,
+        664,
+        38,
+        767,
+        190,
+        909,
+        403,
+        269,
+        483
+      ],
+      "ca": [
+        58,
+        126,
+        300,
+        816,
+        1035
+      ],
+      "hb": [
+        [
+          11,
+          12.7
+        ],
+        [
+          54,
+          8.8
+        ],
+        [
+          58,
+          16.9
+        ],
+        [
+          114,
+          9
+        ],
+        [
+          126,
+          12
+        ],
+        [
+          300,
+          23
+        ],
+        [
+          605,
+          6.1
+        ],
+        [
+          665,
+          19.5
+        ],
+        [
+          816,
+          21.7
+        ],
+        [
+          862,
+          17.2
+        ],
+        [
+          863,
+          13
+        ],
+        [
+          866,
+          16.8
+        ],
+        [
+          922,
+          6.7
+        ],
+        [
+          1035,
+          23.7
+        ],
+        [
+          1056,
+          15
+        ],
+        [
+          1059,
+          15.5
+        ],
+        [
+          1115,
+          20
+        ],
+        [
+          1116,
+          20
+        ],
+        [
+          1118,
+          20
+        ],
+        [
+          1160,
+          11
+        ]
+      ],
+      "sp": [
+        [
+          1035,
+          11
+        ],
+        [
+          58,
+          300
+        ],
+        [
+          816,
+          1035
+        ],
+        [
+          816,
+          119
+        ],
+        [
+          1035,
+          114
+        ],
+        [
+          1036,
+          3
+        ],
+        [
+          816,
+          605
+        ],
+        [
+          1036,
+          300
+        ],
+        [
+          816,
+          126
+        ],
+        [
+          1035,
+          58
+        ]
+      ],
+      "dc": [
+        [
+          816,
+          58,
+          1,
+          0.458,
+          12,
+          " (100% WR em 12 duelos cruzados)"
+        ],
+        [
+          119,
+          210,
+          0.9,
+          0.388,
+          10,
+          " (90% WR em 10 duelos cruzados)"
+        ],
+        [
+          866,
+          605,
+          0.875,
+          0.363,
+          8,
+          " (88% WR em 8 duelos cruzados)"
+        ],
+        [
+          54,
+          210,
+          0.833,
+          0.321,
+          12,
+          " (83% WR em 12 duelos cruzados)"
+        ],
+        [
+          58,
+          11,
+          0.781,
+          0.269,
+          32,
+          " (78% WR em 32 duelos cruzados)"
+        ],
+        [
+          54,
+          863,
+          0.778,
+          0.265,
+          9,
+          " (78% WR em 9 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        665,
+        0.212,
+        -0.0359,
+        0.2479,
+        0.8,
+        0.915,
+        10
+      ],
+      [
+        862,
+        0.161,
+        -0.139,
+        0.3001,
+        0.75,
+        0.933,
+        8
+      ],
+      [
+        866,
+        0.1512,
+        -0.0468,
+        0.198,
+        0.737,
+        0.866,
+        19
+      ],
+      [
+        1059,
+        0.1213,
+        -0.0509,
+        0.1722,
+        0.704,
+        0.801,
+        27
+      ],
+      [
+        58,
+        0.1107,
+        0.0329,
+        0.0778,
+        0.671,
+        0.369,
+        140
+      ],
+      [
+        863,
+        0.0666,
+        -0.1424,
+        0.209,
+        0.65,
+        0.821,
+        20
+      ],
+      [
+        11,
+        0.0595,
+        -0.0014,
+        0.0609,
+        0.619,
+        0.341,
+        244
+      ],
+      [
+        816,
+        0.0495,
+        -0.0618,
+        0.1112,
+        0.608,
+        0.327,
+        74
+      ],
+      [
+        54,
+        0.0388,
+        -0.02,
+        0.0588,
+        0.593,
+        0.243,
+        268
+      ],
+      [
+        922,
+        0.0383,
+        -0.0474,
+        0.0857,
+        0.613,
+        0.646,
+        124
+      ],
+      [
+        114,
+        0.021,
+        -0.0474,
+        0.0684,
+        0.572,
+        0.176,
+        201
+      ],
+      [
+        126,
+        0.0205,
+        -0.0488,
+        0.0693,
+        0.571,
+        0.173,
+        196
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAICAgEBAQMDAwAAAAQBAQAAAAAAAAEBAQQAAAACAgIEBAAEAAABAQEEAAQAAAAAAgAEBAAAAAAAAAAAAAQCAwMDAQEBBAQEBAQEBAQAAAADAwMCAQEAAQQEAAMAAAQAAgAAAkNPT08sLCyNjY13d3clycm+vr4LCws+Pj4lzc3NXV1dJYgDQ3t73d3dTnxDiYl7fG4lUlMmJibo6Og2NjZSbpqampOTk1NTZGRUUlRURUVFLCwsbkJCiUJkTo05H3xOH9EfJdE=",
+        0,
+        0,
+        70,
+        30,
+        2.84,
+        0.049,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAICAgEBAQMDAwAAAAQBAQAAAAAAAAEBAQQAAAACAgIEBAAEAAABAQEEAAQAAAAAAgABAQAAAAAAAAAAAAQCAwMDAQEBAgIEBAQEBAQAAAADAwMCAQEAAQIEAAMAAAQAAgAAAkNPT08sLCyNjY13d3clycm+vr4LCws+Pj4lzc3NXV1dJYgDQ3t73d3dTnxDiYl7fG4lRUUmJibo6Og2NjYgbpqampOTk8vLZGRUUlRURUVFLCwsbkJCiUJ7To05H3xOH9EfJdE=",
+        0,
+        6,
+        65,
+        29,
+        2.88,
+        0.341,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "BAICAgEBAQMDAwAAAAABAQAAAAAAAAEBAQQAAAACAgIEBAAEAAAAAAQEAAQCAgAAAgABAQAAAAAAAAAAAAQCAwMDAQEBAgIBAQQEAgQAAAADAwMEAQEBAQIEAAMAAAQAAgAAAkNPT08sLCyNjY13d3fSycm+vr4LCws+Pj4lzc3NXV1dXIgDQ3t7j48jTnxD//97fG4lRUUmJibo6Og2NjYgbpqampOTk8vLSkpUVG5URUVFLCwsXkJCDUJ7To05H3xOH9EfJdE=",
+        3,
+        14,
+        56,
+        27,
+        3.03,
+        0.651,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "BAICAgEBAQMDAwAAAAABAQAAAAAAAAEBAQQAAAACAgIEBAAEAAAAAAQEAwQCAgAABAABAQAAAAAAAAAAAAQBAwMDAQEBAgIBAQMDAgIAAAADAwMEAQABAQIEAAMAAwQAAgAAAltPT08sLCyNjY13d3fSycm+vr4LCws+Pj4lzc3NXV1dXIgDQ3Jyj48jQwFD//9+fgslRUUmJibo6Og2NjYgQpqampOTk8vLSkrz825uRUVFLCwsXkI/DUJ7To05H2JOH9EfJdE=",
+        6,
+        22,
+        45,
+        27,
+        3.14,
+        0.703,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "BAICAgEBAQMDAwAAAAABAQAAAAAAAAEBAQIAAAACAgIEBAAAAAAAAAQDAwMCAgAABAABAQAAAAAAAAAAAAQDAwMDAQEBAgIBAQMDAAAAAAADAwMEAgABAgIBAAMAAwIAAgAAAltPT08sLCyNjY13d3fSycm+vr4LCws+Pj5izc3NXV1dXIgDdHJyj48jXgFf//9+fgslRUUmJibo6Og2NjYgMJqampOTk8vLSkrz8zo6RUVFLCwsXs8/DQx7c405H2KZH9EfJdE=",
+        10,
+        29,
+        34,
+        27,
+        3.45,
+        0.739,
+        0.025
+      ]
+    ]
   },
   "tri_red_blue_gold": {
     "archetypeId": "tri_red_blue_gold",
     "tierFormat": "tricolor",
-    "domains": ["gold","red","blue"],
+    "domains": [
+      "gold",
+      "red",
+      "blue"
+    ],
     "conclaveId": "imperial_triads",
     "classicDeckIds": [],
     "name": "Conclave da Chama Celeste",
@@ -466,74 +4883,1559 @@ export const POLYCOLOR_ARCHETYPE_MASTERY: Record<PolycolorArchetypeId, Polycolor
     "strategySummary": "Domina os céus com Dragões Solares e Fênix protegidos por Escudo Divino, Congelamento tático e rajadas piroclásticas precisas.",
     "tacticalIdentity": "tempo",
     "coverCardId": "gold_173_general_roda_sol",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6300,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7104,
     "seedWinRate": 0.472,
-    "championWinRate": 0.695,
+    "championWinRate": 0.657,
     "vsMonocolorWinRate": 0.797,
     "vsBicolorWinRate": 0.567,
-    "championDeckJaccardStability": 0.961,
+    "championDeckJaccardStability": 0.869,
     "medianCardCi95HalfWidth": 0.0862,
-    "domainCardBreakdown": {"red":22,"blue":41,"neutral":12,"gold":25},
-    "crossDomainCombos": [[1035,784,1,0.335,9," (100% WR em 9 duelos cruzados)"],[816,159,1,0.335,19," (100% WR em 19 duelos cruzados)"],[1035,272,1,0.335,9," (100% WR em 9 duelos cruzados)"],[1037,913,1,0.335,9," (100% WR em 9 duelos cruzados)"],[54,1037,1,0.335,9," (100% WR em 9 duelos cruzados)"],[272,1034,1,0.335,8," (100% WR em 8 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"tri_red_blue_gold","deckName":"Conclave da Chama Celeste","archetypeTag":"tempo","generationsTrained":13,"matchesSimulated":6300,"baselineWinRate":0.472,"trainedWinRate":0.583,"weights":{"aggroFaceBias":1.16,"tradeValueBias":1.2,"guardianPriority":0.94,"flyingEvasionBias":1.41,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":1.19,"relicPriority":1.04,"ascensionEagerness":0.98,"bloodPactThresholdHp":24,"domainExpansionEagerness":0.96,"sovPowerTempoBias":1,"synergyHoldBonus":22,"mulliganCurveTarget":2.8},"mk":[300,159,913,272,784,70],"cp":[335,70,403,715,457,943,278,942,1011,57],"ca":[11,58,159,272,300,460,784,816,880,892,913,1029],"hb":[[11,12.1],[54,7.7],[58,14],[159,18.6],[272,16.8],[278,7],[300,20.8],[421,7.4],[460,10.4],[784,20.3],[816,24],[880,24],[892,13],[913,18.2],[1029,15.8],[1034,13.2],[1035,17],[1037,13]],"sp":[[816,159],[816,784],[816,892],[816,278],[913,1034],[816,300],[816,272],[816,913],[1035,272],[816,11]],"dc":[[1035,784,1,0.335,9," (100% WR em 9 duelos cruzados)"],[816,159,1,0.335,19," (100% WR em 19 duelos cruzados)"],[1035,272,1,0.335,9," (100% WR em 9 duelos cruzados)"],[1037,913,1,0.335,9," (100% WR em 9 duelos cruzados)"],[54,1037,1,0.335,9," (100% WR em 9 duelos cruzados)"],[272,1034,1,0.335,8," (100% WR em 8 duelos cruzados)"]]},
-    "topShapleyCards": [[1035,0.1931,0.0907,0.1024,0.923,0.694,26],[226,0.185,0.0151,0.1699,0.909,0.577,11],[816,0.0955,0.023,0.0724,0.807,0.325,114],[1034,0.0882,-0.073,0.1612,0.818,0.694,22],[784,0.0826,0.0303,0.0523,0.782,0.091,239],[159,0.0665,-0.0111,0.0776,0.77,0.163,113],[880,0.0612,-0.1867,0.2479,0.8,0.87,10],[913,0.0607,0.015,0.0456,0.76,0.074,337],[300,0.057,0.0118,0.0452,0.759,0.129,344],[421,0.0544,-0.0037,0.0581,0.771,0.429,201],[22,0.0335,-0.0875,0.121,0.766,0.743,47],[37,0.0327,-0.1277,0.1604,0.75,0.44,28]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AgEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwAAAAIDAAAAAgIBAQEAAAAAAAACAAMCAAACAgAAAAAAAAEBAQAAAAAAAAICAQEBAAIBAQEAAAAAAwMCAwIAAwIDAwAAAl3JyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZGenp5ABJOTk0BAFhYWAwMDzc3NXc4sbt/fbm00NDQmJiZCQkI2Nja2trbIyJOTk9/IzMzM6OglJS4ubgRdnyxtBCwl6G0=",0,0,76,24,2.79,0.029,0.025],[2,"Tier II • Guarnição Regular","AgEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwAAAAIDAAAAAgIBAQEAAAAAAAACAAMCAAACAAABAQAAAAEBAQAAAAAAAAICAQEBAAIBAQEAAAICAwMCAwIAAwIDAwAAAl3JyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZGenp5ABJOTk0BAFhYWAwMDzc3NXc4sbt/fbkZGRUUmJiZCQkI2Nja2trbIyJOTk9/IzMzM6OjLyy4ubgRdnyxtBCwl6G0=",0,6,72,22,2.83,0.363,0.025],[3,"Tier III • Bastião Veterano","BAEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwAAAAIDAAAAAgIBAQEAAAAAAAACAgQCAwMCAAABAQAAAAEBAQAAAAMDAAACAQEBAAABAQEBAQICAwMCAAIAAAIAAwABAwrJyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZGenp5ABJOTk0BAFhYWAwMDzc3NXV0LbiwsbkZGRUUmJiZCQkI2Njavr7bfyJOTk9/fzMzMT0/Lyy4ubpldn+LImSwloPM=",3,14,61,22,3.01,0.67,0.025],[4,"Tier IV • Elite do Alto Trono","BAEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwQAAAMDAAAAAAIBAQEAAAAAAAACAgQEAgICAAABAQAAAAEBAQAAAAMDAwICAQEBAAABAQEBAQICAwMBAAIAAAMAAwABAwrJyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZENnp4QEJOTk55AFhYWAwMDzc3NXV0LBW5ubkZGRUUmJiZCQkI2Njavr67NzZOTkzo6zMzMT0/Lyy4umJldn+LzmSwloPM=",6,22,50,22,3.25,0.712,0.025],[5,"Tier V • Campeão Soberano Ápice","BAEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwQDBAMDAAAAAwMBAQEAAAAAAAAAAAQEAwMAAAABAQAAAAEBAQAAAAMDAwICAQEBAAABAQEBAQICAwMBAAMAAAMAAwABAwrJyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZENcAcQEJOTk25uFhYWAwMDzc3NFhYLBTAwKUZGRUUmJiZCQkI2Njavr67NzZOTkzo6zMzMT0/Lyy4umJken+LzmSwloPM=",9,29,40,22,3.54,0.75,0.025]]
+    "domainCardBreakdown": {
+      "red": 22,
+      "blue": 41,
+      "neutral": 12,
+      "gold": 25
+    },
+    "crossDomainCombos": [
+      [
+        1037,
+        300,
+        1,
+        0.373,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        226,
+        11,
+        1,
+        0.373,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        816,
+        278,
+        0.923,
+        0.296,
+        13,
+        " (92% WR em 13 duelos cruzados)"
+      ],
+      [
+        892,
+        22,
+        0.909,
+        0.282,
+        11,
+        " (91% WR em 11 duelos cruzados)"
+      ],
+      [
+        54,
+        457,
+        0.909,
+        0.282,
+        11,
+        " (91% WR em 11 duelos cruzados)"
+      ],
+      [
+        58,
+        11,
+        0.903,
+        0.277,
+        31,
+        " (90% WR em 31 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "tri_red_blue_gold",
+      "deckName": "Conclave da Chama Celeste",
+      "archetypeTag": "tempo",
+      "generationsTrained": 19,
+      "matchesSimulated": 7104,
+      "baselineWinRate": 0.472,
+      "trainedWinRate": 0.657,
+      "weights": {
+        "aggroFaceBias": 1.16,
+        "tradeValueBias": 1.2,
+        "guardianPriority": 0.94,
+        "flyingEvasionBias": 1.41,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1.19,
+        "relicPriority": 1.04,
+        "ascensionEagerness": 0.98,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 0.96,
+        "sovPowerTempoBias": 1,
+        "synergyHoldBonus": 22,
+        "mulliganCurveTarget": 2.8
+      },
+      "mk": [
+        300,
+        159,
+        913,
+        272,
+        784,
+        70
+      ],
+      "cp": [
+        335,
+        70,
+        403,
+        715,
+        457,
+        943,
+        278,
+        942,
+        1011,
+        57
+      ],
+      "ca": [
+        11,
+        58,
+        159,
+        272,
+        300,
+        460,
+        784,
+        816,
+        880,
+        892,
+        913,
+        1029
+      ],
+      "hb": [
+        [
+          11,
+          14.7
+        ],
+        [
+          54,
+          7.7
+        ],
+        [
+          58,
+          14
+        ],
+        [
+          159,
+          18.6
+        ],
+        [
+          205,
+          12.7
+        ],
+        [
+          226,
+          12.5
+        ],
+        [
+          272,
+          16.8
+        ],
+        [
+          278,
+          7
+        ],
+        [
+          300,
+          20.8
+        ],
+        [
+          421,
+          7.4
+        ],
+        [
+          457,
+          13.6
+        ],
+        [
+          460,
+          10.4
+        ],
+        [
+          784,
+          20.3
+        ],
+        [
+          816,
+          24
+        ],
+        [
+          880,
+          24
+        ],
+        [
+          892,
+          13
+        ],
+        [
+          913,
+          18.2
+        ],
+        [
+          1029,
+          15.8
+        ],
+        [
+          1034,
+          13.2
+        ],
+        [
+          1035,
+          17
+        ],
+        [
+          1037,
+          17.1
+        ],
+        [
+          1050,
+          13.4
+        ],
+        [
+          1056,
+          14.4
+        ],
+        [
+          1116,
+          20
+        ],
+        [
+          1118,
+          20
+        ],
+        [
+          1119,
+          20
+        ]
+      ],
+      "sp": [
+        [
+          816,
+          159
+        ],
+        [
+          816,
+          784
+        ],
+        [
+          816,
+          892
+        ],
+        [
+          816,
+          278
+        ],
+        [
+          913,
+          1034
+        ],
+        [
+          816,
+          300
+        ],
+        [
+          816,
+          272
+        ],
+        [
+          816,
+          913
+        ],
+        [
+          1035,
+          272
+        ],
+        [
+          816,
+          11
+        ]
+      ],
+      "dc": [
+        [
+          1037,
+          300,
+          1,
+          0.373,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          226,
+          11,
+          1,
+          0.373,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          816,
+          278,
+          0.923,
+          0.296,
+          13,
+          " (92% WR em 13 duelos cruzados)"
+        ],
+        [
+          892,
+          22,
+          0.909,
+          0.282,
+          11,
+          " (91% WR em 11 duelos cruzados)"
+        ],
+        [
+          54,
+          457,
+          0.909,
+          0.282,
+          11,
+          " (91% WR em 11 duelos cruzados)"
+        ],
+        [
+          58,
+          11,
+          0.903,
+          0.277,
+          31,
+          " (90% WR em 31 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        1037,
+        0.1574,
+        0.0009,
+        0.1565,
+        0.85,
+        0.718,
+        20
+      ],
+      [
+        11,
+        0.1054,
+        0.0506,
+        0.0548,
+        0.781,
+        0.374,
+        219
+      ],
+      [
+        1056,
+        0.0978,
+        -0.1501,
+        0.2479,
+        0.8,
+        0.909,
+        10
+      ],
+      [
+        816,
+        0.09,
+        -0.0171,
+        0.107,
+        0.767,
+        0.4,
+        60
+      ],
+      [
+        58,
+        0.0853,
+        0.0045,
+        0.0808,
+        0.764,
+        0.442,
+        106
+      ],
+      [
+        457,
+        0.0792,
+        -0.064,
+        0.1432,
+        0.781,
+        0.906,
+        32
+      ],
+      [
+        1050,
+        0.0751,
+        -0.1965,
+        0.2716,
+        0.778,
+        0.919,
+        9
+      ],
+      [
+        205,
+        0.0608,
+        0.0005,
+        0.0603,
+        0.737,
+        0.381,
+        205
+      ],
+      [
+        226,
+        0.0551,
+        -0.0989,
+        0.154,
+        0.742,
+        0.603,
+        31
+      ],
+      [
+        784,
+        0.0526,
+        -0.0112,
+        0.0639,
+        0.717,
+        0.159,
+        191
+      ],
+      [
+        1029,
+        0.052,
+        -0.1602,
+        0.2122,
+        0.75,
+        0.826,
+        16
+      ],
+      [
+        1035,
+        0.0504,
+        -0.1291,
+        0.1795,
+        0.739,
+        0.641,
+        23
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwICAgAAAAAABAQBAQEAAAAAAAAEBAIDAAQCBAQAAAAAAAEBAQAAAAQEBAQEAQEBBAQBAQEEBAICAwMDAAQAAgQEAwAEBCXJyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZFAQECenpOTk6CgFhYWAwMDzc3NJVhuLDRSblNTNDQmJiZCQkI2NjYoKChUVJOTk1JSzMzMZGTIyC4uLJ4ln25UoCwlZFM=",
+        0,
+        0,
+        75,
+        25,
+        2.82,
+        0.029,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwICAgAAAAAABAQBAQEAAAAAAAAEBAIDBAQCBAQBAQAAAAEBAQAAAAQEBAQEAQEBBAQBAQEEBAICAwMDAAQAAgQEAwAEBCXJyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZFAQECenpOTk6AaFhYWAwMDzc3NJVhuLCBSblNTRUUmJiZCQkI2NjYoKChUVJOTk1JSzMzMZGTLyy4uLJ4ln25UoCwlZFM=",
+        0,
+        6,
+        69,
+        25,
+        2.89,
+        0.363,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "BAEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwQEAgICAAAABAQBAQEAAAAAAAAEBAIDBAIEAAABAQAAAAEBAQAAAAMDBAQEAQEBBAQBAQEEBAICAwMDAAQAAgQAAwABBCXJyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZENX0BAQJOTkxoaFhYWAwMDzc3NJVhuLCBuXkZGRUUmJiZCQkI2NjavryhSVJOTk1JSzMzMZGTLyy4uLJkln25UmSwloFQ=",
+        3,
+        14,
+        59,
+        24,
+        2.94,
+        0.67,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "BAEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwQEAgIDAAAABAQBAQEAAAAAAAAEBAQDBAIEAAABAQAAAAEBAQAAAAMDAwICAQEBAgIBAQEBAQICAwMDAAQAAAMAAwABA1zJyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZENX0BAEJOTkxoaFhYWAwMDzc3NJSULLCBuXkZGRUUmJiZCQkI2Njavr67NzZOTk25uzMzMT0/Lyy4uLJkln+LzmSwloPM=",
+        6,
+        22,
+        50,
+        22,
+        3.13,
+        0.712,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "BAEBAQAAAAAAAAEBAQMDAwMDAwICAgEBAQEBAQMDAwQEBAMDAAAABAQBAQEAAAAAAAAAAAQEBAMEAAABAQAAAAEBAQAAAAMDAwICAQEBAAABAQEBAQICAwMBAAIAAAMAAwABA1zJyckLCwvd3d0sLCyNjY18fHw9PT0QEBClpaWRkZENXwcQEJOTkxoaFhYWAwMDzc3NFhYLBSAwXkZGRUUmJiZCQkI2Njavr67NzZOTkzo6zMzMT0/Lyy4umJlin+LzmSwloPM=",
+        10,
+        28,
+        40,
+        22,
+        3.42,
+        0.75,
+        0.025
+      ]
+    ]
   },
   "penta_prismatic_crater": {
     "archetypeId": "penta_prismatic_crater",
     "tierFormat": "pentachromatic",
-    "domains": ["red","blue","purple","green","gold"],
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "green",
+      "gold"
+    ],
     "conclaveId": "pentachromatic_apex",
-    "classicDeckIds": ["deck_spec_pentachromatic"],
+    "classicDeckIds": [
+      "deck_spec_pentachromatic"
+    ],
     "name": "Soberania da Cratera Prismática",
     "subtitle": "Ápice Pentacromático 🔥❄️💀🌿☀️ • Dragões do Prisma & Primeira Fratura",
     "strategySummary": "Canaliza os cinco domínios primordiais através de Arautos e Dragões da Cratera Prismática para desencadear Sopro, Voo e Expansão no Turno 4.",
     "tacticalIdentity": "ramp",
     "coverCardId": "neutral_167_arauto_prisma_matriz",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6516,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7320,
     "seedWinRate": 0.542,
-    "championWinRate": 0.545,
+    "championWinRate": 0.517,
     "vsMonocolorWinRate": 0.672,
     "vsBicolorWinRate": 0.483,
-    "championDeckJaccardStability": 0.923,
+    "championDeckJaccardStability": 0.905,
     "medianCardCi95HalfWidth": 0.086,
-    "domainCardBreakdown": {"neutral":20,"gold":13,"red":26,"blue":15,"purple":13,"green":13},
-    "crossDomainCombos": [[1035,11,1,0.485,8," (100% WR em 8 duelos cruzados)"],[1033,236,1,0.455,8," (100% WR em 8 duelos cruzados)"],[37,839,0.929,0.414,14," (93% WR em 14 duelos cruzados)"],[816,145,0.9,0.385,10," (90% WR em 10 duelos cruzados)"],[834,605,0.889,0.374,9," (89% WR em 9 duelos cruzados)"],[839,300,0.882,0.368,17," (88% WR em 17 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"penta_prismatic_crater","deckName":"Soberania da Cratera Prismática","archetypeTag":"ramp","generationsTrained":13,"matchesSimulated":6516,"baselineWinRate":0.542,"trainedWinRate":0.542,"weights":{"aggroFaceBias":1.18,"tradeValueBias":1.21,"guardianPriority":1,"flyingEvasionBias":1.25,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":0.94,"relicPriority":1.02,"ascensionEagerness":1.31,"bloodPactThresholdHp":24,"domainExpansionEagerness":1.32,"sovPowerTempoBias":1,"synergyHoldBonus":20,"mulliganCurveTarget":2.9},"mk":[37,300,126,591,145],"cp":[644,166,834,838,194,816,58,396,796,90],"ca":[11,37,126,145,189,272,300,816,839,853,862,1028],"hb":[[11,16.5],[37,24],[58,13.6],[126,17],[145,15.2],[189,24],[221,6.5],[236,7.4],[272,15.1],[300,24],[816,18.4],[839,24],[853,19.7],[862,18],[1028,24],[1031,23.7],[1032,17.4],[1033,24],[1035,24]],"sp":[[839,300],[1035,300],[839,11],[272,839],[1033,300],[189,300],[37,853],[126,1032],[853,300],[145,839]],"dc":[[1035,11,1,0.485,8," (100% WR em 8 duelos cruzados)"],[1033,236,1,0.455,8," (100% WR em 8 duelos cruzados)"],[37,839,0.929,0.414,14," (93% WR em 14 duelos cruzados)"],[816,145,0.9,0.385,10," (90% WR em 10 duelos cruzados)"],[834,605,0.889,0.374,9," (89% WR em 9 duelos cruzados)"],[839,300,0.882,0.368,17," (88% WR em 17 duelos cruzados)"]]},
-    "topShapleyCards": [[1033,0.4149,0.3626,0.0524,1,0.806,14],[1028,0.4096,0.3355,0.0741,1,0.912,7],[175,0.4075,0.3198,0.0877,1,0.955,5],[1035,0.2978,0.1447,0.1532,0.882,0.795,17],[890,0.2976,0.0923,0.2053,0.889,0.931,9],[1034,0.2869,0.0577,0.2292,0.875,0.867,8],[58,0.2844,0.0552,0.2292,0.875,0.917,8],[1032,0.2304,0.0392,0.1913,0.813,0.746,16],[834,0.2139,0.0386,0.1753,0.8,0.826,20],[839,0.1603,0.0299,0.1304,0.744,0.783,43],[862,0.1427,-0.0811,0.2238,0.733,0.917,15],[816,0.0977,-0.0215,0.1192,0.678,0.709,59]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AwEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAMDAwMDAQEBAQAAAAAAAAAAAgIAAAAAAAACAAICAgACAgEBAgICAgEBAAAAAAMDAwMDAAEBAQEDAwICAgACAQEBAQIBAQMAAAEAA58QEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxVVVWfn4uMjIzOzgMDA83NzQgIJiYmJSUlCDYdHX9ZHX8DaTGTMTFpaa6Tk65paRwcHDbMzMyLrKxdXV3OtSYmdyZ/iwNCQ2oDH0I=",0,0,76,24,2.92,0.051,0.025],[2,"Tier II • Guarnição Regular","AwEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAMDAwMDAAEBAQAAAAAAAAAAAgIAAAAAAAACAAICAgACAgEBAAAAAAEBAAAAAAMDAwMDAAEBAQEDAwICAgACAQEBAQIBAQMBAAEAA58QEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxVVVWfn8KMjIzOzgMDA83NzQgIJiYmJSUlCDYdHX9ZHX8DaY+PcnJpaa6Tk65paRwcHDbMzMyLrKxdXV3OtSYmdyZ/iwNCoGoDH0I=",0,6,70,24,2.92,0.372,0.025],[3,"Tier III • Bastião Veterano","AwEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAMDAwQDAAEBAQAAAAAAAAAABAIAAAAAAAADAwICAgACAgEBAAAAAAEBAAAAAAMDAwMDAAEBAQMDAwICAgACAQEBAQIDAQMBAAEAA+QQEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxVVVUIn8KMjIzOzgMDA83NzQsIJiYmJSUlMDAdHX9MHX8DaY+PcnJpaa+Tk69paRwcHDrMzMx6rKxdXV3OtSYmdyZ/egNCoGoDH0I=",3,14,59,24,3.11,0.666,0.025],[4,"Tier IV • Elite do Alto Trono","AwEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAMDAwQDAAEBAQQAAAAAAAAABAQAAAAAAAADAwIEAAADAwEBAAAAAAAAAAAAAAMDAwMDAAEBAQMDAwICAgMDAQEBAQADAQMBAAEAA+QQEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxVVVUIn8KMjIwKzgMDA83NzQsFJiYmJSUlMDAdCUxMR0cDaY+PcnJ+fq+Tk69paRwcHDrMzMx6rKxdXV0eHiYmdyZdegNCoGoDH0I=",6,22,48,24,3.36,0.694,0.025],[5,"Tier V • Campeão Soberano Ápice","AwEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAMDAwQAAAEBAQQEAAAAAAAABAQAAAAAAAADAwQEAAADAwMDAAAAAAAAAAAAAAMDAwMDAAEBAQMDAwICAgMDAQEEAQADAgMBAAMAA+QQEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxVVVUIvcKMjIwKBAMDA83NzQsFJiYmJSUlMDADCUxMR0deXo+PcnJ+fq+Tk69paRwcHDrMzMx6rKxdXV0eHiYmByZdeplCoGr0H0I=",10,26,40,24,3.63,0.726,0.025]]
+    "domainCardBreakdown": {
+      "neutral": 20,
+      "gold": 13,
+      "red": 26,
+      "blue": 15,
+      "purple": 13,
+      "green": 13
+    },
+    "crossDomainCombos": [
+      [
+        76,
+        834,
+        1,
+        0.483,
+        11,
+        " (100% WR em 11 duelos cruzados)"
+      ],
+      [
+        834,
+        460,
+        0.923,
+        0.436,
+        13,
+        " (92% WR em 13 duelos cruzados)"
+      ],
+      [
+        839,
+        11,
+        0.9,
+        0.413,
+        10,
+        " (90% WR em 10 duelos cruzados)"
+      ],
+      [
+        37,
+        839,
+        0.833,
+        0.346,
+        12,
+        " (83% WR em 12 duelos cruzados)"
+      ],
+      [
+        591,
+        834,
+        0.824,
+        0.336,
+        17,
+        " (82% WR em 17 duelos cruzados)"
+      ],
+      [
+        272,
+        890,
+        0.818,
+        0.331,
+        11,
+        " (82% WR em 11 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "penta_prismatic_crater",
+      "deckName": "Soberania da Cratera Prismática",
+      "archetypeTag": "ramp",
+      "generationsTrained": 19,
+      "matchesSimulated": 7320,
+      "baselineWinRate": 0.542,
+      "trainedWinRate": 0.517,
+      "weights": {
+        "aggroFaceBias": 1.18,
+        "tradeValueBias": 1.21,
+        "guardianPriority": 1,
+        "flyingEvasionBias": 1.25,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 0.94,
+        "relicPriority": 1.02,
+        "ascensionEagerness": 1.31,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 1.32,
+        "sovPowerTempoBias": 1,
+        "synergyHoldBonus": 20,
+        "mulliganCurveTarget": 2.9
+      },
+      "mk": [
+        37,
+        300,
+        126,
+        591,
+        145
+      ],
+      "cp": [
+        644,
+        166,
+        834,
+        838,
+        194,
+        816,
+        58,
+        396,
+        796,
+        90
+      ],
+      "ca": [
+        11,
+        37,
+        126,
+        145,
+        189,
+        272,
+        300,
+        816,
+        839,
+        853,
+        862,
+        1028
+      ],
+      "hb": [
+        [
+          11,
+          16.5
+        ],
+        [
+          37,
+          24
+        ],
+        [
+          58,
+          13.6
+        ],
+        [
+          126,
+          17
+        ],
+        [
+          145,
+          15.2
+        ],
+        [
+          189,
+          24
+        ],
+        [
+          221,
+          6.5
+        ],
+        [
+          236,
+          7.4
+        ],
+        [
+          272,
+          15.1
+        ],
+        [
+          300,
+          24
+        ],
+        [
+          816,
+          18.4
+        ],
+        [
+          834,
+          17.5
+        ],
+        [
+          839,
+          24
+        ],
+        [
+          853,
+          19.7
+        ],
+        [
+          862,
+          18
+        ],
+        [
+          866,
+          19
+        ],
+        [
+          890,
+          15.5
+        ],
+        [
+          1028,
+          24
+        ],
+        [
+          1031,
+          23.7
+        ],
+        [
+          1032,
+          17.4
+        ],
+        [
+          1033,
+          24
+        ],
+        [
+          1034,
+          24
+        ],
+        [
+          1035,
+          24
+        ],
+        [
+          1101,
+          11
+        ],
+        [
+          1131,
+          15
+        ],
+        [
+          1133,
+          20
+        ]
+      ],
+      "sp": [
+        [
+          839,
+          300
+        ],
+        [
+          1035,
+          300
+        ],
+        [
+          839,
+          11
+        ],
+        [
+          272,
+          839
+        ],
+        [
+          1033,
+          300
+        ],
+        [
+          189,
+          300
+        ],
+        [
+          37,
+          853
+        ],
+        [
+          126,
+          1032
+        ],
+        [
+          853,
+          300
+        ],
+        [
+          145,
+          839
+        ]
+      ],
+      "dc": [
+        [
+          76,
+          834,
+          1,
+          0.483,
+          11,
+          " (100% WR em 11 duelos cruzados)"
+        ],
+        [
+          834,
+          460,
+          0.923,
+          0.436,
+          13,
+          " (92% WR em 13 duelos cruzados)"
+        ],
+        [
+          839,
+          11,
+          0.9,
+          0.413,
+          10,
+          " (90% WR em 10 duelos cruzados)"
+        ],
+        [
+          37,
+          839,
+          0.833,
+          0.346,
+          12,
+          " (83% WR em 12 duelos cruzados)"
+        ],
+        [
+          591,
+          834,
+          0.824,
+          0.336,
+          17,
+          " (82% WR em 17 duelos cruzados)"
+        ],
+        [
+          272,
+          890,
+          0.818,
+          0.331,
+          11,
+          " (82% WR em 11 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        1034,
+        0.3405,
+        0.1546,
+        0.1859,
+        0.9,
+        0.841,
+        10
+      ],
+      [
+        189,
+        0.2383,
+        -0.0097,
+        0.2479,
+        0.8,
+        0.886,
+        10
+      ],
+      [
+        866,
+        0.2008,
+        -0.0993,
+        0.3001,
+        0.75,
+        0.636,
+        8
+      ],
+      [
+        1033,
+        0.181,
+        -0.017,
+        0.198,
+        0.737,
+        0.768,
+        19
+      ],
+      [
+        834,
+        0.1677,
+        0.0729,
+        0.0948,
+        0.721,
+        0.716,
+        86
+      ],
+      [
+        1035,
+        0.1675,
+        -0.0957,
+        0.2632,
+        0.727,
+        0.847,
+        11
+      ],
+      [
+        1032,
+        0.1576,
+        -0.079,
+        0.2366,
+        0.714,
+        0.785,
+        14
+      ],
+      [
+        862,
+        0.1411,
+        -0.0598,
+        0.2008,
+        0.7,
+        0.831,
+        20
+      ],
+      [
+        890,
+        0.1212,
+        -0.0878,
+        0.209,
+        0.684,
+        0.912,
+        19
+      ],
+      [
+        1031,
+        0.1034,
+        -0.2738,
+        0.3772,
+        0.667,
+        0.918,
+        6
+      ],
+      [
+        11,
+        0.0767,
+        0.018,
+        0.0587,
+        0.603,
+        0.178,
+        267
+      ],
+      [
+        37,
+        0.0752,
+        0.0182,
+        0.057,
+        0.596,
+        0.078,
+        285
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAQEAwQEBAEBAQQEAAAAAAAABAAAAAAAAAAABAICBAQCBAQEBAQEBAQEBAAABAMDAwMDBAEBAQQDAwICAgQCAQEBAQMEBAMAAAQAA08QEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxDTVVPT5qMjIxaWgMDA83NzVNDJiYmJSUlQ1MdHUZGHUZyQ3JyIiJNIpKTk5JpaRwcHFPMzMyarKxdXV1atSYmdyZCmk1CQ2pDH0I=",
+        0,
+        0,
+        76,
+        24,
+        2.9,
+        0.051,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAQEAwQEAAEBAQQEAAAAAAAABAAAAAAAAAAEBAICBAQCBAQEAAAEAAQEBAAABAMDAwMDBAEBAQQDAwICAgQCAQEBAQMEBAMBAAQAA08QEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxDTVVPT8KMjIxaWgMDA83NzVNDJiYmJSUla1MdHUZGHUZyQ4+PInJNIpKTk5JpaRwcHFPMzMyarKxdXV1atSYmdyZCmk1CoGpDH0I=",
+        0,
+        6,
+        70,
+        24,
+        2.95,
+        0.372,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "AwEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAQEAwQEAAEBAQQEAAAAAAAABAQAAAAAAAAEAwICAAACBAMEAAAAAAQEAAAAAAMDAwMDAAEBAQQDAwICAgQCAQEBAQMEBAMBAAQAA+QQEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxDTVUIT8KMjIxaWgMDA83NzVNtJiYmJSUlazAdHUxMHUZiQ4+PcnJNIq+Tk69paRwcHDrMzMxPrKxdXV1atSYmdyZCT01CoGpDH0I=",
+        3,
+        14,
+        59,
+        24,
+        3.14,
+        0.666,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "AwEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAMEAwQEAAEBAQQEAAAAAAAABAQAAAAAAAAEAwIEAAACAwMDAAAAAAAAAAAAAAMDAwMDAAEBAQMDAwICAgQEAQEBAQMDAgMBAAQAA+QQEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxeTVUIT8KMjIwKWgMDA83NzQttJiYmJSUlazAdCUxMHUdiXo+PcnJ+fq+Tk69paRwcHDrMzMx6rKxdXV1aWiYmdyZCeplCoGpDH0I=",
+        6,
+        22,
+        48,
+        24,
+        3.36,
+        0.694,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "AwEBAQAAAAICAgAAAAMDAwEBAQAAAAAAAAMEAwQAAAEBAQQEAAAAAAAABAQAAAAAAAAEAwQEAAADAwMDAAAAAAAAAAAAAAMDAwMDAAEBAQMDAwICAgMDAQEEAQMDAgMBAAMAA+QQEBCRkZFPT08LCwuNjY0sLCzd3d3s7OxeTVUIvcKMjIwKBAMDA83NzQttJiYmJSUlazADCUxMR0diXo+PcnJ+fq+Tk69paRwcHDrMzMx6rKxdXV0eHiYmByZCeplCoGr0H0I=",
+        10,
+        26,
+        40,
+        24,
+        3.62,
+        0.726,
+        0.025
+      ]
+    ]
   },
   "penta_free_city_sovereign": {
     "archetypeId": "penta_free_city_sovereign",
     "tierFormat": "pentachromatic",
-    "domains": ["gold","green","red","blue","purple"],
+    "domains": [
+      "gold",
+      "green",
+      "red",
+      "blue",
+      "purple"
+    ],
     "conclaveId": "pentachromatic_apex",
-    "classicDeckIds": ["deck_penta_valkyra_pact"],
+    "classicDeckIds": [
+      "deck_penta_valkyra_pact"
+    ],
     "name": "Concílio Supremo da Cidade Franca",
     "subtitle": "Ápice Pentacromático ☀️🌿🔥❄️💀+⚙️ • Valkyra & Torre dos Cinco Selos",
     "strategySummary": "Une Valkyra, os Cinco Anciões Cromáticos e a elite da Cidade Franca em uma falange pentacromática de Escudo Divino, Ímpeto e hinos globais.",
     "tacticalIdentity": "midrange",
     "coverCardId": "neutral_10_valkyra_pentacromatica",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6304,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7108,
     "seedWinRate": 0.319,
-    "championWinRate": 0.527,
+    "championWinRate": 0.53,
     "vsMonocolorWinRate": 0.641,
     "vsBicolorWinRate": 0.4,
-    "championDeckJaccardStability": 0.961,
+    "championDeckJaccardStability": 0.905,
     "medianCardCi95HalfWidth": 0.0894,
-    "domainCardBreakdown": {"neutral":24,"green":17,"blue":18,"gold":15,"red":13,"purple":13},
-    "crossDomainCombos": [[1035,126,1,0.503,9," (100% WR em 9 duelos cruzados)"],[784,863,0.929,0.431,14," (93% WR em 14 duelos cruzados)"],[349,205,0.917,0.419,12," (92% WR em 12 duelos cruzados)"],[984,11,0.917,0.419,12," (92% WR em 12 duelos cruzados)"],[272,314,0.913,0.416,23," (91% WR em 23 duelos cruzados)"],[863,11,0.909,0.412,11," (91% WR em 11 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"penta_free_city_sovereign","deckName":"Concílio Supremo da Cidade Franca","archetypeTag":"midrange","generationsTrained":13,"matchesSimulated":6304,"baselineWinRate":0.319,"trainedWinRate":0.438,"weights":{"aggroFaceBias":1.14,"tradeValueBias":1.2,"guardianPriority":1.32,"flyingEvasionBias":1.27,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":1.01,"relicPriority":1.01,"ascensionEagerness":1,"bloodPactThresholdHp":24,"domainExpansionEagerness":1.31,"sovPowerTempoBias":1.05,"synergyHoldBonus":21,"mulliganCurveTarget":2.5},"mk":[126,11,101,810,591,922],"cp":[175,126,717,483,349,680,11,38,205,916],"ca":[11,48,101,114,126,140,175,189,272,349,595,784],"hb":[[11,11.1],[48,11.6],[101,24],[114,20.6],[126,18.9],[140,24],[175,19.5],[189,24],[272,12.8],[349,18.7],[595,24],[680,14],[780,13.6],[784,24],[853,14.9],[863,24],[880,24],[922,15.8],[984,24],[1032,24],[1034,24],[1035,24],[1036,23.4],[1037,24]],"sp":[[189,595],[272,189],[784,1032],[101,1034],[189,101],[853,189],[140,922],[126,1032],[272,1032],[1035,101]],"dc":[[1035,126,1,0.503,9," (100% WR em 9 duelos cruzados)"],[784,863,0.929,0.431,14," (93% WR em 14 duelos cruzados)"],[349,205,0.917,0.419,12," (92% WR em 12 duelos cruzados)"],[984,11,0.917,0.419,12," (92% WR em 12 duelos cruzados)"],[272,314,0.913,0.416,23," (91% WR em 23 duelos cruzados)"],[863,11,0.909,0.412,11," (91% WR em 11 duelos cruzados)"]]},
-    "topShapleyCards": [[1035,0.2686,0.1195,0.1491,0.833,0.747,24],[880,0.2593,-0.0389,0.2982,0.833,0.933,6],[1034,0.2474,0.0195,0.2279,0.818,0.867,11],[890,0.2244,-0.1262,0.3506,0.8,0.965,5],[1036,0.182,-0.0078,0.1898,0.75,0.813,20],[935,0.1745,0.0746,0.0999,0.718,0.322,78],[863,0.1705,0.0052,0.1653,0.741,0.858,27],[140,0.1557,0.0061,0.1497,0.714,0.624,35],[189,0.1555,-0.1077,0.2632,0.727,0.888,11],[210,0.1551,-0.0518,0.2069,0.722,0.795,18],[1037,0.1539,-0.0531,0.2069,0.722,0.82,18],[314,0.143,0.0286,0.1145,0.705,0.69,61]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AwICAgMDAwMDAwMDAwEBAQEBAQABAQAAAAICAgAAAAMDAwMDAAABAQEBAQEAAAEAAQECAgAAAAAAAAAAAAEBAQAAAAAAAAAAAAEBAwMDAwEBAgICAwMDAQMDAQAAAQAAAAABAZhPT098jY1VVVUqKioQEBCwsLDVyckLCwuPj48wMDCYmJqampKSGxYbGwUFiooFigkJXV3Nzc02398mJiZCQkJbW2VlZVlZWVtTU6amrKwDA1NTU5SUlAmsphaSapMf1TY2Flw=",0,0,76,24,2.87,0.051,0.025],[2,"Tier II • Guarnição Regular","AwICAgMDAwMDAwMDAwEBAQEBAQABAQAAAAICAgAAAAMDAwMDAAABAQEBAQEAAAEAAQECAgAAAAABAQAAAAEBAQAAAAAAAAAAAAEBAwMDAwEBAgICAwMDAQMDAQAAAQAAAAABAZhPT0+njY1VVVUqKioQEBCwsLDVyckLCwuPj48wMDCYmJqampKSGxYbGwUFiooFigkJXV3Nzc02RUUmJiZCQkJbW2VlZVlZWVtTXq+vrKwDA1NTU5SUlAmsphaSapMf1TY2Flw=",0,6,71,23,2.89,0.372,0.025],[3,"Tier III • Bastião Veterano","AAICAgMDAwMDAwMDAwEBAQEBAQABAQAAAAICAgAAAAMDAwMDAAAAAAEBBAEAAAEBAQECAgAAAAQBAQAAAAEBAQICAAAAAAAAAAEBAwMDAwAAAgICAwMDAAMDAQAAAQAAAAADAb1PT0+njY1VVVUqKioQEBCwsLDVyckLCwuPj48wMDCYmJqampKSr68bGwwFiooFBQkJXV3Nzc0LRUUmJiZCQkKNjWVlZVlZWVteXq+vmKx+flNTU5SUlIqsrBaSapMf1TY2bVw=",3,14,60,23,3.02,0.666,0.025],[4,"Tier IV • Elite do Alto Trono","AAICAgMDAwMDAwMDAwEBAQEBAQABAQAAAAICAgAAAAMDAwMDBAAAAAABBAEAAAEBAAAEAgAAAAQBAQAAAAEBAQICAAAAAAABAQEBAwMDAwAAAgICAwMDAAMDAQAAAQAAAgIDAb1PT0+njY1VVVUqKioQEBCwsLDVyckLCwuPj48wMDCY5Jqamg2Sr6+SGwwFiooFBXJyCl3Nzc0LRUUmJiZCQkKNjWVlZVlZXV1eXq+vmJh+flNTU5SUlIp62BaSapMf1c3NbVw=",6,22,49,23,3.14,0.694,0.025],[5,"Tier V • Campeão Soberano Ápice","AAICAgMDAwMDAwMDAwEBAQEBAQEBAQAAAAICAgAAAAQDAwMDBAMAAAMDBAAAAAMDAAAEAAAAAAQBAQAAAAEBAQICAAAAAgIBAQEBAwMDAwAAAgICAwMDAgMDAwIAAQABAgIDAb1PT0+njY1VVVUqKioQEBCwsLA6yckLCwuPj48wMDAI5Jqamg1wr68QEAyMc3NfX3JyCtLNzc0LRUUmJiZCQkKNjWVlZeDgXV1eXq+vsLB+flNTU5SUlJh62AyoapMfOs3NbVw=",10,37,30,23,3.51,0.726,0.025]]
+    "domainCardBreakdown": {
+      "neutral": 24,
+      "green": 17,
+      "blue": 18,
+      "gold": 15,
+      "red": 13,
+      "purple": 13
+    },
+    "crossDomainCombos": [
+      [
+        780,
+        655,
+        1,
+        0.5,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        784,
+        984,
+        0.909,
+        0.409,
+        11,
+        " (91% WR em 11 duelos cruzados)"
+      ],
+      [
+        784,
+        736,
+        0.889,
+        0.389,
+        27,
+        " (89% WR em 27 duelos cruzados)"
+      ],
+      [
+        1074,
+        595,
+        0.889,
+        0.389,
+        9,
+        " (89% WR em 9 duelos cruzados)"
+      ],
+      [
+        1059,
+        935,
+        0.875,
+        0.375,
+        8,
+        " (88% WR em 8 duelos cruzados)"
+      ],
+      [
+        736,
+        101,
+        0.897,
+        0.367,
+        29,
+        " (90% WR em 29 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "penta_free_city_sovereign",
+      "deckName": "Concílio Supremo da Cidade Franca",
+      "archetypeTag": "midrange",
+      "generationsTrained": 19,
+      "matchesSimulated": 7108,
+      "baselineWinRate": 0.319,
+      "trainedWinRate": 0.53,
+      "weights": {
+        "aggroFaceBias": 1.14,
+        "tradeValueBias": 1.2,
+        "guardianPriority": 1.32,
+        "flyingEvasionBias": 1.27,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1.01,
+        "relicPriority": 1.01,
+        "ascensionEagerness": 1,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 1.31,
+        "sovPowerTempoBias": 1.05,
+        "synergyHoldBonus": 21,
+        "mulliganCurveTarget": 2.5
+      },
+      "mk": [
+        126,
+        11,
+        101,
+        810,
+        591,
+        922
+      ],
+      "cp": [
+        175,
+        126,
+        717,
+        483,
+        349,
+        680,
+        11,
+        38,
+        205,
+        916
+      ],
+      "ca": [
+        11,
+        48,
+        101,
+        114,
+        126,
+        140,
+        175,
+        189,
+        272,
+        349,
+        595,
+        784
+      ],
+      "hb": [
+        [
+          11,
+          11.1
+        ],
+        [
+          48,
+          11.6
+        ],
+        [
+          101,
+          24
+        ],
+        [
+          114,
+          20.6
+        ],
+        [
+          126,
+          18.9
+        ],
+        [
+          140,
+          24
+        ],
+        [
+          175,
+          19.5
+        ],
+        [
+          189,
+          24
+        ],
+        [
+          272,
+          12.8
+        ],
+        [
+          349,
+          18.7
+        ],
+        [
+          595,
+          24
+        ],
+        [
+          664,
+          18
+        ],
+        [
+          680,
+          14
+        ],
+        [
+          780,
+          17.7
+        ],
+        [
+          784,
+          24
+        ],
+        [
+          853,
+          14.9
+        ],
+        [
+          863,
+          24
+        ],
+        [
+          880,
+          24
+        ],
+        [
+          922,
+          15.8
+        ],
+        [
+          935,
+          14.9
+        ],
+        [
+          984,
+          24
+        ],
+        [
+          1032,
+          24
+        ],
+        [
+          1034,
+          24
+        ],
+        [
+          1035,
+          24
+        ],
+        [
+          1036,
+          23.4
+        ],
+        [
+          1037,
+          24
+        ],
+        [
+          1050,
+          15
+        ],
+        [
+          1059,
+          15
+        ],
+        [
+          1068,
+          20
+        ],
+        [
+          1074,
+          20
+        ],
+        [
+          1079,
+          20
+        ]
+      ],
+      "sp": [
+        [
+          189,
+          595
+        ],
+        [
+          272,
+          189
+        ],
+        [
+          784,
+          1032
+        ],
+        [
+          101,
+          1034
+        ],
+        [
+          189,
+          101
+        ],
+        [
+          853,
+          189
+        ],
+        [
+          140,
+          922
+        ],
+        [
+          126,
+          1032
+        ],
+        [
+          272,
+          1032
+        ],
+        [
+          1035,
+          101
+        ]
+      ],
+      "dc": [
+        [
+          780,
+          655,
+          1,
+          0.5,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          784,
+          984,
+          0.909,
+          0.409,
+          11,
+          " (91% WR em 11 duelos cruzados)"
+        ],
+        [
+          784,
+          736,
+          0.889,
+          0.389,
+          27,
+          " (89% WR em 27 duelos cruzados)"
+        ],
+        [
+          1074,
+          595,
+          0.889,
+          0.389,
+          9,
+          " (89% WR em 9 duelos cruzados)"
+        ],
+        [
+          1059,
+          935,
+          0.875,
+          0.375,
+          8,
+          " (88% WR em 8 duelos cruzados)"
+        ],
+        [
+          736,
+          101,
+          0.897,
+          0.367,
+          29,
+          " (90% WR em 29 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        1032,
+        0.2354,
+        0.0786,
+        0.1568,
+        0.8,
+        0.695,
+        25
+      ],
+      [
+        863,
+        0.1963,
+        -0.0327,
+        0.229,
+        0.769,
+        0.862,
+        13
+      ],
+      [
+        1037,
+        0.1934,
+        0.026,
+        0.1674,
+        0.76,
+        0.734,
+        25
+      ],
+      [
+        664,
+        0.178,
+        -0.0342,
+        0.2122,
+        0.75,
+        0.843,
+        16
+      ],
+      [
+        189,
+        0.1758,
+        -0.1243,
+        0.3001,
+        0.75,
+        0.887,
+        8
+      ],
+      [
+        780,
+        0.171,
+        -0.0084,
+        0.1795,
+        0.739,
+        0.765,
+        23
+      ],
+      [
+        175,
+        0.1569,
+        -0.0669,
+        0.2238,
+        0.733,
+        0.932,
+        15
+      ],
+      [
+        1036,
+        0.1522,
+        -0.0548,
+        0.2069,
+        0.722,
+        0.804,
+        18
+      ],
+      [
+        595,
+        0.1342,
+        0.0689,
+        0.0653,
+        0.686,
+        0.429,
+        194
+      ],
+      [
+        935,
+        0.1081,
+        0.0198,
+        0.0882,
+        0.652,
+        0.277,
+        112
+      ],
+      [
+        101,
+        0.1014,
+        0.0436,
+        0.0578,
+        0.644,
+        0.254,
+        264
+      ],
+      [
+        1034,
+        0.0961,
+        -0.1425,
+        0.2386,
+        0.667,
+        0.815,
+        15
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAICAgQDAwMDAwMDAwEBAQEBAQQBAQAAAAICAgAAAAQEAwMDAgIBAQIBBAQBAQQEBAQEBAAAAAQEBAAAAAEBAQQEAAAABAQEBAEBBAQEBAQEAgICAwMDAQQEBAQAAQAEBAQEAVFPT08ojY1VVVUqKioQEBCwsLCIyckLCwuPj48wMDBRUZqamkFBGxtBG0NDBQVMQ01NWlrNzc1SVFQmJiZCQkJ9YmVlZWJifX1cXCgoSUlNTFNTU5SUlAVJmlZWapMfiFJSVlw=",
+        0,
+        0,
+        77,
+        23,
+        2.84,
+        0.051,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAICAgMDAwMDAwMDAwEBAQEBAQQBAQAAAAICAgAAAAQEAwMDAgIBAQIBBAQBAQQEBAQEBAAAAAQEBAAAAAEBAQQEAAAABAQEBAEBAwMEBAQEAgICAwMDAQQEBAQAAQAEBAQEAVFPT0+njY1VVVUqKioQEBCwsLCIyckLCwuPj48wMDBRUZqamkFBGxtBG0NDBQUjQ01NWlrNzc1SVFQmJiZCQkJ9YmVlZWJifX1cXq+vSUlNTFNTU5SUlAVJmlYaapMfiFJSVlw=",
+        0,
+        6,
+        71,
+        23,
+        2.88,
+        0.372,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "AAICAgMDAwMDAwMDAwEBAQEBAQQBAQAAAAICAgAAAAQEAwMDAgQAAAICBAQBAQQEBAQEBAAAAAQBAQAAAAEBAQQCAAAABAQEBAEBAwMEBAQEAgICAwMDAQQDBAQAAQAEBAQDAb1PT0+njY1VVVUqKioQEBCwsLCIyckLCwuPj48wMDBRUZqamkEsr69BQUNDBQUjQ01NWlrNzc0yRUUmJiZCQkJ9jWVlZWJifX1eXq+vSUlNTFNTU5SUlAVR2FYaapMfiFJSbVw=",
+        3,
+        14,
+        60,
+        23,
+        3.02,
+        0.666,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "AAICAgMDAwMDAwMDAwEBAQEBAQQBAQAAAAICAgAAAAQDAwMDAgQAAAICBAQEBAQEAQAEBAAAAAQBAQAAAAEBAQICAAAABAQBAQEBAwMEBAAAAgICAwMDAQQDBAQAAQAEAgIDAb1PT0+njY1VVVUqKioQEBCwsLCIyckLCwuPj48wMDBR5JqamkEsr69BQQw3Q0MjQwVyWlrNzc0yRUUmJiZCQkKNjWVlZWJiXV1eXq+vUUl+flNTU5SUlAVR2FYaapMfiM3NbVw=",
+        6,
+        22,
+        49,
+        23,
+        3.13,
+        0.694,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "AAICAgMDAwMDAwMDAwEBAQEBAQEBAQAAAAICAgAAAAQDAwMDBAQAAAMDBAQAAAQDAAAEAAAAAAQBAQAAAAEBAQICAAAAAgIBAQEBAwMDAwAAAgICAwMDAgMDAwQAAQABAgIDAb1PT0+njY1VVVUqKioQEBCwsLA6yckLCwuPj48wMDAI5Jqamg0sr68QEAw3c3MjX3JyCtLNzc0yRUUmJiZCQkKNjWVlZeDgXV1eXq+vsLB+flNTU5SUlJh62AwaapMfOs3NbVw=",
+        10,
+        37,
+        30,
+        23,
+        3.39,
+        0.726,
+        0.025
+      ]
+    ]
   },
   "penta_wheel_convergence": {
     "archetypeId": "penta_wheel_convergence",
     "tierFormat": "pentachromatic",
-    "domains": ["blue","gold","purple","red","green"],
+    "domains": [
+      "blue",
+      "gold",
+      "purple",
+      "red",
+      "green"
+    ],
     "conclaveId": "pentachromatic_apex",
     "classicDeckIds": [],
     "name": "Convergência da Roda Horológica",
@@ -541,18 +6443,503 @@ export const POLYCOLOR_ARCHETYPE_MASTERY: Record<PolycolorArchetypeId, Polycolor
     "strategySummary": "Orquestra os Generais da Roda dos seis domínios, Constructos de Aeternus e Relíquias cronomantes para controle absoluto e viradas inevitáveis.",
     "tacticalIdentity": "control",
     "coverCardId": "neutral_173_general_roda_matriz",
-    "generationsEvolved": 19,
-    "matchesSimulated": 6512,
+    "generationsEvolved": 25,
+    "matchesSimulated": 7316,
     "seedWinRate": 0.472,
-    "championWinRate": 0.53,
+    "championWinRate": 0.593,
     "vsMonocolorWinRate": 0.703,
     "vsBicolorWinRate": 0.35,
     "championDeckJaccardStability": 0.905,
     "medianCardCi95HalfWidth": 0.18,
-    "domainCardBreakdown": {"neutral":23,"gold":18,"red":13,"blue":20,"green":13,"purple":13},
-    "crossDomainCombos": [[278,1033,1,0.5,9," (100% WR em 9 duelos cruzados)"],[115,922,1,0.5,8," (100% WR em 8 duelos cruzados)"],[816,115,0.923,0.423,13," (92% WR em 13 duelos cruzados)"],[1035,421,0.909,0.409,11," (91% WR em 11 duelos cruzados)"],[54,1036,0.889,0.389,9," (89% WR em 9 duelos cruzados)"],[272,115,0.882,0.383,17," (88% WR em 17 duelos cruzados)"]],
-    "learnedProfile": {"deckId":"penta_wheel_convergence","deckName":"Convergência da Roda Horológica","archetypeTag":"control","generationsTrained":13,"matchesSimulated":6512,"baselineWinRate":0.472,"trainedWinRate":0.417,"weights":{"aggroFaceBias":0.94,"tradeValueBias":1.34,"guardianPriority":1.3,"flyingEvasionBias":1,"stackConsolidationBias":1,"antiAoeSpreadBias":1,"spellHoldPatience":1.28,"relicPriority":1.19,"ascensionEagerness":1,"bloodPactThresholdHp":24,"domainExpansionEagerness":1,"sovPowerTempoBias":1,"synergyHoldBonus":20,"mulliganCurveTarget":2.7},"mk":[105,810,272,278,922],"cp":[1002,862,922,962,767,717,322,816,312,943],"ca":[54,103,105,189,226,272,278,816,862,922,1032,1033],"hb":[[54,14.2],[103,23.6],[105,23.7],[115,8],[126,6.4],[189,24],[221,6],[226,12.8],[272,15.2],[278,10],[421,10.9],[816,24],[862,20.8],[922,12.1],[1032,24],[1033,24],[1034,14.7],[1035,19.1],[1037,24]],"sp":[[816,1033],[1033,105],[278,1033],[272,1033],[114,1033],[816,103],[816,1032],[189,76],[816,105],[816,421]],"dc":[[278,1033,1,0.5,9," (100% WR em 9 duelos cruzados)"],[115,922,1,0.5,8," (100% WR em 8 duelos cruzados)"],[816,115,0.923,0.423,13," (92% WR em 13 duelos cruzados)"],[1035,421,0.909,0.409,11," (91% WR em 11 duelos cruzados)"],[54,1036,0.889,0.389,9," (89% WR em 9 duelos cruzados)"],[272,115,0.882,0.383,17," (88% WR em 17 duelos cruzados)"]]},
-    "topShapleyCards": [[1033,0.3663,0.2476,0.1186,0.938,0.828,16],[189,0.2138,0.0452,0.1686,0.783,0.779,23],[1034,0.1933,-0.0084,0.2016,0.765,0.832,17],[1036,0.1788,-0.0109,0.1898,0.75,0.826,20],[103,0.1193,-0.0047,0.124,0.673,0.471,55],[1035,0.1133,-0.0376,0.1508,0.676,0.651,37],[421,0.1097,0.0417,0.068,0.651,0.225,189],[115,0.0884,-0.0182,0.1066,0.649,0.623,77],[816,0.0858,0.0028,0.083,0.636,0.4,129],[278,0.0698,0.0135,0.0563,0.613,0.272,287],[226,0.0646,-0.0553,0.1199,0.619,0.492,63],[54,0.0289,-0.0252,0.054,0.567,0.157,323]],
-    "tierDecks": [[1,"Tier I • Patrulha de Fronteira","AwEBAQMDAwAAAAMDAgEBAAAAAAADAwMDAwEDAAAAAQEBAAMAAQAAAQEBAAAAAAAAAQEBAAAAAgAAAAEBAQEBAQEAAQEBAAABAQMDAwAAAAAAAQEDAwAAAQEBAAEDAAIDAQAAAqywsLARERG+vr7Cwl3Jyd3d3Xd3KiqsrJ+In7smJkJCQiYsk6WTkxYWFllZWVtbW1xcXGlpaV0fHx84ODjf397ecd4JCXFxiIiampo2Nja7uyQkLCzf3xAQCaEkn99dI6Wh+F4=",0,0,91,9,3.09,0.051,0.025],[2,"Tier II • Guarnição Regular","AwEBAQMDAwAAAAMDAgEBAAAAAAADAwMDAwMDAAAAAQEBAAMAAQAAAQEBAAAAAAAAAQEBAAAAAgAAAAEBAQAAAQEAAQEBAAADAwMDAwAAAAAAAQEDAwAAAQEBAAEDAAIDAQAAAqywsLARERG+vr7Cwl3Jyd3d3Xd3KiqsrK+vn7smJkJCQiYsk6WTkxYWFllZWVtbW1xcXGlpaV0fHx84ODhyct7ecd4JCXFx6uqampo2Nja7uyQkLCzf3xAQCaEkn99dI6Wh+F4=",0,6,85,9,3.08,0.372,0.025],[3,"Tier III • Bastião Veterano","BAEBAQMDAwAAAAMDAgEBAAAAAAADAwMDAwMDAwQAAQEBAAAAAQAAAQEBAAAAAAAAAQEBAAAAAgAAAAEBAQAAAAAAAQEBAAADAwMDAwAAAAMAAAADAwMAAQEBAAMDAAIDAQAAAgiwsLARERG+vr7Cwl3Jyd3d3Xd3Kiqs5K+veqwLJkJCQiYmk6WTkxYWFllZWVtMTFxcXGlpaV0fHx84ODhycn5+cd4JCXFx6uqampo2Njasu7u7LCws3xAQCaGwsN9dI6Wh+AE=",3,14,74,9,3.16,0.666,0.025],[4,"Tier IV • Elite do Alto Trono","BAEBAQMDAwAAAAMDAgEBAAAAAAADAwMDAwMDAwQAAQEBAAAAAQAAAQEBBAAAAAAAAQEBAAAAAgAAAAEBAQAAAAACAgEBAAADAwMDAwAAAAMAAwMAAwICAQEBAAMDAQIDAQAAAgiwsLARERG+vr7Cwl3Jyd3d3Xd3Kiqs5K+veqwL4kJCQiYmk6WTkxYWFglnWVlMTFxcXGlpaV0fHx84ODhycn5+//8JCXFx6uqampo2Njasu+PjJizLyxAQCaGwsEoBI6Wh+AE=",6,22,63,9,3.26,0.694,0.025],[5,"Tier V • Campeão Soberano Ápice","BAEBAQMDAwAAAAMDAgEBAAAAAAADAwADAwMDAwQAAQEBAgIDAQAAAQEBBAABAQAAAQEBAAAABAAAAAEBAQAAAAACAgMDAAADAwMDAwAAAAAAAwMDAwICAQEEAAMDAQIDAQAAAgiwsLARERG+vr7Cwl3Jyd3d3Xd3Kiq95K+veqcL4kJCQs3NcKWTkxYWFglnXl5MTFxcXGlpaQofHx84ODhycn5+//9eXnNz6uqampo2NjbGxuPjMDDLyxAQDJmwsEoBI6WZ+AE=",10,37,44,9,3.55,0.726,0.025]]
+    "domainCardBreakdown": {
+      "neutral": 23,
+      "gold": 18,
+      "red": 13,
+      "blue": 20,
+      "green": 13,
+      "purple": 13
+    },
+    "crossDomainCombos": [
+      [
+        126,
+        1032,
+        1,
+        0.437,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        272,
+        189,
+        1,
+        0.437,
+        8,
+        " (100% WR em 8 duelos cruzados)"
+      ],
+      [
+        114,
+        189,
+        1,
+        0.437,
+        14,
+        " (100% WR em 14 duelos cruzados)"
+      ],
+      [
+        114,
+        1034,
+        1,
+        0.437,
+        9,
+        " (100% WR em 9 duelos cruzados)"
+      ],
+      [
+        1035,
+        278,
+        1,
+        0.437,
+        11,
+        " (100% WR em 11 duelos cruzados)"
+      ],
+      [
+        189,
+        105,
+        0.944,
+        0.381,
+        18,
+        " (94% WR em 18 duelos cruzados)"
+      ]
+    ],
+    "learnedProfile": {
+      "deckId": "penta_wheel_convergence",
+      "deckName": "Convergência da Roda Horológica",
+      "archetypeTag": "control",
+      "generationsTrained": 19,
+      "matchesSimulated": 7316,
+      "baselineWinRate": 0.472,
+      "trainedWinRate": 0.593,
+      "weights": {
+        "aggroFaceBias": 0.94,
+        "tradeValueBias": 1.34,
+        "guardianPriority": 1.3,
+        "flyingEvasionBias": 1,
+        "stackConsolidationBias": 1,
+        "antiAoeSpreadBias": 1,
+        "spellHoldPatience": 1.28,
+        "relicPriority": 1.19,
+        "ascensionEagerness": 1,
+        "bloodPactThresholdHp": 24,
+        "domainExpansionEagerness": 1,
+        "sovPowerTempoBias": 1,
+        "synergyHoldBonus": 20,
+        "mulliganCurveTarget": 2.7
+      },
+      "mk": [
+        105,
+        810,
+        272,
+        278,
+        922
+      ],
+      "cp": [
+        1002,
+        862,
+        922,
+        962,
+        767,
+        717,
+        322,
+        816,
+        312,
+        943
+      ],
+      "ca": [
+        54,
+        103,
+        105,
+        189,
+        226,
+        272,
+        278,
+        816,
+        862,
+        922,
+        1032,
+        1033
+      ],
+      "hb": [
+        [
+          54,
+          14.2
+        ],
+        [
+          76,
+          12.1
+        ],
+        [
+          103,
+          23.6
+        ],
+        [
+          105,
+          23.7
+        ],
+        [
+          115,
+          8
+        ],
+        [
+          126,
+          6.4
+        ],
+        [
+          189,
+          24
+        ],
+        [
+          221,
+          6
+        ],
+        [
+          226,
+          12.8
+        ],
+        [
+          272,
+          15.2
+        ],
+        [
+          278,
+          12.9
+        ],
+        [
+          421,
+          10.9
+        ],
+        [
+          605,
+          13.6
+        ],
+        [
+          816,
+          24
+        ],
+        [
+          862,
+          20.8
+        ],
+        [
+          922,
+          12.1
+        ],
+        [
+          935,
+          16.5
+        ],
+        [
+          1032,
+          24
+        ],
+        [
+          1033,
+          24
+        ],
+        [
+          1034,
+          15.7
+        ],
+        [
+          1035,
+          20.8
+        ],
+        [
+          1037,
+          24
+        ],
+        [
+          1038,
+          15
+        ],
+        [
+          1074,
+          20
+        ],
+        [
+          1079,
+          20
+        ],
+        [
+          1119,
+          20
+        ],
+        [
+          1151,
+          15
+        ]
+      ],
+      "sp": [
+        [
+          816,
+          1033
+        ],
+        [
+          1033,
+          105
+        ],
+        [
+          278,
+          1033
+        ],
+        [
+          272,
+          1033
+        ],
+        [
+          114,
+          1033
+        ],
+        [
+          816,
+          103
+        ],
+        [
+          816,
+          1032
+        ],
+        [
+          189,
+          76
+        ],
+        [
+          816,
+          105
+        ],
+        [
+          816,
+          421
+        ]
+      ],
+      "dc": [
+        [
+          126,
+          1032,
+          1,
+          0.437,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          272,
+          189,
+          1,
+          0.437,
+          8,
+          " (100% WR em 8 duelos cruzados)"
+        ],
+        [
+          114,
+          189,
+          1,
+          0.437,
+          14,
+          " (100% WR em 14 duelos cruzados)"
+        ],
+        [
+          114,
+          1034,
+          1,
+          0.437,
+          9,
+          " (100% WR em 9 duelos cruzados)"
+        ],
+        [
+          1035,
+          278,
+          1,
+          0.437,
+          11,
+          " (100% WR em 11 duelos cruzados)"
+        ],
+        [
+          189,
+          105,
+          0.944,
+          0.381,
+          18,
+          " (94% WR em 18 duelos cruzados)"
+        ]
+      ]
+    },
+    "topShapleyCards": [
+      [
+        1035,
+        0.239,
+        0.1174,
+        0.1216,
+        0.867,
+        0.688,
+        30
+      ],
+      [
+        189,
+        0.1793,
+        0.05,
+        0.1293,
+        0.806,
+        0.66,
+        36
+      ],
+      [
+        935,
+        0.1454,
+        0.0534,
+        0.092,
+        0.759,
+        0.407,
+        83
+      ],
+      [
+        1033,
+        0.1313,
+        -0.0149,
+        0.1462,
+        0.758,
+        0.66,
+        33
+      ],
+      [
+        1034,
+        0.1276,
+        -0.0281,
+        0.1557,
+        0.759,
+        0.754,
+        29
+      ],
+      [
+        1032,
+        0.1037,
+        -0.0347,
+        0.1384,
+        0.725,
+        0.56,
+        40
+      ],
+      [
+        605,
+        0.0809,
+        -0.0265,
+        0.1074,
+        0.7,
+        0.517,
+        70
+      ],
+      [
+        103,
+        0.0768,
+        -0.0605,
+        0.1373,
+        0.698,
+        0.552,
+        43
+      ],
+      [
+        278,
+        0.0638,
+        0.0079,
+        0.0559,
+        0.669,
+        0.24,
+        272
+      ],
+      [
+        816,
+        0.0603,
+        -0.0245,
+        0.0849,
+        0.675,
+        0.432,
+        117
+      ],
+      [
+        105,
+        0.0481,
+        -0.0047,
+        0.0528,
+        0.648,
+        0.125,
+        315
+      ],
+      [
+        76,
+        0.046,
+        -0.0192,
+        0.0651,
+        0.654,
+        0.288,
+        205
+      ]
+    ],
+    "tierDecks": [
+      [
+        1,
+        "Tier I • Patrulha de Fronteira",
+        "BAEBAQMDAwAAAAMDAgEBAAAAAAADAwQEBAQEBAAAAQEBAAMEAQAAAQEBBAQEBAAAAQEBAAAAAgAAAAEBAQEBBAQEBAQEBAQEBAMDAwAAAAQEBAQDAwQEAQEEBAQEBAQDAQQAAkmwsLARERG+vr7Cwl3Jyd3d3Xd3KipJSVBRmk8mJkJCQiYsVaWTkxYWFmJifWJbW1xcXGlpaV0fHx84ODgJCU5OTE5NTUxMUVGampo2Njaamk9PLCxUVBAQTVVQUFSII6VV+F0=",
+        0,
+        0,
+        91,
+        9,
+        3.02,
+        0.051,
+        0.025
+      ],
+      [
+        2,
+        "Tier II • Guarnição Regular",
+        "BAEBAQMDAwAAAAMDAgEBAAAAAAADAwQEAwMEBAAAAQEBAAMEAQAAAQEBBAQEBAAAAQEBAAAAAgAAAAEBAQEABAQEBAQEBAQDAwMDAwAAAAQEBAQDAwQEAQEEBAQEBAQDAQQAAkmwsLARERG+vr7Cwl3Jyd3d3Xd3KipJSa+vmk8mJkJCQiYsVaWTkxYWFmJif2JbW1xcXGlpaV0fHx84ODgJck5OTE5NTUxM6uqampo2Njaamk9PLCxUVBAQTVVQUFSII6VV+F0=",
+        0,
+        6,
+        85,
+        9,
+        3,
+        0.372,
+        0.025
+      ],
+      [
+        3,
+        "Tier III • Bastião Veterano",
+        "BAEBAQMDAwAAAAMDAgEBAAAAAAADAwQEAwMEBAQAAQEBAAAEAQAAAQEBBAQEBAAAAQEBAAAAAgAAAAEBAQAAAAAEBAQEBAQDAwMDAwAAAAQEBAQDAwMEAQEEBAQEBAQDAQAAAgiwsLARERG+vr7Cwl3Jyd3d3Xd3KipJSa+vSU8LJkJCQiYmX6WTkxYWFmJif2JMTFxcXGlpaV0fHx84ODhycn5+TE5NTUxM6uqampo2NjaamppPLCwsVBAQTVVPUFQOI6WZ+AE=",
+        3,
+        14,
+        74,
+        9,
+        3.06,
+        0.666,
+        0.025
+      ],
+      [
+        4,
+        "Tier IV • Elite do Alto Trono",
+        "BAEBAQMDAwAAAAMDAgEBAAAAAAADAwQDAwMEBAQEAQEBAAAEAQAAAQEBBAQEBAAAAQEBAAAAAgAAAAEBAQAAAAAEBAQEBAQDAwMDAwAAAAQEAwMAAwICAQEEAAMDAQQDAQAAAgiwsLARERG+vr7Cwl3Jyd3d3Xd3KipJ5K+vSUkLMkJCQiYmX6WTkxYWFmJif2JMTFxcXGlpaV0fHx84ODhycn5+TExNTU1M6uqampo2NjaamuPjJizLyxAQN5mwsEoOI6WZ+AE=",
+        6,
+        22,
+        63,
+        9,
+        3.19,
+        0.694,
+        0.025
+      ],
+      [
+        5,
+        "Tier V • Campeão Soberano Ápice",
+        "BAEBAQMDAwAAAAMDAgEBAAAAAAADAwADAwMDAwQEAQEBAgIEAQAAAQEBBAAEAQAAAQEBAAAABAAAAAEBAQAAAAACAgMDAAADAwMDAwAAAAAAAwMDAwICAQEEAAMDAQQDAQAAAgiwsLARERG+vr7Cwl3Jyd3d3Xd3Kiq95K+veqcLMkJCQs3NX6WTkxYWFglnf15MTFxcXGlpaQofHx84ODhycn5+//9eXnNz6uqampo2NjbGxuPjMDDLyxAQN5mwsEoOI6WZ+AE=",
+        10,
+        37,
+        44,
+        9,
+        3.5,
+        0.726,
+        0.025
+      ]
+    ]
   }
 });

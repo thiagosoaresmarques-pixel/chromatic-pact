@@ -691,6 +691,17 @@ function serializeLearnedProfilesTs(
   const profilesJson = JSON.stringify(profiles, null, 2);
 
   return `import { CAMPAIGN_BOSSES, PREBUILT_DECKS } from './decks';
+import {
+  BICOLOR_ARCHETYPE_MASTERY,
+  MONOCOLOR_ARCHETYPE_MASTERY,
+  MonocolorArchetypeId,
+  POLYCOLOR_ARCHETYPE_MASTERY,
+  resolveBicolorArchetypeForDeckId,
+  resolveBicolorArchetypeForDomains,
+  resolvePentachromaticArchetypeForBoss,
+  resolvePolycolorArchetypeForDeckId,
+  resolveTricolorArchetypeForDomains,
+} from './aiMonocolorMastery';
 import { GameState } from '../types/game';
 
 /**
@@ -780,14 +791,50 @@ export function resolveLearnedProfileForActor(
   if (overrideProfile) return overrideProfile;
 
   const explicitDeckId = actor === 'player' ? state.playerDeckId : state.aiDeckId;
-  if (explicitDeckId && AI_LEARNED_PROFILES[explicitDeckId]) {
-    return AI_LEARNED_PROFILES[explicitDeckId];
+  if (explicitDeckId) {
+    if (AI_LEARNED_PROFILES[explicitDeckId]) {
+      return AI_LEARNED_PROFILES[explicitDeckId];
+    }
+    const polyId = resolvePolycolorArchetypeForDeckId(explicitDeckId);
+    if (polyId && POLYCOLOR_ARCHETYPE_MASTERY[polyId]?.learnedProfile) {
+      return POLYCOLOR_ARCHETYPE_MASTERY[polyId].learnedProfile;
+    }
+    const biId = resolveBicolorArchetypeForDeckId(explicitDeckId);
+    if (biId && BICOLOR_ARCHETYPE_MASTERY[biId]?.learnedProfile) {
+      return BICOLOR_ARCHETYPE_MASTERY[biId].learnedProfile;
+    }
+    const monoMastery = MONOCOLOR_ARCHETYPE_MASTERY[explicitDeckId as MonocolorArchetypeId];
+    if (monoMastery?.learnedProfile) {
+      return monoMastery.learnedProfile;
+    }
   }
 
   if (actor === 'ai' && state.bossId) {
     const boss = CAMPAIGN_BOSSES.find((b) => b.id === state.bossId);
-    if (boss && AI_LEARNED_PROFILES[boss.deckId]) {
-      return AI_LEARNED_PROFILES[boss.deckId];
+    if (boss) {
+      if (AI_LEARNED_PROFILES[boss.deckId]) {
+        return AI_LEARNED_PROFILES[boss.deckId];
+      }
+      if (boss.domains.length >= 4) {
+        const pentaId = resolvePentachromaticArchetypeForBoss(boss);
+        if (POLYCOLOR_ARCHETYPE_MASTERY[pentaId]?.learnedProfile) {
+          return POLYCOLOR_ARCHETYPE_MASTERY[pentaId].learnedProfile;
+        }
+      } else if (boss.domains.length === 3) {
+        const triBossId =
+          resolveTricolorArchetypeForDomains(boss.domains) ??
+          resolvePolycolorArchetypeForDeckId(boss.deckId);
+        if (triBossId && POLYCOLOR_ARCHETYPE_MASTERY[triBossId]?.learnedProfile) {
+          return POLYCOLOR_ARCHETYPE_MASTERY[triBossId].learnedProfile;
+        }
+      } else if (boss.domains.length === 2) {
+        const biBossId =
+          resolveBicolorArchetypeForDomains(boss.domains) ??
+          resolveBicolorArchetypeForDeckId(boss.deckId);
+        if (biBossId && BICOLOR_ARCHETYPE_MASTERY[biBossId]?.learnedProfile) {
+          return BICOLOR_ARCHETYPE_MASTERY[biBossId].learnedProfile;
+        }
+      }
     }
   }
 

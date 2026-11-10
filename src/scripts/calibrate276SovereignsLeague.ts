@@ -346,7 +346,10 @@ function buildAll276Contenders(): SovereignContender[] {
   }
 
   const allRareLeg = ALL_CARDS.filter(
-    (c) => c.type === 'creature' && (c.rarity === 'legendary' || c.rarity === 'rare')
+    (c) =>
+      c.type === 'creature' &&
+      (c.rarity === 'legendary' || c.rarity === 'rare') &&
+      nodeByCardId.has(c.id)
   );
   if (allRareLeg.length !== 276) {
     throw new Error(`Expected 276 Rare+Legendary creatures, found ${allRareLeg.length}`);

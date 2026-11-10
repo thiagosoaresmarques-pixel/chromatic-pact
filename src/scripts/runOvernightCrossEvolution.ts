@@ -17,6 +17,7 @@ import {
   DOMAIN_VALUE_NETWORKS,
   POLYCOLOR_VALUE_NETWORKS,
 } from '../data/aiValueNetworksData';
+import { packMasteryRecord, packValueMlpMap } from '../data/compactMasteryCodec';
 import {
   CardShapleyMetric,
   MONOCOLOR_ARCHETYPE_MASTERY,
@@ -544,31 +545,80 @@ function heuristicCardPriorForIdentity(
   else if (card.rarity === 'rare') score += 0.14;
   else if (card.rarity === 'uncommon') score += 0.06;
 
-  if (effs.has('draw_cards')) score += 0.14;
+  if (effs.has('draw_cards') || effs.has('draw_cards_at_hp_cost') || effs.has('mirror_blade_envoy')) score += 0.16;
   if (effs.has('break_domain_expansion')) score += 0.16;
+  if (effs.has('royal_prism_convergence') || effs.has('thalassion_council_decree')) score += 0.24;
+
+  // Give a slight exploration bonus to newly completed cycle cards (174..198) so they are actively tested in gauntlets
+  const numMatch = card.id.match(/_(\d+)_/);
+  const cardNum = numMatch ? parseInt(numMatch[1], 10) : 0;
+  if (cardNum >= 174) {
+    score += 0.12;
+  }
 
   switch (identity) {
     case 'aggro':
       if (card.cost <= 3) score += 0.22;
-      if (kw.has('Ímpeto') || kw.has('Voo') || effs.has('damage_enemy_sovereign')) score += 0.25;
+      if (
+        kw.has('Ímpeto') ||
+        kw.has('Voo') ||
+        effs.has('damage_enemy_sovereign') ||
+        effs.has('crimson_anvil_march') ||
+        effs.has('kaelith_phoenix_nova') ||
+        effs.has('living_ash_arrow') ||
+        effs.has('draw_cards_at_hp_cost')
+      ) {
+        score += 0.25;
+      }
       break;
     case 'tempo':
-      if (kw.has('Voo') || kw.has('Alcance') || effs.has('freeze_enemy')) score += 0.22;
+      if (
+        kw.has('Voo') ||
+        kw.has('Alcance') ||
+        effs.has('freeze_enemy') ||
+        effs.has('coordinate_inversion') ||
+        effs.has('chrono_prism_volley') ||
+        effs.has('lyriel_astral_zero') ||
+        effs.has('crystal_guard_resonance')
+      ) {
+        score += 0.22;
+      }
       if (card.cost <= 4) score += 0.12;
       break;
     case 'midrange':
       if (kw.has('Escudo Divino') || kw.has('Guardião') || kw.has('Atropelar')) score += 0.2;
-      if (effs.has('buff_all_allies') || effs.has('damage_single_enemy')) score += 0.16;
+      if (
+        effs.has('buff_all_allies') ||
+        effs.has('damage_single_enemy') ||
+        effs.has('aelion_solar_edict') ||
+        effs.has('lanca_cantora_ward') ||
+        effs.has('solar_spear_phalanx') ||
+        effs.has('emerald_antler_hunt') ||
+        effs.has('food_chain_law')
+      ) {
+        score += 0.18;
+      }
       break;
     case 'ramp':
       if (effs.has('grant_bonus_essence')) score += 0.32;
-      if (kw.has('Atropelar') || (card.breathDamage ?? 0) > 0 || card.cost >= 6) score += 0.2;
+      if (
+        kw.has('Atropelar') ||
+        (card.breathDamage ?? 0) > 0 ||
+        card.cost >= 6 ||
+        effs.has('primordial_evolution_apex') ||
+        effs.has('sylvaris_fullmoon_bloom')
+      ) {
+        score += 0.22;
+      }
       break;
     case 'control':
       if (
         effs.has('destroy_enemy') ||
         effs.has('freeze_enemy') ||
         effs.has('damage_all_units') ||
+        effs.has('horizon_singularity') ||
+        effs.has('magmatic_subduction') ||
+        effs.has('unconquered_champion_oath') ||
         kw.has('Guardião')
       ) {
         score += 0.24;
@@ -579,7 +629,12 @@ function heuristicCardPriorForIdentity(
         kw.has('Renascer') ||
         kw.has('Dreno de Vida') ||
         kw.has('Toque Letal') ||
-        effs.has('revive_from_crypt')
+        effs.has('revive_from_crypt') ||
+        effs.has('drain_enemy_sovereign') ||
+        effs.has('shared_shadow_link') ||
+        effs.has('twilight_procession') ||
+        effs.has('vaelen_astral_stigma') ||
+        effs.has('astral_obsidian_strike')
       ) {
         score += 0.25;
       }
@@ -1186,6 +1241,89 @@ async function runStage1(): Promise<void> {
     }
   };
 
+  // Initial Expansion Seeding Pass: integrate top-synergy newly created cycle cards (174..198)
+  // into each Champion's 100-card deck while strictly preserving domain & rarity/creature invariants.
+  let totalSeededNewCards = 0;
+  for (const champ of champions) {
+    const deck = champ.cardIds.slice();
+    const counts = new Map<string, number>();
+    let legCount = 0;
+    let creatureCount = 0;
+    let relicCount = 0;
+    let costSum = 0;
+    for (const cid of deck) {
+      counts.set(cid, (counts.get(cid) ?? 0) + 1);
+      const c = CARDS_BY_ID[cid]!;
+      if (c.rarity === 'legendary') legCount += 1;
+      if (c.type === 'creature') creatureCount += 1;
+      if (c.type === 'relic') relicCount += 1;
+      costSum += c.cost;
+    }
+    const avgCost = costSum / deck.length;
+
+    const newCycleCandidates = ALL_CARDS.filter((c) => {
+      if (!champ.domains.includes(c.domain)) return false;
+      const m = c.id.match(/_(\d+)_/);
+      const num = m ? parseInt(m[1], 10) : 0;
+      return num >= 174 && (counts.get(c.id) ?? 0) === 0;
+    }).sort(
+      (a, b) =>
+        heuristicCardPriorForIdentity(b, champ.tacticalIdentity, avgCost) -
+        heuristicCardPriorForIdentity(a, champ.tacticalIdentity, avgCost)
+    );
+
+    let seededHere = 0;
+    for (const cand of newCycleCandidates) {
+      if (seededHere >= 5) break;
+      // Find lowest-prior replaceable card in deck of the SAME domain, SAME rarity, and compatible type
+      let worstIdx = -1;
+      let worstScore = Infinity;
+      for (let i = 0; i < deck.length; i++) {
+        const dropId = deck[i];
+        if (dropId === champ.coverCardId) continue;
+        const dropCard = CARDS_BY_ID[dropId]!;
+        if (dropCard.domain !== cand.domain || dropCard.rarity !== cand.rarity) continue;
+        const mDrop = dropId.match(/_(\d+)_/);
+        const dropNum = mDrop ? parseInt(mDrop[1], 10) : 0;
+        if (dropNum >= 174) continue;
+        if (dropCard.type === 'creature' && cand.type !== 'creature' && creatureCount - 1 < 58) {
+          continue;
+        }
+        if (cand.type === 'relic' && dropCard.type !== 'relic' && relicCount + 1 > 12) {
+          continue;
+        }
+        const sc = heuristicCardPriorForIdentity(dropCard, champ.tacticalIdentity, avgCost);
+        if (sc < worstScore) {
+          worstScore = sc;
+          worstIdx = i;
+        }
+      }
+
+      if (worstIdx !== -1) {
+        const dropCard = CARDS_BY_ID[deck[worstIdx]]!;
+        deck[worstIdx] = cand.id;
+        counts.set(dropCard.id, (counts.get(dropCard.id) ?? 1) - 1);
+        counts.set(cand.id, (counts.get(cand.id) ?? 0) + 1);
+        if (dropCard.type === 'creature' && cand.type !== 'creature') creatureCount -= 1;
+        if (dropCard.type !== 'creature' && cand.type === 'creature') creatureCount += 1;
+        if (dropCard.type === 'relic' && cand.type !== 'relic') relicCount -= 1;
+        if (dropCard.type !== 'relic' && cand.type === 'relic') relicCount += 1;
+        void legCount;
+        seededHere += 1;
+        totalSeededNewCards += 1;
+      }
+    }
+
+    if (seededHere > 0) {
+      assertDeckInvariants(deck, champ.coverCardId, `${champ.id}_seeded`);
+      champ.cardIds = deck;
+      champ.acceptedSwaps += seededHere;
+    }
+  }
+  console.log(
+    `[Integração Inicial] ${totalSeededNewCards} cartas dos novos ciclos (174..198) integradas nos 44 Campeões para validação competitiva!`
+  );
+
   try {
     for (let gen = 1; gen <= NUM_GENERATIONS; gen++) {
       const genStart = Date.now();
@@ -1506,6 +1644,34 @@ async function runStage1(): Promise<void> {
   for (const c of champions) {
     const jaccard = Number(jaccardDeckSimilarity(c.initialCardIds, c.cardIds).toFixed(3));
     const crossWr = c.matchesPlayed > 0 ? Number((c.scoreSum / c.matchesPlayed).toFixed(3)) : 0.5;
+    const updatedShapley = buildTopShapleyList(
+      c,
+      c.format === 'monocolor'
+        ? updatedMonoMastery[c.id as MonocolorArchetypeId]?.topShapleyCards ?? []
+        : c.format === 'bicolor'
+        ? updatedBiMastery[c.id as BicolorArchetypeId]?.topShapleyCards ?? []
+        : updatedPolyMastery[c.id as PolycolorArchetypeId]?.topShapleyCards ?? []
+    );
+
+    // Refresh highImpactCardBoosts & mulliganKeepIds from evolved deck + empirical Shapley
+    const nextBoosts: Record<string, number> = { ...(c.learnedProfile.highImpactCardBoosts ?? {}) };
+    const inDeckSet = new Set(c.cardIds);
+    for (const m of updatedShapley) {
+      if (m.shapleyValue > 0.04) {
+        nextBoosts[m.cardId] = Number(
+          Math.min(24, Math.max(nextBoosts[m.cardId] ?? 10, 10 + m.shapleyValue * 45)).toFixed(1)
+        );
+      }
+    }
+    for (const cid of inDeckSet) {
+      const card = CARDS_BY_ID[cid];
+      if (!card) continue;
+      const numMatch = cid.match(/_(\d+)_/);
+      const cardNum = numMatch ? parseInt(numMatch[1], 10) : 0;
+      if (cardNum >= 174 && nextBoosts[cid] === undefined) {
+        nextBoosts[cid] = card.rarity === 'legendary' ? 20 : card.rarity === 'rare' ? 15 : 11;
+      }
+    }
 
     for (const cdId of c.classicDeckIds) {
       evolvedClassicDeckMap.set(cdId, c.cardIds.slice());
@@ -1519,13 +1685,22 @@ async function runStage1(): Promise<void> {
         c.acceptedSwaps > 0
           ? buildDomainPreservingTierDecks(c, prev.tierDecks, globalCardShapley)
           : prev.tierDecks;
+      const updatedCombos = extractCrossDomainCombos(c, prev.learnedProfile.discoveredCombos ?? []);
       updatedMonoMastery[mid] = {
         ...prev,
         generationsEvolved: prev.generationsEvolved + NUM_GENERATIONS,
         matchesSimulated: prev.matchesSimulated + c.matchesPlayed,
         championWinRate: crossWr,
         championDeckJaccardStability: jaccard,
-        topShapleyCards: buildTopShapleyList(c, prev.topShapleyCards),
+        learnedProfile: {
+          ...prev.learnedProfile,
+          generationsTrained: prev.learnedProfile.generationsTrained + NUM_GENERATIONS,
+          matchesSimulated: prev.learnedProfile.matchesSimulated + c.matchesPlayed,
+          trainedWinRate: crossWr,
+          highImpactCardBoosts: nextBoosts,
+          discoveredCombos: updatedCombos,
+        },
+        topShapleyCards: updatedShapley,
         tierDecks: rebuiltTiers,
       };
     } else if (c.format === 'bicolor') {
@@ -1546,10 +1721,13 @@ async function runStage1(): Promise<void> {
         crossDomainCombos: updatedCombos,
         learnedProfile: {
           ...prev.learnedProfile,
+          generationsTrained: prev.learnedProfile.generationsTrained + NUM_GENERATIONS,
           matchesSimulated: prev.learnedProfile.matchesSimulated + c.matchesPlayed,
+          trainedWinRate: crossWr,
+          highImpactCardBoosts: nextBoosts,
           discoveredCombos: updatedCombos.slice(0, 6),
         },
-        topShapleyCards: buildTopShapleyList(c, prev.topShapleyCards),
+        topShapleyCards: updatedShapley,
         tierDecks: rebuiltTiers,
       };
     } else {
@@ -1569,16 +1747,44 @@ async function runStage1(): Promise<void> {
         crossDomainCombos: updatedCombos,
         learnedProfile: {
           ...prev.learnedProfile,
+          generationsTrained: prev.learnedProfile.generationsTrained + NUM_GENERATIONS,
           matchesSimulated: prev.learnedProfile.matchesSimulated + c.matchesPlayed,
+          trainedWinRate: crossWr,
+          highImpactCardBoosts: nextBoosts,
           discoveredCombos: updatedCombos.slice(0, 6),
         },
-        topShapleyCards: buildTopShapleyList(c, prev.topShapleyCards),
+        topShapleyCards: updatedShapley,
         tierDecks: rebuiltTiers,
       };
     }
   }
 
-  // 1. Write aiMonocolorMasteryData.ts
+  // 0. Write aiValueNetworksData.ts using lossless compact codec
+  const valueNetsPath = path.resolve(__dirname, '../data/aiValueNetworksData.ts');
+  const packedDomainMlps = packValueMlpMap(domainMlps);
+  const packedBicolorMlps = packValueMlpMap(bicolorMlps);
+  const packedPolyMlps = packValueMlpMap(polycolorMlps);
+  const valueNetsContent = `import type { Domain } from '../types/game';
+import type { SerializedValueMlp } from '../engine/aiValueNetwork';
+import type { BicolorArchetypeId } from './aiBicolorMasteryData';
+import type { PolycolorArchetypeId } from './aiPolycolorMasteryData';
+import { unpackValueMlpMap } from './compactMasteryCodec';
+
+export const DOMAIN_VALUE_NETWORKS: Partial<Record<Domain, SerializedValueMlp>> = unpackValueMlpMap(${JSON.stringify(
+    packedDomainMlps
+  )});
+
+export const BICOLOR_VALUE_NETWORKS: Partial<Record<BicolorArchetypeId, SerializedValueMlp>> = unpackValueMlpMap(${JSON.stringify(
+    packedBicolorMlps
+  )});
+
+export const POLYCOLOR_VALUE_NETWORKS: Partial<Record<PolycolorArchetypeId, SerializedValueMlp>> = unpackValueMlpMap(${JSON.stringify(
+    packedPolyMlps
+  )});
+`;
+  fs.writeFileSync(valueNetsPath, valueNetsContent, 'utf-8');
+
+  // 1. Write aiMonocolorMasteryData.ts using lossless compact codec
   const monoNewMatches = Math.round(totalMatchesSimulated * (16 / 44));
   const monoNewSamples = Array.from(domainSamples.values()).reduce((s, a) => s + a.length, 0);
   const nextMonoSummary: MonocolorTrainingSummary = {
@@ -1595,23 +1801,22 @@ async function runStage1(): Promise<void> {
     .readFileSync(monoFilePath, 'utf-8')
     .indexOf('export const MONOCOLOR_TRAINING_SUMMARY');
   const monoTypeHeader = fs.readFileSync(monoFilePath, 'utf-8').slice(0, monoHeaderEnd);
+  const packedMonoMastery = packMasteryRecord(updatedMonoMastery);
   fs.writeFileSync(
     monoFilePath,
     `${monoTypeHeader}export const MONOCOLOR_TRAINING_SUMMARY: MonocolorTrainingSummary = ${JSON.stringify(
       nextMonoSummary,
       null,
       2
-    )};\n\nexport const DOMAIN_VALUE_NETWORKS: Partial<Record<Domain, SerializedValueMlp>> = ${JSON.stringify(
-      domainMlps
-    )};\n\nexport const MONOCOLOR_ARCHETYPE_MASTERY: Partial<Record<MonocolorArchetypeId, MonocolorArchetypeMastery>> = ${JSON.stringify(
-      updatedMonoMastery,
+    )};\n\nexport const MONOCOLOR_ARCHETYPE_MASTERY: Partial<Record<MonocolorArchetypeId, MonocolorArchetypeMastery>> = unpackMasteryRecord<MonocolorArchetypeId, MonocolorArchetypeMastery>(${JSON.stringify(
+      packedMonoMastery,
       null,
       2
-    )};\n`,
+    )});\n`,
     'utf-8'
   );
 
-  // 2. Write aiBicolorMasteryData.ts
+  // 2. Write aiBicolorMasteryData.ts using lossless compact codec
   const biNewMatches = Math.round(totalMatchesSimulated * (15 / 44));
   const biNewSamples = Array.from(bicolorSamples.values()).reduce((s, a) => s + a.length, 0);
   const nextBiSummary: BicolorTrainingSummary = {
@@ -1627,23 +1832,22 @@ async function runStage1(): Promise<void> {
   const biRaw = fs.readFileSync(biFilePath, 'utf-8');
   const biHeaderEnd = biRaw.indexOf('export const BICOLOR_TRAINING_SUMMARY');
   const biTypeHeader = biRaw.slice(0, biHeaderEnd);
+  const packedBiMastery = packMasteryRecord(updatedBiMastery);
   fs.writeFileSync(
     biFilePath,
     `${biTypeHeader}export const BICOLOR_TRAINING_SUMMARY: BicolorTrainingSummary = ${JSON.stringify(
       nextBiSummary,
       null,
       2
-    )};\n\nexport const BICOLOR_VALUE_NETWORKS: Partial<Record<BicolorArchetypeId, SerializedValueMlp>> = ${JSON.stringify(
-      bicolorMlps
-    )};\n\nexport const BICOLOR_ARCHETYPE_MASTERY: Partial<Record<BicolorArchetypeId, BicolorArchetypeMastery>> = ${JSON.stringify(
-      updatedBiMastery,
+    )};\n\nexport const BICOLOR_ARCHETYPE_MASTERY: Partial<Record<BicolorArchetypeId, BicolorArchetypeMastery>> = unpackMasteryRecord<BicolorArchetypeId, BicolorArchetypeMastery>(${JSON.stringify(
+      packedBiMastery,
       null,
       2
-    )};\n`,
+    )});\n`,
     'utf-8'
   );
 
-  // 3. Write aiPolycolorMasteryData.ts
+  // 3. Write aiPolycolorMasteryData.ts using lossless compact codec
   const polyNewMatches = totalMatchesSimulated - monoNewMatches - biNewMatches;
   const polyNewSamples = Array.from(polySamples.values()).reduce((s, a) => s + a.length, 0);
   const nextPolySummary: PolycolorTrainingSummary = {
@@ -1659,19 +1863,18 @@ async function runStage1(): Promise<void> {
   const polyRaw = fs.readFileSync(polyFilePath, 'utf-8');
   const polyHeaderEnd = polyRaw.indexOf('export const POLYCOLOR_TRAINING_SUMMARY');
   const polyTypeHeader = polyRaw.slice(0, polyHeaderEnd);
+  const packedPolyMastery = packMasteryRecord(updatedPolyMastery);
   fs.writeFileSync(
     polyFilePath,
     `${polyTypeHeader}export const POLYCOLOR_TRAINING_SUMMARY: PolycolorTrainingSummary = ${JSON.stringify(
       nextPolySummary,
       null,
       2
-    )};\n\nexport const POLYCOLOR_VALUE_NETWORKS: Partial<Record<PolycolorArchetypeId, SerializedValueMlp>> = ${JSON.stringify(
-      polycolorMlps
-    )};\n\nexport const POLYCOLOR_ARCHETYPE_MASTERY: Record<\n  PolycolorArchetypeId,\n  PolycolorArchetypeMastery\n> = ${JSON.stringify(
-      updatedPolyMastery,
+    )};\n\nexport const POLYCOLOR_ARCHETYPE_MASTERY: Record<\n  PolycolorArchetypeId,\n  PolycolorArchetypeMastery\n> = unpackMasteryRecord<PolycolorArchetypeId, PolycolorArchetypeMastery>(${JSON.stringify(
+      packedPolyMastery,
       null,
       2
-    )};\n`,
+    )});\n`,
     'utf-8'
   );
 

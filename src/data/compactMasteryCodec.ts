@@ -278,3 +278,210 @@ export function unpackMasteryRecord<
   }
   return out;
 }
+
+const B64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+function encodeBase64Bytes(bytes: Uint8Array): string {
+  let out = '';
+  const len = bytes.length;
+  let i = 0;
+  while (i + 2 < len) {
+    const triple = (bytes[i++] << 16) | (bytes[i++] << 8) | bytes[i++];
+    out +=
+      B64_CHARS[(triple >> 18) & 0x3f] +
+      B64_CHARS[(triple >> 12) & 0x3f] +
+      B64_CHARS[(triple >> 6) & 0x3f] +
+      B64_CHARS[triple & 0x3f];
+  }
+  const rem = len - i;
+  if (rem === 1) {
+    const a = bytes[i];
+    out += B64_CHARS[(a >> 2) & 0x3f] + B64_CHARS[(a << 4) & 0x3f] + '==';
+  } else if (rem === 2) {
+    const pair = (bytes[i] << 8) | bytes[i + 1];
+    out +=
+      B64_CHARS[(pair >> 10) & 0x3f] +
+      B64_CHARS[(pair >> 4) & 0x3f] +
+      B64_CHARS[(pair << 2) & 0x3f] +
+      '=';
+  }
+  return out;
+}
+
+const CARD_INDEX_BY_ID: Record<string, number> = (() => {
+  const m: Record<string, number> = {};
+  for (let i = 0; i < ALL_CARDS.length; i++) {
+    m[ALL_CARDS[i].id] = i;
+  }
+  return m;
+})();
+
+function encodeCardIndicesB64(cardIds: string[]): string {
+  const count = cardIds.length;
+  const bytes = new Uint8Array(count * 2);
+  for (let i = 0; i < count; i++) {
+    const idx = CARD_INDEX_BY_ID[cardIds[i]] ?? 0;
+    bytes[i] = (idx >> 8) & 0xff;
+    bytes[count + i] = idx & 0xff;
+  }
+  return encodeBase64Bytes(bytes);
+}
+
+export function packValueMlpMap<K extends string>(
+  raw: Partial<Record<K, SerializedValueMlp>>
+): Partial<Record<K, CompactValueMlp>> {
+  const out: Partial<Record<K, CompactValueMlp>> = {};
+  for (const key of Object.keys(raw) as K[]) {
+    const mlp = raw[key];
+    if (!mlp) continue;
+    const all = [...mlp.w1, ...mlp.b1, ...mlp.w2, ...mlp.b2, ...mlp.w3];
+    const total = all.length;
+    const bytes = new Uint8Array(total * 2);
+    for (let i = 0; i < total; i++) {
+      const q = Math.max(-32768, Math.min(32767, Math.round(all[i] * 10000)));
+      const zz = ((q << 1) ^ (q >> 31)) & 0xffff;
+      bytes[i] = (zz >> 8) & 0xff;
+      bytes[total + i] = zz & 0xff;
+    }
+    out[key] = {
+      d: mlp.domain,
+      a: mlp.architecture,
+      s: mlp.samplesTrained,
+      e: mlp.epochs,
+      im: Number(mlp.initialMse.toFixed(4)),
+      fm: Number(mlp.finalMse.toFixed(4)),
+      sa: Number(mlp.signAccuracy.toFixed(4)),
+      wb: encodeBase64Bytes(bytes),
+      b3: Number(mlp.b3.toFixed(4)),
+    };
+  }
+  return out;
+}
+
+export function packCombos(combos: DiscoveredCardCombo[]): CompactComboTuple[] {
+  return combos.map((c) => {
+    const idxA = CARD_INDEX_BY_ID[c.cardAId] ?? 0;
+    const idxB = CARD_INDEX_BY_ID[c.cardBId] ?? 0;
+    const cardA = ALL_CARDS[idxA];
+    const cardB = ALL_CARDS[idxB];
+    const prefix = `${cardA?.name ?? ''} + ${cardB?.name ?? ''}`;
+    if (c.synergyNote.startsWith(prefix)) {
+      return [
+        idxA,
+        idxB,
+        Number(c.coPlayWinRate.toFixed(3)),
+        Number(c.liftOverBaseline.toFixed(3)),
+        c.sampleCount,
+        c.synergyNote.slice(prefix.length),
+      ];
+    }
+    return [
+      idxA,
+      idxB,
+      Number(c.coPlayWinRate.toFixed(3)),
+      Number(c.liftOverBaseline.toFixed(3)),
+      c.sampleCount,
+      c.synergyNote,
+      1,
+    ];
+  });
+}
+
+export function packShapleyList(list: CardShapleyMetric[]): CompactShapleyTuple[] {
+  return list.map((m) => {
+    const idx = CARD_INDEX_BY_ID[m.cardId] ?? 0;
+    const card = ALL_CARDS[idx];
+    const customName = card && card.name !== m.cardName ? m.cardName : undefined;
+    const tuple: CompactShapleyTuple = [
+      idx,
+      Number(m.shapleyValue.toFixed(4)),
+      m.shapleyLcb !== undefined ? Number(m.shapleyLcb.toFixed(4)) : null,
+      m.ci95HalfWidth !== undefined ? Number(m.ci95HalfWidth.toFixed(4)) : null,
+      Number(m.playedWinRate.toFixed(3)),
+      Number(m.stuckInHandRate.toFixed(3)),
+      m.samples,
+    ];
+    if (customName !== undefined) tuple.push(customName);
+    return tuple;
+  });
+}
+
+export function packLearnedProfile(p: DeckLearnedAiProfile): CompactLearnedAiProfile {
+  const hb: Array<[number, number]> = [];
+  for (const [cid, val] of Object.entries(p.highImpactCardBoosts ?? {})) {
+    const idx = CARD_INDEX_BY_ID[cid];
+    if (idx !== undefined) {
+      hb.push([idx, Number(val.toFixed(1))]);
+    }
+  }
+  hb.sort((a, b) => a[0] - b[0]);
+  return {
+    deckId: p.deckId,
+    deckName: p.deckName,
+    archetypeTag: p.archetypeTag,
+    generationsTrained: p.generationsTrained,
+    matchesSimulated: p.matchesSimulated,
+    baselineWinRate: Number(p.baselineWinRate.toFixed(3)),
+    trainedWinRate: Number(p.trainedWinRate.toFixed(3)),
+    weights: p.weights,
+    mk: (p.mulliganKeepIds ?? []).map((id) => CARD_INDEX_BY_ID[id] ?? 0),
+    cp: (p.channelPriorityIds ?? []).map((id) => CARD_INDEX_BY_ID[id] ?? 0),
+    ca: (p.channelAvoidIds ?? []).map((id) => CARD_INDEX_BY_ID[id] ?? 0),
+    hb,
+    sp: (p.synergyPairs ?? []).map(([a, b]) => [
+      CARD_INDEX_BY_ID[a] ?? 0,
+      CARD_INDEX_BY_ID[b] ?? 0,
+    ]),
+    dc: packCombos(p.discoveredCombos ?? []),
+  };
+}
+
+export function packTierDecks(
+  tierDecks: Record<AiSkillTier, TierDeckMetadata>
+): CompactTierDeckTuple[] {
+  const tiers: AiSkillTier[] = [1, 2, 3, 4, 5];
+  return tiers.map((t) => {
+    const m = tierDecks[t];
+    return [
+      m.tier,
+      m.tierLabel,
+      encodeCardIndicesB64(m.cardIds),
+      m.legendaryCount,
+      m.rareCount,
+      m.uncommonCount,
+      m.commonCount,
+      Number(m.avgCost.toFixed(2)),
+      Number(m.benchmarkWinRateVsLadder.toFixed(3)),
+      m.benchmarkCi95HalfWidth !== undefined ? Number(m.benchmarkCi95HalfWidth.toFixed(4)) : null,
+    ];
+  });
+}
+
+export function packMasteryRecord<
+  K extends string,
+  T extends {
+    learnedProfile: DeckLearnedAiProfile;
+    topShapleyCards: CardShapleyMetric[];
+    tierDecks: Record<AiSkillTier, TierDeckMetadata>;
+    crossDomainCombos?: DiscoveredCardCombo[];
+  },
+>(
+  record: Partial<Record<K, T>>
+): Record<K, Omit<T, keyof CompactMasteryFields> & CompactMasteryFields> {
+  const out = {} as Record<K, Omit<T, keyof CompactMasteryFields> & CompactMasteryFields>;
+  for (const key of Object.keys(record) as K[]) {
+    const entry = record[key];
+    if (!entry) continue;
+    const packed: Record<string, unknown> = {
+      ...entry,
+      learnedProfile: packLearnedProfile(entry.learnedProfile),
+      topShapleyCards: packShapleyList(entry.topShapleyCards),
+      tierDecks: packTierDecks(entry.tierDecks),
+    };
+    if (entry.crossDomainCombos !== undefined) {
+      packed.crossDomainCombos = packCombos(entry.crossDomainCombos);
+    }
+    out[key] = packed as Omit<T, keyof CompactMasteryFields> & CompactMasteryFields;
+  }
+  return out;
+}

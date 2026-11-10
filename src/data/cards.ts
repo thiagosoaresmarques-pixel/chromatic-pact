@@ -35670,6 +35670,348 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Concede +2/+4, +3 de Armadura e Escudo Divino ao seu campeão, concede Escudo Divino aos demais aliados e restaura 4 de Vida.",
     "flavorText": "Diante do Trono Solar, o campeão ergue a cúpula inquebrável enquanto toda a hoste resplandece em ouro imortal.",
     "imagePath": "/assets/cards/gold_198_apoteose_trono_solar.webp"
+  },
+  {
+    "id": "neutral_189_estrepes_aco_negro",
+    "name": "Estrepes de Aço Negro",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Tática Mercenária",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Causa 1 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 1,
+        "description": "Reduz em 1 o Ataque dos inimigos."
+      }
+    ],
+    "description": "Causa 1 de dano à Vanguarda inimiga e reduz em 1 o Ataque dos inimigos.",
+    "flavorText": "Espalhados na lama antes da carga, os estrepes de ferro temperado quebram o ímpeto de qualquer cavalaria.",
+    "imagePath": "/assets/cards/neutral_189_estrepes_aco_negro.webp"
+  },
+  {
+    "id": "neutral_190_destilado_mercurio",
+    "name": "Destilado de Mercúrio",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Alquimia",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Gera +1 de Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Gera +1 de Essência neste turno e compra 1 carta.",
+    "flavorText": "Purificado três vezes nos alambiques da Torre Axial, o mercúrio líquido aguça a mente e acelera o pulso.",
+    "imagePath": "/assets/cards/neutral_190_destilado_mercurio.webp"
+  },
+  {
+    "id": "neutral_191_unguento_adamantina",
+    "name": "Unguento de Adamantina",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Alquimia",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Concede +1/+2 a 1 aliado."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_target_ally",
+        "value": 2,
+        "description": "Restaura 2 de Vida de 1 aliado."
+      }
+    ],
+    "description": "Concede +1/+2 a 1 aliado e restaura 2 de Vida dele.",
+    "flavorText": "Onde a prata alquímica escorre sobre o aço partido, a armadura se refaz mais dura que antes.",
+    "imagePath": "/assets/cards/neutral_191_unguento_adamantina.webp"
+  },
+  {
+    "id": "neutral_192_contrato_escolta",
+    "name": "Contrato de Escolta",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Tática Mercenária",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Invoca 1 Mercenário 2/2."
+      }
+    ],
+    "description": "Invoca 1 Mercenário 2/2.",
+    "flavorText": "Prata pesada e lacre de chumbo: a única língua que todas as companhias livres respeitam.",
+    "imagePath": "/assets/cards/neutral_192_contrato_escolta.webp"
+  },
+  {
+    "id": "neutral_193_selo_ruptura_planar",
+    "name": "Selo de Ruptura Planar",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Rúnico Axial",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Reduz em 2 o Ataque dos inimigos."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Quebra Expansões de Domínio inimigas, reduz em 2 o Ataque dos inimigos e compra 1 carta.",
+    "flavorText": "Quatro lâminas de prata cravadas no hexágono axial dissipam qualquer santuário elemental.",
+    "imagePath": "/assets/cards/neutral_193_selo_ruptura_planar.webp"
+  },
+  {
+    "id": "neutral_194_granada_eter_prateado",
+    "name": "Granada de Éter Prateado",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Alquimia",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 2,
+        "description": "Causa 2 de dano à Vanguarda inimiga."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "bounce_enemy",
+        "value": 1,
+        "description": "Devolve 1 inimigo à mão do oponente."
+      }
+    ],
+    "description": "Causa 2 de dano à Vanguarda inimiga e devolve 1 inimigo à mão do oponente.",
+    "flavorText": "Ao estourar em fumaça de mercúrio e estilhaços de aço, desfaz até a formação mais cerrada.",
+    "imagePath": "/assets/cards/neutral_194_granada_eter_prateado.webp"
+  },
+  {
+    "id": "neutral_195_mobilizacao_guilda",
+    "name": "Mobilização da Guilda",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Tática Mercenária",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 3,
+        "secondaryValue": 3,
+        "description": "Invoca 1 Veterano 3/3."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Concede +1/+1 aos seus aliados."
+      }
+    ],
+    "description": "Invoca 1 Veterano 3/3 e concede +1/+1 aos seus aliados.",
+    "flavorText": "Quando o sino de bronze da Guilda Livre badala, veteranos de todas as fronteiras fecham fileira.",
+    "imagePath": "/assets/cards/neutral_195_mobilizacao_guilda.webp"
+  },
+  {
+    "id": "neutral_196_singularidade_mercurio",
+    "name": "Singularidade de Mercúrio",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Rúnico Axial",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "damage_all_units",
+        "value": 3,
+        "description": "Causa 3 de dano a todas as unidades."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Quebra Expansões de Domínio inimigas, causa 3 de dano a todas as unidades e compra 1 carta.",
+    "flavorText": "O obelisco invertido esmaga o próprio ar sob correntes de gravidade prateada.",
+    "imagePath": "/assets/cards/neutral_196_singularidade_mercurio.webp"
+  },
+  {
+    "id": "neutral_197_tratado_cinco_coroas",
+    "name": "Tratado das Cinco Coroas",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Convergência",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "royal_prism_convergence",
+        "value": 2,
+        "description": "Ativa 1 efeito para cada cor distinta nos seus Terrenos canalizados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      }
+    ],
+    "description": "Ativa 1 efeito para cada cor nos seus Terrenos canalizados e gera +2 de Essência.",
+    "flavorText": "Cinco adagas reais apontam para o mesmo astrolábio, unindo forças opostas sob um único pacto.",
+    "imagePath": "/assets/cards/neutral_197_tratado_cinco_coroas.webp"
+  },
+  {
+    "id": "neutral_198_decreto_prisma_primordial",
+    "name": "Decreto do Prisma Primordial",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Convergência Lendária",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "royal_prism_convergence",
+        "value": 2,
+        "description": "Ativa 1 efeito para cada cor distinta nos seus Terrenos canalizados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Concede Escudo Divino aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Compra 2 cartas."
+      }
+    ],
+    "description": "Quebra Expansões de Domínio inimigas, ativa 1 efeito para cada cor nos seus Terrenos canalizados, concede Escudo Divino aos seus aliados e compra 2 cartas.",
+    "flavorText": "No coração da Torre Axial, o octaedro primordial refrata todas as cinco coroas num único cataclismo.",
+    "imagePath": "/assets/cards/neutral_198_decreto_prisma_primordial.webp"
   }
 ];
 

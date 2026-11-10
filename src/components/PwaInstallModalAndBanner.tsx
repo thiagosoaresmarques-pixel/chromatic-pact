@@ -382,7 +382,7 @@ export const PwaInstallGuideModal: React.FC<PwaInstallGuideModalProps> = ({
               ⚡ Cache Instantâneo
             </div>
             <div style={{ fontSize: '0.73rem', color: '#cbd5e1', marginTop: 3 }}>
-              Artes das 1.038 cartas e tabuleiros abrem imediatamente e atualizam sozinhos.
+              Artes das 1.188 cartas e tabuleiros abrem imediatamente e atualizam sozinhos.
             </div>
           </div>
           <div

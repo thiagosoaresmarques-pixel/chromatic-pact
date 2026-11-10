@@ -15,1301 +15,1673 @@ export interface TacticalComboEntry {
 }
 
 export const TACTICAL_COMBOS_COMPENDIUM: TacticalComboEntry[] = [
-  // =========================================================================
-  // 1 COR — COMBOS MONOCROMÁTICOS (DOMÍNIOS PUROS + SUPORTE ÉTER ARCANO)
-  // =========================================================================
-  {
-    id: 'mono_red_pyromancy',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['red'],
-    title: 'Artilharia Piromante de Retaguarda',
-    archetypeTag: 'Dano Direto por Feitiço',
-    cardIds: [
-      'red_107_fornalha_draconica',
-      'red_72_caldeirao_magma',
-      'red_97_lancador_chamas',
-      'red_32_ritual_cinzas',
-      'red_85_tempo_emprestado',
-    ],
-    mechanism:
-      'Com o Piromante e as duas Fornalhas na Retaguarda, cada feitiço lançado dispara 5 de dano automático ao Soberano inimigo (2 + 2 + 1). Feitiços que devolvem +1⚡ (Ritual da Pira e Fúria da Ampulheta) encadeiam múltiplos disparos no mesmo turno.',
-    payoff: '15+ de dano direto ao Soberano rival em um único turno ignorando Guardiões.',
-  },
-  {
-    id: 'mono_red_swarm',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['red'],
-    title: 'Forja de Crias Dracônicas & Comando de Falange',
-    archetypeTag: 'Enxame & Buff de Fileira',
-    cardIds: [
-      'red_10_altar_draconico',
-      'red_36_bigorna_fogo',
-      'red_146_coroa_chama_eterna',
-      'red_18_marechal_rubro',
-    ],
-    mechanism:
-      'A Máscara do Trono Rubro e a Bigorna do Rei da Fornalha concedem +1/+1 na entrada, invocam Crias Dracônicas (2/1) e fortalecem as tropas todo início de turno ao lado da Coroa da Caldeira Eterna (+1 ATQ global). Quando o Marechal ataca, concede +1 ATQ extra a toda a fileira.',
-    payoff: 'Geração perpétua de atacantes 5+ ATQ sem custo de Essência.',
-  },
-  {
-    id: 'mono_red_deathrattle',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['red'],
-    title: 'Bomba-Relógio Vulcânica (Último Suspiro)',
-    archetypeTag: 'Detonação de Vanguarda',
-    cardIds: [
-      'red_02_magmin',
-      'red_75_kobold_cronobomba',
-      'red_45_fenix_primordial',
-      'red_156_fenix_coroa_solar',
-    ],
-    mechanism:
-      'Posicione unidades explosivas na Vanguarda junto a Pyrokor, Monarca do Fogo Vivo. Qualquer ataque ou limpeza inimiga detona Últimos Suspiros em cadeia (até 8 de dano sobre toda a Vanguarda rival), enquanto a Fênix da Coroa Solar renasce imediatamente com Voo e Ímpeto.',
-    payoff: '8 de dano em área garantido na Vanguarda inimiga + retorno imortal da Fênix.',
-  },
-  {
-    id: 'mono_red_cataclysm_forge',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['red'],
-    title: 'Cataclismo do Sol Aprisionado & Titãs de Magma',
-    archetypeTag: 'Queima Contínua & Devastação',
-    cardIds: [
-      'red_166_coroa_imperador_vulcao',
-      'red_28_coroa_cinzas',
-      'red_123_cataclismo_solar',
-      'red_157_dragao_tiamat_carmesim',
-    ],
-    mechanism:
-      'O Orbe do Sol Aprisionado e a Tiara do Arauto Escarlate queimam o Soberano rival (4 de dano automático por rodada) e desgastam a Vanguarda inimiga. Detonação do Sol Carmesim (5 em área + 3 na face) e Vulcanis (Sopro 3 + 3 em área e 3 no Soberano) finalizam a partida.',
-    payoff: 'Limpeza completa da mesa rival combinada com 10+ de dano direto inevitável ao Soberano.',
-  },
-  {
-    id: 'mono_blue_spellslinger',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['blue'],
-    title: 'Ressonância Rúnica & Ciclo de Essência',
-    archetypeTag: 'Compra & Disparo Arcano',
-    cardIds: [
-      'blue_37_mago_aprendiz',
-      'blue_152_arquimago_vortice',
-      'blue_10_portal_runas',
-      'blue_36_tomo_infinito',
-      'blue_119_convergencia_runica',
-    ],
-    mechanism:
-      'Com Hydrissa (compra 1 e causa 1 à Vanguarda a cada feitiço), o Códice, o Grimório do Infinito e o Iniciado, cada magia lançada dispara 5 de dano e repõe sua mão. Convergência Rúnica compra 2 cartas e devolve +1⚡.',
-    payoff: 'Limpeza contínua da mesa inimiga comprando cartas a cada feitiço lançado.',
-  },
-  {
-    id: 'mono_blue_permafrost',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['blue'],
-    title: 'Prisão Glacial Perpétua',
-    archetypeTag: 'Trava Total de Mesa',
-    cardIds: [
-      'blue_28_orbe_tempestade',
-      'blue_146_trono_inverno_eterno',
-      'blue_166_trono_oniciencia_astral',
-      'blue_09_onda_repulsora',
-    ],
-    mechanism:
-      'O Trono do Inverno Eterno e o Astrolábio congelam toda a Vanguarda ao entrar. No início de cada turno, o Cetro do Arquimago Astral e o Astrolábio congelam inimigos automaticamente, geram +1⚡ extra e compram 2 cartas.',
-    payoff: 'Neutraliza os ataques terrestres do adversário enquanto gera vantagem de cartas e Essência.',
-  },
-  {
-    id: 'mono_blue_chronos_lock',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['blue'],
-    title: 'Singularidade de Chronos & Ruptura do Relógio',
-    archetypeTag: 'Estase Temporal & Leviatãs',
-    cardIds: [
-      'blue_141_ruptura_temporal',
-      'blue_161_singularidade_temporal',
-      'blue_136_leviata_cronos',
-      'blue_154_dragao_safira_soberano',
-    ],
-    mechanism:
-      'Ruptura do Relógio Astral congela toda a mesa rival, compra 1 carta e devolve +2⚡, abrindo janela para Pilares da Geada Eterna (congela todos + 2 de dano em área + compra 2) e a descida de Chronoleviatã ou do Dragão de Safira Sônico.',
-    payoff: 'Mantém todo o exército rival congelado por 3 turnos consecutivos enquanto seus dragões atacam pelo ar.',
-  },
-  {
-    id: 'mono_blue_mirror_ambush',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['blue'],
-    title: 'Labirinto de Espelhos & Contra-Feitiços',
-    archetypeTag: 'Emboscadas & Devolução à Mão',
-    cardIds: [
-      'blue_164_desvio_dimensional',
-      'blue_144_espelho_geada',
-      'blue_124_dissipar_essencia',
-      'blue_153_leviata_fenda_abissal',
-    ],
-    mechanism:
-      'Cúpula Defletora do Vendaval devolve o atacante inimigo para a mão antes do golpe conectar, enquanto Espelho Congelante e Dissipação Rúnica congelam o restante da fileira e concedem Escudo Divino. No seu turno, Zephyrus devolve outro colosso e congela o segundo.',
-    payoff: 'Anula o turno inteiro do oponente fazendo-o gastar Essência repetidamente na mesma criatura.',
-  },
-  {
-    id: 'mono_purple_dark_ritual',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['purple'],
-    title: 'Canalização Umbral de Aceleração Precoce',
-    archetypeTag: 'Explosão de Essência',
-    cardIds: [
-      'purple_104_pacto_demoniaco',
-      'purple_50_pacto_proibido',
-      'purple_25_dama_seis_laminas',
-      'purple_07_lich',
-    ],
-    mechanism:
-      'Centelha Umbral (1⚡ → +2⚡) e Contrato das Sete Correntes (2⚡ → +2⚡ e compra 2 cartas) convertem Sobrecarga em Essência imediata, permitindo descer colossos de custo 6–7 já nos primeiros turnos.',
-    payoff: 'Invoca Serpente Abissal (7/6 Ímpeto) ou Vesperion vários turnos antes da curva normal.',
-  },
-  {
-    id: 'mono_purple_reanimator',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['purple'],
-    title: 'Ciclo Imortal da Cripta',
-    archetypeTag: 'Reanimação & Buff Global',
-    cardIds: [
-      'purple_28_filacterio_noite',
-      'purple_30_erguer_mortos',
-      'purple_68_exumar_legiao',
-      'purple_156_lich_coroa_entropia',
-    ],
-    mechanism:
-      'Sempre que seus campeões tombam, Erguer Legião da Cripta (3⚡), Exumar a Legião Caída (4⚡) e o Dragão Umbral do Eclipse os trazem de volta ao campo e ainda concedem +1/+1 a todas as unidades aliadas.',
-    payoff: 'Exército que volta mais forte da Cripta a cada tentativa de remoção do oponente.',
-  },
-  {
-    id: 'mono_purple_blood_cathedral',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['purple'],
-    title: 'Sinfonia da Catedral Negra & Dreno Real',
-    archetypeTag: 'Dreno Passivo de Soberano',
-    cardIds: [
-      'purple_126_campanario_mortos',
-      'purple_145_orgao_catedrais_negras',
-      'purple_165_calice_sangue_imortal',
-      'purple_138_soberano_carnica',
-    ],
-    mechanism:
-      'O Campanário dos Mortos, o Órgão Fantasma e o Cálice de Obsidiana drenam automaticamente até 5 de VIDA do Soberano rival e curam o seu todo início de turno. Necrothor entra limpando a mesa em 3 de dano e drenando mais 3.',
-    payoff: 'Diferencial automático de 8+ de VIDA por turno sem precisar declarar ataques terrestres.',
-  },
-  {
-    id: 'mono_purple_plague_eclipse',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['purple'],
-    title: 'Eclipse do Sol Abissal & Visagem da Peste',
-    archetypeTag: 'Erradicação em Área & Cripta',
-    cardIds: [
-      'purple_166_altar_ceifador_supremo',
-      'purple_123_eclipse_abissal',
-      'purple_162_apocalipse_necrotico',
-      'purple_157_dragao_sombra_abissal',
-    ],
-    mechanism:
-      'A Visagem do Dragão da Peste causa 2 de dano à Vanguarda inimiga e compra 1 carta todo início de turno. Eclipse do Sol Abissal varre o campo (4 em área + drena 4) e Colheita do Cálice abate o maior colosso sobrevivente antes do Monarca dos Três Crânios dominar o ar.',
-    payoff: 'Aniquila tanto enxames quanto colossos individuais enquanto mantém sua VIDA acima de 35.',
-  },
-  {
-    id: 'mono_green_ramp',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['green'],
-    title: 'Seiva Primordial & Despertar da Hidra',
-    archetypeTag: 'Aceleração & Colosso',
-    cardIds: [
-      'green_12_pixie',
-      'green_36_coracao_floresta',
-      'green_28_totem_silvestre',
-      'green_09_hidra',
-    ],
-    mechanism:
-      'A Fada Pixie (+1⚡), o Coração da Seiva (+1⚡ e compra 1) e o Santuário Silvestre (+2⚡) reembolsam Essência no mesmo turno em que entram, financiando a chegada imediata de Vorágine, Hidra Voraz.',
-    payoff: 'Coloca uma Hidra 8/9 (Armadura 2, Regeneração 3, Sopro 2) com suporte de cura contínua.',
-  },
-  {
-    id: 'mono_green_enrage',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['green'],
-    title: 'Muralha de Fúria Crescente & Regeneração',
-    archetypeTag: 'Escalada de Ataque',
-    cardIds: [
-      'green_07_troll',
-      'green_54_totem_ancestral',
-      'green_166_coracao_arvore_mundo',
-      'green_53_carapaca_espinhosa',
-    ],
-    mechanism:
-      'O Troll Regenerador (6/8, Guardião, Atropelar, Fúria Crescente, Regeneração 3) absorve ataques inimigos, recupera até 7 de VIDA por turno com o Monólito e o Totem do Espírito Urso Ancestral, e ganha +2 ATQ permanente a cada impacto sofrido.',
-    payoff: 'Cria um Guardião 12+ ATQ com Atropelar que esmaga a coluna inimiga.',
-  },
-  {
-    id: 'mono_green_prehistoric_stampede',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['green'],
-    title: 'Estouro da Manada Pré-Histórica',
-    archetypeTag: 'Ímpeto, Atropelar & Buff Global',
-    cardIds: [
-      'green_115_carnotauro_chifre',
-      'green_136_rinoceronte_monolito',
-      'green_141_soberano_fera_primordial',
-      'green_163_despertar_colosso_floresta',
-    ],
-    mechanism:
-      'Carnotauro Chifre-de-Ferro e Rinoceronte Chifre-de-Monólito entram com Ímpeto e Atropelar. Fenris-Gorgon (+2/+1 a todos com Ímpeto/Atropelar) e Investida do Espírito Urso (+2/+2 a todos e cura 4) transformam a fileira em uma avalanche.',
-    payoff: 'Mais de 25 de dano com Atropelar no mesmo turno em que os predadores entram em campo.',
-  },
-  {
-    id: 'mono_green_pangaea_fortress',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['green'],
-    title: 'Fortaleza Viva de Pangeia & Galhada',
-    archetypeTag: 'Armadura 3, Sopro & Cura em Massa',
-    cardIds: [
-      'green_160_behemoth_cratera_viva',
-      'green_142_patriarca_selva_eterna',
-      'green_161_dragao_esmeralda_primordial',
-      'green_126_coracao_selva_viva',
-    ],
-    mechanism:
-      'Terrakhor (Armadura 3, Regeneração 2) e Sylvanhorn concedem +4/+4 acumulado a toda a sua tropa na entrada, enquanto o Dragão Esmeralda de Galhada Viva limpa as pilhas inimigas com Sopro de Espinhos 3.',
-    payoff: 'Fileira inteira com +4/+4 de bônus permanente e regeneração contínua a cada rodada.',
-  },
-  {
-    id: 'mono_gold_aegis',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['gold'],
-    title: 'Falange Invulnerável do Sol Invicto',
-    archetypeTag: 'Escudo Divino em Massa',
-    cardIds: [
-      'gold_28_reliquia_pacto',
-      'gold_30_escudo_solar',
-      'gold_26_muralha_aco',
-      'gold_160_decreto_invulnerabilidade',
-    ],
-    mechanism:
-      'A Arca da Aliança e o Bastião do Sol concedem Escudo Divino a toda a tropa ao entrar. Quando o inimigo ataca para quebrar os escudos, Falange de Escudos Animados e Cúpula das Asas Seráficas reaplicam Escudo Divino em todos e compram 2 cartas.',
-    payoff: 'Trocas de combate 100% gratuitas onde suas unidades jamais perdem VIDA.',
-  },
-  {
-    id: 'mono_gold_empire_engine',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['gold'],
-    title: 'Motor Imperial de Essência & Zênite',
-    archetypeTag: 'Geração de Mana & Cura',
-    cardIds: [
-      'gold_105_coroa_imperador',
-      'gold_90_trono_horas',
-      'gold_166_trono_soberano_sol',
-      'gold_07_dragao_ouro',
-    ],
-    mechanism:
-      'A Coroa Imperial, o Santuário do Relógio e o Diadema dos Cristais Orbitais geram +3⚡ extras todo início de turno enquanto distribuem Escudo Divino e curam toda a fileira, acelerando Aurarius, Majestade do Sol.',
-    payoff: '+3⚡ permanentes por turno + fileira inteira blindada com Armadura 3 e Escudo Divino.',
-  },
-  {
-    id: 'mono_gold_eternal_throne',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['gold'],
-    title: 'Corte de Hyperion & Trono do Imperador Eterno',
-    archetypeTag: 'Escalonamento Real & Sopro Solar',
-    cardIds: [
-      'gold_146_trono_imperador_eterno',
-      'gold_126_coroa_imperador_solar',
-      'gold_138_imperador_sol_supremo',
-      'gold_157_dragao_soberano_alvorada',
-    ],
-    mechanism:
-      'O Trono Supremo do Imperador Eterno e a Coroa do Imperador Solar concedem Escudo Divino na entrada e +2/+2 automáticos a todos os aliados a cada início de turno. Hyperion e Aurelius entram adicionando mais +2/+2, Escudo Divino global e Sopro Solar 3.',
-    payoff: 'Qualquer soldado comum torna-se um colosso 8/10 com Escudo Divino em duas rodadas.',
-  },
-  {
-    id: 'mono_neutral_archmage',
-    tier: 'mono',
-    tierLabel: 'Suporte Universal • Éter Arcano',
-    domains: ['neutral'],
-    title: 'Motor Arcano Universal (0 Afinidade)',
-    archetypeTag: 'Catalisador para Qualquer Cor',
-    cardIds: [
-      'neutral_13_grimorio_astral',
-      'neutral_49_fragmento_mental',
-      'neutral_40_cajado_magi',
-      'neutral_17_pedra_filosofal',
-    ],
-    mechanism:
-      'Sem exigir Afinidade Elemental, a Pedra Filosofal gera Essência extra todo turno enquanto o Tomo, o Diadema e o Cajado Supremo convertem qualquer feitiço em 5 de dano + 1 de dreno de VIDA.',
-    payoff: 'Encaixa em qualquer Grimório para multiplicar o impacto de feitiços e acelerar a curva.',
-  },
-  {
-    id: 'mono_neutral_aeternus_clockwork',
-    tier: 'mono',
-    tierLabel: 'Suporte Universal • Éter Arcano',
-    domains: ['neutral'],
-    title: 'Engrenagem Suprema de Aeternus',
-    archetypeTag: 'Escudo Divino Perpétuo & Mana',
-    cardIds: [
-      'neutral_50_relogio_eternidade',
-      'neutral_123_emissario_relojoeiro_supremo',
-      'neutral_117_elminster_sabio_cinzento',
-      'neutral_166_protocolo_torre_axial',
-    ],
-    mechanism:
-      'O Grande Relógio da Eternidade e Valerius geram +2⚡ extras e +1/+1 aos aliados todo início de turno, enquanto o Deus-Máquina de Aeternus (Guardião, Renascer) renova Escudo Divino em todas as suas unidades a cada rodada.',
-    payoff: 'Escudo Divino renovado gratuitamente todo turno em todas as colunas sem exigir cor específica.',
-  },
-  {
-    id: 'mono_neutral_titan_conclave',
-    tier: 'mono',
-    tierLabel: 'Suporte Universal • Éter Arcano',
-    domains: ['neutral'],
-    title: 'Conclave dos Titãs Quebra-Tronos',
-    archetypeTag: 'Colossos Sem Requisito de Cor',
-    cardIds: [
-      'neutral_128_trono_cranio_dragao',
-      'neutral_122_rei_hekaton_neutro_arbitro',
-      'neutral_119_colosso_vonindod_fragmento',
-      'neutral_124_tarrasque_despertar_neutro',
-    ],
-    mechanism:
-      'O Trono do Crânio Dracônico e Atlas-Khor concedem +4/+4 somados a todos os seus aliados na entrada. Em seguida, Titã Ferrostor e Gorgonoth, O Devorador de Continentes entram varrendo o tabuleiro inteiro com 5 de dano sísmico.',
-    payoff: 'Seus aliados sobrevivem ao terremoto graças ao +4/+4 enquanto a mesa adversária é dizimada.',
-  },
-
-  {
-    id: 'mono_red_wheel_armada_blitz',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['red'],
-    title: 'Roda Vulcânica & Bombardeio da Hoste Dracônica',
-    archetypeTag: 'Quebra de Domínio & Ímpeto Letal',
-    cardIds: [
-      'red_173_general_roda_chama',
-      'red_172_armada_draconica_chama',
-      'red_167_arauto_prisma_chama',
-      'red_170_flagelo_cornudo_chama',
-    ],
-    mechanism:
-      'Pyrrakon (General da Roda Vulcânica) entra quebrando imediatamente qualquer Expansão de Domínio inimiga (impondo 2 rodadas de Exaustão de Domínio ao rival), concede Escudo Divino a toda a sua tropa e varre a Vanguarda em 2 de dano ao atacar com Ímpeto. Na sequência, a Hoste Dracônica da Cratera limpa os sobreviventes com 3 de dano de entrada + Sopro 3, gera duas crias 2/2 e ataca com Ímpeto causando mais 3 de dano direto ao Soberano.',
-    payoff: 'Anulação total do Domínio inimigo, limpeza dupla de Vanguarda e 10+ de pressão imediata no mesmo turno.',
-  },
-  {
-    id: 'mono_purple_crypt_wheel_eclipse',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['purple'],
-    title: 'Roda Fúnebre & Reanimação da Legião do Eclipse',
-    archetypeTag: 'Anti-Domínio, Execução & Cripta',
-    cardIds: [
-      'purple_173_general_roda_abismo',
-      'purple_172_armada_draconica_abismo',
-      'purple_23_dracolich',
-      'purple_169_pressagio_revoada_abismo',
-    ],
-    mechanism:
-      'Nyxaroth quebra a Expansão de Domínio rival, protege seus mortos-vivos com Escudo Divino e, ao atacar, executa a criatura inimiga mais forte ignorando Escudo Divino e Armadura. Em seguida, a Legião Dracônica do Eclipse aplica 2 em área + Sopro 2, invoca duas crias 2/2 e, ao declarar ataque, reanima gratuitamente o maior titã da sua Cripta (como Ossaurion).',
-    payoff: 'Destruição de Domínio e de colossos blindados somada à ressurreição gratuita de lendas de custo 7–8⚡.',
-  },
-  {
-    id: 'mono_blue_wheel_clash_lock',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['blue'],
-    title: 'Vitória Instantânea em Disputa 50/50 & Trava Astral',
-    archetypeTag: 'Quebra de Choque de Domínios & Gelo',
-    cardIds: [
-      'blue_173_general_roda_gelo',
-      'blue_172_armada_draconica_gelo',
-      'blue_171_pactuario_elemental_gelo',
-      'blue_119_convergencia_runica',
-    ],
-    mechanism:
-      'Durante uma Disputa de Domínios (50/50) em que os Acertos Garantidos estão mutuamente suprimidos, invocar Cryonax (General da Roda Astral) estilhaça exclusivamente o domínio rival (clashRival) e impõe 2 rodadas de Exaustão de Domínio ao oponente — restaurando na mesma hora o +1/+1 e o Acerto Garantido da sua própria Expansão! Cryonax ainda congela toda a Vanguarda inimiga e concede Escudo Divino global antes da Esquadra Dracônica da Nevasca consolidar a trava.',
-    payoff: 'Soberania absoluta de Domínio recuperada instantaneamente + Vanguarda inimiga congelada por turnos seguidos.',
-  },
-  {
-    id: 'mono_green_primal_wheel_stampede',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['green'],
-    title: 'Roda Primeva & Escalada do Enxame Ancestral',
-    archetypeTag: 'Anti-Domínio & Buff Exponencial',
-    cardIds: [
-      'green_173_general_roda_selva',
-      'green_172_armada_draconica_selva',
-      'green_169_pressagio_revoada_selva',
-      'green_167_arauto_prisma_selva',
-    ],
-    mechanism:
-      'O Presságio da Revoada Espinhosa povoa a Vanguarda com duas feras 2/2; o Arauto da Raiz Prismática (+1/+2 global) e Sylvarok (quebra a Expansão de Domínio inimiga + +1/+2 e Escudo Divino global) transformam as fichas em brucutus blindados. Por fim, o Enxame Dracônico Ancestral varre a frente rival em 2, cria mais duas feras 2/2 e concede +1/+2 adicional a todos os aliados ao atacar.',
-    payoff: 'Mesa larga com +3/+6 acumulado, Escudo Divino e Atropelar sobre um oponente em Exaustão de Domínio.',
-  },
-  {
-    id: 'mono_gold_celestial_wheel_aegis',
-    tier: 'mono',
-    tierLabel: '1 Cor • Monocromático',
-    domains: ['gold'],
-    title: 'Égide da Roda Celeste & Armada do Zênite',
-    archetypeTag: 'Cidadela Anti-Domínio & Escudos Infinitos',
-    cardIds: [
-      'gold_173_general_roda_sol',
-      'gold_172_armada_draconica_sol',
-      'gold_167_arauto_prisma_sol',
-      'gold_171_pactuario_elemental_sol',
-    ],
-    mechanism:
-      'Heliokar (General da Roda Celeste) destrói a Expansão de Domínio rival, concede Escudo Divino e +1 de Armadura permanente a todos os seus aliados e restaura 3 de Vida em todo o seu lado. Quando a Armada Dracônica do Zênite ataca com Voo e Sopro 2, ela renova o Escudo Divino de todo o exército aliado e cura mais 3 do seu Soberano.',
-    payoff: 'Falange virtualmente indestrutível com Armadura acumulada, Escudos Divinos renováveis e +10 de cura total ao Soberano.',
-  },
-  {
-    id: 'mono_neutral_vaelkor_ascension_refund',
-    tier: 'mono',
-    tierLabel: 'Suporte Universal • Éter Arcano',
-    domains: ['neutral'],
-    title: 'Reembolso de Essência & Ascensão Imediata de Vaelkor',
-    archetypeTag: 'Anti-Domínio Universal & Ascensão (★)',
-    cardIds: [
-      'neutral_173_general_roda_matriz',
-      'neutral_172_armada_draconica_matriz',
-      'neutral_170_flagelo_cornudo_matriz',
-      'neutral_60_calice_infinito',
-    ],
-    mechanism:
-      'Sem exigir Afinidade (0), Vaelkor entra por 7⚡ quebrando a Expansão de Domínio rival, concedendo Escudo Divino a todos os aliados e reembolsando +2⚡ imediatamente. Com 9⚡ disponíveis — ou somando os +2⚡ gerados pelo Graal do Prisma Infinito ou pelo ataque da Armada Dracônica do Prisma —, esses +2⚡ reembolsados pagam no mesmo turno a Ascensão (4⚡) para ★ Vaelkor, Roda da Perfeição (8/10)!',
-    payoff: 'Quebra de Domínio + Escudo Divino global + Guardião Ascendido 8/10 em campo num único turno decisivo.',
-  },
-
-  // =========================================================================
-  // 2 CORES — AS 10 ALIANÇAS BICROMÁTICAS (2 COMBOS POR ALIANÇA = 20 COMBOS)
-  // =========================================================================
-  {
-    id: 'dual_red_blue',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['red', 'blue'],
-    title: 'Tempestade Piroclástica (Spell-Burn)',
-    archetypeTag: 'Chama + Tempestade',
-    cardIds: [
-      'red_97_lancador_chamas',
-      'red_107_fornalha_draconica',
-      'blue_10_portal_runas',
-      'blue_30_visao_ancestral',
-      'blue_49_mente_onisciente',
-    ],
-    mechanism:
-      'O Vermelho fornece os maiores gatilhos de dano ao Soberano por feitiço lançado, enquanto o Azul fornece feitiços que devolvem +1⚡ e compram 1–2 cartas (Visão do Oráculo e Epifania), evitando que a mão se esgote.',
-    payoff: 'Permite encadear 4 a 5 feitiços no mesmo turno para um abate explosivo à distância.',
-  },
-  {
-    id: 'dual_red_blue_supernova',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['red', 'blue'],
-    title: 'Zero Absoluto & Supernova Solar',
-    archetypeTag: 'Chama + Tempestade',
-    cardIds: [
-      'blue_141_ruptura_temporal',
-      'blue_152_arquimago_vortice',
-      'red_166_coroa_imperador_vulcao',
-      'red_123_cataclismo_solar',
-    ],
-    mechanism:
-      'Ruptura do Relógio Astral congela todas as tropas inimigas, compra 1 carta e gera +2⚡ neste turno, permitindo lançar imediatamente Detonação do Sol Carmesim (5 de dano em área + 3 ao Soberano) com Hydrissa e o Orbe do Sol em campo.',
-    payoff: 'Congela e incinera todo o exército rival em 6+ de dano no mesmo turno sem possibilidade de resposta.',
-  },
-  {
-    id: 'dual_red_purple',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['red', 'purple'],
-    title: 'Fênix Imortal do Abismo',
-    archetypeTag: 'Chama + Abismo',
-    cardIds: [
-      'purple_104_pacto_demoniaco',
-      'red_45_fenix_primordial',
-      'purple_30_erguer_mortos',
-      'purple_28_filacterio_noite',
-    ],
-    mechanism:
-      'Use a Centelha Umbral e o Sacrifício Vital para invocar a Fênix da Coroa Solar cedo. Quando ela gastar seu Renascer e finalmente cair na Cripta (causando 2× dano em área), Erguer Legião da Cripta e a Máscara a trazem de volta com Renascer renovado.',
-    payoff: 'Uma Fênix com Voo e Ímpeto que precisa ser morta 4 a 6 vezes pelo oponente.',
-  },
-  {
-    id: 'dual_red_purple_blood_furnace',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['red', 'purple'],
-    title: 'Catedral das Cinzas & Retorno Profano',
-    archetypeTag: 'Chama + Abismo',
-    cardIds: [
-      'red_166_coroa_imperador_vulcao',
-      'purple_145_orgao_catedrais_negras',
-      'purple_144_retorno_profano',
-      'red_156_fenix_coroa_solar',
-    ],
-    mechanism:
-      'O Orbe do Sol Aprisionado e o Órgão Fantasma causam 4 de dano direto ao Soberano rival todo início de turno. Quando Pyrokor cai na Vanguarda, sua supernova causa 3 em área e dispara a Emboscada Retorno Profano (+1/+1 aos aliados e drena 2).',
-    payoff: 'Cada turno ou abate aliado pune severamente a VIDA do Soberano adversário.',
-  },
-  {
-    id: 'dual_red_green',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['red', 'green'],
-    title: 'Avalanche de Fúria & Atropelar',
-    archetypeTag: 'Chama + Selva',
-    cardIds: [
-      'green_05_minotauro',
-      'green_32_gorila_alfa',
-      'red_85_tempo_emprestado',
-      'red_17_orc_xama',
-    ],
-    mechanism:
-      'O Verde entrega criaturas brutais com Ímpeto, Atropelar e Fúria Crescente (Minotauro Quebra-Muros e Kongor), e o Vermelho injeta +3/+1 e +1⚡ imediato com Fúria da Ampulheta Rubra.',
-    payoff: 'Golpes imediatos de 9+ ATQ com Atropelar que atravessam bloqueadores e acertam o Soberano.',
-  },
-  {
-    id: 'dual_red_green_volcanic_apex',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['red', 'green'],
-    title: 'Predadores da Caldeira Pré-Histórica',
-    archetypeTag: 'Chama + Selva',
-    cardIds: [
-      'green_141_soberano_fera_primordial',
-      'red_134_senhor_guerra_rubro',
-      'red_141_sangue_fervente',
-      'green_138_giganotossauro_apex',
-    ],
-    mechanism:
-      'O General Senhor da Guerra Rubro (+2 ATQ global com Ímpeto), Fenris-Gorgon (+2/+1 global com Ímpeto e Atropelar) e Ritual do Sangue Fervente (+2/+1 global) somam +6 ATQ a toda a fileira de feras com Atropelar.',
-    payoff: 'Transforma qualquer predador em campo em um colosso de 12+ ATQ com Atropelar.',
-  },
-  {
-    id: 'dual_red_gold',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['red', 'gold'],
-    title: 'Falange Dracônica Blindada',
-    archetypeTag: 'Chama + Ordem',
-    cardIds: [
-      'red_10_altar_draconico',
-      'red_36_bigorna_fogo',
-      'gold_28_reliquia_pacto',
-      'gold_27_decreto_gloria',
-    ],
-    mechanism:
-      'As Relíquias vermelhas inundam o campo com Crias Dracônicas ofensivas, e o Dourado elimina a fragilidade delas concedendo +1/+2 (Juramento do Campeão) e Escudo Divino global (Arca da Aliança).',
-    payoff: 'Transforma fichas 2/1 em soldados 4/3 com Escudo Divino imunes a limpezas de área.',
-  },
-  {
-    id: 'dual_red_gold_solar_judgment',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['red', 'gold'],
-    title: 'Julgamento Vulcânico do Sol Invicto',
-    archetypeTag: 'Chama + Ordem',
-    cardIds: [
-      'gold_140_ira_firmamento_dourado',
-      'red_143_julgamento_vulcanico',
-      'gold_146_trono_imperador_eterno',
-      'red_157_dragao_tiamat_carmesim',
-    ],
-    mechanism:
-      'Ira do Firmamento Dourado causa 4 de dano a todos os inimigos e concede Escudo Divino às suas unidades; na sequência, Fissura do Julgamento Vulcânico causa mais 5 a todos os inimigos e dá +2 ATQ à sua fileira blindada.',
-    payoff: '9 de dano em área contra o inimigo enquanto seu exército recebe +2 ATQ e Escudo Divino.',
-  },
-  {
-    id: 'dual_blue_purple',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['blue', 'purple'],
-    title: 'Usurpação Mental & Controle Sombrio',
-    archetypeTag: 'Tempestade + Abismo',
-    cardIds: [
-      'purple_27_emboscada_umbrosa',
-      'purple_44_devorador_intelecto',
-      'purple_21_abolete',
-      'blue_27_dissipacao_astral',
-    ],
-    mechanism:
-      'Manto Sufocante da Caverna reduz o ATQ da Vanguarda inimiga em -2, colocando campeões rivais dentro do limite (ATQ <= 3) para serem roubados permanentemente pelo Espectro Usurpador ou Leviatã Psíquico.',
-    payoff: 'Rouba as melhores criaturas do adversário para o seu lado do tabuleiro.',
-  },
-  {
-    id: 'dual_blue_purple_abyssal_tide',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['blue', 'purple'],
-    title: 'Maré Necrótica & Prisão de Almas',
-    archetypeTag: 'Tempestade + Abismo',
-    cardIds: [
-      'blue_146_trono_inverno_eterno',
-      'purple_166_altar_ceifador_supremo',
-      'blue_142_diluvio_astral',
-      'purple_138_soberano_carnica',
-    ],
-    mechanism:
-      'O Trono do Inverno Eterno e a Visagem do Dragão da Peste compram 2 cartas extras todo início de turno enquanto congelam e corroem a Vanguarda rival em 2 de dano. Dilúvio da Fenda Cósmica e Necrothor limpam os sobreviventes.',
-    payoff: 'Compra 3 cartas por turno enquanto congela e dissolve gradualmente toda a mesa inimiga.',
-  },
-  {
-    id: 'dual_blue_green',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['blue', 'green'],
-    title: 'Inverno Primordial (Ramp & Caminho Livre)',
-    archetypeTag: 'Tempestade + Selva',
-    cardIds: [
-      'green_28_totem_silvestre',
-      'green_36_coracao_floresta',
-      'blue_28_orbe_tempestade',
-      'green_09_hidra',
-    ],
-    mechanism:
-      'O Verde acelera a Essência para colocar colossos em campo rapidamente, enquanto o Astrolábio azul congela toda a Vanguarda inimiga, impedindo revides contra suas feras.',
-    payoff: 'Seus colossos verdes atacam livremente contra defensores congelados.',
-  },
-  {
-    id: 'dual_blue_green_Sapphire_canopy',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['blue', 'green'],
-    title: 'Soberanos da Nevasca & Galhada Viva',
-    archetypeTag: 'Tempestade + Selva',
-    cardIds: [
-      'green_108_semente_mundo',
-      'blue_166_trono_oniciencia_astral',
-      'green_161_dragao_esmeralda_primordial',
-      'blue_154_dragao_safira_soberano',
-    ],
-    mechanism:
-      'O Coração da Árvore-Mundo e o Cetro do Arquimago Astral geram +2⚡ extras todo turno e congelam defensores, permitindo invocar em sequência os dois Dragões Anciões de custo 8⚡ (Esmeralda e Safira).',
-    payoff: 'Dois Dragões 8⚡ com Sopro 3, Armadura 2, Regeneração, Congelamento em massa e compra de 2 cartas.',
-  },
-  {
-    id: 'dual_blue_gold',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['blue', 'gold'],
-    title: 'Cidadela de Quartzo & Égide Solar',
-    archetypeTag: 'Tempestade + Ordem',
-    cardIds: [
-      'blue_41_golem_cristal',
-      'gold_105_coroa_imperador',
-      'gold_26_muralha_aco',
-      'blue_09_onda_repulsora',
-    ],
-    mechanism:
-      'Combina os Escudos Divinos reativos dourados com o congelamento em área azul e o Autômato de Quartzo Rúnico, que cura todos os aliados a cada feitiço ou reação lançada.',
-    payoff: 'Defesa intransponível que anula tanto ataques físicos quanto magias de atrito.',
-  },
-  {
-    id: 'dual_blue_gold_celestial_chronos',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['blue', 'gold'],
-    title: 'Tribunal do Tempo & Asas de Pérola',
-    archetypeTag: 'Tempestade + Ordem',
-    cardIds: [
-      'gold_165_arca_lei_celestial',
-      'gold_166_trono_soberano_sol',
-      'blue_165_planetario_horologico',
-      'blue_81_arconte_cronos',
-    ],
-    mechanism:
-      'A Escritura das Asas de Pérola, o Diadema dos Cristais Orbitais e a Visagem da Tempestade Safira geram +1⚡, compram 2 cartas extras, curam 2 no Soberano e concedem Escudo Divino todo início de turno ao lado de Chronos.',
-    payoff: 'Compra 4 cartas por turno com cura contínua e Escudo Divino perpétuo em seus Guardiões.',
-  },
-  {
-    id: 'dual_purple_green',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['purple', 'green'],
-    title: 'Reencarnação Selvagem da Cripta',
-    archetypeTag: 'Abismo + Selva',
-    cardIds: [
-      'green_07_troll',
-      'green_09_hidra',
-      'green_88_reencarnacao_ancestral',
-      'purple_30_erguer_mortos',
-    ],
-    mechanism:
-      'Une as maiores feras regenerativas verdes com as magias de reanimação em massa roxas e verdes. Cada vez que um colosso cai e retorna, todo o seu exército recebe +1/+1 ou +1/+2.',
-    payoff: 'Feras gigantescas que voltam da Cripta ainda maiores do que quando entraram.',
-  },
-  {
-    id: 'dual_purple_green_venom_crypt',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['purple', 'green'],
-    title: 'Peçonha Imortal & Monarca da Rocha',
-    archetypeTag: 'Abismo + Selva',
-    cardIds: [
-      'purple_63_rainha_fungos',
-      'green_120_hidra_primordial_rei',
-      'green_160_behemoth_cratera_viva',
-      'purple_102_exumar_legiao',
-    ],
-    mechanism:
-      'Mycoria, Dama da Podridão reanima automaticamente 1 aliado da Cripta todo início de turno. Quando a Hidra-Rei de Sete Cabeças (Renascer, Sopro 2) ou Terrakhor (+2/+2 a todos) são reanimados, a mesa inteira escala fora de controle.',
-    payoff: 'Reanimação gratuita todo início de turno trazendo colossos de custo 6–7⚡ de volta à Vanguarda.',
-  },
-  {
-    id: 'dual_purple_gold',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['purple', 'gold'],
-    title: 'Pacto das Valquírias & Necromancia Solar',
-    archetypeTag: 'Abismo + Ordem',
-    cardIds: [
-      'gold_35_chamado_valquirias',
-      'purple_22_orbe_necrotico',
-      'purple_07_lich',
-      'gold_28_reliquia_pacto',
-    ],
-    mechanism:
-      'Chamado das Valquírias Solares (4⚡) reanima o Crânio Arcano da Morte (custo 6⚡) e concede Escudo Divino a todos; ao entrar em campo, o Crânio Arcano dispara seu próprio efeito e reanima mais um aliado da Cripta!',
-    payoff: 'Reanima 2 criaturas pesadas em cadeia por apenas 4⚡ com Escudo Divino em toda a mesa.',
-  },
-  {
-    id: 'dual_purple_gold_immortal_inquisition',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['purple', 'gold'],
-    title: 'Inquisição do Sol Negro & Sangue Real',
-    archetypeTag: 'Abismo + Ordem',
-    cardIds: [
-      'gold_116_centuriao_forja_dourada',
-      'purple_146_coroa_rei_cadaver',
-      'gold_126_coroa_imperador_solar',
-      'purple_157_dragao_sombra_abissal',
-    ],
-    mechanism:
-      'A Coroa do Rei-Cadáver e a Coroa do Imperador Solar fortalecem toda a mesa (+2/+2 ao entrar e +1/+1 por turno) e curam 5+ de VIDA. O Centurião da Forja Dourada (Guardião, Dreno de Vida, ARM 2) e o Monarca dos Três Crânios tornam sua linha intransponível.',
-    payoff: 'Exército com Escudo Divino, Dreno de Vida e +3/+3 de atributos que mantém o Soberano sempre no máximo de VIDA.',
-  },
-  {
-    id: 'dual_green_gold',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['green', 'gold'],
-    title: 'Bastião Imortal de Fúria & Escudo Divino',
-    archetypeTag: 'Selva + Ordem',
-    cardIds: [
-      'green_07_troll',
-      'green_32_gorila_alfa',
-      'gold_33_trono_celestial',
-      'gold_90_trono_horas',
-    ],
-    mechanism:
-      'Criaturas verdes de alta VIDA, Regeneração e Fúria Crescente recebem Armadura, Escudo Divino e +3 de cura por turno das Relíquias douradas, tornando-se impossíveis de abater.',
-    payoff: 'Vanguarda com 8+ VIDA, Regeneração 3 e Escudo Divino que cresce a cada turno.',
-  },
-  {
-    id: 'dual_green_gold_world_tree_citadel',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['green', 'gold'],
-    title: 'Santuário da Árvore-Mundo & Deus-Imperador',
-    archetypeTag: 'Selva + Ordem',
-    cardIds: [
-      'green_142_patriarca_selva_eterna',
-      'gold_138_imperador_sol_supremo',
-      'green_166_coracao_arvore_mundo',
-      'gold_146_trono_imperador_eterno',
-    ],
-    mechanism:
-      'Sylvanhorn (+2/+2 e cura 3 em todos) e Hyperion (+2/+2 e Escudo Divino em todos) somam +4/+4 imediatos para toda a mesa, sustentados pelo Trono Supremo (+1/+1 por turno) e pelo Totem do Espírito Urso (cura 2 em todos por turno).',
-    payoff: 'A maior parede de atributos do jogo: unidades com +5/+6, Guardião, Atropelar e Escudo Divino.',
-  },
-
-  {
-    id: 'dual_red_purple_elemental_pact_burn',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['red', 'purple'],
-    title: 'Conclave dos Pactuários & Corrente de Feitiços',
-    archetypeTag: 'Motor Duplo Ao Lançar Feitiço',
-    cardIds: [
-      'red_171_pactuario_elemental_chama',
-      'purple_171_pactuario_elemental_abismo',
-      'red_32_ritual_cinzas',
-      'red_85_tempo_emprestado',
-      'purple_168_tecelao_feixe_abismo',
-    ],
-    mechanism:
-      'Os dois Pactuários entram protegidos na Retaguarda com Alcance já invocando dois elementais 3/2 na Vanguarda. A partir daí, cada magia que reembolsa +1⚡ (Ritual da Pira de Cinzas e Fúria da Ampulheta Rubra) dispara simultaneamente 1 de dano em toda a Vanguarda inimiga e 2 de dano direto ao Soberano rival.',
-    payoff: 'Varredura contínua da fileira frontal inimiga combinada com 8–10 de queima direta ao Soberano num único turno.',
-  },
-  {
-    id: 'dual_blue_green_matrix_ascension_surge',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['blue', 'green', 'neutral'],
-    title: 'Escalada Quimérica de Dupla Ascensão do Prisma',
-    archetypeTag: 'Reembolso de Mana & Colossos Ascendidos',
-    cardIds: [
-      'neutral_170_flagelo_cornudo_matriz',
-      'green_171_pactuario_elemental_selva',
-      'neutral_173_general_roda_matriz',
-      'neutral_172_armada_draconica_matriz',
-    ],
-    mechanism:
-      'O Flagelo Cornudo Primordial segura a Vanguarda cedo e ascende para 5/6, recebendo +1/+2 do Pactuário do Espírito Silvestre a cada feitiço de rampa/compra. Nos turnos finais, tanto Vaelkor (ao entrar) quanto a Armada Dracônica do Prisma (ao atacar) devolvem +2⚡ extras para financiar suas próprias Ascensões 8/10 e 9/10.',
-    payoff: 'Três ameaças Ascendidas (★) gigantescas sustentadas por geração contínua de Essência bônus.',
-  },
-  {
-    id: 'dual_green_gold_wheel_clash_supremacy',
-    tier: 'dual',
-    tierLabel: '2 Cores • Aliança Bicromática',
-    domains: ['green', 'gold'],
-    title: 'Supremacia de Domínio: Quebra de Choque 50/50 & Falange',
-    archetypeTag: 'Domínio Soberano & Empilhamento 3x',
-    cardIds: [
-      'gold_173_general_roda_sol',
-      'green_173_general_roda_selva',
-      'green_169_pressagio_revoada_selva',
-      'gold_168_tecelao_feixe_sol',
-    ],
-    mechanism:
-      'Se o oponente contestar seu Domínio num Choque 50/50, desça Heliokar ou Sylvarok: o efeito Quebrar Expansões de Domínio destrói apenas a barreira rival (clashRival), impõe 2 rodadas de Exaustão de Domínio ao inimigo e reativa na hora o +1/+1 e o Acerto Garantido do seu próprio Domínio sobre colunas empilhadas com Escudo Divino.',
-    payoff: 'Reativação imediata do seu Domínio Soberano somada a uma falange 3x blindada com +2/+3 efetivos.',
-  },
-
-  // =========================================================================
-  // 3 CORES — AS 10 TRÍADES TÁTICAS COMPLETAS + 2 TRÍADES COM ÉTER (12 COMBOS)
-  // =========================================================================
-  {
-    id: 'tri_red_blue_purple',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['red', 'blue', 'purple'],
-    title: 'Tríade do Cataclismo Arcano (Storm OTK)',
-    archetypeTag: 'Chama + Tempestade + Abismo',
-    cardIds: [
-      'purple_104_pacto_demoniaco',
-      'purple_50_pacto_proibido',
-      'red_107_fornalha_draconica',
-      'red_97_lancador_chamas',
-      'blue_30_visao_ancestral',
-      'purple_107_grimorio_necromante',
-    ],
-    mechanism:
-      'Estágio 1 (Roxo): Centelha Umbral e Contrato geram +4⚡ de explosão. Estágio 2 (Vermelho + Roxo): Fornalha, Piromante e Necronomicon na Retaguarda. Estágio 3 (Azul): Feitiços de compra e restituição de Essência disparam todos os gatilhos em sequência.',
-    payoff: 'Cada feitiço causa 5+ de dano direto e drena VIDA, permitindo abater o Soberano rival em um único turno.',
-  },
-  {
-    id: 'tri_green_gold_red',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['green', 'gold', 'red'],
-    title: 'Tríade da Avalanche Solar',
-    archetypeTag: 'Selva + Ordem + Chama',
-    cardIds: [
-      'green_28_totem_silvestre',
-      'green_141_soberano_fera_primordial',
-      'red_134_senhor_guerra_rubro',
-      'gold_28_reliquia_pacto',
-      'gold_158_bencao_falange_invicta',
-    ],
-    mechanism:
-      'O Verde gera a explosão de Essência (+2⚡ do Santuário) e coloca Fenris-Gorgon (+2/+1 global), o Vermelho soma o General Senhor da Guerra (+2 ATQ global com Ímpeto), e o Dourado sela o turno com Baluarte dos Escudos (+1 ATQ e Escudo Divino para toda a Vanguarda).',
-    payoff: 'Investida total com +5 ATQ em todas as colunas protegidas por Escudo Divino.',
-  },
-  {
-    id: 'tri_blue_purple_green',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['blue', 'purple', 'green'],
-    title: 'Tríade da Eternidade (Ramp, Trava & Cripta)',
-    archetypeTag: 'Tempestade + Abismo + Selva',
-    cardIds: [
-      'green_36_coracao_floresta',
-      'blue_10_portal_runas',
-      'blue_28_orbe_tempestade',
-      'purple_30_erguer_mortos',
-      'green_88_reencarnacao_ancestral',
-    ],
-    mechanism:
-      'Combina a aceleração de Essência verde, a compra de cartas e congelamento azul, e a dupla reanimação com buff global (Erguer Legião + Reencarnação Primordial).',
-    payoff: 'Domínio absoluto de recursos: você tem mais Essência, mais cartas na mão e recicla toda a Cripta.',
-  },
-  {
-    id: 'tri_red_purple_gold',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['red', 'purple', 'gold'],
-    title: 'Tríade dos Imortais Caídos',
-    archetypeTag: 'Chama + Abismo + Ordem',
-    cardIds: [
-      'red_45_fenix_primordial',
-      'purple_22_orbe_necrotico',
-      'purple_07_lich',
-      'gold_35_chamado_valquirias',
-    ],
-    mechanism:
-      'Une campeões com Renascer nativo (Fênix e Vesperion) ao Chamado das Valquírias Solares e ao Crânio Arcano da Morte, revivendo múltiplas lendas simultaneamente com Escudo Divino.',
-    payoff: 'Tabuleiro imortal que pune qualquer tentativa de troca do adversário.',
-  },
-  {
-    id: 'tri_red_blue_green',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['red', 'blue', 'green'],
-    title: 'Tríade da Tormenta Primordial (Dragões Anciões)',
-    archetypeTag: 'Chama + Tempestade + Selva',
-    cardIds: [
-      'green_28_totem_silvestre',
-      'blue_141_ruptura_temporal',
-      'red_157_dragao_tiamat_carmesim',
-      'blue_154_dragao_safira_soberano',
-      'green_161_dragao_esmeralda_primordial',
-    ],
-    mechanism:
-      'O Santuário Silvestre (+2⚡) e a Ruptura do Relógio Astral (+2⚡ e congela todos os inimigos) aceleram os três maiores Dragões Anciões de custo 8⚡: Vulcanis, Dragão de Safira Sônico e Dragão Esmeralda de Galhada Viva.',
-    payoff: 'Sopro Elemental triplo (9 de dano em área acumulado) com Vanguarda inimiga congelada.',
-  },
-  {
-    id: 'tri_red_blue_gold',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['red', 'blue', 'gold'],
-    title: 'Tríade do Zênite Astral (Artilharia Blindada)',
-    archetypeTag: 'Chama + Tempestade + Ordem',
-    cardIds: [
-      'gold_166_trono_soberano_sol',
-      'blue_166_trono_oniciencia_astral',
-      'red_166_coroa_imperador_vulcao',
-      'blue_152_arquimago_vortice',
-      'gold_160_decreto_invulnerabilidade',
-    ],
-    mechanism:
-      'Os três Tronos Lendários na Retaguarda geram +2⚡ extras por turno, concedem Escudo Divino, congelam 1 inimigo e queimam o Soberano rival e sua Vanguarda automaticamente a cada início de rodada.',
-    payoff: 'Fortaleza intocável na Retaguarda que vence por queima solar e controle glacial.',
-  },
-  {
-    id: 'tri_red_purple_green',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['red', 'purple', 'green'],
-    title: 'Tríade da Extinção & Reencarnação Vulcânica',
-    archetypeTag: 'Chama + Abismo + Selva',
-    cardIds: [
-      'purple_104_pacto_demoniaco',
-      'red_138_colosso_vulcano_primordial',
-      'green_120_hidra_primordial_rei',
-      'purple_102_exumar_legiao',
-      'green_88_reencarnacao_ancestral',
-    ],
-    mechanism:
-      'Acelere Vulcanor (3 de dano a todos os inimigos + 2 ao Soberano) e a Hidra-Rei de Sete Cabeças com Centelha Umbral e Sacrifício Vital. Se o oponente gastar recursos para abatê-los, Despertar da Legião e Reencarnação Primordial os trazem de volta com +2/+3 extras.',
-    payoff: 'Colossos de Sopro e Atropelar que retornam da Cripta disparando novos terremotos na entrada.',
-  },
-  {
-    id: 'tri_blue_purple_gold',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['blue', 'purple', 'gold'],
-    title: 'Tríade do Tribunal do Eclipse Eterno',
-    archetypeTag: 'Tempestade + Abismo + Ordem',
-    cardIds: [
-      'blue_146_trono_inverno_eterno',
-      'purple_166_altar_ceifador_supremo',
-      'gold_146_trono_imperador_eterno',
-      'purple_123_eclipse_abissal',
-      'gold_140_ira_firmamento_dourado',
-    ],
-    mechanism:
-      'Enquanto os três Tronos compram 2 cartas extras por turno, corroem a Vanguarda rival e dão +1/+1 às suas unidades, Ira do Firmamento Dourado e Eclipse do Sol Abissal causam 8 de dano em área aos inimigos, curam 4 e protegem sua mesa com Escudo Divino.',
-    payoff: 'Controle supremo de mesa: limpa qualquer formação inimiga mantendo Escudo Divino e 40 de VIDA.',
-  },
-  {
-    id: 'tri_blue_green_gold',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['blue', 'green', 'gold'],
-    title: 'Tríade do Bastião de Safira & Alvorada',
-    archetypeTag: 'Tempestade + Selva + Ordem',
-    cardIds: [
-      'green_108_semente_mundo',
-      'gold_138_imperador_sol_supremo',
-      'green_121_avatar_gaia',
-      'blue_136_leviata_cronos',
-      'blue_163_espelho_congelante',
-    ],
-    mechanism:
-      'Tellurion (+2/+2 a todos e cura 4) e Hyperion (+2/+2 e Escudo Divino a todos) erguem uma Vanguarda colossal, enquanto Chronoleviatã congela todos os defensores inimigos e compra 2 cartas para fechar o jogo.',
-    payoff: 'Vanguarda com +4/+4 e Escudo Divino atacando contra uma mesa inimiga 100% congelada.',
-  },
-  {
-    id: 'tri_purple_green_gold',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['purple', 'green', 'gold'],
-    title: 'Tríade da Cidadela Necro-Silvestre',
-    archetypeTag: 'Abismo + Selva + Ordem',
-    cardIds: [
-      'purple_63_rainha_fungos',
-      'green_160_behemoth_cratera_viva',
-      'gold_119_soberano_ordem_eterna',
-      'purple_146_coroa_rei_cadaver',
-      'gold_35_chamado_valquirias',
-    ],
-    mechanism:
-      'Justinian (+2/+2 e Escudo Divino a todos) e Terrakhor (+2/+2 a todos, Armadura 3) blindam Mycoria na Retaguarda, permitindo que ela reanime gratuitamente um colosso por turno com suporte do Chamado das Valquírias.',
-    payoff: 'Reanimação perpétua protegida por Guardiões com Armadura 3 e Escudo Divino global.',
-  },
-  {
-    id: 'tri_red_gold_neutral',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade com Éter',
-    domains: ['red', 'gold', 'neutral'],
-    title: 'Armada Forjada de Aeternus & Caldeira',
-    archetypeTag: 'Chama + Ordem + Éter',
-    cardIds: [
-      'neutral_123_emissario_relojoeiro_supremo',
-      'gold_83_forjado_ancestral',
-      'red_157_dragao_tiamat_carmesim',
-      'neutral_128_trono_cranio_dragao',
-    ],
-    mechanism:
-      'O Deus-Máquina de Aeternus concede Escudo Divino a todos os aliados todo início de turno, enquanto Aeternus, O Primeiro Forjado e o Trono do Crânio Dracônico somam +4/+4 a todos e 3 de dano à Vanguarda inimiga.',
-    payoff: 'Colossos mecânicos e dracônicos com +4/+4 e Escudo Divino renovado a cada rodada.',
-  },
-  {
-    id: 'tri_blue_purple_neutral',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade com Éter',
-    domains: ['blue', 'purple', 'neutral'],
-    title: 'Conclave de Valerius, Xanathar & Entropia',
-    archetypeTag: 'Tempestade + Abismo + Éter',
-    cardIds: [
-      'neutral_117_elminster_sabio_cinzento',
-      'neutral_120_xanathar_senhor_crime',
-      'blue_159_paradoxo_ampulheta',
-      'purple_162_apocalipse_necrotico',
-    ],
-    mechanism:
-      'Valerius gera +1⚡ extra e compra 2 cartas, financiando Oculus-Vex (destrói 1 inimigo ao entrar e compra 1 ao atacar), Colheita do Cálice de Obsidiana (destrói o inimigo mais forte e drena 3) e Ruptura do Astrolábio (devolve outro à mão e compra 2).',
-    payoff: 'Remove 3 colossos inimigos em sequência enquanto mantém a mão sempre cheia.',
-  },
-
-  {
-    id: 'tri_red_blue_purple_pact_cataclysm',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade com Éter',
-    domains: ['red', 'blue', 'purple', 'neutral'],
-    title: 'Bateria Quádrupla de Pactuários Elementais (#171)',
-    archetypeTag: '4 Motores de Feitiço na Retaguarda',
-    cardIds: [
-      'neutral_171_pactuario_elemental_matriz',
-      'red_171_pactuario_elemental_chama',
-      'blue_171_pactuario_elemental_gelo',
-      'purple_171_pactuario_elemental_abismo',
-      'blue_119_convergencia_runica',
-    ],
-    mechanism:
-      'Posicione os 4 Pactuários Elementais na Retaguarda (povoando automaticamente a Vanguarda com 4 guardas elementais). Cada feitiço conjurado concede +1⚡ de volta (Éter), congela a maior ameaça inimiga (Gelo), causa 1 em toda a Vanguarda rival (Chama) e arranca 2 de Vida do Soberano inimigo (Abismo).',
-    payoff: 'Cada magia lançada custa -1⚡ efetivo e gera trava glacial, limpeza em área e dano direto simultâneos.',
-  },
-  {
-    id: 'tri_prism_triad_curve_escalation',
-    tier: 'tri',
-    tierLabel: '3 Cores • Tríade Tática',
-    domains: ['red', 'green', 'gold'],
-    title: 'Escalada da Tríade do Prisma (#170 → #168 → #169 → #167)',
-    archetypeTag: 'Curva Perfeita de Afinidade Baixa',
-    cardIds: [
-      'red_170_flagelo_cornudo_chama',
-      'green_168_tecelao_feixe_selva',
-      'gold_169_pressagio_revoada_sol',
-      'gold_167_arauto_prisma_sol',
-      'red_167_arauto_prisma_chama',
-    ],
-    mechanism:
-      'Exigindo apenas Afinidade 1–2 em baralhos tricolores, o Flagelo (3⚡, Ímpeto/Atropelar) abre agressão imediata, recebe +2/+2 do Tecelão Silvestre (4⚡), é curado pelo Presságio Solar (5⚡) e culmina nos dois Arautos do Prisma (6⚡): Escudo Divino global + cura 4 seguidos de 2 de dano em área e ataque aéreo com Ímpeto.',
-    payoff: 'Pressão ininterrupta do Turno 3 ao Turno 6 sem jamais travar por exigência tripla de Afinidade.',
-  },
-
-  // =========================================================================
-  // 4 E 5 CORES — CONVERGÊNCIA POLICROMÁTICA / PENTACROMÁTICA (8 COMBOS)
-  // =========================================================================
-  {
-    id: 'poly_five_suns_citadel',
-    tier: 'poly',
-    tierLabel: '4–5 Cores • Convergência Pentacromática',
-    domains: ['red', 'blue', 'purple', 'green', 'gold', 'neutral'],
-    title: 'Cidadela dos Sóis (Motor de 4 Relíquias)',
-    archetypeTag: 'Lotação Máxima de Retaguarda (4/4)',
-    cardIds: [
-      'neutral_30_coroa_pactos',
-      'gold_105_coroa_imperador',
-      'green_36_coracao_floresta',
-      'blue_35_cetro_inverno',
-    ],
-    mechanism:
-      'Canalize 1 carta por turno nos 3 primeiros turnos para fixar Afinidade multi-domínio e preencha os 4 slots da Retaguarda com o Diadema Supremo Pentacromático (+1⚡ e cura), Coroa do Imperador (+1/+1), Coração da Floresta e Cetro do Inverno.',
-    payoff: 'Ocupa os 4/4 slots da Retaguarda gerando +1⚡ extra, Congelamento automático, +1/+1 global e cura a cada rodada.',
-  },
-  {
-    id: 'poly_ambush_web',
-    tier: 'poly',
-    tierLabel: '4–5 Cores • Convergência Pentacromática',
-    domains: ['blue', 'purple', 'green', 'gold'],
-    title: 'Labirinto Pentacromático de Emboscadas (4/4)',
-    archetypeTag: '4 Reações Ocultas na Retaguarda',
-    cardIds: [
-      'green_35_fosso_vinhas',
-      'gold_26_muralha_aco',
-      'blue_27_dissipacao_astral',
-      'purple_34_cripta_espinhos',
-    ],
-    mechanism:
-      'Arme os 4 slots da Retaguarda com 4 Reações ocultas (❓) de diferentes Domínios (requisito apenas 1 de Afinidade cada). O adversário jamais sabe qual punição acionará ao declarar um ataque.',
-    payoff: 'Cada ataque inimigo nas 4 colunas resulta em destruição imediata, devolução à mão, paralisia ou Escudo Divino global.',
-  },
-  {
-    id: 'poly_five_sovereign_thrones',
-    tier: 'poly',
-    tierLabel: '4–5 Cores • Convergência Pentacromática',
-    domains: ['red', 'blue', 'purple', 'gold'],
-    title: 'Convergência dos Quatro Tronos Soberanos (#166)',
-    archetypeTag: '4 Artefatos Supremos na Retaguarda (4/4)',
-    cardIds: [
-      'red_166_coroa_imperador_vulcao',
-      'blue_166_trono_oniciencia_astral',
-      'purple_166_altar_ceifador_supremo',
-      'gold_166_trono_soberano_sol',
-    ],
-    mechanism:
-      'Ao ocupar os 4 slots da Retaguarda com quatro Relíquias Lendárias #166, o início de cada turno dispara simultaneamente: +1⚡ extra, compra de 1 carta extra, Escudo Divino em 1 aliado, Congelamento de 1 inimigo, 3 de dano à Vanguarda rival, 2 de dano ao Soberano inimigo e +2 de cura.',
-    payoff: 'A maior máquina passiva de valor do jogo respeitando o limite de 4 slots da Retaguarda.',
-  },
-  {
-    id: 'poly_pentachromatic_dragons',
-    tier: 'poly',
-    tierLabel: '4–5 Cores • Convergência Pentacromática',
-    domains: ['red', 'blue', 'purple', 'gold', 'neutral'],
-    title: 'Revoada da Imperatriz Pentacromática',
-    archetypeTag: '4 Dragões na Vanguarda + 1 Relíquia',
-    cardIds: [
-      'neutral_10_valkyra_pentacromatica',
-      'neutral_60_calice_infinito',
-      'red_157_dragao_tiamat_carmesim',
-      'blue_154_dragao_safira_soberano',
-      'gold_157_dragao_soberano_alvorada',
-    ],
-    mechanism:
-      'O Graal do Prisma Infinito na Retaguarda (+2⚡ ao entrar, cura 3 e dá +1/+1 e compra 1 por turno sem requisito de Afinidade) financia os 4 slots da Vanguarda com Valkyra (Sopro 4) e 3 Dragões Primordiais.',
-    payoff: 'Esquadrão aéreo de 4 Dragões na Vanguarda com Sopro 3–4, Armadura 2–3 e Escudo Divino que apaga todas as fileiras inimigas.',
-  },
-  {
-    id: 'poly_four_cataclysms',
-    tier: 'poly',
-    tierLabel: '4–5 Cores • Convergência Pentacromática',
-    domains: ['red', 'blue', 'purple', 'gold', 'neutral'],
-    title: 'Quatro Cavaleiros do Apocalipse Astral',
-    archetypeTag: 'Feitiços Lendários de Erradicação',
-    cardIds: [
-      'neutral_40_cajado_magi',
-      'red_123_cataclismo_solar',
-      'blue_122_colapso_gravidade',
-      'purple_123_eclipse_abissal',
-      'gold_140_ira_firmamento_dourado',
-    ],
-    mechanism:
-      'Com o Cajado Supremo do Arquimago em campo (+2 de dano a um inimigo e +2 ao Soberano a cada feitiço), alterne os 4 Feitiços Lendários de custo 5–6⚡: Ira do Firmamento, Colapso Gravitacional, Eclipse do Sol Abissal e Detonação do Sol Carmesim.',
-    payoff: '17 de dano acumulado em área contra o exército rival, Congelamento total, Escudo Divino nos seus aliados e 15+ de diferencial de VIDA nos Soberanos.',
-  },
-  {
-    id: 'poly_ascension_pantheon',
-    tier: 'poly',
-    tierLabel: '4–5 Cores • Convergência Pentacromática',
-    domains: ['red', 'blue', 'purple', 'gold'],
-    title: 'Panteão dos Quatro Campeões Ascendidos (★)',
-    archetypeTag: '4 Colunas de Evolução em Campo (4/4)',
-    cardIds: [
-      'red_153_elemental_fornalha_viva',
-      'blue_03_esfinge',
-      'purple_155_lorde_vampiro_soberano',
-      'gold_150_paladino_juramento_eterno',
-    ],
-    mechanism:
-      'Invoque 4 campeões eficientes nas 4 colunas da Vanguarda e use sua Essência dos turnos seguintes para ativar suas Ascensões (★) em campo, transformando-os em colossos 7/7 a 9/9 sem gastar cartas adicionais da mão.',
-    payoff: 'Preserva sua mão cheia enquanto transforma cada uma das 4 colunas da Vanguarda em um Titã Ascendido.',
-  },
-  {
-    id: 'poly_axial_fortress_control',
-    tier: 'poly',
-    tierLabel: '4–5 Cores • Convergência Pentacromática',
-    domains: ['red', 'blue', 'gold', 'neutral'],
-    title: 'Protocolo da Torre Axial & Emboscadas de Elite',
-    archetypeTag: '4 Reações de Elite na Retaguarda (4/4)',
-    cardIds: [
-      'neutral_166_protocolo_torre_axial',
-      'neutral_165_quebra_feiticaria_runica',
-      'red_164_armadilha_fissura_magma',
-      'gold_162_veredito_inquisidor',
-    ],
-    mechanism:
-      'Preencha os 4 slots da Retaguarda com o Decreto de Paz Armada da Torre (congela toda a Vanguarda, compra 2 e cura 3), o Selo de Anulação (-3 ATQ na Vanguarda rival + Escudo Divino em todos os aliados) e 2 Emboscadas raras de punição.',
-    payoff: 'Impede qualquer ofensiva letal do adversário nas 4 colunas enquanto converte os ataques dele em cartas extras e cura.',
-  },
-  {
-    id: 'poly_prism_overdrive_swarm',
-    tier: 'poly',
-    tierLabel: '4–5 Cores • Convergência Pentacromática',
-    domains: ['red', 'green', 'gold', 'purple', 'neutral'],
-    title: 'Legião dos Cinco Selos & Estandartes',
-    archetypeTag: 'Buff Global Multi-Domínio',
-    cardIds: [
-      'neutral_155_chamado_armas_fronteira',
-      'neutral_128_trono_cranio_dragao',
-      'green_142_patriarca_selva_eterna',
-      'gold_119_soberano_ordem_eterna',
-      'purple_146_coroa_rei_cadaver',
-      'red_146_coroa_chama_eterna',
-    ],
-    mechanism:
-      'Três Relíquias na Retaguarda (Trono do Crânio Dracônico, Coroa do Rei-Cadáver e Coroa da Chama Eterna) somam bônus contínuos à entrada de Sylvanhorn e Justinian na Vanguarda, finalizando com Mobilização da Torre dos Cinco Selos.',
-    payoff: 'Transforma toda a sua Vanguarda em campeões 8/8+ com Escudo Divino.',
-  },
-  {
-    id: 'poly_prismatic_wheel_armada_convergence',
-    tier: 'poly',
-    tierLabel: '4–5 Cores • Convergência Pentacromática',
-    domains: ['red', 'blue', 'purple', 'green', 'gold', 'neutral'],
-    title: 'Convergência da Matriz: Vaelkor & Armada do Prisma',
-    archetypeTag: 'Afinidade Zero, Anti-Domínio & Sopro',
-    cardIds: [
-      'neutral_173_general_roda_matriz',
-      'neutral_172_armada_draconica_matriz',
-      'neutral_167_arauto_prisma_matriz',
-      'neutral_169_pressagio_revoada_matriz',
-      'neutral_168_tecelao_feixe_matriz',
-    ],
-    mechanism:
-      'Independentemente das cores canalizadas num grimório pentacolor, toda a espinha dorsal da Matriz tem Afinidade 0: Tecelão (compra 1) e Presságio (duas fichas 2/2) estabilizam a mesa; a Matriz do Prisma (compra 1 e +1⚡) acelera Vaelkor (quebra o Domínio rival + Escudo Divino global + +2⚡) e a Armada Dracônica do Prisma (2 em área, duas fichas 2/2, Sopro 2 e +2⚡ ao atacar rumo à Ascensão 9/10).',
-    payoff: 'Consistência absoluta em 5 cores com compra, geração de fichas, quebra de Domínio e Esquadra Suprema 9/10.',
-  },
+  {
+    "id": "mono_red_pyromancy",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "red"
+    ],
+    "title": "Artilharia Piromante de Retaguarda",
+    "archetypeTag": "Dano Direto por Feitiço",
+    "cardIds": [
+      "red_107_fornalha_draconica",
+      "red_72_caldeirao_magma",
+      "red_97_lancador_chamas",
+      "red_32_ritual_cinzas",
+      "red_85_tempo_emprestado"
+    ],
+    "mechanism": "Com o Piromante e as duas Fornalhas na Retaguarda, cada feitiço lançado dispara 5 de dano automático ao Soberano inimigo (2 + 2 + 1). Feitiços que devolvem +1⚡ (Ritual da Pira e Fúria da Ampulheta) encadeiam múltiplos disparos no mesmo turno.",
+    "payoff": "15+ de dano direto ao Soberano rival em um único turno ignorando Guardiões."
+  },
+  {
+    "id": "mono_red_swarm",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "red"
+    ],
+    "title": "Forja de Crias Dracônicas & Comando de Falange",
+    "archetypeTag": "Enxame & Buff de Fileira",
+    "cardIds": [
+      "red_10_altar_draconico",
+      "red_36_bigorna_fogo",
+      "red_146_coroa_chama_eterna",
+      "red_18_marechal_rubro"
+    ],
+    "mechanism": "A Máscara do Trono Rubro e a Bigorna do Rei da Fornalha concedem +1/+1 na entrada, invocam Crias Dracônicas (2/1) e fortalecem as tropas todo início de turno ao lado da Coroa da Caldeira Eterna (+1 ATQ global). Quando o Marechal ataca, concede +1 ATQ extra a toda a fileira.",
+    "payoff": "Geração perpétua de atacantes 5+ ATQ sem custo de Essência."
+  },
+  {
+    "id": "mono_red_deathrattle",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "red"
+    ],
+    "title": "Bomba-Relógio Vulcânica (Último Suspiro)",
+    "archetypeTag": "Detonação de Vanguarda",
+    "cardIds": [
+      "red_02_magmin",
+      "red_75_kobold_cronobomba",
+      "red_45_fenix_primordial",
+      "red_156_fenix_coroa_solar"
+    ],
+    "mechanism": "Posicione unidades explosivas na Vanguarda junto a Pyrokor, Monarca do Fogo Vivo. Qualquer ataque ou limpeza inimiga detona Últimos Suspiros em cadeia (até 8 de dano sobre toda a Vanguarda rival), enquanto a Fênix da Coroa Solar renasce imediatamente com Voo e Ímpeto.",
+    "payoff": "8 de dano em área garantido na Vanguarda inimiga + retorno imortal da Fênix."
+  },
+  {
+    "id": "mono_red_cataclysm_forge",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "red"
+    ],
+    "title": "Cataclismo do Sol Aprisionado & Titãs de Magma",
+    "archetypeTag": "Queima Contínua & Devastação",
+    "cardIds": [
+      "red_166_coroa_imperador_vulcao",
+      "red_28_coroa_cinzas",
+      "red_123_cataclismo_solar",
+      "red_157_dragao_tiamat_carmesim"
+    ],
+    "mechanism": "O Orbe do Sol Aprisionado e a Tiara do Arauto Escarlate queimam o Soberano rival (4 de dano automático por rodada) e desgastam a Vanguarda inimiga. Detonação do Sol Carmesim (5 em área + 3 na face) e Vulcanis (Sopro 3 + 3 em área e 3 no Soberano) finalizam a partida.",
+    "payoff": "Limpeza completa da mesa rival combinada com 10+ de dano direto inevitável ao Soberano."
+  },
+  {
+    "id": "mono_blue_spellslinger",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "blue"
+    ],
+    "title": "Ressonância Rúnica & Ciclo de Essência",
+    "archetypeTag": "Compra & Disparo Arcano",
+    "cardIds": [
+      "blue_37_mago_aprendiz",
+      "blue_152_arquimago_vortice",
+      "blue_10_portal_runas",
+      "blue_36_tomo_infinito",
+      "blue_119_convergencia_runica"
+    ],
+    "mechanism": "Com Hydrissa (compra 1 e causa 1 à Vanguarda a cada feitiço), o Códice, o Grimório do Infinito e o Iniciado, cada magia lançada dispara 5 de dano e repõe sua mão. Convergência Rúnica compra 2 cartas e devolve +1⚡.",
+    "payoff": "Limpeza contínua da mesa inimiga comprando cartas a cada feitiço lançado."
+  },
+  {
+    "id": "mono_blue_permafrost",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "blue"
+    ],
+    "title": "Prisão Glacial Perpétua",
+    "archetypeTag": "Trava Total de Mesa",
+    "cardIds": [
+      "blue_28_orbe_tempestade",
+      "blue_146_trono_inverno_eterno",
+      "blue_166_trono_oniciencia_astral",
+      "blue_09_onda_repulsora"
+    ],
+    "mechanism": "O Trono do Inverno Eterno e o Astrolábio congelam toda a Vanguarda ao entrar. No início de cada turno, o Cetro do Arquimago Astral e o Astrolábio congelam inimigos automaticamente, geram +1⚡ extra e compram 2 cartas.",
+    "payoff": "Neutraliza os ataques terrestres do adversário enquanto gera vantagem de cartas e Essência."
+  },
+  {
+    "id": "mono_blue_chronos_lock",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "blue"
+    ],
+    "title": "Singularidade de Chronos & Ruptura do Relógio",
+    "archetypeTag": "Estase Temporal & Leviatãs",
+    "cardIds": [
+      "blue_141_ruptura_temporal",
+      "blue_161_singularidade_temporal",
+      "blue_136_leviata_cronos",
+      "blue_154_dragao_safira_soberano"
+    ],
+    "mechanism": "Ruptura do Relógio Astral congela toda a mesa rival, compra 1 carta e devolve +2⚡, abrindo janela para Pilares da Geada Eterna (congela todos + 2 de dano em área + compra 2) e a descida de Chronoleviatã ou do Dragão de Safira Sônico.",
+    "payoff": "Mantém todo o exército rival congelado por 3 turnos consecutivos enquanto seus dragões atacam pelo ar."
+  },
+  {
+    "id": "mono_blue_mirror_ambush",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "blue"
+    ],
+    "title": "Labirinto de Espelhos & Contra-Feitiços",
+    "archetypeTag": "Emboscadas & Devolução à Mão",
+    "cardIds": [
+      "blue_164_desvio_dimensional",
+      "blue_144_espelho_geada",
+      "blue_124_dissipar_essencia",
+      "blue_153_leviata_fenda_abissal"
+    ],
+    "mechanism": "Cúpula Defletora do Vendaval devolve o atacante inimigo para a mão antes do golpe conectar, enquanto Espelho Congelante e Dissipação Rúnica congelam o restante da fileira e concedem Escudo Divino. No seu turno, Zephyrus devolve outro colosso e congela o segundo.",
+    "payoff": "Anula o turno inteiro do oponente fazendo-o gastar Essência repetidamente na mesma criatura."
+  },
+  {
+    "id": "mono_purple_dark_ritual",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "purple"
+    ],
+    "title": "Canalização Umbral de Aceleração Precoce",
+    "archetypeTag": "Explosão de Essência",
+    "cardIds": [
+      "purple_104_pacto_demoniaco",
+      "purple_50_pacto_proibido",
+      "purple_25_dama_seis_laminas",
+      "purple_07_lich"
+    ],
+    "mechanism": "Centelha Umbral (1⚡ → +2⚡) e Contrato das Sete Correntes (2⚡ → +2⚡ e compra 2 cartas) convertem Sobrecarga em Essência imediata, permitindo descer colossos de custo 6–7 já nos primeiros turnos.",
+    "payoff": "Invoca Serpente Abissal (7/6 Ímpeto) ou Vesperion vários turnos antes da curva normal."
+  },
+  {
+    "id": "mono_purple_reanimator",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "purple"
+    ],
+    "title": "Ciclo Imortal da Cripta",
+    "archetypeTag": "Reanimação & Buff Global",
+    "cardIds": [
+      "purple_28_filacterio_noite",
+      "purple_30_erguer_mortos",
+      "purple_68_exumar_legiao",
+      "purple_156_lich_coroa_entropia"
+    ],
+    "mechanism": "Sempre que seus campeões tombam, Erguer Legião da Cripta (3⚡), Exumar a Legião Caída (4⚡) e o Dragão Umbral do Eclipse os trazem de volta ao campo e ainda concedem +1/+1 a todas as unidades aliadas.",
+    "payoff": "Exército que volta mais forte da Cripta a cada tentativa de remoção do oponente."
+  },
+  {
+    "id": "mono_purple_blood_cathedral",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "purple"
+    ],
+    "title": "Sinfonia da Catedral Negra & Dreno Real",
+    "archetypeTag": "Dreno Passivo de Soberano",
+    "cardIds": [
+      "purple_126_campanario_mortos",
+      "purple_145_orgao_catedrais_negras",
+      "purple_165_calice_sangue_imortal",
+      "purple_138_soberano_carnica"
+    ],
+    "mechanism": "O Campanário dos Mortos, o Órgão Fantasma e o Cálice de Obsidiana drenam automaticamente até 5 de VIDA do Soberano rival e curam o seu todo início de turno. Necrothor entra limpando a mesa em 3 de dano e drenando mais 3.",
+    "payoff": "Diferencial automático de 8+ de VIDA por turno sem precisar declarar ataques terrestres."
+  },
+  {
+    "id": "mono_purple_plague_eclipse",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "purple"
+    ],
+    "title": "Eclipse do Sol Abissal & Visagem da Peste",
+    "archetypeTag": "Erradicação em Área & Cripta",
+    "cardIds": [
+      "purple_166_altar_ceifador_supremo",
+      "purple_123_eclipse_abissal",
+      "purple_162_apocalipse_necrotico",
+      "purple_157_dragao_sombra_abissal"
+    ],
+    "mechanism": "A Visagem do Dragão da Peste causa 2 de dano à Vanguarda inimiga e compra 1 carta todo início de turno. Eclipse do Sol Abissal varre o campo (4 em área + drena 4) e Colheita do Cálice abate o maior colosso sobrevivente antes do Monarca dos Três Crânios dominar o ar.",
+    "payoff": "Aniquila tanto enxames quanto colossos individuais enquanto mantém sua VIDA acima de 35."
+  },
+  {
+    "id": "mono_green_ramp",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "green"
+    ],
+    "title": "Seiva Primordial & Despertar da Hidra",
+    "archetypeTag": "Aceleração & Colosso",
+    "cardIds": [
+      "green_12_pixie",
+      "green_36_coracao_floresta",
+      "green_28_totem_silvestre",
+      "green_09_hidra"
+    ],
+    "mechanism": "A Fada Pixie (+1⚡), o Coração da Seiva (+1⚡ e compra 1) e o Santuário Silvestre (+2⚡) reembolsam Essência no mesmo turno em que entram, financiando a chegada imediata de Vorágine, Hidra Voraz.",
+    "payoff": "Coloca uma Hidra 8/9 (Armadura 2, Regeneração 3, Sopro 2) com suporte de cura contínua."
+  },
+  {
+    "id": "mono_green_enrage",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "green"
+    ],
+    "title": "Muralha de Fúria Crescente & Regeneração",
+    "archetypeTag": "Escalada de Ataque",
+    "cardIds": [
+      "green_07_troll",
+      "green_54_totem_ancestral",
+      "green_166_coracao_arvore_mundo",
+      "green_53_carapaca_espinhosa"
+    ],
+    "mechanism": "O Troll Regenerador (6/8, Guardião, Atropelar, Fúria Crescente, Regeneração 3) absorve ataques inimigos, recupera até 7 de VIDA por turno com o Monólito e o Totem do Espírito Urso Ancestral, e ganha +2 ATQ permanente a cada impacto sofrido.",
+    "payoff": "Cria um Guardião 12+ ATQ com Atropelar que esmaga a coluna inimiga."
+  },
+  {
+    "id": "mono_green_prehistoric_stampede",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "green"
+    ],
+    "title": "Estouro da Manada Pré-Histórica",
+    "archetypeTag": "Ímpeto, Atropelar & Buff Global",
+    "cardIds": [
+      "green_115_carnotauro_chifre",
+      "green_136_rinoceronte_monolito",
+      "green_141_soberano_fera_primordial",
+      "green_163_despertar_colosso_floresta"
+    ],
+    "mechanism": "Carnotauro Chifre-de-Ferro e Rinoceronte Chifre-de-Monólito entram com Ímpeto e Atropelar. Fenris-Gorgon (+2/+1 a todos com Ímpeto/Atropelar) e Investida do Espírito Urso (+2/+2 a todos e cura 4) transformam a fileira em uma avalanche.",
+    "payoff": "Mais de 25 de dano com Atropelar no mesmo turno em que os predadores entram em campo."
+  },
+  {
+    "id": "mono_green_pangaea_fortress",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "green"
+    ],
+    "title": "Fortaleza Viva de Pangeia & Galhada",
+    "archetypeTag": "Armadura 3, Sopro & Cura em Massa",
+    "cardIds": [
+      "green_160_behemoth_cratera_viva",
+      "green_142_patriarca_selva_eterna",
+      "green_161_dragao_esmeralda_primordial",
+      "green_126_coracao_selva_viva"
+    ],
+    "mechanism": "Terrakhor (Armadura 3, Regeneração 2) e Sylvanhorn concedem +4/+4 acumulado a toda a sua tropa na entrada, enquanto o Dragão Esmeralda de Galhada Viva limpa as pilhas inimigas com Sopro de Espinhos 3.",
+    "payoff": "Fileira inteira com +4/+4 de bônus permanente e regeneração contínua a cada rodada."
+  },
+  {
+    "id": "mono_gold_aegis",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "gold"
+    ],
+    "title": "Falange Invulnerável do Sol Invicto",
+    "archetypeTag": "Escudo Divino em Massa",
+    "cardIds": [
+      "gold_28_reliquia_pacto",
+      "gold_30_escudo_solar",
+      "gold_26_muralha_aco",
+      "gold_160_decreto_invulnerabilidade"
+    ],
+    "mechanism": "A Arca da Aliança e o Bastião do Sol concedem Escudo Divino a toda a tropa ao entrar. Quando o inimigo ataca para quebrar os escudos, Falange de Escudos Animados e Cúpula das Asas Seráficas reaplicam Escudo Divino em todos e compram 2 cartas.",
+    "payoff": "Trocas de combate 100% gratuitas onde suas unidades jamais perdem VIDA."
+  },
+  {
+    "id": "mono_gold_empire_engine",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "gold"
+    ],
+    "title": "Motor Imperial de Essência & Zênite",
+    "archetypeTag": "Geração de Mana & Cura",
+    "cardIds": [
+      "gold_105_coroa_imperador",
+      "gold_90_trono_horas",
+      "gold_166_trono_soberano_sol",
+      "gold_07_dragao_ouro"
+    ],
+    "mechanism": "A Coroa Imperial, o Santuário do Relógio e o Diadema dos Cristais Orbitais geram +3⚡ extras todo início de turno enquanto distribuem Escudo Divino e curam toda a fileira, acelerando Aurarius, Majestade do Sol.",
+    "payoff": "+3⚡ permanentes por turno + fileira inteira blindada com Armadura 3 e Escudo Divino."
+  },
+  {
+    "id": "mono_gold_eternal_throne",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "gold"
+    ],
+    "title": "Corte de Hyperion & Trono do Imperador Eterno",
+    "archetypeTag": "Escalonamento Real & Sopro Solar",
+    "cardIds": [
+      "gold_146_trono_imperador_eterno",
+      "gold_126_coroa_imperador_solar",
+      "gold_138_imperador_sol_supremo",
+      "gold_157_dragao_soberano_alvorada"
+    ],
+    "mechanism": "O Trono Supremo do Imperador Eterno e a Coroa do Imperador Solar concedem Escudo Divino na entrada e +2/+2 automáticos a todos os aliados a cada início de turno. Hyperion e Aurelius entram adicionando mais +2/+2, Escudo Divino global e Sopro Solar 3.",
+    "payoff": "Qualquer soldado comum torna-se um colosso 8/10 com Escudo Divino em duas rodadas."
+  },
+  {
+    "id": "mono_neutral_archmage",
+    "tier": "mono",
+    "tierLabel": "Suporte Universal • Éter Arcano",
+    "domains": [
+      "neutral"
+    ],
+    "title": "Motor Arcano Universal (0 Afinidade)",
+    "archetypeTag": "Catalisador para Qualquer Cor",
+    "cardIds": [
+      "neutral_13_grimorio_astral",
+      "neutral_49_fragmento_mental",
+      "neutral_40_cajado_magi",
+      "neutral_17_pedra_filosofal"
+    ],
+    "mechanism": "Sem exigir Afinidade Elemental, a Pedra Filosofal gera Essência extra todo turno enquanto o Tomo, o Diadema e o Cajado Supremo convertem qualquer feitiço em 5 de dano + 1 de dreno de VIDA.",
+    "payoff": "Encaixa em qualquer Grimório para multiplicar o impacto de feitiços e acelerar a curva."
+  },
+  {
+    "id": "mono_neutral_aeternus_clockwork",
+    "tier": "mono",
+    "tierLabel": "Suporte Universal • Éter Arcano",
+    "domains": [
+      "neutral"
+    ],
+    "title": "Engrenagem Suprema de Aeternus",
+    "archetypeTag": "Escudo Divino Perpétuo & Mana",
+    "cardIds": [
+      "neutral_50_relogio_eternidade",
+      "neutral_123_emissario_relojoeiro_supremo",
+      "neutral_117_elminster_sabio_cinzento",
+      "neutral_166_protocolo_torre_axial"
+    ],
+    "mechanism": "O Grande Relógio da Eternidade e Valerius geram +2⚡ extras e +1/+1 aos aliados todo início de turno, enquanto o Deus-Máquina de Aeternus (Guardião, Renascer) renova Escudo Divino em todas as suas unidades a cada rodada.",
+    "payoff": "Escudo Divino renovado gratuitamente todo turno em todas as colunas sem exigir cor específica."
+  },
+  {
+    "id": "mono_neutral_titan_conclave",
+    "tier": "mono",
+    "tierLabel": "Suporte Universal • Éter Arcano",
+    "domains": [
+      "neutral"
+    ],
+    "title": "Conclave dos Titãs Quebra-Tronos",
+    "archetypeTag": "Colossos Sem Requisito de Cor",
+    "cardIds": [
+      "neutral_128_trono_cranio_dragao",
+      "neutral_122_rei_hekaton_neutro_arbitro",
+      "neutral_119_colosso_vonindod_fragmento",
+      "neutral_124_tarrasque_despertar_neutro"
+    ],
+    "mechanism": "O Trono do Crânio Dracônico e Atlas-Khor concedem +4/+4 somados a todos os seus aliados na entrada. Em seguida, Titã Ferrostor e Gorgonoth, O Devorador de Continentes entram varrendo o tabuleiro inteiro com 5 de dano sísmico.",
+    "payoff": "Seus aliados sobrevivem ao terremoto graças ao +4/+4 enquanto a mesa adversária é dizimada."
+  },
+  {
+    "id": "mono_red_wheel_armada_blitz",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "red"
+    ],
+    "title": "Roda Vulcânica & Bombardeio da Hoste Dracônica",
+    "archetypeTag": "Quebra de Domínio & Ímpeto Letal",
+    "cardIds": [
+      "red_173_general_roda_chama",
+      "red_172_armada_draconica_chama",
+      "red_167_arauto_prisma_chama",
+      "red_170_flagelo_cornudo_chama"
+    ],
+    "mechanism": "Pyrrakon (General da Roda Vulcânica) entra quebrando imediatamente qualquer Expansão de Domínio inimiga (impondo 2 rodadas de Exaustão de Domínio ao rival), concede Escudo Divino a toda a sua tropa e varre a Vanguarda em 2 de dano ao atacar com Ímpeto. Na sequência, a Hoste Dracônica da Cratera limpa os sobreviventes com 3 de dano de entrada + Sopro 3, gera duas crias 2/2 e ataca com Ímpeto causando mais 3 de dano direto ao Soberano.",
+    "payoff": "Anulação total do Domínio inimigo, limpeza dupla de Vanguarda e 10+ de pressão imediata no mesmo turno."
+  },
+  {
+    "id": "mono_purple_crypt_wheel_eclipse",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "purple"
+    ],
+    "title": "Roda Fúnebre & Reanimação da Legião do Eclipse",
+    "archetypeTag": "Anti-Domínio, Execução & Cripta",
+    "cardIds": [
+      "purple_173_general_roda_abismo",
+      "purple_172_armada_draconica_abismo",
+      "purple_23_dracolich",
+      "purple_169_pressagio_revoada_abismo"
+    ],
+    "mechanism": "Nyxaroth quebra a Expansão de Domínio rival, protege seus mortos-vivos com Escudo Divino e, ao atacar, executa a criatura inimiga mais forte ignorando Escudo Divino e Armadura. Em seguida, a Legião Dracônica do Eclipse aplica 2 em área + Sopro 2, invoca duas crias 2/2 e, ao declarar ataque, reanima gratuitamente o maior titã da sua Cripta (como Ossaurion).",
+    "payoff": "Destruição de Domínio e de colossos blindados somada à ressurreição gratuita de lendas de custo 7–8⚡."
+  },
+  {
+    "id": "mono_blue_wheel_clash_lock",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "blue"
+    ],
+    "title": "Vitória Instantânea em Disputa 50/50 & Trava Astral",
+    "archetypeTag": "Quebra de Choque de Domínios & Gelo",
+    "cardIds": [
+      "blue_173_general_roda_gelo",
+      "blue_172_armada_draconica_gelo",
+      "blue_171_pactuario_elemental_gelo",
+      "blue_119_convergencia_runica"
+    ],
+    "mechanism": "Durante uma Disputa de Domínios (50/50) em que os Acertos Garantidos estão mutuamente suprimidos, invocar Cryonax (General da Roda Astral) estilhaça exclusivamente o domínio rival (clashRival) e impõe 2 rodadas de Exaustão de Domínio ao oponente — restaurando na mesma hora o +1/+1 e o Acerto Garantido da sua própria Expansão! Cryonax ainda congela toda a Vanguarda inimiga e concede Escudo Divino global antes da Esquadra Dracônica da Nevasca consolidar a trava.",
+    "payoff": "Soberania absoluta de Domínio recuperada instantaneamente + Vanguarda inimiga congelada por turnos seguidos."
+  },
+  {
+    "id": "mono_green_primal_wheel_stampede",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "green"
+    ],
+    "title": "Roda Primeva & Escalada do Enxame Ancestral",
+    "archetypeTag": "Anti-Domínio & Buff Exponencial",
+    "cardIds": [
+      "green_173_general_roda_selva",
+      "green_172_armada_draconica_selva",
+      "green_169_pressagio_revoada_selva",
+      "green_167_arauto_prisma_selva"
+    ],
+    "mechanism": "O Presságio da Revoada Espinhosa povoa a Vanguarda com duas feras 2/2; o Arauto da Raiz Prismática (+1/+2 global) e Sylvarok (quebra a Expansão de Domínio inimiga + +1/+2 e Escudo Divino global) transformam as fichas em brucutus blindados. Por fim, o Enxame Dracônico Ancestral varre a frente rival em 2, cria mais duas feras 2/2 e concede +1/+2 adicional a todos os aliados ao atacar.",
+    "payoff": "Mesa larga com +3/+6 acumulado, Escudo Divino e Atropelar sobre um oponente em Exaustão de Domínio."
+  },
+  {
+    "id": "mono_gold_celestial_wheel_aegis",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "gold"
+    ],
+    "title": "Égide da Roda Celeste & Armada do Zênite",
+    "archetypeTag": "Cidadela Anti-Domínio & Escudos Infinitos",
+    "cardIds": [
+      "gold_173_general_roda_sol",
+      "gold_172_armada_draconica_sol",
+      "gold_167_arauto_prisma_sol",
+      "gold_171_pactuario_elemental_sol"
+    ],
+    "mechanism": "Heliokar (General da Roda Celeste) destrói a Expansão de Domínio rival, concede Escudo Divino e +1 de Armadura permanente a todos os seus aliados e restaura 3 de Vida em todo o seu lado. Quando a Armada Dracônica do Zênite ataca com Voo e Sopro 2, ela renova o Escudo Divino de todo o exército aliado e cura mais 3 do seu Soberano.",
+    "payoff": "Falange virtualmente indestrutível com Armadura acumulada, Escudos Divinos renováveis e +10 de cura total ao Soberano."
+  },
+  {
+    "id": "mono_neutral_vaelkor_ascension_refund",
+    "tier": "mono",
+    "tierLabel": "Suporte Universal • Éter Arcano",
+    "domains": [
+      "neutral"
+    ],
+    "title": "Reembolso de Essência & Ascensão Imediata de Vaelkor",
+    "archetypeTag": "Anti-Domínio Universal & Ascensão (★)",
+    "cardIds": [
+      "neutral_173_general_roda_matriz",
+      "neutral_172_armada_draconica_matriz",
+      "neutral_170_flagelo_cornudo_matriz",
+      "neutral_60_calice_infinito"
+    ],
+    "mechanism": "Sem exigir Afinidade (0), Vaelkor entra por 7⚡ quebrando a Expansão de Domínio rival, concedendo Escudo Divino a todos os aliados e reembolsando +2⚡ imediatamente. Com 9⚡ disponíveis — ou somando os +2⚡ gerados pelo Graal do Prisma Infinito ou pelo ataque da Armada Dracônica do Prisma —, esses +2⚡ reembolsados pagam no mesmo turno a Ascensão (4⚡) para ★ Vaelkor, Roda da Perfeição (8/10)!",
+    "payoff": "Quebra de Domínio + Escudo Divino global + Guardião Ascendido 8/10 em campo num único turno decisivo."
+  },
+  {
+    "id": "dual_red_blue",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "red",
+      "blue"
+    ],
+    "title": "Tempestade Piroclástica (Spell-Burn)",
+    "archetypeTag": "Chama + Tempestade",
+    "cardIds": [
+      "red_97_lancador_chamas",
+      "red_107_fornalha_draconica",
+      "blue_10_portal_runas",
+      "blue_30_visao_ancestral",
+      "blue_49_mente_onisciente"
+    ],
+    "mechanism": "O Vermelho fornece os maiores gatilhos de dano ao Soberano por feitiço lançado, enquanto o Azul fornece feitiços que devolvem +1⚡ e compram 1–2 cartas (Visão do Oráculo e Epifania), evitando que a mão se esgote.",
+    "payoff": "Permite encadear 4 a 5 feitiços no mesmo turno para um abate explosivo à distância."
+  },
+  {
+    "id": "dual_red_blue_supernova",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "red",
+      "blue"
+    ],
+    "title": "Zero Absoluto & Supernova Solar",
+    "archetypeTag": "Chama + Tempestade",
+    "cardIds": [
+      "blue_141_ruptura_temporal",
+      "blue_152_arquimago_vortice",
+      "red_166_coroa_imperador_vulcao",
+      "red_123_cataclismo_solar"
+    ],
+    "mechanism": "Ruptura do Relógio Astral congela todas as tropas inimigas, compra 1 carta e gera +2⚡ neste turno, permitindo lançar imediatamente Detonação do Sol Carmesim (5 de dano em área + 3 ao Soberano) com Hydrissa e o Orbe do Sol em campo.",
+    "payoff": "Congela e incinera todo o exército rival em 6+ de dano no mesmo turno sem possibilidade de resposta."
+  },
+  {
+    "id": "dual_red_purple",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "red",
+      "purple"
+    ],
+    "title": "Fênix Imortal do Abismo",
+    "archetypeTag": "Chama + Abismo",
+    "cardIds": [
+      "purple_104_pacto_demoniaco",
+      "red_45_fenix_primordial",
+      "purple_30_erguer_mortos",
+      "purple_28_filacterio_noite"
+    ],
+    "mechanism": "Use a Centelha Umbral e o Sacrifício Vital para invocar a Fênix da Coroa Solar cedo. Quando ela gastar seu Renascer e finalmente cair na Cripta (causando 2× dano em área), Erguer Legião da Cripta e a Máscara a trazem de volta com Renascer renovado.",
+    "payoff": "Uma Fênix com Voo e Ímpeto que precisa ser morta 4 a 6 vezes pelo oponente."
+  },
+  {
+    "id": "dual_red_purple_blood_furnace",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "red",
+      "purple"
+    ],
+    "title": "Catedral das Cinzas & Retorno Profano",
+    "archetypeTag": "Chama + Abismo",
+    "cardIds": [
+      "red_166_coroa_imperador_vulcao",
+      "purple_145_orgao_catedrais_negras",
+      "purple_144_retorno_profano",
+      "red_156_fenix_coroa_solar"
+    ],
+    "mechanism": "O Orbe do Sol Aprisionado e o Órgão Fantasma causam 4 de dano direto ao Soberano rival todo início de turno. Quando Pyrokor cai na Vanguarda, sua supernova causa 3 em área e dispara a Emboscada Retorno Profano (+1/+1 aos aliados e drena 2).",
+    "payoff": "Cada turno ou abate aliado pune severamente a VIDA do Soberano adversário."
+  },
+  {
+    "id": "dual_red_green",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "red",
+      "green"
+    ],
+    "title": "Avalanche de Fúria & Atropelar",
+    "archetypeTag": "Chama + Selva",
+    "cardIds": [
+      "green_05_minotauro",
+      "green_32_gorila_alfa",
+      "red_85_tempo_emprestado",
+      "red_17_orc_xama"
+    ],
+    "mechanism": "O Verde entrega criaturas brutais com Ímpeto, Atropelar e Fúria Crescente (Minotauro Quebra-Muros e Kongor), e o Vermelho injeta +3/+1 e +1⚡ imediato com Fúria da Ampulheta Rubra.",
+    "payoff": "Golpes imediatos de 9+ ATQ com Atropelar que atravessam bloqueadores e acertam o Soberano."
+  },
+  {
+    "id": "dual_red_green_volcanic_apex",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "red",
+      "green"
+    ],
+    "title": "Predadores da Caldeira Pré-Histórica",
+    "archetypeTag": "Chama + Selva",
+    "cardIds": [
+      "green_141_soberano_fera_primordial",
+      "red_134_senhor_guerra_rubro",
+      "red_141_sangue_fervente",
+      "green_138_giganotossauro_apex"
+    ],
+    "mechanism": "O General Senhor da Guerra Rubro (+2 ATQ global com Ímpeto), Fenris-Gorgon (+2/+1 global com Ímpeto e Atropelar) e Ritual do Sangue Fervente (+2/+1 global) somam +6 ATQ a toda a fileira de feras com Atropelar.",
+    "payoff": "Transforma qualquer predador em campo em um colosso de 12+ ATQ com Atropelar."
+  },
+  {
+    "id": "dual_red_gold",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "red",
+      "gold"
+    ],
+    "title": "Falange Dracônica Blindada",
+    "archetypeTag": "Chama + Ordem",
+    "cardIds": [
+      "red_10_altar_draconico",
+      "red_36_bigorna_fogo",
+      "gold_28_reliquia_pacto",
+      "gold_27_decreto_gloria"
+    ],
+    "mechanism": "As Relíquias vermelhas inundam o campo com Crias Dracônicas ofensivas, e o Dourado elimina a fragilidade delas concedendo +1/+2 (Juramento do Campeão) e Escudo Divino global (Arca da Aliança).",
+    "payoff": "Transforma fichas 2/1 em soldados 4/3 com Escudo Divino imunes a limpezas de área."
+  },
+  {
+    "id": "dual_red_gold_solar_judgment",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "red",
+      "gold"
+    ],
+    "title": "Julgamento Vulcânico do Sol Invicto",
+    "archetypeTag": "Chama + Ordem",
+    "cardIds": [
+      "gold_140_ira_firmamento_dourado",
+      "red_143_julgamento_vulcanico",
+      "gold_146_trono_imperador_eterno",
+      "red_157_dragao_tiamat_carmesim"
+    ],
+    "mechanism": "Ira do Firmamento Dourado causa 4 de dano a todos os inimigos e concede Escudo Divino às suas unidades; na sequência, Fissura do Julgamento Vulcânico causa mais 5 a todos os inimigos e dá +2 ATQ à sua fileira blindada.",
+    "payoff": "9 de dano em área contra o inimigo enquanto seu exército recebe +2 ATQ e Escudo Divino."
+  },
+  {
+    "id": "dual_blue_purple",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "blue",
+      "purple"
+    ],
+    "title": "Usurpação Mental & Controle Sombrio",
+    "archetypeTag": "Tempestade + Abismo",
+    "cardIds": [
+      "purple_27_emboscada_umbrosa",
+      "purple_44_devorador_intelecto",
+      "purple_21_abolete",
+      "blue_27_dissipacao_astral"
+    ],
+    "mechanism": "Manto Sufocante da Caverna reduz o ATQ da Vanguarda inimiga em -2, colocando campeões rivais dentro do limite (ATQ <= 3) para serem roubados permanentemente pelo Espectro Usurpador ou Leviatã Psíquico.",
+    "payoff": "Rouba as melhores criaturas do adversário para o seu lado do tabuleiro."
+  },
+  {
+    "id": "dual_blue_purple_abyssal_tide",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "blue",
+      "purple"
+    ],
+    "title": "Maré Necrótica & Prisão de Almas",
+    "archetypeTag": "Tempestade + Abismo",
+    "cardIds": [
+      "blue_146_trono_inverno_eterno",
+      "purple_166_altar_ceifador_supremo",
+      "blue_142_diluvio_astral",
+      "purple_138_soberano_carnica"
+    ],
+    "mechanism": "O Trono do Inverno Eterno e a Visagem do Dragão da Peste compram 2 cartas extras todo início de turno enquanto congelam e corroem a Vanguarda rival em 2 de dano. Dilúvio da Fenda Cósmica e Necrothor limpam os sobreviventes.",
+    "payoff": "Compra 3 cartas por turno enquanto congela e dissolve gradualmente toda a mesa inimiga."
+  },
+  {
+    "id": "dual_blue_green",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "blue",
+      "green"
+    ],
+    "title": "Inverno Primordial (Ramp & Caminho Livre)",
+    "archetypeTag": "Tempestade + Selva",
+    "cardIds": [
+      "green_28_totem_silvestre",
+      "green_36_coracao_floresta",
+      "blue_28_orbe_tempestade",
+      "green_09_hidra"
+    ],
+    "mechanism": "O Verde acelera a Essência para colocar colossos em campo rapidamente, enquanto o Astrolábio azul congela toda a Vanguarda inimiga, impedindo revides contra suas feras.",
+    "payoff": "Seus colossos verdes atacam livremente contra defensores congelados."
+  },
+  {
+    "id": "dual_blue_green_Sapphire_canopy",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "blue",
+      "green"
+    ],
+    "title": "Soberanos da Nevasca & Galhada Viva",
+    "archetypeTag": "Tempestade + Selva",
+    "cardIds": [
+      "green_108_semente_mundo",
+      "blue_166_trono_oniciencia_astral",
+      "green_161_dragao_esmeralda_primordial",
+      "blue_154_dragao_safira_soberano"
+    ],
+    "mechanism": "O Coração da Árvore-Mundo e o Cetro do Arquimago Astral geram +2⚡ extras todo turno e congelam defensores, permitindo invocar em sequência os dois Dragões Anciões de custo 8⚡ (Esmeralda e Safira).",
+    "payoff": "Dois Dragões 8⚡ com Sopro 3, Armadura 2, Regeneração, Congelamento em massa e compra de 2 cartas."
+  },
+  {
+    "id": "dual_blue_gold",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "blue",
+      "gold"
+    ],
+    "title": "Cidadela de Quartzo & Égide Solar",
+    "archetypeTag": "Tempestade + Ordem",
+    "cardIds": [
+      "blue_41_golem_cristal",
+      "gold_105_coroa_imperador",
+      "gold_26_muralha_aco",
+      "blue_09_onda_repulsora"
+    ],
+    "mechanism": "Combina os Escudos Divinos reativos dourados com o congelamento em área azul e o Autômato de Quartzo Rúnico, que cura todos os aliados a cada feitiço ou reação lançada.",
+    "payoff": "Defesa intransponível que anula tanto ataques físicos quanto magias de atrito."
+  },
+  {
+    "id": "dual_blue_gold_celestial_chronos",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "blue",
+      "gold"
+    ],
+    "title": "Tribunal do Tempo & Asas de Pérola",
+    "archetypeTag": "Tempestade + Ordem",
+    "cardIds": [
+      "gold_165_arca_lei_celestial",
+      "gold_166_trono_soberano_sol",
+      "blue_165_planetario_horologico",
+      "blue_81_arconte_cronos"
+    ],
+    "mechanism": "A Escritura das Asas de Pérola, o Diadema dos Cristais Orbitais e a Visagem da Tempestade Safira geram +1⚡, compram 2 cartas extras, curam 2 no Soberano e concedem Escudo Divino todo início de turno ao lado de Chronos.",
+    "payoff": "Compra 4 cartas por turno com cura contínua e Escudo Divino perpétuo em seus Guardiões."
+  },
+  {
+    "id": "dual_purple_green",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "purple",
+      "green"
+    ],
+    "title": "Reencarnação Selvagem da Cripta",
+    "archetypeTag": "Abismo + Selva",
+    "cardIds": [
+      "green_07_troll",
+      "green_09_hidra",
+      "green_88_reencarnacao_ancestral",
+      "purple_30_erguer_mortos"
+    ],
+    "mechanism": "Une as maiores feras regenerativas verdes com as magias de reanimação em massa roxas e verdes. Cada vez que um colosso cai e retorna, todo o seu exército recebe +1/+1 ou +1/+2.",
+    "payoff": "Feras gigantescas que voltam da Cripta ainda maiores do que quando entraram."
+  },
+  {
+    "id": "dual_purple_green_venom_crypt",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "purple",
+      "green"
+    ],
+    "title": "Peçonha Imortal & Monarca da Rocha",
+    "archetypeTag": "Abismo + Selva",
+    "cardIds": [
+      "purple_63_rainha_fungos",
+      "green_120_hidra_primordial_rei",
+      "green_160_behemoth_cratera_viva",
+      "purple_102_exumar_legiao"
+    ],
+    "mechanism": "Mycoria, Dama da Podridão reanima automaticamente 1 aliado da Cripta todo início de turno. Quando a Hidra-Rei de Sete Cabeças (Renascer, Sopro 2) ou Terrakhor (+2/+2 a todos) são reanimados, a mesa inteira escala fora de controle.",
+    "payoff": "Reanimação gratuita todo início de turno trazendo colossos de custo 6–7⚡ de volta à Vanguarda."
+  },
+  {
+    "id": "dual_purple_gold",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "purple",
+      "gold"
+    ],
+    "title": "Pacto das Valquírias & Necromancia Solar",
+    "archetypeTag": "Abismo + Ordem",
+    "cardIds": [
+      "gold_35_chamado_valquirias",
+      "purple_22_orbe_necrotico",
+      "purple_07_lich",
+      "gold_28_reliquia_pacto"
+    ],
+    "mechanism": "Chamado das Valquírias Solares (4⚡) reanima o Crânio Arcano da Morte (custo 6⚡) e concede Escudo Divino a todos; ao entrar em campo, o Crânio Arcano dispara seu próprio efeito e reanima mais um aliado da Cripta!",
+    "payoff": "Reanima 2 criaturas pesadas em cadeia por apenas 4⚡ com Escudo Divino em toda a mesa."
+  },
+  {
+    "id": "dual_purple_gold_immortal_inquisition",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "purple",
+      "gold"
+    ],
+    "title": "Inquisição do Sol Negro & Sangue Real",
+    "archetypeTag": "Abismo + Ordem",
+    "cardIds": [
+      "gold_116_centuriao_forja_dourada",
+      "purple_146_coroa_rei_cadaver",
+      "gold_126_coroa_imperador_solar",
+      "purple_157_dragao_sombra_abissal"
+    ],
+    "mechanism": "A Coroa do Rei-Cadáver e a Coroa do Imperador Solar fortalecem toda a mesa (+2/+2 ao entrar e +1/+1 por turno) e curam 5+ de VIDA. O Centurião da Forja Dourada (Guardião, Dreno de Vida, ARM 2) e o Monarca dos Três Crânios tornam sua linha intransponível.",
+    "payoff": "Exército com Escudo Divino, Dreno de Vida e +3/+3 de atributos que mantém o Soberano sempre no máximo de VIDA."
+  },
+  {
+    "id": "dual_green_gold",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "green",
+      "gold"
+    ],
+    "title": "Bastião Imortal de Fúria & Escudo Divino",
+    "archetypeTag": "Selva + Ordem",
+    "cardIds": [
+      "green_07_troll",
+      "green_32_gorila_alfa",
+      "gold_33_trono_celestial",
+      "gold_90_trono_horas"
+    ],
+    "mechanism": "Criaturas verdes de alta VIDA, Regeneração e Fúria Crescente recebem Armadura, Escudo Divino e +3 de cura por turno das Relíquias douradas, tornando-se impossíveis de abater.",
+    "payoff": "Vanguarda com 8+ VIDA, Regeneração 3 e Escudo Divino que cresce a cada turno."
+  },
+  {
+    "id": "dual_green_gold_world_tree_citadel",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "green",
+      "gold"
+    ],
+    "title": "Santuário da Árvore-Mundo & Deus-Imperador",
+    "archetypeTag": "Selva + Ordem",
+    "cardIds": [
+      "green_142_patriarca_selva_eterna",
+      "gold_138_imperador_sol_supremo",
+      "green_166_coracao_arvore_mundo",
+      "gold_146_trono_imperador_eterno"
+    ],
+    "mechanism": "Sylvanhorn (+2/+2 e cura 3 em todos) e Hyperion (+2/+2 e Escudo Divino em todos) somam +4/+4 imediatos para toda a mesa, sustentados pelo Trono Supremo (+1/+1 por turno) e pelo Totem do Espírito Urso (cura 2 em todos por turno).",
+    "payoff": "A maior parede de atributos do jogo: unidades com +5/+6, Guardião, Atropelar e Escudo Divino."
+  },
+  {
+    "id": "dual_red_purple_elemental_pact_burn",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "red",
+      "purple"
+    ],
+    "title": "Conclave dos Pactuários & Corrente de Feitiços",
+    "archetypeTag": "Motor Duplo Ao Lançar Feitiço",
+    "cardIds": [
+      "red_171_pactuario_elemental_chama",
+      "purple_171_pactuario_elemental_abismo",
+      "red_32_ritual_cinzas",
+      "red_85_tempo_emprestado",
+      "purple_168_tecelao_feixe_abismo"
+    ],
+    "mechanism": "Os dois Pactuários entram protegidos na Retaguarda com Alcance já invocando dois elementais 3/2 na Vanguarda. A partir daí, cada magia que reembolsa +1⚡ (Ritual da Pira de Cinzas e Fúria da Ampulheta Rubra) dispara simultaneamente 1 de dano em toda a Vanguarda inimiga e 2 de dano direto ao Soberano rival.",
+    "payoff": "Varredura contínua da fileira frontal inimiga combinada com 8–10 de queima direta ao Soberano num único turno."
+  },
+  {
+    "id": "dual_blue_green_matrix_ascension_surge",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "blue",
+      "green",
+      "neutral"
+    ],
+    "title": "Escalada Quimérica de Dupla Ascensão do Prisma",
+    "archetypeTag": "Reembolso de Mana & Colossos Ascendidos",
+    "cardIds": [
+      "neutral_170_flagelo_cornudo_matriz",
+      "green_171_pactuario_elemental_selva",
+      "neutral_173_general_roda_matriz",
+      "neutral_172_armada_draconica_matriz"
+    ],
+    "mechanism": "O Flagelo Cornudo Primordial segura a Vanguarda cedo e ascende para 5/6, recebendo +1/+2 do Pactuário do Espírito Silvestre a cada feitiço de rampa/compra. Nos turnos finais, tanto Vaelkor (ao entrar) quanto a Armada Dracônica do Prisma (ao atacar) devolvem +2⚡ extras para financiar suas próprias Ascensões 8/10 e 9/10.",
+    "payoff": "Três ameaças Ascendidas (★) gigantescas sustentadas por geração contínua de Essência bônus."
+  },
+  {
+    "id": "dual_green_gold_wheel_clash_supremacy",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Bicromática",
+    "domains": [
+      "green",
+      "gold"
+    ],
+    "title": "Supremacia de Domínio: Quebra de Choque 50/50 & Falange",
+    "archetypeTag": "Domínio Soberano & Empilhamento 3x",
+    "cardIds": [
+      "gold_173_general_roda_sol",
+      "green_173_general_roda_selva",
+      "green_169_pressagio_revoada_selva",
+      "gold_168_tecelao_feixe_sol"
+    ],
+    "mechanism": "Se o oponente contestar seu Domínio num Choque 50/50, desça Heliokar ou Sylvarok: o efeito Quebrar Expansões de Domínio destrói apenas a barreira rival (clashRival), impõe 2 rodadas de Exaustão de Domínio ao inimigo e reativa na hora o +1/+1 e o Acerto Garantido do seu próprio Domínio sobre colunas empilhadas com Escudo Divino.",
+    "payoff": "Reativação imediata do seu Domínio Soberano somada a uma falange 3x blindada com +2/+3 efetivos."
+  },
+  {
+    "id": "tri_red_blue_purple",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "red",
+      "blue",
+      "purple"
+    ],
+    "title": "Tríade do Cataclismo Arcano (Storm OTK)",
+    "archetypeTag": "Chama + Tempestade + Abismo",
+    "cardIds": [
+      "purple_104_pacto_demoniaco",
+      "purple_50_pacto_proibido",
+      "red_107_fornalha_draconica",
+      "red_97_lancador_chamas",
+      "blue_30_visao_ancestral",
+      "purple_107_grimorio_necromante"
+    ],
+    "mechanism": "Estágio 1 (Roxo): Centelha Umbral e Contrato geram +4⚡ de explosão. Estágio 2 (Vermelho + Roxo): Fornalha, Piromante e Necronomicon na Retaguarda. Estágio 3 (Azul): Feitiços de compra e restituição de Essência disparam todos os gatilhos em sequência.",
+    "payoff": "Cada feitiço causa 5+ de dano direto e drena VIDA, permitindo abater o Soberano rival em um único turno."
+  },
+  {
+    "id": "tri_green_gold_red",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "green",
+      "gold",
+      "red"
+    ],
+    "title": "Tríade da Avalanche Solar",
+    "archetypeTag": "Selva + Ordem + Chama",
+    "cardIds": [
+      "green_28_totem_silvestre",
+      "green_141_soberano_fera_primordial",
+      "red_134_senhor_guerra_rubro",
+      "gold_28_reliquia_pacto",
+      "gold_158_bencao_falange_invicta"
+    ],
+    "mechanism": "O Verde gera a explosão de Essência (+2⚡ do Santuário) e coloca Fenris-Gorgon (+2/+1 global), o Vermelho soma o General Senhor da Guerra (+2 ATQ global com Ímpeto), e o Dourado sela o turno com Baluarte dos Escudos (+1 ATQ e Escudo Divino para toda a Vanguarda).",
+    "payoff": "Investida total com +5 ATQ em todas as colunas protegidas por Escudo Divino."
+  },
+  {
+    "id": "tri_blue_purple_green",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "blue",
+      "purple",
+      "green"
+    ],
+    "title": "Tríade da Eternidade (Ramp, Trava & Cripta)",
+    "archetypeTag": "Tempestade + Abismo + Selva",
+    "cardIds": [
+      "green_36_coracao_floresta",
+      "blue_10_portal_runas",
+      "blue_28_orbe_tempestade",
+      "purple_30_erguer_mortos",
+      "green_88_reencarnacao_ancestral"
+    ],
+    "mechanism": "Combina a aceleração de Essência verde, a compra de cartas e congelamento azul, e a dupla reanimação com buff global (Erguer Legião + Reencarnação Primordial).",
+    "payoff": "Domínio absoluto de recursos: você tem mais Essência, mais cartas na mão e recicla toda a Cripta."
+  },
+  {
+    "id": "tri_red_purple_gold",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "red",
+      "purple",
+      "gold"
+    ],
+    "title": "Tríade dos Imortais Caídos",
+    "archetypeTag": "Chama + Abismo + Ordem",
+    "cardIds": [
+      "red_45_fenix_primordial",
+      "purple_22_orbe_necrotico",
+      "purple_07_lich",
+      "gold_35_chamado_valquirias"
+    ],
+    "mechanism": "Une campeões com Renascer nativo (Fênix e Vesperion) ao Chamado das Valquírias Solares e ao Crânio Arcano da Morte, revivendo múltiplas lendas simultaneamente com Escudo Divino.",
+    "payoff": "Tabuleiro imortal que pune qualquer tentativa de troca do adversário."
+  },
+  {
+    "id": "tri_red_blue_green",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "red",
+      "blue",
+      "green"
+    ],
+    "title": "Tríade da Tormenta Primordial (Dragões Anciões)",
+    "archetypeTag": "Chama + Tempestade + Selva",
+    "cardIds": [
+      "green_28_totem_silvestre",
+      "blue_141_ruptura_temporal",
+      "red_157_dragao_tiamat_carmesim",
+      "blue_154_dragao_safira_soberano",
+      "green_161_dragao_esmeralda_primordial"
+    ],
+    "mechanism": "O Santuário Silvestre (+2⚡) e a Ruptura do Relógio Astral (+2⚡ e congela todos os inimigos) aceleram os três maiores Dragões Anciões de custo 8⚡: Vulcanis, Dragão de Safira Sônico e Dragão Esmeralda de Galhada Viva.",
+    "payoff": "Sopro Elemental triplo (9 de dano em área acumulado) com Vanguarda inimiga congelada."
+  },
+  {
+    "id": "tri_red_blue_gold",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "red",
+      "blue",
+      "gold"
+    ],
+    "title": "Tríade do Zênite Astral (Artilharia Blindada)",
+    "archetypeTag": "Chama + Tempestade + Ordem",
+    "cardIds": [
+      "gold_166_trono_soberano_sol",
+      "blue_166_trono_oniciencia_astral",
+      "red_166_coroa_imperador_vulcao",
+      "blue_152_arquimago_vortice",
+      "gold_160_decreto_invulnerabilidade"
+    ],
+    "mechanism": "Os três Tronos Lendários na Retaguarda geram +2⚡ extras por turno, concedem Escudo Divino, congelam 1 inimigo e queimam o Soberano rival e sua Vanguarda automaticamente a cada início de rodada.",
+    "payoff": "Fortaleza intocável na Retaguarda que vence por queima solar e controle glacial."
+  },
+  {
+    "id": "tri_red_purple_green",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "red",
+      "purple",
+      "green"
+    ],
+    "title": "Tríade da Extinção & Reencarnação Vulcânica",
+    "archetypeTag": "Chama + Abismo + Selva",
+    "cardIds": [
+      "purple_104_pacto_demoniaco",
+      "red_138_colosso_vulcano_primordial",
+      "green_120_hidra_primordial_rei",
+      "purple_102_exumar_legiao",
+      "green_88_reencarnacao_ancestral"
+    ],
+    "mechanism": "Acelere Vulcanor (3 de dano a todos os inimigos + 2 ao Soberano) e a Hidra-Rei de Sete Cabeças com Centelha Umbral e Sacrifício Vital. Se o oponente gastar recursos para abatê-los, Despertar da Legião e Reencarnação Primordial os trazem de volta com +2/+3 extras.",
+    "payoff": "Colossos de Sopro e Atropelar que retornam da Cripta disparando novos terremotos na entrada."
+  },
+  {
+    "id": "tri_blue_purple_gold",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "blue",
+      "purple",
+      "gold"
+    ],
+    "title": "Tríade do Tribunal do Eclipse Eterno",
+    "archetypeTag": "Tempestade + Abismo + Ordem",
+    "cardIds": [
+      "blue_146_trono_inverno_eterno",
+      "purple_166_altar_ceifador_supremo",
+      "gold_146_trono_imperador_eterno",
+      "purple_123_eclipse_abissal",
+      "gold_140_ira_firmamento_dourado"
+    ],
+    "mechanism": "Enquanto os três Tronos compram 2 cartas extras por turno, corroem a Vanguarda rival e dão +1/+1 às suas unidades, Ira do Firmamento Dourado e Eclipse do Sol Abissal causam 8 de dano em área aos inimigos, curam 4 e protegem sua mesa com Escudo Divino.",
+    "payoff": "Controle supremo de mesa: limpa qualquer formação inimiga mantendo Escudo Divino e 40 de VIDA."
+  },
+  {
+    "id": "tri_blue_green_gold",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "blue",
+      "green",
+      "gold"
+    ],
+    "title": "Tríade do Bastião de Safira & Alvorada",
+    "archetypeTag": "Tempestade + Selva + Ordem",
+    "cardIds": [
+      "green_108_semente_mundo",
+      "gold_138_imperador_sol_supremo",
+      "green_121_avatar_gaia",
+      "blue_136_leviata_cronos",
+      "blue_163_espelho_congelante"
+    ],
+    "mechanism": "Tellurion (+2/+2 a todos e cura 4) e Hyperion (+2/+2 e Escudo Divino a todos) erguem uma Vanguarda colossal, enquanto Chronoleviatã congela todos os defensores inimigos e compra 2 cartas para fechar o jogo.",
+    "payoff": "Vanguarda com +4/+4 e Escudo Divino atacando contra uma mesa inimiga 100% congelada."
+  },
+  {
+    "id": "tri_purple_green_gold",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "purple",
+      "green",
+      "gold"
+    ],
+    "title": "Tríade da Cidadela Necro-Silvestre",
+    "archetypeTag": "Abismo + Selva + Ordem",
+    "cardIds": [
+      "purple_63_rainha_fungos",
+      "green_160_behemoth_cratera_viva",
+      "gold_119_soberano_ordem_eterna",
+      "purple_146_coroa_rei_cadaver",
+      "gold_35_chamado_valquirias"
+    ],
+    "mechanism": "Justinian (+2/+2 e Escudo Divino a todos) e Terrakhor (+2/+2 a todos, Armadura 3) blindam Mycoria na Retaguarda, permitindo que ela reanime gratuitamente um colosso por turno com suporte do Chamado das Valquírias.",
+    "payoff": "Reanimação perpétua protegida por Guardiões com Armadura 3 e Escudo Divino global."
+  },
+  {
+    "id": "tri_red_gold_neutral",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade com Éter",
+    "domains": [
+      "red",
+      "gold",
+      "neutral"
+    ],
+    "title": "Armada Forjada de Aeternus & Caldeira",
+    "archetypeTag": "Chama + Ordem + Éter",
+    "cardIds": [
+      "neutral_123_emissario_relojoeiro_supremo",
+      "gold_83_forjado_ancestral",
+      "red_157_dragao_tiamat_carmesim",
+      "neutral_128_trono_cranio_dragao"
+    ],
+    "mechanism": "O Deus-Máquina de Aeternus concede Escudo Divino a todos os aliados todo início de turno, enquanto Aeternus, O Primeiro Forjado e o Trono do Crânio Dracônico somam +4/+4 a todos e 3 de dano à Vanguarda inimiga.",
+    "payoff": "Colossos mecânicos e dracônicos com +4/+4 e Escudo Divino renovado a cada rodada."
+  },
+  {
+    "id": "tri_blue_purple_neutral",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade com Éter",
+    "domains": [
+      "blue",
+      "purple",
+      "neutral"
+    ],
+    "title": "Conclave de Valerius, Xanathar & Entropia",
+    "archetypeTag": "Tempestade + Abismo + Éter",
+    "cardIds": [
+      "neutral_117_elminster_sabio_cinzento",
+      "neutral_120_xanathar_senhor_crime",
+      "blue_159_paradoxo_ampulheta",
+      "purple_162_apocalipse_necrotico"
+    ],
+    "mechanism": "Valerius gera +1⚡ extra e compra 2 cartas, financiando Oculus-Vex (destrói 1 inimigo ao entrar e compra 1 ao atacar), Colheita do Cálice de Obsidiana (destrói o inimigo mais forte e drena 3) e Ruptura do Astrolábio (devolve outro à mão e compra 2).",
+    "payoff": "Remove 3 colossos inimigos em sequência enquanto mantém a mão sempre cheia."
+  },
+  {
+    "id": "tri_red_blue_purple_pact_cataclysm",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade com Éter",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "neutral"
+    ],
+    "title": "Bateria Quádrupla de Pactuários Elementais (#171)",
+    "archetypeTag": "4 Motores de Feitiço na Retaguarda",
+    "cardIds": [
+      "neutral_171_pactuario_elemental_matriz",
+      "red_171_pactuario_elemental_chama",
+      "blue_171_pactuario_elemental_gelo",
+      "purple_171_pactuario_elemental_abismo",
+      "blue_119_convergencia_runica"
+    ],
+    "mechanism": "Posicione os 4 Pactuários Elementais na Retaguarda (povoando automaticamente a Vanguarda com 4 guardas elementais). Cada feitiço conjurado concede +1⚡ de volta (Éter), congela a maior ameaça inimiga (Gelo), causa 1 em toda a Vanguarda rival (Chama) e arranca 2 de Vida do Soberano inimigo (Abismo).",
+    "payoff": "Cada magia lançada custa -1⚡ efetivo e gera trava glacial, limpeza em área e dano direto simultâneos."
+  },
+  {
+    "id": "tri_prism_triad_curve_escalation",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Tática",
+    "domains": [
+      "red",
+      "green",
+      "gold"
+    ],
+    "title": "Escalada da Tríade do Prisma (#170 → #168 → #169 → #167)",
+    "archetypeTag": "Curva Perfeita de Afinidade Baixa",
+    "cardIds": [
+      "red_170_flagelo_cornudo_chama",
+      "green_168_tecelao_feixe_selva",
+      "gold_169_pressagio_revoada_sol",
+      "gold_167_arauto_prisma_sol",
+      "red_167_arauto_prisma_chama"
+    ],
+    "mechanism": "Exigindo apenas Afinidade 1–2 em baralhos tricolores, o Flagelo (3⚡, Ímpeto/Atropelar) abre agressão imediata, recebe +2/+2 do Tecelão Silvestre (4⚡), é curado pelo Presságio Solar (5⚡) e culmina nos dois Arautos do Prisma (6⚡): Escudo Divino global + cura 4 seguidos de 2 de dano em área e ataque aéreo com Ímpeto.",
+    "payoff": "Pressão ininterrupta do Turno 3 ao Turno 6 sem jamais travar por exigência tripla de Afinidade."
+  },
+  {
+    "id": "poly_five_suns_citadel",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "green",
+      "gold",
+      "neutral"
+    ],
+    "title": "Cidadela dos Sóis (Motor de 4 Relíquias)",
+    "archetypeTag": "Lotação Máxima de Retaguarda (4/4)",
+    "cardIds": [
+      "neutral_30_coroa_pactos",
+      "gold_105_coroa_imperador",
+      "green_36_coracao_floresta",
+      "blue_35_cetro_inverno"
+    ],
+    "mechanism": "Canalize 1 carta por turno nos 3 primeiros turnos para fixar Afinidade multi-domínio e preencha os 4 slots da Retaguarda com o Diadema Supremo Pentacromático (+1⚡ e cura), Coroa do Imperador (+1/+1), Coração da Floresta e Cetro do Inverno.",
+    "payoff": "Ocupa os 4/4 slots da Retaguarda gerando +1⚡ extra, Congelamento automático, +1/+1 global e cura a cada rodada."
+  },
+  {
+    "id": "poly_ambush_web",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "blue",
+      "purple",
+      "green",
+      "gold"
+    ],
+    "title": "Labirinto Pentacromático de Emboscadas (4/4)",
+    "archetypeTag": "4 Reações Ocultas na Retaguarda",
+    "cardIds": [
+      "green_35_fosso_vinhas",
+      "gold_26_muralha_aco",
+      "blue_27_dissipacao_astral",
+      "purple_34_cripta_espinhos"
+    ],
+    "mechanism": "Arme os 4 slots da Retaguarda com 4 Reações ocultas (❓) de diferentes Domínios (requisito apenas 1 de Afinidade cada). O adversário jamais sabe qual punição acionará ao declarar um ataque.",
+    "payoff": "Cada ataque inimigo nas 4 colunas resulta em destruição imediata, devolução à mão, paralisia ou Escudo Divino global."
+  },
+  {
+    "id": "poly_five_sovereign_thrones",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "gold"
+    ],
+    "title": "Convergência dos Quatro Tronos Soberanos (#166)",
+    "archetypeTag": "4 Artefatos Supremos na Retaguarda (4/4)",
+    "cardIds": [
+      "red_166_coroa_imperador_vulcao",
+      "blue_166_trono_oniciencia_astral",
+      "purple_166_altar_ceifador_supremo",
+      "gold_166_trono_soberano_sol"
+    ],
+    "mechanism": "Ao ocupar os 4 slots da Retaguarda com quatro Relíquias Lendárias #166, o início de cada turno dispara simultaneamente: +1⚡ extra, compra de 1 carta extra, Escudo Divino em 1 aliado, Congelamento de 1 inimigo, 3 de dano à Vanguarda rival, 2 de dano ao Soberano inimigo e +2 de cura.",
+    "payoff": "A maior máquina passiva de valor do jogo respeitando o limite de 4 slots da Retaguarda."
+  },
+  {
+    "id": "poly_pentachromatic_dragons",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "gold",
+      "neutral"
+    ],
+    "title": "Revoada da Imperatriz Pentacromática",
+    "archetypeTag": "4 Dragões na Vanguarda + 1 Relíquia",
+    "cardIds": [
+      "neutral_10_valkyra_pentacromatica",
+      "neutral_60_calice_infinito",
+      "red_157_dragao_tiamat_carmesim",
+      "blue_154_dragao_safira_soberano",
+      "gold_157_dragao_soberano_alvorada"
+    ],
+    "mechanism": "O Graal do Prisma Infinito na Retaguarda (+2⚡ ao entrar, cura 3 e dá +1/+1 e compra 1 por turno sem requisito de Afinidade) financia os 4 slots da Vanguarda com Valkyra (Sopro 4) e 3 Dragões Primordiais.",
+    "payoff": "Esquadrão aéreo de 4 Dragões na Vanguarda com Sopro 3–4, Armadura 2–3 e Escudo Divino que apaga todas as fileiras inimigas."
+  },
+  {
+    "id": "poly_four_cataclysms",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "gold",
+      "neutral"
+    ],
+    "title": "Quatro Cavaleiros do Apocalipse Astral",
+    "archetypeTag": "Feitiços Lendários de Erradicação",
+    "cardIds": [
+      "neutral_40_cajado_magi",
+      "red_123_cataclismo_solar",
+      "blue_122_colapso_gravidade",
+      "purple_123_eclipse_abissal",
+      "gold_140_ira_firmamento_dourado"
+    ],
+    "mechanism": "Com o Cajado Supremo do Arquimago em campo (+2 de dano a um inimigo e +2 ao Soberano a cada feitiço), alterne os 4 Feitiços Lendários de custo 5–6⚡: Ira do Firmamento, Colapso Gravitacional, Eclipse do Sol Abissal e Detonação do Sol Carmesim.",
+    "payoff": "17 de dano acumulado em área contra o exército rival, Congelamento total, Escudo Divino nos seus aliados e 15+ de diferencial de VIDA nos Soberanos."
+  },
+  {
+    "id": "poly_ascension_pantheon",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "gold"
+    ],
+    "title": "Panteão dos Quatro Campeões Ascendidos (★)",
+    "archetypeTag": "4 Colunas de Evolução em Campo (4/4)",
+    "cardIds": [
+      "red_153_elemental_fornalha_viva",
+      "blue_03_esfinge",
+      "purple_155_lorde_vampiro_soberano",
+      "gold_150_paladino_juramento_eterno"
+    ],
+    "mechanism": "Invoque 4 campeões eficientes nas 4 colunas da Vanguarda e use sua Essência dos turnos seguintes para ativar suas Ascensões (★) em campo, transformando-os em colossos 7/7 a 9/9 sem gastar cartas adicionais da mão.",
+    "payoff": "Preserva sua mão cheia enquanto transforma cada uma das 4 colunas da Vanguarda em um Titã Ascendido."
+  },
+  {
+    "id": "poly_axial_fortress_control",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "red",
+      "blue",
+      "gold",
+      "neutral"
+    ],
+    "title": "Protocolo da Torre Axial & Emboscadas de Elite",
+    "archetypeTag": "4 Reações de Elite na Retaguarda (4/4)",
+    "cardIds": [
+      "neutral_166_protocolo_torre_axial",
+      "neutral_165_quebra_feiticaria_runica",
+      "red_164_armadilha_fissura_magma",
+      "gold_162_veredito_inquisidor"
+    ],
+    "mechanism": "Preencha os 4 slots da Retaguarda com o Decreto de Paz Armada da Torre (congela toda a Vanguarda, compra 2 e cura 3), o Selo de Anulação (-3 ATQ na Vanguarda rival + Escudo Divino em todos os aliados) e 2 Emboscadas raras de punição.",
+    "payoff": "Impede qualquer ofensiva letal do adversário nas 4 colunas enquanto converte os ataques dele em cartas extras e cura."
+  },
+  {
+    "id": "poly_prism_overdrive_swarm",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "red",
+      "green",
+      "gold",
+      "purple",
+      "neutral"
+    ],
+    "title": "Legião dos Cinco Selos & Estandartes",
+    "archetypeTag": "Buff Global Multi-Domínio",
+    "cardIds": [
+      "neutral_155_chamado_armas_fronteira",
+      "neutral_128_trono_cranio_dragao",
+      "green_142_patriarca_selva_eterna",
+      "gold_119_soberano_ordem_eterna",
+      "purple_146_coroa_rei_cadaver",
+      "red_146_coroa_chama_eterna"
+    ],
+    "mechanism": "Três Relíquias na Retaguarda (Trono do Crânio Dracônico, Coroa do Rei-Cadáver e Coroa da Chama Eterna) somam bônus contínuos à entrada de Sylvanhorn e Justinian na Vanguarda, finalizando com Mobilização da Torre dos Cinco Selos.",
+    "payoff": "Transforma toda a sua Vanguarda em campeões 8/8+ com Escudo Divino."
+  },
+  {
+    "id": "poly_prismatic_wheel_armada_convergence",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "green",
+      "gold",
+      "neutral"
+    ],
+    "title": "Convergência da Matriz: Vaelkor & Armada do Prisma",
+    "archetypeTag": "Afinidade Zero, Anti-Domínio & Sopro",
+    "cardIds": [
+      "neutral_173_general_roda_matriz",
+      "neutral_172_armada_draconica_matriz",
+      "neutral_167_arauto_prisma_matriz",
+      "neutral_169_pressagio_revoada_matriz",
+      "neutral_168_tecelao_feixe_matriz"
+    ],
+    "mechanism": "Independentemente das cores canalizadas num grimório pentacolor, toda a espinha dorsal da Matriz tem Afinidade 0: Tecelão (compra 1) e Presságio (duas fichas 2/2) estabilizam a mesa; a Matriz do Prisma (compra 1 e +1⚡) acelera Vaelkor (quebra o Domínio rival + Escudo Divino global + +2⚡) e a Armada Dracônica do Prisma (2 em área, duas fichas 2/2, Sopro 2 e +2⚡ ao atacar rumo à Ascensão 9/10).",
+    "payoff": "Consistência absoluta em 5 cores com compra, geração de fichas, quebra de Domínio e Esquadra Suprema 9/10."
+  },
+  {
+    "id": "mono_red_ash_forge",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "red"
+    ],
+    "title": "Marechais da Bigorna & Clamor da Forja de Guerra",
+    "archetypeTag": "Ofensiva de Vanguarda & Recarga Vital",
+    "cardIds": [
+      "red_180_malakor_general_lamina_colossal",
+      "red_181_ignis_marechal_coroa_cinzas",
+      "red_195_clamor_forja_guerra",
+      "red_188_malik_genio_tres_brasas"
+    ],
+    "mechanism": "Malik, Gênio das Três Brasas recarrega a mão comprando 3 cartas por 3 de Vida; Clamor da Forja de Guerra fortalece toda a tropa e limpa bloqueadores menores, preparando a entrada consecutiva de Malakor e Ignis na Vanguarda.",
+    "payoff": "Colunas de Vanguarda com Ímpeto e dano explosivo capaz de abater o Soberano rival em dois turnos."
+  },
+  {
+    "id": "mono_blue_third_prism",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "blue"
+    ],
+    "title": "Estilhaçar do Terceiro Prisma & Zero Astral",
+    "archetypeTag": "Congelamento, Dano Dobrado & Compra",
+    "cardIds": [
+      "blue_177_cronomante_terceiro_prisma",
+      "blue_178_lyriel_vidente_zero_astral",
+      "blue_175_singularidade_horizonte",
+      "blue_188_tariq_genio_tres_ventos"
+    ],
+    "mechanism": "Lyriel e Singularidade do Horizonte congelam a linha de frente inimiga. No 1º feitiço de cada turno, o Cronomante do Terceiro Prisma mira automaticamente num inimigo Congelado para causar 4 de dano e comprar 1 carta, enquanto Tariq reabastece a mão com mais 3 cartas.",
+    "payoff": "Abate contínuo de ameaças congeladas com reposição automática de cartas a cada turno."
+  },
+  {
+    "id": "mono_purple_black_sun",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "purple"
+    ],
+    "title": "Guilhotina do Sol Negro & Procissão Crepuscular",
+    "archetypeTag": "Execução, Sobrecarga & Reanimação",
+    "cardIds": [
+      "purple_178_vaelen_oraculo_choro_dourado",
+      "purple_196_guilhotina_sol_negro",
+      "purple_175_procissao_crepusculo",
+      "purple_188_azhar_genio_tres_pactos"
+    ],
+    "mechanism": "Azhar, Gênio dos Três Pactos compra 3 cartas pagando 3 de Vida (ativando o gatilho de Vaelen e subindo rumo a 5+ de Sobrecarga). A Guilhotina do Sol Negro executa o maior colosso inimigo e a Procissão do Crepúsculo reanima até 3 ameaças da Cripta com Ímpeto e Dreno de Vida.",
+    "payoff": "Domínio absoluto de trocas pesadas com recuperação imediata da Vida investida."
+  },
+  {
+    "id": "mono_green_fullmoon_pack",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "green"
+    ],
+    "title": "Plenilúnio Élfico & Lei da Cadeia Alimentar",
+    "archetypeTag": "Ascensão Gratuita & Predação",
+    "cardIds": [
+      "green_178_sylvaris_arquidruida_plenilunio",
+      "green_181_verbena_marechal_cardo_real",
+      "green_174_lei_cadeia_alimentar",
+      "green_188_zahir_genio_tres_desejos"
+    ],
+    "mechanism": "Zahir, Gênio dos Três Desejos mantém a mão cheia com 3 compras imediatas; Sylvaris fortalece a Vanguarda em +2/+2 e ascende gratuitamente um aliado, enquanto Verbena e a Lei da Cadeia Alimentar convertem o maior predador em abatedor imparável.",
+    "payoff": "Vanguarda regenerativa gigante com Ascensões ativadas sem custo de Essência."
+  },
+  {
+    "id": "mono_gold_seraphic_choir",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "gold"
+    ],
+    "title": "Coro Seráfico das Seis Asas & Édito Solar",
+    "archetypeTag": "Escalada Celestial 2→4→6 Asas",
+    "cardIds": [
+      "gold_182_arauto_duas_asas_alvorada",
+      "gold_183_haniel_arcanjo_quatro_asas_sol",
+      "gold_184_uriel_serafim_seis_asas_zenite",
+      "gold_188_sulaiman_genio_tres_editos"
+    ],
+    "mechanism": "A curva aérea inicia no Arauto das Duas Asas (4⚡) e Haniel das Quatro Asas (5⚡), reabastecida por Sulaiman (3 cartas por 3 PV). No ápice, Uriel, Serafim das Seis Asas do Zênite concede Escudo Divino e +1/+1 aos aliados e restaura 3 de Vida ao Soberano.",
+    "payoff": "Esquadra aérea blindada com Escudo Divino que ignora bloqueadores terrestres e sustenta a Vida do Soberano."
+  },
+  {
+    "id": "mono_neutral_axial_edict",
+    "tier": "mono",
+    "tierLabel": "1 Cor • Monocromático",
+    "domains": [
+      "neutral"
+    ],
+    "title": "Balança Axial & Concílio de Ferro",
+    "archetypeTag": "Afinidade Zero & Simetria Tática",
+    "cardIds": [
+      "neutral_177_thalassion_alto_rei_concilio_elfico",
+      "neutral_178_edito_balanca_axial",
+      "neutral_184_metatron_serafim_seis_asas_prisma",
+      "neutral_188_qamar_genio_tres_esferas"
+    ],
+    "mechanism": "Com Afinidade 0 universal, Qamar compra 3 cartas para encontrar o Édito da Balança Axial (causa 3 de dano a 1 inimigo, dá +2 de Armadura a 1 aliado e compra 1 carta), enquanto Thalassion e Metatron blindam a mesa.",
+    "payoff": "Motor neutro autossuficiente que encaixa tanto no Grimório Axial puro quanto em qualquer aliança multicor."
+  },
+  {
+    "id": "dual_red_blue_prism_storm",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Elemental",
+    "domains": [
+      "red",
+      "blue"
+    ],
+    "title": "Feixe do Terceiro Prisma & Nova Fênix",
+    "archetypeTag": "Feitiços em Cadeia & Quebra de Gelo",
+    "cardIds": [
+      "blue_177_cronomante_terceiro_prisma",
+      "red_178_kaelith_principe_asas_fenix",
+      "blue_180_leona_marechal_leao_branco_inverno",
+      "red_194_granada_escoria_solar"
+    ],
+    "mechanism": "Leona congela as ameaças rivais na entrada; em seguida, lançar a Granada de Escória Solar dispara automaticamente o Cronomante do Terceiro Prisma (4 de dano no alvo congelado + compra de 1 carta), abrindo caminho para Kaelith varrer a Vanguarda.",
+    "payoff": "Converte cada turno de feitiço em remoção dupla e vantagem de cartas."
+  },
+  {
+    "id": "dual_green_purple_black_sun_rot",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Elemental",
+    "domains": [
+      "green",
+      "purple"
+    ],
+    "title": "Manto de Musgo & Guilhotina Abissal",
+    "archetypeTag": "Atrito Pesado & Recarga dos Gênios",
+    "cardIds": [
+      "green_179_brennus_marechal_manto_musgo",
+      "purple_196_guilhotina_sol_negro",
+      "purple_180_corvina_marechal_bico_praga",
+      "green_188_zahir_genio_tres_desejos"
+    ],
+    "mechanism": "Brennus e Corvina travam as colunas terrestres com corpos resilientes enquanto Zahir compra 3 cartas para manter a Guilhotina do Sol Negro sempre pronta contra qualquer campeão inimigo.",
+    "payoff": "Sufoca tanto baralhos agressivos quanto colossos tardios sem nunca esgotar a mão."
+  },
+  {
+    "id": "dual_gold_red_imperial_anvil",
+    "tier": "dual",
+    "tierLabel": "2 Cores • Aliança Elemental",
+    "domains": [
+      "gold",
+      "red"
+    ],
+    "title": "Águia Imperial & Máscara Auricrânia",
+    "archetypeTag": "Falange Blindada com Ímpeto",
+    "cardIds": [
+      "gold_180_valerius_comandante_aguia_imperial",
+      "red_179_khorvus_tirano_mascara_auricrania",
+      "gold_177_lanca_cantora_coro_solar",
+      "red_175_marcha_bigorna_rubra"
+    ],
+    "mechanism": "A Lança-Cantora e Valerius erguem uma Vanguarda blindada; ao descer Khorvus, toda a Vanguarda recebe +2 de Ataque, +1 de Armadura e Ímpeto, culminando na Marcha da Bigorna Rubra para golpear todas as colunas.",
+    "payoff": "Transforma uma formação defensiva Dourada num ataque letal imediato."
+  },
+  {
+    "id": "tri_red_purple_green_blood_moon_apex",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Elemental",
+    "domains": [
+      "red",
+      "purple",
+      "green"
+    ],
+    "title": "Corte da Lua Sangrenta & Pacto dos Marechais",
+    "archetypeTag": "Supremacia Campeã do Torneio Mundial",
+    "cardIds": [
+      "red_180_malakor_general_lamina_colossal",
+      "purple_188_azhar_genio_tres_pactos",
+      "green_181_verbena_marechal_cardo_real",
+      "purple_196_guilhotina_sol_negro"
+    ],
+    "mechanism": "Motor campeão do Torneio Unificado: a rampa Verde antecipa Azhar (3 cartas por 3 PV) e os Marechais Verbena e Malakor, enquanto a Guilhotina do Sol Negro e Necrothor limpam unilateralmente o tabuleiro adversário.",
+    "payoff": "Pressão ininterrupta de campeões de custo 5–7 com remoção unilateral e mão sempre cheia."
+  },
+  {
+    "id": "tri_red_green_gold_primordial_forge_apex",
+    "tier": "tri",
+    "tierLabel": "3 Cores • Tríade Elemental",
+    "domains": [
+      "red",
+      "green",
+      "gold"
+    ],
+    "title": "Forja Primordial de Brennus, Ignis & Uriel",
+    "archetypeTag": "Colossos Blindados & Zênite Solar",
+    "cardIds": [
+      "green_179_brennus_marechal_manto_musgo",
+      "gold_184_uriel_serafim_seis_asas_zenite",
+      "red_181_ignis_marechal_coroa_cinzas",
+      "gold_198_apoteose_trono_solar"
+    ],
+    "mechanism": "Brennus e Ignis dominam as colunas terrestres enquanto Uriel, Serafim das Seis Asas do Zênite e a Apoteose do Trono Solar concedem Escudo Divino e atributos massivos a todo o exército.",
+    "payoff": "Mesa intransponível de colossos com Escudo Divino, Atropelar e Voo."
+  },
+  {
+    "id": "poly_six_wings_genie_convergence",
+    "tier": "poly",
+    "tierLabel": "4–5 Cores • Convergência Pentacromática",
+    "domains": [
+      "red",
+      "blue",
+      "purple",
+      "green",
+      "gold",
+      "neutral"
+    ],
+    "title": "Convergência dos Gênios & Decreto do Prisma Primordial",
+    "archetypeTag": "Motor Pentacromático de 1.188 Cartas",
+    "cardIds": [
+      "neutral_198_decreto_prisma_primordial",
+      "neutral_174_convergencia_prisma_real",
+      "green_188_zahir_genio_tres_desejos",
+      "gold_188_sulaiman_genio_tres_editos",
+      "gold_184_uriel_serafim_seis_asas_zenite"
+    ],
+    "mechanism": "Zahir e Sulaiman convertem 3 de Vida em 3 cartas imediatas cada, alimentando as 5 cores de Terrenos para disparar a Convergência do Prisma Real e o Decreto do Prisma Primordial enquanto Uriel restaura a Vida do Soberano e blinda toda a mesa.",
+    "payoff": "Ativa simultaneamente os efeitos dos 5 domínios com recarga inesgotável de cartas."
+  }
 ];

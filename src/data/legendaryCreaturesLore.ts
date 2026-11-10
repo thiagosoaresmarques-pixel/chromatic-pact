@@ -7,1722 +7,2185 @@ export interface LegendaryCreatureBiography extends CardMythologyEntry {
 }
 
 /**
- * O PANTHEON E CRÔNICA PARTICULAR DAS 100 CRIATURAS LENDÁRIAS DE VAELORIA
+ * O PANTHEON E CRÔNICA PARTICULAR DAS 136 CRIATURAS LENDÁRIAS DE VAELORIA
  * Ordenadas cronologicamente da Era Zero (∞ A.F.) até a VIª Era (1.240 D.F.).
  * Cada Criatura Lendária possui uma história particular em prosa e uma quadra rimada exclusiva.
  */
 export const LEGENDARY_CREATURE_BIOGRAPHIES: Record<string, LegendaryCreatureBiography> = {
-  // ==================== ERA ZERO (∞ A.F.): OS PRIMOGÊNITOS E A FRATURA ====================
-  neutral_10_valkyra_pentacromatica: {
-    cardId: 'neutral_10_valkyra_pentacromatica',
-    properTitle: 'Valkyra, Imperatriz Pentacromática',
-    yearLabel: '∞ A.F.',
-    eraTitle: 'Era Zero — A Vigília Imóvel',
-    eraId: 'era_0_vigilia',
-    chronologicalOrder: 1,
-    locationLabel: 'Cume do Monte Axial (Fronteira Cinzenta)',
-    proseStory:
-      'Nascida do próprio reflexo do Coroa-Prisma antes que o tempo tivesse nome, Valkyra foi a única entidade capaz de suportar em suas escamas as cinco frequências de luz simultaneamente. Quando os Cinco Titãs Primogênitos subiram ao Monte Axial para romper a estase eterna, Valkyra não os impediu — pois sabia que um mundo imóvel estava morto em vida. Após a Fratura, recolheu as cascas sem cor do astro partido para erguer a Torre Cinzenta — futura Torre dos Cinco Selos — e tornou-se a árbitra eterna do Pacto Cromático.',
-    sungStanza: [
-      'Das cinco correntes que o céu dividiu,',
-      'Valkyra nas asas o espectro reuniu;',
-      'Sem curva a nenhum, mas senhora da lei,',
-      'É ela quem julga o mendigo e o rei!',
-    ],
-  },
-  red_157_dragao_tiamat_carmesim: {
-    cardId: 'red_157_dragao_tiamat_carmesim',
-    properTitle: 'Vulcanis, Titã da Bigorna Primordial',
-    yearLabel: '∞ A.F.',
-    eraTitle: 'Era Zero — A Vigília Imóvel',
-    eraId: 'era_0_vigilia',
-    chronologicalOrder: 2,
-    locationLabel: 'Fornalha Axial de Pyros',
-    proseStory:
-      'O mais velho dos Cinco Primogênitos que conspiraram contra a estase do Coroa-Prisma. No silêncio sem tempo antes da Fratura, Vulcanis bateu em segredo no núcleo líquido do mundo o malho que partiria o sol branco. Quando o Fragmento Rubro caiu no norte, seu corpo de basalto e brasa fundiu-se à maior caldeira de Pyros, de onde ainda hoje ergue o martelo para partir montanhas.',
-    sungStanza: [
-      'No abismo sem tempo rasgou todo o véu,',
-      'Até que a faísca subisse até o céu;',
-      'Vulcanis ferreiro do primeiro ardor,',
-      'Deu fogo às montanhas e ao sangue o calor!',
-    ],
-  },
-  gold_24_tita_empirico: {
-    cardId: 'gold_24_tita_empirico',
-    properTitle: 'Titã Primogênito da Alvorada',
-    yearLabel: '∞ A.F.',
-    eraTitle: 'Era Zero — A Vigília Imóvel',
-    eraId: 'era_0_vigilia',
-    chronologicalOrder: 3,
-    locationLabel: 'Planalto Oriental de Solária',
-    proseStory:
-      'Irmão de Vulcanis na aurora do mundo, o Titã Primogênito da Alvorada temia que a ruptura do Coroa-Prisma mergulhasse Vaeloria na barbárie sem lei. Participou do Golpe Pentacromático com uma única condição: aparar em seu escudo o Fragmento Dourado para que a Justiça e a Ordem tivessem um lar incorruptível nos planaltos do leste.',
-    sungStanza: [
-      'Quando o sol de vidro no alto estalou,',
-      'No escudo de ouro a manhã repousou;',
-      'Gigante primeiro da lei e da paz,',
-      'Que o chão estremecer sob o passo nos faz!',
-    ],
-  },
-  blue_81_arconte_cronos: {
-    cardId: 'blue_81_arconte_cronos',
-    properTitle: 'Chronos, Guardião do Eixo Eterno',
-    yearLabel: '∞ A.F.',
-    eraTitle: 'Era Zero — A Vigília Imóvel',
-    eraId: 'era_0_vigilia',
-    chronologicalOrder: 6,
-    locationLabel: 'Pináculo Polar de Vórtex',
-    proseStory:
-      'Assim que o Golpe Pentacromático partiu o Coroa-Prisma, o recém-nascido fluxo do tempo começou a jorrar como uma torrente desgovernada. Chronos ergueu o Eixo Eterno nos mares polares de Vórtex, encaixando as engrenagens astrais que havia preparado na estase para dividir a eternidade em horas, estações e turnos.',
-    sungStanza: [
-      'O tempo corria sem freio e sem cais,',
-      'Mas Chronos prendeu os segundos mortais;',
-      'No eixo de gelo que gira no norte,',
-      'Compôs o compasso da vida e da morte!',
-    ],
-  },
-  green_50_avatar_gaia: {
-    cardId: 'green_50_avatar_gaia',
-    properTitle: 'Sylvanor, o Coração do Mundo',
-    yearLabel: '∞ A.F.',
-    eraTitle: 'Era Zero — A Vigília Imóvel',
-    eraId: 'era_0_vigilia',
-    chronologicalOrder: 5,
-    locationLabel: 'Bosque Matriz de Veridia',
-    proseStory:
-      'Quando a chuva de estilhaços ameaçou calcinar o hemisfério sul no instante da Fratura, Sylvanor abriu o próprio peito de rocha e casca para engolir o Fragmento Esmeralda. De seu sacrifício brotou em uma única noite o Continente-Selva de Veridia, onde cada raiz que pulsa ainda responde ao seu batimento cardíaco.',
-    sungStanza: [
-      'Engoliu a esmeralda que vinha do ar,',
-      'Para a mata primeira poder germinar;',
-      'No peito de tronco que nunca secou,',
-      'O próprio coração de Vaeloria pulsou!',
-    ],
-  },
-
-  // ==================== Iª ERA (1 D.F. — 142 D.F.): A GRANDE FRATURA ====================
-  red_08_dragao_vermelho: {
-    cardId: 'red_08_dragao_vermelho',
-    properTitle: 'Igniskar, Tirano da Cratera',
-    yearLabel: 'Ano 3 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 7,
-    locationLabel: 'Grande Cratera de Pyros',
-    proseStory:
-      'No terceiro ano após a queda do Fragmento Rubro, a lava fervente da Cratera Central condensou-se em escamas e chifres, dando origem a Igniskar. Diferente dos reis mortais que disputavam moedas, Igniskar exigiu que as tribos do norte derretessem seus tributos diretamente sobre o chão da caverna, coroando-se o primeiro soberano dracônico de Pyros.',
-    sungStanza: [
-      'Três anos ardeu a cratera sem fundo,',
-      'Até que Igniskar emergisse no mundo;',
-      'Não pede tributo de seda ou brasão:',
-      'Quer ouro fundido correndo no chão!',
-    ],
-  },
-  blue_06_dragao_azul: {
-    cardId: 'blue_06_dragao_azul',
-    properTitle: 'Vorthurion, Tempestade do Deserto',
-    yearLabel: 'Ano 14 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 8,
-    locationLabel: 'Deserto de Vidro ao Sul de Vórtex',
-    proseStory:
-      'Nascido onde os ventos polares de Vórtex chocam-se com as dunas salgadas do litoral, Vorthurion aprendeu a armazenar relâmpagos inteiros sob as placas de safira do dorso. No Ano 14 D.F., vitrificou uma cadeia inteira de dunas com um único sopro elétrico para demarcar a fronteira aérea do domínio azul.',
-    sungStanza: [
-      'O cheiro do raio nos ares voou,',
-      'Enquanto nas nuvens a fúria ecoou;',
-      'Vorthurion desce rasgando o trovão,',
-      'Cravando uma lança de raio no chão!',
-    ],
-  },
-  gold_07_dragao_ouro: {
-    cardId: 'gold_07_dragao_ouro',
-    properTitle: 'Aurarius, Majestade do Sol',
-    yearLabel: 'Ano 19 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 9,
-    locationLabel: 'Pico da Alvorada em Solária',
-    proseStory:
-      'Enquanto Igniskar reinava pelo terror vulcânico, Aurarius desceu das nuvens orientais no Ano 19 D.F. para ensinar às primeiras caravanas humanas a arte de forjar escudos de luz. Suas asas douradas serviram de modelo para os estandartes imperiais que mais tarde guiariam a construção de Solária.',
-    sungStanza: [
-      'Dezenove invernos depois do clarão,',
-      'Aurarius pousou sobre o alto chapadão;',
-      'Abriu sobre os fracos as asas de sol,',
-      'Erguendo no leste o primeiro farol!',
-    ],
-  },
-  purple_23_dracolich: {
-    cardId: 'purple_23_dracolich',
-    properTitle: 'Ossaurion, Dragão-Ossário Eterno',
-    yearLabel: 'Ano 27 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 10,
-    locationLabel: 'Fenda Abissal do Vale do Eclipse',
-    proseStory:
-      'O primeiro dragão a cair em combate após a Fratura recusou-se a entregar sua alma ao esquecimento. Banhado pelas águas escuras do Fragmento Umbral no Ano 27 D.F., levantou-se da própria carcaça como Ossaurion — provando a toda Vaeloria que, sob a luz violeta do Eclipse, a morte não encerrava o voo.',
-    sungStanza: [
-      'Caiu na garganta sem carne e sem cor,',
-      'Mas dentro do osso ficou o rancor;',
-      'Das águas escuras voltou a voar,',
-      'Soprado de cinza e difícil de matar!',
-    ],
-  },
-  blue_07_kraken: {
-    cardId: 'blue_07_kraken',
-    properTitle: 'Kraken da Fossa Abissal',
-    yearLabel: 'Ano 44 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 11,
-    locationLabel: 'Trincheira Submarina de Vórtex',
-    proseStory:
-      'Estilhaços menores de Safira afundaram sete léguas abaixo do nível do mar, onde despertaram o Kraken da Fossa Abissal no Ano 44 D.F. Sempre que ele se revira no leito oceânico, muralhas de água gelada sobem sobre os portos costeiros, congelando navios e exércitos em segundos.',
-    sungStanza: [
-      'No fundo da fossa onde o sol nunca vai,',
-      'Dorme o velho monstro que o oceano atrai;',
-      'Se ergue os seus braços na espuma do mar,',
-      'Faz toda a vanguarda em gelo estancar!',
-    ],
-  },
-  green_24_verme_purpura: {
-    cardId: 'green_24_verme_purpura',
-    properTitle: 'Leviatã Verme das Fendas',
-    yearLabel: 'Ano 61 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 12,
-    locationLabel: 'Galerias Tectônicas de Veridia',
-    proseStory:
-      'Escavador incansável das raízes continentais, o Leviatã Verme das Fendas abriu no Ano 61 D.F. os grandes rios subterrâneos que irrigam a selva de Veridia. Os druidas aprenderam a ler a vibração das pedras para prever onde sua bocarra blindada romperá o campo de batalha.',
-    sungStanza: [
-      'Debaixo da mata ele rasga o granito,',
-      'Sem olhos no rosto e sem dar um só grito;',
-      'Quando abre a cratera no meio do chão,',
-      'Engole estandarte, cavalo e canhão!',
-    ],
-  },
-  red_138_colosso_vulcano_primordial: {
-    cardId: 'red_138_colosso_vulcano_primordial',
-    properTitle: 'Vulcanor, Colosso da Caldeira Primordial',
-    yearLabel: 'Ano 83 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 13,
-    locationLabel: 'Caldeira Fumegante do Norte',
-    proseStory:
-      'Quando três vulcões gêmeos entraram em erupção simultânea no Ano 83 D.F., a coluna de magma solidificou-se na forma caminhante de Vulcanor. Considerado o filho vivo da própria montanha, onde quer que pise o solo rasga-se em gêiseres de fogo líquido.',
-    sungStanza: [
-      'De três chaminés que cuspiram carvão,',
-      'Ergueu-se o colosso de lava no chão;',
-      'Seu passo é terremoto, seu sopro é fornalha,',
-      'Que varre em segundos qualquer muralha!',
-    ],
-  },
-  green_68_zaratan_ilha: {
-    cardId: 'green_68_zaratan_ilha',
-    properTitle: 'Chelonia, A Tartaruga-Continente',
-    yearLabel: 'Ano 98 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 14,
-    locationLabel: 'Costa Esmeralda de Veridia',
-    proseStory:
-      'Por quase um século os navegadores julgaram que a península ao sul de Veridia era terra firme, até que no Ano 98 D.F. a montanha abriu os olhos e nadou três léguas mar adentro. Sobre o casco de Chelonia crescem florestas inteiras que curam e abrigam os defensores da natureza.',
-    sungStanza: [
-      'Pensaram os nautas que fosse uma ilha,',
-      'Com mata no dorso e com pedra na quilha;',
-      'Mas quando Chelonia se pôs a nadar,',
-      'Levou toda uma selva por cima do mar!',
-    ],
-  },
-  green_161_dragao_esmeralda_primordial: {
-    cardId: 'green_161_dragao_esmeralda_primordial',
-    properTitle: 'Dragão Esmeralda de Galhada Viva',
-    yearLabel: 'Ano 118 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 15,
-    locationLabel: 'Santuário do Dossel Antigo',
-    proseStory:
-      'Coroado com chifres de madeira-ferro que florescem na primavera e endurecem no inverno, o Dragão Esmeralda de Galhada Viva despertou no Ano 118 D.F. como guardião supremo das sementes da Primeira Era. Seu sopro não queima: faz brotar espinheiros gigantescos dentro das armaduras inimigas.',
-    sungStanza: [
-      'Nos chifres de carvalho floresce a estação,',
-      'Nas asas de jade reside o tufão;',
-      'Onde ele respira na terra desnuda,',
-      'Em selva de espinhos o campo se muda!',
-    ],
-  },
-  blue_63_leviata_primordial: {
-    cardId: 'blue_63_leviata_primordial',
-    properTitle: 'Thalassia, A Maré Devoradora',
-    yearLabel: 'Ano 134 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 16,
-    locationLabel: 'Mar Circular de Vórtex',
-    proseStory:
-      'Personificação viva das correntes oceânicas que cercam o arquipélago de Vórtex, Thalassia ergueu-se no Ano 134 D.F. para afundar a primeira frota invasora que tentou escalar o Pináculo. Seu corpo é feito de água salgada sob pressão tão extrema que desvia aço como diamante.',
-    sungStanza: [
-      'Não é carne nem osso que sobe do mar:',
-      'É o próprio oceano erguido a lutar!',
-      'Thalassia se enrola na quilha e no forte,',
-      'Trazendo na espuma o silêncio do norte!',
-    ],
-  },
-
-  // ==================== IIª ERA (143 D.F. — 410 D.F.): AS CINCO CIDADELAS ====================
-  gold_83_forjado_ancestral: {
-    cardId: 'gold_83_forjado_ancestral',
-    properTitle: 'Aeternus, O Primeiro Forjado de Guerra',
-    yearLabel: 'Ano 152 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 17,
-    locationLabel: 'Fundação do Bastião de Solária',
-    proseStory:
-      'Quando os arquitetos de Solária começaram a erguer o Bastião dos Sete Sóis no Ano 152 D.F., moldaram Aeternus a partir do primeiro bloco de adamantina e ouro branco. Dotado de consciência tática própria, foi nomeado comandante perpétuo dos autômatos defensores da capital.',
-    sungStanza: [
-      'Primeiro soldado sem carne e sem dor,',
-      'Fundido no ouro do nosso Senhor;',
-      'Enquanto Aeternus guardar o portão,',
-      'Solária não teme nenhuma invasão!',
-    ],
-  },
-  red_22_tirano_fogo: {
-    cardId: 'red_22_tirano_fogo',
-    properTitle: 'Baelgor, Senhor do Fosso Ardente',
-    yearLabel: 'Ano 178 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 18,
-    locationLabel: 'Fosso Inferior da Cidadela da Caldeira',
-    proseStory:
-      'Senhor das galerias mais fundas sob a Cidadela da Caldeira, Baelgor estabeleceu no Ano 178 D.F. o tratado de brasa e enxofre que alimenta as fornalhas militares de Pyros. O calor que irradia de suas asas é tão intenso que derrete as lanças da vanguarda inimiga antes do contato.',
-    sungStanza: [
-      'No fundo do fosso onde a escória reluz,',
-      'Baelgor nas trevas de brasa conduz;',
-      'Só de abrir as asas no meio da lida,',
-      'Incendeia o escudo e consome a vida!',
-    ],
-  },
-  purple_07_lich: {
-    cardId: 'purple_07_lich',
-    properTitle: 'Vesperion, Arquimago Lich Imortal',
-    yearLabel: 'Ano 195 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 19,
-    locationLabel: 'Torre Capitular da Catedral de Obsidiana',
-    proseStory:
-      'Arquiteto-chefe da Catedral de Obsidiana no Ano 195 D.F., Vesperion recusou-se a morrer antes de ver concluída a grande nave gótica do Vale do Eclipse. Selou a própria alma nas pedras angulares da catedral, tornando-se o primeiro Arquimago Lich a comandar a exumação em massa.',
-    sungStanza: [
-      'Prendeu a própria alma na pedra do altar,',
-      'Para a grande obra jamais terminar;',
-      'Vesperion aponta o cajado de osso,',
-      'E salta um exército inteiro do fosso!',
-    ],
-  },
-  green_09_hidra: {
-    cardId: 'green_09_hidra',
-    properTitle: 'Vorágine, Hidra Voraz do Pântano',
-    yearLabel: 'Ano 214 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 20,
-    locationLabel: 'Pântanos Limítrofes de Veridia',
-    proseStory:
-      'Quando caçadores estrangeiros tentaram drenar os pântanos do norte de Veridia no Ano 214 D.F., encontraram Vorágine. A cada golpe de espada que decepava um de seus pescoços, a seiva esmeralda do lodo fazia brotar duas novas cabeças ainda mais famintas.',
-    sungStanza: [
-      'Cortaram-lhe um colo com golpe certeiro,',
-      'Mas dois levantaram do lodo brejeiro;',
-      'Vorágine guarda a fronteira do brejo,',
-      'Sem nunca fartar seu faminto desejo!',
-    ],
-  },
-  blue_44_dragao_prateado: {
-    cardId: 'blue_44_dragao_prateado',
-    properTitle: 'Aureon, Dragão da Geada Astral',
-    yearLabel: 'Ano 238 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 21,
-    locationLabel: 'Cúpula Alta do Observatório de Safira',
-    proseStory:
-      'Aliado jurado dos primeiros astrônomos de Vórtex no Ano 238 D.F., Aureon pousou sobre a cúpula do Observatório para polir com seu sopro glacial as lentes que enxergam o futuro. Em batalha, desce das estrelas envolvendo os aliados em um manto de geada protetora.',
-    sungStanza: [
-      'Nas lentes de prata do grande mirante,',
-      'Aureon reflete a estrela distante;',
-      'Seu sopro congela a fileira rival,',
-      'Guardando os amigos num véu de cristal!',
-    ],
-  },
-  purple_46_noiva_vampira: {
-    cardId: 'purple_46_noiva_vampira',
-    properTitle: 'Carmilla, Condessa de Sangue e Ouro',
-    yearLabel: 'Ano 264 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 22,
-    locationLabel: 'Palácio Carmesim do Vale do Eclipse',
-    proseStory:
-      'Fundadora da aristocracia vampírica do Eclipse no Ano 264 D.F., a Condessa Carmilla transformou a guerra de atrito em arte cortesã. Nos salões de veludo negro e ouro antigo, cada cálice erguido em seus banquetes transfere a juventude do inimigo diretamente para o seu Soberano.',
-    sungStanza: [
-      'Em taça de ouro e vestido carmim,',
-      'Carmilla sorri no banquete sem fim;',
-      'O sangue que drena do peito inimigo',
-      'Restaura a coroa do trono antigo!',
-    ],
-  },
-  gold_09_serafim_solar: {
-    cardId: 'gold_09_serafim_solar',
-    properTitle: 'Zephaniel, Arcanjo Solar do Zênite',
-    yearLabel: 'Ano 289 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 23,
-    locationLabel: 'Torre Zênite de Solária',
-    proseStory:
-      'No solstício do Ano 289 D.F., quando os sete espelhos solares do Bastião convergiram num único ponto, Zephaniel desceu pela coluna de luz. Como executor supremo do Tribunal de Solária, seu feixe lancinante julga o adversário do alto da Retaguarda enquanto restaura a força do Soberano.',
-    sungStanza: [
-      'Quando o sol atinge o ponto mais alto,',
-      'Zephaniel desce pronto pro assalto;',
-      'Seu raio de ouro castiga o traidor,',
-      'Curando as feridas do justo senhor!',
-    ],
-  },
-  green_25_dragao_verde: {
-    cardId: 'green_25_dragao_verde',
-    properTitle: 'Viperia, Tirana da Selva Tóxica',
-    yearLabel: 'Ano 312 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 24,
-    locationLabel: 'Vale dos Vapores de Veridia',
-    proseStory:
-      'Senhora do Vale dos Vapores no coração fechado de Veridia, Viperia destilou no Ano 312 D.F. o néctar das mil orquídeas venenosas em seu próprio sopro. Nenhuma falange consegue manter a força dos braços após respirar a névoa verde que desce de suas asas.',
-    sungStanza: [
-      'Por trás do perfume da flor tropical,',
-      'Viperia esconde a nuvem letal;',
-      'Basta um só sopro de névoa esmeralda',
-      'Pra cair sem força quem sobe a fralda!',
-    ],
-  },
-  neutral_35_colosso_adamantina: {
-    cardId: 'neutral_35_colosso_adamantina',
-    properTitle: 'Titã Forjado em Adamantina',
-    yearLabel: 'Ano 340 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 25,
-    locationLabel: 'Portões da Torre Cinzenta',
-    proseStory:
-      'Construído pelos mestres artífices da Fronteira Cinzenta no Ano 340 D.F. para guardar a neutralidade das caravanas, este colosso não possui lealdade a nenhuma cor. Sua couraça maciça de adamantina cinzenta suporta tanto o fogo de Pyros quanto o gelo de Vórtex.',
-    sungStanza: [
-      'Forjado sem cor na bigorna central,',
-      'De pura adamantina e peso brutal;',
-      'Marcha por quem paga o justo tributo,',
-      'Partindo a vanguarda com passo absoluto!',
-    ],
-  },
-  red_47_arquiduque_ferro: {
-    cardId: 'red_47_arquiduque_ferro',
-    properTitle: 'Belphegor, Regente da Cidadela Ardente',
-    yearLabel: 'Ano 366 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 26,
-    locationLabel: 'Bastilha de Ferro de Pyros',
-    proseStory:
-      'Nomeado Regente Militar das muralhas externas de Pyros no Ano 366 D.F., Belphegor transformou bandos indisciplinados de saqueadores em legiões blindadas. Ao sobrevoar a linha de batalha, seu grito de comando tempera o aço e o ânimo de todos os aliados.',
-    sungStanza: [
-      'Com asas de brasa e couraça de aço,',
-      'Belphegor ordena da tropa o compasso;',
-      'Ao som de seu brado na linha de frente,',
-      'Todo soldado se faz mais valente!',
-    ],
-  },
-  blue_45_oraculo_abissal: {
-    cardId: 'blue_45_oraculo_abissal',
-    properTitle: 'Nereus, Soberano das Sete Marés',
-    yearLabel: 'Ano 382 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 27,
-    locationLabel: 'Trono Submerso de Vórtex',
-    proseStory:
-      'No Ano 382 D.F., Nereus unificou as sete correntes marítimas sob o Pináculo de Vórtex. Capaz de ler o futuro no desenho da espuma, expulsa campeões inimigos de volta ao ponto de partida com um gesto do tridente enquanto abastece a mão do Soberano.',
-    sungStanza: [
-      'Sete correntes obedecem à mão',
-      'De quem lê na espuma o que as eras trarão;',
-      'Nereus devolve o invasor para o mar,',
-      'Trazendo segredos pro sábio jogar!',
-    ],
-  },
-  gold_157_dragao_soberano_alvorada: {
-    cardId: 'gold_157_dragao_soberano_alvorada',
-    properTitle: 'Aurelius, Soberano Dragão da Alvorada',
-    yearLabel: 'Ano 388 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 28,
-    locationLabel: 'Catedral dos Sete Sóis (Solária)',
-    proseStory:
-      'Coroado no grande jubileu de 388 D.F. no topo da Catedral dos Sete Sóis, Aurelius é o estandarte vivo da Alvorada. Quando abre suas quatro asas de ouro e marfim sobre o campo de batalha, cada aliado recebe uma redoma impenetrável de luz solar.',
-    sungStanza: [
-      'Quatro asas de ouro no céu da manhã,',
-      'Que fazem da sombra uma ameaça vã;',
-      'Aurelius sopra a chama divina,',
-      'E ergue Solária por cima da ruína!',
-    ],
-  },
-  purple_99_lorde_vampiro_anciao: {
-    cardId: 'purple_99_lorde_vampiro_anciao',
-    properTitle: 'Vladislaus, O Patriarca de Sangue',
-    yearLabel: 'Ano 402 D.F.',
-    eraTitle: 'IIª Era — As Cinco Cidadelas',
-    eraId: 'era_2_cidadelas',
-    chronologicalOrder: 29,
-    locationLabel: 'Cripta Real da Corte Carmesim',
-    proseStory:
-      'Patriarca fundador das sete linhagens nobres do Vale do Eclipse no Ano 402 D.F., Vladislaus jamais suja as mãos com soldados rasos: em cada investida aérea, sua espada mira diretamente a garganta e a reserva vital do próprio Soberano adversário.',
-    sungStanza: [
-      'Mais velho que a pedra do negro castelo,',
-      'Vladislaus caça no escuro mais belo;',
-      'Ignora o escudeiro e avança no ar,',
-      'Fugindo com o sangue de quem comandar!',
-    ],
-  },
-
-  // ==================== IIIª ERA (411 D.F. — 688 D.F.): A GUERRA DO SANGUE DERRAMADO ====================
-  red_46_tirano_carmesim: {
-    cardId: 'red_46_tirano_carmesim',
-    properTitle: 'Ignarok, o Devorador de Reinos',
-    yearLabel: 'Ano 412 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 30,
-    locationLabel: 'Planícies Calcinadas do Centro',
-    proseStory:
-      'No segundo ano da Guerra do Sangue Derramado (412 D.F.), Ignarok liderou a primeira grande ofensiva aérea de Pyros além das montanhas. Famoso por mergulhar diretamente sobre a tenda de comando inimiga, cada ataque seu fere ao mesmo tempo a linha de frente e o Soberano rival.',
-    sungStanza: [
-      'Por cima dos muros do centro voou,',
-      'E três fortalezas em cinza deixou;',
-      'Ignarok não para na linha do chão:',
-      'Seu fogo vai reto queimar o barão!',
-    ],
-  },
-  purple_08_lorde_abissal: {
-    cardId: 'purple_08_lorde_abissal',
-    properTitle: 'Balgorath, Flagelo do Abismo',
-    yearLabel: 'Ano 429 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 31,
-    locationLabel: 'Garganta de Cinzas do Oeste',
-    proseStory:
-      'Invocado pelos bruxos mais radicais do Eclipse no Ano 429 D.F., Balgorath foi concebido como uma bomba viva de entropia. Mesmo quando abatido pelas lanças inimigas, seu núcleo abissal rompe-se numa explosão catastrófica que arrasta consigo aliados e adversários.',
-    sungStanza: [
-      'Teme o guerreiro que o consegue abater,',
-      'Pois quando Balgorath começa a morrer,',
-      'Rebenta no peito a fornalha abissal,',
-      'Levando consigo a fileira rival!',
-    ],
-  },
-  green_33_behemoth_primordial: {
-    cardId: 'green_33_behemoth_primordial',
-    properTitle: 'Gorgoroth, Behemoth Devorador de Montanhas',
-    yearLabel: 'Ano 448 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 32,
-    locationLabel: 'Cordilheira Sul de Veridia',
-    proseStory:
-      'Quando os engenheiros de cerco tentaram abrir estradas militares através das montanhas de Veridia no Ano 448 D.F., os druidas despertaram Gorgoroth. Tão vasto que árvores crescem entre suas placas dorsais, sua simples chegada revigora todo o exército verde.',
-    sungStanza: [
-      'Quiseram abrir na montanha um caminho,',
-      'Mas lá descansava o colosso sozinho;',
-      'Ergueu-se Gorgoroth mastigando o metal,',
-      'Curando a floresta do golpe mortal!',
-    ],
-  },
-  gold_46_arcanjo_supremo: {
-    cardId: 'gold_46_arcanjo_supremo',
-    properTitle: 'Caelestius, o Serafim de Seis Asas',
-    yearLabel: 'Ano 467 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 33,
-    locationLabel: 'Cerco do Vale Dourado',
-    proseStory:
-      'No inverno mais sangrento do Cerco do Vale Dourado (467 D.F.), quando as muralhas externas estavam prestes a cair, Caelestius abriu suas seis asas sobre os defensores exaustos. A chuva de penas luminosas fechou todas as feridas da tropa em um único instante.',
-    sungStanza: [
-      'Seis asas abriram no céu em fumaça,',
-      'Trazendo aos feridos o bálsamo e a graça;',
-      'Caelestius cantou sobre o muro caído,',
-      'E ergueu-se de novo o esquadrão redimido!',
-    ],
-  },
-  purple_47_avatar_escuridao: {
-    cardId: 'purple_47_avatar_escuridao',
-    properTitle: 'Nocturnus, Avatar da Noite Sem Fim',
-    yearLabel: '∞ A.F.',
-    eraTitle: 'Era Zero — A Vigília Imóvel',
-    eraId: 'era_0_vigilia',
-    chronologicalOrder: 4,
-    locationLabel: 'Fenda Abissal do Vale do Eclipse',
-    proseStory:
-      'Terceiro dos Cinco Irmãos Primogênitos da Era Zero, Nocturnus compadeceu-se de um mundo onde a luz branca perpétua do Coroa-Prisma impedia o sono e os sonhos. Nas cavernas abissais sob o Monte Axial, forjou em segredo a Foice Umbral para rasgar o clarão imóvel e presentear Vaeloria com o repouso da primeira noite.',
-    sungStanza: [
-      'Onde o astro sem pausa cegava a visão,',
-      'Nocturnus teceu a primeira escuridão;',
-      'Ergueu sua foice de prata sideral,',
-      'Rasgando no zênite o véu imortal!',
-    ],
-  },
-  red_64_principe_fogo: {
-    cardId: 'red_64_principe_fogo',
-    properTitle: 'Ignis-Vael, Príncipe do Núcleo Ardente',
-    yearLabel: 'Ano 504 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 34,
-    locationLabel: 'Câmara Magmática de Pyros',
-    proseStory:
-      'Proclamado Príncipe Regente dos elementais puros no Ano 504 D.F., Ignis-Vael não usa armadura porque seu próprio corpo é um sol subterrâneo em miniatura. A cada turno que permanece em campo, o calor de sua presença aumenta a ferocidade de todas as armas aliadas.',
-    sungStanza: [
-      'Não veste couraça quem é feito de brasa,',
-      'Que toda a vanguarda num sopro já arrasa;',
-      'Ignis-Vael brilha na frente da fila,',
-      'E o ferro aliado em calor rejubila!',
-    ],
-  },
-  green_67_tiranossauro_alfa: {
-    cardId: 'green_67_tiranossauro_alfa',
-    properTitle: 'Rex Primordial da Cratera Perdida',
-    yearLabel: 'Ano 518 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 35,
-    locationLabel: 'Cratera Perdida do Sul de Veridia',
-    proseStory:
-      'Solto das selvas fechadas da Cratera Perdida no Ano 518 D.F., este predador alfa jamais aprendeu o significado de cautela. Entra na arena em disparada total, partindo escudos e armaduras pesadas com a força de suas mandíbulas no primeiro segundo do combate.',
-    sungStanza: [
-      'Da velha cratera onde o tempo parou,',
-      'O rei das escamas faminto saltou;',
-      'Não espera comando nem toca clarim:',
-      'No primeiro bote já leva ao fim!',
-    ],
-  },
-  purple_63_rainha_fungos: {
-    cardId: 'purple_63_rainha_fungos',
-    properTitle: 'Mycoria, Dama da Podridão',
-    yearLabel: 'Ano 531 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 36,
-    locationLabel: 'Jardins Subterrâneos do Eclipse',
-    proseStory:
-      'Nos campos encharcados de sangue do Ano 531 D.F., Mycoria espalhou seus esporos violetas sobre os restos das batalhas. Para ela, toda morte é adubo: a cada novo turno, seus jardins fúngicos reerguem um guerreiro tombado da Cripta.',
-    sungStanza: [
-      'Onde cai o guerreiro no barro sombrio,',
-      'Floresce o jardim do seu manto macio;',
-      'Mycoria recolhe o que a guerra deixou,',
-      'E em tropa de esporos o morto acordou!',
-    ],
-  },
-  purple_65_principe_mortos: {
-    cardId: 'purple_65_principe_mortos',
-    properTitle: 'Malakor-Vael, Soberano da Não-Vida',
-    yearLabel: 'Ano 532 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 37,
-    locationLabel: 'Trono de Obsidiana do Eclipse',
-    proseStory:
-      'Autor da célebre Noite da Longa Exumação em 532 D.F., Malakor-Vael provou que qualquer vitória contra o Vale do Eclipse é temporária. Ao descer sobre a arena, varre a Vanguarda rival com energia necrótica enquanto traz de volta seu melhor campeão caído.',
-    sungStanza: [
-      'Na noite mais longa do escuro fadário,',
-      'Malakor abriu todo o negro relicário;',
-      'Com uma das mãos ele abate o vivente,',
-      'Com a outra levanta o caído valente!',
-    ],
-  },
-  red_83_dragao_cataclismo: {
-    cardId: 'red_83_dragao_cataclismo',
-    properTitle: 'Pyraxis, Soberano da Ruína Solar',
-    yearLabel: 'Ano 554 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 38,
-    locationLabel: 'Pico da Cinza Negra (Pyros)',
-    proseStory:
-      'No auge das campanhas aéreas de 554 D.F., Pyraxis ficou conhecido como o terror dos tronos porque suas nuvens de cinza escureciam o próprio sol antes do mergulho. Seu sopro vulcânico atravessa as linhas defensivas para atingir diretamente o Soberano inimigo.',
-    sungStanza: [
-      'Escurece a manhã sob a nuvem de pó,',
-      'Quando desce Pyraxis sem freio e sem dó;',
-      'Por cima do muro seu sopro atravessa,',
-      'Queimando na sala a coroa e a promessa!',
-    ],
-  },
-  red_99_senhor_balor_fogo: {
-    cardId: 'red_99_senhor_balor_fogo',
-    properTitle: 'Bael-Khor, General do Chicote Ígneo',
-    yearLabel: 'Ano 571 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 39,
-    locationLabel: 'Fronteira de Basalto',
-    proseStory:
-      'Comandante das vanguardas punitivas de Pyros no Ano 571 D.F., Bael-Khor brande um chicote de sete caudas de magma líquido cujo estalo varre toda a arena no instante de sua chegada.',
-    sungStanza: [
-      'Estala no ar o chicote de brasa,',
-      'Varrendo em faíscas a tropa que arrasa;',
-      'Bael-Khor na dianteira não deixa quartel,',
-      'Tingindo de rubro o mais alto dossel!',
-    ],
-  },
-  green_85_fenrir_primordial: {
-    cardId: 'green_85_fenrir_primordial',
-    properTitle: 'Fenris-Vael, O Lobo do Fim das Eras',
-    yearLabel: 'Ano 588 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 40,
-    locationLabel: 'Tundra Selvagem do Norte de Veridia',
-    proseStory:
-      'Libertado de suas correntes de raiz e gelo no Ano 588 D.F., Fenris-Vael caça exércitos inteiros como se fossem rebanhos. Quanto mais longa a batalha, maior torna-se sua fúria e sua velocidade predatória.',
-    sungStanza: [
-      'Partiu os grilhões na floresta invernal,',
-      'Correndo faminto no vento glacial;',
-      'Fenris-Vael salta por cima do aço,',
-      'Crescendo em furor a cada estilhaço!',
-    ],
-  },
-  green_86_tarrasque_desperto: {
-    cardId: 'green_86_tarrasque_desperto',
-    properTitle: 'Kragmorth, O Devorador de Eras',
-    yearLabel: 'Ano 599 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 41,
-    locationLabel: 'Fenda Continental de Vaeloria',
-    proseStory:
-      'O ápice do terror da IIIª Era: no Ano 599 D.F., o excesso de cataclismos mágicos rachou o manto continental e despertou Kragmorth. Encouraçado em placas de rocha primordial imunes a flechas comuns, sua marcha engoliu três fortalezas inteiras e convenceu os Cinco Soberanos de que o mundo precisava de um Pacto.',
-    sungStanza: [
-      'Das fendas abertas da terra acordou,',
-      'A fera que os tronos do mundo calou;',
-      'Kragmorth quando marcha não desvia do forte:',
-      'Mastiga a muralha e cospe o suporte!',
-    ],
-  },
-  neutral_09_baphometis_abismo: {
-    cardId: 'neutral_09_baphometis_abismo',
-    properTitle: 'Tauron-Khor, Titã Quebra-Tronos',
-    yearLabel: 'Ano 634 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 42,
-    locationLabel: 'Labirinto de Ferro da Fronteira Cinzenta',
-    proseStory:
-      'Senhor dos labirintos de pedra negra na fronteira sem lei durante os anos finais da grande guerra (634 D.F.), Tauron-Khor derrubou os portões de quatro capitais provinciais com seus chifres de bronze antes de ser contido pelos selos de Valkyra.',
-    sungStanza: [
-      'No centro do velho labirinto sem luz,',
-      'Tauron-Khor carrega o machado que reluz;',
-      'Não serve a coroa nem dobra o joelho:',
-      'Deixa todo trono em pedaço vermelho!',
-    ],
-  },
-
-  // ==================== IVª ERA (689 D.F. — 850 D.F.): A ASSINATURA DO PACTO ====================
-  gold_119_soberano_ordem_eterna: {
-    cardId: 'gold_119_soberano_ordem_eterna',
-    properTitle: 'Justinian, Soberano da Ordem Eterna',
-    yearLabel: 'Ano 689 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 43,
-    locationLabel: 'Salão do Tratado (Torre dos Cinco Selos)',
-    proseStory:
-      'Primeiro signatário do Pacto Cromático em nome de Solária no Ano 689 D.F., Justinian redigiu os artigos que instituíram a Vanguarda de Escudos. Na Arena, sua presença envolve todo o exército aliado em escudos dourados inquebráveis.',
-    sungStanza: [
-      'Com pena de ouro assinou o tratado,',
-      'Deixando o massacre no tempo passado;',
-      'Justinian ergue o bastão da aliança,',
-      'E veste a falange de luz e esperança!',
-    ],
-  },
-  blue_80_senhor_tempo: {
-    cardId: 'blue_80_senhor_tempo',
-    properTitle: 'Thaddeus, Senhor do Tempo',
-    yearLabel: 'Ano 702 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 44,
-    locationLabel: 'Câmara Horológica de Vórtex',
-    proseStory:
-      'Designado pelo Conclave de Vórtex no Ano 702 D.F. para fiscalizar os turnos da Arena do Pacto, Thaddeus carrega no peito o relógio que paralisa vanguardas inteiras enquanto concede ao seu Soberano o tempo de ler dois novos pergaminhos.',
-    sungStanza: [
-      'Bateu seu cajado no piso do salão,',
-      'E os quatro guerreiros pararam no chão;',
-      'Enquanto o rival congelado espera,',
-      'Thaddeus escolhe o destino da era!',
-    ],
-  },
-  neutral_44_dragao_relogio: {
-    cardId: 'neutral_44_dragao_relogio',
-    properTitle: 'Draco Horológico de Aeternus',
-    yearLabel: 'Ano 718 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 45,
-    locationLabel: 'Oficinas da Torre Cinzenta',
-    proseStory:
-      'Construído em conjunto pelos relojoeiros da Fronteira Cinzenta e de Vórtex no Ano 718 D.F., este dragão mecânico de bronze e cristal serve como guardião imparcial dos relógios de duelo, gerando Essência pura a cada bater de asas.',
-    sungStanza: [
-      'Com asas de bronze e coração de mola,',
-      'Pelo céu cinzento sem cansar decola;',
-      'Gira a engrenagem no peito central,',
-      'Gerando a Essência do duelo imortal!',
-    ],
-  },
-  red_82_fenix_taquion: {
-    cardId: 'red_82_fenix_taquion',
-    properTitle: 'Ignis-Aeterna, A Fênix do Tempo Emprestado',
-    yearLabel: 'Ano 741 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 46,
-    locationLabel: 'Pináculo Vulcânico da Fronteira Norte',
-    proseStory:
-      'Nascida quando uma centelha de Pyros atravessou uma fenda temporal de Vórtex no Ano 741 D.F., Ignis-Aeterna ataca antes mesmo que sua invocação termine de ecoar e, quando abatida, rebobina as próprias cinzas para renascer intacta.',
-    sungStanza: [
-      'Voou mais depressa que a própria faísca,',
-      'Rasgando a ampulheta que o destino arrisca;',
-      'Se cai em combate virando carvão,',
-      'No instante seguinte já sobe do chão!',
-    ],
-  },
-  purple_82_senhor_malogro: {
-    cardId: 'purple_82_senhor_malogro',
-    properTitle: 'Nihil-Vael, Devorador de Linhas do Tempo',
-    yearLabel: 'Ano 768 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 47,
-    locationLabel: 'Abismo Horológico do Oeste',
-    proseStory:
-      'Quando cronomantes imprudentes tentaram alterar o resultado de um duelo oficial em 768 D.F., Nihil-Vael emergiu da fenda para devorar os anos roubados. Seu sopro envelhece o aço e drena a vitalidade de toda a linha de frente adversária.',
-    sungStanza: [
-      'Devorou os anos que o mago roubou,',
-      'E em cinza violeta o escudo deixou;',
-      'Nihil-Vael sopra o vento do fim,',
-      'Tingindo a vanguarda de negro carmim!',
-    ],
-  },
-  purple_83_arquidemonio_tempo: {
-    cardId: 'purple_83_arquidemonio_tempo',
-    properTitle: 'Mephistar, O Demônio do Pacto Eterno',
-    yearLabel: 'Ano 794 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 48,
-    locationLabel: 'Arquivo Negro da Catedral de Obsidiana',
-    proseStory:
-      'Guardião dos contratos perpétuos assinados na Catedral de Obsidiana desde 794 D.F., Mephistar cobra juros em sangue de qualquer Soberano rival enquanto devolve à vida os devedores que juraram servir ao Eclipse.',
-    sungStanza: [
-      'Assina em pergaminho de couro e carmim',
-      'O contrato eterno que nunca tem fim;',
-      'Mephistar cobra a dívida em dor,',
-      'Erguendo da tumba o fiel servidor!',
-    ],
-  },
-  gold_47_dragao_solar: {
-    cardId: 'gold_47_dragao_solar',
-    properTitle: 'Heliodor, Dragão do Sol Nascente',
-    yearLabel: 'Ano 815 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 49,
-    locationLabel: 'Muralha Leste de Solária',
-    proseStory:
-      'Sentinela matinal das fronteiras de Solária desde 815 D.F., Heliodor é sempre o primeiro a levantar voo ao romper da aurora. O brilho de suas escamas inspira as tropas em terra, aumentando tanto o poder de ataque quanto a resistência da falange.',
-    sungStanza: [
-      'Primeiro a subir quando rompe a manhã,',
-      'Fazendo da treva uma sombra pagã;',
-      'Heliodor brilha por cima do valo,',
-      'Dando força ao peão e vigor ao cavalo!',
-    ],
-  },
-  green_49_dragao_esmeralda: {
-    cardId: 'green_49_dragao_esmeralda',
-    properTitle: 'Smaragda, Soberana da Selva Fechada',
-    yearLabel: 'Ano 839 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 50,
-    locationLabel: 'Copa Real de Veridia',
-    proseStory:
-      'Ágil e silenciosa entre as copas gigantescas de Veridia desde 839 D.F., Smaragda domina os céus da floresta com um sopro ácido que corrói armaduras inimigas enquanto suas próprias escamas verdes se regeneram a cada estação.',
-    sungStanza: [
-      'Escondida no verde do alto dossel,',
-      'Smaragda destila seu sopro de fel;',
-      'Se uma flecha lhe fere a escama real,',
-      'A seiva da mata já cura o sinal!',
-    ],
-  },
-
-  // ==================== Vª ERA (851 D.F. — 1.120 D.F.): OS DEZ TRATADOS BICOLORES ====================
-  neutral_24_dragao_astral: {
-    cardId: 'neutral_24_dragao_astral',
-    properTitle: 'Astrolon, Dragão do Vácuo Estelar',
-    yearLabel: 'Ano 862 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 51,
-    locationLabel: 'Cúpula Astral da Torre Cinzenta',
-    proseStory:
-      'Pousou sobre a Torre dos Cinco Selos no Ano 862 D.F. durante a assinatura dos primeiros tratados bicolores. Por habitar o espaço entre as constelações, Astrolon canaliza Essência livre e revela novos pergaminhos a qualquer Soberano que o invoque.',
-    sungStanza: [
-      'Vindo do espaço onde brilha o fanal,',
-      'Astrolon pousou na torre central;',
-      'Nas asas carrega a estrela que guia,',
-      'Dando carta na mão e mais energia!',
-    ],
-  },
-  red_65_dragao_magma_anciao: {
-    cardId: 'red_65_dragao_magma_anciao',
-    properTitle: 'Magmarok, o Tirano Piroclástico',
-    yearLabel: 'Ano 884 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 52,
-    locationLabel: 'Rio de Lava da Concordata Rubro-Solar',
-    proseStory:
-      'Selo vivo da força vulcânica de Pyros no Ano 884 D.F., Magmarok cospe uma maré de rocha líquida que varre toda a fileira adversária antes mesmo de suas garras tocarem o chão da arena.',
-    sungStanza: [
-      'Antes da garra tocar no broquel,',
-      'Já corre na frente o magma cruel;',
-      'Magmarok avança num salto de brasa,',
-      'E toda a fileira num sopro ele arrasa!',
-    ],
-  },
-  gold_65_emperion_solar: {
-    cardId: 'gold_65_emperion_solar',
-    properTitle: 'Aurelion, O Titã Empíreo',
-    yearLabel: 'Ano 901 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 53,
-    locationLabel: 'Praça das Dez Alianças (Solária)',
-    proseStory:
-      'Campeão invicto de Solária nos grandes torneios diplomáticos do Ano 901 D.F., Aurelion ergue sua alabarda solar para abençoar simultaneamente o ataque e a vitalidade de todas as tropas aliadas em campo.',
-    sungStanza: [
-      'Na praça dourada das dez alianças,',
-      'Aurelion ergueu o brasão das esperanças;',
-      'Ao lado do titã ninguém desfalece:',
-      'Toda a falange em vigor resplandece!',
-    ],
-  },
-  blue_97_draco_relampago: {
-    cardId: 'blue_97_draco_relampago',
-    properTitle: 'Zephyros, O Dragão da Tempestade Astral',
-    yearLabel: 'Ano 924 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 54,
-    locationLabel: 'Estreito das Tempestades (Vórtex)',
-    proseStory:
-      'Mensageiro alado das alianças de Vórtex no Ano 924 D.F., Zephyros cruza o continente na velocidade de um relâmpago, trazendo dois novos pergaminhos táticos ao Soberano enquanto fustiga o inimigo do alto.',
-    sungStanza: [
-      'Mais rápido voa que o próprio clarão,',
-      'Trazendo dois tomos pro sábio na mão;',
-      'Zephyros lampeja nas nuvens do mar,',
-      'Sem lança terrena poder lhe alcançar!',
-    ],
-  },
-  blue_98_soberano_mares: {
-    cardId: 'blue_98_soberano_mares',
-    properTitle: 'Aegirion, Soberano das Fendas Abissais',
-    yearLabel: 'Ano 948 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 55,
-    locationLabel: 'Muralha Marítima de Vórtex',
-    proseStory:
-      'No Ano 948 D.F., Aegirion ergueu os diques de gelo abissal que protegem as rotas comerciais de Vórtex. Quando entra na Vanguarda, sua onda polar congela e fere todos os atacantes rivais de ponta a ponta.',
-    sungStanza: [
-      'Do fundo da fenda subiu com o tridente,',
-      'Gelando de vez a fileira da frente;',
-      'Aegirion firma na espuma o seu pé,',
-      'E ninguém avança contra a sua maré!',
-    ],
-  },
-  purple_100_dragao_necrotico: {
-    cardId: 'purple_100_dragao_necrotico',
-    properTitle: 'Morgath, O Dragão da Chama Necrótica',
-    yearLabel: 'Ano 965 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 56,
-    locationLabel: 'Fronteira do Pacto do Inverno Umbral',
-    proseStory:
-      'Selado no Tratado de 965 D.F. entre Vórtex e o Eclipse, Morgath sopra um fogo frio de cor ametista que drena a vida dos vivos enquanto levanta automaticamente um guerreiro adormecido na Cripta.',
-    sungStanza: [
-      'Sua chama é violeta e não traz calor:',
-      'Congela o vivente e lhe rouba o vigor;',
-      'Enquanto Morgath sobrevoa o vallado,',
-      'Da tumba levanta mais um convocado!',
-    ],
-  },
-  red_100_dragao_vulcanico_anciao: {
-    cardId: 'red_100_dragao_vulcanico_anciao',
-    properTitle: 'Khorvath, O Dragão Vulcânico Ancião',
-    yearLabel: 'Ano 988 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 57,
-    locationLabel: 'Trono da Cratera Alta (Pyros)',
-    proseStory:
-      'Decano das ninhadas reais de Pyros no final do décimo século (988 D.F.), Khorvath domina tanto a Vanguarda quanto o ataque à distância: ao surgir nos céus da arena, lança um cometa de magma diretamente sobre o Soberano adversário.',
-    sungStanza: [
-      'Cem anos dormiu no vulcão principal,',
-      'Saindo na nuvem de fogo real;',
-      'Khorvath quando ruge lá do firmamento,',
-      'Já tira do trono o rival num momento!',
-    ],
-  },
-  green_102_hidra_venenosa: {
-    cardId: 'green_102_hidra_venenosa',
-    properTitle: 'Polydra, A Hidra de Nove Cabeças',
-    yearLabel: 'Ano 1.004 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 58,
-    locationLabel: 'Delta Esmeralda de Veridia',
-    proseStory:
-      'Catalogada pelos naturalistas da Torre Cinzenta no Ano 1.004 D.F. como a criatura mais letal dos rios do sul, cada uma das nove cabeças de Polydra carrega uma peçonha capaz de abater qualquer colosso com uma única mordida.',
-    sungStanza: [
-      'Nove gargantas silvam no pântano verde,',
-      'Onde todo escudo de ferro se perde;',
-      'Basta um só dente de Polydra tocar,',
-      'Para o maior gigante no lodo tombar!',
-    ],
-  },
-  green_103_dragao_floresta_anciao: {
-    cardId: 'green_103_dragao_floresta_anciao',
-    properTitle: 'Silvathor, O Dragão-Floresta Ancião',
-    yearLabel: 'Ano 1.022 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 59,
-    locationLabel: 'Coração de Raiz-Ferro (Veridia)',
-    proseStory:
-      'Patriarca alado de Veridia no século XI (1.022 D.F.), Silvathor carrega um ecossistema inteiro sobre suas escamas de casca e esmeralda. Quando pousa na Vanguarda, o pólen dourado de suas asas fortalece todo o exército aliado.',
-    sungStanza: [
-      'Nas asas carrega a semente e a flor,',
-      'No peito a couraça do tronco maior;',
-      'Silvathor pousando na frente da mata,',
-      'Dá força dobrada à falange de prata!',
-    ],
-  },
-  gold_99_serafim_coroado: {
-    cardId: 'gold_99_serafim_coroado',
-    properTitle: 'Seraphiel, A Imperatriz das Seis Asas',
-    yearLabel: 'Ano 1.045 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 60,
-    locationLabel: 'Santuário Coral de Solária',
-    proseStory:
-      'Regente do Coro Celestial de Solária desde 1.045 D.F., Seraphiel entoa o hino que restaura a vitalidade do Soberano enquanto estende um véu de Escudos Divinos sobre cada companheiro de armas.',
-    sungStanza: [
-      'Quando Seraphiel abre a voz na canção,',
-      'Fecha-se a chaga do nosso barão;',
-      'E cada soldado que guarda a fileira',
-      'Recebe um escudo de luz verdadeira!',
-    ],
-  },
-  gold_100_dragao_imperial_ouro: {
-    cardId: 'gold_100_dragao_imperial_ouro',
-    properTitle: 'Aurion-Sol, O Dragão Imperial do Zênite',
-    yearLabel: 'Ano 1.068 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 61,
-    locationLabel: 'Trono Alto do Bastião dos Sete Sóis',
-    proseStory:
-      'Protetor pessoal do Trono Solar no Ano 1.068 D.F., Aurion-Sol lidera a carga final das legiões douradas: seu rugido eleva permanentemente o vigor e a força de todas as unidades aliadas.',
-    sungStanza: [
-      'Do alto do zênite desce o dragão,',
-      'Dourando as espadas de todo o esquadrão;',
-      'Com Aurion-Sol a guardar a vanguarda,',
-      'Nenhuma muralha inimiga se guarda!',
-    ],
-  },
-  neutral_54_dragao_etereo: {
-    cardId: 'neutral_54_dragao_etereo',
-    properTitle: 'Aetherion, O Dragão do Vácuo Astral',
-    yearLabel: 'Ano 1.089 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 62,
-    locationLabel: 'Horizonte Estelar da Fronteira Cinzenta',
-    proseStory:
-      'Guardião das rotas etéreas entre os cinco domínios desde 1.089 D.F., Aetherion condensa a luz das estrelas distantes em duas cargas imediatas de Essência pura para o Soberano que o convoca.',
-    sungStanza: [
-      'Nas asas translúcidas brilha o luar,',
-      'Trazendo duas chamas de Essência no ar;',
-      'Aetherion paira acima da cor,',
-      'Servindo na Arena ao mais sábio senhor!',
-    ],
-  },
-  red_119_soberano_piroclasma: {
-    cardId: 'red_119_soberano_piroclasma',
-    properTitle: 'Pyroclasmos, Imperador das Chamas',
-    yearLabel: 'Ano 1.104 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 63,
-    locationLabel: 'Cidadela Superior de Pyros',
-    proseStory:
-      'Vencedor do Grande Torneio Imperial de 1.104 D.F., Pyroclasmos combina a velocidade do Ímpeto com uma onda de choque vulcânica que incinera toda a Vanguarda adversária no instante em que entra na arena.',
-    sungStanza: [
-      'Entrou na arena qual raio de brasa,',
-      'Varrendo de frente a falange que arrasa;',
-      'Pyroclasmos reina no fogo maior,',
-      'Sem dar ao rival nem alívio nem dor!',
-    ],
-  },
-  blue_117_arconte_astral: {
-    cardId: 'blue_117_arconte_astral',
-    properTitle: 'Orion, Arconte da Tempestade Astral',
-    yearLabel: 'Ano 1.115 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 64,
-    locationLabel: 'Observatório Superior de Vórtex',
-    proseStory:
-      'Mestre supremo da artilharia celeste de Vórtex no Ano 1.115 D.F., Orion desce envolto em relâmpagos azuis que ferem e congelam simultaneamente todos os inimigos posicionados na Vanguarda.',
-    sungStanza: [
-      'Com arco de estrela e flecha de gelo,',
-      'Orion dispara sem erro ou apelo;',
-      'Congela a vanguarda num único instante,',
-      'Brilhando no alto qual astro radiante!',
-    ],
-  },
-
-  // ==================== VIª ERA (1.121 D.F. — 1.240 D.F.): O ECLIPSE DO SÉTIMO SELO ====================
-  purple_119_soberano_entropia: {
-    cardId: 'purple_119_soberano_entropia',
-    properTitle: 'Malakor, Imperador da Entropia',
-    yearLabel: 'Ano 1.132 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 65,
-    locationLabel: 'Catedral de Obsidiana (Vale do Eclipse)',
-    proseStory:
-      'Ao ascender à forma suprema no Ano 1.132 D.F., Malakor inaugurou a VIª Era ao abrir a primeira fissura no Sétimo Selo. Sua presença drena a força vital de todas as tropas inimigas de uma só vez para restaurar seu Soberano.',
-    sungStanza: [
-      'Abriu-se a fissura no sétimo selo,',
-      'Quando Malakor ergueu seu cutelo;',
-      'De todos os vivos recolhe o tributo,',
-      'Reinando nas sombras com mando absoluto!',
-    ],
-  },
-  green_121_avatar_gaia: {
-    cardId: 'green_121_avatar_gaia',
-    properTitle: 'Tellurion, Avatar Primordial da Terra Viva',
-    yearLabel: 'Ano 1.148 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 66,
-    locationLabel: 'Santuário Central de Veridia',
-    proseStory:
-      'Despertado pelos Arquidruidas em 1.148 D.F. para conter o avanço das fissuras umbrais, Tellurion ergue montanhas e raízes ao redor de seus aliados, fortalecendo todo o exército e curando o Soberano.',
-    sungStanza: [
-      'Quando a terra tremeu sob a sombra do mal,',
-      'Tellurion ergueu-se em couraça mineral;',
-      'Cura o Soberano com seiva e granito,',
-      'Fazendo do bosque um baluarte infinito!',
-    ],
-  },
-  blue_136_leviata_cronos: {
-    cardId: 'blue_136_leviata_cronos',
-    properTitle: 'Chronoleviatã, Soberano do Tempo',
-    yearLabel: 'Ano 1.166 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 67,
-    locationLabel: 'Fenda Temporal do Mar de Vórtex',
-    proseStory:
-      'Emergiu das águas profundas do Pináculo em 1.166 D.F. nadando não na água, mas no próprio fluxo das horas. Quando surge na arena, paralisa absolutamente todos os inimigos em campo e entrega duas novas memórias ao Soberano.',
-    sungStanza: [
-      'Nadando nas horas qual peixe no mar,',
-      'Faz todo o tabuleiro de súbito parar;',
-      'Enquanto o inimigo não move um só dedo,',
-      'O Chronoleviatã revela o segredo!',
-    ],
-  },
-  purple_138_soberano_carnica: {
-    cardId: 'purple_138_soberano_carnica',
-    properTitle: 'Necrothor, Monarca do Trono de Ossos',
-    yearLabel: 'Ano 1.181 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 68,
-    locationLabel: 'Ossário Real do Vale do Eclipse',
-    proseStory:
-      'Fundido a partir das ossadas de antigos reis dragões no Ano 1.181 D.F., Necrothor varre o campo inimigo com chamas de almas enquanto sifona a vitalidade diretamente do Soberano adversário.',
-    sungStanza: [
-      'No trono de ossos das eras passadas,',
-      'Necrothor desperta as almas penadas;',
-      'Queima os soldados e drena o senhor,',
-      'Voltando da tumba com novo furor!',
-    ],
-  },
-  green_141_soberano_fera_primordial: {
-    cardId: 'green_141_soberano_fera_primordial',
-    properTitle: 'Fenris-Gorgon, Imperador das Feras',
-    yearLabel: 'Ano 1.195 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 69,
-    locationLabel: 'Fronteira Selvagem de Veridia',
-    proseStory:
-      'Alfa supremo das matilhas de Veridia desde 1.195 D.F., o uivo de Fenris-Gorgon desperta o instinto predatório de todas as criaturas aliadas, lançando-as em carga imediata sobre as linhas rivais.',
-    sungStanza: [
-      'Quando uiva na noite o grande imperador,',
-      'Toda fera da mata redobra o furor;',
-      'Fenris-Gorgon salta na frente da caça,',
-      'E não há parede que o bando não desfaça!',
-    ],
-  },
-  green_142_patriarca_selva_eterna: {
-    cardId: 'green_142_patriarca_selva_eterna',
-    properTitle: 'Sylvanhorn, Patriarca da Selva Eterna',
-    yearLabel: 'Ano 1.208 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 70,
-    locationLabel: 'Clareira Sagrada de Raiz-Ferro',
-    proseStory:
-      'Espírito ancestral de galhada dourada que se manifestou em 1.208 D.F. para guiar os guardiões de Veridia através das Fendas do Vazio, restaurando as feridas de todos os aliados em combate.',
-    sungStanza: [
-      'Com galhada de luz na clareira sagrada,',
-      'Sylvanhorn abençoa a tropa cansada;',
-      'Fecha toda ferida e levanta o moral,',
-      'Guardando a floresta do golpe final!',
-    ],
-  },
-  gold_138_imperador_sol_supremo: {
-    cardId: 'gold_138_imperador_sol_supremo',
-    properTitle: 'Hyperion, Deus-Imperador da Aurora',
-    yearLabel: 'Ano 1.220 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 71,
-    locationLabel: 'Cúpula Dourada de Solária',
-    proseStory:
-      'Avatar vivo dos Sete Sóis de Solária invocado em 1.220 D.F., Hyperion desce à arena revestindo cada aliado com Escudo Divino e armadura radiante para o confronto decisivo da VIª Era.',
-    sungStanza: [
-      'Sete sóis brilharam na ponta da lança,',
-      'Quando Hyperion desceu liderando a aliança;',
-      'Veste cada aliado num manto de luz,',
-      'Que à vitória suprema Solária conduz!',
-    ],
-  },
-  blue_154_dragao_safira_soberano: {
-    cardId: 'blue_154_dragao_safira_soberano',
-    properTitle: 'Dragão de Safira Sônico',
-    yearLabel: 'Ano 1.232 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 72,
-    locationLabel: 'Pináculo Acústico de Vórtex',
-    proseStory:
-      'Desperto nas câmaras de ressonância de Vórtex no Ano 1.232 D.F., seu rugido sônico estilhaça formações inteiras, congelando a Vanguarda adversária em cristal azul enquanto revela dois novos pergaminhos.',
-    sungStanza: [
-      'Seu rugido não é fogo: é trovão de cristal,',
-      'Que paralisa de frente a falange rival;',
-      'Nas escamas de safira ressoa a canção,',
-      'Trazendo duas cartas pro sábio na mão!',
-    ],
-  },
-  purple_157_dragao_sombra_abissal: {
-    cardId: 'purple_157_dragao_sombra_abissal',
-    properTitle: 'Monarca dos Três Crânios',
-    yearLabel: 'Ano 1.240 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 73,
-    locationLabel: 'Altar Tríplice da Catedral de Obsidiana',
-    proseStory:
-      'Erguido no presente Ano de 1.240 D.F. a partir da união de três antigos reis-liches do Vale do Eclipse, o Monarca dos Três Crânios fala simultaneamente pelo Passado, pelo Presente e pelo Fim, liderando as legiões imortais na guerra pelos Relicários.',
-    sungStanza: [
-      'Três crânios coroados num único trono,',
-      'Chamando os exércitos fora do sono;',
-      'Na noite suprema do Eclipse surgiu,',
-      'E a Cripta inteira ao seu mando subiu!',
-    ],
-  },
-  neutral_116_harshnag_machado_inverno: {
-    cardId: 'neutral_116_harshnag_machado_inverno',
-    properTitle: 'Skrym-Khor, O Gigante Quebra-Tronos',
-    yearLabel: 'Ano 740 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 74,
-    locationLabel: 'Cordilheira da Espinha Cinzenta',
-    proseStory:
-      'Veterano das guerras nortenhas que abateu um dragão ancião em duelo singular e tomou seu crânio como elmo, Skrym-Khor recusou-se a jurar vassalagem a qualquer trono elemental. Desde 740 D.F., guarda as passagens da Fronteira Cinzenta com seu machado rúnico colossal.',
-    sungStanza: [
-      'Com crânio de drago forjado no gelo,',
-      'Skrym-Khor guarda o monte com feroz desvelo;',
-      'Quando o grande machado na rocha bateu,',
-      'Toda a linha inimiga de frente cedeu!',
-    ],
-  },
-  neutral_117_elminster_sabio_cinzento: {
-    cardId: 'neutral_117_elminster_sabio_cinzento',
-    properTitle: 'Valerius, Arquimago dos Sete Selos',
-    yearLabel: 'Ano 680 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 75,
-    locationLabel: 'Torre dos Cinco Selos (Fronteira Cinzenta)',
-    proseStory:
-      'Redator original das cláusulas arcanas do Pacto Cromático no Ano 680 D.F., Valerius domina as cinco frequências sem pertencer a nenhuma. De seu cajado de prata sobem espirais que revelam os planos ocultos de reis e demônios.',
-    sungStanza: [
-      'Mais velho que os tronos que vivem em guerra,',
-      'Valerius conhece os segredos da terra;',
-      'Redigiu os tratados com tinta de luz,',
-      'E o próprio equilíbrio nos selos conduz!',
-    ],
-  },
-  neutral_118_volothamp_cronista_mundos: {
-    cardId: 'neutral_118_volothamp_cronista_mundos',
-    properTitle: 'Aldous, Grande Cronista do Bestiário',
-    yearLabel: 'Ano 965 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 76,
-    locationLabel: 'Grande Biblioteca da Fronteira',
-    proseStory:
-      'Armado apenas com uma pena encantada, um chapéu emplumado e uma audácia inverossímil, Aldous percorreu os cinco continentes de Vaeloria catalogando a anatomia e as fraquezas de cada fera, dragão e aberração.',
-    sungStanza: [
-      'De pena na mão e chapéu emplumado,',
-      'Deixou cada monstro em seu livro anotado;',
-      'Quem lê seu compêndio na hora da dor,',
-      'Encontra a fraqueza de qualquer senhor!',
-    ],
-  },
-  neutral_119_colosso_vonindod_fragmento: {
-    cardId: 'neutral_119_colosso_vonindod_fragmento',
-    properTitle: 'Titã Ferrostor, O Devastador de Dragões',
-    yearLabel: 'Ano 110 D.F.',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 77,
-    locationLabel: 'Cratera de Adamantina (Fronteira Cinzenta)',
-    proseStory:
-      'Construído pelos antigos reis-forjadores na Iª Era para abater os dragões primordiais que disputavam os fragmentos do Coroa-Prisma, o Colosso Ferrostor ergue-se com arpões de adamantina e um núcleo de fornalha capaz de estilhaçar exércitos.',
-    sungStanza: [
-      'Forjado em segredo no ferro mais duro,',
-      'Ergueu-se o colosso quebrando o ar puro;',
-      'Com arpões que derrubam dragões pelo chão,',
-      'Ferrostor é o terror de qualquer legião!',
-    ],
-  },
-  neutral_120_xanathar_senhor_crime: {
-    cardId: 'neutral_120_xanathar_senhor_crime',
-    properTitle: 'Oculus-Vex, O Olho Mecânico do Submundo',
-    yearLabel: 'Ano 950 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 78,
-    locationLabel: 'Galerias Subterrâneas do Porto Neutro',
-    proseStory:
-      'Nas galerias profundas sob a Fronteira Cinzenta, um soberano autômato em forma de olho mecânico de bronze e obsidiana governa todas as guildas de espiões e mercenários. Com lentes telescópicas e anéis giroscópicos que nunca se fecham, desintegra traidores num lampejo de energia.',
-    sungStanza: [
-      'Lentes de bronze girando no chão,',
-      'Controlam o ouro, a adaga e a traição;',
-      'Ninguém move um passo sem a máquina ver,',
-      'E um feixe da lente faz tudo morrer!',
-    ],
-  },
-  neutral_121_vizeran_arquimago_exilado: {
-    cardId: 'neutral_121_vizeran_arquimago_exilado',
-    properTitle: 'Malphas, O Tecelão do Ritual Abissal',
-    yearLabel: 'Ano 1.040 D.F.',
-    eraTitle: 'Vª Era — Os Dez Tratados Bicolores',
-    eraId: 'era_5_tratados',
-    chronologicalOrder: 79,
-    locationLabel: 'Torre da Estalagmite Oca',
-    proseStory:
-      'Exilado das cortes sombrias por recusar-se a servir aos deuses do Abismo, Malphas esculpiu sua torre no coração de uma estalagmite colossal, onde tece rituais que jogam soberanos rivais uns contra os outros.',
-    sungStanza: [
-      'Na torre de pedra escondida no fundo,',
-      'Malphas manipula os senhores do mundo;',
-      'Enquanto os tiranos se matam no altar,',
-      'É ele quem fica no fim a reinar!',
-    ],
-  },
-  neutral_122_rei_hekaton_neutro_arbitro: {
-    cardId: 'neutral_122_rei_hekaton_neutro_arbitro',
-    properTitle: 'Atlas-Khor, O Regente do Ordenamento',
-    yearLabel: 'Ano 520 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 80,
-    locationLabel: 'Trono da Rocha Submersa',
-    proseStory:
-      'Monarca ancestral das seis castas de gigantes, Atlas-Khor permaneceu neutro durante a Guerra do Sangue Derramado para preservar o Ordenamento. Quando marcha à batalha, sua presença inspira força titânica em todas as fileiras aliadas.',
-    sungStanza: [
-      'Seis castas gigantes se curvam à voz,',
-      'Do rei que governa a tormenta feroz;',
-      'Sustenta o equilíbrio na ponta da espada,',
-      'Deixando a falange duas vezes dobrada!',
-    ],
-  },
-  neutral_123_emissario_relojoeiro_supremo: {
-    cardId: 'neutral_123_emissario_relojoeiro_supremo',
-    properTitle: 'Deus-Máquina de Aeternus',
-    yearLabel: 'Ano 1.180 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 81,
-    locationLabel: 'Santuário Horológico da Fronteira',
-    proseStory:
-      'A obra-prima definitiva dos mestres relojoeiros da Fronteira Cinzenta: um arconte mecânico de platina e ferro negro dotado de consciência própria e capacidade de autorreconstrução perpétua em campo.',
-    sungStanza: [
-      'Sem carne que sangre, sem medo da dor,',
-      'De platina e ferro surgiu o senhor;',
-      'Se cai na batalha, a mola refaz,',
-      'Trazendo aos aliados couraça capaz!',
-    ],
-  },
-  neutral_124_tarrasque_despertar_neutro: {
-    cardId: 'neutral_124_tarrasque_despertar_neutro',
-    properTitle: 'Gorgonoth, O Devorador de Continentes',
-    yearLabel: 'Ano 1.240 D.F.',
-    eraTitle: 'VIª Era — O Eclipse do Sétimo Selo',
-    eraId: 'era_6_presente',
-    chronologicalOrder: 82,
-    locationLabel: 'Fenda Axial Profunda',
-    proseStory:
-      'A maior monstruosidade viva de Vaeloria, cujo casco espelhado devora feitiços e cujas mandíbulas esmagam fortalezas inteiras. Desperta apenas uma vez por era quando o embate dos cinco domínios racha a crosta do continente.',
-    sungStanza: [
-      'A terra estremece, a muralha caiu,',
-      'Quando Gorgonoth do abismo subiu;',
-      'Não serve a coroa, nem teme o dragão:',
-      'Deixando os impérios desfeitos no chão!',
-    ],
-  },
-  neutral_167_arauto_prisma_matriz: {
-    cardId: 'neutral_167_arauto_prisma_matriz',
-    properTitle: 'Matriz do Prisma Primordial',
-    yearLabel: 'Ano 1 D.F. (1ª Hora)',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 83,
-    locationLabel: 'Eixo Partido do Zênite (Monte Axial)',
-    proseStory:
-      'Quando o Golpe Pentacromático partiu o Coroa-Prisma, o coração diamantino do astro permaneceu suspenso no eixo do céu, revelando um olho ciclópico envolto em anéis de platina e mercúrio líquido. Da Matriz do Prisma Primordial desprenderam-se os cinco Arautos elementais na primeira hora do tempo.',
-    sungStanza: [
-      'Em anéis de mercúrio e platina sem cor,',
-      'Despertou a Matriz do primeiro fulgor;',
-      'No peito um diamante girava em clarão,',
-      'Sangrando em silêncio a quíntupla refração!',
-    ],
-  },
-  red_167_arauto_prisma_chama: {
-    cardId: 'red_167_arauto_prisma_chama',
-    properTitle: 'Arauto da Supernova Prismática',
-    yearLabel: 'Ano 1 D.F. (1ª Hora)',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 84,
-    locationLabel: 'Abóbada Ardente do Norte',
-    proseStory:
-      'Primeiro avatar desprendido da Matriz após a destruição do Coroa-Prisma, o Arauto da Supernova Prismática incendiou a estratosfera boreal até que o Tecelão do Feixe Ígneo curvasse sua torrente para as futuras Caldeiras de Pyros.',
-    sungStanza: [
-      'Da fenda vermelha do peito central,',
-      'Saltou o primeiro avatar elemental;',
-      'Com halo de escória e estrela no peito,',
-      'Deixou todo o norte em brasas refeito!',
-    ],
-  },
-  blue_167_arauto_prisma_gelo: {
-    cardId: 'blue_167_arauto_prisma_gelo',
-    properTitle: 'Arauto do Zero Prismático',
-    yearLabel: 'Ano 1 D.F. (1ª Hora)',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 85,
-    locationLabel: 'Zênite Polar de Vórtex',
-    proseStory:
-      'Nascido por contraste térmico imediato à Supernova na primeira hora da Fratura, o Arauto do Zero Prismático condensou anéis horológicos de geada sobre os polos, impedindo que os oceanos de Vaeloria evaporassem.',
-    sungStanza: [
-      'Vestido em cristais de safira polida,',
-      'Com uma estrela fria no torso contida;',
-      'Soprou a geada por cima do mar,',
-      'Fazendo a tormenta em silêncio parar!',
-    ],
-  },
-  purple_167_arauto_prisma_abismo: {
-    cardId: 'purple_167_arauto_prisma_abismo',
-    properTitle: 'Arauto do Eclipse Prismático',
-    yearLabel: 'Ano 1 D.F. (1ª Hora)',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 86,
-    locationLabel: 'Fenda Ocidental do Firmamento',
-    proseStory:
-      'A primeira sombra projetada no universo quando a luz branca deixou de ser única encarnou no Arauto do Eclipse Prismático, cujo feixe violeta foi guiado pelo Tecelão Umbral até as gargantas profundas do oeste.',
-    sungStanza: [
-      'Quando a branca Matriz em pedaços partiu,',
-      'Às costas da luz o Primeiro Véu riu;',
-      'Trazendo no peito o vórtice oco,',
-      'Que dobra os soberbos aos poucos, a pouco!',
-    ],
-  },
-  green_167_arauto_prisma_selva: {
-    cardId: 'green_167_arauto_prisma_selva',
-    properTitle: 'Arauto da Raiz Prismática',
-    yearLabel: 'Ano 1 D.F. (1ª Hora)',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 87,
-    locationLabel: 'Abóbada Meridional sobre Veridia',
-    proseStory:
-      'Revestido de pau-ferro estelar e anéis de sarças vivas, o Arauto da Raiz Prismática verteu do céu a seiva esmeralda que o Tecelão Silvestre espalhou em mil rios férteis sobre o sul de Vaeloria.',
-    sungStanza: [
-      'Entrelaçando cipós sobre a rocha estelar,',
-      'Com seiva brilhante no peito a pulsar;',
-      'Cada gota verde que dele pingou',
-      'Em musgo e floresta a montanha mudou!',
-    ],
-  },
-  gold_167_arauto_prisma_sol: {
-    cardId: 'gold_167_arauto_prisma_sol',
-    properTitle: 'Arauto do Zênite Prismático',
-    yearLabel: 'Ano 1 D.F. (1ª Hora)',
-    eraTitle: 'Iª Era — A Grande Fratura',
-    eraId: 'era_1_fratura',
-    chronologicalOrder: 88,
-    locationLabel: 'Céu Oriental sobre Solária',
-    proseStory:
-      'Último dos seis avatares a emergir da destruição do Coroa-Prisma, o Arauto do Zênite Prismático estendeu o primeiro Escudo Divino sobre os horizontes nascentes enquanto o Tecelão Solar pousava sua luz nos planaltos do leste.',
-    sungStanza: [
-      'Em ouro celeste e com runas de luz,',
-      'Surgiu a presença que a Ordem conduz;',
-      'Abriu sobre os justos seu manto sagrado,',
-      'Deixando o horizonte de escudos cercado!',
-    ],
-  },
-  red_172_armada_draconica_chama: {
-    cardId: 'red_172_armada_draconica_chama',
-    properTitle: 'Hoste Dracônica da Cratera',
-    yearLabel: 'Ano 655 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 89,
-    locationLabel: 'Abóbada Vulcânica do Norte (Pyros)',
-    proseStory:
-      'Quando o continente rachado por Kragmorth impediu a marcha de exércitos terrestres, Pyros abriu todas as chaminés da Grande Caldeira em 655 D.F. e despejou nos céus a Hoste Dracônica da Cratera: dezenas de dragões chifrudos de basalto e magma cujo sopro incinera vanguardas inteiras e atinge diretamente o Soberano rival.',
-    sungStanza: [
-      'Não subiu um só draco de crista imperial,',
-      'Mas a Hoste Dracônica em fúria total;',
-      'Cem gargantas de lava rugindo de par,',
-      'Com chifres de touro rasgando o alto ar!',
-    ],
-  },
-  blue_172_armada_draconica_gelo: {
-    cardId: 'blue_172_armada_draconica_gelo',
-    properTitle: 'Esquadra Dracônica da Nevasca',
-    yearLabel: 'Ano 661 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 90,
-    locationLabel: 'Frente Ciclônica de Vórtex',
-    proseStory:
-      'Lançada do Pináculo de Vórtex em 661 D.F. para conter o incêndio boreal de Pyros, a Esquadra Dracônica da Nevasca gira em espiral ciclônica de geada e relâmpago, petrificando vanguardas inteiras em estátuas de gelo antes mesmo que o primeiro leviatã toque o chão.',
-    sungStanza: [
-      'Seis invernos depois que a fornalha subiu,',
-      'Toda a torre de Vórtex nos ventos se abriu:',
-      'Em espiral de safira, relâmpago e sal,',
-      'Descolou das geleiras a Esquadra glacial!',
-    ],
-  },
-  purple_172_armada_draconica_abismo: {
-    cardId: 'purple_172_armada_draconica_abismo',
-    properTitle: 'Legião Dracônica do Eclipse',
-    yearLabel: 'Ano 669 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 91,
-    locationLabel: 'Firmamento Sem Sol do Oeste (Eclipse)',
-    proseStory:
-      'Erguida em 669 D.F. pelos necromantes da Catedral de Obsidiana a partir das ossadas aladas que tombavam da guerra aérea, a Legião Dracônica do Eclipse apagou o sol do meio-dia com uma nuvem de dracoliches cujo sopro anímico reergue os campeões caídos da Cripta.',
-    sungStanza: [
-      'Das carcaças caídas na terra sangrenta,',
-      'Nasceu no ocidente a revoada cinzenta:',
-      'A Legião do Eclipse, de osso e terror,',
-      'Subindo num vórtice roxo e sem cor!',
-    ],
-  },
-  green_172_armada_draconica_selva: {
-    cardId: 'green_172_armada_draconica_selva',
-    properTitle: 'Enxame Dracônico Ancestral',
-    yearLabel: 'Ano 675 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 92,
-    locationLabel: 'Dossel Ascendente de Veridia',
-    proseStory:
-      'Em 675 D.F., o dossel milenar de Veridia inteiro pareceu levantar voo quando o Enxame Dracônico Ancestral — serpes galhadas envoltas em tempestades de esporos e veneno esmeralda — subiu aos céus regenerando suas feridas e redobrando a fúria de toda a mata.',
-    sungStanza: [
-      'Sacudiram-se os ramos da mata primeira,',
-      'Como se decolasse a floresta inteira:',
-      'Em nuvem de jade, veneno e cipó,',
-      'O Enxame Ancestral levantou-se de um só!',
-    ],
-  },
-  gold_172_armada_draconica_sol: {
-    cardId: 'gold_172_armada_draconica_sol',
-    properTitle: 'Armada Dracônica do Zênite',
-    yearLabel: 'Ano 683 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 93,
-    locationLabel: 'Cunha Celeste de Solária',
-    proseStory:
-      'No Ano 683 D.F., para rasgar a escuridão de quatro céus hostis que sufocavam as lavouras do continente, Solária lançou a Armada Dracônica do Zênite: uma cunha radiante de dragões-serafins de seis asas que veste os aliados em Escudos Divinos e restaura o Soberano.',
-    sungStanza: [
-      'Rompendo as camadas de fumo e geada,',
-      'Desceu em V d’ouro a falange sagrada:',
-      'A Armada do Zênite, em seis asas belas,',
-      'Acesa qual frota de vivas estrelas!',
-    ],
-  },
-  neutral_172_armada_draconica_matriz: {
-    cardId: 'neutral_172_armada_draconica_matriz',
-    properTitle: 'Armada Dracônica do Prisma',
-    yearLabel: 'Ano 687 D.F.',
-    eraTitle: 'IIIª Era — A Guerra do Sangue Derramado',
-    eraId: 'era_3_guerra',
-    chronologicalOrder: 94,
-    locationLabel: 'Zênite Cinzento sobre a Torre Axial',
-    proseStory:
-      'Última revoada a subir na Guerra dos Céus Sem Horizonte em 687 D.F., a Armada Dracônica do Prisma desprendeu-se da cúpula da Torre Axial em dezenas de dragões geométricos de cristal e mercúrio, separando à força os cinco céus em guerra e forçando a trégua que originou o Pacto Cromático em 689 D.F.',
-    sungStanza: [
-      'Da agulha mais alta da Torre Cinzenta,',
-      'Subiu no seiscentos e oitenta e sete a tormenta:',
-      'A Armada do Prisma, em mercúrio e cristal,',
-      'Refratando nos ares a luz ancestral!',
-    ],
-  },
-  neutral_173_general_roda_matriz: {
-    cardId: 'neutral_173_general_roda_matriz',
-    properTitle: 'Vaelkor, General da Roda Prismática',
-    yearLabel: 'Ano 839 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 95,
-    locationLabel: 'Átrio Axial da Torre dos Cinco Selos',
-    proseStory:
-      'Primeiro dos Seis Generais da Roda consagrado em 839 D.F. durante a Crise das Redomas Soberanas, Vaelkor carrega às costas o astrolábio de oito prismas octaédricos. Ao pisar na Arena ou avançar em combate, o giro de sua roda decifra e estilhaça qualquer Expansão de Domínio inimiga enquanto reveste seus aliados em Escudos Divinos.',
-    sungStanza: [
-      'Do núcleo cinzento de mercúrio e cristal,',
-      'Ergueu-se o primeiro juiz imortal:',
-      'Vaelkor caminhou sobre a pedra partida,',
-      'Trazendo nos ombros a Roda esculpida!',
-    ],
-  },
-  red_173_general_roda_chama: {
-    cardId: 'red_173_general_roda_chama',
-    properTitle: 'Pyrrakon, General da Roda Vulcânica',
-    yearLabel: 'Ano 841 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 96,
-    locationLabel: 'Bigorna Suprema de Pyros',
-    proseStory:
-      'Forjado em 841 D.F. nas bigornas abissais de Pyros com dois cutelos vulcânicos acorrentados e uma roda de oito cadinhos ferventes às costas, Pyrrakon derrete instantaneamente qualquer Expansão de Domínio que tente aprisionar as falanges da fornalha.',
-    sungStanza: [
-      'Elmo de grelha vomitando fumaça,',
-      'Dois cutelos presos onde a chama esvoaça;',
-      'Às costas girava o terrível brasão:',
-      'Oito cadinhos cheios de magma em fusão!',
-    ],
-  },
-  blue_173_general_roda_gelo: {
-    cardId: 'blue_173_general_roda_gelo',
-    properTitle: 'Cryonax, General da Roda Astral',
-    yearLabel: 'Ano 843 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 97,
-    locationLabel: 'Câmara do Astrolábio Frio (Vórtex)',
-    proseStory:
-      'Consagrado em 843 D.F. pelos mestres horológicos de Vórtex, Cryonax flutua sobre quatro asas de geada eletrostática com uma roda de oito globos de tempestade. Basta um estalo de seu astrolábio polar para trincar Expansões de Domínio rivais como vidro e congelar toda a Vanguarda adversária.',
-    sungStanza: [
-      'Atrás de seus ombros, sem falha ou ruído,',
-      'Girava o astrolábio de gelo polido:',
-      'Oito globos azuis de tormenta guardada,',
-      'Calculando a fraqueza da cúpula armada!',
-    ],
-  },
-  purple_173_general_roda_abismo: {
-    cardId: 'purple_173_general_roda_abismo',
-    properTitle: 'Nyxaroth, General da Roda Fúnebre',
-    yearLabel: 'Ano 845 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 98,
-    locationLabel: 'Nave Sem Luz da Catedral de Obsidiana',
-    proseStory:
-      'Erguido na Catedral de Obsidiana em 845 D.F. com quatro braços rituais e uma roda de ferro forjado ornada por oito lanternas cranianas, Nyxaroth desfaz Expansões de Domínio inimigas em cinza violeta e executa o campeão mais forte do oponente sem respeitar cota ou escudo.',
-    sungStanza: [
-      'Em roda de ferro batido em lamento,',
-      'Oito crânios acesos giravam ao vento;',
-      'Cada chama guardava o decreto final',
-      'Contra o tolo que erguesse um abrigo imortal!',
-    ],
-  },
-  green_173_general_roda_selva: {
-    cardId: 'green_173_general_roda_selva',
-    properTitle: 'Sylvarok, General da Roda Primeva',
-    yearLabel: 'Ano 847 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 99,
-    locationLabel: 'Trono de Pau-Ferro (Veridia)',
-    proseStory:
-      'Despertado pelo Círculo de Raiz-Ferro em 847 D.F., Sylvarok carrega a roda ancestral de oito orbes de seiva bioluminescente. Suas raízes arrombam de baixo para cima qualquer Expansão de Domínio artificial, devolvendo o céu aberto e revestindo a matilha aliada de força e Escudos Divinos.',
-    sungStanza: [
-      'Onde um mago fechava sua redoma vã,',
-      'Arrombava o cimento a raiz temporã;',
-      'Quebrando o Domínio num tranco profundo',
-      'E devolvendo o ar livre às criaturas do mundo!',
-    ],
-  },
-  gold_173_general_roda_sol: {
-    cardId: 'gold_173_general_roda_sol',
-    properTitle: 'Heliokar, General da Roda Celeste',
-    yearLabel: 'Ano 849 D.F.',
-    eraTitle: 'IVª Era — A Assinatura do Pacto',
-    eraId: 'era_4_pacto',
-    chronologicalOrder: 100,
-    locationLabel: 'Zimbório Dourado de Solária',
-    proseStory:
-      'Sexto e último General da Roda consagrado em 849 D.F. sob o zimbório de Solária, Heliokar desce em alabastro e ouro com oito sóis de bronze girando às suas costas, dissolvendo Expansões de Domínio tirânicas em poeira luminosa enquanto blinda e restaura toda a hoste fiel.',
-    sungStanza: [
-      'Trazia nos ombros o círculo ardente',
-      'De oito sóis de bronze girando em torrente;',
-      'Ao erguer a mão destra em sereno julgar,',
-      'Fazia o falso céu em centelhas quebrar!',
-    ],
-  },
+  "neutral_10_valkyra_pentacromatica": {
+    "cardId": "neutral_10_valkyra_pentacromatica",
+    "properTitle": "Valkyra, Imperatriz Pentacromática",
+    "yearLabel": "∞ A.F.",
+    "eraTitle": "Era Zero — A Vigília Imóvel",
+    "eraId": "era_0_vigilia",
+    "chronologicalOrder": 1,
+    "locationLabel": "Cume do Monte Axial (Fronteira Cinzenta)",
+    "proseStory": "Nascida do próprio reflexo do Coroa-Prisma antes que o tempo tivesse nome, Valkyra foi a única entidade capaz de suportar em suas escamas as cinco frequências de luz simultaneamente. Quando os Cinco Titãs Primogênitos subiram ao Monte Axial para romper a estase eterna, Valkyra não os impediu — pois sabia que um mundo imóvel estava morto em vida. Após a Fratura, recolheu as cascas sem cor do astro partido para erguer a Torre Cinzenta — futura Torre dos Cinco Selos — e tornou-se a árbitra eterna do Pacto Cromático.",
+    "sungStanza": [
+      "Das cinco correntes que o céu dividiu,",
+      "Valkyra nas asas o espectro reuniu;",
+      "Sem curva a nenhum, mas senhora da lei,",
+      "É ela quem julga o mendigo e o rei!"
+    ]
+  },
+  "red_157_dragao_tiamat_carmesim": {
+    "cardId": "red_157_dragao_tiamat_carmesim",
+    "properTitle": "Vulcanis, Titã da Bigorna Primordial",
+    "yearLabel": "∞ A.F.",
+    "eraTitle": "Era Zero — A Vigília Imóvel",
+    "eraId": "era_0_vigilia",
+    "chronologicalOrder": 2,
+    "locationLabel": "Fornalha Axial de Pyros",
+    "proseStory": "O mais velho dos Cinco Primogênitos que conspiraram contra a estase do Coroa-Prisma. No silêncio sem tempo antes da Fratura, Vulcanis bateu em segredo no núcleo líquido do mundo o malho que partiria o sol branco. Quando o Fragmento Rubro caiu no norte, seu corpo de basalto e brasa fundiu-se à maior caldeira de Pyros, de onde ainda hoje ergue o martelo para partir montanhas.",
+    "sungStanza": [
+      "No abismo sem tempo rasgou todo o véu,",
+      "Até que a faísca subisse até o céu;",
+      "Vulcanis ferreiro do primeiro ardor,",
+      "Deu fogo às montanhas e ao sangue o calor!"
+    ]
+  },
+  "gold_24_tita_empirico": {
+    "cardId": "gold_24_tita_empirico",
+    "properTitle": "Titã Primogênito da Alvorada",
+    "yearLabel": "∞ A.F.",
+    "eraTitle": "Era Zero — A Vigília Imóvel",
+    "eraId": "era_0_vigilia",
+    "chronologicalOrder": 3,
+    "locationLabel": "Planalto Oriental de Solária",
+    "proseStory": "Irmão de Vulcanis na aurora do mundo, o Titã Primogênito da Alvorada temia que a ruptura do Coroa-Prisma mergulhasse Vaeloria na barbárie sem lei. Participou do Golpe Pentacromático com uma única condição: aparar em seu escudo o Fragmento Dourado para que a Justiça e a Ordem tivessem um lar incorruptível nos planaltos do leste.",
+    "sungStanza": [
+      "Quando o sol de vidro no alto estalou,",
+      "No escudo de ouro a manhã repousou;",
+      "Gigante primeiro da lei e da paz,",
+      "Que o chão estremecer sob o passo nos faz!"
+    ]
+  },
+  "blue_81_arconte_cronos": {
+    "cardId": "blue_81_arconte_cronos",
+    "properTitle": "Chronos, Guardião do Eixo Eterno",
+    "yearLabel": "∞ A.F.",
+    "eraTitle": "Era Zero — A Vigília Imóvel",
+    "eraId": "era_0_vigilia",
+    "chronologicalOrder": 6,
+    "locationLabel": "Pináculo Polar de Vórtex",
+    "proseStory": "Assim que o Golpe Pentacromático partiu o Coroa-Prisma, o recém-nascido fluxo do tempo começou a jorrar como uma torrente desgovernada. Chronos ergueu o Eixo Eterno nos mares polares de Vórtex, encaixando as engrenagens astrais que havia preparado na estase para dividir a eternidade em horas, estações e turnos.",
+    "sungStanza": [
+      "O tempo corria sem freio e sem cais,",
+      "Mas Chronos prendeu os segundos mortais;",
+      "No eixo de gelo que gira no norte,",
+      "Compôs o compasso da vida e da morte!"
+    ]
+  },
+  "green_50_avatar_gaia": {
+    "cardId": "green_50_avatar_gaia",
+    "properTitle": "Sylvanor, o Coração do Mundo",
+    "yearLabel": "∞ A.F.",
+    "eraTitle": "Era Zero — A Vigília Imóvel",
+    "eraId": "era_0_vigilia",
+    "chronologicalOrder": 5,
+    "locationLabel": "Bosque Matriz de Veridia",
+    "proseStory": "Quando a chuva de estilhaços ameaçou calcinar o hemisfério sul no instante da Fratura, Sylvanor abriu o próprio peito de rocha e casca para engolir o Fragmento Esmeralda. De seu sacrifício brotou em uma única noite o Continente-Selva de Veridia, onde cada raiz que pulsa ainda responde ao seu batimento cardíaco.",
+    "sungStanza": [
+      "Engoliu a esmeralda que vinha do ar,",
+      "Para a mata primeira poder germinar;",
+      "No peito de tronco que nunca secou,",
+      "O próprio coração de Vaeloria pulsou!"
+    ]
+  },
+  "red_08_dragao_vermelho": {
+    "cardId": "red_08_dragao_vermelho",
+    "properTitle": "Igniskar, Tirano da Cratera",
+    "yearLabel": "Ano 3 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 7,
+    "locationLabel": "Grande Cratera de Pyros",
+    "proseStory": "No terceiro ano após a queda do Fragmento Rubro, a lava fervente da Cratera Central condensou-se em escamas e chifres, dando origem a Igniskar. Diferente dos reis mortais que disputavam moedas, Igniskar exigiu que as tribos do norte derretessem seus tributos diretamente sobre o chão da caverna, coroando-se o primeiro soberano dracônico de Pyros.",
+    "sungStanza": [
+      "Três anos ardeu a cratera sem fundo,",
+      "Até que Igniskar emergisse no mundo;",
+      "Não pede tributo de seda ou brasão:",
+      "Quer ouro fundido correndo no chão!"
+    ]
+  },
+  "blue_06_dragao_azul": {
+    "cardId": "blue_06_dragao_azul",
+    "properTitle": "Vorthurion, Tempestade do Deserto",
+    "yearLabel": "Ano 14 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 8,
+    "locationLabel": "Deserto de Vidro ao Sul de Vórtex",
+    "proseStory": "Nascido onde os ventos polares de Vórtex chocam-se com as dunas salgadas do litoral, Vorthurion aprendeu a armazenar relâmpagos inteiros sob as placas de safira do dorso. No Ano 14 D.F., vitrificou uma cadeia inteira de dunas com um único sopro elétrico para demarcar a fronteira aérea do domínio azul.",
+    "sungStanza": [
+      "O cheiro do raio nos ares voou,",
+      "Enquanto nas nuvens a fúria ecoou;",
+      "Vorthurion desce rasgando o trovão,",
+      "Cravando uma lança de raio no chão!"
+    ]
+  },
+  "gold_07_dragao_ouro": {
+    "cardId": "gold_07_dragao_ouro",
+    "properTitle": "Aurarius, Majestade do Sol",
+    "yearLabel": "Ano 19 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 9,
+    "locationLabel": "Pico da Alvorada em Solária",
+    "proseStory": "Enquanto Igniskar reinava pelo terror vulcânico, Aurarius desceu das nuvens orientais no Ano 19 D.F. para ensinar às primeiras caravanas humanas a arte de forjar escudos de luz. Suas asas douradas serviram de modelo para os estandartes imperiais que mais tarde guiariam a construção de Solária.",
+    "sungStanza": [
+      "Dezenove invernos depois do clarão,",
+      "Aurarius pousou sobre o alto chapadão;",
+      "Abriu sobre os fracos as asas de sol,",
+      "Erguendo no leste o primeiro farol!"
+    ]
+  },
+  "purple_23_dracolich": {
+    "cardId": "purple_23_dracolich",
+    "properTitle": "Ossaurion, Dragão-Ossário Eterno",
+    "yearLabel": "Ano 27 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 10,
+    "locationLabel": "Fenda Abissal do Vale do Eclipse",
+    "proseStory": "O primeiro dragão a cair em combate após a Fratura recusou-se a entregar sua alma ao esquecimento. Banhado pelas águas escuras do Fragmento Umbral no Ano 27 D.F., levantou-se da própria carcaça como Ossaurion — provando a toda Vaeloria que, sob a luz violeta do Eclipse, a morte não encerrava o voo.",
+    "sungStanza": [
+      "Caiu na garganta sem carne e sem cor,",
+      "Mas dentro do osso ficou o rancor;",
+      "Das águas escuras voltou a voar,",
+      "Soprado de cinza e difícil de matar!"
+    ]
+  },
+  "blue_07_kraken": {
+    "cardId": "blue_07_kraken",
+    "properTitle": "Kraken da Fossa Abissal",
+    "yearLabel": "Ano 44 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 11,
+    "locationLabel": "Trincheira Submarina de Vórtex",
+    "proseStory": "Estilhaços menores de Safira afundaram sete léguas abaixo do nível do mar, onde despertaram o Kraken da Fossa Abissal no Ano 44 D.F. Sempre que ele se revira no leito oceânico, muralhas de água gelada sobem sobre os portos costeiros, congelando navios e exércitos em segundos.",
+    "sungStanza": [
+      "No fundo da fossa onde o sol nunca vai,",
+      "Dorme o velho monstro que o oceano atrai;",
+      "Se ergue os seus braços na espuma do mar,",
+      "Faz toda a vanguarda em gelo estancar!"
+    ]
+  },
+  "green_24_verme_purpura": {
+    "cardId": "green_24_verme_purpura",
+    "properTitle": "Leviatã Verme das Fendas",
+    "yearLabel": "Ano 61 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 12,
+    "locationLabel": "Galerias Tectônicas de Veridia",
+    "proseStory": "Escavador incansável das raízes continentais, o Leviatã Verme das Fendas abriu no Ano 61 D.F. os grandes rios subterrâneos que irrigam a selva de Veridia. Os druidas aprenderam a ler a vibração das pedras para prever onde sua bocarra blindada romperá o campo de batalha.",
+    "sungStanza": [
+      "Debaixo da mata ele rasga o granito,",
+      "Sem olhos no rosto e sem dar um só grito;",
+      "Quando abre a cratera no meio do chão,",
+      "Engole estandarte, cavalo e canhão!"
+    ]
+  },
+  "red_138_colosso_vulcano_primordial": {
+    "cardId": "red_138_colosso_vulcano_primordial",
+    "properTitle": "Vulcanor, Colosso da Caldeira Primordial",
+    "yearLabel": "Ano 83 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 13,
+    "locationLabel": "Caldeira Fumegante do Norte",
+    "proseStory": "Quando três vulcões gêmeos entraram em erupção simultânea no Ano 83 D.F., a coluna de magma solidificou-se na forma caminhante de Vulcanor. Considerado o filho vivo da própria montanha, onde quer que pise o solo rasga-se em gêiseres de fogo líquido.",
+    "sungStanza": [
+      "De três chaminés que cuspiram carvão,",
+      "Ergueu-se o colosso de lava no chão;",
+      "Seu passo é terremoto, seu sopro é fornalha,",
+      "Que varre em segundos qualquer muralha!"
+    ]
+  },
+  "green_68_zaratan_ilha": {
+    "cardId": "green_68_zaratan_ilha",
+    "properTitle": "Chelonia, A Tartaruga-Continente",
+    "yearLabel": "Ano 98 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 14,
+    "locationLabel": "Costa Esmeralda de Veridia",
+    "proseStory": "Por quase um século os navegadores julgaram que a península ao sul de Veridia era terra firme, até que no Ano 98 D.F. a montanha abriu os olhos e nadou três léguas mar adentro. Sobre o casco de Chelonia crescem florestas inteiras que curam e abrigam os defensores da natureza.",
+    "sungStanza": [
+      "Pensaram os nautas que fosse uma ilha,",
+      "Com mata no dorso e com pedra na quilha;",
+      "Mas quando Chelonia se pôs a nadar,",
+      "Levou toda uma selva por cima do mar!"
+    ]
+  },
+  "green_161_dragao_esmeralda_primordial": {
+    "cardId": "green_161_dragao_esmeralda_primordial",
+    "properTitle": "Dragão Esmeralda de Galhada Viva",
+    "yearLabel": "Ano 118 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 15,
+    "locationLabel": "Santuário do Dossel Antigo",
+    "proseStory": "Coroado com chifres de madeira-ferro que florescem na primavera e endurecem no inverno, o Dragão Esmeralda de Galhada Viva despertou no Ano 118 D.F. como guardião supremo das sementes da Primeira Era. Seu sopro não queima: faz brotar espinheiros gigantescos dentro das armaduras inimigas.",
+    "sungStanza": [
+      "Nos chifres de carvalho floresce a estação,",
+      "Nas asas de jade reside o tufão;",
+      "Onde ele respira na terra desnuda,",
+      "Em selva de espinhos o campo se muda!"
+    ]
+  },
+  "blue_63_leviata_primordial": {
+    "cardId": "blue_63_leviata_primordial",
+    "properTitle": "Thalassia, A Maré Devoradora",
+    "yearLabel": "Ano 134 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 16,
+    "locationLabel": "Mar Circular de Vórtex",
+    "proseStory": "Personificação viva das correntes oceânicas que cercam o arquipélago de Vórtex, Thalassia ergueu-se no Ano 134 D.F. para afundar a primeira frota invasora que tentou escalar o Pináculo. Seu corpo é feito de água salgada sob pressão tão extrema que desvia aço como diamante.",
+    "sungStanza": [
+      "Não é carne nem osso que sobe do mar:",
+      "É o próprio oceano erguido a lutar!",
+      "Thalassia se enrola na quilha e no forte,",
+      "Trazendo na espuma o silêncio do norte!"
+    ]
+  },
+  "gold_83_forjado_ancestral": {
+    "cardId": "gold_83_forjado_ancestral",
+    "properTitle": "Aeternus, O Primeiro Forjado de Guerra",
+    "yearLabel": "Ano 152 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 17,
+    "locationLabel": "Fundação do Bastião de Solária",
+    "proseStory": "Quando os arquitetos de Solária começaram a erguer o Bastião dos Sete Sóis no Ano 152 D.F., moldaram Aeternus a partir do primeiro bloco de adamantina e ouro branco. Dotado de consciência tática própria, foi nomeado comandante perpétuo dos autômatos defensores da capital.",
+    "sungStanza": [
+      "Primeiro soldado sem carne e sem dor,",
+      "Fundido no ouro do nosso Senhor;",
+      "Enquanto Aeternus guardar o portão,",
+      "Solária não teme nenhuma invasão!"
+    ]
+  },
+  "red_22_tirano_fogo": {
+    "cardId": "red_22_tirano_fogo",
+    "properTitle": "Baelgor, Senhor do Fosso Ardente",
+    "yearLabel": "Ano 178 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 18,
+    "locationLabel": "Fosso Inferior da Cidadela da Caldeira",
+    "proseStory": "Senhor das galerias mais fundas sob a Cidadela da Caldeira, Baelgor estabeleceu no Ano 178 D.F. o tratado de brasa e enxofre que alimenta as fornalhas militares de Pyros. O calor que irradia de suas asas é tão intenso que derrete as lanças da vanguarda inimiga antes do contato.",
+    "sungStanza": [
+      "No fundo do fosso onde a escória reluz,",
+      "Baelgor nas trevas de brasa conduz;",
+      "Só de abrir as asas no meio da lida,",
+      "Incendeia o escudo e consome a vida!"
+    ]
+  },
+  "purple_07_lich": {
+    "cardId": "purple_07_lich",
+    "properTitle": "Vesperion, Arquimago Lich Imortal",
+    "yearLabel": "Ano 195 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 19,
+    "locationLabel": "Torre Capitular da Catedral de Obsidiana",
+    "proseStory": "Arquiteto-chefe da Catedral de Obsidiana no Ano 195 D.F., Vesperion recusou-se a morrer antes de ver concluída a grande nave gótica do Vale do Eclipse. Selou a própria alma nas pedras angulares da catedral, tornando-se o primeiro Arquimago Lich a comandar a exumação em massa.",
+    "sungStanza": [
+      "Prendeu a própria alma na pedra do altar,",
+      "Para a grande obra jamais terminar;",
+      "Vesperion aponta o cajado de osso,",
+      "E salta um exército inteiro do fosso!"
+    ]
+  },
+  "green_09_hidra": {
+    "cardId": "green_09_hidra",
+    "properTitle": "Vorágine, Hidra Voraz do Pântano",
+    "yearLabel": "Ano 214 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 20,
+    "locationLabel": "Pântanos Limítrofes de Veridia",
+    "proseStory": "Quando caçadores estrangeiros tentaram drenar os pântanos do norte de Veridia no Ano 214 D.F., encontraram Vorágine. A cada golpe de espada que decepava um de seus pescoços, a seiva esmeralda do lodo fazia brotar duas novas cabeças ainda mais famintas.",
+    "sungStanza": [
+      "Cortaram-lhe um colo com golpe certeiro,",
+      "Mas dois levantaram do lodo brejeiro;",
+      "Vorágine guarda a fronteira do brejo,",
+      "Sem nunca fartar seu faminto desejo!"
+    ]
+  },
+  "blue_44_dragao_prateado": {
+    "cardId": "blue_44_dragao_prateado",
+    "properTitle": "Aureon, Dragão da Geada Astral",
+    "yearLabel": "Ano 238 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 21,
+    "locationLabel": "Cúpula Alta do Observatório de Safira",
+    "proseStory": "Aliado jurado dos primeiros astrônomos de Vórtex no Ano 238 D.F., Aureon pousou sobre a cúpula do Observatório para polir com seu sopro glacial as lentes que enxergam o futuro. Em batalha, desce das estrelas envolvendo os aliados em um manto de geada protetora.",
+    "sungStanza": [
+      "Nas lentes de prata do grande mirante,",
+      "Aureon reflete a estrela distante;",
+      "Seu sopro congela a fileira rival,",
+      "Guardando os amigos num véu de cristal!"
+    ]
+  },
+  "purple_46_noiva_vampira": {
+    "cardId": "purple_46_noiva_vampira",
+    "properTitle": "Carmilla, Condessa de Sangue e Ouro",
+    "yearLabel": "Ano 264 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 22,
+    "locationLabel": "Palácio Carmesim do Vale do Eclipse",
+    "proseStory": "Fundadora da aristocracia vampírica do Eclipse no Ano 264 D.F., a Condessa Carmilla transformou a guerra de atrito em arte cortesã. Nos salões de veludo negro e ouro antigo, cada cálice erguido em seus banquetes transfere a juventude do inimigo diretamente para o seu Soberano.",
+    "sungStanza": [
+      "Em taça de ouro e vestido carmim,",
+      "Carmilla sorri no banquete sem fim;",
+      "O sangue que drena do peito inimigo",
+      "Restaura a coroa do trono antigo!"
+    ]
+  },
+  "gold_09_serafim_solar": {
+    "cardId": "gold_09_serafim_solar",
+    "properTitle": "Zephaniel, Arcanjo Solar do Zênite",
+    "yearLabel": "Ano 289 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 23,
+    "locationLabel": "Torre Zênite de Solária",
+    "proseStory": "No solstício do Ano 289 D.F., quando os sete espelhos solares do Bastião convergiram num único ponto, Zephaniel desceu pela coluna de luz. Como executor supremo do Tribunal de Solária, seu feixe lancinante julga o adversário do alto da Retaguarda enquanto restaura a força do Soberano.",
+    "sungStanza": [
+      "Quando o sol atinge o ponto mais alto,",
+      "Zephaniel desce pronto pro assalto;",
+      "Seu raio de ouro castiga o traidor,",
+      "Curando as feridas do justo senhor!"
+    ]
+  },
+  "green_25_dragao_verde": {
+    "cardId": "green_25_dragao_verde",
+    "properTitle": "Viperia, Tirana da Selva Tóxica",
+    "yearLabel": "Ano 312 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 24,
+    "locationLabel": "Vale dos Vapores de Veridia",
+    "proseStory": "Senhora do Vale dos Vapores no coração fechado de Veridia, Viperia destilou no Ano 312 D.F. o néctar das mil orquídeas venenosas em seu próprio sopro. Nenhuma falange consegue manter a força dos braços após respirar a névoa verde que desce de suas asas.",
+    "sungStanza": [
+      "Por trás do perfume da flor tropical,",
+      "Viperia esconde a nuvem letal;",
+      "Basta um só sopro de névoa esmeralda",
+      "Pra cair sem força quem sobe a fralda!"
+    ]
+  },
+  "neutral_35_colosso_adamantina": {
+    "cardId": "neutral_35_colosso_adamantina",
+    "properTitle": "Titã Forjado em Adamantina",
+    "yearLabel": "Ano 340 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 25,
+    "locationLabel": "Portões da Torre Cinzenta",
+    "proseStory": "Construído pelos mestres artífices da Fronteira Cinzenta no Ano 340 D.F. para guardar a neutralidade das caravanas, este colosso não possui lealdade a nenhuma cor. Sua couraça maciça de adamantina cinzenta suporta tanto o fogo de Pyros quanto o gelo de Vórtex.",
+    "sungStanza": [
+      "Forjado sem cor na bigorna central,",
+      "De pura adamantina e peso brutal;",
+      "Marcha por quem paga o justo tributo,",
+      "Partindo a vanguarda com passo absoluto!"
+    ]
+  },
+  "red_47_arquiduque_ferro": {
+    "cardId": "red_47_arquiduque_ferro",
+    "properTitle": "Belphegor, Regente da Cidadela Ardente",
+    "yearLabel": "Ano 366 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 26,
+    "locationLabel": "Bastilha de Ferro de Pyros",
+    "proseStory": "Nomeado Regente Militar das muralhas externas de Pyros no Ano 366 D.F., Belphegor transformou bandos indisciplinados de saqueadores em legiões blindadas. Ao sobrevoar a linha de batalha, seu grito de comando tempera o aço e o ânimo de todos os aliados.",
+    "sungStanza": [
+      "Com asas de brasa e couraça de aço,",
+      "Belphegor ordena da tropa o compasso;",
+      "Ao som de seu brado na linha de frente,",
+      "Todo soldado se faz mais valente!"
+    ]
+  },
+  "blue_45_oraculo_abissal": {
+    "cardId": "blue_45_oraculo_abissal",
+    "properTitle": "Nereus, Soberano das Sete Marés",
+    "yearLabel": "Ano 382 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 27,
+    "locationLabel": "Trono Submerso de Vórtex",
+    "proseStory": "No Ano 382 D.F., Nereus unificou as sete correntes marítimas sob o Pináculo de Vórtex. Capaz de ler o futuro no desenho da espuma, expulsa campeões inimigos de volta ao ponto de partida com um gesto do tridente enquanto abastece a mão do Soberano.",
+    "sungStanza": [
+      "Sete correntes obedecem à mão",
+      "De quem lê na espuma o que as eras trarão;",
+      "Nereus devolve o invasor para o mar,",
+      "Trazendo segredos pro sábio jogar!"
+    ]
+  },
+  "gold_157_dragao_soberano_alvorada": {
+    "cardId": "gold_157_dragao_soberano_alvorada",
+    "properTitle": "Aurelius, Soberano Dragão da Alvorada",
+    "yearLabel": "Ano 388 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 28,
+    "locationLabel": "Catedral dos Sete Sóis (Solária)",
+    "proseStory": "Coroado no grande jubileu de 388 D.F. no topo da Catedral dos Sete Sóis, Aurelius é o estandarte vivo da Alvorada. Quando abre suas quatro asas de ouro e marfim sobre o campo de batalha, cada aliado recebe uma redoma impenetrável de luz solar.",
+    "sungStanza": [
+      "Quatro asas de ouro no céu da manhã,",
+      "Que fazem da sombra uma ameaça vã;",
+      "Aurelius sopra a chama divina,",
+      "E ergue Solária por cima da ruína!"
+    ]
+  },
+  "purple_99_lorde_vampiro_anciao": {
+    "cardId": "purple_99_lorde_vampiro_anciao",
+    "properTitle": "Vladislaus, O Patriarca de Sangue",
+    "yearLabel": "Ano 402 D.F.",
+    "eraTitle": "IIª Era — As Cinco Cidadelas",
+    "eraId": "era_2_cidadelas",
+    "chronologicalOrder": 29,
+    "locationLabel": "Cripta Real da Corte Carmesim",
+    "proseStory": "Patriarca fundador das sete linhagens nobres do Vale do Eclipse no Ano 402 D.F., Vladislaus jamais suja as mãos com soldados rasos: em cada investida aérea, sua espada mira diretamente a garganta e a reserva vital do próprio Soberano adversário.",
+    "sungStanza": [
+      "Mais velho que a pedra do negro castelo,",
+      "Vladislaus caça no escuro mais belo;",
+      "Ignora o escudeiro e avança no ar,",
+      "Fugindo com o sangue de quem comandar!"
+    ]
+  },
+  "red_46_tirano_carmesim": {
+    "cardId": "red_46_tirano_carmesim",
+    "properTitle": "Ignarok, o Devorador de Reinos",
+    "yearLabel": "Ano 412 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 30,
+    "locationLabel": "Planícies Calcinadas do Centro",
+    "proseStory": "No segundo ano da Guerra do Sangue Derramado (412 D.F.), Ignarok liderou a primeira grande ofensiva aérea de Pyros além das montanhas. Famoso por mergulhar diretamente sobre a tenda de comando inimiga, cada ataque seu fere ao mesmo tempo a linha de frente e o Soberano rival.",
+    "sungStanza": [
+      "Por cima dos muros do centro voou,",
+      "E três fortalezas em cinza deixou;",
+      "Ignarok não para na linha do chão:",
+      "Seu fogo vai reto queimar o barão!"
+    ]
+  },
+  "purple_08_lorde_abissal": {
+    "cardId": "purple_08_lorde_abissal",
+    "properTitle": "Balgorath, Flagelo do Abismo",
+    "yearLabel": "Ano 429 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 31,
+    "locationLabel": "Garganta de Cinzas do Oeste",
+    "proseStory": "Invocado pelos bruxos mais radicais do Eclipse no Ano 429 D.F., Balgorath foi concebido como uma bomba viva de entropia. Mesmo quando abatido pelas lanças inimigas, seu núcleo abissal rompe-se numa explosão catastrófica que arrasta consigo aliados e adversários.",
+    "sungStanza": [
+      "Teme o guerreiro que o consegue abater,",
+      "Pois quando Balgorath começa a morrer,",
+      "Rebenta no peito a fornalha abissal,",
+      "Levando consigo a fileira rival!"
+    ]
+  },
+  "green_33_behemoth_primordial": {
+    "cardId": "green_33_behemoth_primordial",
+    "properTitle": "Gorgoroth, Behemoth Devorador de Montanhas",
+    "yearLabel": "Ano 448 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 32,
+    "locationLabel": "Cordilheira Sul de Veridia",
+    "proseStory": "Quando os engenheiros de cerco tentaram abrir estradas militares através das montanhas de Veridia no Ano 448 D.F., os druidas despertaram Gorgoroth. Tão vasto que árvores crescem entre suas placas dorsais, sua simples chegada revigora todo o exército verde.",
+    "sungStanza": [
+      "Quiseram abrir na montanha um caminho,",
+      "Mas lá descansava o colosso sozinho;",
+      "Ergueu-se Gorgoroth mastigando o metal,",
+      "Curando a floresta do golpe mortal!"
+    ]
+  },
+  "gold_46_arcanjo_supremo": {
+    "cardId": "gold_46_arcanjo_supremo",
+    "properTitle": "Caelestius, o Serafim de Seis Asas",
+    "yearLabel": "Ano 467 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 33,
+    "locationLabel": "Cerco do Vale Dourado",
+    "proseStory": "No inverno mais sangrento do Cerco do Vale Dourado (467 D.F.), quando as muralhas externas estavam prestes a cair, Caelestius abriu suas seis asas sobre os defensores exaustos. A chuva de penas luminosas fechou todas as feridas da tropa em um único instante.",
+    "sungStanza": [
+      "Seis asas abriram no céu em fumaça,",
+      "Trazendo aos feridos o bálsamo e a graça;",
+      "Caelestius cantou sobre o muro caído,",
+      "E ergueu-se de novo o esquadrão redimido!"
+    ]
+  },
+  "purple_47_avatar_escuridao": {
+    "cardId": "purple_47_avatar_escuridao",
+    "properTitle": "Nocturnus, Avatar da Noite Sem Fim",
+    "yearLabel": "∞ A.F.",
+    "eraTitle": "Era Zero — A Vigília Imóvel",
+    "eraId": "era_0_vigilia",
+    "chronologicalOrder": 4,
+    "locationLabel": "Fenda Abissal do Vale do Eclipse",
+    "proseStory": "Terceiro dos Cinco Irmãos Primogênitos da Era Zero, Nocturnus compadeceu-se de um mundo onde a luz branca perpétua do Coroa-Prisma impedia o sono e os sonhos. Nas cavernas abissais sob o Monte Axial, forjou em segredo a Foice Umbral para rasgar o clarão imóvel e presentear Vaeloria com o repouso da primeira noite.",
+    "sungStanza": [
+      "Onde o astro sem pausa cegava a visão,",
+      "Nocturnus teceu a primeira escuridão;",
+      "Ergueu sua foice de prata sideral,",
+      "Rasgando no zênite o véu imortal!"
+    ]
+  },
+  "red_64_principe_fogo": {
+    "cardId": "red_64_principe_fogo",
+    "properTitle": "Ignis-Vael, Príncipe do Núcleo Ardente",
+    "yearLabel": "Ano 504 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 34,
+    "locationLabel": "Câmara Magmática de Pyros",
+    "proseStory": "Proclamado Príncipe Regente dos elementais puros no Ano 504 D.F., Ignis-Vael não usa armadura porque seu próprio corpo é um sol subterrâneo em miniatura. A cada turno que permanece em campo, o calor de sua presença aumenta a ferocidade de todas as armas aliadas.",
+    "sungStanza": [
+      "Não veste couraça quem é feito de brasa,",
+      "Que toda a vanguarda num sopro já arrasa;",
+      "Ignis-Vael brilha na frente da fila,",
+      "E o ferro aliado em calor rejubila!"
+    ]
+  },
+  "green_67_tiranossauro_alfa": {
+    "cardId": "green_67_tiranossauro_alfa",
+    "properTitle": "Rex Primordial da Cratera Perdida",
+    "yearLabel": "Ano 518 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 35,
+    "locationLabel": "Cratera Perdida do Sul de Veridia",
+    "proseStory": "Solto das selvas fechadas da Cratera Perdida no Ano 518 D.F., este predador alfa jamais aprendeu o significado de cautela. Entra na arena em disparada total, partindo escudos e armaduras pesadas com a força de suas mandíbulas no primeiro segundo do combate.",
+    "sungStanza": [
+      "Da velha cratera onde o tempo parou,",
+      "O rei das escamas faminto saltou;",
+      "Não espera comando nem toca clarim:",
+      "No primeiro bote já leva ao fim!"
+    ]
+  },
+  "purple_63_rainha_fungos": {
+    "cardId": "purple_63_rainha_fungos",
+    "properTitle": "Mycoria, Dama da Podridão",
+    "yearLabel": "Ano 531 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 36,
+    "locationLabel": "Jardins Subterrâneos do Eclipse",
+    "proseStory": "Nos campos encharcados de sangue do Ano 531 D.F., Mycoria espalhou seus esporos violetas sobre os restos das batalhas. Para ela, toda morte é adubo: a cada novo turno, seus jardins fúngicos reerguem um guerreiro tombado da Cripta.",
+    "sungStanza": [
+      "Onde cai o guerreiro no barro sombrio,",
+      "Floresce o jardim do seu manto macio;",
+      "Mycoria recolhe o que a guerra deixou,",
+      "E em tropa de esporos o morto acordou!"
+    ]
+  },
+  "purple_65_principe_mortos": {
+    "cardId": "purple_65_principe_mortos",
+    "properTitle": "Malakor-Vael, Soberano da Não-Vida",
+    "yearLabel": "Ano 532 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 37,
+    "locationLabel": "Trono de Obsidiana do Eclipse",
+    "proseStory": "Autor da célebre Noite da Longa Exumação em 532 D.F., Malakor-Vael provou que qualquer vitória contra o Vale do Eclipse é temporária. Ao descer sobre a arena, varre a Vanguarda rival com energia necrótica enquanto traz de volta seu melhor campeão caído.",
+    "sungStanza": [
+      "Na noite mais longa do escuro fadário,",
+      "Malakor abriu todo o negro relicário;",
+      "Com uma das mãos ele abate o vivente,",
+      "Com a outra levanta o caído valente!"
+    ]
+  },
+  "red_83_dragao_cataclismo": {
+    "cardId": "red_83_dragao_cataclismo",
+    "properTitle": "Pyraxis, Soberano da Ruína Solar",
+    "yearLabel": "Ano 554 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 38,
+    "locationLabel": "Pico da Cinza Negra (Pyros)",
+    "proseStory": "No auge das campanhas aéreas de 554 D.F., Pyraxis ficou conhecido como o terror dos tronos porque suas nuvens de cinza escureciam o próprio sol antes do mergulho. Seu sopro vulcânico atravessa as linhas defensivas para atingir diretamente o Soberano inimigo.",
+    "sungStanza": [
+      "Escurece a manhã sob a nuvem de pó,",
+      "Quando desce Pyraxis sem freio e sem dó;",
+      "Por cima do muro seu sopro atravessa,",
+      "Queimando na sala a coroa e a promessa!"
+    ]
+  },
+  "red_99_senhor_balor_fogo": {
+    "cardId": "red_99_senhor_balor_fogo",
+    "properTitle": "Bael-Khor, General do Chicote Ígneo",
+    "yearLabel": "Ano 571 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 39,
+    "locationLabel": "Fronteira de Basalto",
+    "proseStory": "Comandante das vanguardas punitivas de Pyros no Ano 571 D.F., Bael-Khor brande um chicote de sete caudas de magma líquido cujo estalo varre toda a arena no instante de sua chegada.",
+    "sungStanza": [
+      "Estala no ar o chicote de brasa,",
+      "Varrendo em faíscas a tropa que arrasa;",
+      "Bael-Khor na dianteira não deixa quartel,",
+      "Tingindo de rubro o mais alto dossel!"
+    ]
+  },
+  "green_85_fenrir_primordial": {
+    "cardId": "green_85_fenrir_primordial",
+    "properTitle": "Fenris-Vael, O Lobo do Fim das Eras",
+    "yearLabel": "Ano 588 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 40,
+    "locationLabel": "Tundra Selvagem do Norte de Veridia",
+    "proseStory": "Libertado de suas correntes de raiz e gelo no Ano 588 D.F., Fenris-Vael caça exércitos inteiros como se fossem rebanhos. Quanto mais longa a batalha, maior torna-se sua fúria e sua velocidade predatória.",
+    "sungStanza": [
+      "Partiu os grilhões na floresta invernal,",
+      "Correndo faminto no vento glacial;",
+      "Fenris-Vael salta por cima do aço,",
+      "Crescendo em furor a cada estilhaço!"
+    ]
+  },
+  "green_86_tarrasque_desperto": {
+    "cardId": "green_86_tarrasque_desperto",
+    "properTitle": "Kragmorth, O Devorador de Eras",
+    "yearLabel": "Ano 599 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 41,
+    "locationLabel": "Fenda Continental de Vaeloria",
+    "proseStory": "O ápice do terror da IIIª Era: no Ano 599 D.F., o excesso de cataclismos mágicos rachou o manto continental e despertou Kragmorth. Encouraçado em placas de rocha primordial imunes a flechas comuns, sua marcha engoliu três fortalezas inteiras e convenceu os Cinco Soberanos de que o mundo precisava de um Pacto.",
+    "sungStanza": [
+      "Das fendas abertas da terra acordou,",
+      "A fera que os tronos do mundo calou;",
+      "Kragmorth quando marcha não desvia do forte:",
+      "Mastiga a muralha e cospe o suporte!"
+    ]
+  },
+  "neutral_09_baphometis_abismo": {
+    "cardId": "neutral_09_baphometis_abismo",
+    "properTitle": "Tauron-Khor, Titã Quebra-Tronos",
+    "yearLabel": "Ano 634 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 42,
+    "locationLabel": "Labirinto de Ferro da Fronteira Cinzenta",
+    "proseStory": "Senhor dos labirintos de pedra negra na fronteira sem lei durante os anos finais da grande guerra (634 D.F.), Tauron-Khor derrubou os portões de quatro capitais provinciais com seus chifres de bronze antes de ser contido pelos selos de Valkyra.",
+    "sungStanza": [
+      "No centro do velho labirinto sem luz,",
+      "Tauron-Khor carrega o machado que reluz;",
+      "Não serve a coroa nem dobra o joelho:",
+      "Deixa todo trono em pedaço vermelho!"
+    ]
+  },
+  "gold_119_soberano_ordem_eterna": {
+    "cardId": "gold_119_soberano_ordem_eterna",
+    "properTitle": "Justinian, Soberano da Ordem Eterna",
+    "yearLabel": "Ano 689 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 43,
+    "locationLabel": "Salão do Tratado (Torre dos Cinco Selos)",
+    "proseStory": "Primeiro signatário do Pacto Cromático em nome de Solária no Ano 689 D.F., Justinian redigiu os artigos que instituíram a Vanguarda de Escudos. Na Arena, sua presença envolve todo o exército aliado em escudos dourados inquebráveis.",
+    "sungStanza": [
+      "Com pena de ouro assinou o tratado,",
+      "Deixando o massacre no tempo passado;",
+      "Justinian ergue o bastão da aliança,",
+      "E veste a falange de luz e esperança!"
+    ]
+  },
+  "blue_80_senhor_tempo": {
+    "cardId": "blue_80_senhor_tempo",
+    "properTitle": "Thaddeus, Senhor do Tempo",
+    "yearLabel": "Ano 702 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 44,
+    "locationLabel": "Câmara Horológica de Vórtex",
+    "proseStory": "Designado pelo Conclave de Vórtex no Ano 702 D.F. para fiscalizar os turnos da Arena do Pacto, Thaddeus carrega no peito o relógio que paralisa vanguardas inteiras enquanto concede ao seu Soberano o tempo de ler dois novos pergaminhos.",
+    "sungStanza": [
+      "Bateu seu cajado no piso do salão,",
+      "E os quatro guerreiros pararam no chão;",
+      "Enquanto o rival congelado espera,",
+      "Thaddeus escolhe o destino da era!"
+    ]
+  },
+  "neutral_44_dragao_relogio": {
+    "cardId": "neutral_44_dragao_relogio",
+    "properTitle": "Draco Horológico de Aeternus",
+    "yearLabel": "Ano 718 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 45,
+    "locationLabel": "Oficinas da Torre Cinzenta",
+    "proseStory": "Construído em conjunto pelos relojoeiros da Fronteira Cinzenta e de Vórtex no Ano 718 D.F., este dragão mecânico de bronze e cristal serve como guardião imparcial dos relógios de duelo, gerando Essência pura a cada bater de asas.",
+    "sungStanza": [
+      "Com asas de bronze e coração de mola,",
+      "Pelo céu cinzento sem cansar decola;",
+      "Gira a engrenagem no peito central,",
+      "Gerando a Essência do duelo imortal!"
+    ]
+  },
+  "red_82_fenix_taquion": {
+    "cardId": "red_82_fenix_taquion",
+    "properTitle": "Ignis-Aeterna, A Fênix do Tempo Emprestado",
+    "yearLabel": "Ano 741 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 46,
+    "locationLabel": "Pináculo Vulcânico da Fronteira Norte",
+    "proseStory": "Nascida quando uma centelha de Pyros atravessou uma fenda temporal de Vórtex no Ano 741 D.F., Ignis-Aeterna ataca antes mesmo que sua invocação termine de ecoar e, quando abatida, rebobina as próprias cinzas para renascer intacta.",
+    "sungStanza": [
+      "Voou mais depressa que a própria faísca,",
+      "Rasgando a ampulheta que o destino arrisca;",
+      "Se cai em combate virando carvão,",
+      "No instante seguinte já sobe do chão!"
+    ]
+  },
+  "purple_82_senhor_malogro": {
+    "cardId": "purple_82_senhor_malogro",
+    "properTitle": "Nihil-Vael, Devorador de Linhas do Tempo",
+    "yearLabel": "Ano 768 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 47,
+    "locationLabel": "Abismo Horológico do Oeste",
+    "proseStory": "Quando cronomantes imprudentes tentaram alterar o resultado de um duelo oficial em 768 D.F., Nihil-Vael emergiu da fenda para devorar os anos roubados. Seu sopro envelhece o aço e drena a vitalidade de toda a linha de frente adversária.",
+    "sungStanza": [
+      "Devorou os anos que o mago roubou,",
+      "E em cinza violeta o escudo deixou;",
+      "Nihil-Vael sopra o vento do fim,",
+      "Tingindo a vanguarda de negro carmim!"
+    ]
+  },
+  "purple_83_arquidemonio_tempo": {
+    "cardId": "purple_83_arquidemonio_tempo",
+    "properTitle": "Mephistar, O Demônio do Pacto Eterno",
+    "yearLabel": "Ano 794 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 48,
+    "locationLabel": "Arquivo Negro da Catedral de Obsidiana",
+    "proseStory": "Guardião dos contratos perpétuos assinados na Catedral de Obsidiana desde 794 D.F., Mephistar cobra juros em sangue de qualquer Soberano rival enquanto devolve à vida os devedores que juraram servir ao Eclipse.",
+    "sungStanza": [
+      "Assina em pergaminho de couro e carmim",
+      "O contrato eterno que nunca tem fim;",
+      "Mephistar cobra a dívida em dor,",
+      "Erguendo da tumba o fiel servidor!"
+    ]
+  },
+  "gold_47_dragao_solar": {
+    "cardId": "gold_47_dragao_solar",
+    "properTitle": "Heliodor, Dragão do Sol Nascente",
+    "yearLabel": "Ano 815 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 49,
+    "locationLabel": "Muralha Leste de Solária",
+    "proseStory": "Sentinela matinal das fronteiras de Solária desde 815 D.F., Heliodor é sempre o primeiro a levantar voo ao romper da aurora. O brilho de suas escamas inspira as tropas em terra, aumentando tanto o poder de ataque quanto a resistência da falange.",
+    "sungStanza": [
+      "Primeiro a subir quando rompe a manhã,",
+      "Fazendo da treva uma sombra pagã;",
+      "Heliodor brilha por cima do valo,",
+      "Dando força ao peão e vigor ao cavalo!"
+    ]
+  },
+  "green_49_dragao_esmeralda": {
+    "cardId": "green_49_dragao_esmeralda",
+    "properTitle": "Smaragda, Soberana da Selva Fechada",
+    "yearLabel": "Ano 839 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 50,
+    "locationLabel": "Copa Real de Veridia",
+    "proseStory": "Ágil e silenciosa entre as copas gigantescas de Veridia desde 839 D.F., Smaragda domina os céus da floresta com um sopro ácido que corrói armaduras inimigas enquanto suas próprias escamas verdes se regeneram a cada estação.",
+    "sungStanza": [
+      "Escondida no verde do alto dossel,",
+      "Smaragda destila seu sopro de fel;",
+      "Se uma flecha lhe fere a escama real,",
+      "A seiva da mata já cura o sinal!"
+    ]
+  },
+  "neutral_24_dragao_astral": {
+    "cardId": "neutral_24_dragao_astral",
+    "properTitle": "Astrolon, Dragão do Vácuo Estelar",
+    "yearLabel": "Ano 862 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 51,
+    "locationLabel": "Cúpula Astral da Torre Cinzenta",
+    "proseStory": "Pousou sobre a Torre dos Cinco Selos no Ano 862 D.F. durante a assinatura dos primeiros tratados bicolores. Por habitar o espaço entre as constelações, Astrolon canaliza Essência livre e revela novos pergaminhos a qualquer Soberano que o invoque.",
+    "sungStanza": [
+      "Vindo do espaço onde brilha o fanal,",
+      "Astrolon pousou na torre central;",
+      "Nas asas carrega a estrela que guia,",
+      "Dando carta na mão e mais energia!"
+    ]
+  },
+  "red_65_dragao_magma_anciao": {
+    "cardId": "red_65_dragao_magma_anciao",
+    "properTitle": "Magmarok, o Tirano Piroclástico",
+    "yearLabel": "Ano 884 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 52,
+    "locationLabel": "Rio de Lava da Concordata Rubro-Solar",
+    "proseStory": "Selo vivo da força vulcânica de Pyros no Ano 884 D.F., Magmarok cospe uma maré de rocha líquida que varre toda a fileira adversária antes mesmo de suas garras tocarem o chão da arena.",
+    "sungStanza": [
+      "Antes da garra tocar no broquel,",
+      "Já corre na frente o magma cruel;",
+      "Magmarok avança num salto de brasa,",
+      "E toda a fileira num sopro ele arrasa!"
+    ]
+  },
+  "gold_65_emperion_solar": {
+    "cardId": "gold_65_emperion_solar",
+    "properTitle": "Aurelion, O Titã Empíreo",
+    "yearLabel": "Ano 901 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 53,
+    "locationLabel": "Praça das Dez Alianças (Solária)",
+    "proseStory": "Campeão invicto de Solária nos grandes torneios diplomáticos do Ano 901 D.F., Aurelion ergue sua alabarda solar para abençoar simultaneamente o ataque e a vitalidade de todas as tropas aliadas em campo.",
+    "sungStanza": [
+      "Na praça dourada das dez alianças,",
+      "Aurelion ergueu o brasão das esperanças;",
+      "Ao lado do titã ninguém desfalece:",
+      "Toda a falange em vigor resplandece!"
+    ]
+  },
+  "blue_97_draco_relampago": {
+    "cardId": "blue_97_draco_relampago",
+    "properTitle": "Zephyros, O Dragão da Tempestade Astral",
+    "yearLabel": "Ano 924 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 54,
+    "locationLabel": "Estreito das Tempestades (Vórtex)",
+    "proseStory": "Mensageiro alado das alianças de Vórtex no Ano 924 D.F., Zephyros cruza o continente na velocidade de um relâmpago, trazendo dois novos pergaminhos táticos ao Soberano enquanto fustiga o inimigo do alto.",
+    "sungStanza": [
+      "Mais rápido voa que o próprio clarão,",
+      "Trazendo dois tomos pro sábio na mão;",
+      "Zephyros lampeja nas nuvens do mar,",
+      "Sem lança terrena poder lhe alcançar!"
+    ]
+  },
+  "blue_98_soberano_mares": {
+    "cardId": "blue_98_soberano_mares",
+    "properTitle": "Aegirion, Soberano das Fendas Abissais",
+    "yearLabel": "Ano 948 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 55,
+    "locationLabel": "Muralha Marítima de Vórtex",
+    "proseStory": "No Ano 948 D.F., Aegirion ergueu os diques de gelo abissal que protegem as rotas comerciais de Vórtex. Quando entra na Vanguarda, sua onda polar congela e fere todos os atacantes rivais de ponta a ponta.",
+    "sungStanza": [
+      "Do fundo da fenda subiu com o tridente,",
+      "Gelando de vez a fileira da frente;",
+      "Aegirion firma na espuma o seu pé,",
+      "E ninguém avança contra a sua maré!"
+    ]
+  },
+  "purple_100_dragao_necrotico": {
+    "cardId": "purple_100_dragao_necrotico",
+    "properTitle": "Morgath, O Dragão da Chama Necrótica",
+    "yearLabel": "Ano 965 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 56,
+    "locationLabel": "Fronteira do Pacto do Inverno Umbral",
+    "proseStory": "Selado no Tratado de 965 D.F. entre Vórtex e o Eclipse, Morgath sopra um fogo frio de cor ametista que drena a vida dos vivos enquanto levanta automaticamente um guerreiro adormecido na Cripta.",
+    "sungStanza": [
+      "Sua chama é violeta e não traz calor:",
+      "Congela o vivente e lhe rouba o vigor;",
+      "Enquanto Morgath sobrevoa o vallado,",
+      "Da tumba levanta mais um convocado!"
+    ]
+  },
+  "red_100_dragao_vulcanico_anciao": {
+    "cardId": "red_100_dragao_vulcanico_anciao",
+    "properTitle": "Khorvath, O Dragão Vulcânico Ancião",
+    "yearLabel": "Ano 988 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 57,
+    "locationLabel": "Trono da Cratera Alta (Pyros)",
+    "proseStory": "Decano das ninhadas reais de Pyros no final do décimo século (988 D.F.), Khorvath domina tanto a Vanguarda quanto o ataque à distância: ao surgir nos céus da arena, lança um cometa de magma diretamente sobre o Soberano adversário.",
+    "sungStanza": [
+      "Cem anos dormiu no vulcão principal,",
+      "Saindo na nuvem de fogo real;",
+      "Khorvath quando ruge lá do firmamento,",
+      "Já tira do trono o rival num momento!"
+    ]
+  },
+  "green_102_hidra_venenosa": {
+    "cardId": "green_102_hidra_venenosa",
+    "properTitle": "Polydra, A Hidra de Nove Cabeças",
+    "yearLabel": "Ano 1.004 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 58,
+    "locationLabel": "Delta Esmeralda de Veridia",
+    "proseStory": "Catalogada pelos naturalistas da Torre Cinzenta no Ano 1.004 D.F. como a criatura mais letal dos rios do sul, cada uma das nove cabeças de Polydra carrega uma peçonha capaz de abater qualquer colosso com uma única mordida.",
+    "sungStanza": [
+      "Nove gargantas silvam no pântano verde,",
+      "Onde todo escudo de ferro se perde;",
+      "Basta um só dente de Polydra tocar,",
+      "Para o maior gigante no lodo tombar!"
+    ]
+  },
+  "green_103_dragao_floresta_anciao": {
+    "cardId": "green_103_dragao_floresta_anciao",
+    "properTitle": "Silvathor, O Dragão-Floresta Ancião",
+    "yearLabel": "Ano 1.022 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 59,
+    "locationLabel": "Coração de Raiz-Ferro (Veridia)",
+    "proseStory": "Patriarca alado de Veridia no século XI (1.022 D.F.), Silvathor carrega um ecossistema inteiro sobre suas escamas de casca e esmeralda. Quando pousa na Vanguarda, o pólen dourado de suas asas fortalece todo o exército aliado.",
+    "sungStanza": [
+      "Nas asas carrega a semente e a flor,",
+      "No peito a couraça do tronco maior;",
+      "Silvathor pousando na frente da mata,",
+      "Dá força dobrada à falange de prata!"
+    ]
+  },
+  "gold_99_serafim_coroado": {
+    "cardId": "gold_99_serafim_coroado",
+    "properTitle": "Seraphiel, A Imperatriz das Seis Asas",
+    "yearLabel": "Ano 1.045 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 60,
+    "locationLabel": "Santuário Coral de Solária",
+    "proseStory": "Regente do Coro Celestial de Solária desde 1.045 D.F., Seraphiel entoa o hino que restaura a vitalidade do Soberano enquanto estende um véu de Escudos Divinos sobre cada companheiro de armas.",
+    "sungStanza": [
+      "Quando Seraphiel abre a voz na canção,",
+      "Fecha-se a chaga do nosso barão;",
+      "E cada soldado que guarda a fileira",
+      "Recebe um escudo de luz verdadeira!"
+    ]
+  },
+  "gold_100_dragao_imperial_ouro": {
+    "cardId": "gold_100_dragao_imperial_ouro",
+    "properTitle": "Aurion-Sol, O Dragão Imperial do Zênite",
+    "yearLabel": "Ano 1.068 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 61,
+    "locationLabel": "Trono Alto do Bastião dos Sete Sóis",
+    "proseStory": "Protetor pessoal do Trono Solar no Ano 1.068 D.F., Aurion-Sol lidera a carga final das legiões douradas: seu rugido eleva permanentemente o vigor e a força de todas as unidades aliadas.",
+    "sungStanza": [
+      "Do alto do zênite desce o dragão,",
+      "Dourando as espadas de todo o esquadrão;",
+      "Com Aurion-Sol a guardar a vanguarda,",
+      "Nenhuma muralha inimiga se guarda!"
+    ]
+  },
+  "neutral_54_dragao_etereo": {
+    "cardId": "neutral_54_dragao_etereo",
+    "properTitle": "Aetherion, O Dragão do Vácuo Astral",
+    "yearLabel": "Ano 1.089 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 62,
+    "locationLabel": "Horizonte Estelar da Fronteira Cinzenta",
+    "proseStory": "Guardião das rotas etéreas entre os cinco domínios desde 1.089 D.F., Aetherion condensa a luz das estrelas distantes em duas cargas imediatas de Essência pura para o Soberano que o convoca.",
+    "sungStanza": [
+      "Nas asas translúcidas brilha o luar,",
+      "Trazendo duas chamas de Essência no ar;",
+      "Aetherion paira acima da cor,",
+      "Servindo na Arena ao mais sábio senhor!"
+    ]
+  },
+  "red_119_soberano_piroclasma": {
+    "cardId": "red_119_soberano_piroclasma",
+    "properTitle": "Pyroclasmos, Imperador das Chamas",
+    "yearLabel": "Ano 1.104 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 63,
+    "locationLabel": "Cidadela Superior de Pyros",
+    "proseStory": "Vencedor do Grande Torneio Imperial de 1.104 D.F., Pyroclasmos combina a velocidade do Ímpeto com uma onda de choque vulcânica que incinera toda a Vanguarda adversária no instante em que entra na arena.",
+    "sungStanza": [
+      "Entrou na arena qual raio de brasa,",
+      "Varrendo de frente a falange que arrasa;",
+      "Pyroclasmos reina no fogo maior,",
+      "Sem dar ao rival nem alívio nem dor!"
+    ]
+  },
+  "blue_117_arconte_astral": {
+    "cardId": "blue_117_arconte_astral",
+    "properTitle": "Orion, Arconte da Tempestade Astral",
+    "yearLabel": "Ano 1.115 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 64,
+    "locationLabel": "Observatório Superior de Vórtex",
+    "proseStory": "Mestre supremo da artilharia celeste de Vórtex no Ano 1.115 D.F., Orion desce envolto em relâmpagos azuis que ferem e congelam simultaneamente todos os inimigos posicionados na Vanguarda.",
+    "sungStanza": [
+      "Com arco de estrela e flecha de gelo,",
+      "Orion dispara sem erro ou apelo;",
+      "Congela a vanguarda num único instante,",
+      "Brilhando no alto qual astro radiante!"
+    ]
+  },
+  "purple_119_soberano_entropia": {
+    "cardId": "purple_119_soberano_entropia",
+    "properTitle": "Malakor, Imperador da Entropia",
+    "yearLabel": "Ano 1.132 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 65,
+    "locationLabel": "Catedral de Obsidiana (Vale do Eclipse)",
+    "proseStory": "Ao ascender à forma suprema no Ano 1.132 D.F., Malakor inaugurou a VIª Era ao abrir a primeira fissura no Sétimo Selo. Sua presença drena a força vital de todas as tropas inimigas de uma só vez para restaurar seu Soberano.",
+    "sungStanza": [
+      "Abriu-se a fissura no sétimo selo,",
+      "Quando Malakor ergueu seu cutelo;",
+      "De todos os vivos recolhe o tributo,",
+      "Reinando nas sombras com mando absoluto!"
+    ]
+  },
+  "green_121_avatar_gaia": {
+    "cardId": "green_121_avatar_gaia",
+    "properTitle": "Tellurion, Avatar Primordial da Terra Viva",
+    "yearLabel": "Ano 1.148 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 66,
+    "locationLabel": "Santuário Central de Veridia",
+    "proseStory": "Despertado pelos Arquidruidas em 1.148 D.F. para conter o avanço das fissuras umbrais, Tellurion ergue montanhas e raízes ao redor de seus aliados, fortalecendo todo o exército e curando o Soberano.",
+    "sungStanza": [
+      "Quando a terra tremeu sob a sombra do mal,",
+      "Tellurion ergueu-se em couraça mineral;",
+      "Cura o Soberano com seiva e granito,",
+      "Fazendo do bosque um baluarte infinito!"
+    ]
+  },
+  "blue_136_leviata_cronos": {
+    "cardId": "blue_136_leviata_cronos",
+    "properTitle": "Chronoleviatã, Soberano do Tempo",
+    "yearLabel": "Ano 1.166 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 67,
+    "locationLabel": "Fenda Temporal do Mar de Vórtex",
+    "proseStory": "Emergiu das águas profundas do Pináculo em 1.166 D.F. nadando não na água, mas no próprio fluxo das horas. Quando surge na arena, paralisa absolutamente todos os inimigos em campo e entrega duas novas memórias ao Soberano.",
+    "sungStanza": [
+      "Nadando nas horas qual peixe no mar,",
+      "Faz todo o tabuleiro de súbito parar;",
+      "Enquanto o inimigo não move um só dedo,",
+      "O Chronoleviatã revela o segredo!"
+    ]
+  },
+  "purple_138_soberano_carnica": {
+    "cardId": "purple_138_soberano_carnica",
+    "properTitle": "Necrothor, Monarca do Trono de Ossos",
+    "yearLabel": "Ano 1.181 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 68,
+    "locationLabel": "Ossário Real do Vale do Eclipse",
+    "proseStory": "Fundido a partir das ossadas de antigos reis dragões no Ano 1.181 D.F., Necrothor varre o campo inimigo com chamas de almas enquanto sifona a vitalidade diretamente do Soberano adversário.",
+    "sungStanza": [
+      "No trono de ossos das eras passadas,",
+      "Necrothor desperta as almas penadas;",
+      "Queima os soldados e drena o senhor,",
+      "Voltando da tumba com novo furor!"
+    ]
+  },
+  "green_141_soberano_fera_primordial": {
+    "cardId": "green_141_soberano_fera_primordial",
+    "properTitle": "Fenris-Gorgon, Imperador das Feras",
+    "yearLabel": "Ano 1.195 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 69,
+    "locationLabel": "Fronteira Selvagem de Veridia",
+    "proseStory": "Alfa supremo das matilhas de Veridia desde 1.195 D.F., o uivo de Fenris-Gorgon desperta o instinto predatório de todas as criaturas aliadas, lançando-as em carga imediata sobre as linhas rivais.",
+    "sungStanza": [
+      "Quando uiva na noite o grande imperador,",
+      "Toda fera da mata redobra o furor;",
+      "Fenris-Gorgon salta na frente da caça,",
+      "E não há parede que o bando não desfaça!"
+    ]
+  },
+  "green_142_patriarca_selva_eterna": {
+    "cardId": "green_142_patriarca_selva_eterna",
+    "properTitle": "Sylvanhorn, Patriarca da Selva Eterna",
+    "yearLabel": "Ano 1.208 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 70,
+    "locationLabel": "Clareira Sagrada de Raiz-Ferro",
+    "proseStory": "Espírito ancestral de galhada dourada que se manifestou em 1.208 D.F. para guiar os guardiões de Veridia através das Fendas do Vazio, restaurando as feridas de todos os aliados em combate.",
+    "sungStanza": [
+      "Com galhada de luz na clareira sagrada,",
+      "Sylvanhorn abençoa a tropa cansada;",
+      "Fecha toda ferida e levanta o moral,",
+      "Guardando a floresta do golpe final!"
+    ]
+  },
+  "gold_138_imperador_sol_supremo": {
+    "cardId": "gold_138_imperador_sol_supremo",
+    "properTitle": "Hyperion, Deus-Imperador da Aurora",
+    "yearLabel": "Ano 1.220 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 71,
+    "locationLabel": "Cúpula Dourada de Solária",
+    "proseStory": "Avatar vivo dos Sete Sóis de Solária invocado em 1.220 D.F., Hyperion desce à arena revestindo cada aliado com Escudo Divino e armadura radiante para o confronto decisivo da VIª Era.",
+    "sungStanza": [
+      "Sete sóis brilharam na ponta da lança,",
+      "Quando Hyperion desceu liderando a aliança;",
+      "Veste cada aliado num manto de luz,",
+      "Que à vitória suprema Solária conduz!"
+    ]
+  },
+  "blue_154_dragao_safira_soberano": {
+    "cardId": "blue_154_dragao_safira_soberano",
+    "properTitle": "Dragão de Safira Sônico",
+    "yearLabel": "Ano 1.232 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 72,
+    "locationLabel": "Pináculo Acústico de Vórtex",
+    "proseStory": "Desperto nas câmaras de ressonância de Vórtex no Ano 1.232 D.F., seu rugido sônico estilhaça formações inteiras, congelando a Vanguarda adversária em cristal azul enquanto revela dois novos pergaminhos.",
+    "sungStanza": [
+      "Seu rugido não é fogo: é trovão de cristal,",
+      "Que paralisa de frente a falange rival;",
+      "Nas escamas de safira ressoa a canção,",
+      "Trazendo duas cartas pro sábio na mão!"
+    ]
+  },
+  "purple_157_dragao_sombra_abissal": {
+    "cardId": "purple_157_dragao_sombra_abissal",
+    "properTitle": "Monarca dos Três Crânios",
+    "yearLabel": "Ano 1.240 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 73,
+    "locationLabel": "Altar Tríplice da Catedral de Obsidiana",
+    "proseStory": "Erguido no presente Ano de 1.240 D.F. a partir da união de três antigos reis-liches do Vale do Eclipse, o Monarca dos Três Crânios fala simultaneamente pelo Passado, pelo Presente e pelo Fim, liderando as legiões imortais na guerra pelos Relicários.",
+    "sungStanza": [
+      "Três crânios coroados num único trono,",
+      "Chamando os exércitos fora do sono;",
+      "Na noite suprema do Eclipse surgiu,",
+      "E a Cripta inteira ao seu mando subiu!"
+    ]
+  },
+  "neutral_116_harshnag_machado_inverno": {
+    "cardId": "neutral_116_harshnag_machado_inverno",
+    "properTitle": "Skrym-Khor, O Gigante Quebra-Tronos",
+    "yearLabel": "Ano 740 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 74,
+    "locationLabel": "Cordilheira da Espinha Cinzenta",
+    "proseStory": "Veterano das guerras nortenhas que abateu um dragão ancião em duelo singular e tomou seu crânio como elmo, Skrym-Khor recusou-se a jurar vassalagem a qualquer trono elemental. Desde 740 D.F., guarda as passagens da Fronteira Cinzenta com seu machado rúnico colossal.",
+    "sungStanza": [
+      "Com crânio de drago forjado no gelo,",
+      "Skrym-Khor guarda o monte com feroz desvelo;",
+      "Quando o grande machado na rocha bateu,",
+      "Toda a linha inimiga de frente cedeu!"
+    ]
+  },
+  "neutral_117_elminster_sabio_cinzento": {
+    "cardId": "neutral_117_elminster_sabio_cinzento",
+    "properTitle": "Valerius, Arquimago dos Sete Selos",
+    "yearLabel": "Ano 680 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 75,
+    "locationLabel": "Torre dos Cinco Selos (Fronteira Cinzenta)",
+    "proseStory": "Redator original das cláusulas arcanas do Pacto Cromático no Ano 680 D.F., Valerius domina as cinco frequências sem pertencer a nenhuma. De seu cajado de prata sobem espirais que revelam os planos ocultos de reis e demônios.",
+    "sungStanza": [
+      "Mais velho que os tronos que vivem em guerra,",
+      "Valerius conhece os segredos da terra;",
+      "Redigiu os tratados com tinta de luz,",
+      "E o próprio equilíbrio nos selos conduz!"
+    ]
+  },
+  "neutral_118_volothamp_cronista_mundos": {
+    "cardId": "neutral_118_volothamp_cronista_mundos",
+    "properTitle": "Aldous, Grande Cronista do Bestiário",
+    "yearLabel": "Ano 965 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 76,
+    "locationLabel": "Grande Biblioteca da Fronteira",
+    "proseStory": "Armado apenas com uma pena encantada, um chapéu emplumado e uma audácia inverossímil, Aldous percorreu os cinco continentes de Vaeloria catalogando a anatomia e as fraquezas de cada fera, dragão e aberração.",
+    "sungStanza": [
+      "De pena na mão e chapéu emplumado,",
+      "Deixou cada monstro em seu livro anotado;",
+      "Quem lê seu compêndio na hora da dor,",
+      "Encontra a fraqueza de qualquer senhor!"
+    ]
+  },
+  "neutral_119_colosso_vonindod_fragmento": {
+    "cardId": "neutral_119_colosso_vonindod_fragmento",
+    "properTitle": "Titã Ferrostor, O Devastador de Dragões",
+    "yearLabel": "Ano 110 D.F.",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 77,
+    "locationLabel": "Cratera de Adamantina (Fronteira Cinzenta)",
+    "proseStory": "Construído pelos antigos reis-forjadores na Iª Era para abater os dragões primordiais que disputavam os fragmentos do Coroa-Prisma, o Colosso Ferrostor ergue-se com arpões de adamantina e um núcleo de fornalha capaz de estilhaçar exércitos.",
+    "sungStanza": [
+      "Forjado em segredo no ferro mais duro,",
+      "Ergueu-se o colosso quebrando o ar puro;",
+      "Com arpões que derrubam dragões pelo chão,",
+      "Ferrostor é o terror de qualquer legião!"
+    ]
+  },
+  "neutral_120_xanathar_senhor_crime": {
+    "cardId": "neutral_120_xanathar_senhor_crime",
+    "properTitle": "Oculus-Vex, O Olho Mecânico do Submundo",
+    "yearLabel": "Ano 950 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 78,
+    "locationLabel": "Galerias Subterrâneas do Porto Neutro",
+    "proseStory": "Nas galerias profundas sob a Fronteira Cinzenta, um soberano autômato em forma de olho mecânico de bronze e obsidiana governa todas as guildas de espiões e mercenários. Com lentes telescópicas e anéis giroscópicos que nunca se fecham, desintegra traidores num lampejo de energia.",
+    "sungStanza": [
+      "Lentes de bronze girando no chão,",
+      "Controlam o ouro, a adaga e a traição;",
+      "Ninguém move um passo sem a máquina ver,",
+      "E um feixe da lente faz tudo morrer!"
+    ]
+  },
+  "neutral_121_vizeran_arquimago_exilado": {
+    "cardId": "neutral_121_vizeran_arquimago_exilado",
+    "properTitle": "Malphas, O Tecelão do Ritual Abissal",
+    "yearLabel": "Ano 1.040 D.F.",
+    "eraTitle": "Vª Era — Os Dez Tratados Bicolores",
+    "eraId": "era_5_tratados",
+    "chronologicalOrder": 79,
+    "locationLabel": "Torre da Estalagmite Oca",
+    "proseStory": "Exilado das cortes sombrias por recusar-se a servir aos deuses do Abismo, Malphas esculpiu sua torre no coração de uma estalagmite colossal, onde tece rituais que jogam soberanos rivais uns contra os outros.",
+    "sungStanza": [
+      "Na torre de pedra escondida no fundo,",
+      "Malphas manipula os senhores do mundo;",
+      "Enquanto os tiranos se matam no altar,",
+      "É ele quem fica no fim a reinar!"
+    ]
+  },
+  "neutral_122_rei_hekaton_neutro_arbitro": {
+    "cardId": "neutral_122_rei_hekaton_neutro_arbitro",
+    "properTitle": "Atlas-Khor, O Regente do Ordenamento",
+    "yearLabel": "Ano 520 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 80,
+    "locationLabel": "Trono da Rocha Submersa",
+    "proseStory": "Monarca ancestral das seis castas de gigantes, Atlas-Khor permaneceu neutro durante a Guerra do Sangue Derramado para preservar o Ordenamento. Quando marcha à batalha, sua presença inspira força titânica em todas as fileiras aliadas.",
+    "sungStanza": [
+      "Seis castas gigantes se curvam à voz,",
+      "Do rei que governa a tormenta feroz;",
+      "Sustenta o equilíbrio na ponta da espada,",
+      "Deixando a falange duas vezes dobrada!"
+    ]
+  },
+  "neutral_123_emissario_relojoeiro_supremo": {
+    "cardId": "neutral_123_emissario_relojoeiro_supremo",
+    "properTitle": "Deus-Máquina de Aeternus",
+    "yearLabel": "Ano 1.180 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 81,
+    "locationLabel": "Santuário Horológico da Fronteira",
+    "proseStory": "A obra-prima definitiva dos mestres relojoeiros da Fronteira Cinzenta: um arconte mecânico de platina e ferro negro dotado de consciência própria e capacidade de autorreconstrução perpétua em campo.",
+    "sungStanza": [
+      "Sem carne que sangre, sem medo da dor,",
+      "De platina e ferro surgiu o senhor;",
+      "Se cai na batalha, a mola refaz,",
+      "Trazendo aos aliados couraça capaz!"
+    ]
+  },
+  "neutral_124_tarrasque_despertar_neutro": {
+    "cardId": "neutral_124_tarrasque_despertar_neutro",
+    "properTitle": "Gorgonoth, O Devorador de Continentes",
+    "yearLabel": "Ano 1.240 D.F.",
+    "eraTitle": "VIª Era — O Eclipse do Sétimo Selo",
+    "eraId": "era_6_presente",
+    "chronologicalOrder": 82,
+    "locationLabel": "Fenda Axial Profunda",
+    "proseStory": "A maior monstruosidade viva de Vaeloria, cujo casco espelhado devora feitiços e cujas mandíbulas esmagam fortalezas inteiras. Desperta apenas uma vez por era quando o embate dos cinco domínios racha a crosta do continente.",
+    "sungStanza": [
+      "A terra estremece, a muralha caiu,",
+      "Quando Gorgonoth do abismo subiu;",
+      "Não serve a coroa, nem teme o dragão:",
+      "Deixando os impérios desfeitos no chão!"
+    ]
+  },
+  "neutral_167_arauto_prisma_matriz": {
+    "cardId": "neutral_167_arauto_prisma_matriz",
+    "properTitle": "Matriz do Prisma Primordial",
+    "yearLabel": "Ano 1 D.F. (1ª Hora)",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 83,
+    "locationLabel": "Eixo Partido do Zênite (Monte Axial)",
+    "proseStory": "Quando o Golpe Pentacromático partiu o Coroa-Prisma, o coração diamantino do astro permaneceu suspenso no eixo do céu, revelando um olho ciclópico envolto em anéis de platina e mercúrio líquido. Da Matriz do Prisma Primordial desprenderam-se os cinco Arautos elementais na primeira hora do tempo.",
+    "sungStanza": [
+      "Em anéis de mercúrio e platina sem cor,",
+      "Despertou a Matriz do primeiro fulgor;",
+      "No peito um diamante girava em clarão,",
+      "Sangrando em silêncio a quíntupla refração!"
+    ]
+  },
+  "red_167_arauto_prisma_chama": {
+    "cardId": "red_167_arauto_prisma_chama",
+    "properTitle": "Arauto da Supernova Prismática",
+    "yearLabel": "Ano 1 D.F. (1ª Hora)",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 84,
+    "locationLabel": "Abóbada Ardente do Norte",
+    "proseStory": "Primeiro avatar desprendido da Matriz após a destruição do Coroa-Prisma, o Arauto da Supernova Prismática incendiou a estratosfera boreal até que o Tecelão do Feixe Ígneo curvasse sua torrente para as futuras Caldeiras de Pyros.",
+    "sungStanza": [
+      "Da fenda vermelha do peito central,",
+      "Saltou o primeiro avatar elemental;",
+      "Com halo de escória e estrela no peito,",
+      "Deixou todo o norte em brasas refeito!"
+    ]
+  },
+  "blue_167_arauto_prisma_gelo": {
+    "cardId": "blue_167_arauto_prisma_gelo",
+    "properTitle": "Arauto do Zero Prismático",
+    "yearLabel": "Ano 1 D.F. (1ª Hora)",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 85,
+    "locationLabel": "Zênite Polar de Vórtex",
+    "proseStory": "Nascido por contraste térmico imediato à Supernova na primeira hora da Fratura, o Arauto do Zero Prismático condensou anéis horológicos de geada sobre os polos, impedindo que os oceanos de Vaeloria evaporassem.",
+    "sungStanza": [
+      "Vestido em cristais de safira polida,",
+      "Com uma estrela fria no torso contida;",
+      "Soprou a geada por cima do mar,",
+      "Fazendo a tormenta em silêncio parar!"
+    ]
+  },
+  "purple_167_arauto_prisma_abismo": {
+    "cardId": "purple_167_arauto_prisma_abismo",
+    "properTitle": "Arauto do Eclipse Prismático",
+    "yearLabel": "Ano 1 D.F. (1ª Hora)",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 86,
+    "locationLabel": "Fenda Ocidental do Firmamento",
+    "proseStory": "A primeira sombra projetada no universo quando a luz branca deixou de ser única encarnou no Arauto do Eclipse Prismático, cujo feixe violeta foi guiado pelo Tecelão Umbral até as gargantas profundas do oeste.",
+    "sungStanza": [
+      "Quando a branca Matriz em pedaços partiu,",
+      "Às costas da luz o Primeiro Véu riu;",
+      "Trazendo no peito o vórtice oco,",
+      "Que dobra os soberbos aos poucos, a pouco!"
+    ]
+  },
+  "green_167_arauto_prisma_selva": {
+    "cardId": "green_167_arauto_prisma_selva",
+    "properTitle": "Arauto da Raiz Prismática",
+    "yearLabel": "Ano 1 D.F. (1ª Hora)",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 87,
+    "locationLabel": "Abóbada Meridional sobre Veridia",
+    "proseStory": "Revestido de pau-ferro estelar e anéis de sarças vivas, o Arauto da Raiz Prismática verteu do céu a seiva esmeralda que o Tecelão Silvestre espalhou em mil rios férteis sobre o sul de Vaeloria.",
+    "sungStanza": [
+      "Entrelaçando cipós sobre a rocha estelar,",
+      "Com seiva brilhante no peito a pulsar;",
+      "Cada gota verde que dele pingou",
+      "Em musgo e floresta a montanha mudou!"
+    ]
+  },
+  "gold_167_arauto_prisma_sol": {
+    "cardId": "gold_167_arauto_prisma_sol",
+    "properTitle": "Arauto do Zênite Prismático",
+    "yearLabel": "Ano 1 D.F. (1ª Hora)",
+    "eraTitle": "Iª Era — A Grande Fratura",
+    "eraId": "era_1_fratura",
+    "chronologicalOrder": 88,
+    "locationLabel": "Céu Oriental sobre Solária",
+    "proseStory": "Último dos seis avatares a emergir da destruição do Coroa-Prisma, o Arauto do Zênite Prismático estendeu o primeiro Escudo Divino sobre os horizontes nascentes enquanto o Tecelão Solar pousava sua luz nos planaltos do leste.",
+    "sungStanza": [
+      "Em ouro celeste e com runas de luz,",
+      "Surgiu a presença que a Ordem conduz;",
+      "Abriu sobre os justos seu manto sagrado,",
+      "Deixando o horizonte de escudos cercado!"
+    ]
+  },
+  "red_172_armada_draconica_chama": {
+    "cardId": "red_172_armada_draconica_chama",
+    "properTitle": "Hoste Dracônica da Cratera",
+    "yearLabel": "Ano 655 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 89,
+    "locationLabel": "Abóbada Vulcânica do Norte (Pyros)",
+    "proseStory": "Quando o continente rachado por Kragmorth impediu a marcha de exércitos terrestres, Pyros abriu todas as chaminés da Grande Caldeira em 655 D.F. e despejou nos céus a Hoste Dracônica da Cratera: dezenas de dragões chifrudos de basalto e magma cujo sopro incinera vanguardas inteiras e atinge diretamente o Soberano rival.",
+    "sungStanza": [
+      "Não subiu um só draco de crista imperial,",
+      "Mas a Hoste Dracônica em fúria total;",
+      "Cem gargantas de lava rugindo de par,",
+      "Com chifres de touro rasgando o alto ar!"
+    ]
+  },
+  "blue_172_armada_draconica_gelo": {
+    "cardId": "blue_172_armada_draconica_gelo",
+    "properTitle": "Esquadra Dracônica da Nevasca",
+    "yearLabel": "Ano 661 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 90,
+    "locationLabel": "Frente Ciclônica de Vórtex",
+    "proseStory": "Lançada do Pináculo de Vórtex em 661 D.F. para conter o incêndio boreal de Pyros, a Esquadra Dracônica da Nevasca gira em espiral ciclônica de geada e relâmpago, petrificando vanguardas inteiras em estátuas de gelo antes mesmo que o primeiro leviatã toque o chão.",
+    "sungStanza": [
+      "Seis invernos depois que a fornalha subiu,",
+      "Toda a torre de Vórtex nos ventos se abriu:",
+      "Em espiral de safira, relâmpago e sal,",
+      "Descolou das geleiras a Esquadra glacial!"
+    ]
+  },
+  "purple_172_armada_draconica_abismo": {
+    "cardId": "purple_172_armada_draconica_abismo",
+    "properTitle": "Legião Dracônica do Eclipse",
+    "yearLabel": "Ano 669 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 91,
+    "locationLabel": "Firmamento Sem Sol do Oeste (Eclipse)",
+    "proseStory": "Erguida em 669 D.F. pelos necromantes da Catedral de Obsidiana a partir das ossadas aladas que tombavam da guerra aérea, a Legião Dracônica do Eclipse apagou o sol do meio-dia com uma nuvem de dracoliches cujo sopro anímico reergue os campeões caídos da Cripta.",
+    "sungStanza": [
+      "Das carcaças caídas na terra sangrenta,",
+      "Nasceu no ocidente a revoada cinzenta:",
+      "A Legião do Eclipse, de osso e terror,",
+      "Subindo num vórtice roxo e sem cor!"
+    ]
+  },
+  "green_172_armada_draconica_selva": {
+    "cardId": "green_172_armada_draconica_selva",
+    "properTitle": "Enxame Dracônico Ancestral",
+    "yearLabel": "Ano 675 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 92,
+    "locationLabel": "Dossel Ascendente de Veridia",
+    "proseStory": "Em 675 D.F., o dossel milenar de Veridia inteiro pareceu levantar voo quando o Enxame Dracônico Ancestral — serpes galhadas envoltas em tempestades de esporos e veneno esmeralda — subiu aos céus regenerando suas feridas e redobrando a fúria de toda a mata.",
+    "sungStanza": [
+      "Sacudiram-se os ramos da mata primeira,",
+      "Como se decolasse a floresta inteira:",
+      "Em nuvem de jade, veneno e cipó,",
+      "O Enxame Ancestral levantou-se de um só!"
+    ]
+  },
+  "gold_172_armada_draconica_sol": {
+    "cardId": "gold_172_armada_draconica_sol",
+    "properTitle": "Armada Dracônica do Zênite",
+    "yearLabel": "Ano 683 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 93,
+    "locationLabel": "Cunha Celeste de Solária",
+    "proseStory": "No Ano 683 D.F., para rasgar a escuridão de quatro céus hostis que sufocavam as lavouras do continente, Solária lançou a Armada Dracônica do Zênite: uma cunha radiante de dragões-serafins de seis asas que veste os aliados em Escudos Divinos e restaura o Soberano.",
+    "sungStanza": [
+      "Rompendo as camadas de fumo e geada,",
+      "Desceu em V d’ouro a falange sagrada:",
+      "A Armada do Zênite, em seis asas belas,",
+      "Acesa qual frota de vivas estrelas!"
+    ]
+  },
+  "neutral_172_armada_draconica_matriz": {
+    "cardId": "neutral_172_armada_draconica_matriz",
+    "properTitle": "Armada Dracônica do Prisma",
+    "yearLabel": "Ano 687 D.F.",
+    "eraTitle": "IIIª Era — A Guerra do Sangue Derramado",
+    "eraId": "era_3_guerra",
+    "chronologicalOrder": 94,
+    "locationLabel": "Zênite Cinzento sobre a Torre Axial",
+    "proseStory": "Última revoada a subir na Guerra dos Céus Sem Horizonte em 687 D.F., a Armada Dracônica do Prisma desprendeu-se da cúpula da Torre Axial em dezenas de dragões geométricos de cristal e mercúrio, separando à força os cinco céus em guerra e forçando a trégua que originou o Pacto Cromático em 689 D.F.",
+    "sungStanza": [
+      "Da agulha mais alta da Torre Cinzenta,",
+      "Subiu no seiscentos e oitenta e sete a tormenta:",
+      "A Armada do Prisma, em mercúrio e cristal,",
+      "Refratando nos ares a luz ancestral!"
+    ]
+  },
+  "neutral_173_general_roda_matriz": {
+    "cardId": "neutral_173_general_roda_matriz",
+    "properTitle": "Vaelkor, General da Roda Prismática",
+    "yearLabel": "Ano 839 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 95,
+    "locationLabel": "Átrio Axial da Torre dos Cinco Selos",
+    "proseStory": "Primeiro dos Seis Generais da Roda consagrado em 839 D.F. durante a Crise das Redomas Soberanas, Vaelkor carrega às costas o astrolábio de oito prismas octaédricos. Ao pisar na Arena ou avançar em combate, o giro de sua roda decifra e estilhaça qualquer Expansão de Domínio inimiga enquanto reveste seus aliados em Escudos Divinos.",
+    "sungStanza": [
+      "Do núcleo cinzento de mercúrio e cristal,",
+      "Ergueu-se o primeiro juiz imortal:",
+      "Vaelkor caminhou sobre a pedra partida,",
+      "Trazendo nos ombros a Roda esculpida!"
+    ]
+  },
+  "red_173_general_roda_chama": {
+    "cardId": "red_173_general_roda_chama",
+    "properTitle": "Pyrrakon, General da Roda Vulcânica",
+    "yearLabel": "Ano 841 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 96,
+    "locationLabel": "Bigorna Suprema de Pyros",
+    "proseStory": "Forjado em 841 D.F. nas bigornas abissais de Pyros com dois cutelos vulcânicos acorrentados e uma roda de oito cadinhos ferventes às costas, Pyrrakon derrete instantaneamente qualquer Expansão de Domínio que tente aprisionar as falanges da fornalha.",
+    "sungStanza": [
+      "Elmo de grelha vomitando fumaça,",
+      "Dois cutelos presos onde a chama esvoaça;",
+      "Às costas girava o terrível brasão:",
+      "Oito cadinhos cheios de magma em fusão!"
+    ]
+  },
+  "blue_173_general_roda_gelo": {
+    "cardId": "blue_173_general_roda_gelo",
+    "properTitle": "Cryonax, General da Roda Astral",
+    "yearLabel": "Ano 843 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 97,
+    "locationLabel": "Câmara do Astrolábio Frio (Vórtex)",
+    "proseStory": "Consagrado em 843 D.F. pelos mestres horológicos de Vórtex, Cryonax flutua sobre quatro asas de geada eletrostática com uma roda de oito globos de tempestade. Basta um estalo de seu astrolábio polar para trincar Expansões de Domínio rivais como vidro e congelar toda a Vanguarda adversária.",
+    "sungStanza": [
+      "Atrás de seus ombros, sem falha ou ruído,",
+      "Girava o astrolábio de gelo polido:",
+      "Oito globos azuis de tormenta guardada,",
+      "Calculando a fraqueza da cúpula armada!"
+    ]
+  },
+  "purple_173_general_roda_abismo": {
+    "cardId": "purple_173_general_roda_abismo",
+    "properTitle": "Nyxaroth, General da Roda Fúnebre",
+    "yearLabel": "Ano 845 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 98,
+    "locationLabel": "Nave Sem Luz da Catedral de Obsidiana",
+    "proseStory": "Erguido na Catedral de Obsidiana em 845 D.F. com quatro braços rituais e uma roda de ferro forjado ornada por oito lanternas cranianas, Nyxaroth desfaz Expansões de Domínio inimigas em cinza violeta e executa o campeão mais forte do oponente sem respeitar cota ou escudo.",
+    "sungStanza": [
+      "Em roda de ferro batido em lamento,",
+      "Oito crânios acesos giravam ao vento;",
+      "Cada chama guardava o decreto final",
+      "Contra o tolo que erguesse um abrigo imortal!"
+    ]
+  },
+  "green_173_general_roda_selva": {
+    "cardId": "green_173_general_roda_selva",
+    "properTitle": "Sylvarok, General da Roda Primeva",
+    "yearLabel": "Ano 847 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 99,
+    "locationLabel": "Trono de Pau-Ferro (Veridia)",
+    "proseStory": "Despertado pelo Círculo de Raiz-Ferro em 847 D.F., Sylvarok carrega a roda ancestral de oito orbes de seiva bioluminescente. Suas raízes arrombam de baixo para cima qualquer Expansão de Domínio artificial, devolvendo o céu aberto e revestindo a matilha aliada de força e Escudos Divinos.",
+    "sungStanza": [
+      "Onde um mago fechava sua redoma vã,",
+      "Arrombava o cimento a raiz temporã;",
+      "Quebrando o Domínio num tranco profundo",
+      "E devolvendo o ar livre às criaturas do mundo!"
+    ]
+  },
+  "gold_173_general_roda_sol": {
+    "cardId": "gold_173_general_roda_sol",
+    "properTitle": "Heliokar, General da Roda Celeste",
+    "yearLabel": "Ano 849 D.F.",
+    "eraTitle": "IVª Era — A Assinatura do Pacto",
+    "eraId": "era_4_pacto",
+    "chronologicalOrder": 100,
+    "locationLabel": "Zimbório Dourado de Solária",
+    "proseStory": "Sexto e último General da Roda consagrado em 849 D.F. sob o zimbório de Solária, Heliokar desce em alabastro e ouro com oito sóis de bronze girando às suas costas, dissolvendo Expansões de Domínio tirânicas em poeira luminosa enquanto blinda e restaura toda a hoste fiel.",
+    "sungStanza": [
+      "Trazia nos ombros o círculo ardente",
+      "De oito sóis de bronze girando em torrente;",
+      "Ao erguer a mão destra em sereno julgar,",
+      "Fazia o falso céu em centelhas quebrar!"
+    ]
+  },
+  "gold_178_aelion_hierofante_coroa_aurea": {
+    "cardId": "gold_178_aelion_hierofante_coroa_aurea",
+    "properTitle": "Aelion, Hierofante da Coroa Áurea",
+    "yearLabel": "Ano 853 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 101,
+    "locationLabel": "Zimbório Imperial de Solária (Solis)",
+    "proseStory": "Aelion, Hierofante da Coroa Áurea (Elfo • Hierofante Solar) ergueu seu estandarte em Zimbório Imperial de Solária (Solis) durante a grande convocação das Seis Cortes. Onde repousa sua bênção dourada, nenhuma lâmina profana encontra carne. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar ou lançar feitiço, dá Escudo Divino a 1 aliado (+2 de Ataque com Escudo).",
+    "sungStanza": [
+      "Nas crônicas altas de Aelion cantou,",
+      "O título eterno que a corte aclamou: Hierofante da Coroa Áurea;",
+      "Com 4 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "purple_178_vaelen_oraculo_choro_dourado": {
+    "cardId": "purple_178_vaelen_oraculo_choro_dourado",
+    "properTitle": "Vaelen, Oráculo do Choro Dourado",
+    "yearLabel": "Ano 856 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 102,
+    "locationLabel": "Catedral de Obsidiana (Umbra)",
+    "proseStory": "Vaelen, Oráculo do Choro Dourado (Elfo • Oráculo do Abismo) ergueu seu estandarte em Catedral de Obsidiana (Umbra) durante a grande convocação das Seis Cortes. Chora ouro líquido pelos impérios que ainda não sabem que já caíram. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, dá -2 de Ataque a 1 inimigo; abatê-lo reanima 1 aliado de custo até 4.",
+    "sungStanza": [
+      "Nas crônicas altas de Vaelen cantou,",
+      "O título eterno que a corte aclamou: Oráculo do Choro Dourado;",
+      "Com 4 de força e 5 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "blue_178_lyriel_vidente_zero_astral": {
+    "cardId": "blue_178_lyriel_vidente_zero_astral",
+    "properTitle": "Lyriel, Vidente do Zero Astral",
+    "yearLabel": "Ano 859 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 103,
+    "locationLabel": "Pináculo do Relógio Astral (Vórtex)",
+    "proseStory": "Lyriel, Vidente do Zero Astral (Elfo • Vidente Boreal) ergueu seu estandarte em Pináculo do Relógio Astral (Vórtex) durante a grande convocação das Seis Cortes. No instante zero entre duas estrelas, todo escudo é vidro prestes a estilhaçar. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, congela até 2 inimigos. Inimigos congelados perdem Guardião e sofrem +2 de dano.",
+    "sungStanza": [
+      "Nas crônicas altas de Lyriel cantou,",
+      "O título eterno que a corte aclamou: Vidente do Zero Astral;",
+      "Com 4 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "green_178_sylvaris_arquidruida_plenilunio": {
+    "cardId": "green_178_sylvaris_arquidruida_plenilunio",
+    "properTitle": "Sylvaris, Arquidruida do Plenilúnio",
+    "yearLabel": "Ano 862 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 104,
+    "locationLabel": "Coração de Raiz-Ferro (Veridia)",
+    "proseStory": "Sylvaris, Arquidruida do Plenilúnio (Elfo • Arquidruida Lunar) ergueu seu estandarte em Coração de Raiz-Ferro (Veridia) durante a grande convocação das Seis Cortes. Quando a lua cheia coroa Verídia, brotos tornam-se titãs em um único suspiro. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, dá +2/+2 à Vanguarda e ascende sem custo 1 aliado.",
+    "sungStanza": [
+      "Nas crônicas altas de Sylvaris cantou,",
+      "O título eterno que a corte aclamou: Arquidruida do Plenilúnio;",
+      "Com 5 de força e 7 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "red_178_kaelith_principe_asas_fenix": {
+    "cardId": "red_178_kaelith_principe_asas_fenix",
+    "properTitle": "Kaelith, Príncipe das Asas de Fênix",
+    "yearLabel": "Ano 865 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 105,
+    "locationLabel": "Cidadela da Caldeira Rubra (Pyros)",
+    "proseStory": "Kaelith, Príncipe das Asas de Fênix (Elfo • Príncipe Fênix) ergueu seu estandarte em Cidadela da Caldeira Rubra (Pyros) durante a grande convocação das Seis Cortes. Abatê-lo uma vez é apenas convidar o próprio sol carmesim a descer sobre a arena. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar ou Renascer, causa 3 de dano à Vanguarda inimiga e dá +1 de Ataque aos aliados.",
+    "sungStanza": [
+      "Nas crônicas altas de Kaelith cantou,",
+      "O título eterno que a corte aclamou: Príncipe das Asas de Fênix;",
+      "Com 6 de força e 5 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "neutral_177_thalassion_alto_rei_concilio_elfico": {
+    "cardId": "neutral_177_thalassion_alto_rei_concilio_elfico",
+    "properTitle": "Thalassion, Alto-Rei do Concílio Élfico",
+    "yearLabel": "Ano 868 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 106,
+    "locationLabel": "Torre dos Cinco Selos (Cidade Franca Axial)",
+    "proseStory": "Thalassion, Alto-Rei do Concílio Élfico (Elfo • Alto-Rei do Concílio) ergueu seu estandarte em Torre dos Cinco Selos (Cidade Franca Axial) durante a grande convocação das Seis Cortes. Cinco joias na coroa prateada, uma só voz soberana ecoando através das eras. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, dá +1/+1 aos seus Elfos e busca 1 Elfo do Grimório.",
+    "sungStanza": [
+      "Nas crônicas altas de Thalassion cantou,",
+      "O título eterno que a corte aclamou: Alto-Rei do Concílio Élfico;",
+      "Com 5 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "gold_179_leoric_grao_marechal_leao_solar": {
+    "cardId": "gold_179_leoric_grao_marechal_leao_solar",
+    "properTitle": "Leoric, Grão-Marechal do Leão Solar",
+    "yearLabel": "Ano 871 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 107,
+    "locationLabel": "Zimbório Imperial de Solária (Solis)",
+    "proseStory": "Leoric, Grão-Marechal do Leão Solar (Humano • Marechal) ergueu seu estandarte em Zimbório Imperial de Solária (Solis) durante a grande convocação das Seis Cortes. Quando o Leão de Solária apoia a montante no ombro, nenhuma muralha inimiga permanece de pé. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1, +1 de Armadura e Escudo Divino aos seus aliados.",
+    "sungStanza": [
+      "Nas crônicas altas de Leoric cantou,",
+      "O título eterno que a corte aclamou: Grão-Marechal do Leão Solar;",
+      "Com 5 de força e 7 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "gold_180_valerius_comandante_aguia_imperial": {
+    "cardId": "gold_180_valerius_comandante_aguia_imperial",
+    "properTitle": "Valerius, Comandante da Águia Imperial",
+    "yearLabel": "Ano 874 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 108,
+    "locationLabel": "Zimbório Imperial de Solária (Solis)",
+    "proseStory": "Valerius, Comandante da Águia Imperial (Humano • General) ergueu seu estandarte em Zimbório Imperial de Solária (Solis) durante a grande convocação das Seis Cortes. Sob o capuz alvo da Águia Imperial, cada ordem transforma recrutas em bastiões. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e invoca 2 aliados 2/2 na Vanguarda.",
+    "sungStanza": [
+      "Nas crônicas altas de Valerius cantou,",
+      "O título eterno que a corte aclamou: Comandante da Águia Imperial;",
+      "Com 4 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "gold_181_wolfgang_marechal_escama_solar": {
+    "cardId": "gold_181_wolfgang_marechal_escama_solar",
+    "properTitle": "Wolfgang, Marechal da Escama Solar",
+    "yearLabel": "Ano 877 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 109,
+    "locationLabel": "Zimbório Imperial de Solária (Solis)",
+    "proseStory": "Wolfgang, Marechal da Escama Solar (Humano • Marechal) ergueu seu estandarte em Zimbório Imperial de Solária (Solis) durante a grande convocação das Seis Cortes. Forjada em escamas de dragão solar e safira astral, sua couraça avança como um cometa em terra. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo.",
+    "sungStanza": [
+      "Nas crônicas altas de Wolfgang cantou,",
+      "O título eterno que a corte aclamou: Marechal da Escama Solar;",
+      "Com 6 de força e 7 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "red_179_khorvus_tirano_mascara_auricrania": {
+    "cardId": "red_179_khorvus_tirano_mascara_auricrania",
+    "properTitle": "Khorvus, Tirano da Máscara Auricrânia",
+    "yearLabel": "Ano 880 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 110,
+    "locationLabel": "Cidadela da Caldeira Rubra (Pyros)",
+    "proseStory": "Khorvus, Tirano da Máscara Auricrânia (Humano • General) ergueu seu estandarte em Cidadela da Caldeira Rubra (Pyros) durante a grande convocação das Seis Cortes. Por trás do sorriso de ouro fundido, sua ordem de ataque é um decreto de aniquilação. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +2 de Ataque, +1 de Armadura e Ímpeto à sua Vanguarda.",
+    "sungStanza": [
+      "Nas crônicas altas de Khorvus cantou,",
+      "O título eterno que a corte aclamou: Tirano da Máscara Auricrânia;",
+      "Com 5 de força e 5 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "red_180_malakor_general_lamina_colossal": {
+    "cardId": "red_180_malakor_general_lamina_colossal",
+    "properTitle": "Malakor, General da Lâmina Colossal",
+    "yearLabel": "Ano 883 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 111,
+    "locationLabel": "Cidadela da Caldeira Rubra (Pyros)",
+    "proseStory": "Malakor, General da Lâmina Colossal (Humano • General) ergueu seu estandarte em Cidadela da Caldeira Rubra (Pyros) durante a grande convocação das Seis Cortes. Sua montante de ferro negro pesa tanto quanto um aríete — e parte muralhas com a mesma facilidade. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo.",
+    "sungStanza": [
+      "Nas crônicas altas de Malakor cantou,",
+      "O título eterno que a corte aclamou: General da Lâmina Colossal;",
+      "Com 6 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "red_181_ignis_marechal_coroa_cinzas": {
+    "cardId": "red_181_ignis_marechal_coroa_cinzas",
+    "properTitle": "Ignis, Marechal da Coroa de Cinzas",
+    "yearLabel": "Ano 886 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 112,
+    "locationLabel": "Cidadela da Caldeira Rubra (Pyros)",
+    "proseStory": "Ignis, Marechal da Coroa de Cinzas (Humano • Marechal) ergueu seu estandarte em Cidadela da Caldeira Rubra (Pyros) durante a grande convocação das Seis Cortes. Onde a ponta incandescente de sua espada toca a pedra, nascem vulcões. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e causa 3 de dano à Vanguarda inimiga.",
+    "sungStanza": [
+      "Nas crônicas altas de Ignis cantou,",
+      "O título eterno que a corte aclamou: Marechal da Coroa de Cinzas;",
+      "Com 7 de força e 7 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "blue_179_arcturus_rei_juiz_coroa_safira": {
+    "cardId": "blue_179_arcturus_rei_juiz_coroa_safira",
+    "properTitle": "Arcturus, Rei-Juiz da Coroa de Safira",
+    "yearLabel": "Ano 889 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 113,
+    "locationLabel": "Pináculo do Relógio Astral (Vórtex)",
+    "proseStory": "Arcturus, Rei-Juiz da Coroa de Safira (Humano • General) ergueu seu estandarte em Pináculo do Relógio Astral (Vórtex) durante a grande convocação das Seis Cortes. Sua sentença desce como o inverno astral: estática, irrevogável e absoluta. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e congela a Vanguarda inimiga por 1 rodada.",
+    "sungStanza": [
+      "Nas crônicas altas de Arcturus cantou,",
+      "O título eterno que a corte aclamou: Rei-Juiz da Coroa de Safira;",
+      "Com 5 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "blue_180_leona_marechal_leao_branco_inverno": {
+    "cardId": "blue_180_leona_marechal_leao_branco_inverno",
+    "properTitle": "Leona, Marechal do Leão Branco de Inverno",
+    "yearLabel": "Ano 892 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 114,
+    "locationLabel": "Pináculo do Relógio Astral (Vórtex)",
+    "proseStory": "Leona, Marechal do Leão Branco de Inverno (Humano • Marechal) ergueu seu estandarte em Pináculo do Relógio Astral (Vórtex) durante a grande convocação das Seis Cortes. Sob a juba alva do Leão Boreal, a nevasca marcha em formação cerrada. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e congela 1 inimigo por 1 rodada.",
+    "sungStanza": [
+      "Nas crônicas altas de Leona cantou,",
+      "O título eterno que a corte aclamou: Marechal do Leão Branco de Inverno;",
+      "Com 4 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "blue_181_selene_estrategista_egide_lunar": {
+    "cardId": "blue_181_selene_estrategista_egide_lunar",
+    "properTitle": "Selene, Estrategista da Égide Lunar",
+    "yearLabel": "Ano 895 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 115,
+    "locationLabel": "Pináculo do Relógio Astral (Vórtex)",
+    "proseStory": "Selene, Estrategista da Égide Lunar (Humano • General) ergueu seu estandarte em Pináculo do Relógio Astral (Vórtex) durante a grande convocação das Seis Cortes. Cada fase do seu escudo crescente redesenha as linhas de batalha antes do primeiro choque. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e devolve 1 inimigo à mão do oponente.",
+    "sungStanza": [
+      "Nas crônicas altas de Selene cantou,",
+      "O título eterno que a corte aclamou: Estrategista da Égide Lunar;",
+      "Com 5 de força e 7 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "neutral_179_aldric_marechal_lobo_prateado": {
+    "cardId": "neutral_179_aldric_marechal_lobo_prateado",
+    "properTitle": "Aldric, Marechal do Lobo Prateado",
+    "yearLabel": "Ano 898 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 116,
+    "locationLabel": "Torre dos Cinco Selos (Cidade Franca Axial)",
+    "proseStory": "Aldric, Marechal do Lobo Prateado (Humano • Marechal) ergueu seu estandarte em Torre dos Cinco Selos (Cidade Franca Axial) durante a grande convocação das Seis Cortes. Nenhuma bandeira o prende, mas todo reino conhece o peso da sua palavra e do seu aço. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e compra 1 carta.",
+    "sungStanza": [
+      "Nas crônicas altas de Aldric cantou,",
+      "O título eterno que a corte aclamou: Marechal do Lobo Prateado;",
+      "Com 4 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "neutral_180_garruk_bastiao_ferro_veterano": {
+    "cardId": "neutral_180_garruk_bastiao_ferro_veterano",
+    "properTitle": "Garruk, Bastião de Ferro Veterano",
+    "yearLabel": "Ano 901 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 117,
+    "locationLabel": "Torre dos Cinco Selos (Cidade Franca Axial)",
+    "proseStory": "Garruk, Bastião de Ferro Veterano (Humano • General) ergueu seu estandarte em Torre dos Cinco Selos (Cidade Franca Axial) durante a grande convocação das Seis Cortes. Cem cercos deixaram marcas em sua couraça, mas nenhuma lâmina jamais o fez recuar um passo. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1, +1 de Armadura e Escudo Divino aos seus aliados.",
+    "sungStanza": [
+      "Nas crônicas altas de Garruk cantou,",
+      "O título eterno que a corte aclamou: Bastião de Ferro Veterano;",
+      "Com 5 de força e 7 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "neutral_181_vaelor_lorde_comandante_olho_ferro": {
+    "cardId": "neutral_181_vaelor_lorde_comandante_olho_ferro",
+    "properTitle": "Vaelor, Lorde-Comandante do Olho de Ferro",
+    "yearLabel": "Ano 904 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 118,
+    "locationLabel": "Torre dos Cinco Selos (Cidade Franca Axial)",
+    "proseStory": "Vaelor, Lorde-Comandante do Olho de Ferro (Humano • General) ergueu seu estandarte em Torre dos Cinco Selos (Cidade Franca Axial) durante a grande convocação das Seis Cortes. Um único olho lhe basta para enxergar o ponto exato onde a linha inimiga irá ruir. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo.",
+    "sungStanza": [
+      "Nas crônicas altas de Vaelor cantou,",
+      "O título eterno que a corte aclamou: Lorde-Comandante do Olho de Ferro;",
+      "Com 6 de força e 7 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "green_179_brennus_marechal_manto_musgo": {
+    "cardId": "green_179_brennus_marechal_manto_musgo",
+    "properTitle": "Brennus, Marechal do Manto de Musgo",
+    "yearLabel": "Ano 907 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 119,
+    "locationLabel": "Coração de Raiz-Ferro (Veridia)",
+    "proseStory": "Brennus, Marechal do Manto de Musgo (Humano • Marechal) ergueu seu estandarte em Coração de Raiz-Ferro (Veridia) durante a grande convocação das Seis Cortes. A própria floresta brota de sua couraça, alimentando as tropas com a seiva das raízes antigas. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e gera +2 de Essência neste turno.",
+    "sungStanza": [
+      "Nas crônicas altas de Brennus cantou,",
+      "O título eterno que a corte aclamou: Marechal do Manto de Musgo;",
+      "Com 4 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "green_180_flora_dama_florescer_perene": {
+    "cardId": "green_180_flora_dama_florescer_perene",
+    "properTitle": "Flora, Dama do Florescer Perene",
+    "yearLabel": "Ano 910 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 120,
+    "locationLabel": "Coração de Raiz-Ferro (Veridia)",
+    "proseStory": "Flora, Dama do Florescer Perene (Humano • General) ergueu seu estandarte em Coração de Raiz-Ferro (Veridia) durante a grande convocação das Seis Cortes. Onde sua montante toca o solo, pétalas desabrocham em pura essência vital. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e restaura 3 de Vida deles e do seu Soberano.",
+    "sungStanza": [
+      "Nas crônicas altas de Flora cantou,",
+      "O título eterno que a corte aclamou: Dama do Florescer Perene;",
+      "Com 5 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "green_181_verbena_marechal_cardo_real": {
+    "cardId": "green_181_verbena_marechal_cardo_real",
+    "properTitle": "Verbena, Marechal do Cardo Real",
+    "yearLabel": "Ano 913 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 121,
+    "locationLabel": "Coração de Raiz-Ferro (Veridia)",
+    "proseStory": "Verbena, Marechal do Cardo Real (Humano • Marechal) ergueu seu estandarte em Coração de Raiz-Ferro (Veridia) durante a grande convocação das Seis Cortes. Sob a coroa do Cardo Real, cada espinho drena o vigor da terra para abastecer a ofensiva. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e gera +3 de Essência neste turno.",
+    "sungStanza": [
+      "Nas crônicas altas de Verbena cantou,",
+      "O título eterno que a corte aclamou: Marechal do Cardo Real;",
+      "Com 6 de força e 7 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "purple_179_morgause_dama_ferro_abissal": {
+    "cardId": "purple_179_morgause_dama_ferro_abissal",
+    "properTitle": "Morgause, Dama do Ferro Abissal",
+    "yearLabel": "Ano 916 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 122,
+    "locationLabel": "Catedral de Obsidiana (Umbra)",
+    "proseStory": "Morgause, Dama do Ferro Abissal (Humano • General) ergueu seu estandarte em Catedral de Obsidiana (Umbra) durante a grande convocação das Seis Cortes. Nem a própria morte ousa dispensar um soldado que jurou lealdade ao seu escudo negro. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e reanima da Cripta o aliado mais forte.",
+    "sungStanza": [
+      "Nas crônicas altas de Morgause cantou,",
+      "O título eterno que a corte aclamou: Dama do Ferro Abissal;",
+      "Com 5 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "purple_180_corvina_marechal_bico_praga": {
+    "cardId": "purple_180_corvina_marechal_bico_praga",
+    "properTitle": "Corvina, Marechal do Bico da Praga",
+    "yearLabel": "Ano 919 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 123,
+    "locationLabel": "Catedral de Obsidiana (Umbra)",
+    "proseStory": "Corvina, Marechal do Bico da Praga (Humano • Marechal) ergueu seu estandarte em Catedral de Obsidiana (Umbra) durante a grande convocação das Seis Cortes. Quando a máscara de corvo cruza a névoa, o fôlego dos vivos torna-se tributo para o Abismo. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, reduz em 2 o Ataque dos inimigos e drena 3 de Vida do Soberano rival.",
+    "sungStanza": [
+      "Nas crônicas altas de Corvina cantou,",
+      "O título eterno que a corte aclamou: Marechal do Bico da Praga;",
+      "Com 4 de força e 5 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "purple_181_nyxara_comandante_laminas_veu": {
+    "cardId": "purple_181_nyxara_comandante_laminas_veu",
+    "properTitle": "Nyxara, Comandante das Lâminas do Véu",
+    "yearLabel": "Ano 922 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 124,
+    "locationLabel": "Catedral de Obsidiana (Umbra)",
+    "proseStory": "Nyxara, Comandante das Lâminas do Véu (Humano • General) ergueu seu estandarte em Catedral de Obsidiana (Umbra) durante a grande convocação das Seis Cortes. Duas lâminas curvas bastam para cortar o fio do destino do campeão mais poderoso. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 aos seus aliados e destrói 1 criatura inimiga.",
+    "sungStanza": [
+      "Nas crônicas altas de Nyxara cantou,",
+      "O título eterno que a corte aclamou: Comandante das Lâminas do Véu;",
+      "Com 6 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "red_184_azariel_serafim_dez_asas_chama": {
+    "cardId": "red_184_azariel_serafim_dez_asas_chama",
+    "properTitle": "Azariel, Serafim de Oito Asas",
+    "yearLabel": "Ano 925 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 125,
+    "locationLabel": "Cidadela da Caldeira Rubra (Pyros)",
+    "proseStory": "Azariel, Serafim de Oito Asas (Celestial • Serafim) ergueu seu estandarte em Cidadela da Caldeira Rubra (Pyros) durante a grande convocação das Seis Cortes. No ápice do Coro da Chama, oito asas ardentes coroam o aço negro-dourado enquanto sua espada incendeia o campo de batalha. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +2/+1 aos seus aliados e causa 3 de dano à Vanguarda inimiga.",
+    "sungStanza": [
+      "Nas crônicas altas de Azariel cantou,",
+      "O título eterno que a corte aclamou: Serafim de Oito Asas;",
+      "Com 7 de força e 8 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "blue_184_cassiel_serafim_seis_asas_inverno": {
+    "cardId": "blue_184_cassiel_serafim_seis_asas_inverno",
+    "properTitle": "Cassiel, Serafim de Seis Asas",
+    "yearLabel": "Ano 928 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 126,
+    "locationLabel": "Pináculo do Relógio Astral (Vórtex)",
+    "proseStory": "Cassiel, Serafim de Seis Asas (Celestial • Serafim) ergueu seu estandarte em Pináculo do Relógio Astral (Vórtex) durante a grande convocação das Seis Cortes. No ápice do Coro Boreal, seis asas de gelo eterno suspendem o próprio fluxo do tempo diante de sua espada. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, congela a Vanguarda inimiga por 1 rodada e compra 2 cartas.",
+    "sungStanza": [
+      "Nas crônicas altas de Cassiel cantou,",
+      "O título eterno que a corte aclamou: Serafim de Seis Asas;",
+      "Com 6 de força e 8 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "green_184_raphael_serafim_seis_asas_eden": {
+    "cardId": "green_184_raphael_serafim_seis_asas_eden",
+    "properTitle": "Raphael, Serafim de Seis Asas",
+    "yearLabel": "Ano 931 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 127,
+    "locationLabel": "Coração de Raiz-Ferro (Veridia)",
+    "proseStory": "Raphael, Serafim de Seis Asas (Celestial • Serafim) ergueu seu estandarte em Coração de Raiz-Ferro (Veridia) durante a grande convocação das Seis Cortes. No ápice do Coro do Éden, seis asas de esmeralda e ouro despertam o florescer imortal em toda a fileira aliada. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +2/+2 aos seus aliados e restaura 3 de Vida deles e do seu Soberano.",
+    "sungStanza": [
+      "Nas crônicas altas de Raphael cantou,",
+      "O título eterno que a corte aclamou: Serafim de Seis Asas;",
+      "Com 7 de força e 8 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "purple_184_samael_serafim_seis_asas_eclipse": {
+    "cardId": "purple_184_samael_serafim_seis_asas_eclipse",
+    "properTitle": "Samael, Serafim de Seis Asas",
+    "yearLabel": "Ano 934 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 128,
+    "locationLabel": "Catedral de Obsidiana (Umbra)",
+    "proseStory": "Samael, Serafim de Seis Asas (Celestial • Serafim) ergueu seu estandarte em Catedral de Obsidiana (Umbra) durante a grande convocação das Seis Cortes. No ápice do Coro do Sol Eclipsado, seis asas de obsidiana decretam o fim dos inimigos e erguem os caídos da Cripta. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, destrói 1 criatura inimiga e reanima da Cripta o aliado mais forte.",
+    "sungStanza": [
+      "Nas crônicas altas de Samael cantou,",
+      "O título eterno que a corte aclamou: Serafim de Seis Asas;",
+      "Com 7 de força e 7 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "neutral_184_metatron_serafim_seis_asas_prisma": {
+    "cardId": "neutral_184_metatron_serafim_seis_asas_prisma",
+    "properTitle": "Metatron, Serafim de Seis Asas",
+    "yearLabel": "Ano 937 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 129,
+    "locationLabel": "Torre dos Cinco Selos (Cidade Franca Axial)",
+    "proseStory": "Metatron, Serafim de Seis Asas (Celestial • Serafim) ergueu seu estandarte em Torre dos Cinco Selos (Cidade Franca Axial) durante a grande convocação das Seis Cortes. No ápice do Coro de Alabastro, seis asas de platina preservam a memória incorruptível da Era Zero. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+1 e Escudo Divino aos seus aliados.",
+    "sungStanza": [
+      "Nas crônicas altas de Metatron cantou,",
+      "O título eterno que a corte aclamou: Serafim de Seis Asas;",
+      "Com 6 de força e 8 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "green_188_zahir_genio_tres_desejos": {
+    "cardId": "green_188_zahir_genio_tres_desejos",
+    "properTitle": "Zahir, Gênio dos Três Desejos",
+    "yearLabel": "Ano 940 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 130,
+    "locationLabel": "Coração de Raiz-Ferro (Veridia)",
+    "proseStory": "Zahir, Gênio dos Três Desejos (Elemental • Gênio) ergueu seu estandarte em Coração de Raiz-Ferro (Veridia) durante a grande convocação das Seis Cortes. Três desejos saem da lâmpada carmesim — e cada um cobra uma gota do próprio pulso. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, paga 3 de Vida e compra 3 cartas.",
+    "sungStanza": [
+      "Nas crônicas altas de Zahir cantou,",
+      "O título eterno que a corte aclamou: Gênio dos Três Desejos;",
+      "Com 5 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "red_188_malik_genio_tres_brasas": {
+    "cardId": "red_188_malik_genio_tres_brasas",
+    "properTitle": "Malik, Gênio das Três Brasas",
+    "yearLabel": "Ano 943 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 131,
+    "locationLabel": "Cidadela da Caldeira Rubra (Pyros)",
+    "proseStory": "Malik, Gênio das Três Brasas (Elemental • Gênio) ergueu seu estandarte em Cidadela da Caldeira Rubra (Pyros) durante a grande convocação das Seis Cortes. Três brasas saltam de suas manoplas de ouro — cada segredo arrancado da pira queima a mão de quem o invoca. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, paga 3 de Vida e compra 3 cartas.",
+    "sungStanza": [
+      "Nas crônicas altas de Malik cantou,",
+      "O título eterno que a corte aclamou: Gênio das Três Brasas;",
+      "Com 6 de força e 5 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "purple_188_azhar_genio_tres_pactos": {
+    "cardId": "purple_188_azhar_genio_tres_pactos",
+    "properTitle": "Azhar, Gênio dos Três Pactos",
+    "yearLabel": "Ano 946 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 132,
+    "locationLabel": "Catedral de Obsidiana (Umbra)",
+    "proseStory": "Azhar, Gênio dos Três Pactos (Elemental • Gênio) ergueu seu estandarte em Catedral de Obsidiana (Umbra) durante a grande convocação das Seis Cortes. Ele concede três cláusulas sem hesitar, sabendo que o juro de sangue sempre volta à sua fumaça negra. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, paga 3 de Vida e compra 3 cartas.",
+    "sungStanza": [
+      "Nas crônicas altas de Azhar cantou,",
+      "O título eterno que a corte aclamou: Gênio dos Três Pactos;",
+      "Com 5 de força e 5 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "blue_188_tariq_genio_tres_ventos": {
+    "cardId": "blue_188_tariq_genio_tres_ventos",
+    "properTitle": "Tariq, Gênio dos Três Ventos",
+    "yearLabel": "Ano 949 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 133,
+    "locationLabel": "Pináculo do Relógio Astral (Vórtex)",
+    "proseStory": "Tariq, Gênio dos Três Ventos (Elemental • Gênio) ergueu seu estandarte em Pináculo do Relógio Astral (Vórtex) durante a grande convocação das Seis Cortes. De braços cruzados sobre o turbilhão celeste, ele entrega três segredos astrais pelo tributo exato do pulso mortal. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, paga 3 de Vida e compra 3 cartas.",
+    "sungStanza": [
+      "Nas crônicas altas de Tariq cantou,",
+      "O título eterno que a corte aclamou: Gênio dos Três Ventos;",
+      "Com 5 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "gold_188_sulaiman_genio_tres_editos": {
+    "cardId": "gold_188_sulaiman_genio_tres_editos",
+    "properTitle": "Sulaiman, Gênio dos Três Éditos",
+    "yearLabel": "Ano 952 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 134,
+    "locationLabel": "Zimbório Imperial de Solária (Solis)",
+    "proseStory": "Sulaiman, Gênio dos Três Éditos (Elemental • Gênio) ergueu seu estandarte em Zimbório Imperial de Solária (Solis) durante a grande convocação das Seis Cortes. Três selos dourados pairam sobre sua palma; cada decreto imperial exige o penhor de uma gota real. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, paga 3 de Vida e compra 3 cartas.",
+    "sungStanza": [
+      "Nas crônicas altas de Sulaiman cantou,",
+      "O título eterno que a corte aclamou: Gênio dos Três Éditos;",
+      "Com 5 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "neutral_188_qamar_genio_tres_esferas": {
+    "cardId": "neutral_188_qamar_genio_tres_esferas",
+    "properTitle": "Qamar, Gênio das Três Esferas",
+    "yearLabel": "Ano 955 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 135,
+    "locationLabel": "Torre dos Cinco Selos (Cidade Franca Axial)",
+    "proseStory": "Qamar, Gênio das Três Esferas (Elemental • Gênio) ergueu seu estandarte em Torre dos Cinco Selos (Cidade Franca Axial) durante a grande convocação das Seis Cortes. Sem jurar lealdade a nenhuma coroa cromática, pesa três destinos em mercúrio e cobra o mesmo tributo de todos. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, paga 3 de Vida e compra 3 cartas.",
+    "sungStanza": [
+      "Nas crônicas altas de Qamar cantou,",
+      "O título eterno que a corte aclamou: Gênio das Três Esferas;",
+      "Com 4 de força e 6 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  },
+  "gold_184_uriel_serafim_seis_asas_zenite": {
+    "cardId": "gold_184_uriel_serafim_seis_asas_zenite",
+    "properTitle": "Uriel, Serafim de Seis Asas",
+    "yearLabel": "Ano 958 D.F.",
+    "eraTitle": "Vª Era — O Censo dos Seis Domínios",
+    "eraId": "era_5_convergencia",
+    "chronologicalOrder": 136,
+    "locationLabel": "Zimbório Imperial de Solária (Solis)",
+    "proseStory": "Uriel, Serafim de Seis Asas (Celestial • Serafim) ergueu seu estandarte em Zimbório Imperial de Solária (Solis) durante a grande convocação das Seis Cortes. No ápice do Coro Solar, seis asas incandescentes descem do zênite para tornar invulnerável toda a hoste dourada. Nos registros táticos da Torre dos Cinco Selos, sua presença em campo ficou marcada pela habilidade: Ao entrar, concede +1/+2 e Escudo Divino aos seus aliados e restaura 4 de Vida.",
+    "sungStanza": [
+      "Nas crônicas altas de Uriel cantou,",
+      "O título eterno que a corte aclamou: Serafim de Seis Asas;",
+      "Com 7 de força e 8 de bastião,",
+      "Selou nas seis linhas a sua jurisdição!"
+    ]
+  }
 };

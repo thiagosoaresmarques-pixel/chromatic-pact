@@ -226,7 +226,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     subtitle: '1º Grimório grátis, pacotes por 30 Ouro, edição completa por 100 Ouro e criação direta por Estilhaços.',
     cardId: 'blue_06_dragao_azul',
     summary:
-      `Você inicia com 160 de Ouro (+10 de Ouro por vitória padrão) e monta seu 1º Grimório de 100 cartas gratuitamente entre as ${ALL_CARDS.length} cartas ou qualquer um dos 30 modelos táticos.`,
+      `Você inicia com 160 de Ouro (+10 de Ouro por vitória padrão) e monta seu 1º Grimório de 100 cartas gratuitamente entre as ${ALL_CARDS.length} cartas ou qualquer um dos 40 modelos táticos.`,
     keyPoints: [
       {
         tag: 'RELICÁRIO • 30 OURO',
@@ -244,7 +244,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
         tag: 'EDIÇÃO TOTAL • 100 OURO',
         title: 'Editar Grimório Base (100 🪙)',
         detail:
-          `Trocar cartas que você já possui na coleção é sempre gratuito. E por apenas 100 de Ouro você reabre todo o catálogo de ${ALL_CARDS.length} cartas ou os 30 modelos táticos na Forja.`,
+          `Trocar cartas que você já possui na coleção é sempre gratuito. E por apenas 100 de Ouro você reabre todo o catálogo de ${ALL_CARDS.length} cartas ou os 40 modelos táticos na Forja.`,
       },
     ],
     proTip:
@@ -285,7 +285,7 @@ const WALKTHROUGH_STEPS: WalkthroughStep[] = [
     stepNumber: 9,
     badge: 'SINERGIAS & COMPÊNDIO TÁTICO',
     title: 'Combos de 1 a 5 Cores & Reações em Cadeia',
-    subtitle: 'Domine os 62 combos catalogados no Oráculo: Monocromáticos, Alianças, Tríades e Pentacromáticos.',
+    subtitle: 'Domine os 86 combos catalogados no Oráculo: Monocromáticos, Alianças, Tríades e Pentacromáticos.',
     cardId: 'gold_166_trono_soberano_sol',
     summary:
       `As ${ALL_CARDS.length} cartas foram desenhadas com sinergias cruzadas entre Criaturas Ascendidas (★), Relíquias de Retaguarda, Feitiços Cataclísmicos e Emboscadas Ocultas. Consulte o Compêndio de Combos no Oráculo de Guerra para ver quais combinações já estão ativas no seu Grimório.`,
@@ -2139,9 +2139,9 @@ export const TutorialCodexView: React.FC<TutorialCodexViewProps> = ({
                 desc: 'Pacotes custam 30 de Ouro (duplicatas excedentes viram Estilhaços Astrais 💎 para criar cartas exatas: 20/50/140/360💎). Por 100 de Ouro, edite ou substitua todo o Grimório Base.',
               },
               {
-                key: 'Oráculo • 62 Combos',
+                key: 'Oráculo • 86 Combos',
                 title: 'Compêndio de Combos (1 a 5 Cores)',
-                desc: 'No Oráculo de Guerra, consulte os 62 combos táticos (Monocromáticos, Alianças, Tríades e Pentacromáticos) e filtre os que já estão no seu Grimório.',
+                desc: 'No Oráculo de Guerra, consulte os 86 combos táticos (Monocromáticos, Alianças, Tríades e Pentacromáticos) e filtre os que já estão no seu Grimório.',
               },
             ].map((sc, i) => (
               <div

@@ -36012,6 +36012,150 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Quebra Expansões de Domínio inimigas, ativa 1 efeito para cada cor nos seus Terrenos canalizados, concede Escudo Divino aos seus aliados e compra 2 cartas.",
     "flavorText": "No coração da Torre Axial, o octaedro primordial refrata todas as cinco coroas num único cataclismo.",
     "imagePath": "/assets/cards/neutral_198_decreto_prisma_primordial.webp"
+  },
+  {
+    "id": "gold_182_arauto_duas_asas_alvorada",
+    "name": "Arauto das Duas Asas do Sol",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Celestial • Anjo",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 3,
+    "armor": 2,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao entrar, restaura 3 de Vida do seu Soberano."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 0,
+        "secondaryValue": 2,
+        "description": "Ao entrar, concede +0/+2 a 1 aliado."
+      }
+    ],
+    "description": "Ao entrar, restaura 3 de Vida do seu Soberano e concede +0/+2 a 1 aliado.",
+    "flavorText": "Do Primeiro Coro Solar descem os sentinelas de duas asas douradas, erguendo muralhas de luz sobre os feridos.",
+    "imagePath": "/assets/cards/gold_182_arauto_duas_asas_alvorada.webp"
+  },
+  {
+    "id": "gold_183_haniel_arcanjo_quatro_asas_sol",
+    "name": "Haniel, Arcanjo de Quatro Asas",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Celestial • Arcanjo",
+    "rarity": "rare",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Ao entrar, concede +1/+2 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao entrar, restaura 3 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Ao entrar, concede +1/+2 aos seus aliados e restaura 3 de Vida do seu Soberano.",
+    "flavorText": "No Segundo Coro Solar, quatro asas de ouro brunido consagram a falange sob o decreto perpétuo de Solária.",
+    "imagePath": "/assets/cards/gold_183_haniel_arcanjo_quatro_asas_sol.webp"
+  },
+  {
+    "id": "gold_184_uriel_serafim_seis_asas_zenite",
+    "name": "Uriel, Serafim de Seis Asas",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Celestial • Serafim",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 7,
+    "armor": 3,
+    "hp": 8,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Guardião", "Escudo Divino", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Ao entrar, concede +1/+2 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Ao entrar, concede Escudo Divino aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 4,
+        "description": "Ao entrar, restaura 4 de Vida dos seus aliados e do seu Soberano."
+      }
+    ],
+    "description": "Ao entrar, concede +1/+2 e Escudo Divino aos seus aliados e restaura 4 de Vida.",
+    "flavorText": "No ápice do Coro Solar, seis asas incandescentes descem do zênite para tornar invulnerável toda a hoste dourada.",
+    "imagePath": "/assets/cards/gold_184_uriel_serafim_seis_asas_zenite.webp"
+  },
+  {
+    "id": "neutral_178_edito_balanca_axial",
+    "name": "Édito da Balança Axial",
+    "domain": "neutral",
+    "type": "spell",
+    "subtype": "Feitiço • Equilíbrio Axial",
+    "rarity": "rare",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "break_domain_expansion",
+        "value": 1,
+        "description": "Quebra Expansões de Domínio inimigas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Quebra Expansões de Domínio inimigas, concede +1/+1 aos seus aliados e compra 1 carta.",
+    "flavorText": "Quando um domínio tenta impor seu próprio céu sobre a Fronteira, a Balança da Torre parte o encantamento ao meio.",
+    "imagePath": "/assets/cards/neutral_178_edito_balanca_axial.webp"
   }
 ];
 

@@ -33929,6 +33929,92 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Guardião, Escudo Divino, Armadura 2. Ao entrar, congela 1 criatura inimiga.",
     "flavorText": "Placas de ferro antigo prendem em seu peito o coração pulsante de uma avalanche.",
     "imagePath": "/assets/cards/blue_187_colosso_gelo_ferro.webp"
+  },
+  {
+    "id": "gold_185_automato_latao_imperial",
+    "name": "Autômato de Latão Imperial",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Constructo • Imperial",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 2,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Centurião Áureo da Cidadela",
+      "newAtk": 7,
+      "newArmor": 3,
+      "newMaxHp": 8,
+      "addedKeywords": ["Guardião", "Escudo Divino", "Atropelar"]
+    },
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 a um aliado."
+      }
+    ],
+    "description": "Guardião, Armadura 2. Ao entrar, dá +1/+1 a um aliado. Ascensão (4): Centurião Áureo da Cidadela (7/8, ARM 3, Escudo Divino, Atropelar).",
+    "flavorText": "Revestido em ouro batido e púrpura imperial, ele marcha sem fadiga diante dos estandartes solares.",
+    "imagePath": "/assets/cards/gold_185_automato_latao_imperial.webp"
+  },
+  {
+    "id": "gold_186_pugilista_filigrana_real",
+    "name": "Pugilista de Filigrana Real",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Constructo • Duelista",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 3,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": ["Ímpeto", "Escudo Divino"],
+    "effects": [],
+    "description": "Ímpeto, Escudo Divino, Armadura 1.",
+    "flavorText": "Sob os arcos de filigrana dourada, pistões consagrados desferem o peso de um martelo de cerco.",
+    "imagePath": "/assets/cards/gold_186_pugilista_filigrana_real.webp"
+  },
+  {
+    "id": "gold_187_guardiao_selos_cobre",
+    "name": "Guardião dos Selos de Cobre",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Constructo • Custódio",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 2,
+    "armor": 2,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Ao entrar, cura 3 de Vida do seu Soberano."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 1,
+        "description": "Ao entrar, cura 1 de Vida de todos os seus aliados."
+      }
+    ],
+    "description": "Guardião, Armadura 2. Ao entrar, cura 3 de Vida do seu Soberano e 1 de Vida de todos os seus aliados.",
+    "flavorText": "A chave solar gravada em seu peito sela os cofres sagrados e sustenta os juramentos da coroa.",
+    "imagePath": "/assets/cards/gold_187_guardiao_selos_cobre.webp"
   }
 ];
 

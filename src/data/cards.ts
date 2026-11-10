@@ -35344,6 +35344,332 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Seus aliados ganham +2 de Ataque e golpeiam sua coluna ou o Soberano rival; além disso, causa 3 de dano à Vanguarda inimiga.",
     "flavorText": "Ao impacto final dos malhos colossais, a linha inimiga racha em brasa antes da investida total.",
     "imagePath": "/assets/cards/red_198_decreto_bigorna_vulcanica.webp"
+  },
+  {
+    "id": "gold_189_selo_solar_protecao",
+    "name": "Selo Solar de Proteção",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Ordem Solar",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Concede +1/+2 a 1 aliado."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Restaura 2 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Concede +1/+2 a 1 aliado e restaura 2 de Vida do seu Soberano.",
+    "flavorText": "Cravado a ouro quente sobre o peitoral, o brasão do leão alado guarda tanto o soldado quanto o trono.",
+    "imagePath": "/assets/cards/gold_189_selo_solar_protecao.webp"
+  },
+  {
+    "id": "gold_190_dizimo_alvorada",
+    "name": "Dízimo da Alvorada",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Édito Imperial",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_target_ally",
+        "value": 2,
+        "description": "Restaura 2 de Vida de 1 aliado."
+      }
+    ],
+    "description": "Gera +2 de Essência neste turno e restaura 2 de Vida de 1 aliado.",
+    "flavorText": "Nas balanças de Solária, cada moeda consagrada ao amanhecer retorna em luz para a linha de frente.",
+    "imagePath": "/assets/cards/gold_190_dizimo_alvorada.webp"
+  },
+  {
+    "id": "gold_191_bencao_baluarte",
+    "name": "Bênção do Baluarte",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Ordem Solar",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 3,
+        "description": "Restaura 3 de Vida dos seus aliados e do seu Soberano."
+      }
+    ],
+    "description": "Restaura 3 de Vida dos seus aliados e do seu Soberano.",
+    "flavorText": "Quando o relicário alado se abre sobre a muralha, as fendas nos escudos se fecham em ouro líquido.",
+    "imagePath": "/assets/cards/gold_191_bencao_baluarte.webp"
+  },
+  {
+    "id": "gold_192_decreto_sentinela",
+    "name": "Decreto da Sentinela",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Édito Imperial",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Invoca 1 Guarda Solar 2/2."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Restaura 2 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Invoca 1 Guarda Solar 2/2 e restaura 2 de Vida do seu Soberano.",
+    "flavorText": "Basta romper o lacre imperial para que uma alabarda de luz assuma seu posto diante da coroa.",
+    "imagePath": "/assets/cards/gold_192_decreto_sentinela.webp"
+  },
+  {
+    "id": "gold_193_formacao_escudos_solares",
+    "name": "Formação de Escudos Solares",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Tática Imperial",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "solar_spear_phalanx",
+        "value": 2,
+        "description": "Iguala a Armadura da Vanguarda à maior Armadura aliada (mín. 2) e retalia em 2."
+      }
+    ],
+    "description": "Iguala a Armadura da Vanguarda à maior Armadura aliada (mín. 2) e retalia em 2.",
+    "flavorText": "Cinco escudos de leão travados num único arco transformam qualquer investida inimiga em sentença.",
+    "imagePath": "/assets/cards/gold_193_formacao_escudos_solares.webp"
+  },
+  {
+    "id": "gold_194_manto_invulnerabilidade",
+    "name": "Manto da Invulnerabilidade",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Ordem Solar",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Concede Escudo Divino aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 2,
+        "description": "Restaura 2 de Vida dos seus aliados e do seu Soberano."
+      }
+    ],
+    "description": "Concede Escudo Divino aos seus aliados e restaura 2 de Vida deles e do seu Soberano.",
+    "flavorText": "Seis asas de bronze e sol se fecham sobre a legião; nenhuma lâmina atravessa o primeiro clarão.",
+    "imagePath": "/assets/cards/gold_194_manto_invulnerabilidade.webp"
+  },
+  {
+    "id": "gold_195_estandarte_coroa_radiante",
+    "name": "Estandarte da Coroa Radiante",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Édito Imperial",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Concede +1/+2 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Gera +1 de Essência neste turno."
+      }
+    ],
+    "description": "Concede +1/+2 aos seus aliados e gera +1 de Essência neste turno.",
+    "flavorText": "Onde o pavilhão dourado é fincado na rocha, nenhum soldado recua um único passo.",
+    "imagePath": "/assets/cards/gold_195_estandarte_coroa_radiante.webp"
+  },
+  {
+    "id": "gold_196_bastilha_sete_sois",
+    "name": "Bastilha dos Sete Sóis",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Ordem Solar",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Concede Escudo Divino aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Concede +1/+2 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 3,
+        "description": "Restaura 3 de Vida dos seus aliados e do seu Soberano."
+      }
+    ],
+    "description": "Concede Escudo Divino e +1/+2 aos seus aliados, e restaura 3 de Vida deles e do seu Soberano.",
+    "flavorText": "Sete astros em arco coroam os portões de Solária, tornando cada fileira tão eterna quanto a própria cidadela.",
+    "imagePath": "/assets/cards/gold_196_bastilha_sete_sois.webp"
+  },
+  {
+    "id": "gold_197_veredito_falange_dourada",
+    "name": "Veredito da Falange Dourada",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Tática Imperial",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "solar_spear_phalanx",
+        "value": 2,
+        "description": "Iguala a Armadura da Vanguarda à maior Armadura aliada (mín. 2) e retalia em 2."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Concede +1/+2 aos seus aliados."
+      }
+    ],
+    "description": "Iguala a Armadura da Vanguarda à maior Armadura aliada (mín. 2), retalia em 2 e concede +1/+2 aos seus aliados.",
+    "flavorText": "A roda do tribunal celeste gira com sete espadas e sete escudos: defesa absoluta e punição imediata.",
+    "imagePath": "/assets/cards/gold_197_veredito_falange_dourada.webp"
+  },
+  {
+    "id": "gold_198_apoteose_trono_solar",
+    "name": "Apoteose do Trono Solar",
+    "domain": "gold",
+    "type": "spell",
+    "subtype": "Feitiço • Investidura Lendária",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "unconquered_champion_oath",
+        "value": 2,
+        "secondaryValue": 4,
+        "description": "Concede +2/+4, +3 de Armadura e Escudo Divino a 1 aliado, que protege seu Soberano."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Concede Escudo Divino aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 4,
+        "description": "Restaura 4 de Vida dos seus aliados e do seu Soberano."
+      }
+    ],
+    "description": "Concede +2/+4, +3 de Armadura e Escudo Divino ao seu campeão, concede Escudo Divino aos demais aliados e restaura 4 de Vida.",
+    "flavorText": "Diante do Trono Solar, o campeão ergue a cúpula inquebrável enquanto toda a hoste resplandece em ouro imortal.",
+    "imagePath": "/assets/cards/gold_198_apoteose_trono_solar.webp"
   }
 ];
 

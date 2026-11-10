@@ -618,30 +618,13 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
   const trainedPolyDecks = useMemo(() => getTrainedPolycolorPrebuiltDecks(5), []);
 
   const allDecks: PrebuiltDeck[] = useMemo(() => {
-    const customConverted: PrebuiltDeck[] = customDecks.map((cd) => {
-      const domainsSet = new Set<Domain>();
-      for (const cid of cd.cardIds) {
-        const c = CARDS_BY_ID[cid];
-        if (c && c.domain !== 'neutral') domainsSet.add(c.domain);
-      }
-      return {
-        id: cd.id,
-        name: cd.name,
-        subtitle: 'Grimório Personalizado do Jogador',
-        domains: domainsSet.size > 0 ? Array.from(domainsSet) : ['neutral'],
-        strategy: 'Grimório forjado sob medida no Construtor de Decks.',
-        coverCardId: cd.cardIds[0] ?? 'neutral_10_valkyra_pentacromatica',
-        cardIds: cd.cardIds,
-      };
-    });
     return [
       ...trainedMonoDecks,
       ...trainedBiDecks,
       ...trainedPolyDecks,
       ...PREBUILT_DECKS,
-      ...customConverted,
     ];
-  }, [customDecks, trainedMonoDecks, trainedBiDecks, trainedPolyDecks]);
+  }, [trainedMonoDecks, trainedBiDecks, trainedPolyDecks]);
 
   const [selectedPlayerDeckId, setSelectedPlayerDeckId] = useState<string>(
     initialPlayerDeckId && allDecks.some((d) => d.id === initialPlayerDeckId)
@@ -821,15 +804,6 @@ export const TacticalGuideView: React.FC<TacticalGuideViewProps> = ({
           </option>
         ))}
       </optgroup>
-      {customDecks.length > 0 && (
-        <optgroup label="Grimórios Pessoais">
-          {customDecks.map((cd) => (
-            <option key={cd.id} value={cd.id}>
-              {cd.name}
-            </option>
-          ))}
-        </optgroup>
-      )}
     </>
   );
 

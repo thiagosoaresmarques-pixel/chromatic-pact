@@ -34149,6 +34149,33 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Ímpeto, Pele Incandescente, Armadura 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
     "flavorText": "Três brasas saltam de suas manoplas de ouro — cada segredo arrancado da pira queima a mão de quem o invoca.",
     "imagePath": "/assets/cards/red_188_malik_genio_tres_brasas.webp"
+  },
+  {
+    "id": "purple_188_azhar_genio_tres_pactos",
+    "name": "Azhar, Gênio dos Três Pactos",
+    "domain": "purple",
+    "type": "creature",
+    "subtype": "Elemental • Gênio",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 5,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Dreno de Vida", "Toque Letal"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards_at_hp_cost",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+      }
+    ],
+    "description": "Voo, Dreno de Vida, Toque Letal, Armadura 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "flavorText": "Ele concede três cláusulas sem hesitar, sabendo que o juro de sangue sempre volta à sua fumaça negra.",
+    "imagePath": "/assets/cards/purple_188_azhar_genio_tres_pactos.webp"
   }
 ];
 

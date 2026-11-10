@@ -34122,6 +34122,33 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Atropelar, Armadura 1, Regeneração 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
     "flavorText": "Três desejos saem da lâmpada carmesim — e cada um cobra uma gota do próprio pulso.",
     "imagePath": "/assets/cards/green_188_zahir_genio_tres_desejos.webp"
+  },
+  {
+    "id": "red_188_malik_genio_tres_brasas",
+    "name": "Malik, Gênio das Três Brasas",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Elemental • Gênio",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 6,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Ímpeto", "Pele Incandescente"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards_at_hp_cost",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+      }
+    ],
+    "description": "Voo, Ímpeto, Pele Incandescente, Armadura 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "flavorText": "Três brasas saltam de suas manoplas de ouro — cada segredo arrancado da pira queima a mão de quem o invoca.",
+    "imagePath": "/assets/cards/red_188_malik_genio_tres_brasas.webp"
   }
 ];
 

@@ -31604,10 +31604,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "magmatic_subduction",
         "value": 3,
         "secondaryValue": 2,
-        "description": "Zera a Armadura na coluna alvo, causa 3 de dano à Vanguarda e a empurra para a Retaguarda (+2 de dano se já ocupada)."
+        "description": "Zera a Armadura na coluna alvo, causa 3 de dano à Vanguarda e a recua."
       }
     ],
-    "description": "Zera a Armadura inimiga na coluna alvo, causa 3 de dano à Vanguarda e empurra os sobreviventes para a Retaguarda. Se a Retaguarda já estava ocupada, toda a coluna sofre +2 de dano.",
+    "description": "Zera a Armadura na coluna alvo, causa 3 de dano à Vanguarda e a recua.",
     "flavorText": "Quando as placas de Pyros cedem, nem o aço temperado nem a segunda linha escapam da fornalha.",
     "imagePath": "/assets/cards/red_174_subduccao_magmatica.webp"
   },
@@ -31631,10 +31631,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "crimson_anvil_march",
         "value": 2,
         "secondaryValue": 2,
-        "description": "Seus aliados ganham +2 de Ataque neste turno e golpeiam sua coluna imediatamente, ou causam 2 de dano ao Soberano rival."
+        "description": "Seus aliados ganham +2 de Ataque neste turno e golpeiam sua coluna ou o Soberano rival."
       }
     ],
-    "description": "Coloca seus aliados em Ataque com +2 de Ataque neste turno. Cada um golpeia o inimigo à frente sem gastar o ataque do turno, ou causa 2 de dano ao Soberano rival se a coluna estiver livre.",
+    "description": "Seus aliados ganham +2 de Ataque neste turno e golpeiam sua coluna ou o Soberano rival.",
     "flavorText": "Ao soar do malho celeste, cada guerreiro golpeia duas vezes antes que a cinza toque o chão.",
     "imagePath": "/assets/cards/red_175_marcha_bigorna_rubra.webp"
   },
@@ -31657,10 +31657,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "coordinate_inversion",
         "value": 1,
-        "description": "Troca Vanguarda e Retaguarda na coluna inimiga alvo, congela quem recuar e compra 1 carta."
+        "description": "Troca Vanguarda e Retaguarda na coluna inimiga, congela quem recuar e compra 1 carta."
       }
     ],
-    "description": "Troca Vanguarda e Retaguarda na coluna inimiga escolhida, congela por 1 rodada quem foi para a Retaguarda e compra 1 carta.",
+    "description": "Troca Vanguarda e Retaguarda na coluna inimiga, congela quem recuar e compra 1 carta.",
     "flavorText": "No Vórtex, 'frente' e 'retaguarda' são apenas convenções à espera de uma equação superior.",
     "imagePath": "/assets/cards/blue_174_inversao_coordenadas.webp"
   },
@@ -31684,10 +31684,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "horizon_singularity",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Puxa a Vanguarda inimiga ao centro, causa 3 de dano e a congela; excedentes voltam à mão custando +1."
+        "description": "Puxa a Vanguarda inimiga ao centro, causa 3 de dano e a congela por 1 rodada."
       }
     ],
-    "description": "Puxa toda a Vanguarda inimiga para a coluna central, causando 3 de dano e congelando a pilha por 1 rodada. Excedentes voltam à mão do oponente custando +1 de Essência.",
+    "description": "Puxa a Vanguarda inimiga ao centro, causa 3 de dano e a congela por 1 rodada.",
     "flavorText": "Toda linha de batalha converge para um único ponto quando o próprio espaço se curva.",
     "imagePath": "/assets/cards/blue_175_singularidade_horizonte.webp"
   },
@@ -31710,10 +31710,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shared_shadow_link",
         "value": 1,
-        "description": "Vincula 1 inimigo ao seu aliado de maior Vida neste turno: o dano sofrido pelo aliado também atinge o alvo."
+        "description": "Vincula 1 inimigo ao seu aliado de maior Vida: o dano sofrido pelo aliado atinge o alvo."
       }
     ],
-    "description": "Vincula o inimigo alvo ao seu aliado de maior Vida até o fim do turno: todo dano ou Sacrifício Vital sofrido por esse aliado também atinge o alvo, até a Vida máxima do aliado.",
+    "description": "Vincula 1 inimigo ao seu aliado de maior Vida: o dano sofrido pelo aliado atinge o alvo.",
     "flavorText": "Duas sombras costuradas pelo crepúsculo partilham o mesmo fôlego e a mesma ruína.",
     "imagePath": "/assets/cards/purple_174_elo_sombra_partilhada.webp"
   },
@@ -31738,10 +31738,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "twilight_procession",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Sobrecarga +2. Invoca até 3 criaturas da Cripta com Ímpeto e Dreno de Vida neste turno; cada ataque dá +1/+1 aos aliados."
+        "description": "Invoca até 3 criaturas da Cripta com Ímpeto e Dreno de Vida neste turno."
       }
     ],
-    "description": "Sobrecarga +2. Invoca até 3 criaturas distintas da Cripta com Ímpeto e Dreno de Vida até o fim do turno. Ao voltarem à Cripta, concedem +1/+1 permanente aos demais aliados por cada uma que atacou.",
+    "description": "Invoca até 3 criaturas da Cripta com Ímpeto e Dreno de Vida neste turno.",
     "flavorText": "Os heróis adormecidos atendem a um último chamado antes que a estrela vespertina se apague.",
     "imagePath": "/assets/cards/purple_175_procissao_crepusculo.webp"
   },
@@ -31764,10 +31764,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "food_chain_law",
         "value": 3,
-        "description": "Seu aliado de maior Ataque golpeia 1 inimigo; se o abater, herda suas palavras-chave e cura 3 de Vida."
+        "description": "Seu aliado mais forte golpeia 1 inimigo; se o abater, herda suas habilidades e cura 3."
       }
     ],
-    "description": "Seu aliado de maior Ataque golpeia o inimigo escolhido (sem contra-ataque se tiver maior Vida máxima). Se o abater, herda suas palavras-chave e cura 3 de Vida.",
+    "description": "Seu aliado mais forte golpeia 1 inimigo; se o abater, herda suas habilidades e cura 3.",
     "flavorText": "Na mata primordial de Verídia, o topo do dossel pertence a quem devora o predador anterior.",
     "imagePath": "/assets/cards/green_174_lei_cadeia_alimentar.webp"
   },
@@ -31791,10 +31791,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "primordial_evolution_apex",
         "value": 3,
         "secondaryValue": 2,
-        "description": "Evolui de graça seus aliados com Ascensão; os demais ganham +3/+3, Atropelar e +2 de Regeneração."
+        "description": "Ascende seus aliados sem custo; os demais ganham +3/+3, Atropelar e Regeneração 2."
       }
     ],
-    "description": "Ativa sem custo a Ascensão de todos os seus aliados elegíveis, curando toda a sua Vida. Seus demais aliados ganham permanentemente +3/+3, Atropelar e +2 de Regeneração.",
+    "description": "Ascende seus aliados sem custo; os demais ganham +3/+3, Atropelar e Regeneração 2.",
     "flavorText": "Milênios de seleção selvagem condensados num único pulsar da Árvore-Mundo.",
     "imagePath": "/assets/cards/green_175_apice_evolucao_primordial.webp"
   },
@@ -31817,10 +31817,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "solar_spear_phalanx",
         "value": 2,
-        "description": "Iguala a Armadura da Vanguarda à maior Armadura aliada (mínimo 2); colunas vizinhas retaliam em 2 de dano até o próximo turno."
+        "description": "Iguala a Armadura da Vanguarda à maior Armadura aliada (mín. 2) e retalia em 2."
       }
     ],
-    "description": "Eleva a Armadura da sua Vanguarda até a maior Armadura aliada (mínimo 2). Até o seu próximo turno, quando sua Vanguarda for atacada, aliados nas colunas vizinhas causam 2 de dano ao atacante.",
+    "description": "Iguala a Armadura da Vanguarda à maior Armadura aliada (mín. 2) e retalia em 2.",
     "flavorText": "Nenhum escudo de Solária luta sozinho; golpear um é despertar duas lanças de luz.",
     "imagePath": "/assets/cards/gold_174_falange_lancas_solares.webp"
   },
@@ -31844,10 +31844,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "unconquered_champion_oath",
         "value": 2,
         "secondaryValue": 4,
-        "description": "Dá a 1 aliado +2/+4, +3 de Armadura, Guardião e Escudo Divino; enquanto viver, ele absorve o dano ao seu Soberano."
+        "description": "Concede +2/+4, +3 de Armadura e Escudo Divino a 1 aliado, que protege seu Soberano."
       }
     ],
-    "description": "Concede a 1 aliado +2/+4, +3 de Armadura, Guardião e Escudo Divino. Enquanto permanecer vivo, ele recebe em seu lugar todo dano inimigo que atingiria o seu Soberano.",
+    "description": "Concede +2/+4, +3 de Armadura e Escudo Divino a 1 aliado, que protege seu Soberano.",
     "flavorText": "Enquanto minha égide respirar, nenhuma flecha ou chama alcançará os degraus do trono.",
     "imagePath": "/assets/cards/gold_175_juramento_campeao_invicto.webp"
   },
@@ -31870,10 +31870,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "royal_prism_convergence",
         "value": 3,
-        "description": "Ativa 1 efeito por cor distinta nos seus Terrenos: 3 dano, Congelar+Compra, Drenar 3, +2/+2 ou Escudo Divino."
+        "description": "Ativa 1 efeito para cada cor distinta nos seus Terrenos canalizados."
       }
     ],
-    "description": "Ativa o efeito de cada cor nos seus Terrenos canalizados: Vermelho causa 3 de dano à Vanguarda inimiga; Azul congela 2 inimigos e compra 1 carta; Roxo drena 3 de Vida do Soberano rival; Verde dá +2/+2 e Regeneração 1 aos aliados; Dourado dá Escudo Divino à Vanguarda.",
+    "description": "Ativa 1 efeito para cada cor distinta nos seus Terrenos canalizados.",
     "flavorText": "Separadas, as cinco coroas guerreiam; reunidas no Prisma, o próprio mundo se ajoelha.",
     "imagePath": "/assets/cards/neutral_174_convergencia_prisma_real.webp"
   },
@@ -31907,7 +31907,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "description": "Ao entrar, cura 2 de Vida do seu Soberano."
       }
     ],
-    "description": "Alcance, Escudo Divino, Armadura 1. Ao entrar, cura 2 de Vida do seu Soberano. Ascensão 4: torna-se 4/5 com 2 de Armadura e Guardião.",
+    "description": "Ao entrar, cura 2 de Vida do seu Soberano. Ascensão 4: torna-se 4/5 com Guardião.",
     "flavorText": "Cada folha de ouro em sua fronte foi forjada no primeiro raio de Aethelgard.",
     "imagePath": "/assets/cards/gold_176_arauto_louros_alvorada.webp"
   },
@@ -31930,10 +31930,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "turn_start",
         "type": "lanca_cantora_ward",
         "value": 1,
-        "description": "No início do seu turno, dá +1 de Armadura e cura 1 de Vida do aliado mais ferido na Vanguarda."
+        "description": "No início do seu turno, dá +1 de Armadura e cura 1 de Vida de 1 aliado na Vanguarda."
       }
     ],
-    "description": "Alcance, Escudo Divino. No início do seu turno, concede +1 de Armadura e restaura 1 de Vida ao aliado mais ferido na Vanguarda.",
+    "description": "No início do seu turno, dá +1 de Armadura e cura 1 de Vida de 1 aliado na Vanguarda.",
     "flavorText": "Seu hino endurece o aço dos escudos antes mesmo que a primeira seta toque o chão.",
     "imagePath": "/assets/cards/gold_177_lanca_cantora_coro_solar.webp"
   },
@@ -31956,7 +31956,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "aelion_solar_edict",
         "value": 2,
-        "description": "Ao entrar ou lançar feitiço, dá Escudo Divino a 1 aliado sem escudo. Aliados com Escudo Divino têm +2 de Ataque."
+        "description": "Ao entrar ou lançar feitiço, dá Escudo Divino a 1 aliado (+2 de Ataque com Escudo)."
       },
       {
         "trigger": "spell_cast",
@@ -31965,7 +31965,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "description": "Ao lançar feitiço, dá Escudo Divino a 1 aliado sem escudo."
       }
     ],
-    "description": "Alcance, Escudo Divino, Armadura 1. Ao entrar ou lançar feitiço, concede Escudo Divino a 1 aliado sem escudo. Seus aliados com Escudo Divino têm +2 de Ataque.",
+    "description": "Ao entrar ou lançar feitiço, dá Escudo Divino a 1 aliado (+2 de Ataque com Escudo).",
     "flavorText": "Onde repousa sua bênção dourada, nenhuma lâmina profana encontra carne.",
     "imagePath": "/assets/cards/gold_178_aelion_hierofante_coroa_aurea.webp"
   },
@@ -31989,10 +31989,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_death",
         "type": "drain_enemy_sovereign",
         "value": 2,
-        "description": "Ao morrer, drena 2 de Vida do Soberano rival para o seu Soberano."
+        "description": "Ao morrer, drena 2 de Vida do Soberano rival."
       }
     ],
-    "description": "Alcance, Dreno de Vida, Sobrecarga +1. Ao morrer, drena 2 de Vida do Soberano rival para o seu Soberano.",
+    "description": "Ao morrer, drena 2 de Vida do Soberano rival.",
     "flavorText": "Fios de obsidiana estelar costuram o destino dos reis que ousam encará-la.",
     "imagePath": "/assets/cards/purple_176_tecela_lagrimas_negras.webp"
   },
@@ -32019,7 +32019,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "description": "Ao atacar com 5+ de Sobrecarga, causa 2 de dano ao alvo antes do combate."
       }
     ],
-    "description": "Alcance, Toque Letal, Renascer, Sobrecarga +2. Ao atacar com 5+ de Sobrecarga, causa 2 de dano direto ao alvo antes do combate.",
+    "description": "Ao atacar com 5+ de Sobrecarga, causa 2 de dano ao alvo antes do combate.",
     "flavorText": "Forjado sob o eclipse negro, seu arco dispara estilhaços de estrelas mortas.",
     "imagePath": "/assets/cards/purple_177_inquisidor_obsidiana_astral.webp"
   },
@@ -32044,10 +32044,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "vaelen_astral_stigma",
         "value": 2,
         "secondaryValue": 4,
-        "description": "Dá -2 de Ataque a 1 inimigo; abatê-lo reanima da Cripta 1 aliado de custo até 4 com 1 de Vida. Sobrecarga ou Sacrifício Vital causa 2 de dano ao rival."
+        "description": "Ao entrar, dá -2 de Ataque a 1 inimigo; abatê-lo reanima 1 aliado de custo até 4."
       }
     ],
-    "description": "Alcance, Dreno de Vida, Sobrecarga +2. Ao entrar, dá -2 de Ataque a 1 inimigo; quando ele morrer, reanima da Cripta 1 criatura de custo até 4 com 1 de Vida. Ganhar Sobrecarga ou usar Sacrifício Vital causa 2 de dano ao Soberano rival.",
+    "description": "Ao entrar, dá -2 de Ataque a 1 inimigo; abatê-lo reanima 1 aliado de custo até 4.",
     "flavorText": "Chora ouro líquido pelos impérios que ainda não sabem que já caíram.",
     "imagePath": "/assets/cards/purple_178_vaelen_oraculo_choro_dourado.webp"
   },
@@ -32081,7 +32081,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "description": "Ao entrar, congela 1 inimigo por 1 rodada."
       }
     ],
-    "description": "Alcance. Ao entrar, congela 1 inimigo por 1 rodada. Ascensão 4: torna-se 4/6 e compra 1 carta ao atacar alvos congelados.",
+    "description": "Ao entrar, congela 1 inimigo por 1 rodada. Ascensão 4: torna-se 4/6.",
     "flavorText": "Sob seu capuz bordado de constelações, o próprio vento esquece como soprar.",
     "imagePath": "/assets/cards/blue_176_sentinela_capuz_estelar.webp"
   },
@@ -32105,10 +32105,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "chrono_prism_volley",
         "value": 2,
         "secondaryValue": 4,
-        "description": "1x por turno, ao lançar feitiço, causa 2 de dano a 1 inimigo, ou 4 de dano e compra 1 carta se congelado."
+        "description": "Ao lançar feitiço (1x/turno), causa 2 de dano a 1 inimigo, ou 4 e compra 1 se congelado."
       }
     ],
-    "description": "Alcance. 1x por turno, ao lançar feitiço, causa 2 de dano a 1 inimigo — ou 4 de dano e compra 1 carta se o alvo estiver congelado.",
+    "description": "Ao lançar feitiço (1x/turno), causa 2 de dano a 1 inimigo, ou 4 e compra 1 se congelado.",
     "flavorText": "Três segundos bastam para que o gelo eterno devore um exército inteiro.",
     "imagePath": "/assets/cards/blue_177_cronomante_terceiro_prisma.webp"
   },
@@ -32131,10 +32131,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "lyriel_astral_zero",
         "value": 2,
-        "description": "Congela até 2 inimigos e puxa o mais fraco da Retaguarda à Vanguarda. Inimigos congelados perdem Guardião e sofrem +2 de dano seu."
+        "description": "Ao entrar, congela até 2 inimigos. Inimigos congelados perdem Guardião e sofrem +2 de dano."
       }
     ],
-    "description": "Alcance, Voo. Ao entrar, congela até 2 inimigos e puxa o de menor Ataque da Retaguarda para a Vanguarda. Inimigos congelados perdem Guardião e sofrem +2 de dano das suas cartas.",
+    "description": "Ao entrar, congela até 2 inimigos. Inimigos congelados perdem Guardião e sofrem +2 de dano.",
     "flavorText": "No instante zero entre duas estrelas, todo escudo é vidro prestes a estilhaçar.",
     "imagePath": "/assets/cards/blue_178_lyriel_vidente_zero_astral.webp"
   },
@@ -32150,7 +32150,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 1,
     "armor": 0,
     "hp": 4,
-    "regeneration": 2,
     "preferredRow": "rearguard",
     "keywords": ["Alcance"],
     "ascension": {
@@ -32166,10 +32165,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Ao entrar, ganha +1 de Essência neste turno."
+        "description": "Ao entrar, gera +1 de Essência neste turno."
       }
     ],
-    "description": "Alcance, Regeneração 2. Ao entrar, ganha +1 de Essência neste turno. Ascensão 4: torna-se 3/6 e dá +1/+1 aos outros Elfos e aliados Verdes.",
+    "description": "Ao entrar, gera +1 de Essência neste turno. Ascensão 4: torna-se 3/6.",
     "flavorText": "As raízes antigas respondem ao luar antes mesmo de ouvirem a voz dos druidas.",
     "imagePath": "/assets/cards/green_176_sussurrador_seiva_lunar.webp"
   },
@@ -32194,10 +32193,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "emerald_antler_hunt",
         "value": 1,
         "secondaryValue": 3,
-        "description": "Ao atacar, ganha +1/+1 para cada outro Elfo ou aliado com Regeneração em campo, até +3/+3."
+        "description": "Ao atacar, ganha +1/+1 para cada outro Elfo aliado, até +3/+3."
       }
     ],
-    "description": "Alcance, Ímpeto, Atropelar, Regeneração 2. Ao atacar, ganha +1/+1 permanente para cada outro Elfo ou aliado com Regeneração em campo, até +3/+3.",
+    "description": "Ao atacar, ganha +1/+1 para cada outro Elfo aliado, até +3/+3.",
     "flavorText": "Nenhum invasor escapa quando toda a floresta respira no ritmo da sua corda.",
     "imagePath": "/assets/cards/green_177_cacador_galhada_esmeralda.webp"
   },
@@ -32221,16 +32220,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "sylvaris_fullmoon_bloom",
         "value": 2,
-        "description": "Dá +2/+2 e +2 de Regeneração à Vanguarda e ascende de graça 1 aliado elegível."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "No início do seu turno, gera +1 de Essência extra."
+        "description": "Ao entrar, dá +2/+2 à Vanguarda e ascende sem custo 1 aliado."
       }
     ],
-    "description": "Alcance, Regeneração 3. Ao entrar, dá +2/+2 e +2 de Regeneração à Vanguarda e ascende de graça 1 aliado elegível. No início do turno, gera +1 de Essência.",
+    "description": "Ao entrar, dá +2/+2 à Vanguarda e ascende sem custo 1 aliado.",
     "flavorText": "Quando a lua cheia coroa Verídia, brotos tornam-se titãs em um único suspiro.",
     "imagePath": "/assets/cards/green_178_sylvaris_arquidruida_plenilunio.webp"
   },
@@ -32257,7 +32250,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       "addedKeywords": ["Renascer"]
     },
     "effects": [],
-    "description": "Alcance, Voo, Ímpeto, Pele Incandescente. Ascensão 4: torna-se 5/4 e ganha Renascer.",
+    "description": "Ascensão 4: torna-se 5/4 com Renascer.",
     "flavorText": "Suas plumas cortam o ar como fagulhas vivas dançando sobre a cratera rubra.",
     "imagePath": "/assets/cards/red_176_dancarino_plumas_brasa.webp"
   },
@@ -32273,7 +32266,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 4,
     "armor": 0,
     "hp": 3,
-    "breathDamage": 1,
     "preferredRow": "rearguard",
     "keywords": ["Alcance", "Fúria Crescente"],
     "effects": [
@@ -32281,10 +32273,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "spell_cast",
         "type": "living_ash_arrow",
         "value": 2,
-        "description": "Ao lançar feitiço, causa 2 de dano ignorando Armadura a 1 inimigo na Vanguarda."
+        "description": "Ao lançar um feitiço, causa 2 de dano ignorando Armadura a 1 inimigo."
       }
     ],
-    "description": "Alcance, Fúria Crescente. Ao entrar, causa 1 de dano à Vanguarda inimiga. Ao lançar feitiço, causa 2 de dano ignorando Armadura a 1 inimigo.",
+    "description": "Ao lançar um feitiço, causa 2 de dano ignorando Armadura a 1 inimigo.",
     "flavorText": "Cada encantamento entoado acende uma nova seta em sua aljava de brasa.",
     "imagePath": "/assets/cards/red_177_arqueiro_solar_cinza_viva.webp"
   },
@@ -32308,10 +32300,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "kaelith_phoenix_nova",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar ou ativar Renascer, causa 3 de dano à Vanguarda inimiga e dá +1 de Ataque aos outros aliados neste turno."
+        "description": "Ao entrar ou Renascer, causa 3 de dano à Vanguarda inimiga e dá +1 de Ataque aos aliados."
       }
     ],
-    "description": "Alcance, Voo, Ímpeto, Renascer. Ao entrar ou ativar Renascer, causa 3 de dano à Vanguarda inimiga e concede +1 de Ataque neste turno aos seus outros aliados.",
+    "description": "Ao entrar ou Renascer, causa 3 de dano à Vanguarda inimiga e dá +1 de Ataque aos aliados.",
     "flavorText": "Abatê-lo uma vez é apenas convidar o próprio sol carmesim a descer sobre a arena.",
     "imagePath": "/assets/cards/red_178_kaelith_principe_asas_fenix.webp"
   },
@@ -32334,10 +32326,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "mirror_blade_envoy",
         "value": 1,
-        "description": "Ao entrar, compra 1 carta se você controlar outro Elfo ou aliados de 2+ cores."
+        "description": "Ao entrar, compra 1 carta se controlar outro Elfo ou 2+ cores."
       }
     ],
-    "description": "Alcance, Armadura 1. Ao entrar, compra 1 carta se você controlar outro Elfo ou aliados de 2 ou mais cores distintas.",
+    "description": "Ao entrar, compra 1 carta se controlar outro Elfo ou 2+ cores.",
     "flavorText": "Suas adagas espelhadas refletem os pactos selados entre todas as cortes.",
     "imagePath": "/assets/cards/neutral_175_emissario_lamina_espelho.webp"
   },
@@ -32360,10 +32352,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "crystal_guard_resonance",
         "value": 1,
-        "description": "Ao entrar, dá +1/+1 aos outros Elfos aliados; se houver 2+, ganha +1 de Ataque e Escudo Divino."
+        "description": "Ao entrar, concede +1/+1 aos outros Elfos aliados."
       }
     ],
-    "description": "Alcance. Ao entrar, concede +1/+1 aos outros Elfos aliados; se houver 2 ou mais, ganha +1 de Ataque e Escudo Divino.",
+    "description": "Ao entrar, concede +1/+1 aos outros Elfos aliados.",
     "flavorText": "Setas lapidadas em cristal axial voam em uníssono quando o Concílio marcha.",
     "imagePath": "/assets/cards/neutral_176_mestre_arqueiro_guarda_cristalina.webp"
   },
@@ -32386,10 +32378,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "thalassion_council_decree",
         "value": 1,
-        "description": "Dá +1/+1 aos seus Elfos e busca 1 Elfo do Grimório. Seus outros Elfos têm +1 de Armadura."
+        "description": "Ao entrar, dá +1/+1 aos seus Elfos e busca 1 Elfo do Grimório."
       }
     ],
-    "description": "Alcance, Escudo Divino, Armadura 1. Ao entrar, concede +1/+1 aos seus Elfos e busca 1 Elfo do Grimório para a mão. Seus outros Elfos têm +1 de Armadura.",
+    "description": "Ao entrar, dá +1/+1 aos seus Elfos e busca 1 Elfo do Grimório.",
     "flavorText": "Cinco joias na coroa prateada, uma só voz soberana ecoando através das eras.",
     "imagePath": "/assets/cards/neutral_177_thalassion_alto_rei_concilio_elfico.webp"
   },
@@ -32423,7 +32415,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "description": "Ao entrar, concede Escudo Divino e +1 de Armadura aos seus aliados."
       }
     ],
-    "description": "Guardião, Escudo Divino, Atropelar, Armadura 3. Ao entrar, dá +1/+1, +1 de Armadura e Escudo Divino a todos os seus aliados.",
+    "description": "Ao entrar, concede +1/+1, +1 de Armadura e Escudo Divino aos seus aliados.",
     "flavorText": "Quando o Leão de Solária apoia a montante no ombro, nenhuma muralha inimiga permanece de pé.",
     "imagePath": "/assets/cards/gold_179_leoric_grao_marechal_leao_solar.webp"
   },
@@ -32453,16 +32445,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "summon_token",
         "value": 2,
-        "description": "Ao entrar, invoca 2 Guardas Solares 2/2 na Vanguarda."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "heal_all_allies",
-        "value": 2,
-        "description": "No início do seu turno, restaura 2 de Vida dos seus aliados e do seu Soberano."
+        "description": "Ao entrar, invoca 2 aliados 2/2 na Vanguarda."
       }
     ],
-    "description": "Guardião, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e invoca 2 Guardas 2/2. No início do turno, cura 2 de Vida dos aliados.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e invoca 2 aliados 2/2 na Vanguarda.",
     "flavorText": "Sob o capuz alvo da Águia Imperial, cada ordem transforma recrutas em bastiões.",
     "imagePath": "/assets/cards/gold_180_valerius_comandante_aguia_imperial.webp"
   },
@@ -32493,15 +32479,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "damage_single_enemy",
         "value": 4,
         "description": "Ao entrar, causa 4 de dano a 1 inimigo."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "damage_enemy_row",
-        "value": 2,
-        "description": "Ao atacar, causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Guardião, Ímpeto, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, causa 2 de dano à Vanguarda inimiga.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo.",
     "flavorText": "Forjada em escamas de dragão solar e safira astral, sua couraça avança como um cometa em terra.",
     "imagePath": "/assets/cards/gold_181_wolfgang_marechal_escama_solar.webp"
   },
@@ -32522,20 +32502,13 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao entrar, concede +1/+1 aos seus aliados."
-      },
-      {
-        "trigger": "on_enter",
         "type": "crimson_anvil_march",
         "value": 2,
         "secondaryValue": 1,
         "description": "Ao entrar, concede +2 de Ataque, +1 de Armadura e Ímpeto à sua Vanguarda."
       }
     ],
-    "description": "Ímpeto, Fúria Crescente, Atropelar, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e concede +2 de Ataque, +1 de Armadura e Ímpeto à sua Vanguarda.",
+    "description": "Ao entrar, concede +2 de Ataque, +1 de Armadura e Ímpeto à sua Vanguarda.",
     "flavorText": "Por trás do sorriso de ouro fundido, sua ordem de ataque é um decreto de aniquilação.",
     "imagePath": "/assets/cards/red_179_khorvus_tirano_mascara_auricrania.webp"
   },
@@ -32566,16 +32539,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "damage_single_enemy",
         "value": 4,
         "description": "Ao entrar, causa 4 de dano a 1 inimigo."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao atacar, concede +1/+1 aos seus aliados."
       }
     ],
-    "description": "Ímpeto, Atropelar, Fúria Crescente, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos aliados.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo.",
     "flavorText": "Sua montante de ferro negro pesa tanto quanto um aríete — e parte muralhas com a mesma facilidade.",
     "imagePath": "/assets/cards/red_180_malakor_general_lamina_colossal.webp"
   },
@@ -32606,15 +32572,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "damage_enemy_row",
         "value": 3,
         "description": "Ao entrar, causa 3 de dano à Vanguarda inimiga."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "damage_enemy_sovereign",
-        "value": 3,
-        "description": "Ao atacar, causa 3 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Guardião, Ímpeto, Pele Incandescente, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 3 de dano à Vanguarda inimiga. Ao atacar, causa 3 ao Soberano.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e causa 3 de dano à Vanguarda inimiga.",
     "flavorText": "Onde a ponta incandescente de sua espada toca a pedra, nascem vulcões.",
     "imagePath": "/assets/cards/red_181_ignis_marechal_coroa_cinzas.webp"
   },
@@ -32644,16 +32604,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Ao entrar, Congela a Vanguarda inimiga."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "damage_enemy_row",
-        "value": 2,
-        "description": "Ao atacar, causa 2 de dano à Vanguarda inimiga."
+        "description": "Ao entrar, congela a Vanguarda inimiga por 1 rodada."
       }
     ],
-    "description": "Guardião, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e congela a Vanguarda inimiga. Ao atacar, causa 2 à Vanguarda.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e congela a Vanguarda inimiga por 1 rodada.",
     "flavorText": "Sua sentença desce como o inverno astral: estática, irrevogável e absoluta.",
     "imagePath": "/assets/cards/blue_179_arcturus_rei_juiz_coroa_safira.webp"
   },
@@ -32683,16 +32637,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao entrar, Congela 1 inimigo por 1 rodada."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao entrar, compra 1 carta."
+        "description": "Ao entrar, congela 1 inimigo por 1 rodada."
       }
     ],
-    "description": "Guardião, Escudo Divino, Ímpeto, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados, congela 1 inimigo por 1 rodada e compra 1 carta.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e congela 1 inimigo por 1 rodada.",
     "flavorText": "Sob a juba alva do Leão Boreal, a nevasca marcha em formação cerrada.",
     "imagePath": "/assets/cards/blue_180_leona_marechal_leao_branco_inverno.webp"
   },
@@ -32722,16 +32670,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "bounce_enemy",
         "value": 1,
-        "description": "Ao entrar, devolve 1 criatura inimiga para a mão do oponente."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "No início do seu turno, compra 1 carta."
+        "description": "Ao entrar, devolve 1 inimigo à mão do oponente."
       }
     ],
-    "description": "Guardião, Alcance, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e devolve 1 inimigo à mão. No início do turno, compra 1 carta.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e devolve 1 inimigo à mão do oponente.",
     "flavorText": "Cada fase do seu escudo crescente redesenha as linhas de batalha antes do primeiro choque.",
     "imagePath": "/assets/cards/blue_181_selene_estrategista_egide_lunar.webp"
   },
@@ -32762,15 +32704,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards",
         "value": 1,
         "description": "Ao entrar, compra 1 carta."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "Ao entrar, gera +1 de Essência neste turno."
       }
     ],
-    "description": "Guardião, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados, compra 1 carta e gera +1 de Essência neste turno.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e compra 1 carta.",
     "flavorText": "Nenhuma bandeira o prende, mas todo reino conhece o peso da sua palavra e do seu aço.",
     "imagePath": "/assets/cards/neutral_179_aldric_marechal_lobo_prateado.webp"
   },
@@ -32804,7 +32740,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "description": "Ao entrar, concede +1 de Armadura e Escudo Divino aos seus aliados."
       }
     ],
-    "description": "Guardião, Atropelar, Armadura 3. Ao entrar, dá +1/+1, +1 de Armadura e Escudo Divino a todos os seus aliados.",
+    "description": "Ao entrar, concede +1/+1, +1 de Armadura e Escudo Divino aos seus aliados.",
     "flavorText": "Cem cercos deixaram marcas em sua couraça, mas nenhuma lâmina jamais o fez recuar um passo.",
     "imagePath": "/assets/cards/neutral_180_garruk_bastiao_ferro_veterano.webp"
   },
@@ -32835,16 +32771,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "damage_single_enemy",
         "value": 4,
         "description": "Ao entrar, causa 4 de dano a 1 inimigo."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao atacar, concede +1/+1 aos seus aliados."
       }
     ],
-    "description": "Guardião, Ímpeto, Atropelar, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos seus aliados.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e causa 4 de dano a 1 inimigo.",
     "flavorText": "Um único olho lhe basta para enxergar o ponto exato onde a linha inimiga irá ruir.",
     "imagePath": "/assets/cards/neutral_181_vaelor_lorde_comandante_olho_ferro.webp"
   },
@@ -32860,7 +32789,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 4,
     "armor": 2,
     "hp": 6,
-    "regeneration": 2,
     "preferredRow": "vanguard",
     "keywords": ["Guardião", "Atropelar"],
     "effects": [
@@ -32876,15 +32804,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "grant_bonus_essence",
         "value": 2,
         "description": "Ao entrar, gera +2 de Essência neste turno."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "No início do seu turno, gera +1 de Essência."
       }
     ],
-    "description": "Guardião, Atropelar, Armadura 2, Regeneração 2. Ao entrar, dá +1/+1 aos seus aliados e gera +2 de Essência. No início do turno, gera +1 de Essência.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e gera +2 de Essência neste turno.",
     "flavorText": "A própria floresta brota de sua couraça, alimentando as tropas com a seiva das raízes antigas.",
     "imagePath": "/assets/cards/green_179_brennus_marechal_manto_musgo.webp"
   },
@@ -32900,7 +32822,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 5,
     "armor": 1,
     "hp": 6,
-    "regeneration": 2,
     "preferredRow": "vanguard",
     "keywords": ["Guardião", "Escudo Divino"],
     "effects": [
@@ -32913,24 +32834,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       },
       {
         "trigger": "on_enter",
-        "type": "grant_bonus_essence",
-        "value": 2,
-        "description": "Ao entrar, gera +2 de Essência neste turno."
-      },
-      {
-        "trigger": "on_enter",
         "type": "heal_all_allies",
         "value": 3,
         "description": "Ao entrar, restaura 3 de Vida dos seus aliados e do seu Soberano."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "No início do seu turno, gera +1 de Essência."
       }
     ],
-    "description": "Guardião, Escudo Divino, Armadura 1, Regeneração 2. Ao entrar, dá +1/+1 aos seus aliados, cura 3 de Vida deles e gera +2 de Essência. No início do turno, gera +1 de Essência.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e restaura 3 de Vida deles e do seu Soberano.",
     "flavorText": "Onde sua montante toca o solo, pétalas desabrocham em pura essência vital.",
     "imagePath": "/assets/cards/green_180_flora_dama_florescer_perene.webp"
   },
@@ -32946,7 +32855,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 6,
     "armor": 2,
     "hp": 7,
-    "regeneration": 2,
     "preferredRow": "vanguard",
     "keywords": ["Guardião", "Alcance", "Toque Letal"],
     "effects": [
@@ -32962,21 +32870,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "grant_bonus_essence",
         "value": 3,
         "description": "Ao entrar, gera +3 de Essência neste turno."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "grant_bonus_essence",
-        "value": 2,
-        "description": "Ao atacar, gera +2 de Essência neste turno."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "No início do seu turno, gera +1 de Essência."
       }
     ],
-    "description": "Guardião, Alcance, Toque Letal, Armadura 2, Regeneração 2. Ao entrar, dá +1/+1 aos seus aliados e gera +3 de Essência. Ao atacar, gera +2; no início do turno, +1.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e gera +3 de Essência neste turno.",
     "flavorText": "Sob a coroa do Cardo Real, cada espinho drena o vigor da terra para abastecer a ofensiva.",
     "imagePath": "/assets/cards/green_181_verbena_marechal_cardo_real.webp"
   },
@@ -33006,10 +32902,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "revive_from_crypt",
         "value": 1,
-        "description": "Ao entrar, reanima da sua Cripta a criatura aliada mais forte."
+        "description": "Ao entrar, reanima da Cripta o aliado mais forte."
       }
     ],
-    "description": "Guardião, Dreno de Vida, Renascer, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados e reanima da Cripta o aliado mais forte.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e reanima da Cripta o aliado mais forte.",
     "flavorText": "Nem a própria morte ousa dispensar um soldado que jurou lealdade ao seu escudo negro.",
     "imagePath": "/assets/cards/purple_179_morgause_dama_ferro_abissal.webp"
   },
@@ -33030,25 +32926,18 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao entrar, concede +1/+1 aos seus aliados."
-      },
-      {
-        "trigger": "on_enter",
         "type": "debuff_enemy_vanguard_atk",
         "value": 2,
-        "description": "Ao entrar, reduz em 2 o Ataque da Vanguarda inimiga."
+        "description": "Ao entrar, reduz em 2 o Ataque dos inimigos."
       },
       {
         "trigger": "on_enter",
         "type": "drain_enemy_sovereign",
         "value": 3,
-        "description": "Ao entrar, drena 3 de Vida do Soberano rival para o seu Soberano."
+        "description": "Ao entrar, drena 3 de Vida do Soberano rival."
       }
     ],
-    "description": "Toque Letal, Dreno de Vida, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados, reduz em 2 o Ataque da Vanguarda inimiga e drena 3 de Vida do Soberano rival.",
+    "description": "Ao entrar, reduz em 2 o Ataque dos inimigos e drena 3 de Vida do Soberano rival.",
     "flavorText": "Quando a máscara de corvo cruza a névoa, o fôlego dos vivos torna-se tributo para o Abismo.",
     "imagePath": "/assets/cards/purple_180_corvina_marechal_bico_praga.webp"
   },
@@ -33079,15 +32968,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "destroy_enemy",
         "value": 1,
         "description": "Ao entrar, destrói 1 criatura inimiga."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "drain_enemy_sovereign",
-        "value": 2,
-        "description": "Ao atacar, drena 2 de Vida do Soberano rival para o seu Soberano."
       }
     ],
-    "description": "Ímpeto, Toque Letal, Dreno de Vida, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e destrói 1 inimigo. Ao atacar, drena 2 de Vida do Soberano rival.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e destrói 1 criatura inimiga.",
     "flavorText": "Duas lâminas curvas bastam para cortar o fio do destino do campeão mais poderoso.",
     "imagePath": "/assets/cards/purple_181_nyxara_comandante_laminas_veu.webp"
   },
@@ -33111,15 +32994,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "damage_single_enemy",
         "value": 2,
         "description": "Ao entrar, causa 2 de dano a 1 inimigo."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
-        "value": 2,
-        "description": "Ao entrar, causa 2 de dano diretamente ao Soberano rival."
       }
     ],
-    "description": "Voo, Ímpeto, Pele Incandescente, Armadura 1. Ao entrar, causa 2 de dano a 1 inimigo e 2 de dano ao Soberano rival.",
+    "description": "Ao entrar, causa 2 de dano a 1 inimigo.",
     "flavorText": "Do Primeiro Coro da Chama descem os guardiões de duas asas, portando o escudo do olho ardente e a espada da sentença.",
     "imagePath": "/assets/cards/red_182_arauto_duas_asas_pira.webp"
   },
@@ -33140,25 +33017,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao entrar, concede +1/+1 aos seus aliados."
-      },
-      {
-        "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 2,
         "description": "Ao entrar, causa 2 de dano à Vanguarda inimiga."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "damage_enemy_sovereign",
-        "value": 2,
-        "description": "Ao atacar, causa 2 de dano diretamente ao Soberano rival."
       }
     ],
-    "description": "Voo, Ímpeto, Fúria Crescente, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e causa 2 de dano à Vanguarda inimiga. Ao atacar, causa 2 de dano ao Soberano rival.",
+    "description": "Ao entrar, causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "No Segundo Coro da Pira, quatro asas em chamas erguem o aço antigo e conjuram a adaga incandescente da sentença.",
     "imagePath": "/assets/cards/red_183_kamael_arcanjo_seis_asas_brasa.webp"
   },
@@ -33189,21 +33053,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "damage_enemy_row",
         "value": 3,
         "description": "Ao entrar, causa 3 de dano à Vanguarda inimiga."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
-        "value": 3,
-        "description": "Ao entrar, causa 3 de dano diretamente ao Soberano rival."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "damage_enemy_row",
-        "value": 2,
-        "description": "Ao atacar, causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Voo, Ímpeto, Escudo Divino, Fúria Crescente, Armadura 2. Ao entrar, dá +2/+1 aos seus aliados, causa 3 de dano à Vanguarda inimiga e 3 ao Soberano rival. Ao atacar, causa 2 de dano à Vanguarda inimiga.",
+    "description": "Ao entrar, concede +2/+1 aos seus aliados e causa 3 de dano à Vanguarda inimiga.",
     "flavorText": "No ápice do Coro da Chama, oito asas ardentes coroam o aço negro-dourado enquanto sua espada incendeia o campo de batalha.",
     "imagePath": "/assets/cards/red_184_azariel_serafim_dez_asas_chama.webp"
   },
@@ -33226,16 +33078,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao entrar, congela 1 criatura inimiga."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao entrar, compra 1 carta."
+        "description": "Ao entrar, congela 1 inimigo por 1 rodada."
       }
     ],
-    "description": "Voo, Escudo Divino, Armadura 1. Ao entrar, congela 1 inimigo e compra 1 carta.",
+    "description": "Ao entrar, congela 1 inimigo por 1 rodada.",
     "flavorText": "Do Primeiro Coro Boreal descem os guardiões de duas asas glaciais, trazendo o silêncio cristalino das alturas.",
     "imagePath": "/assets/cards/blue_182_arauto_duas_asas_geada.webp"
   },
@@ -33256,25 +33102,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao entrar, concede +1/+1 aos seus aliados."
-      },
-      {
-        "trigger": "on_enter",
         "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Ao entrar, congela toda a Vanguarda inimiga."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao atacar, compra 1 carta."
+        "description": "Ao entrar, congela a Vanguarda inimiga por 1 rodada."
       }
     ],
-    "description": "Voo, Escudo Divino, Alcance, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e congela a Vanguarda inimiga. Ao atacar, compra 1 carta.",
+    "description": "Ao entrar, congela a Vanguarda inimiga por 1 rodada.",
     "flavorText": "No Segundo Coro Boreal, quatro asas de safira imobilizam exércitos inteiros sob o prisma do inverno eterno.",
     "imagePath": "/assets/cards/blue_183_zadkiel_arcanjo_quatro_asas_gelo.webp"
   },
@@ -33295,31 +33128,18 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 2,
-        "description": "Ao entrar, concede +1/+2 aos seus aliados."
-      },
-      {
-        "trigger": "on_enter",
         "type": "freeze_enemy_vanguard",
         "value": 1,
-        "description": "Ao entrar, congela toda a Vanguarda inimiga."
+        "description": "Ao entrar, congela a Vanguarda inimiga por 1 rodada."
       },
       {
         "trigger": "on_enter",
         "type": "draw_cards",
         "value": 2,
         "description": "Ao entrar, compra 2 cartas."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "freeze_enemy",
-        "value": 1,
-        "description": "Ao atacar, congela 1 criatura inimiga."
       }
     ],
-    "description": "Voo, Escudo Divino, Guardião, Alcance, Armadura 2. Ao entrar, dá +1/+2 aos seus aliados, congela a Vanguarda inimiga e compra 2 cartas. Ao atacar, congela 1 inimigo.",
+    "description": "Ao entrar, congela a Vanguarda inimiga por 1 rodada e compra 2 cartas.",
     "flavorText": "No ápice do Coro Boreal, seis asas de gelo eterno suspendem o próprio fluxo do tempo diante de sua espada.",
     "imagePath": "/assets/cards/blue_184_cassiel_serafim_seis_asas_inverno.webp"
   },
@@ -33335,7 +33155,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 4,
     "armor": 1,
     "hp": 5,
-    "regeneration": 1,
     "preferredRow": "vanguard",
     "keywords": ["Voo", "Atropelar"],
     "effects": [
@@ -33343,16 +33162,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
         "value": 2,
-        "description": "Ao entrar, concede +2 de Essência neste turno."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "heal_sovereign",
-        "value": 2,
-        "description": "Ao entrar, cura 2 de Vida do seu Soberano."
+        "description": "Ao entrar, gera +2 de Essência neste turno."
       }
     ],
-    "description": "Voo, Atropelar, Armadura 1, Regeneração 1. Ao entrar, dá +2 de Essência neste turno e cura 2 de Vida do seu Soberano.",
+    "description": "Ao entrar, gera +2 de Essência neste turno.",
     "flavorText": "Do Primeiro Coro do Éden descem os guardiões de duas asas vivas, onde cada pluma brota da seiva ancestral.",
     "imagePath": "/assets/cards/green_182_arauto_duas_asas_eden.webp"
   },
@@ -33368,7 +33181,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 5,
     "armor": 1,
     "hp": 6,
-    "regeneration": 2,
     "preferredRow": "vanguard",
     "keywords": ["Voo", "Escudo Divino", "Atropelar"],
     "effects": [
@@ -33383,16 +33195,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
         "value": 2,
-        "description": "Ao entrar, concede +2 de Essência neste turno."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "No início do turno, concede +1 de Essência."
+        "description": "Ao entrar, gera +2 de Essência neste turno."
       }
     ],
-    "description": "Voo, Escudo Divino, Atropelar, Armadura 1, Regeneração 2. Ao entrar, dá +1/+1 aos seus aliados e +2 de Essência. No início do turno, dá +1 de Essência.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e gera +2 de Essência neste turno.",
     "flavorText": "No Segundo Coro do Éden, quatro asas luminosas condensam a seiva da criação em cristais puros de Essência.",
     "imagePath": "/assets/cards/green_183_sachiel_arcanjo_quatro_asas_seiva.webp"
   },
@@ -33408,7 +33214,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 7,
     "armor": 2,
     "hp": 8,
-    "regeneration": 2,
     "preferredRow": "vanguard",
     "keywords": ["Voo", "Escudo Divino", "Guardião", "Atropelar"],
     "effects": [
@@ -33423,22 +33228,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "heal_all_allies",
         "value": 3,
-        "description": "Ao entrar, cura 3 de Vida de todos os seus aliados."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "grant_bonus_essence",
-        "value": 3,
-        "description": "Ao entrar, concede +3 de Essência neste turno."
-      },
-      {
-        "trigger": "turn_start",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "No início do turno, concede +1 de Essência."
+        "description": "Ao entrar, restaura 3 de Vida dos seus aliados e do seu Soberano."
       }
     ],
-    "description": "Voo, Escudo Divino, Guardião, Atropelar, Armadura 2, Regeneração 2. Ao entrar, dá +2/+2 e cura 3 de Vida dos seus aliados, além de +3 de Essência. No início do turno, dá +1 de Essência.",
+    "description": "Ao entrar, concede +2/+2 aos seus aliados e restaura 3 de Vida deles e do seu Soberano.",
     "flavorText": "No ápice do Coro do Éden, seis asas de esmeralda e ouro despertam o florescer imortal em toda a fileira aliada.",
     "imagePath": "/assets/cards/green_184_raphael_serafim_seis_asas_eden.webp"
   },
@@ -33461,10 +33254,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "drain_enemy_sovereign",
         "value": 2,
-        "description": "Ao entrar, drena 2 de Vida do Soberano rival para o seu Soberano."
+        "description": "Ao entrar, drena 2 de Vida do Soberano rival."
       }
     ],
-    "description": "Voo, Dreno de Vida, Toque Letal, Armadura 1. Ao entrar, drena 2 de Vida do Soberano rival para o seu Soberano.",
+    "description": "Ao entrar, drena 2 de Vida do Soberano rival.",
     "flavorText": "Do Primeiro Coro do Sol Eclipsado descem os ceifadores de duas asas negras, colhendo o tributo das almas perjuras.",
     "imagePath": "/assets/cards/purple_182_arauto_duas_asas_eclipse.webp"
   },
@@ -33485,25 +33278,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao entrar, concede +1/+1 aos seus aliados."
-      },
-      {
-        "trigger": "on_enter",
         "type": "debuff_enemy_vanguard_atk",
         "value": 2,
-        "description": "Ao entrar, reduz em 2 o Ataque da Vanguarda inimiga."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "drain_enemy_sovereign",
-        "value": 2,
-        "description": "Ao atacar, drena 2 de Vida do Soberano rival para o seu Soberano."
+        "description": "Ao entrar, reduz em 2 o Ataque dos inimigos."
       }
     ],
-    "description": "Voo, Dreno de Vida, Renascer, Armadura 1. Ao entrar, dá +1/+1 aos seus aliados e reduz em 2 o Ataque da Vanguarda inimiga. Ao atacar, drena 2 de Vida do Soberano rival.",
+    "description": "Ao entrar, reduz em 2 o Ataque dos inimigos.",
     "flavorText": "No Segundo Coro do Eclipse, quatro asas sombrias extinguem a coragem dos vivos e alimentam o trono abissal.",
     "imagePath": "/assets/cards/purple_183_sariel_arcanjo_quatro_asas_abismo.webp"
   },
@@ -33524,13 +33304,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_all_allies",
-        "value": 2,
-        "secondaryValue": 1,
-        "description": "Ao entrar, concede +2/+1 aos seus aliados."
-      },
-      {
-        "trigger": "on_enter",
         "type": "destroy_enemy",
         "value": 1,
         "description": "Ao entrar, destrói 1 criatura inimiga."
@@ -33539,16 +33312,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "revive_from_crypt",
         "value": 1,
-        "description": "Ao entrar, reanima da sua Cripta a criatura aliada mais forte."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "drain_enemy_sovereign",
-        "value": 3,
-        "description": "Ao atacar, drena 3 de Vida do Soberano rival para o seu Soberano."
+        "description": "Ao entrar, reanima da Cripta o aliado mais forte."
       }
     ],
-    "description": "Voo, Dreno de Vida, Toque Letal, Renascer, Armadura 2. Ao entrar, dá +2/+1 aos seus aliados, destrói 1 inimigo e reanima da Cripta o aliado mais forte. Ao atacar, drena 3 de Vida do Soberano rival.",
+    "description": "Ao entrar, destrói 1 criatura inimiga e reanima da Cripta o aliado mais forte.",
     "flavorText": "No ápice do Coro do Sol Eclipsado, seis asas de obsidiana decretam o fim dos inimigos e erguem os caídos da Cripta.",
     "imagePath": "/assets/cards/purple_184_samael_serafim_seis_asas_eclipse.webp"
   },
@@ -33574,7 +33341,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "description": "Ao entrar, compra 1 carta."
       }
     ],
-    "description": "Voo, Guardião, Escudo Divino, Armadura 1. Ao entrar, compra 1 carta.",
+    "description": "Ao entrar, compra 1 carta.",
     "flavorText": "Do Primeiro Coro de Alabastro descem os sentinelas imparciais que guardam os tratados antigos da Fronteira.",
     "imagePath": "/assets/cards/neutral_182_arauto_duas_asas_alabastro.webp"
   },
@@ -33602,18 +33369,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       },
       {
         "trigger": "on_enter",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "Ao entrar, concede +1 de Essência neste turno."
-      },
-      {
-        "trigger": "on_enter",
         "type": "draw_cards",
         "value": 1,
         "description": "Ao entrar, compra 1 carta."
       }
     ],
-    "description": "Voo, Guardião, Escudo Divino, Armadura 2. Ao entrar, dá +1/+1 aos seus aliados, dá +1 de Essência e compra 1 carta.",
+    "description": "Ao entrar, concede +1/+1 aos seus aliados e compra 1 carta.",
     "flavorText": "No Segundo Coro de Alabastro, quatro asas prateadas calibram a esfera celeste sem pender a nenhum domínio.",
     "imagePath": "/assets/cards/neutral_183_jophiel_arcanjo_quatro_asas_prata.webp"
   },
@@ -33643,23 +33404,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "shield_all_allies",
         "value": 1,
-        "description": "Ao entrar, concede +1 de Armadura e Escudo Divino aos seus aliados."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "damage_single_enemy",
-        "value": 4,
-        "description": "Ao entrar, causa 4 de dano a 1 inimigo."
-      },
-      {
-        "trigger": "on_attack",
-        "type": "buff_all_allies",
-        "value": 1,
-        "secondaryValue": 1,
-        "description": "Ao atacar, concede +1/+1 aos seus aliados."
+        "description": "Ao entrar, concede Escudo Divino aos seus aliados."
       }
     ],
-    "description": "Voo, Guardião, Escudo Divino, Atropelar, Armadura 3. Ao entrar, dá +1/+1, +1 de Armadura e Escudo Divino aos seus aliados e causa 4 de dano a 1 inimigo. Ao atacar, dá +1/+1 aos seus aliados.",
+    "description": "Ao entrar, concede +1/+1 e Escudo Divino aos seus aliados.",
     "flavorText": "No ápice do Coro de Alabastro, seis asas de platina preservam a memória incorruptível da Era Zero.",
     "imagePath": "/assets/cards/neutral_184_metatron_serafim_seis_asas_prisma.webp"
   },
@@ -33675,27 +33423,18 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 3,
     "armor": 1,
     "hp": 4,
-    "regeneration": 1,
     "preferredRow": "vanguard",
     "keywords": ["Guardião"],
-    "ascension": {
-      "cost": 4,
-      "newName": "Campeão da Lâmina Silvestre",
-      "newAtk": 6,
-      "newArmor": 2,
-      "newMaxHp": 7,
-      "addedKeywords": ["Guardião", "Escudo Divino", "Atropelar"]
-    },
     "effects": [
       {
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 1,
         "secondaryValue": 2,
-        "description": "Ao entrar, concede +1/+2 a um aliado."
+        "description": "Ao entrar, concede +1/+2 a 1 aliado."
       }
     ],
-    "description": "Guardião, Armadura 1, Regeneração 1. Ao entrar, dá +1/+2 a um aliado. Ascensão (4): Campeão da Lâmina Silvestre (6/7, ARM 2, Escudo Divino, Atropelar).",
+    "description": "Ao entrar, concede +1/+2 a 1 aliado.",
     "flavorText": "Forjado de casca viva e musgo eterno, sua espada de luz guarda as trilhas onde nenhum machado ousa tocar.",
     "imagePath": "/assets/cards/green_185_sentinela_galhada_musgo.webp"
   },
@@ -33711,7 +33450,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 4,
     "armor": 1,
     "hp": 6,
-    "regeneration": 1,
     "preferredRow": "vanguard",
     "keywords": ["Guardião", "Atropelar"],
     "effects": [
@@ -33719,16 +33457,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Ao entrar, concede +1 de Essência neste turno."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "heal_sovereign",
-        "value": 2,
-        "description": "Ao entrar, cura 2 de Vida do seu Soberano."
+        "description": "Ao entrar, gera +1 de Essência neste turno."
       }
     ],
-    "description": "Guardião, Atropelar, Armadura 1, Regeneração 1. Ao entrar, dá +1 de Essência neste turno e cura 2 de Vida do seu Soberano.",
+    "description": "Ao entrar, gera +1 de Essência neste turno.",
     "flavorText": "Runas douradas ardem sob o cerne milenar, canalizando a seiva das raízes profundas para o pacto druídico.",
     "imagePath": "/assets/cards/green_186_guardiao_runico_carvalho.webp"
   },
@@ -33744,7 +33476,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 3,
     "armor": 0,
     "hp": 4,
-    "regeneration": 1,
     "preferredRow": "rearguard",
     "keywords": ["Alcance", "Toque Letal"],
     "effects": [
@@ -33752,10 +33483,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao entrar, enraíza (Congela) 1 criatura inimiga."
+        "description": "Ao entrar, congela 1 inimigo por 1 rodada."
       }
     ],
-    "description": "Alcance, Toque Letal, Regeneração 1. Ao entrar, enraíza (Congela) 1 criatura inimiga.",
+    "description": "Ao entrar, congela 1 inimigo por 1 rodada.",
     "flavorText": "Nas águas paradas do pântano antigo, galhos retorcidos ganham olhos frios e garras que nunca soltam a presa.",
     "imagePath": "/assets/cards/green_187_errante_galhos_charco.webp"
   },
@@ -33778,16 +33509,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
         "value": 1,
-        "description": "Ao entrar, concede +1 de Essência neste turno."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Ao entrar, compra 1 carta."
+        "description": "Ao entrar, gera +1 de Essência neste turno."
       }
     ],
-    "description": "Guardião, Armadura 1. Ao entrar, dá +1 de Essência neste turno e compra 1 carta.",
+    "description": "Ao entrar, gera +1 de Essência neste turno.",
     "flavorText": "A caldeira rúnica às suas costas arde desde a fundação das primeiras muralhas da Fronteira.",
     "imagePath": "/assets/cards/neutral_185_automato_braseiro_runico.webp"
   },
@@ -33814,7 +33539,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       "addedKeywords": ["Guardião", "Atropelar", "Escudo Divino"]
     },
     "effects": [],
-    "description": "Guardião, Atropelar, Armadura 2. Ascensão (4): Monólito Vivo da Pedreira (7/8, ARM 3, Escudo Divino).",
+    "description": "Ascensão 4: torna-se 7/8 com Escudo Divino.",
     "flavorText": "Nenhuma lâmina encontra carne ou sangue entre seus blocos; apenas o peso implacável da própria montanha.",
     "imagePath": "/assets/cards/neutral_186_golem_granito_bruto.webp"
   },
@@ -33837,10 +33562,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_single_enemy",
         "value": 2,
-        "description": "Ao entrar, causa 2 de dano a 1 criatura inimiga."
+        "description": "Ao entrar, causa 2 de dano a 1 inimigo."
       }
     ],
-    "description": "Guardião, Pele Incandescente, Armadura 2. Ao entrar, causa 2 de dano a 1 criatura inimiga.",
+    "description": "Ao entrar, causa 2 de dano a 1 inimigo.",
     "flavorText": "Forjado em ferro escuro para guerras esquecidas, seu coração de âmbar ainda pulsa em brasa viva.",
     "imagePath": "/assets/cards/neutral_187_colosso_nucleo_ambar.webp"
   },
@@ -33863,10 +33588,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_attack",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao atacar, congela 1 criatura inimiga."
+        "description": "Ao atacar, congela a criatura atacada por 1 rodada."
       }
     ],
-    "description": "Ímpeto, Atropelar. Ao atacar, congela 1 criatura inimiga.",
+    "description": "Ao atacar, congela a criatura atacada por 1 rodada.",
     "flavorText": "Suas presas trazem o primeiro frio; suas garras de gelo vivo encerram a caçada antes do grito.",
     "imagePath": "/assets/cards/blue_185_urso_garras_geada.webp"
   },
@@ -33884,23 +33609,15 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "hp": 5,
     "preferredRow": "vanguard",
     "keywords": ["Atropelar"],
-    "ascension": {
-      "cost": 4,
-      "newName": "Jarl da Geleira Trovejante",
-      "newAtk": 8,
-      "newArmor": 2,
-      "newMaxHp": 8,
-      "addedKeywords": ["Atropelar", "Guardião", "Escudo Divino"]
-    },
     "effects": [
       {
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao entrar, congela 1 criatura inimiga."
+        "description": "Ao entrar, congela 1 inimigo por 1 rodada."
       }
     ],
-    "description": "Atropelar, Armadura 1. Ao entrar, congela 1 criatura inimiga. Ascensão (4): Jarl da Geleira Trovejante (8/8, ARM 2, Guardião, Escudo Divino).",
+    "description": "Ao entrar, congela 1 inimigo por 1 rodada.",
     "flavorText": "Arrancou um pilar inteiro da geleira norte e gravou no peito a runa do inverno eterno.",
     "imagePath": "/assets/cards/blue_186_gigante_clava_glacial.webp"
   },
@@ -33923,10 +33640,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao entrar, congela 1 criatura inimiga."
+        "description": "Ao entrar, congela 1 inimigo por 1 rodada."
       }
     ],
-    "description": "Guardião, Escudo Divino, Armadura 2. Ao entrar, congela 1 criatura inimiga.",
+    "description": "Ao entrar, congela 1 inimigo por 1 rodada.",
     "flavorText": "Placas de ferro antigo prendem em seu peito o coração pulsante de uma avalanche.",
     "imagePath": "/assets/cards/blue_187_colosso_gelo_ferro.webp"
   },
@@ -33944,24 +33661,16 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "hp": 5,
     "preferredRow": "vanguard",
     "keywords": ["Guardião"],
-    "ascension": {
-      "cost": 4,
-      "newName": "Centurião Áureo da Cidadela",
-      "newAtk": 7,
-      "newArmor": 3,
-      "newMaxHp": 8,
-      "addedKeywords": ["Guardião", "Escudo Divino", "Atropelar"]
-    },
     "effects": [
       {
         "trigger": "on_enter",
         "type": "buff_target_ally",
         "value": 1,
         "secondaryValue": 1,
-        "description": "Ao entrar, concede +1/+1 a um aliado."
+        "description": "Ao entrar, concede +1/+1 a 1 aliado."
       }
     ],
-    "description": "Guardião, Armadura 2. Ao entrar, dá +1/+1 a um aliado. Ascensão (4): Centurião Áureo da Cidadela (7/8, ARM 3, Escudo Divino, Atropelar).",
+    "description": "Ao entrar, concede +1/+1 a 1 aliado.",
     "flavorText": "Revestido em ouro batido e púrpura imperial, ele marcha sem fadiga diante dos estandartes solares.",
     "imagePath": "/assets/cards/gold_185_automato_latao_imperial.webp"
   },
@@ -33980,7 +33689,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "preferredRow": "vanguard",
     "keywords": ["Ímpeto", "Escudo Divino"],
     "effects": [],
-    "description": "Ímpeto, Escudo Divino, Armadura 1.",
+    "description": "Ataca no turno em que entra e anula o primeiro dano sofrido.",
     "flavorText": "Sob os arcos de filigrana dourada, pistões consagrados desferem o peso de um martelo de cerco.",
     "imagePath": "/assets/cards/gold_186_pugilista_filigrana_real.webp"
   },
@@ -34003,16 +33712,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "heal_sovereign",
         "value": 3,
-        "description": "Ao entrar, cura 3 de Vida do seu Soberano."
-      },
-      {
-        "trigger": "on_enter",
-        "type": "heal_all_allies",
-        "value": 1,
-        "description": "Ao entrar, cura 1 de Vida de todos os seus aliados."
+        "description": "Ao entrar, restaura 3 de Vida do seu Soberano."
       }
     ],
-    "description": "Guardião, Armadura 2. Ao entrar, cura 3 de Vida do seu Soberano e 1 de Vida de todos os seus aliados.",
+    "description": "Ao entrar, restaura 3 de Vida do seu Soberano.",
     "flavorText": "A chave solar gravada em seu peito sela os cofres sagrados e sustenta os juramentos da coroa.",
     "imagePath": "/assets/cards/gold_187_guardiao_selos_cobre.webp"
   },
@@ -34038,7 +33741,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "description": "Ao entrar, causa 2 de dano ao Soberano rival."
       }
     ],
-    "description": "Alcance, Pele Incandescente. Ao entrar, causa 2 de dano ao Soberano rival.",
+    "description": "Ao entrar, causa 2 de dano ao Soberano rival.",
     "flavorText": "Onde sua mortalha carbonizada arrasta pelo solo, até as pedras inflamam em agonia.",
     "imagePath": "/assets/cards/red_185_espectro_mortalha_cinzas.webp"
   },
@@ -34065,7 +33768,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       "addedKeywords": ["Guardião", "Pele Incandescente", "Fúria Crescente", "Atropelar"]
     },
     "effects": [],
-    "description": "Guardião, Pele Incandescente, Fúria Crescente, Armadura 1. Ascensão (4): Tirano da Fornalha Enjaulada (7/8, ARM 2, Atropelar).",
+    "description": "Ascensão 4: torna-se 7/8 com Atropelar.",
     "flavorText": "As grades de ferro negro não servem para proteger o mundo dele, mas para manter o incêndio faminto.",
     "imagePath": "/assets/cards/red_186_carcereiro_jaula_ardente.webp"
   },
@@ -34088,10 +33791,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "damage_enemy_row",
         "value": 1,
-        "description": "Ao entrar, causa 1 de dano à fileira inimiga."
+        "description": "Ao entrar, causa 1 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Atropelar, Pele Incandescente, Armadura 1. Ao entrar, causa 1 de dano à fileira inimiga.",
+    "description": "Ao entrar, causa 1 de dano à Vanguarda inimiga.",
     "flavorText": "Quando ergue os dois punhos cravados de ferro sobre a cabeça, a própria caldeira ruge através da escotilha em seu peito.",
     "imagePath": "/assets/cards/red_187_golem_manoplas_brasa.webp"
   },
@@ -34107,7 +33810,6 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "atk": 5,
     "armor": 1,
     "hp": 6,
-    "regeneration": 1,
     "preferredRow": "vanguard",
     "keywords": ["Voo", "Atropelar"],
     "effects": [
@@ -34116,10 +33818,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
       }
     ],
-    "description": "Voo, Atropelar, Armadura 1, Regeneração 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
     "flavorText": "Três desejos saem da lâmpada carmesim — e cada um cobra uma gota do próprio pulso.",
     "imagePath": "/assets/cards/green_188_zahir_genio_tres_desejos.webp"
   },
@@ -34143,10 +33845,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
       }
     ],
-    "description": "Voo, Ímpeto, Pele Incandescente, Armadura 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
     "flavorText": "Três brasas saltam de suas manoplas de ouro — cada segredo arrancado da pira queima a mão de quem o invoca.",
     "imagePath": "/assets/cards/red_188_malik_genio_tres_brasas.webp"
   },
@@ -34170,10 +33872,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
       }
     ],
-    "description": "Voo, Dreno de Vida, Toque Letal, Armadura 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
     "flavorText": "Ele concede três cláusulas sem hesitar, sabendo que o juro de sangue sempre volta à sua fumaça negra.",
     "imagePath": "/assets/cards/purple_188_azhar_genio_tres_pactos.webp"
   },
@@ -34197,10 +33899,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
       }
     ],
-    "description": "Voo, Alcance, Escudo Divino, Armadura 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
     "flavorText": "De braços cruzados sobre o turbilhão celeste, ele entrega três segredos astrais pelo tributo exato do pulso mortal.",
     "imagePath": "/assets/cards/blue_188_tariq_genio_tres_ventos.webp"
   },
@@ -34224,10 +33926,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
       }
     ],
-    "description": "Voo, Guardião, Escudo Divino, Armadura 2. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
     "flavorText": "Três selos dourados pairam sobre sua palma; cada decreto imperial exige o penhor de uma gota real.",
     "imagePath": "/assets/cards/gold_188_sulaiman_genio_tres_editos.webp"
   },
@@ -34251,10 +33953,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
       }
     ],
-    "description": "Voo, Guardião, Armadura 2. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
     "flavorText": "Sem jurar lealdade a nenhuma coroa cromática, pesa três destinos em mercúrio e cobra o mesmo tributo de todos.",
     "imagePath": "/assets/cards/neutral_188_qamar_genio_tres_esferas.webp"
   },
@@ -34277,10 +33979,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "trigger": "on_enter",
         "type": "debuff_enemy_vanguard_atk",
         "value": 1,
-        "description": "Ao entrar, reduz em 1 o Ataque da Vanguarda inimiga."
+        "description": "Ao entrar, reduz em 1 o Ataque dos inimigos."
       }
     ],
-    "description": "Voo, Alcance, Dreno de Vida. Ao entrar, reduz em 1 o Ataque da Vanguarda inimiga.",
+    "description": "Ao entrar, reduz em 1 o Ataque dos inimigos.",
     "flavorText": "Cada máscara pendurada em seu manto guarda a voz e o último medo de quem tentou atravessar a névoa.",
     "imagePath": "/assets/cards/purple_185_xama_mascaras_vazias.webp"
   },
@@ -34298,23 +34000,15 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "hp": 6,
     "preferredRow": "vanguard",
     "keywords": ["Guardião", "Dreno de Vida"],
-    "ascension": {
-      "cost": 4,
-      "newName": "Patriarca da Raiz do Eclipse",
-      "newAtk": 6,
-      "newArmor": 2,
-      "newMaxHp": 8,
-      "addedKeywords": ["Guardião", "Dreno de Vida", "Renascer"]
-    },
     "effects": [
       {
         "trigger": "on_enter",
         "type": "drain_enemy_sovereign",
         "value": 2,
-        "description": "Ao entrar, drena 2 de Vida do Soberano rival para o seu Soberano."
+        "description": "Ao entrar, drena 2 de Vida do Soberano rival."
       }
     ],
-    "description": "Guardião, Dreno de Vida, Armadura 1. Ao entrar, drena 2 de Vida do Soberano rival para o seu Soberano. Ascensão (4): Patriarca da Raiz do Eclipse (6/8, ARM 2, Renascer).",
+    "description": "Ao entrar, drena 2 de Vida do Soberano rival.",
     "flavorText": "Suas raízes não bebem água da chuva, mas a memória adormecida sob os campos de batalha.",
     "imagePath": "/assets/cards/purple_186_anciao_copa_umbrosa.webp"
   },
@@ -34333,7 +34027,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "preferredRow": "vanguard",
     "keywords": ["Voo", "Ímpeto", "Renascer"],
     "effects": [],
-    "description": "Voo, Ímpeto, Renascer.",
+    "description": "Ignora defensores sem Voo, ataca no turno em que entra e renasce uma vez com 1 de Vida.",
     "flavorText": "Apagar sua primeira forma apenas espalha a fuligem faminta para o segundo bote.",
     "imagePath": "/assets/cards/purple_187_aparicao_chama_negra.webp"
   }

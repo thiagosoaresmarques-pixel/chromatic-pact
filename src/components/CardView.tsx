@@ -968,6 +968,12 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  const detailedRules = formatCardDetailedRules(card);
+  const typeLabel = CARD_TYPE_LABELS[card.type];
+  const cleanSubtype = card.subtype
+    ? card.subtype.replace(new RegExp(`^${typeLabel}\\s*•\\s*`, 'i'), '').trim()
+    : '';
+
   const modalContent = (
     <div
       className="modal-backdrop"
@@ -1001,8 +1007,11 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
               {card.name}
             </h2>
             <p style={{ fontSize: '0.82rem', color: '#94a3b8' }}>
-              {domainInfo.icon} {domainInfo.name} • {CARD_TYPE_LABELS[card.type]} ({card.subtype}) •{' '}
-              { RARITY_LABELS[card.rarity] }
+              {domainInfo.icon} {domainInfo.name} • {typeLabel}
+              {cleanSubtype && cleanSubtype.toLowerCase() !== typeLabel.toLowerCase()
+                ? ` (${cleanSubtype})`
+                : ''}{' '}
+              • {RARITY_LABELS[card.rarity]}
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -1083,24 +1092,33 @@ export const CardInspectModal: React.FC<CardInspectModalProps> = ({
               >
                 Efeitos & Habilidades de Combate
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                {formatCardDetailedRules(card).map((sentence, idx) => (
-                  <p
-                    key={idx}
-                    style={{
-                      fontSize: '0.9rem',
-                      lineHeight: 1.5,
-                      color: '#f1f5f9',
-                      margin: 0,
-                    }}
-                  >
-                    {sentence}
-                  </p>
-                ))}
-              </div>
+              {detailedRules.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {detailedRules.map((sentence, idx) => (
+                    <p
+                      key={idx}
+                      style={{
+                        fontSize: '0.9rem',
+                        lineHeight: 1.5,
+                        color: '#f1f5f9',
+                        margin: 0,
+                      }}
+                    >
+                      {sentence}
+                    </p>
+                  ))}
+                </div>
+              )}
 
               {card.keywords.length > 0 && (
-                <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <div
+                  style={{
+                    marginTop: detailedRules.length > 0 ? '0.65rem' : '0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.35rem',
+                  }}
+                >
                   {card.keywords.map((kw) => (
                     <div key={kw} style={{ fontSize: '0.78rem', color: '#cbd5e1' }}>
                       <strong style={{ color: '#e5c97b' }}>• {kw}:</strong> {KEYWORD_TOOLTIPS[kw]}

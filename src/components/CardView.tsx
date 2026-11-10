@@ -496,7 +496,7 @@ export const CardView: React.FC<CardViewProps> = ({
           <div className={`cpa-token-art aura-${displayCard.domain}`}>
             {!imgError && displayCard.imagePath ? (
               <img
-                src={`${displayCard.imagePath}?v=89`}
+                src={`${displayCard.imagePath}?v=90`}
                 alt={displayName}
                 className="cpa-token-img"
                 onError={() => setImgError(true)}
@@ -667,7 +667,7 @@ export const CardView: React.FC<CardViewProps> = ({
 
           {!imgError && displayCard.imagePath ? (
             <img
-              src={`${displayCard.imagePath}?v=89`}
+              src={`${displayCard.imagePath}?v=90`}
               alt={displayName}
               className="card-cutout-img"
               onError={() => setImgError(true)}

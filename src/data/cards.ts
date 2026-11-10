@@ -33758,6 +33758,91 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Alcance, Toque Letal, Regeneração 1. Ao entrar, enraíza (Congela) 1 criatura inimiga.",
     "flavorText": "Nas águas paradas do pântano antigo, galhos retorcidos ganham olhos frios e garras que nunca soltam a presa.",
     "imagePath": "/assets/cards/green_187_errante_galhos_charco.webp"
+  },
+  {
+    "id": "neutral_185_automato_braseiro_runico",
+    "name": "Autômato do Braseiro Rúnico",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Rúnico",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 0,
+    "atk": 2,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao entrar, concede +1 de Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Ao entrar, compra 1 carta."
+      }
+    ],
+    "description": "Guardião, Armadura 1. Ao entrar, dá +1 de Essência neste turno e compra 1 carta.",
+    "flavorText": "A caldeira rúnica às suas costas arde desde a fundação das primeiras muralhas da Fronteira.",
+    "imagePath": "/assets/cards/neutral_185_automato_braseiro_runico.webp"
+  },
+  {
+    "id": "neutral_186_golem_granito_bruto",
+    "name": "Golem de Granito Bruto",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Golem",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 2,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Atropelar"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Monólito Vivo da Pedreira",
+      "newAtk": 7,
+      "newArmor": 3,
+      "newMaxHp": 8,
+      "addedKeywords": ["Guardião", "Atropelar", "Escudo Divino"]
+    },
+    "effects": [],
+    "description": "Guardião, Atropelar, Armadura 2. Ascensão (4): Monólito Vivo da Pedreira (7/8, ARM 3, Escudo Divino).",
+    "flavorText": "Nenhuma lâmina encontra carne ou sangue entre seus blocos; apenas o peso implacável da própria montanha.",
+    "imagePath": "/assets/cards/neutral_186_golem_granito_bruto.webp"
+  },
+  {
+    "id": "neutral_187_colosso_nucleo_ambar",
+    "name": "Colosso do Núcleo Âmbar",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Constructo • Colosso",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 2,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Pele Incandescente"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Ao entrar, causa 2 de dano a 1 criatura inimiga."
+      }
+    ],
+    "description": "Guardião, Pele Incandescente, Armadura 2. Ao entrar, causa 2 de dano a 1 criatura inimiga.",
+    "flavorText": "Forjado em ferro escuro para guerras esquecidas, seu coração de âmbar ainda pulsa em brasa viva.",
+    "imagePath": "/assets/cards/neutral_187_colosso_nucleo_ambar.webp"
   }
 ];
 

@@ -32168,10 +32168,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "chrono_prism_volley",
         "value": 2,
         "secondaryValue": 4,
-        "description": "Ao lançar feitiço (1x/turno), causa 2 de dano a 1 inimigo, ou 4 e compra 1 se congelado."
+        "description": "No 1º feitiço que lançar a cada turno, causa 2 de dano a 1 inimigo — ou 4 de dano e compra 1 carta se o alvo estiver Congelado."
       }
     ],
-    "description": "Ao lançar feitiço (1x/turno), causa 2 de dano a 1 inimigo, ou 4 e compra 1 se congelado.",
+    "description": "No 1º feitiço que lançar a cada turno, causa 2 de dano a 1 inimigo — ou 4 de dano e compra 1 carta se o alvo estiver Congelado.",
     "flavorText": "Três segundos bastam para que o gelo eterno devore um exército inteiro.",
     "imagePath": "/assets/cards/blue_177_cronomante_terceiro_prisma.webp"
   },

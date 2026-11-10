@@ -422,7 +422,7 @@ export function formatEffectActionClause(
 
     case 'chrono_prism_volley': {
       const frzDmg = effect.secondaryValue ?? 4;
-      return `1x por turno, causa ${v} de dano a 1 inimigo, ou ${frzDmg} e compra 1 carta se congelado`;
+      return `1x por turno, causa ${v} de dano a 1 inimigo — ou ${frzDmg} de dano e compra 1 carta se o alvo estiver Congelado`;
     }
 
     case 'lyriel_astral_zero': {
@@ -935,9 +935,9 @@ const BESPOKE_RECENT_CARD_RULES: Record<string, BespokeCardTextEntry> = {
     detailed: ['Ao entrar, congela 1 criatura inimiga por 1 rodada.'],
   },
   blue_177_cronomante_terceiro_prisma: {
-    face: 'Ao lançar feitiço (1x/turno), causa 2 de dano a 1 inimigo, ou 4 e compra 1 se congelado.',
+    face: 'No 1º feitiço que lançar a cada turno, causa 2 de dano a 1 inimigo — ou 4 de dano e compra 1 carta se o alvo estiver Congelado.',
     detailed: [
-      'Uma vez por turno, ao lançar feitiço, causa 2 de dano a 1 inimigo — ou 4 de dano e compra 1 carta se estiver congelado.',
+      'No 1º feitiço que você lançar a cada turno, causa 2 de dano a 1 inimigo — ou 4 de dano e compra 1 carta se o alvo estiver Congelado.',
     ],
   },
   blue_178_lyriel_vidente_zero_astral: {

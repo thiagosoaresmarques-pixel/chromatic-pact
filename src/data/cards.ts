@@ -33322,6 +33322,125 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Escudo Divino, Guardião, Alcance, Armadura 2. Ao entrar, dá +1/+2 aos seus aliados, congela a Vanguarda inimiga e compra 2 cartas. Ao atacar, congela 1 inimigo.",
     "flavorText": "No ápice do Coro Boreal, seis asas de gelo eterno suspendem o próprio fluxo do tempo diante de sua espada.",
     "imagePath": "/assets/cards/blue_184_cassiel_serafim_seis_asas_inverno.webp"
+  },
+  {
+    "id": "green_182_arauto_duas_asas_eden",
+    "name": "Arauto das Duas Asas do Éden",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Celestial • Anjo",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 1,
+    "hp": 5,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Ao entrar, concede +2 de Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Ao entrar, cura 2 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Voo, Atropelar, Armadura 1, Regeneração 1. Ao entrar, dá +2 de Essência neste turno e cura 2 de Vida do seu Soberano.",
+    "flavorText": "Do Primeiro Coro do Éden descem os guardiões de duas asas vivas, onde cada pluma brota da seiva ancestral.",
+    "imagePath": "/assets/cards/green_182_arauto_duas_asas_eden.webp"
+  },
+  {
+    "id": "green_183_sachiel_arcanjo_quatro_asas_seiva",
+    "name": "Sachiel, Arcanjo das Quatro Asas Silvestres",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Celestial • Arcanjo",
+    "rarity": "rare",
+    "cost": 6,
+    "affinityReq": 3,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Escudo Divino", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao entrar, concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Ao entrar, concede +2 de Essência neste turno."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "No início do turno, concede +1 de Essência."
+      }
+    ],
+    "description": "Voo, Escudo Divino, Atropelar, Armadura 1, Regeneração 2. Ao entrar, dá +1/+1 aos seus aliados e +2 de Essência. No início do turno, dá +1 de Essência.",
+    "flavorText": "No Segundo Coro do Éden, quatro asas luminosas condensam a seiva da criação em cristais puros de Essência.",
+    "imagePath": "/assets/cards/green_183_sachiel_arcanjo_quatro_asas_seiva.webp"
+  },
+  {
+    "id": "green_184_raphael_serafim_seis_asas_eden",
+    "name": "Raphael, Serafim das Seis Asas do Éden",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Celestial • Serafim",
+    "rarity": "legendary",
+    "cost": 8,
+    "affinityReq": 3,
+    "atk": 7,
+    "armor": 2,
+    "hp": 8,
+    "regeneration": 2,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Escudo Divino", "Guardião", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Ao entrar, concede +2/+2 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 3,
+        "description": "Ao entrar, cura 3 de Vida de todos os seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 3,
+        "description": "Ao entrar, concede +3 de Essência neste turno."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "No início do turno, concede +1 de Essência."
+      }
+    ],
+    "description": "Voo, Escudo Divino, Guardião, Atropelar, Armadura 2, Regeneração 2. Ao entrar, dá +2/+2 e cura 3 de Vida dos seus aliados, além de +3 de Essência. No início do turno, dá +1 de Essência.",
+    "flavorText": "No ápice do Coro do Éden, seis asas de esmeralda e ouro despertam o florescer imortal em toda a fileira aliada.",
+    "imagePath": "/assets/cards/green_184_raphael_serafim_seis_asas_eden.webp"
   }
 ];
 

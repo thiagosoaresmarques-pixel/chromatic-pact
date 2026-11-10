@@ -34176,6 +34176,33 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Dreno de Vida, Toque Letal, Armadura 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
     "flavorText": "Ele concede três cláusulas sem hesitar, sabendo que o juro de sangue sempre volta à sua fumaça negra.",
     "imagePath": "/assets/cards/purple_188_azhar_genio_tres_pactos.webp"
+  },
+  {
+    "id": "blue_188_tariq_genio_tres_ventos",
+    "name": "Tariq, Gênio dos Três Ventos",
+    "domain": "blue",
+    "type": "creature",
+    "subtype": "Elemental • Gênio",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "preferredRow": "rearguard",
+    "keywords": ["Voo", "Alcance", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards_at_hp_cost",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+      }
+    ],
+    "description": "Voo, Alcance, Escudo Divino, Armadura 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "flavorText": "De braços cruzados sobre o turbilhão celeste, ele entrega três segredos astrais pelo tributo exato do pulso mortal.",
+    "imagePath": "/assets/cards/blue_188_tariq_genio_tres_ventos.webp"
   }
 ];
 

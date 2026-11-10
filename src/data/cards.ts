@@ -34094,6 +34094,34 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Atropelar, Pele Incandescente, Armadura 1. Ao entrar, causa 1 de dano à fileira inimiga.",
     "flavorText": "Quando ergue os dois punhos cravados de ferro sobre a cabeça, a própria caldeira ruge através da escotilha em seu peito.",
     "imagePath": "/assets/cards/red_187_golem_manoplas_brasa.webp"
+  },
+  {
+    "id": "green_188_zahir_genio_tres_desejos",
+    "name": "Zahir, Gênio dos Três Desejos",
+    "domain": "green",
+    "type": "creature",
+    "subtype": "Elemental • Gênio",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 5,
+    "armor": 1,
+    "hp": 6,
+    "regeneration": 1,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Atropelar"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards_at_hp_cost",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+      }
+    ],
+    "description": "Voo, Atropelar, Armadura 1, Regeneração 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "flavorText": "Três desejos saem da lâmpada carmesim — e cada um cobra uma gota do próprio pulso.",
+    "imagePath": "/assets/cards/green_188_zahir_genio_tres_desejos.webp"
   }
 ];
 

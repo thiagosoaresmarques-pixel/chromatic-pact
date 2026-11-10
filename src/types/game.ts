@@ -65,7 +65,8 @@ export type TriggerEffectType =
   | 'kaelith_phoenix_nova'
   | 'mirror_blade_envoy'
   | 'crystal_guard_resonance'
-  | 'thalassion_council_decree';
+  | 'thalassion_council_decree'
+  | 'draw_cards_at_hp_cost';
 
 export interface CardEffect {
   trigger: 'on_enter' | 'on_death' | 'on_attack' | 'turn_start' | 'turn_end' | 'spell_cast';

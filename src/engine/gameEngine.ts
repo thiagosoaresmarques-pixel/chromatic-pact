@@ -4984,6 +4984,38 @@ function executeCardEffect(
       );
       break;
     }
+
+    case 'draw_cards_at_hp_cost': {
+      const maxCards = Math.max(1, effect.value);
+      const hpPerCard = Math.max(1, effect.secondaryValue ?? 1);
+      let drawnCount = 0;
+      let totalHpPaid = 0;
+
+      for (let i = 0; i < maxCards; i++) {
+        if (state.winner) break;
+        actorState.hp = Math.max(0, actorState.hp - hpPerCard);
+        totalHpPaid += hpPerCard;
+        drawnCount += 1;
+        drawCardsForActor(state, actor, 1);
+        checkWinCondition(state);
+      }
+
+      if (drawnCount > 0) {
+        addFeedback(
+          state,
+          `${actor}-sovereign`,
+          `-${totalHpPaid}❤️ +${drawnCount} Carta(s)`,
+          'damage'
+        );
+        addLog(
+          state,
+          actor,
+          'effect',
+          `[${sourceCard.name}] concedeu ${drawnCount} carta(s) extra(s) a ${actorState.name} ao preço de ${totalHpPaid} de Vida!`
+        );
+      }
+      break;
+    }
   }
 }
 

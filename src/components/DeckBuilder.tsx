@@ -554,7 +554,8 @@ const ABILITY_FILTER_OPTIONS: AbilityFilterOption[] = [
           e.type === 'royal_prism_convergence' ||
           e.type === 'chrono_prism_volley' ||
           e.type === 'mirror_blade_envoy' ||
-          e.type === 'thalassion_council_decree'
+          e.type === 'thalassion_council_decree' ||
+          e.type === 'draw_cards_at_hp_cost'
       ),
   },
   {

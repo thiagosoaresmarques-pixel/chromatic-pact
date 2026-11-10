@@ -518,6 +518,14 @@ export function formatEffectActionClause(
       return `concede +${v}/+${v} permanente a todos os seus Elfos em campo e busca 1 Elfo do Grimório para a mão`;
     }
 
+    case 'draw_cards_at_hp_cost': {
+      const hpCost = Math.max(1, effect.secondaryValue ?? 1);
+      if (!detailed) {
+        return `compra ${v} ${v === 1 ? 'carta extra' : 'cartas extras'} ao preço de ${hpCost} de Vida cada`;
+      }
+      return `compra ${v} ${v === 1 ? 'carta extra' : 'cartas extras'}, pagando ${hpCost} ponto${hpCost === 1 ? '' : 's'} de Vida do seu Soberano por cada carta comprada`;
+    }
+
     default:
       return (effect.description || '').replace(/[()]/g, '');
   }

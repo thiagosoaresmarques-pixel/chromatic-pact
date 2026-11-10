@@ -34030,6 +34030,339 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Ignora defensores sem Voo, ataca no turno em que entra e renasce uma vez com 1 de Vida.",
     "flavorText": "Apagar sua primeira forma apenas espalha a fuligem faminta para o segundo bote.",
     "imagePath": "/assets/cards/purple_187_aparicao_chama_negra.webp"
+  },
+  {
+    "id": "blue_189_ampulheta_estase",
+    "name": "Ampulheta de Estase",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy",
+        "value": 1,
+        "description": "Congela 1 inimigo por 1 rodada."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Congela 1 inimigo por 1 rodada e compra 1 carta.",
+    "flavorText": "Quando os grãos rúnicos se estreitam no funil, um segundo dura uma era inteira.",
+    "imagePath": "/assets/cards/blue_189_ampulheta_estase.webp"
+  },
+  {
+    "id": "blue_190_pulso_cronologico",
+    "name": "Pulso Cronológico",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      }
+    ],
+    "description": "Gera +2 de Essência neste turno.",
+    "flavorText": "Um único avanço do ponteiro astral rouba fôlego do amanhã para alimentar o presente.",
+    "imagePath": "/assets/cards/blue_190_pulso_cronologico.webp"
+  },
+  {
+    "id": "blue_191_atraso_temporal",
+    "name": "Atraso Temporal",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Reduz em 2 o Ataque dos inimigos."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Reduz em 2 o Ataque dos inimigos e compra 1 carta.",
+    "flavorText": "O golpe inimigo ainda tenta descer, mas seu ímpeto ficou preso no minuto anterior.",
+    "imagePath": "/assets/cards/blue_191_atraso_temporal.webp"
+  },
+  {
+    "id": "blue_192_vislumbre_futuro",
+    "name": "Vislumbre do Futuro",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Compra 2 cartas."
+      }
+    ],
+    "description": "Compra 2 cartas.",
+    "flavorText": "No centro da espiral estrelada, o desfecho do duelo já está escrito.",
+    "imagePath": "/assets/cards/blue_192_vislumbre_futuro.webp"
+  },
+  {
+    "id": "blue_193_regressao_temporal",
+    "name": "Regressão Temporal",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "bounce_enemy",
+        "value": 1,
+        "description": "Devolve 1 inimigo à mão do oponente."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Devolve 1 inimigo à mão do oponente e compra 1 carta.",
+    "flavorText": "Os ponteiros dourados giram para trás e desfazem a própria marcha de quem ousou avançar.",
+    "imagePath": "/assets/cards/blue_193_regressao_temporal.webp"
+  },
+  {
+    "id": "blue_194_badalada_hora_zero",
+    "name": "Badalada da Hora Zero",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Congela a Vanguarda inimiga por 1 rodada."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Reduz em 2 o Ataque dos inimigos."
+      }
+    ],
+    "description": "Congela a Vanguarda inimiga por 1 rodada e reduz em 2 o Ataque dos inimigos.",
+    "flavorText": "Quando os anéis de jade batem a meia-noite, toda a frente adversária vira estátua.",
+    "imagePath": "/assets/cards/blue_194_badalada_hora_zero.webp"
+  },
+  {
+    "id": "blue_195_aceleracao_cronos",
+    "name": "Aceleração de Cronos",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Concede +1/+1 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      }
+    ],
+    "description": "Concede +1/+1 aos seus aliados e gera +2 de Essência neste turno.",
+    "flavorText": "Enquanto o mundo hesita, suas fileiras vivem dois batimentos no espaço de um.",
+    "imagePath": "/assets/cards/blue_195_aceleracao_cronos.webp"
+  },
+  {
+    "id": "blue_196_engrenagens_eternidade",
+    "name": "Engrenagens da Eternidade",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Congela a Vanguarda inimiga por 1 rodada."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Compra 2 cartas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      }
+    ],
+    "description": "Congela a Vanguarda inimiga por 1 rodada, compra 2 cartas e gera +2 de Essência neste turno.",
+    "flavorText": "Milhares de rodas suspensas no abismo celeste moem os séculos em silêncio absoluto.",
+    "imagePath": "/assets/cards/blue_196_engrenagens_eternidade.webp"
+  },
+  {
+    "id": "blue_197_fratura_paradoxo",
+    "name": "Fratura do Paradoxo",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "bounce_enemy",
+        "value": 1,
+        "description": "Devolve 1 inimigo à mão do oponente."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Congela a Vanguarda inimiga por 1 rodada."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 1,
+        "description": "Compra 1 carta."
+      }
+    ],
+    "description": "Devolve 1 inimigo à mão do oponente, congela a Vanguarda inimiga por 1 rodada e compra 1 carta.",
+    "flavorText": "Quando o relógio astral se estilhaça, passado e presente colidem sobre a linha inimiga.",
+    "imagePath": "/assets/cards/blue_197_fratura_paradoxo.webp"
+  },
+  {
+    "id": "blue_198_decreto_decima_segunda_hora",
+    "name": "Decreto da Décima Segunda Hora",
+    "domain": "blue",
+    "type": "spell",
+    "subtype": "Feitiço • Cronomancia",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "freeze_enemy_vanguard",
+        "value": 1,
+        "description": "Congela a Vanguarda inimiga por 1 rodada."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "shield_all_allies",
+        "value": 1,
+        "description": "Concede Escudo Divino aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards",
+        "value": 2,
+        "description": "Compra 2 cartas."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 3,
+        "description": "Gera +3 de Essência neste turno."
+      }
+    ],
+    "description": "Congela a Vanguarda inimiga, concede Escudo Divino aos seus aliados, compra 2 cartas e gera +3 de Essência.",
+    "flavorText": "Ao soar da última badalada do cosmos, apenas os escolhidos do Vórtex permanecem em movimento.",
+    "imagePath": "/assets/cards/blue_198_decreto_decima_segunda_hora.webp"
   }
 ];
 

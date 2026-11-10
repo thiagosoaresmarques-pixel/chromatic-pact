@@ -33818,10 +33818,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
+        "description": "Ao entrar, paga 3 de Vida e compra 3 cartas."
       }
     ],
-    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
+    "description": "Ao entrar, paga 3 de Vida e compra 3 cartas.",
     "flavorText": "Três desejos saem da lâmpada carmesim — e cada um cobra uma gota do próprio pulso.",
     "imagePath": "/assets/cards/green_188_zahir_genio_tres_desejos.webp"
   },
@@ -33845,10 +33845,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
+        "description": "Ao entrar, paga 3 de Vida e compra 3 cartas."
       }
     ],
-    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
+    "description": "Ao entrar, paga 3 de Vida e compra 3 cartas.",
     "flavorText": "Três brasas saltam de suas manoplas de ouro — cada segredo arrancado da pira queima a mão de quem o invoca.",
     "imagePath": "/assets/cards/red_188_malik_genio_tres_brasas.webp"
   },
@@ -33872,10 +33872,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
+        "description": "Ao entrar, paga 3 de Vida e compra 3 cartas."
       }
     ],
-    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
+    "description": "Ao entrar, paga 3 de Vida e compra 3 cartas.",
     "flavorText": "Ele concede três cláusulas sem hesitar, sabendo que o juro de sangue sempre volta à sua fumaça negra.",
     "imagePath": "/assets/cards/purple_188_azhar_genio_tres_pactos.webp"
   },
@@ -33899,10 +33899,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
+        "description": "Ao entrar, paga 3 de Vida e compra 3 cartas."
       }
     ],
-    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
+    "description": "Ao entrar, paga 3 de Vida e compra 3 cartas.",
     "flavorText": "De braços cruzados sobre o turbilhão celeste, ele entrega três segredos astrais pelo tributo exato do pulso mortal.",
     "imagePath": "/assets/cards/blue_188_tariq_genio_tres_ventos.webp"
   },
@@ -33926,10 +33926,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
+        "description": "Ao entrar, paga 3 de Vida e compra 3 cartas."
       }
     ],
-    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
+    "description": "Ao entrar, paga 3 de Vida e compra 3 cartas.",
     "flavorText": "Três selos dourados pairam sobre sua palma; cada decreto imperial exige o penhor de uma gota real.",
     "imagePath": "/assets/cards/gold_188_sulaiman_genio_tres_editos.webp"
   },
@@ -33953,10 +33953,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 3,
         "secondaryValue": 1,
-        "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada."
+        "description": "Ao entrar, paga 3 de Vida e compra 3 cartas."
       }
     ],
-    "description": "Ao entrar, compra 3 cartas pagando 1 de Vida cada.",
+    "description": "Ao entrar, paga 3 de Vida e compra 3 cartas.",
     "flavorText": "Sem jurar lealdade a nenhuma coroa cromática, pesa três destinos em mercúrio e cobra o mesmo tributo de todos.",
     "imagePath": "/assets/cards/neutral_188_qamar_genio_tres_esferas.webp"
   },
@@ -34746,10 +34746,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "type": "draw_cards_at_hp_cost",
         "value": 2,
         "secondaryValue": 1,
-        "description": "Compra 2 cartas pagando 1 de Vida cada."
+        "description": "Paga 2 de Vida e compra 2 cartas."
       }
     ],
-    "description": "Compra 2 cartas pagando 1 de Vida cada.",
+    "description": "Paga 2 de Vida e compra 2 cartas.",
     "flavorText": "A adaga ritual nunca pergunta o que você busca no grimório — apenas cobra duas gotas na lâmina.",
     "imagePath": "/assets/cards/purple_190_tributo_veia_negra.webp"
   },

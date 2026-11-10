@@ -4986,34 +4986,26 @@ function executeCardEffect(
     }
 
     case 'draw_cards_at_hp_cost': {
-      const maxCards = Math.max(1, effect.value);
+      const cardsToDraw = Math.max(1, effect.value);
       const hpPerCard = Math.max(1, effect.secondaryValue ?? 1);
-      let drawnCount = 0;
-      let totalHpPaid = 0;
+      const totalHpPaid = cardsToDraw * hpPerCard;
 
-      for (let i = 0; i < maxCards; i++) {
-        if (state.winner) break;
-        actorState.hp = Math.max(0, actorState.hp - hpPerCard);
-        totalHpPaid += hpPerCard;
-        drawnCount += 1;
-        drawCardsForActor(state, actor, 1);
-        checkWinCondition(state);
-      }
+      actorState.hp = Math.max(0, actorState.hp - totalHpPaid);
+      drawCardsForActor(state, actor, cardsToDraw);
+      checkWinCondition(state);
 
-      if (drawnCount > 0) {
-        addFeedback(
-          state,
-          `${actor}-sovereign`,
-          `-${totalHpPaid}❤️ +${drawnCount} Carta(s)`,
-          'damage'
-        );
-        addLog(
-          state,
-          actor,
-          'effect',
-          `[${sourceCard.name}] concedeu ${drawnCount} carta(s) extra(s) a ${actorState.name} ao preço de ${totalHpPaid} de Vida!`
-        );
-      }
+      addFeedback(
+        state,
+        `${actor}-sovereign`,
+        `-${totalHpPaid}❤️ +${cardsToDraw} Carta(s)`,
+        'damage'
+      );
+      addLog(
+        state,
+        actor,
+        'effect',
+        `[${sourceCard.name}] pagou ${totalHpPaid} de Vida de ${actorState.name} e comprou ${cardsToDraw} carta(s)!`
+      );
       break;
     }
   }

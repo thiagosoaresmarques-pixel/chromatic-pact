@@ -34015,6 +34015,85 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Guardião, Armadura 2. Ao entrar, cura 3 de Vida do seu Soberano e 1 de Vida de todos os seus aliados.",
     "flavorText": "A chave solar gravada em seu peito sela os cofres sagrados e sustenta os juramentos da coroa.",
     "imagePath": "/assets/cards/gold_187_guardiao_selos_cobre.webp"
+  },
+  {
+    "id": "red_185_espectro_mortalha_cinzas",
+    "name": "Espectro da Mortalha em Brasa",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Elemental • Espectro",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 1,
+    "atk": 4,
+    "armor": 0,
+    "hp": 3,
+    "preferredRow": "rearguard",
+    "keywords": ["Alcance", "Pele Incandescente"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_sovereign",
+        "value": 2,
+        "description": "Ao entrar, causa 2 de dano ao Soberano rival."
+      }
+    ],
+    "description": "Alcance, Pele Incandescente. Ao entrar, causa 2 de dano ao Soberano rival.",
+    "flavorText": "Onde sua mortalha carbonizada arrasta pelo solo, até as pedras inflamam em agonia.",
+    "imagePath": "/assets/cards/red_185_espectro_mortalha_cinzas.webp"
+  },
+  {
+    "id": "red_186_carcereiro_jaula_ardente",
+    "name": "Carcereiro da Jaula Ardente",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Constructo • Fornalha",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 4,
+    "armor": 1,
+    "hp": 5,
+    "preferredRow": "vanguard",
+    "keywords": ["Guardião", "Pele Incandescente", "Fúria Crescente"],
+    "ascension": {
+      "cost": 4,
+      "newName": "Tirano da Fornalha Enjaulada",
+      "newAtk": 7,
+      "newArmor": 2,
+      "newMaxHp": 8,
+      "addedKeywords": ["Guardião", "Pele Incandescente", "Fúria Crescente", "Atropelar"]
+    },
+    "effects": [],
+    "description": "Guardião, Pele Incandescente, Fúria Crescente, Armadura 1. Ascensão (4): Tirano da Fornalha Enjaulada (7/8, ARM 2, Atropelar).",
+    "flavorText": "As grades de ferro negro não servem para proteger o mundo dele, mas para manter o incêndio faminto.",
+    "imagePath": "/assets/cards/red_186_carcereiro_jaula_ardente.webp"
+  },
+  {
+    "id": "red_187_golem_manoplas_brasa",
+    "name": "Golem das Manoplas de Brasa",
+    "domain": "red",
+    "type": "creature",
+    "subtype": "Elemental • Golem",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 5,
+    "armor": 1,
+    "hp": 4,
+    "preferredRow": "vanguard",
+    "keywords": ["Atropelar", "Pele Incandescente"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Ao entrar, causa 1 de dano à fileira inimiga."
+      }
+    ],
+    "description": "Atropelar, Pele Incandescente, Armadura 1. Ao entrar, causa 1 de dano à fileira inimiga.",
+    "flavorText": "Quando ergue os dois punhos cravados de ferro sobre a cabeça, a própria caldeira ruge através da escotilha em seu peito.",
+    "imagePath": "/assets/cards/red_187_golem_manoplas_brasa.webp"
   }
 ];
 

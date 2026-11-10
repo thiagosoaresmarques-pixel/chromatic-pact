@@ -662,7 +662,171 @@ export function recalculateProfileEloFromInitialBase(
   };
 }
 
-const RETIRED_EXACT_USERNAMES = new Set(['tsm81']);
+const RETIRED_EXACT_USERNAMES = new Set<string>();
+
+export const TSM81_OPTIMIZED_PYROS_CHAMPS_100: string[] = [
+  'red_01_kobold',
+  'red_01_kobold',
+  'red_01_kobold',
+  'red_38_serpente_fogo',
+  'red_38_serpente_fogo',
+  'red_38_serpente_fogo',
+  'red_91_batedor_salamandra',
+  'red_91_batedor_salamandra',
+  'red_91_batedor_salamandra',
+  'red_109_diabrete_fornalha',
+  'red_109_diabrete_fornalha',
+  'red_109_diabrete_fornalha',
+  'red_147_salamandra_vapor_rubro',
+  'red_147_salamandra_vapor_rubro',
+  'red_147_salamandra_vapor_rubro',
+  'red_11_azer',
+  'red_11_azer',
+  'red_11_azer',
+  'red_12_mephit_magma',
+  'red_12_mephit_magma',
+  'red_12_mephit_magma',
+  'red_16_orc_saqueador',
+  'red_16_orc_saqueador',
+  'red_16_orc_saqueador',
+  'red_27_frenesi_batalha',
+  'red_27_frenesi_batalha',
+  'red_27_frenesi_batalha',
+  'red_30_furia_sangue',
+  'red_30_furia_sangue',
+  'red_30_furia_sangue',
+  'red_37_saqueador_gith',
+  'red_37_saqueador_gith',
+  'red_37_saqueador_gith',
+  'red_67_fornalha_interior',
+  'red_67_fornalha_interior',
+  'red_67_fornalha_interior',
+  'red_129_cao_cinzas_alfa',
+  'red_129_cao_cinzas_alfa',
+  'red_129_cao_cinzas_alfa',
+  'red_148_sapador_enxofre',
+  'red_148_sapador_enxofre',
+  'red_148_sapador_enxofre',
+  'red_35_contra_ataque_igneo',
+  'red_35_contra_ataque_igneo',
+  'red_35_contra_ataque_igneo',
+  'red_42_cavaleiro_draconico',
+  'red_42_cavaleiro_draconico',
+  'red_42_cavaleiro_draconico',
+  'red_50_forjar_no_sangue',
+  'red_50_forjar_no_sangue',
+  'red_50_forjar_no_sangue',
+  'red_76_salamandra_vapor',
+  'red_76_salamandra_vapor',
+  'red_76_salamandra_vapor',
+  'red_90_nucleo_fragmento_rubro',
+  'red_90_nucleo_fragmento_rubro',
+  'red_94_berserker_draconico',
+  'red_94_berserker_draconico',
+  'red_94_berserker_draconico',
+  'red_107_fornalha_draconica',
+  'red_107_fornalha_draconica',
+  'red_174_subduccao_magmatica',
+  'red_174_subduccao_magmatica',
+  'red_176_dancarino_plumas_brasa',
+  'red_176_dancarino_plumas_brasa',
+  'red_195_clamor_forja_guerra',
+  'red_19_corcel_brasas',
+  'red_19_corcel_brasas',
+  'red_19_corcel_brasas',
+  'red_36_bigorna_fogo',
+  'red_36_bigorna_fogo',
+  'red_79_draco_meteoro',
+  'red_79_draco_meteoro',
+  'red_79_draco_meteoro',
+  'red_114_draco_escoria',
+  'red_114_draco_escoria',
+  'red_114_draco_escoria',
+  'red_132_wyvern_escoria',
+  'red_132_wyvern_escoria',
+  'red_132_wyvern_escoria',
+  'red_153_elemental_fornalha_viva',
+  'red_153_elemental_fornalha_viva',
+  'red_153_elemental_fornalha_viva',
+  'red_186_carcereiro_jaula_ardente',
+  'red_44_gigante_forja',
+  'red_44_gigante_forja',
+  'red_45_fenix_primordial',
+  'red_45_fenix_primordial',
+  'red_99_senhor_balor_fogo',
+  'red_167_arauto_prisma_chama',
+  'red_179_khorvus_tirano_mascara_auricrania',
+  'red_47_arquiduque_ferro',
+  'red_82_fenix_taquion',
+  'red_137_dragao_cometa_rubro',
+  'red_137_dragao_cometa_rubro',
+  'red_180_malakor_general_lamina_colossal',
+  'red_119_soberano_piroclasma',
+  'red_173_general_roda_chama',
+  'red_178_kaelith_principe_asas_fenix',
+  'red_181_ignis_marechal_coroa_cinzas',
+];
+
+export function upgradeTsm81ChampionGrimoire(profile: SovereignUserProfile): {
+  profile: SovereignUserProfile;
+  wasUpgraded: boolean;
+} {
+  if ((profile.username || '').trim().toLowerCase() !== 'tsm81') {
+    return { profile, wasUpgraded: false };
+  }
+  const decks = profile.customDecks ?? [];
+  const targetIdx = decks.findIndex(
+    (d) => d.id === 'custom_1793565793825' || d.name.includes('Pyros Campeão')
+  );
+  if (targetIdx === -1) {
+    return { profile, wasUpgraded: false };
+  }
+  const targetDeck = decks[targetIdx];
+  if (
+    targetDeck.cardIds.length === 100 &&
+    targetDeck.cardIds.includes('red_174_subduccao_magmatica') &&
+    targetDeck.cardIds.includes('red_181_ignis_marechal_coroa_cinzas')
+  ) {
+    return { profile, wasUpgraded: false };
+  }
+
+  // Preserve all previously owned starter cards in extraUnlockedCards so nothing is lost
+  const prevCounts: Record<string, number> = {};
+  for (const cid of profile.starterDeckCardIds ?? targetDeck.cardIds) {
+    prevCounts[cid] = (prevCounts[cid] ?? 0) + 1;
+  }
+  const newCounts: Record<string, number> = {};
+  for (const cid of TSM81_OPTIMIZED_PYROS_CHAMPS_100) {
+    newCounts[cid] = (newCounts[cid] ?? 0) + 1;
+  }
+  const nextExtra: Record<string, number> = { ...(profile.extraUnlockedCards ?? {}) };
+  for (const [cid, oldCnt] of Object.entries(prevCounts)) {
+    const newCnt = newCounts[cid] ?? 0;
+    if (oldCnt > newCnt) {
+      nextExtra[cid] = Math.max(nextExtra[cid] ?? 0, oldCnt - newCnt);
+    }
+  }
+
+  const nextDecks = decks.map((d, idx) =>
+    idx === targetIdx
+      ? {
+          ...d,
+          cardIds: [...TSM81_OPTIMIZED_PYROS_CHAMPS_100],
+          updatedAt: Date.now(),
+        }
+      : d
+  );
+
+  return {
+    profile: {
+      ...profile,
+      customDecks: nextDecks,
+      starterDeckCardIds: [...TSM81_OPTIMIZED_PYROS_CHAMPS_100],
+      extraUnlockedCards: nextExtra,
+    },
+    wasUpgraded: true,
+  };
+}
 
 export function getSavedAccountsRoster(): SovereignUserProfile[] {
   try {
@@ -692,8 +856,10 @@ export function getSavedAccountsRoster(): SovereignUserProfile[] {
             recalculateProfileEloFromInitialBase(cleaned);
           const { profile: campClean, wasReset } =
             resetCampaignProgressionForProfile(rebased);
-          if (wasModified || wasRecalculated || wasReset) anyCleaned = true;
-          return campClean;
+          const { profile: tsmUpgraded, wasUpgraded } =
+            upgradeTsm81ChampionGrimoire(campClean);
+          if (wasModified || wasRecalculated || wasReset || wasUpgraded) anyCleaned = true;
+          return tsmUpgraded;
         });
         if (anyCleaned) {
           try {
@@ -895,18 +1061,25 @@ export function ensureStarterDeckForUser(profile: SovereignUserProfile): Soverei
   const { cleaned, wasModified } = stripImposedStarterGrimoire(profile);
   const { profile: rebased, wasRecalculated } = recalculateProfileEloFromInitialBase(cleaned);
   const { profile: campClean, wasReset } = resetCampaignProgressionForProfile(rebased);
-  if (wasModified || wasRecalculated || wasReset || (shouldBeAdmin && !campClean.isAdmin)) {
+  const { profile: tsmUpgraded, wasUpgraded } = upgradeTsm81ChampionGrimoire(campClean);
+  if (
+    wasModified ||
+    wasRecalculated ||
+    wasReset ||
+    wasUpgraded ||
+    (shouldBeAdmin && !tsmUpgraded.isAdmin)
+  ) {
     const updated: SovereignUserProfile = {
-      ...campClean,
+      ...tsmUpgraded,
       isAdmin: shouldBeAdmin,
     };
     setActiveTabUserProfile(updated);
-    if (wasRecalculated || wasReset) {
+    if (wasRecalculated || wasReset || wasUpgraded) {
       void syncProfileToSupabaseIfConfigured(updated);
     }
     return updated;
   }
-  return campClean;
+  return tsmUpgraded;
 }
 
 /**
@@ -1425,10 +1598,14 @@ function hydrateProfileFromRow(
   const { cleaned, wasModified } = stripImposedStarterGrimoire(rawProfile);
   const { profile: rebased, wasRecalculated } = recalculateProfileEloFromInitialBase(cleaned);
   const { profile: campClean, wasReset } = resetCampaignProgressionForProfile(rebased);
-  if ((wasModified || wasRecalculated || wasReset) && Boolean(campClean.passwordHash)) {
-    void syncProfileToSupabaseIfConfigured(campClean);
+  const { profile: tsmUpgraded, wasUpgraded } = upgradeTsm81ChampionGrimoire(campClean);
+  if (
+    (wasModified || wasRecalculated || wasReset || wasUpgraded) &&
+    Boolean(tsmUpgraded.passwordHash)
+  ) {
+    void syncProfileToSupabaseIfConfigured(tsmUpgraded);
   }
-  return campClean;
+  return tsmUpgraded;
 }
 
 /**

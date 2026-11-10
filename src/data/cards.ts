@@ -34363,6 +34363,336 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Congela a Vanguarda inimiga, concede Escudo Divino aos seus aliados, compra 2 cartas e gera +3 de Essência.",
     "flavorText": "Ao soar da última badalada do cosmos, apenas os escolhidos do Vórtex permanecem em movimento.",
     "imagePath": "/assets/cards/blue_198_decreto_decima_segunda_hora.webp"
+  },
+  {
+    "id": "green_189_domo_cipos_voltaicos",
+    "name": "Domo de Cipós Voltaicos",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Biomancia",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "debuff_enemy_vanguard_atk",
+        "value": 2,
+        "description": "Reduz em 2 o Ataque dos inimigos."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Concede +1/+1 aos seus aliados."
+      }
+    ],
+    "description": "Reduz em 2 o Ataque dos inimigos e concede +1/+1 aos seus aliados.",
+    "flavorText": "Dentro da redoma de espinhos e seiva elétrica, apenas os predadores da selva ditam o ritmo da caçada.",
+    "imagePath": "/assets/cards/green_189_domo_cipos_voltaicos.webp"
+  },
+  {
+    "id": "green_190_seiva_despertar",
+    "name": "Seiva do Despertar",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Biomancia",
+    "rarity": "common",
+    "cost": 1,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_sovereign",
+        "value": 2,
+        "description": "Restaura 2 de Vida do seu Soberano."
+      }
+    ],
+    "description": "Gera +2 de Essência neste turno e restaura 2 de Vida do seu Soberano.",
+    "flavorText": "Uma única gota colhida das raízes primeiras basta para incendiar o sangue com o vigor da primavera.",
+    "imagePath": "/assets/cards/green_190_seiva_despertar.webp"
+  },
+  {
+    "id": "green_191_sangue_behemote",
+    "name": "Sangue de Behemote",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Biomancia",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 2,
+        "secondaryValue": 3,
+        "description": "Concede +2/+3 a 1 aliado."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_target_ally",
+        "value": 2,
+        "description": "Restaura 2 de Vida de 1 aliado."
+      }
+    ],
+    "description": "Concede +2/+3 a 1 aliado e restaura 2 de Vida dele.",
+    "flavorText": "Quando o pulso esmeralda do colosso corre nas veias, a casca endurece como rocha viva.",
+    "imagePath": "/assets/cards/green_191_sangue_behemote.webp"
+  },
+  {
+    "id": "green_192_chamado_matilha",
+    "name": "Chamado da Matilha",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Biomancia",
+    "rarity": "common",
+    "cost": 2,
+    "affinityReq": 1,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Invoca 1 Fera 2/2."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Concede +1/+1 a 1 aliado."
+      }
+    ],
+    "description": "Invoca 1 Fera 2/2 e concede +1/+1 a 1 aliado.",
+    "flavorText": "O berrante de pau-ferro nunca ecoa sozinho; a mata inteira responde com presas e garras.",
+    "imagePath": "/assets/cards/green_192_chamado_matilha.webp"
+  },
+  {
+    "id": "green_193_ruptura_seiva_primordial",
+    "name": "Ruptura de Seiva Primordial",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Biomancia",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_target_ally",
+        "value": 3,
+        "secondaryValue": 2,
+        "description": "Concede +3/+2 a 1 aliado."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      }
+    ],
+    "description": "Concede +3/+2 a 1 aliado e gera +2 de Essência neste turno.",
+    "flavorText": "Ao esmagar a semente ancestral contra o peito, o guerreiro liberta a fúria indomável de Verídia.",
+    "imagePath": "/assets/cards/green_193_ruptura_seiva_primordial.webp"
+  },
+  {
+    "id": "green_194_instinto_alfa",
+    "name": "Instinto Alfa",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Predação",
+    "rarity": "uncommon",
+    "cost": 3,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "food_chain_law",
+        "value": 2,
+        "description": "Seu aliado mais forte golpeia 1 inimigo; se o abater, herda suas habilidades e cura 2."
+      }
+    ],
+    "description": "Seu aliado mais forte golpeia 1 inimigo; se o abater, herda suas habilidades e cura 2.",
+    "flavorText": "Na clareira sem leis, a presa entrega não apenas a carne, mas também o próprio vigor ao predador.",
+    "imagePath": "/assets/cards/green_194_instinto_alfa.webp"
+  },
+  {
+    "id": "green_195_crescimento_desenfreado",
+    "name": "Crescimento Desenfreado",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Biomancia",
+    "rarity": "uncommon",
+    "cost": 4,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 2,
+        "description": "Concede +1/+2 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "summon_token",
+        "value": 3,
+        "secondaryValue": 3,
+        "description": "Invoca 1 Fera 3/3."
+      }
+    ],
+    "description": "Concede +1/+2 aos seus aliados e invoca 1 Fera 3/3.",
+    "flavorText": "Onde as raízes de pau-ferro arrombam o solo, brotam feras prontas para esmagar muralhas.",
+    "imagePath": "/assets/cards/green_195_crescimento_desenfreado.webp"
+  },
+  {
+    "id": "green_196_trama_arvore_mundo",
+    "name": "Trama da Árvore-Mundo",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Biomancia",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "secondaryValue": 2,
+        "description": "Concede +2/+2 aos seus aliados."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 3,
+        "description": "Restaura 3 de Vida dos seus aliados e do seu Soberano."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 2,
+        "description": "Gera +2 de Essência neste turno."
+      }
+    ],
+    "description": "Concede +2/+2 aos seus aliados, restaura 3 de Vida deles e gera +2 de Essência.",
+    "flavorText": "Milhares de veios bioluminescentes entrelaçam o tronco primordial, nutrindo cada criatura do dossel.",
+    "imagePath": "/assets/cards/green_196_trama_arvore_mundo.webp"
+  },
+  {
+    "id": "green_197_rugido_dossel_ancestral",
+    "name": "Rugido do Dossel Ancestral",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Predação",
+    "rarity": "rare",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "food_chain_law",
+        "value": 3,
+        "description": "Seu aliado mais forte golpeia 1 inimigo; se o abater, herda suas habilidades e cura 3."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 2,
+        "secondaryValue": 1,
+        "description": "Concede +2/+1 aos seus aliados."
+      }
+    ],
+    "description": "Seu aliado mais forte golpeia 1 inimigo (herdando suas habilidades se o abater) e seus aliados ganham +2/+1.",
+    "flavorText": "Quando o tirano de casca e esmeralda ruge no topo da copa, toda a selva avança num único bote.",
+    "imagePath": "/assets/cards/green_197_rugido_dossel_ancestral.webp"
+  },
+  {
+    "id": "green_198_convergencia_alma_veridia",
+    "name": "Convergência da Alma de Verídia",
+    "domain": "green",
+    "type": "spell",
+    "subtype": "Feitiço • Metamorfose Lendária",
+    "rarity": "legendary",
+    "cost": 7,
+    "affinityReq": 3,
+    "atk": 0,
+    "armor": 0,
+    "hp": 0,
+    "preferredRow": "rearguard",
+    "keywords": [],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "primordial_evolution_apex",
+        "value": 3,
+        "secondaryValue": 2,
+        "description": "Ascende seus aliados sem custo; os demais ganham +3/+3, Atropelar e Regeneração 2."
+      },
+      {
+        "trigger": "on_enter",
+        "type": "heal_all_allies",
+        "value": 4,
+        "description": "Restaura 4 de Vida dos seus aliados e do seu Soberano."
+      }
+    ],
+    "description": "Ascende seus aliados sem custo; os demais ganham +3/+3, Atropelar e Regeneração 2, e restaura 4 de Vida.",
+    "flavorText": "Atravessada pelo pilar esmeralda do próprio continente, ela desperta a forma suprema de toda vida selvagem.",
+    "imagePath": "/assets/cards/green_198_convergencia_alma_veridia.webp"
   }
 ];
 

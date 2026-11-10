@@ -34203,6 +34203,60 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "description": "Voo, Alcance, Escudo Divino, Armadura 1. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
     "flavorText": "De braços cruzados sobre o turbilhão celeste, ele entrega três segredos astrais pelo tributo exato do pulso mortal.",
     "imagePath": "/assets/cards/blue_188_tariq_genio_tres_ventos.webp"
+  },
+  {
+    "id": "gold_188_sulaiman_genio_tres_editos",
+    "name": "Sulaiman, Gênio dos Três Éditos",
+    "domain": "gold",
+    "type": "creature",
+    "subtype": "Elemental • Gênio",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 2,
+    "atk": 5,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards_at_hp_cost",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+      }
+    ],
+    "description": "Voo, Guardião, Escudo Divino, Armadura 2. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "flavorText": "Três selos dourados pairam sobre sua palma; cada decreto imperial exige o penhor de uma gota real.",
+    "imagePath": "/assets/cards/gold_188_sulaiman_genio_tres_editos.webp"
+  },
+  {
+    "id": "neutral_188_qamar_genio_tres_esferas",
+    "name": "Qamar, Gênio das Três Esferas",
+    "domain": "neutral",
+    "type": "creature",
+    "subtype": "Elemental • Gênio",
+    "rarity": "legendary",
+    "cost": 5,
+    "affinityReq": 0,
+    "atk": 4,
+    "armor": 2,
+    "hp": 6,
+    "preferredRow": "vanguard",
+    "keywords": ["Voo", "Guardião"],
+    "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "draw_cards_at_hp_cost",
+        "value": 3,
+        "secondaryValue": 1,
+        "description": "Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada."
+      }
+    ],
+    "description": "Voo, Guardião, Armadura 2. Ao entrar, compra 3 cartas extras ao preço de 1 ponto de vida cada.",
+    "flavorText": "Sem jurar lealdade a nenhuma coroa cromática, pesa três destinos em mercúrio e cobra o mesmo tributo de todos.",
+    "imagePath": "/assets/cards/neutral_188_qamar_genio_tres_esferas.webp"
   }
 ];
 

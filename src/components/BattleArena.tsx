@@ -332,14 +332,21 @@ function doesCardUseTarget(card: CardDefinition): 'enemy' | 'ally' | 'any_row' |
         eff.type === 'magmatic_subduction' ||
         eff.type === 'coordinate_inversion' ||
         eff.type === 'shared_shadow_link' ||
-        eff.type === 'food_chain_law'
+        eff.type === 'food_chain_law' ||
+        eff.type === 'vaelen_astral_stigma' ||
+        eff.type === 'lyriel_astral_zero'
       ) {
         return 'enemy';
       }
       if (
         eff.type === 'buff_target_ally' ||
         eff.type === 'heal_target_ally' ||
-        eff.type === 'unconquered_champion_oath'
+        eff.type === 'unconquered_champion_oath' ||
+        eff.type === 'aelion_solar_edict' ||
+        (eff.type === 'shield_all_allies' &&
+          /a (?:um|1) aliado|a ele|à sua criatura aliada mais forte/i.test(
+            `${eff.description || ''} ${card.description || ''}`
+          ))
       ) {
         return 'ally';
       }

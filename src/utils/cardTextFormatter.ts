@@ -112,6 +112,10 @@ export function formatEffectActionClause(
     }
 
     case 'damage_all_units': {
+      const combinedDesc = `${effect.description || ''} ${card.description || ''}`;
+      if (/inimig/i.test(combinedDesc)) {
+        return `causa ${v} de dano a todos os inimigos`;
+      }
       const isBoardUnit = card.type === 'creature' || card.type === 'relic';
       return isBoardUnit
         ? `causa ${v} de dano às outras criaturas em campo`
@@ -209,7 +213,8 @@ export function formatEffectActionClause(
     }
 
     case 'revive_from_crypt': {
-      if (v >= 5) {
+      const combinedDesc = `${effect.description || ''} ${card.description || ''}`;
+      if (v >= 4 || /custo\s*(?:<=|até)\s*\d+/i.test(combinedDesc)) {
         return `reanima da Cripta o aliado mais forte de custo até ${v}`;
       }
       if (v <= 1) {
@@ -269,7 +274,7 @@ export function formatEffectActionClause(
 
     case 'shield_all_allies': {
       const isSingleTarget =
-        /a um aliado|a ele/i.test(
+        /a (?:um|1) aliado|a ele|à sua criatura aliada mais forte/i.test(
           `${effect.description || ''} ${card.description || ''}`
         ) && v <= 1;
       const bonusArmor = effect.secondaryValue ?? 0;
@@ -456,10 +461,11 @@ export function formatEffectActionClause(
 
     case 'draw_cards_at_hp_cost': {
       const hpCost = Math.max(1, effect.secondaryValue ?? 1);
+      const totalHp = v * hpCost;
       if (!detailed) {
-        return `compra ${v} ${v === 1 ? 'carta' : 'cartas'} pagando ${hpCost} de Vida cada`;
+        return `paga ${totalHp} de Vida e compra ${v} ${v === 1 ? 'carta' : 'cartas'}`;
       }
-      return `compra ${v} ${v === 1 ? 'carta extra' : 'cartas extras'} ao custo de ${hpCost} de Vida cada`;
+      return `paga obrigatoriamente ${totalHp} de Vida do seu Soberano e compra ${v} ${v === 1 ? 'carta' : 'cartas'} imediatamente`;
     }
 
     default:
@@ -524,7 +530,9 @@ function joinTriggerClauses(
 
   const isSingleShield = (e: CardEffect) =>
     e.type === 'shield_all_allies' &&
-    /a um aliado|a ele/i.test(`${e.description || ''} ${card.description || ''}`) &&
+    /a (?:um|1) aliado|a ele|à sua criatura aliada mais forte/i.test(
+      `${e.description || ''} ${card.description || ''}`
+    ) &&
     e.value <= 1;
 
   // Merge shield_all_allies (when all allies) + buff_all_allies on the same trigger

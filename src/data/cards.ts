@@ -1222,7 +1222,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Compra 1 carta."
       }
     ],
-    "description": "Voo, Alcance. Armadura 1. Ao Entrar: Compra 1 carta. Ascensão (4): Transforma-se em Esfinge Soberana do Tempo (7/8, ARM 2).",
+    "description": "Voo, Alcance. Armadura 1. Ao Entrar: Congela 1 inimigo e compra 1 carta. Ascensão (4): Transforma-se em Esfinge Soberana do Tempo (7/8, ARM 2).",
     "flavorText": "Diante dos portões do Pináculo, até os reis precisam provar sua sabedoria antes de passar.",
     "imagePath": "/assets/cards/blue_03_esfinge.webp",
     "ascension": {
@@ -1315,7 +1315,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Fulmina um inimigo com 3 de dano."
       }
     ],
-    "description": "Voo, Alcance. Armadura 2. Sopro 3. Ao Entrar: Queda de raio causa 4 de dano a um inimigo.",
+    "description": "Voo, Alcance. Armadura 2. Sopro 3. Ao Entrar: Queda de raio causa 3 de dano a um inimigo.",
     "flavorText": "O único aviso de sua chegada é o cheiro de ozônio e a areia virando vidro.",
     "imagePath": "/assets/cards/blue_06_dragao_azul.webp"
   },
@@ -1973,7 +1973,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Início do Turno: Causa 2 de dano ao Soberano rival."
       }
     ],
-    "description": "Ao Entrar: Congela a Vanguarda inimiga e compra 1 carta. Início do Turno: Congela 1 inimigo.",
+    "description": "Ao Entrar: Congela a Vanguarda inimiga e compra 1 carta. Início do Turno: Congela 1 inimigo e causa 2 de dano ao Soberano rival.",
     "flavorText": "No centro do ciclone reina o silêncio de quem tudo vê.",
     "imagePath": "/assets/cards/blue_28_orbe_tempestade.webp"
   },
@@ -2234,7 +2234,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Início do Turno: Causa 2 de dano ao Soberano rival."
       }
     ],
-    "description": "Ao Entrar: Congela e causa 2 de dano. Início do Turno: Congela 1 inimigo.",
+    "description": "Ao Entrar: Congela 1 inimigo e causa 2 de dano. Início do Turno: Congela 1 inimigo e causa 2 de dano ao Soberano rival.",
     "flavorText": "Esculpido no coração de uma geleira que jamais conheceu a primavera.",
     "imagePath": "/assets/cards/blue_35_cetro_inverno.webp"
   },
@@ -2422,7 +2422,8 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "Atropelar",
         "Renascer"
       ]
-    }
+    },
+    "corruptionCost": 1
   },
   {
     "id": "purple_06_tirano_ocular",
@@ -2549,7 +2550,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Drena 2 de VIDA para o seu Soberano."
       }
     ],
-    "description": "Causa 5 de dano necrótico a uma criatura inimiga e restaura 2 de VIDA do seu Soberano.",
+    "description": "Causa 6 de dano necrótico a uma criatura inimiga e restaura 2 de VIDA do seu Soberano.",
     "flavorText": "Diamantes cravados em osso antigo cantam a nota que desfaz a carne.",
     "imagePath": "/assets/cards/purple_09_desintegrar.webp"
   },
@@ -2576,14 +2577,15 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       },
       {
         "trigger": "turn_end",
-        "type": "damage_enemy_sovereign",
+        "type": "drain_enemy_sovereign",
         "value": 1,
-        "description": "Fim do Turno: Drena 1 de VIDA do Soberano rival."
+        "description": "Drena 1 de VIDA do Soberano rival."
       }
     ],
     "description": "Sobrecarga +1. Ao Entrar: Compra 2 cartas. Fim do Turno: Drena 1 de VIDA do Soberano inimigo.",
     "flavorText": "O preço é pago em pesadelos; o lucro é colhido em segredos.",
-    "imagePath": "/assets/cards/purple_10_pacto_profano.webp"
+    "imagePath": "/assets/cards/purple_10_pacto_profano.webp",
+    "corruptionCost": 1
   },
   {
     "id": "purple_11_garra_rastejante",
@@ -3037,15 +3039,15 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "grant_bonus_essence",
-        "value": 1,
-        "description": "Gera +2 de Essência neste turno."
+        "type": "damage_single_enemy",
+        "value": 3,
+        "description": "Arranca 3 de VIDA de uma criatura inimiga."
       },
       {
         "trigger": "on_enter",
-        "type": "draw_cards",
-        "value": 1,
-        "description": "Compra 1 carta."
+        "type": "heal_sovereign",
+        "value": 3,
+        "description": "Transfere 3 de VIDA para o seu Soberano."
       }
     ],
     "description": "Feitiço: Arranca 3 de VIDA de uma criatura inimiga e transfere 3 de VIDA para o seu Soberano.",
@@ -3374,8 +3376,8 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "turn_end",
         "type": "heal_sovereign",
-        "value": 1,
-        "description": "Fim do Turno: Cura 1 de VIDA do seu Soberano."
+        "value": 2,
+        "description": "Fim do Turno: Cura 2 de VIDA do seu Soberano."
       }
     ],
     "description": "Ao Entrar: Cura 3 de VIDA e compra 1 carta. Fim do Turno: Drena 2 de VIDA do Soberano inimigo.",
@@ -3563,7 +3565,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Atacar: Chifres de Cerco causam 1 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Ímpeto, Atropelar, Fúria Crescente. Armadura 1. Ao Atacar: Causa 2 de dano ao Soberano inimigo.",
+    "description": "Ímpeto, Atropelar, Fúria Crescente. Armadura 1. Ao Atacar: Causa 1 de dano ao Soberano inimigo.",
     "flavorText": "Para ele, qualquer formação de escudos é apenas lenha esperando o machado.",
     "imagePath": "/assets/cards/green_05_minotauro.webp"
   },
@@ -3585,6 +3587,12 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       "Toque Letal"
     ],
     "effects": [
+      {
+        "trigger": "on_enter",
+        "type": "damage_single_enemy",
+        "value": 2,
+        "description": "Ao Entrar: Causa 2 de dano a 1 inimigo."
+      },
       {
         "trigger": "on_enter",
         "type": "freeze_enemy",
@@ -4557,9 +4565,9 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_single_enemy",
+        "type": "freeze_enemy",
         "value": 1,
-        "description": "Ao Entrar: Mordida Adesiva causa 1 de dano a um inimigo."
+        "description": "Ao Entrar: Sua língua adesiva cola e paralisa 1 inimigo por 1 turno."
       }
     ],
     "description": "Guardião. Armadura 1. Ao Entrar: Sua língua adesiva cola e paralisa um inimigo por 1 turno.",
@@ -4656,12 +4664,12 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       },
       {
         "trigger": "on_enter",
-        "type": "heal_sovereign",
+        "type": "heal_all_allies",
         "value": 2,
-        "description": "Ao Entrar: Cura 2 de VIDA do seu Soberano."
+        "description": "Ao Entrar: Luz celestial cura 2 de VIDA de todos os aliados."
       }
     ],
-    "description": "Voo, Escudo Divino, Dreno de Vida. Ao Entrar: Luz celestial cura 2 de VIDA de todos os aliados. Ascensão (4): Transforma-se em Arcanjo Solar do Zênite (8/9, ARM 2).",
+    "description": "Voo, Escudo Divino, Dreno de Vida. Ao Entrar: Causa 2 de dano a um inimigo e cura 2 de VIDA de todos os aliados. Ascensão (4): Transforma-se em Arcanjo Solar do Zênite (8/9, ARM 2).",
     "flavorText": "Onde suas asas brancas descem, as feridas se fecham e as sombras recuam.",
     "imagePath": "/assets/cards/gold_06_deva.webp",
     "ascension": {
@@ -4733,7 +4741,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Sopro de Gás Venenoso causa 2 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Guardião, Atropelar. Armadura 3. Reduz em 3 o dano de qualquer fonte.",
+    "description": "Guardião, Atropelar. Armadura 3. Ao Entrar: Sopro de Gás Venenoso causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Trinta toneladas de aço maciço que desconhecem dor, piedade ou fadiga.",
     "imagePath": "/assets/cards/gold_08_golem_ferro.webp"
   },
@@ -5440,7 +5448,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "summon_token",
-        "value": 1,
+        "value": 2,
         "secondaryValue": 2,
         "description": "Ao Entrar: Invoca uma Sentinela de Ferro (2/2)."
       }
@@ -6224,7 +6232,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Ímpeto. Ao Entrar: Desfere um corte planar que causa 2 de dano ao Soberano inimigo.",
+    "description": "Ímpeto. Ao Entrar: Desfere um corte planar que causa 1 de dano ao Soberano inimigo.",
     "flavorText": "Nascidos no mar de estrelas, eles cavalgam dragões vermelhos rumo à conquista.",
     "imagePath": "/assets/cards/red_37_saqueador_gith.webp"
   },
@@ -6469,7 +6477,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Último Suspiro: Explode em chamas causando 2 de dano à fileira inimiga."
       }
     ],
-    "description": "Voo, Ímpeto, Renascer. Último Suspiro: Causa 2 de dano a todos os inimigos na fileira.",
+    "description": "Voo, Ímpeto, Renascer. Último Suspiro: Causa 1 de dano a todos os inimigos na fileira.",
     "flavorText": "A morte é apenas o estopim do seu próximo alvorecer.",
     "imagePath": "/assets/cards/red_45_fenix_primordial.webp"
   },
@@ -7343,7 +7351,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Dispara um raio causando 1 de dano a um inimigo."
       }
     ],
-    "description": "Ao Entrar: Causa 2 de dano à fileira inimiga. Ao Lançar Feitiço: Causa 1 de dano a um inimigo.",
+    "description": "Ao Entrar: Causa 1 de dano à fileira inimiga. Ao Lançar Feitiço: Causa 1 de dano a um inimigo.",
     "flavorText": "Dentro do cristal repousa a fúria contida de mil ciclones.",
     "imagePath": "/assets/cards/blue_53_orbe_tempestades.webp"
   },
@@ -8583,7 +8591,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Escudo Divino. Armadura 1. Ao Entrar: Cura 2 de VIDA do seu Soberano.",
+    "description": "Escudo Divino. Armadura 1. Ao Entrar: Cura 3 de VIDA do seu Soberano.",
     "flavorText": "A lei da luz não conhece suborno nem recuo.",
     "imagePath": "/assets/cards/gold_39_inquisidor_justica.webp"
   },
@@ -8992,14 +9000,20 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "heal_sovereign",
-        "value": 2,
-        "description": "Ao Entrar: Cura 2 de VIDA do seu Soberano."
+        "value": 3,
+        "description": "Ao Entrar: Cura 3 de VIDA do seu Soberano."
       },
       {
         "trigger": "turn_start",
         "type": "heal_sovereign",
+        "value": 2,
+        "description": "Início do Turno: Cura 2 de VIDA do seu Soberano."
+      },
+      {
+        "trigger": "turn_start",
+        "type": "heal_all_allies",
         "value": 1,
-        "description": "Início do Turno: Cura 1 de VIDA do seu Soberano."
+        "description": "Início do Turno: Cura 1 de VIDA em todos os aliados."
       }
     ],
     "description": "Ao Entrar: Cura 3 no Soberano. Início do Turno: Cura 2 no Soberano e 1 em todos os aliados.",
@@ -9060,6 +9074,12 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "value": 1,
         "secondaryValue": 2,
         "description": "Ao Entrar: Concede +1 ATQ e +2 VIDA a todos os aliados."
+      },
+      {
+        "trigger": "turn_end",
+        "type": "damage_enemy_row",
+        "value": 1,
+        "description": "Fim do Turno: Causa 1 de dano à fileira inimiga."
       },
       {
         "trigger": "turn_end",
@@ -9796,7 +9816,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Causa 3 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Causa 4 de dano a todos os inimigos na Vanguarda e 3 de dano ao Soberano rival.",
+    "description": "Causa 3 de dano a todos os inimigos na Vanguarda e 2 de dano ao Soberano rival.",
     "flavorText": "O céu tornou-se de chumbo e choveu pedra derretida sobre os escudos.",
     "imagePath": "/assets/cards/red_68_chuva_enxofre.webp"
   },
@@ -9937,7 +9957,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Causa 1 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Ao Entrar: Causa 2 de dano à Vanguarda rival. Fim do Turno: Causa 2 a um inimigo. Ao Lançar Feitiço: 1 de dano ao Soberano rival.",
+    "description": "Ao Entrar: Causa 1 de dano à Vanguarda rival. Fim do Turno: Causa 1 a um inimigo. Ao Lançar Feitiço: 1 de dano ao Soberano rival.",
     "flavorText": "Enquanto o braseiro arder, o ar do campo de batalha queima a cada respiração.",
     "imagePath": "/assets/cards/red_72_caldeirao_magma.webp"
   },
@@ -10708,9 +10728,9 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
+        "type": "drain_enemy_sovereign",
         "value": 2,
-        "description": "Ao Entrar: Causa 2 de dano ao Soberano inimigo."
+        "description": "Drena 2 de VIDA do Soberano rival."
       }
     ],
     "description": "Toque Letal. Ao Entrar: Drena 2 de VIDA do Soberano rival.",
@@ -10993,7 +11013,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Compra 1 carta."
       }
     ],
-    "description": "Causa 5 de dano a um inimigo e cura 3 de VIDA no seu Soberano.",
+    "description": "Causa 6 de dano a um inimigo, cura 4 de VIDA no seu Soberano e compra 1 carta.",
     "flavorText": "Uma única palavra apaga o calor do corpo e acende a chama fria da cripta.",
     "imagePath": "/assets/cards/purple_69_dedo_morte.webp"
   },
@@ -11567,7 +11587,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 1,
         "description": "Ao Entrar: Concede +1/+1 a todos os seus aliados."
@@ -13071,7 +13091,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Ajusta as engrenagens curando 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Blindagem leve (2/1/2). Ao Entrar: Cura 2 de VIDA no seu Soberano.",
+    "description": "Blindagem leve (2/1/2). Ao Entrar: Cura 1 de VIDA no seu Soberano.",
     "flavorText": "Uma mola bem ajustada vale mais que um encantamento mal pronunciado.",
     "imagePath": "/assets/cards/gold_73_aprendiz_relojoeiro.webp"
   },
@@ -14214,7 +14234,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Último Suspiro: O relógio detona causando 1 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Último Suspiro: Causa 2 de dano a todos os inimigos na Vanguarda.",
+    "description": "Último Suspiro: Causa 1 de dano a todos os inimigos na Vanguarda.",
     "flavorText": "Ele não sabe ler as horas, mas sabe muito bem o que acontece quando o ponteiro para.",
     "imagePath": "/assets/cards/red_75_kobold_cronobomba.webp"
   },
@@ -15597,7 +15617,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 1,
         "description": "Ao Entrar: Tempera as lâminas aliadas concedendo +1/+1 a todos os aliados."
@@ -15633,7 +15653,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Varre a linha de frente inimiga causando 2 de dano."
       }
     ],
-    "description": "Voo, Alcance. Sopro 1. Ao Entrar: Causa 2 de dano a toda a Vanguarda inimiga.",
+    "description": "Voo, Alcance. Sopro 1. Ao Entrar: Causa 1 de dano a toda a Vanguarda inimiga.",
     "flavorText": "Nuvens de cinza fervente anunciam seu mergulho rasante.",
     "imagePath": "/assets/cards/red_96_serpente_piroclastica.webp"
   },
@@ -15673,7 +15693,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Lançar Feitiço: Dispara uma lança ígnea que causa 1 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Alcance. Ao Lançar Feitiço: Causa 2 de dano ao Soberano inimigo. Ascensão (4): Arconte da Chama Solar (6/6, ARM 1, Voo).",
+    "description": "Alcance. Ao Lançar Feitiço: Causa 1 de dano ao Soberano inimigo. Ascensão (4): Arconte da Chama Solar (6/6, ARM 1, Voo).",
     "flavorText": "Para ele, cada palavra arcana é um barril de pólvora prestes a explodir.",
     "imagePath": "/assets/cards/red_97_lancador_chamas.webp"
   },
@@ -15702,7 +15722,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Morrer: Explode em lava, causando 3 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Atropelar, Pele Incandescente. Armadura 1. Ao Morrer: Causa 3 de dano à Vanguarda inimiga.",
+    "description": "Atropelar, Pele Incandescente. Armadura 1. Ao Morrer: Causa 2 de dano à Vanguarda inimiga.",
     "flavorText": "Derrubá-lo é apenas abrir a comporta de um vulcão em erupção.",
     "imagePath": "/assets/cards/red_98_colosso_escoria.webp"
   },
@@ -15732,7 +15752,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Sua tempestade de fogo causa 3 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Voo, Atropelar, Pele Incandescente. Armadura 1. Ao Entrar: Causa 2 de dano a todas as unidades.",
+    "description": "Voo, Atropelar, Pele Incandescente. Armadura 1. Ao Entrar: Causa 3 de dano à Vanguarda inimiga.",
     "flavorText": "Seu chicote de múltiplos raios parte muralhas e escudos em um único estalo.",
     "imagePath": "/assets/cards/red_99_senhor_balor_fogo.webp"
   },
@@ -15795,7 +15815,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Causa 2 de dano ao Soberano inimigo."
       }
     ],
-    "description": "Feitiço: Fragmentos incandescentes caem do céu, causando 3 de dano à fileira inimiga e 2 ao Soberano rival.",
+    "description": "Feitiço: Fragmentos incandescentes caem do céu, causando 2 de dano à fileira inimiga e 2 ao Soberano rival.",
     "flavorText": "Quando os magos da cratera olham para as estrelas, as estrelas caem sobre seus inimigos.",
     "imagePath": "/assets/cards/red_101_bombardeio_orbital.webp"
   },
@@ -15902,7 +15922,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
-        "value": 1,
+        "value": 2,
         "description": "Gera +2 de Essência neste turno."
       },
       {
@@ -15973,7 +15993,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "spell_cast",
         "type": "damage_enemy_sovereign",
-        "value": 1,
+        "value": 2,
         "description": "Ao Lançar Feitiço: Dispara uma brasa que causa 2 de dano ao Soberano inimigo."
       }
     ],
@@ -15999,12 +16019,12 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_enemy_row",
-        "value": 1,
+        "value": 2,
         "description": "Ao Entrar: Causa 2 de dano à Vanguarda inimiga."
       },
       {
         "trigger": "turn_start",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 0,
         "description": "Início do Turno: Concede +1 de ATQ a todos os seus aliados."
@@ -16229,7 +16249,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Compra 2 cartas."
       }
     ],
-    "description": "Voo, Alcance, Escudo Divino. Armadura 1. Sopro 2. Ao Entrar: Compra 2 cartas.",
+    "description": "Voo, Alcance, Escudo Divino. Armadura 1. Sopro 2. Ao Entrar: Compra 1 carta.",
     "flavorText": "Suas asas carregam a eletricidade de cem furacões.",
     "imagePath": "/assets/cards/blue_97_draco_relampago.webp"
   },
@@ -16264,7 +16284,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Ao Entrar: Maremoto astral causa 3 de dano à Vanguarda inimiga."
       }
     ],
-    "description": "Guardião, Alcance. Armadura 1. Ao Entrar: Congela toda a Vanguarda inimiga e causa 3 de dano a ela.",
+    "description": "Guardião, Alcance. Armadura 1. Ao Entrar: Congela toda a Vanguarda inimiga e causa 2 de dano a ela.",
     "flavorText": "Tronos e continentes inteiros repousam submersos em seu domínio.",
     "imagePath": "/assets/cards/blue_98_soberano_mares.webp"
   },
@@ -16322,7 +16342,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
         "description": "Causa 3 de dano a um inimigo."
       }
     ],
-    "description": "Feitiço: Um arco voltaico concentrado atinge um inimigo causando 4 de dano.",
+    "description": "Feitiço: Um arco voltaico concentrado atinge um inimigo causando 3 de dano.",
     "flavorText": "O trovão é apenas o aplauso tardio do relâmpago.",
     "imagePath": "/assets/cards/blue_100_cadeia_voltaica.webp"
   },
@@ -16440,7 +16460,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
-        "value": 1,
+        "value": 2,
         "description": "Gera +2 de Essência neste turno."
       },
       {
@@ -16984,7 +17004,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
-        "value": 1,
+        "value": 2,
         "description": "Gera +2 de Essência neste turno."
       }
     ],
@@ -17250,7 +17270,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 1,
         "description": "Ao Entrar: Esporos vitais concedem +1/+1 a todos os seus aliados."
@@ -17795,7 +17815,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 1,
         "description": "Ao Entrar: Tempera as armaduras concedendo +1/+1 aos aliados."
@@ -18041,7 +18061,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 2,
+        "value": 3,
         "description": "Ao Entrar: Causa 3 de dano a um inimigo."
       },
       {
@@ -18170,14 +18190,14 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 1,
         "description": "Ao Entrar: Concede +1/+1 a todos os aliados."
       },
       {
         "trigger": "turn_start",
-        "type": "buff_target_ally",
+        "type": "buff_all_allies",
         "value": 1,
         "secondaryValue": 1,
         "description": "Início do Turno: Concede +1/+1 a todos os seus aliados."
@@ -18288,7 +18308,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
-        "value": 1,
+        "value": 2,
         "description": "Ao Entrar: Gera +2 de Essência."
       }
     ],
@@ -18314,7 +18334,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "grant_bonus_essence",
-        "value": 1,
+        "value": 2,
         "description": "Gera +2 de Essência neste turno."
       },
       {
@@ -18376,6 +18396,12 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
+        "trigger": "on_enter",
+        "type": "grant_bonus_essence",
+        "value": 1,
+        "description": "Ao Entrar: Gera +1 de Essência."
+      },
+      {
         "trigger": "turn_start",
         "type": "grant_bonus_essence",
         "value": 1,
@@ -18404,7 +18430,7 @@ const ALL_CARDS_PART_1: CardDefinition[] = [
       {
         "trigger": "on_enter",
         "type": "damage_single_enemy",
-        "value": 2,
+        "value": 3,
         "description": "Ao Entrar: Causa 3 de dano a um inimigo."
       },
       {
@@ -20542,6 +20568,13 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "keywords": [],
     "effects": [
       {
+        "trigger": "on_enter",
+        "type": "buff_all_allies",
+        "value": 1,
+        "secondaryValue": 1,
+        "description": "Ao Entrar: Concede +1/+1 a todos os aliados."
+      },
+      {
         "trigger": "turn_start",
         "type": "buff_target_ally",
         "value": 1,
@@ -22341,12 +22374,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
+        "type": "drain_enemy_sovereign",
         "value": 2,
-        "description": "Ao Entrar: Drena 1 de VIDA do Soberano inimigo."
+        "description": "Drena 2 de VIDA do Soberano rival."
       }
     ],
-    "description": "Vínculo Vital. Ao Entrar: Drena 1 de VIDA do Soberano inimigo.",
+    "description": "Dreno de Vida. Ao Entrar: Drena 2 de VIDA do Soberano inimigo.",
     "flavorText": "Cada gota oferecida ao Sol Negro retorna em dobro.",
     "imagePath": "/assets/cards/purple_128_acolito_eclipse.webp"
   },
@@ -22483,12 +22516,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "effects": [
       {
         "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
+        "type": "drain_enemy_sovereign",
         "value": 3,
-        "description": "Ao Entrar: Drena 2 de VIDA do Soberano inimigo."
+        "description": "Drena 3 de VIDA do Soberano rival."
       }
     ],
-    "description": "Voo, Alcance, Vínculo Vital. Ao Entrar: Drena 2 de VIDA do Soberano rival.",
+    "description": "Voo, Alcance, Dreno de Vida. Ao Entrar: Drena 3 de VIDA do Soberano rival.",
     "flavorText": "Um brinde de seu cálice sela o destino de reinos inteiros.",
     "imagePath": "/assets/cards/purple_134_matriarca_noite_eterna.webp"
   },
@@ -22631,7 +22664,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
         "description": "Cura 2 de VIDA do seu Soberano."
       }
     ],
-    "description": "Causa 4 de dano a um inimigo e restaura 2 de VIDA ao seu Soberano.",
+    "description": "Causa 5 de dano a um inimigo e restaura 3 de VIDA ao seu Soberano.",
     "flavorText": "Atravessa a armadura para roubar o calor da alma.",
     "imagePath": "/assets/cards/purple_139_lanca_sombra_letal.webp"
   },
@@ -22658,9 +22691,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       },
       {
         "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
+        "type": "drain_enemy_sovereign",
         "value": 2,
-        "description": "Drena 2 de VIDA do Soberano inimigo."
+        "description": "Drena 2 de VIDA do Soberano rival."
       }
     ],
     "description": "Compra 2 cartas e drena 2 de VIDA do Soberano adversário.",
@@ -22690,12 +22723,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       },
       {
         "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
+        "type": "drain_enemy_sovereign",
         "value": 3,
-        "description": "Drena 2 de VIDA do Soberano inimigo."
+        "description": "Drena 3 de VIDA do Soberano rival."
       }
     ],
-    "description": "Causa 3 de dano à Vanguarda inimiga e drena 2 de VIDA do Soberano rival.",
+    "description": "Causa 4 de dano à Vanguarda inimiga e drena 3 de VIDA do Soberano rival.",
     "flavorText": "Onde a onda passa, o aço enferruja e a carne desfalece.",
     "imagePath": "/assets/cards/purple_141_onda_morte_cinzenta.webp"
   },
@@ -22787,9 +22820,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
       },
       {
         "trigger": "on_enter",
-        "type": "damage_enemy_sovereign",
+        "type": "drain_enemy_sovereign",
         "value": 2,
-        "description": "Drena 2 de VIDA do Soberano inimigo."
+        "description": "Drena 2 de VIDA do Soberano rival."
       }
     ],
     "description": "Gatilho: Morte Aliada. Concede +1/+1 aos seus aliados e drena 2 de VIDA do Soberano rival.",
@@ -22896,6 +22929,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "hp": 2,
     "preferredRow": "vanguard",
     "keywords": [
+      "Ímpeto",
       "Fúria Crescente"
     ],
     "effects": [],
@@ -22989,6 +23023,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "hp": 3,
     "preferredRow": "vanguard",
     "keywords": [
+      "Ímpeto",
       "Atropelar"
     ],
     "effects": [],
@@ -23076,6 +23111,7 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "hp": 5,
     "preferredRow": "vanguard",
     "keywords": [
+      "Ímpeto",
       "Atropelar"
     ],
     "effects": [],
@@ -31890,14 +31926,19 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 3,
     "preferredRow": "vanguard",
-    "keywords": ["Alcance", "Escudo Divino"],
+    "keywords": [
+      "Alcance",
+      "Escudo Divino"
+    ],
     "ascension": {
       "cost": 4,
       "newName": "Guardião de Louros Solares",
       "newAtk": 4,
       "newArmor": 2,
       "newMaxHp": 5,
-      "addedKeywords": ["Guardião"]
+      "addedKeywords": [
+        "Guardião"
+      ]
     },
     "effects": [
       {
@@ -31924,7 +31965,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 4,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance", "Escudo Divino"],
+    "keywords": [
+      "Alcance",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "turn_start",
@@ -31950,7 +31994,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance", "Escudo Divino"],
+    "keywords": [
+      "Alcance",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -31983,7 +32030,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 2,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance", "Dreno de Vida"],
+    "keywords": [
+      "Alcance",
+      "Dreno de Vida"
+    ],
     "effects": [
       {
         "trigger": "on_death",
@@ -32010,7 +32060,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 4,
     "preferredRow": "vanguard",
-    "keywords": ["Alcance", "Toque Letal", "Renascer"],
+    "keywords": [
+      "Alcance",
+      "Toque Letal",
+      "Renascer"
+    ],
     "effects": [
       {
         "trigger": "on_attack",
@@ -32037,7 +32091,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 5,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance", "Dreno de Vida"],
+    "keywords": [
+      "Alcance",
+      "Dreno de Vida"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32064,14 +32121,18 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 4,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance"],
+    "keywords": [
+      "Alcance"
+    ],
     "ascension": {
       "cost": 4,
       "newName": "Vigia do Prisma Boreal",
       "newAtk": 4,
       "newArmor": 0,
       "newMaxHp": 6,
-      "addedKeywords": ["Alcance"]
+      "addedKeywords": [
+        "Alcance"
+      ]
     },
     "effects": [
       {
@@ -32098,7 +32159,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 5,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance"],
+    "keywords": [
+      "Alcance"
+    ],
     "effects": [
       {
         "trigger": "spell_cast",
@@ -32125,7 +32188,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 6,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance", "Voo"],
+    "keywords": [
+      "Alcance",
+      "Voo"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32151,14 +32217,18 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 4,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance"],
+    "keywords": [
+      "Alcance"
+    ],
     "ascension": {
       "cost": 4,
       "newName": "Arauto do Dossel Lunar",
       "newAtk": 3,
       "newArmor": 0,
       "newMaxHp": 6,
-      "addedKeywords": ["Alcance"]
+      "addedKeywords": [
+        "Alcance"
+      ]
     },
     "effects": [
       {
@@ -32186,7 +32256,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "hp": 5,
     "regeneration": 2,
     "preferredRow": "vanguard",
-    "keywords": ["Alcance", "Ímpeto", "Atropelar"],
+    "keywords": [
+      "Alcance",
+      "Ímpeto",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_attack",
@@ -32214,7 +32288,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "hp": 7,
     "regeneration": 3,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance"],
+    "keywords": [
+      "Alcance"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32240,14 +32316,21 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 2,
     "preferredRow": "vanguard",
-    "keywords": ["Alcance", "Voo", "Ímpeto", "Pele Incandescente"],
+    "keywords": [
+      "Alcance",
+      "Voo",
+      "Ímpeto",
+      "Pele Incandescente"
+    ],
     "ascension": {
       "cost": 4,
       "newName": "Lâmina-Fênix Escarlate",
       "newAtk": 5,
       "newArmor": 0,
       "newMaxHp": 4,
-      "addedKeywords": ["Renascer"]
+      "addedKeywords": [
+        "Renascer"
+      ]
     },
     "effects": [],
     "description": "Ascensão 4: torna-se 5/4 com Renascer.",
@@ -32267,7 +32350,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 3,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance", "Fúria Crescente"],
+    "keywords": [
+      "Alcance",
+      "Fúria Crescente"
+    ],
     "effects": [
       {
         "trigger": "spell_cast",
@@ -32293,7 +32379,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Alcance", "Voo", "Ímpeto", "Renascer"],
+    "keywords": [
+      "Alcance",
+      "Voo",
+      "Ímpeto",
+      "Renascer"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32320,7 +32411,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 3,
     "preferredRow": "vanguard",
-    "keywords": ["Alcance"],
+    "keywords": [
+      "Alcance"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32346,7 +32439,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 4,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance"],
+    "keywords": [
+      "Alcance"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32372,7 +32467,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance", "Escudo Divino"],
+    "keywords": [
+      "Alcance",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32398,7 +32496,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 3,
     "hp": 7,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Escudo Divino", "Atropelar"],
+    "keywords": [
+      "Guardião",
+      "Escudo Divino",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32432,7 +32534,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Escudo Divino"],
+    "keywords": [
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32465,7 +32570,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 7,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Ímpeto", "Escudo Divino"],
+    "keywords": [
+      "Guardião",
+      "Ímpeto",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32498,7 +32607,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Ímpeto", "Fúria Crescente", "Atropelar"],
+    "keywords": [
+      "Ímpeto",
+      "Fúria Crescente",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32525,7 +32638,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Ímpeto", "Atropelar", "Fúria Crescente"],
+    "keywords": [
+      "Ímpeto",
+      "Atropelar",
+      "Fúria Crescente"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32558,7 +32675,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 7,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Ímpeto", "Pele Incandescente"],
+    "keywords": [
+      "Guardião",
+      "Ímpeto",
+      "Pele Incandescente"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32591,7 +32712,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Escudo Divino"],
+    "keywords": [
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32624,7 +32748,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Escudo Divino", "Ímpeto"],
+    "keywords": [
+      "Guardião",
+      "Escudo Divino",
+      "Ímpeto"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32657,7 +32785,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 7,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Alcance", "Escudo Divino"],
+    "keywords": [
+      "Guardião",
+      "Alcance",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32690,7 +32822,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Escudo Divino"],
+    "keywords": [
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32723,7 +32858,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 3,
     "hp": 7,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Atropelar"],
+    "keywords": [
+      "Guardião",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32757,7 +32895,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 7,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Ímpeto", "Atropelar"],
+    "keywords": [
+      "Guardião",
+      "Ímpeto",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32790,7 +32932,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Atropelar"],
+    "keywords": [
+      "Guardião",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32823,7 +32968,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Escudo Divino"],
+    "keywords": [
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32856,7 +33004,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 7,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Alcance", "Toque Letal"],
+    "keywords": [
+      "Guardião",
+      "Alcance",
+      "Toque Letal"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32889,7 +33041,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Dreno de Vida", "Renascer"],
+    "keywords": [
+      "Guardião",
+      "Dreno de Vida",
+      "Renascer"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32922,7 +33078,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Toque Letal", "Dreno de Vida"],
+    "keywords": [
+      "Toque Letal",
+      "Dreno de Vida"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32954,7 +33113,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Ímpeto", "Toque Letal", "Dreno de Vida"],
+    "keywords": [
+      "Ímpeto",
+      "Toque Letal",
+      "Dreno de Vida"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -32987,7 +33150,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Ímpeto", "Pele Incandescente"],
+    "keywords": [
+      "Voo",
+      "Ímpeto",
+      "Pele Incandescente"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33013,7 +33180,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Ímpeto", "Fúria Crescente"],
+    "keywords": [
+      "Voo",
+      "Ímpeto",
+      "Fúria Crescente"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33039,7 +33210,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 8,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Ímpeto", "Escudo Divino", "Fúria Crescente"],
+    "keywords": [
+      "Voo",
+      "Ímpeto",
+      "Escudo Divino",
+      "Fúria Crescente"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33072,7 +33248,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Escudo Divino"],
+    "keywords": [
+      "Voo",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33098,7 +33277,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Escudo Divino", "Alcance"],
+    "keywords": [
+      "Voo",
+      "Escudo Divino",
+      "Alcance"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33124,7 +33307,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 8,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Escudo Divino", "Guardião", "Alcance"],
+    "keywords": [
+      "Voo",
+      "Escudo Divino",
+      "Guardião",
+      "Alcance"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33156,7 +33344,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Atropelar"],
+    "keywords": [
+      "Voo",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33182,7 +33373,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Escudo Divino", "Atropelar"],
+    "keywords": [
+      "Voo",
+      "Escudo Divino",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33215,7 +33410,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 8,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Escudo Divino", "Guardião", "Atropelar"],
+    "keywords": [
+      "Voo",
+      "Escudo Divino",
+      "Guardião",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33248,7 +33448,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Dreno de Vida", "Toque Letal"],
+    "keywords": [
+      "Voo",
+      "Dreno de Vida",
+      "Toque Letal"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33274,7 +33478,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Dreno de Vida", "Renascer"],
+    "keywords": [
+      "Voo",
+      "Dreno de Vida",
+      "Renascer"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33300,7 +33508,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 7,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Dreno de Vida", "Toque Letal", "Renascer"],
+    "keywords": [
+      "Voo",
+      "Dreno de Vida",
+      "Toque Letal",
+      "Renascer"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33332,7 +33545,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "keywords": [
+      "Voo",
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33358,7 +33575,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "keywords": [
+      "Voo",
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33391,7 +33612,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 3,
     "hp": 8,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Guardião", "Escudo Divino", "Atropelar"],
+    "keywords": [
+      "Voo",
+      "Guardião",
+      "Escudo Divino",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33424,7 +33650,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião"],
+    "keywords": [
+      "Guardião"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33451,7 +33679,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Atropelar"],
+    "keywords": [
+      "Guardião",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33477,7 +33708,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 4,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance", "Toque Letal"],
+    "keywords": [
+      "Alcance",
+      "Toque Letal"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33503,7 +33737,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião"],
+    "keywords": [
+      "Guardião"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33529,14 +33765,21 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Atropelar"],
+    "keywords": [
+      "Guardião",
+      "Atropelar"
+    ],
     "ascension": {
       "cost": 4,
       "newName": "Monólito Vivo da Pedreira",
       "newAtk": 7,
       "newArmor": 3,
       "newMaxHp": 8,
-      "addedKeywords": ["Guardião", "Atropelar", "Escudo Divino"]
+      "addedKeywords": [
+        "Guardião",
+        "Atropelar",
+        "Escudo Divino"
+      ]
     },
     "effects": [],
     "description": "Ascensão 4: torna-se 7/8 com Escudo Divino.",
@@ -33556,7 +33799,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 4,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Pele Incandescente"],
+    "keywords": [
+      "Guardião",
+      "Pele Incandescente"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33582,7 +33828,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 4,
     "preferredRow": "vanguard",
-    "keywords": ["Ímpeto", "Atropelar"],
+    "keywords": [
+      "Ímpeto",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_attack",
@@ -33608,7 +33857,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Atropelar"],
+    "keywords": [
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33634,7 +33885,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Escudo Divino"],
+    "keywords": [
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33660,7 +33914,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião"],
+    "keywords": [
+      "Guardião"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33687,7 +33943,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
-    "keywords": ["Ímpeto", "Escudo Divino"],
+    "keywords": [
+      "Ímpeto",
+      "Escudo Divino"
+    ],
     "effects": [],
     "description": "Ataca no turno em que entra e anula o primeiro dano sofrido.",
     "flavorText": "Sob os arcos de filigrana dourada, pistões consagrados desferem o peso de um martelo de cerco.",
@@ -33706,7 +33965,9 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião"],
+    "keywords": [
+      "Guardião"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33732,7 +33993,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 3,
     "preferredRow": "rearguard",
-    "keywords": ["Alcance", "Pele Incandescente"],
+    "keywords": [
+      "Alcance",
+      "Pele Incandescente"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33758,14 +34022,23 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Pele Incandescente", "Fúria Crescente"],
+    "keywords": [
+      "Guardião",
+      "Pele Incandescente",
+      "Fúria Crescente"
+    ],
     "ascension": {
       "cost": 4,
       "newName": "Tirano da Fornalha Enjaulada",
       "newAtk": 7,
       "newArmor": 2,
       "newMaxHp": 8,
-      "addedKeywords": ["Guardião", "Pele Incandescente", "Fúria Crescente", "Atropelar"]
+      "addedKeywords": [
+        "Guardião",
+        "Pele Incandescente",
+        "Fúria Crescente",
+        "Atropelar"
+      ]
     },
     "effects": [],
     "description": "Ascensão 4: torna-se 7/8 com Atropelar.",
@@ -33785,7 +34058,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 4,
     "preferredRow": "vanguard",
-    "keywords": ["Atropelar", "Pele Incandescente"],
+    "keywords": [
+      "Atropelar",
+      "Pele Incandescente"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33811,7 +34087,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Atropelar"],
+    "keywords": [
+      "Voo",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33838,7 +34117,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Ímpeto", "Pele Incandescente"],
+    "keywords": [
+      "Voo",
+      "Ímpeto",
+      "Pele Incandescente"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33865,7 +34148,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Dreno de Vida", "Toque Letal"],
+    "keywords": [
+      "Voo",
+      "Dreno de Vida",
+      "Toque Letal"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33892,7 +34179,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "rearguard",
-    "keywords": ["Voo", "Alcance", "Escudo Divino"],
+    "keywords": [
+      "Voo",
+      "Alcance",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33919,7 +34210,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "keywords": [
+      "Voo",
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33946,7 +34241,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Guardião"],
+    "keywords": [
+      "Voo",
+      "Guardião"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33973,7 +34271,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 4,
     "preferredRow": "rearguard",
-    "keywords": ["Voo", "Alcance", "Dreno de Vida"],
+    "keywords": [
+      "Voo",
+      "Alcance",
+      "Dreno de Vida"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -33999,7 +34301,10 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 1,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Guardião", "Dreno de Vida"],
+    "keywords": [
+      "Guardião",
+      "Dreno de Vida"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -34025,7 +34330,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 0,
     "hp": 3,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Ímpeto", "Renascer"],
+    "keywords": [
+      "Voo",
+      "Ímpeto",
+      "Renascer"
+    ],
     "effects": [],
     "description": "Ignora defensores sem Voo, ataca no turno em que entra e renasce uma vez com 1 de Vida.",
     "flavorText": "Apagar sua primeira forma apenas espalha a fuligem faminta para o segundo bote.",
@@ -36026,7 +36335,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 5,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "keywords": [
+      "Voo",
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -36059,7 +36372,11 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 2,
     "hp": 6,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Guardião", "Escudo Divino"],
+    "keywords": [
+      "Voo",
+      "Guardião",
+      "Escudo Divino"
+    ],
     "effects": [
       {
         "trigger": "on_enter",
@@ -36092,7 +36409,12 @@ const ALL_CARDS_PART_2: CardDefinition[] = [
     "armor": 3,
     "hp": 8,
     "preferredRow": "vanguard",
-    "keywords": ["Voo", "Guardião", "Escudo Divino", "Atropelar"],
+    "keywords": [
+      "Voo",
+      "Guardião",
+      "Escudo Divino",
+      "Atropelar"
+    ],
     "effects": [
       {
         "trigger": "on_enter",

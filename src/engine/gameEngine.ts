@@ -3015,7 +3015,10 @@ function executeCardEffect(
 
     case 'damage_all_units': {
       const dmg = effect.value + bonusDmg;
-      for (const owner of ['player', 'ai'] as const) {
+      const combinedDesc = `${effect.description || ''} ${sourceCard.description || ''}`;
+      const onlyEnemies = /inimig/i.test(combinedDesc);
+      const targetOwners: ('player' | 'ai')[] = onlyEnemies ? [enemyActor] : ['player', 'ai'];
+      for (const owner of targetOwners) {
         for (const unit of getAllBoardUnits(state[owner])) {
           if (!unit.isTrap && unit.currentHp > 0 && unit.instanceId !== options?.sourceInstanceId) {
             dealEffectDamageToUnit(state, unit, dmg, sourceCard.name);
@@ -3026,7 +3029,9 @@ function executeCardEffect(
         state,
         actor,
         'effect',
-        `[${sourceCard.name}] desencadeou devastação em área (${dmg} de dano a todas as outras unidades)!`
+        onlyEnemies
+          ? `[${sourceCard.name}] desencadeou devastação em área (${dmg} de dano a todos os inimigos)!`
+          : `[${sourceCard.name}] desencadeou devastação em área (${dmg} de dano a todas as outras unidades)!`
       );
       break;
     }
@@ -3290,7 +3295,8 @@ function executeCardEffect(
     }
 
     case 'revive_from_crypt': {
-      const isCostCap = effect.value >= 5;
+      const combinedDesc = `${effect.description || ''} ${sourceCard.description || ''}`;
+      const isCostCap = effect.value >= 4 || /custo\s*(?:<=|até)\s*\d+/i.test(combinedDesc);
       const maxCost = isCostCap ? effect.value : 99;
       const reviveCount = isCostCap ? 1 : Math.max(1, effect.value || 1);
 
@@ -3474,7 +3480,7 @@ function executeCardEffect(
       const livingAllies = getAllBoardUnits(actorState).filter(
         (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
       );
-      const isSingleAlly = /a um aliado|a ele/i.test(
+      const isSingleAlly = /a (?:um|1) aliado|a ele|à sua criatura aliada mais forte/i.test(
         `${effect.description || ''} ${sourceCard.description || ''}`
       );
       let targets: BoardUnit[] = livingAllies;
@@ -3695,6 +3701,36 @@ function executeCardEffect(
     }
 
     case 'crimson_anvil_march': {
+      const combinedDesc = `${effect.description || ''} ${sourceCard.description || ''}`;
+      if (
+        sourceCard.id === 'red_179_khorvus_tirano_mascara_auricrania' ||
+        /Armadura e Ímpeto à sua Vanguarda/i.test(combinedDesc)
+      ) {
+        const atkBuff = effect.value || 2;
+        const armBuff = effect.secondaryValue ?? 1;
+        const vanguardAllies = getRowUnits(actorState, 'vanguard').filter(
+          (u) => u.card.type === 'creature' && !u.isTrap && u.currentHp > 0
+        );
+        for (const ally of vanguardAllies) {
+          ally.currentAtk += atkBuff;
+          ally.currentArmor += armBuff;
+          ally.hasSummoningSickness = false;
+          if (!ally.keywords.includes('Ímpeto')) {
+            ally.keywords.push('Ímpeto');
+          }
+          addFeedback(state, ally.instanceId, `+${atkBuff} ATQ / +${armBuff} ARM • Ímpeto!`, 'buff');
+        }
+        if (vanguardAllies.length > 0) {
+          addLog(
+            state,
+            actor,
+            'effect',
+            `[${sourceCard.name}] concedeu +${atkBuff} de Ataque, +${armBuff} de Armadura e Ímpeto à sua Vanguarda!`
+          );
+        }
+        break;
+      }
+
       const atkBuff = effect.value || 2;
       const siegeDmg = effect.secondaryValue ?? 2;
       const chargers = getAllBoardUnits(actorState).filter(

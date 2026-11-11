@@ -231,10 +231,10 @@ function ensureTournamentUpgradeApplied(campaign) {
 }
 
 function main() {
-  var MAX_DAILY_BUDGET = 50.00;
-  var MAX_CPC_CEILING = 3.50;
-  var MIN_CPC_FLOOR = 0.80;
-  var DEFAULT_CPC = 2.50;
+  var MAX_DAILY_BUDGET = 20.00;
+  var MAX_CPC_CEILING = 1.20;
+  var MIN_CPC_FLOOR = 0.60;
+  var DEFAULT_CPC = 1.20;
 
   var campaignIter = AdsApp.campaigns()
     .withCondition("Name CONTAINS 'Chromatic Pact'")
@@ -304,6 +304,14 @@ function main() {
       var currentCpc = kw.bidding().getCpc();
       if (!currentCpc || currentCpc <= 0) {
         currentCpc = kw.getAdGroup().bidding().getCpc() || DEFAULT_CPC;
+      }
+
+      if (currentCpc > MAX_CPC_CEILING) {
+        try {
+          kw.bidding().setCpc(MAX_CPC_CEILING);
+          currentCpc = MAX_CPC_CEILING;
+          loweredCount++;
+        } catch (e) {}
       }
 
       if ((impr14 >= 150 && ctr14 < 0.015) || (cost7 >= 25.0 && ctr7 < 0.012)) {

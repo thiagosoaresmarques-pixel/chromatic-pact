@@ -1062,24 +1062,50 @@ export function ensureStarterDeckForUser(profile: SovereignUserProfile): Soverei
   const { profile: rebased, wasRecalculated } = recalculateProfileEloFromInitialBase(cleaned);
   const { profile: campClean, wasReset } = resetCampaignProgressionForProfile(rebased);
   const { profile: tsmUpgraded, wasUpgraded } = upgradeTsm81ChampionGrimoire(campClean);
+  let finalProfile = tsmUpgraded;
+  let wasSeededDefaultStarter = false;
+  if ((finalProfile.customDecks ?? []).length === 0 && MONOCHROMATIC_STARTER_DECKS.length > 0) {
+    const defaultTpl = MONOCHROMATIC_STARTER_DECKS[0];
+    const now = Date.now();
+    const seededDeck: SovereignSavedDeck = {
+      id: `grimoire_starter_${defaultTpl.domains[0] ?? 'red'}_${now}`,
+      name: defaultTpl.name,
+      domain: defaultTpl.domains[0] ?? 'red',
+      cardIds: [...defaultTpl.cardIds],
+      updatedAt: now,
+      wins: 0,
+      losses: 0,
+    };
+    finalProfile = {
+      ...finalProfile,
+      customDecks: [seededDeck],
+      starterDeckCardIds:
+        finalProfile.starterDeckCardIds && finalProfile.starterDeckCardIds.length === 100
+          ? finalProfile.starterDeckCardIds
+          : [...defaultTpl.cardIds],
+      preferredDeckId: seededDeck.id,
+    };
+    wasSeededDefaultStarter = true;
+  }
   if (
     wasModified ||
     wasRecalculated ||
     wasReset ||
     wasUpgraded ||
-    (shouldBeAdmin && !tsmUpgraded.isAdmin)
+    wasSeededDefaultStarter ||
+    (shouldBeAdmin && !finalProfile.isAdmin)
   ) {
     const updated: SovereignUserProfile = {
-      ...tsmUpgraded,
+      ...finalProfile,
       isAdmin: shouldBeAdmin,
     };
     setActiveTabUserProfile(updated);
-    if (wasRecalculated || wasReset || wasUpgraded) {
+    if (wasRecalculated || wasReset || wasUpgraded || wasSeededDefaultStarter) {
       void syncProfileToSupabaseIfConfigured(updated);
     }
     return updated;
   }
-  return tsmUpgraded;
+  return finalProfile;
 }
 
 /**

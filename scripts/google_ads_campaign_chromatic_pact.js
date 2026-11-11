@@ -270,8 +270,9 @@ function main() {
   }
 
   try {
-    campaign.getBudget().setAmount(50.00);
-    Logger.log('Orçamento diário confirmado: R$ 50,00/dia.');
+    campaign.enable();
+    campaign.getBudget().setAmount(20.00);
+    Logger.log('Campanha ATIVADA e orçamento diário ajustado para: R$ 20,00/dia.');
   } catch (e) {}
 
   try {
@@ -293,8 +294,12 @@ function main() {
   }
 
   // 1. GA1 — Card Games e TCG Online (Preserva histórico e adiciona RSA V4 com Torneios Diários às 19h + 1.188 Cartas)
-  var res1 = getOrCreateAdGroup(campaign, 'GA1 - Card Games e TCG Online', 2.50);
+  var res1 = getOrCreateAdGroup(campaign, 'GA1 - Card Games e TCG Online', 1.20);
   if (res1.adGroup) {
+    try {
+      res1.adGroup.enable();
+      res1.adGroup.bidding().setCpc(1.20);
+    } catch (e) {}
     if (!hasRsaWithPath2(res1.adGroup, 'Torneios')) {
       res1.adGroup.newAd().responsiveSearchAdBuilder()
         .withFinalUrl(finalUrl)
@@ -336,12 +341,20 @@ function main() {
       '[jogar card game gratis]',
       '"melhores card games pc"',
       '"deckbuilder online gratis"'
-    ], 2.50);
+    ], 1.20);
+    var kw1Iter = res1.adGroup.keywords().withCondition("Status != REMOVED").get();
+    while (kw1Iter.hasNext()) {
+      try { kw1Iter.next().bidding().setCpc(1.20); } catch (e) {}
+    }
   }
 
   // 2. GA2 — RPG Tático e Dark Fantasy
-  var res2 = getOrCreateAdGroup(campaign, 'GA2 - RPG Tático e Dark Fantasy', 2.50);
+  var res2 = getOrCreateAdGroup(campaign, 'GA2 - RPG Tático e Dark Fantasy', 1.20);
   if (res2.adGroup) {
+    try {
+      res2.adGroup.enable();
+      res2.adGroup.bidding().setCpc(1.20);
+    } catch (e) {}
     if (!hasRsaWithPath2(res2.adGroup, 'Vaeloria')) {
       res2.adGroup.newAd().responsiveSearchAdBuilder()
         .withFinalUrl(finalUrl)
@@ -380,12 +393,19 @@ function main() {
       '"rpg de cartas online"',
       '"jogo estrategia turnos navegador"',
       '"dark fantasy game browser"'
-    ], 2.50);
+    ], 1.20);
+    var kw2Iter = res2.adGroup.keywords().withCondition("Status != REMOVED").get();
+    while (kw2Iter.hasNext()) {
+      try { kw2Iter.next().bidding().setCpc(1.20); } catch (e) {}
+    }
   }
 
-  // 3. GA3 — Torneios de Card Game & Cenário Competitivo (Cai direto em ?tab=tournaments)
-  var res3 = getOrCreateAdGroup(campaign, 'GA3 - Torneios de Card Game Online', 2.65);
+  // 3. GA3 — Torneios de Card Game & Cenário Competitivo (Pausado para evitar tráfego frio direto na tabela de torneios)
+  var res3 = getOrCreateAdGroup(campaign, 'GA3 - Torneios de Card Game Online', 1.20);
   if (res3.adGroup) {
+    try {
+      res3.adGroup.pause();
+    } catch (e) {}
     if (!hasRsaWithPath2(res3.adGroup, 'Diarios')) {
       res3.adGroup.newAd().responsiveSearchAdBuilder()
         .withFinalUrl(tournamentsUrl)

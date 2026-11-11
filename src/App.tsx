@@ -446,6 +446,22 @@ export const App: React.FC = () => {
       if (urlTab && resolvePillarForTab(urlTab) !== null) {
         return urlTab;
       }
+      const isDirectPlayOrSearchAd = Boolean(
+        sp.get('play') === '1' ||
+          sp.get('play') === 'duel' ||
+          sp.get('gclid') ||
+          sp.get('gbraid') ||
+          sp.get('wbraid') ||
+          sp.get('gad_source') ||
+          sp.get('gad_campaignid') ||
+          (sp.get('utm_source') || '').toLowerCase().includes('google')
+      );
+      if (isDirectPlayOrSearchAd && !initialNavState) {
+        window.setTimeout(() => {
+          trackAdsEvent('start_duel', { mode: 'ads_instant_landing_duel', isGuest: true });
+        }, 150);
+        return 'arena';
+      }
     } catch {
       // ignore URL parse issues
     }

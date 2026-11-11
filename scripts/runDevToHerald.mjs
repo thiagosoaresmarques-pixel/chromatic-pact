@@ -9,7 +9,7 @@
  */
 
 const DEVTO_API = 'https://dev.to/api';
-const MIN_HOURS_BETWEEN_ARTICLES = 68;
+const MIN_HOURS_BETWEEN_ARTICLES = 36;
 
 function sanitizeTags(tags) {
   return (tags || [])
@@ -109,7 +109,7 @@ Entre os gigantes físicos traduzidos para o digital, é hoje o mais generoso na
 
 - Se você busca **roguelite solo em app instalado**: *Legends of Runeterra*.
 - Se quer **regras clássicas de pilha e tem espaço em disco/tempo de grind**: *MTG Arena*.
-- Se quer **fantasia sombria, tabuleiro tático Vanguarda/Retaguarda, 1.038 cartas em português e partida instantânea no navegador (PC ou celular, zero download)**: experimente um duelo em **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art1&utm_medium=editorial&utm_campaign=cardgames_seo)**.
+- Se quer **fantasia sombria, tabuleiro tático Vanguarda/Retaguarda, 1.188 cartas em português e partida instantânea no navegador (PC ou celular, zero download)**: experimente um duelo em **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art1&utm_medium=editorial&utm_campaign=cardgames_seo)**.
 
 Qual desses sistemas de combate e economia mais combina com o seu estilo de jogo?`,
     },
@@ -220,11 +220,11 @@ Fortunately, modern Web engines have sparked a quiet renaissance of **instant-pl
 
 ### 1. Chromatic Pact (Instant Browser — Desktop & Mobile)
 
-![1,038 Dark Fantasy Cards in Chromatic Pact](https://chromaticpact.com/press/grimorio-1038-cartas.png)
+![1,188 Dark Fantasy Cards in Chromatic Pact](https://chromaticpact.com/press/grimorio-1038-cartas.png)
 
 **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art2_en&utm_medium=editorial&utm_campaign=cardgames_seo)** is a dark-fantasy tactical card game built from day one to boot in **~2 seconds directly in your browser** (\`~460 KB\` initial payload, no download, no mandatory sign-up for your first match).
 
-- **Tactical Hook:** Matches play out on a **6-column × 2-row battlefield** where Frontline (*Vanguard*) units physically shield Rearguard spellweavers. Sovereigns build **100-card Grimoires** across **1,038 illustrated cards** and **6 Domains**, clashing over territory with **Domain Expansions** and mid-combat creature **Ascensions**.
+- **Tactical Hook:** Matches play out on a **6-column × 2-row battlefield** where Frontline (*Vanguard*) units physically shield Rearguard spellweavers. Sovereigns build **100-card Grimoires** across **1,188 illustrated cards** and **6 Domains**, clashing over territory with **Domain Expansions** and mid-combat creature **Ascensions**.
 - **Modes & Fair Economy:** 190 single-player campaign encounters across 48 Provinces, an active global Sovereign Elo ladder, and free automated **6-round Daily Swiss Tournaments** — with zero paid booster packs.
 - **Play instantly:** [Launch Chromatic Pact in Browser](https://chromaticpact.com/?utm_source=devto_art2_en&utm_medium=editorial&utm_campaign=cardgames_seo) (also on [itch.io](https://tsm81.itch.io/chromatic-pact)).
 
@@ -280,7 +280,7 @@ Blends tabletop D&D dungeon crawling with card-driven movement and armor equipme
 
 ### Quick Takeaway
 
-If you want to skip launchers entirely and jump straight into a **dark-fantasy lane-tactical duel** with 1,038 cards and daily Swiss cups, give **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art2_en&utm_medium=editorial&utm_campaign=cardgames_seo)** a spin right in your browser tab.`,
+If you want to skip launchers entirely and jump straight into a **dark-fantasy lane-tactical duel** with 1,188 cards and daily Swiss cups, give **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art2_en&utm_medium=editorial&utm_campaign=cardgames_seo)** a spin right in your browser tab.`,
     },
   },
   {
@@ -309,7 +309,7 @@ A boa notícia é que os jogos de cartas estratégicos na Web evoluíram muito a
 
 ### Destaque Dark Fantasy em Português: Chromatic Pact
 
-Projetado especificamente para carregar em cerca de \`~460 KB\` iniciais, **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art3&utm_medium=editorial&utm_campaign=cardgames_seo)** coloca você em duelos de fantasia sombria com **1.038 cartas em português** sem instalar nada:
+Projetado especificamente para carregar em cerca de \`~460 KB\` iniciais, **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art3&utm_medium=editorial&utm_campaign=cardgames_seo)** coloca você em duelos de fantasia sombria com **1.188 cartas em português** sem instalar nada:
 
 - **Mesa Tática 6×2:** Coloque tanques com *Guarda* na **Vanguarda** para proteger magos e arqueiros na **Retaguarda**.
 - **Sem "Zica de Mana":** A ação tática de **Canalizar (+1)** garante progressão consistente de terrenos e evita perder partidas sem conseguir jogar cartas.
@@ -441,7 +441,7 @@ Estes **5 card games Dark Fantasy** entregam excelentes experiências solo e pro
 
 Em **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art6&utm_medium=editorial&utm_campaign=cardgames_seo)**, a campanha solo leva você por **48 Províncias e 190 confrontos contra Soberanos** espalhados pelas fronteiras abissais, florestas ancestrais e cidadelas de Vaeloria.
 
-- Cada vitória rende ouro para expandir sua coleção entre **1.038 cartas ilustradas em português**, preparando seus Grimórios tanto para os chefes regionais quanto para o Ranking Global de Soberanos.
+- Cada vitória rende ouro para expandir sua coleção entre **1.188 cartas ilustradas em português**, preparando seus Grimórios tanto para os chefes regionais quanto para o Ranking Global de Soberanos.
 - **Acesso imediato (sem instalar):** [Explorar Vaeloria em chromaticpact.com](https://chromaticpact.com/?utm_source=devto_art6&utm_medium=editorial&utm_campaign=cardgames_seo)
 
 ---
@@ -480,7 +480,7 @@ Com 100 cartas, você não vence forçando sempre a mesma peça única: precisa 
 Em decks minúsculos, qualquer carta técnica contra armadura, voo ou expansão territorial acaba cortada. Em um Grimório de 100 cartas, há espaço real para respostas criativas, Ascensões e sinergias de facção.
 
 ### 3. Onde Testar Grimórios de 100 Cartas Grátis no Navegador
-Em **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art7&utm_medium=editorial&utm_campaign=cardgames_seo)**, todos os Grimórios oficiais seguem o padrão estratégico de **100 cartas** dentro de um acervo de **1.038 cartas em português** — e você já começa com Grimórios completos prontos para duelar em 2 segundos sem baixar nada.
+Em **[Chromatic Pact](https://chromaticpact.com/?utm_source=devto_art7&utm_medium=editorial&utm_campaign=cardgames_seo)**, todos os Grimórios oficiais seguem o padrão estratégico de **100 cartas** dentro de um acervo de **1.188 cartas em português** — e você já começa com Grimórios completos prontos para duelar em 2 segundos sem baixar nada.
 
 👉 **[Testar Grimórios de 100 cartas em chromaticpact.com](https://chromaticpact.com/?utm_source=devto_art7&utm_medium=editorial&utm_campaign=cardgames_seo)**`,
     },

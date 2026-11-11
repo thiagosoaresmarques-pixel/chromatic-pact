@@ -12,9 +12,9 @@ const EDITIONS = [
   {
     id: 'edicao_01_lancamento',
     unlockAfterIso: '2026-11-05T00:00:00Z',
-    matchKeywords: ['1.038 cartas', '460 kb', 'show tabnews: construí um card game'],
+    matchKeywords: ['1.038 cartas', '1.188 cartas', '460 kb', 'show tabnews: construí um card game'],
     payload: {
-      title: 'Show TabNews: Construí um Card Game Tático Web com 1.038 cartas e ~460 KB de carregamento inicial (sem instalar nada)',
+      title: 'Show TabNews: Construí um Card Game Tático Web com 1.188 cartas e ~460 KB de carregamento inicial (sem instalar nada)',
       source_url: 'https://chromaticpact.com/?utm_source=tabnews&utm_medium=post&utm_campaign=launch_sem1',
       status: 'published',
       body: `Olá, pessoal do TabNews!
@@ -23,7 +23,7 @@ Nos últimos meses venho construindo o **Chromatic Pact**, um híbrido de Card G
 
 ### Desafios de Engenharia & Produto que resolvemos
 
-1. **Carregamento inicial enxuto (\`~460 KB\` gzipped) mesmo com 1.038 cartas ilustradas:**
+1. **Carregamento inicial enxuto (\`~460 KB\` gzipped) mesmo com 1.188 cartas ilustradas:**
    Separamos o carregamento crítico da vitrine e do motor de regras em chunks sob demanda, mantendo a abertura da mesa em cerca de 2 segundos até em redes móveis.
 2. **Tabuleiro Tático 6×2 (Vanguarda e Retaguarda) + Choque de Domínios:**
    Em vez de apenas somar atributos, o posicionamento em colunas protege unidades de suporte na retaguarda, enquanto *Expansões de Domínio* disputam o controle territorial do tabuleiro.
@@ -137,7 +137,7 @@ async function main() {
 
   // 2B. Garantir descrição e link oficial no perfil público do TabNews
   const targetDescription =
-    'Card Game Tático & RPG Dark Fantasy direto no navegador (~460 KB, 1.038 cartas em português, tabuleiro 6×2 de Vanguarda e Retaguarda e Torneios Suíços diários gratuitos).\n\nJogue sem instalar nada: https://chromaticpact.com';
+    'Card Game Tático & RPG Dark Fantasy direto no navegador (~460 KB, 1.188 cartas em português, tabuleiro 6×2 de Vanguarda e Retaguarda e Torneios Suíços diários gratuitos).\n\nJogue sem instalar nada: https://chromaticpact.com';
   if (!isDryRun && (!user.description || !user.description.includes('chromaticpact.com'))) {
     const profPatch = await fetch(`${TABNEWS_API}/users/${user.username}`, {
       method: 'PATCH',

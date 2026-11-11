@@ -1035,7 +1035,7 @@ export const App: React.FC = () => {
           kicker: 'APLICATIVO EM TELA CHEIA (PWA)',
           title: '📲 Instale o App Chromatic Pact',
           message:
-            'Jogue sem barras do navegador, com atalho direto na Tela Inicial / Área de Trabalho e artes das 1.038 cartas em cache instantâneo.',
+            'Jogue sem barras do navegador, com atalho direto na Tela Inicial / Área de Trabalho e artes das 1.188 cartas em cache instantâneo.',
           actionLabel: 'Instalar App',
           actionTarget: 'pwa_modal',
         },

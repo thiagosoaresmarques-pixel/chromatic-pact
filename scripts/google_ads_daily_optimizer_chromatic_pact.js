@@ -4,7 +4,7 @@
  *
  * O que este script faz automaticamente:
  * 1. Auto-Upgrade Idempotente para Torneios Diários às 19h (sem zerar aprendizado):
- *    - Garante o anúncio RSA atualizado no GA1 (Torneios Diários às 19h + 1.038 Cartas),
+ *    - Garante o anúncio RSA atualizado no GA1 (Torneios Diários às 19h + 1.188 Cartas),
  *    - Garante o GA3 dedicado ("GA3 - Torneios de Card Game Online" -> ?tab=tournaments),
  *    - Garante os 4 Sitelinks oficiais (Torneios às 19h, Ranking ELO, Campanha, Grimório),
  *    - Garante o impulso de +15% no horário pré-torneio (16h00 às 20h00).
@@ -67,7 +67,7 @@ function ensureTournamentUpgradeApplied(campaign) {
           'Inscrição Grátis no Navegador',
           'Suba no Ranking Elo Ao Vivo',
           'TCG Tático de Dark Fantasy',
-          '1.038 Cartas Ilustradas',
+          '1.188 Cartas Ilustradas',
           'Torneio Suíço Competitivo',
           'Jogue Grátis Sem Download',
           'Monte Seu Grimório Lendário',
@@ -77,7 +77,7 @@ function ensureTournamentUpgradeApplied(campaign) {
         ])
         .withDescriptions([
           'Dispute torneios suíços diários às 19h valendo cartas lendárias com inscrição gratuita.',
-          'Card game tático de fantasia sombria com 1.038 cartas direto no navegador sem instalar.',
+          'Card game tático de fantasia sombria com 1.188 cartas direto no navegador sem instalar.',
           'Suba no ranking Elo ao vivo, monte seu grimório em 6 domínios e desafie Soberanos.',
           'Campanha solo com 190 confrontos táticos, duelos 1v1 online e mesas ao vivo no PC.'
         ])
@@ -125,14 +125,14 @@ function ensureTournamentUpgradeApplied(campaign) {
           'Ranking Elo Oficial Ao Vivo',
           'Jogue Grátis no Navegador',
           'Chromatic Pact - Card Game',
-          '1.038 Cartas em 6 Domínios',
+          '1.188 Cartas em 6 Domínios',
           'Duelos Estratégicos em Turnos',
           'Assista às Mesas Ao Vivo',
           'Entre na Rodada das 19h'
         ])
         .withDescriptions([
           'Participe dos torneios suíços todos os dias às 19h com inscrição gratuita no navegador.',
-          'Suba no ranking Elo ao vivo em um card game tático com 1.038 cartas ilustradas.',
+          'Suba no ranking Elo ao vivo em um card game tático com 1.188 cartas ilustradas.',
           'Monte seu grimório grátis sem instalar nada no PC ou celular e dispute a rodada de hoje.',
           'Acompanhe duelos em tempo real, estude partidas táticas e conquiste cartas lendárias.'
         ])
@@ -177,7 +177,7 @@ function ensureTournamentUpgradeApplied(campaign) {
       desc2: 'Jogue grátis no PC ou celular'
     },
     {
-      linkText: 'Forjar Grimório (1.038)',
+      linkText: 'Forjar Grimório (1.188)',
       finalUrl: 'https://chromaticpact.com/?tab=deckbuilder',
       desc1: 'Combine 6 domínios elementais',
       desc2: 'Monte seu deck direto no navegador'

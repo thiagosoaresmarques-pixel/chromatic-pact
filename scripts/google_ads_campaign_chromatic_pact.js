@@ -7,7 +7,7 @@
  *
  * IMPORTANTE (Conformidade Google Ads):
  * - 100% seguro nas políticas do Google Ads: destaca Torneios Diários às 19h, Inscrição Gratuita,
- *   Ranking ELO ao Vivo, Cartas Lendárias e 1.038 cartas sem download (sem mencionar PIX/dinheiro no anúncio).
+ *   Ranking ELO ao Vivo, Cartas Lendárias e 1.188 cartas sem download (sem mencionar PIX/dinheiro no anúncio).
  * - Idempotente: se a campanha já existir, preserva todo o histórico e aprendizado da tag AW-16651599167,
  *   adicionando sem duplicar o anúncio atualizado no GA1, o novo GA3 de Torneios, 4 Sitelinks e ajuste +15% (16h–20h).
  */
@@ -172,7 +172,7 @@ function ensureCampaignSitelinks(campaign) {
       desc2: 'Jogue grátis no PC ou celular'
     },
     {
-      linkText: 'Forjar Grimório (1.038)',
+      linkText: 'Forjar Grimório (1.188)',
       finalUrl: 'https://chromaticpact.com/?tab=deckbuilder',
       desc1: 'Combine 6 domínios elementais',
       desc2: 'Monte seu deck direto no navegador'
@@ -292,7 +292,7 @@ function main() {
     } catch (e) {}
   }
 
-  // 1. GA1 — Card Games e TCG Online (Preserva histórico e adiciona RSA V4 com Torneios Diários às 19h + 1.038 Cartas)
+  // 1. GA1 — Card Games e TCG Online (Preserva histórico e adiciona RSA V4 com Torneios Diários às 19h + 1.188 Cartas)
   var res1 = getOrCreateAdGroup(campaign, 'GA1 - Card Games e TCG Online', 2.50);
   if (res1.adGroup) {
     if (!hasRsaWithPath2(res1.adGroup, 'Torneios')) {
@@ -306,7 +306,7 @@ function main() {
           'Inscrição Grátis no Navegador',
           'Suba no Ranking Elo Ao Vivo',
           'TCG Tático de Dark Fantasy',
-          '1.038 Cartas Ilustradas',
+          '1.188 Cartas Ilustradas',
           'Torneio Suíço Competitivo',
           'Jogue Grátis Sem Download',
           'Monte Seu Grimório Lendário',
@@ -316,12 +316,12 @@ function main() {
         ])
         .withDescriptions([
           'Dispute torneios suíços diários às 19h valendo cartas lendárias com inscrição gratuita.',
-          'Card game tático de fantasia sombria com 1.038 cartas direto no navegador sem instalar.',
+          'Card game tático de fantasia sombria com 1.188 cartas direto no navegador sem instalar.',
           'Suba no ranking Elo ao vivo, monte seu grimório em 6 domínios e desafie Soberanos.',
           'Campanha solo com 190 confrontos táticos, duelos 1v1 online e mesas ao vivo no PC.'
         ])
         .build();
-      Logger.log('[GA1] Novo anúncio RSA V4 (Torneios Diários às 19h + 1.038 Cartas) adicionado.');
+      Logger.log('[GA1] Novo anúncio RSA V4 (Torneios Diários às 19h + 1.188 Cartas) adicionado.');
     }
 
     ensureKeywordsExist(res1.adGroup, [
@@ -351,7 +351,7 @@ function main() {
           'Chromatic Pact - RPG e Cartas',
           'Dark Fantasy Tático Online',
           'Torneios Diários às 19h',
-          'Bestiário com 1.038 Cartas',
+          'Bestiário com 1.188 Cartas',
           'Jogue Grátis no Navegador',
           'Dragões, Lichs e Titãs Épicos',
           'Combate Tático e Magia',
@@ -363,12 +363,12 @@ function main() {
         ])
         .withDescriptions([
           'Enfrente dragões, arquimagos e titãs em um card game tático de fantasia sombria.',
-          '1.038 cartas com habilidades táticas, relíquias e armadilhas direto no navegador.',
+          '1.188 cartas com habilidades táticas, relíquias e armadilhas direto no navegador.',
           'Campanha de 190 confrontos e torneios suíços diários às 19h com inscrição gratuita.',
           'Acesso imediato no PC ou celular sem instalar nada. Comece sua jornada em Vaeloria.'
         ])
         .build();
-      Logger.log('[GA2] Novo anúncio RSA V4 (1.038 Cartas + Torneios 19h) adicionado.');
+      Logger.log('[GA2] Novo anúncio RSA V4 (1.188 Cartas + Torneios 19h) adicionado.');
     }
 
     ensureKeywordsExist(res2.adGroup, [
@@ -400,14 +400,14 @@ function main() {
           'Ranking Elo Oficial Ao Vivo',
           'Jogue Grátis no Navegador',
           'Chromatic Pact - Card Game',
-          '1.038 Cartas em 6 Domínios',
+          '1.188 Cartas em 6 Domínios',
           'Duelos Estratégicos em Turnos',
           'Assista às Mesas Ao Vivo',
           'Entre na Rodada das 19h'
         ])
         .withDescriptions([
           'Participe dos torneios suíços todos os dias às 19h com inscrição gratuita no navegador.',
-          'Suba no ranking Elo ao vivo em um card game tático com 1.038 cartas ilustradas.',
+          'Suba no ranking Elo ao vivo em um card game tático com 1.188 cartas ilustradas.',
           'Monte seu grimório grátis sem instalar nada no PC ou celular e dispute a rodada de hoje.',
           'Acompanhe duelos em tempo real, estude partidas táticas e conquiste cartas lendárias.'
         ])

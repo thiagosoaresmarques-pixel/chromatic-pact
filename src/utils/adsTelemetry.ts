@@ -501,7 +501,7 @@ export function initAdsTelemetry(): AdsAttributionData | null {
       window.history.replaceState(null, '', `/${window.location.search || '?tab=tournaments'}${window.location.hash}`);
     }
 
-    // Fallback inteligente para cliques vindos da Bio/Vídeo do TikTok, Instagram ou Google Ads sem gclid
+    // Fallback inteligente para cliques vindos da Bio/Vídeo/Post do TikTok, Instagram, Reddit, YouTube, itch.io, Medium, Dev.to, Hashnode ou Google Ads sem gclid
     const ref = (typeof document !== 'undefined' ? document.referrer || '' : '').toLowerCase();
     if (!utmSource) {
       if (ttclid || ref.includes('tiktok.com')) {
@@ -510,6 +510,27 @@ export function initAdsTelemetry(): AdsAttributionData | null {
       } else if (fbclid || ref.includes('instagram.com')) {
         utmSource = 'instagram';
         if (!utmMedium) utmMedium = fbclid ? 'paid_social' : 'bio_referral';
+      } else if (ref.includes('reddit.com') || ref.includes('redd.it')) {
+        utmSource = 'reddit';
+        if (!utmMedium) utmMedium = 'organic_post';
+      } else if (ref.includes('youtube.com') || ref.includes('youtu.be')) {
+        utmSource = 'youtube';
+        if (!utmMedium) utmMedium = 'shorts_referral';
+      } else if (ref.includes('itch.io') || ref.includes('hwcdn.net')) {
+        utmSource = 'itchio';
+        if (!utmMedium) utmMedium = 'devlog_or_embed';
+      } else if (ref.includes('medium.com')) {
+        utmSource = 'medium';
+        if (!utmMedium) utmMedium = 'editorial';
+      } else if (ref.includes('dev.to')) {
+        utmSource = 'devto';
+        if (!utmMedium) utmMedium = 'editorial';
+      } else if (ref.includes('hashnode.')) {
+        utmSource = 'hashnode';
+        if (!utmMedium) utmMedium = 'editorial';
+      } else if (ref.includes('tabnews.com.br')) {
+        utmSource = 'tabnews';
+        if (!utmMedium) utmMedium = 'editorial';
       } else if (hasGoogleGadSignal) {
         utmSource = 'google_ads';
         if (!utmMedium) utmMedium = 'cpc';

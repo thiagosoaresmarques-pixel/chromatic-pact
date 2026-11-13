@@ -988,6 +988,15 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     return unique;
   }, [isGuest, customDecks]);
 
+  const FIRST_TURN_GUIDE_STORAGE_KEY = 'chromatic_pact_first_turn_guide_done_v2';
+  const [firstTurnGuideDismissed, setFirstTurnGuideDismissed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(FIRST_TURN_GUIDE_STORAGE_KEY) === '1';
+    } catch {
+      return true;
+    }
+  });
+
   const initialSavedSnapshot = useMemo(() => {
     if (onlineMatch || isSpectatorMode) return null;
     const mode: 'problem' | 'boss' | 'solo' = tacticalProblem
@@ -995,8 +1004,20 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       : campaignBoss
       ? 'boss'
       : 'solo';
-    return loadSavedBattleSnapshot(mode, tacticalProblem?.id, campaignBoss?.id);
-  }, []);
+    const loaded = loadSavedBattleSnapshot(mode, tacticalProblem?.id, campaignBoss?.id);
+    if (
+      loaded &&
+      mode === 'solo' &&
+      isGuest &&
+      !firstTurnGuideDismissed &&
+      loaded.gameState.turn === 1 &&
+      loaded.gameState.player.channeledCards.length === 0 &&
+      getAllBoardUnits(loaded.gameState.player).length === 0
+    ) {
+      return null;
+    }
+    return loaded;
+  }, [onlineMatch, isSpectatorMode, tacticalProblem, campaignBoss, isGuest, firstTurnGuideDismissed]);
 
   const restoredBossIdRef = useRef<string | null>(
     initialSavedSnapshot?.mode === 'boss' ? initialSavedSnapshot.bossId : null
@@ -1005,14 +1026,6 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     initialSavedSnapshot?.mode === 'problem' ? initialSavedSnapshot.problemId : null
   );
 
-  const FIRST_TURN_GUIDE_STORAGE_KEY = 'chromatic_pact_first_turn_guide_done_v1';
-  const [firstTurnGuideDismissed, setFirstTurnGuideDismissed] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(FIRST_TURN_GUIDE_STORAGE_KEY) === '1';
-    } catch {
-      return true;
-    }
-  });
   const isFirstTimeOnboardingSoloGuest = Boolean(
     isGuest &&
       !firstTurnGuideDismissed &&
@@ -1167,8 +1180,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiName: bossDeckObj?.name ?? 'Arconte Rival',
             aiTitle: bossDeckObj?.subtitle ?? 'Mestre do Domínio',
             aiAvatarCardId: bossDeckObj?.coverCardId,
-            playerStartingHp: isFirstTimeOnboardingSoloGuest ? 20 : undefined,
-            aiStartingHp: isFirstTimeOnboardingSoloGuest ? 16 : undefined,
+            playerStartingHp: isFirstTimeOnboardingSoloGuest ? 24 : undefined,
+            aiStartingHp: isFirstTimeOnboardingSoloGuest ? 12 : undefined,
             playerDeckId: defaultPlayerDeck?.id,
             aiDeckId: bossDeckObj?.id,
             aiSkillTier: selectedAiSkillTier,
@@ -1177,13 +1190,103 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
     if (isFirstTimeOnboardingSoloGuest) {
       const heavyIndices = freshState.player.hand
-        .map((c, idx) => (c.cost >= 5 ? idx : -1))
+        .map((c, idx) => (c.cost >= 4 ? idx : -1))
         .filter((idx) => idx !== -1);
       const smoothedPlayer =
         heavyIndices.length > 0
           ? mulliganCards(freshState, 'player', heavyIndices)
           : freshState;
-      return executeAiMulligan(smoothedPlayer, 'ai');
+
+      const allPlayerCards = [
+        ...smoothedPlayer.player.hand,
+        ...smoothedPlayer.player.deck,
+      ];
+      const domainCounts: Record<Domain, number> = {
+        red: 0,
+        blue: 0,
+        purple: 0,
+        green: 0,
+        gold: 0,
+        neutral: 0,
+      };
+      for (const c of allPlayerCards) {
+        if (c.domain !== 'neutral') {
+          domainCounts[c.domain] = (domainCounts[c.domain] ?? 0) + 1;
+        }
+      }
+      let primaryDom: Domain = 'red';
+      let bestDomCount = -1;
+      for (const dom of ['red', 'blue', 'purple', 'green', 'gold'] as const) {
+        if (domainCounts[dom] > bestDomCount) {
+          bestDomCount = domainCounts[dom];
+          primaryDom = dom;
+        }
+      }
+
+      const nextDeck = [...smoothedPlayer.player.deck];
+      const nextHand = [...smoothedPlayer.player.hand];
+
+      // Ensure at least 3 Turn-1 playable creatures (cost <= 3, affinityReq <= 1) in opening hand
+      const isTurn1PlayableCreature = (c: CardDefinition) =>
+        c.type === 'creature' &&
+        c.cost <= 3 &&
+        (c.domain === 'neutral' || (c.domain === primaryDom && c.affinityReq <= 1));
+
+      let playableCreatureCount = nextHand.filter(isTurn1PlayableCreature).length;
+      if (playableCreatureCount < 3) {
+        for (let hIdx = nextHand.length - 1; hIdx >= 0 && playableCreatureCount < 3; hIdx -= 1) {
+          if (isTurn1PlayableCreature(nextHand[hIdx])) continue;
+          const dIdx = nextDeck.findIndex(isTurn1PlayableCreature);
+          if (dIdx !== -1) {
+            const swapped = nextDeck[dIdx];
+            nextDeck[dIdx] = nextHand[hIdx];
+            nextHand[hIdx] = swapped;
+            playableCreatureCount += 1;
+          }
+        }
+      }
+
+      // Sort opening hand so Turn-1 playable creatures appear at indices 0..2 (by ascending cost)
+      nextHand.sort((a, b) => {
+        const aPrio = isTurn1PlayableCreature(a) ? 0 : a.cost <= 3 ? 1 : 2;
+        const bPrio = isTurn1PlayableCreature(b) ? 0 : b.cost <= 3 ? 1 : 2;
+        if (aPrio !== bPrio) return aPrio - bPrio;
+        return a.cost - b.cost;
+      });
+
+      // Pre-channel 1 domain card from the bottom of the deck so Turn-1 cards are immediately playable
+      let seedLandIndex = -1;
+      for (let i = nextDeck.length - 1; i >= 0; i -= 1) {
+        if (nextDeck[i].domain === primaryDom) {
+          seedLandIndex = i;
+          break;
+        }
+      }
+      const seedLandCard =
+        seedLandIndex !== -1
+          ? nextDeck.splice(seedLandIndex, 1)[0]
+          : nextHand.find((c) => c.domain === primaryDom) ?? nextHand[0];
+
+      const onboardedPlayerState: GameState = {
+        ...smoothedPlayer,
+        player: {
+          ...smoothedPlayer.player,
+          hand: nextHand,
+          deck: nextDeck,
+          channeledCards: seedLandCard
+            ? [...smoothedPlayer.player.channeledCards, seedLandCard]
+            : smoothedPlayer.player.channeledCards,
+          affinities: {
+            ...smoothedPlayer.player.affinities,
+            [primaryDom]: Math.max(
+              1,
+              (smoothedPlayer.player.affinities[primaryDom] ?? 0) + 1
+            ),
+          },
+        },
+      };
+
+      return executeAiMulligan(onboardedPlayerState, 'ai');
     }
 
     return freshState;
@@ -1294,10 +1397,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       !tacticalProblem &&
       !onlineMatch &&
       !tournamentContext &&
-      (gameState.turn > 1 ||
-        (gameState.turn === 1 &&
-          gameState.activePlayer !== 'player' &&
-          gameState.player.hasChanneledThisTurn))
+      (gameState.turn > 1 || (gameState.turn === 1 && gameState.activePlayer !== 'player'))
     ) {
       dismissFirstTurnGuide();
     }
@@ -1309,7 +1409,6 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     tournamentContext,
     gameState.turn,
     gameState.activePlayer,
-    gameState.player.hasChanneledThisTurn,
     dismissFirstTurnGuide,
   ]);
 
@@ -4968,7 +5067,12 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       playSfx('hit');
       return;
     }
-    if (!bypassActionGuard && !tacticalProblem) {
+    const isFirstTurnSatisfied =
+      !firstTurnGuideDismissed &&
+      gameState.turn === 1 &&
+      getAllBoardUnits(gameState.player).length > 0 &&
+      readyPlayerUnits.length === 0;
+    if (!bypassActionGuard && !tacticalProblem && !isFirstTurnSatisfied) {
       const canStillChannel =
         !gameState.player.hasChanneledThisTurn && gameState.player.hand.length > 0;
       const hasPlayableHandCard = gameState.player.hand.some(
@@ -6547,6 +6651,19 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   <div className="side-cmd-actions">
                   {isPlayerTurn &&
                     activePlayCheck.allowed &&
+                    activeHandCard.type === 'creature' &&
+                    hasEmptyVanguard && (
+                      <button
+                        type="button"
+                        className="quick-act-btn act-vanguard"
+                        onClick={() => handleQuickDeployToRow(selectedHandIndex, 'vanguard')}
+                      >
+                        ⚔️ Invocar na Vanguarda [V]
+                      </button>
+                    )}
+
+                  {isPlayerTurn &&
+                    activePlayCheck.allowed &&
                     (activeHandCard.type === 'spell' ||
                       activeHandCard.type === 'reaction') && (
                       <button
@@ -6562,10 +6679,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                     <button
                       type="button"
                       className={`quick-act-btn ${
-                        !activePlayCheck.allowed ||
-                        (!firstTurnGuideDismissed && gameState.turn === 1)
-                          ? 'act-spell'
-                          : 'act-channel'
+                        !activePlayCheck.allowed ? 'act-spell' : 'act-channel'
                       }`}
                       onClick={() => handleQuickChannelCard(selectedHandIndex)}
                     >
@@ -7938,7 +8052,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                   const shouldPrioritizeChannel =
                     isPlayerTurn &&
                     !gameState.player.hasChanneledThisTurn &&
-                    (!playCheck.allowed || (!firstTurnGuideDismissed && gameState.turn === 1));
+                    !playCheck.allowed;
 
                   return (
                     <div
@@ -9646,6 +9760,14 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
 
                         const isNewlyDrawn =
                           newlyDrawnMinIdx !== null && idx >= newlyDrawnMinIdx;
+                        const isFirstTurnRecommendedCreature =
+                          !firstTurnGuideDismissed &&
+                          isPlayerTurn &&
+                          gameState.turn === 1 &&
+                          idx === 0 &&
+                          playCheck.allowed &&
+                          card.type === 'creature' &&
+                          hasEmptyVanguard;
 
                         return (
                           <div
@@ -9656,7 +9778,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                             } ${isNewlyDrawn ? 'is-newly-drawn' : ''}`}
                             style={{
                               transform: `translateY(${liftY}px) rotate(${rotDeg}deg)`,
-                              zIndex: isSelected ? 60 : idx + 10,
+                              zIndex: isSelected ? 60 : isFirstTurnRecommendedCreature ? 55 : idx + 10,
                               marginLeft:
                                 idx === 0
                                   ? '0px'
@@ -9667,6 +9789,35 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
                                   : '-28px',
                             }}
                           >
+                            {isFirstTurnRecommendedCreature && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleQuickDeployToRow(idx, 'vanguard');
+                                }}
+                                style={{
+                                  position: 'absolute',
+                                  top: '-30px',
+                                  left: '50%',
+                                  transform: 'translateX(-50%)',
+                                  zIndex: 70,
+                                  padding: '4px 10px',
+                                  borderRadius: '999px',
+                                  background: 'rgba(6, 78, 59, 0.96)',
+                                  border: '1px solid rgba(52, 211, 153, 0.85)',
+                                  color: '#ecfdf5',
+                                  fontSize: '0.68rem',
+                                  fontWeight: 700,
+                                  whiteSpace: 'nowrap',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 6px 16px rgba(0, 0, 0, 0.65)',
+                                }}
+                                title="Invocar imediatamente na Vanguarda"
+                              >
+                                Invocar na Vanguarda
+                              </button>
+                            )}
                             <CardView
                               card={card}
                               mode="hand"
@@ -10890,23 +11041,25 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         gameState.turn === 1 &&
         gameState.activePlayer === 'player' &&
         (() => {
+          const playerBoardCount = getAllBoardUnits(gameState.player).length;
           const hasPlayableInHand = gameState.player.hand.some(
-            (c) =>
-              c.cost <= gameState.player.currentEssence &&
-              (c.domain === 'neutral' || (gameState.player.affinities[c.domain] ?? 0) >= c.affinityReq)
+            (c) => canPlayCard(gameState, 'player', c).allowed
           );
-          const stepLabel = !gameState.player.hasChanneledThisTurn
-            ? 'Passo 1/3'
-            : hasPlayableInHand
-            ? 'Passo 2/3'
-            : 'Passo 3/3';
-          const stepMessage = !gameState.player.hasChanneledThisTurn
-            ? 'Toque em 1 carta da mão e escolha Canalizar (+1 Essência e Afinidade).'
-            : hasPlayableInHand
-            ? 'Toque numa carta iluminada da mão para invocá-la na Vanguarda.'
-            : 'Ataque com unidades prontas ou toque em Passar Turno.';
-          const needsHandAction =
-            !gameState.player.hasChanneledThisTurn || hasPlayableInHand;
+          const stepLabel =
+            playerBoardCount === 0
+              ? 'Passo 1/3'
+              : hasPlayableInHand
+              ? 'Passo 2/3'
+              : 'Passo 3/3';
+          const stepMessage =
+            playerBoardCount === 0
+              ? selectedHandCard && canPlaySelectedHandCard.allowed
+                ? `Toque numa coluna iluminada da Vanguarda (ou no botão Vanguarda) para invocar ${selectedHandCard.name}.`
+                : 'Toque numa criatura iluminada da mão para invocá-la na Vanguarda.'
+              : hasPlayableInHand
+              ? 'Invoque outra carta iluminada com sua Essência ou toque em Passar Turno.'
+              : 'Tropas posicionadas na mesa — toque em Passar Turno para iniciar o combate.';
+          const needsHandAction = playerBoardCount === 0 || hasPlayableInHand;
           return (
             <div
               role="status"

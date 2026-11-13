@@ -446,19 +446,57 @@ export const App: React.FC = () => {
       if (urlTab && resolvePillarForTab(urlTab) !== null) {
         return urlTab;
       }
-      const isDirectPlayOrSearchAd = Boolean(
-        sp.get('play') === '1' ||
-          sp.get('play') === 'duel' ||
-          sp.get('gclid') ||
-          sp.get('gbraid') ||
-          sp.get('wbraid') ||
-          sp.get('gad_source') ||
-          sp.get('gad_campaignid') ||
-          (sp.get('utm_source') || '').toLowerCase().includes('google')
+      const isSpectatorDeepLink = Boolean(
+        sp.get('replay') || sp.get('live') || sp.get('tid')
       );
-      if (isDirectPlayOrSearchAd && !initialNavState) {
+      const utmSource = (sp.get('utm_source') || '').trim().toLowerCase();
+      const utmMedium = (sp.get('utm_medium') || '').trim().toLowerCase();
+      const utmCampaign = (sp.get('utm_campaign') || '').trim().toLowerCase();
+      const refHost = (() => {
+        try {
+          return document.referrer ? new URL(document.referrer).hostname.toLowerCase() : '';
+        } catch {
+          return (document.referrer || '').toLowerCase();
+        }
+      })();
+      const isExternalAcquisitionReferrer = Boolean(
+        refHost &&
+          (refHost.includes('google.') ||
+            refHost.includes('bing.') ||
+            refHost.includes('duckduckgo.') ||
+            refHost.includes('youtube.') ||
+            refHost.includes('youtu.be') ||
+            refHost.includes('tiktok.') ||
+            refHost.includes('reddit.') ||
+            refHost.includes('redd.it') ||
+            refHost.includes('itch.io') ||
+            refHost.includes('medium.') ||
+            refHost.includes('dev.to') ||
+            refHost.includes('tabnews.'))
+      );
+      const isDirectPlayAcquisitionVisit = Boolean(
+        !isSpectatorDeepLink &&
+          (sp.get('play') === '1' ||
+            sp.get('play') === 'duel' ||
+            sp.get('gclid') ||
+            sp.get('gbraid') ||
+            sp.get('wbraid') ||
+            sp.get('gad_source') ||
+            sp.get('gad_campaignid') ||
+            sp.get('ttclid') ||
+            sp.get('fbclid') ||
+            utmSource.length > 0 ||
+            utmMedium.length > 0 ||
+            utmCampaign.length > 0 ||
+            isExternalAcquisitionReferrer)
+      );
+      if (isDirectPlayAcquisitionVisit && !initialNavState) {
         window.setTimeout(() => {
-          trackAdsEvent('start_duel', { mode: 'ads_instant_landing_duel', isGuest: true });
+          trackAdsEvent('start_duel', {
+            mode: 'acquisition_instant_landing_duel',
+            channel: utmSource || refHost || 'direct_play',
+            isGuest: true,
+          });
         }, 150);
         return 'arena';
       }

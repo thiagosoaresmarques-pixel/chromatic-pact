@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'chromatic-pact-v131';
+const CACHE_VERSION = 'chromatic-pact-v132';
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
 const PRECACHE_URLS = [

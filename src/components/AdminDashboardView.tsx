@@ -9,7 +9,6 @@ import {
   adminSaveCloudProfile,
   authenticateSovereignAccount,
   buildFullUnlockedCollectionMap,
-  clearCloudVisitorTelemetryForAdmin,
   CloudVisitorSessionEntry,
   fetchAllCloudProfilesForAdmin,
   fetchAllCloudRoomsForAdmin,
@@ -2656,19 +2655,6 @@ Inscrição gratuita no link da bio (chromaticpact.com). Qual seu ELO atual?
                   Snippet de Conversão de Inscrição: <code>{GOOGLE_ADS_SIGNUP_CONVERSION_SEND_TO}</code>
                 </div>
               </div>
-              {visitorSessions.length > 0 && (
-                <button
-                  type="button"
-                  className="nav-notif-mini-btn"
-                  onClick={async () => {
-                    if (!window.confirm('Deseja limpar o histórico de sessões de visitantes em nuvem?')) return;
-                    await clearCloudVisitorTelemetryForAdmin();
-                    await refreshCloudData();
-                  }}
-                >
-                  🧹 Limpar Sessões de Teste
-                </button>
-              )}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>

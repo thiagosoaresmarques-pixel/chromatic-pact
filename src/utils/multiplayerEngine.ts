@@ -2842,32 +2842,9 @@ export async function syncVisitorSessionToCloud(session: CloudVisitorSessionEntr
 }
 
 export async function clearCloudVisitorTelemetryForAdmin(): Promise<boolean> {
-  const cfg = getSupabaseConfig();
-  if (!cfg.isConfigured) return false;
-
-  const adminCreds = getVerifiedActiveAdminCredentials();
-  if (adminCreds) {
-    const rpcRes = await invokeSupabaseRpc<{ ok?: boolean }>('rpc_admin_action', {
-      p_admin_username: adminCreds.username,
-      p_admin_password_hash: adminCreds.passwordHash,
-      p_action: 'clear_telemetry',
-    });
-    if (rpcRes.status === 'ok') return Boolean(rpcRes.data?.ok);
-    if (rpcRes.status !== 'missing_rpc') return false;
-  }
-
-  try {
-    const res = await fetch(
-      `${cfg.url}/rest/v1/sovereign_profiles?username=like.__telemetry_session__:*`,
-      {
-        method: 'DELETE',
-        headers: getSupabaseHeaders(cfg.anonKey),
-      }
-    );
-    return res.ok;
-  } catch {
-    return false;
-  }
+  // Desativado permanentemente por segurança: o histórico de telemetria de visitantes
+  // nunca deve ser apagado em lote pela interface administrativa.
+  return false;
 }
 
 export async function publishGlobalAdminAnnouncement(

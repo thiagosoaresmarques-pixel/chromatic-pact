@@ -1037,6 +1037,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       !tournamentContext &&
       !rankedDuelContext
   );
+  const [isOnboardingQuickMatch] = useState<boolean>(() => isFirstTimeOnboardingSoloGuest);
 
   const [selectedPlayerDeckId, setSelectedPlayerDeckId] = useState<string>(
     () =>
@@ -1181,7 +1182,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
             aiTitle: bossDeckObj?.subtitle ?? 'Mestre do Domínio',
             aiAvatarCardId: bossDeckObj?.coverCardId,
             playerStartingHp: isFirstTimeOnboardingSoloGuest ? 24 : undefined,
-            aiStartingHp: isFirstTimeOnboardingSoloGuest ? 12 : undefined,
+            aiStartingHp: isFirstTimeOnboardingSoloGuest ? 6 : undefined,
             playerDeckId: defaultPlayerDeck?.id,
             aiDeckId: bossDeckObj?.id,
             aiSkillTier: selectedAiSkillTier,
@@ -1273,6 +1274,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
           ...smoothedPlayer.player,
           hand: nextHand,
           deck: nextDeck,
+          currentEssence: Math.max(4, smoothedPlayer.player.currentEssence),
+          maxEssence: Math.max(4, smoothedPlayer.player.maxEssence),
           channeledCards: seedLandCard
             ? [...smoothedPlayer.player.channeledCards, seedLandCard]
             : smoothedPlayer.player.channeledCards,
@@ -1397,7 +1400,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       !tacticalProblem &&
       !onlineMatch &&
       !tournamentContext &&
-      (gameState.turn > 1 || (gameState.turn === 1 && gameState.activePlayer !== 'player'))
+      (gameState.phase === 'gameover' || gameState.turn > 2)
     ) {
       dismissFirstTurnGuide();
     }
@@ -1407,8 +1410,8 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     tacticalProblem,
     onlineMatch,
     tournamentContext,
+    gameState.phase,
     gameState.turn,
-    gameState.activePlayer,
     dismissFirstTurnGuide,
   ]);
 
@@ -4385,9 +4388,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     }
     const timer = window.setTimeout(() => {
       setGameoverStage('modal');
-    }, 2550);
+    }, isGuest ? 1600 : 2550);
     return () => window.clearTimeout(timer);
-  }, [gameState.phase, gameoverStage, isHomeLiveShowcase]);
+  }, [gameState.phase, gameoverStage, isHomeLiveShowcase, isGuest]);
 
   const isPlayerTurn =
     !isSpectatorMode && gameState.activePlayer === 'player' && gameState.phase !== 'gameover';
@@ -4469,6 +4472,37 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     return bestIdx;
   };
 
+  const empowerOnboardingTurn1Units = (state: GameState): GameState => {
+    if (!isOnboardingQuickMatch || state.turn !== 1) return state;
+    const empowerUnit = (u: BoardUnit): BoardUnit =>
+      u.card.type === 'creature' && !u.hasAttackedThisTurn
+        ? {
+            ...u,
+            hasSummoningSickness: false,
+            currentAtk: Math.max(3, u.currentAtk),
+            keywords: u.keywords.includes('Ímpeto')
+              ? u.keywords
+              : [...u.keywords, 'Ímpeto'],
+          }
+        : u;
+    const nextVanguardStacks = state.player.vanguardStacks.map((stack) =>
+      stack.map(empowerUnit)
+    );
+    const nextRearguardStacks = state.player.rearguardStacks.map((stack) =>
+      stack.map(empowerUnit)
+    );
+    return {
+      ...state,
+      player: {
+        ...state.player,
+        vanguardStacks: nextVanguardStacks,
+        rearguardStacks: nextRearguardStacks,
+        vanguard: nextVanguardStacks.map((stack) => stack[0] ?? null),
+        rearguard: nextRearguardStacks.map((stack) => stack[0] ?? null),
+      },
+    };
+  };
+
   const handleQuickDeployToRow = (handIdx: number, row: RowType) => {
     if (!isPlayerTurn) return;
     const card = gameState.player.hand[handIdx];
@@ -4476,7 +4510,9 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     const slotIdx = findBestDeploySlot(row);
     if (slotIdx === -1) return;
     triggerCardPlaySpectacle('player', card, gameState);
-    const next = playCard(gameState, 'player', handIdx, { row, slotIndex: slotIdx });
+    const next = empowerOnboardingTurn1Units(
+      playCard(gameState, 'player', handIdx, { row, slotIndex: slotIdx })
+    );
     playSfx('summon', {
       domain: card.domain,
       rarity: card.rarity,
@@ -4741,11 +4777,13 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
     if (selectedHandCard.type === 'creature' || selectedHandCard.type === 'relic') {
       const effectiveTargetId = explicitTargetId ?? focusedBoardUnitId ?? undefined;
       triggerCardPlaySpectacle('player', selectedHandCard, gameState, effectiveTargetId);
-      const next = playCard(gameState, 'player', selectedHandIndex, {
-        row,
-        slotIndex,
-        targetId: effectiveTargetId,
-      });
+      const next = empowerOnboardingTurn1Units(
+        playCard(gameState, 'player', selectedHandIndex, {
+          row,
+          slotIndex,
+          targetId: effectiveTargetId,
+        })
+      );
       playSfx('summon', {
         domain: selectedHandCard.domain,
         rarity: selectedHandCard.rarity,
@@ -5067,9 +5105,17 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
       playSfx('hit');
       return;
     }
+    if (
+      (isOnboardingQuickMatch || !firstTurnGuideDismissed) &&
+      gameState.turn <= 2 &&
+      readyPlayerUnits.length > 0
+    ) {
+      handleAutoAttackAll();
+      return;
+    }
     const isFirstTurnSatisfied =
-      !firstTurnGuideDismissed &&
-      gameState.turn === 1 &&
+      (isOnboardingQuickMatch || !firstTurnGuideDismissed) &&
+      gameState.turn <= 2 &&
       getAllBoardUnits(gameState.player).length > 0 &&
       readyPlayerUnits.length === 0;
     if (!bypassActionGuard && !tacticalProblem && !isFirstTurnSatisfied) {
@@ -11038,33 +11084,40 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
         !showQuickRules &&
         !showTacticalAdvisor &&
         gameState.phase !== 'gameover' &&
-        gameState.turn === 1 &&
+        gameState.turn <= 2 &&
         gameState.activePlayer === 'player' &&
         (() => {
           const playerBoardCount = getAllBoardUnits(gameState.player).length;
           const hasPlayableInHand = gameState.player.hand.some(
             (c) => canPlayCard(gameState, 'player', c).allowed
           );
+          const readyCount = readyPlayerUnits.length;
           const stepLabel =
             playerBoardCount === 0
-              ? 'Passo 1/3'
-              : hasPlayableInHand
-              ? 'Passo 2/3'
-              : 'Passo 3/3';
+              ? 'Passo 1/2'
+              : readyCount > 0
+              ? 'Passo 2/2'
+              : 'Pronto';
           const stepMessage =
             playerBoardCount === 0
               ? selectedHandCard && canPlaySelectedHandCard.allowed
                 ? `Toque numa coluna iluminada da Vanguarda (ou no botão Vanguarda) para invocar ${selectedHandCard.name}.`
-                : 'Toque numa criatura iluminada da mão para invocá-la na Vanguarda.'
-              : hasPlayableInHand
-              ? 'Invoque outra carta iluminada com sua Essência ou toque em Passar Turno.'
-              : 'Tropas posicionadas na mesa — toque em Passar Turno para iniciar o combate.';
-          const needsHandAction = playerBoardCount === 0 || hasPlayableInHand;
+                : 'Toque em Invocar na Vanguarda na 1ª carta da mão para posicionar sua tropa.'
+              : readyCount > 0
+              ? hasPlayableInHand
+                ? `Tropa pronta com Ímpeto — invoque mais uma carta ou ataque o Soberano rival (${gameState.ai.hp} PV).`
+                : `Tropa pronta para o combate — ataque o Soberano rival (${gameState.ai.hp} PV).`
+              : 'Ataque concluído — toque em Passar Turno para avançar.';
+          const needsHandAction = playerBoardCount === 0;
           return (
             <div
               role="status"
               className="arena-turn1-guide-pill"
               onClick={() => {
+                if (readyCount > 0 && !combatAnim) {
+                  handleAutoAttackAll();
+                  return;
+                }
                 if (needsHandAction && !isHandPinnedOpen && selectedHandIndex === null) {
                   setIsP1DrawerPinned(false);
                   setIsP2DrawerPinned(false);
@@ -11074,7 +11127,7 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               }}
               style={{
                 cursor:
-                  needsHandAction && !isHandPinnedOpen && selectedHandIndex === null
+                  readyCount > 0 || (needsHandAction && !isHandPinnedOpen && selectedHandIndex === null)
                     ? 'pointer'
                     : 'default',
               }}
@@ -11084,6 +11137,32 @@ export const BattleArena: React.FC<BattleArenaProps> = ({
               </span>
               <span style={{ color: 'rgba(148, 163, 184, 0.35)' }}>·</span>
               <span style={{ color: '#e2e8f0', flex: 1, minWidth: 0 }}>{stepMessage}</span>
+              {readyCount > 0 && (
+                <button
+                  type="button"
+                  disabled={Boolean(combatAnim)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAutoAttackAll();
+                  }}
+                  style={{
+                    marginLeft: '0.25rem',
+                    background: 'rgba(6, 78, 59, 0.96)',
+                    border: '1px solid rgba(52, 211, 153, 0.85)',
+                    borderRadius: '6px',
+                    color: '#ecfdf5',
+                    fontSize: '0.74rem',
+                    fontWeight: 700,
+                    minHeight: '32px',
+                    padding: '0 12px',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                  }}
+                >
+                  Atacar Soberano ({readyCount})
+                </button>
+              )}
               <button
                 type="button"
                 onClick={(e) => {
